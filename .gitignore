@@ -1,2 +1,18 @@
 /.idea/
 /.omc/
+**/.omc/
+
+# Flutter / Dart
+**/.dart_tool/
+**/build/
+**/.flutter-plugins-dependencies
+app/coverage/
+app/mutation-test-report/
+
+# Code généré (régénéré par scripts/generate.sh et generate_widgetbook.sh, jamais versionné)
+app/lib/**/*.g.dart
+app/lib/**/*.freezed.dart
+app/lib/**/*.config.dart
+app/lib/shared/l10n/generated/
+app/test/bdd/*_test.dart
+widgetbook/lib/**/*.g.dart
