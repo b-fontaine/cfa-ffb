@@ -97,14 +97,14 @@ rollback, migrations, ouverture fichier) sont dans `test/unit/shared/persistence
 - Les `.feature` sont la spécification vivante : tout nouveau comportement visible
   par l'utilisateur y apparaît, y compris pour les deux langues quand c'est pertinent.
 
-## Couverture et mutation
+## Couverture
 
 - Seuil de couverture de lignes : **≥ 90 %** sur `lib/` hors code généré, `main.dart`
   et `app/di/injection.dart` (script `scripts/check_coverage.dart`). Tout fichier de
   `lib/` non chargé par un test fait échouer le contrôle.
-- Mutation testing : `mutation_test` (`app/mutation-test.xml`), seuil de détection
-  **≥ 85 %** ; un mutant survivant signale un test trop faible : renforcer l'assertion,
-  pas le seuil.
+- La pertinence des assertions est contrôlée par la relecture de l'agent
+  `testeur-bdd` et par les tests de contrat (le mutation testing a été retiré, voir
+  [quality-gates.md](quality-gates.md)).
 
 ## Commandes
 

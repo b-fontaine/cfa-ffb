@@ -17,7 +17,7 @@ règles sont **vérifiées automatiquement** (voir [quality-gates.md](quality-ga
 ```bash
 scripts/setup.sh          # hooks git + dépendances + code généré
 scripts/check.sh --fast   # format, analyse, architecture, séances (~5 s)
-scripts/check.sh --full   # + l10n, tests, couverture, Widgetbook, mutation
+scripts/check.sh --full   # + l10n, tests, couverture, Widgetbook
 cd app && flutter run     # lancer l'application
 cd widgetbook && flutter run -d chrome   # catalogue du design system
 ```

@@ -78,9 +78,7 @@ Interdits : inventer un exercice « officiel », présenter une adaptation non s
 |--------|----------|
 | Installer les hooks git | `scripts/setup.sh` |
 | Vérification rapide (format, analyse, architecture) | `scripts/check.sh --fast` |
-| Vérification complète (tests, couverture, l10n, mutation…) | `scripts/check.sh --full` |
-| Mutation complète (~30 min, copie temporaire, arbre intact) | `scripts/mutation.sh` |
-| Mutation ciblée (fichiers `lib/` modifiés vs une base) | `scripts/mutation.sh --changed [base-ref]` |
+| Vérification complète (tests, couverture, l10n, Widgetbook) | `scripts/check.sh --full` |
 | Valider les séances | `dart run scripts/validate_seances.dart` |
 | Copier / vérifier le catalogue (asset = `docs/knowledge`) | `scripts/sync_catalogue.sh [--check]` |
 

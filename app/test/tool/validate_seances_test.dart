@@ -1,6 +1,3 @@
-@Tags(['tooling'])
-library;
-
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../scripts/validate_seances.dart';

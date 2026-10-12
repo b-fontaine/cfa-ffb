@@ -21,8 +21,8 @@ Un cycle = un comportement minuscule. Ne jamais écrire plus de code de producti
 - Dépendances externes : `mocktail`, uniquement aux frontières (repository, horloge, réseau) ; jamais le système sous test.
 - Bug : écrire d'abord un test qui le reproduit, puis corriger.
 
-## Qualité des tests (contrôlée par mutation testing)
+## Qualité des tests
 
 - Une assertion par comportement ; vérifier les valeurs, pas seulement l'absence d'exception.
 - Cas limites : listes vides, bornes (89/90/91 min), valeurs `null`.
-- Un test qui ne casse pas quand on mute le code est un mauvais test : le renforcer plutôt que d'abaisser le seuil.
+- Un test qui resterait vert si le comportement était faux est un mauvais test : le renforcer (valeur attendue exacte, borne, cas d'erreur) ; la relecture `testeur-bdd` le vérifie.

@@ -1,6 +1,3 @@
-@Tags(['tooling'])
-library;
-
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -33,7 +30,7 @@ void _copy(String from, String to, {List<String> excludes = const []}) {
 void main() {
   test('check.sh --fast never writes to the working tree', () {
     // Le dépôt réel n'est jamais modifié par ce test : le garde-fou tourne
-    // sur une copie temporaire (comme scripts/mutation.sh).
+    // sur une copie temporaire.
     final real = Directory('..').absolute.path;
     final copy = Directory.systemTemp.createTempSync('check_fast_');
     addTearDown(() => copy.deleteSync(recursive: true));

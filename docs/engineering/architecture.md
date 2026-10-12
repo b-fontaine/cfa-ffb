@@ -100,7 +100,7 @@ app/
 ├── assets/fonts/                      # Exo 2 + licence OFL
 ├── assets/catalogue/                  # copie du catalogue (scripts/sync_catalogue.sh)
 ├── tool/                              # check_architecture.dart (+ architecture/)
-├── l10n.yaml  build.yaml  mutation-test.xml  analysis_options.yaml
+├── l10n.yaml  build.yaml  analysis_options.yaml
 └── android/ ios/ web/ linux/ macos/ windows/
 widgetbook/                            # projet séparé : catalogue du design system
 ├── lib/main.dart                      # @App + addons

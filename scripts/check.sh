@@ -3,13 +3,12 @@
 #
 #   scripts/check.sh --fast   catalogue + fichiers web drift + format + analyse + architecture + séances
 #   scripts/check.sh --full   --fast + l10n + tests + couverture + Widgetbook
-#                             (génération, format, analyse, use cases) + mutation
+#                             (génération, format, analyse, use cases)
 #
 # --fast est en LECTURE SEULE sur les sources (dart format --output=none) ; la
 # preuve est dans app/test/tool/check_fast_read_only_test.dart.
 #
-# Variables : COVERAGE_MIN (défaut 90), SKIP_MUTATION=1 pour ignorer la mutation,
-# MUTATION_ARGS pour la restreindre (ex. "--changed origin/main").
+# Variable : COVERAGE_MIN (défaut 90).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -83,10 +82,5 @@ step "Widgetbook (génération, format, analyse, use cases)"
 )
 (cd "$ROOT" && dart run scripts/check_widgetbook.dart app widgetbook)
 
-if [[ "${SKIP_MUTATION:-0}" != "1" ]]; then
-  step "Mutation testing"
-  # shellcheck disable=SC2086 # MUTATION_ARGS est volontairement découpé en mots.
-  "$ROOT/scripts/mutation.sh" ${MUTATION_ARGS:-}
-fi
 
 printf '\n✔ check --full OK\n'

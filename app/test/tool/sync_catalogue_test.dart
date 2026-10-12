@@ -1,6 +1,3 @@
-@Tags(['tooling'])
-library;
-
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
