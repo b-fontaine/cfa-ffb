@@ -1,0 +1,160 @@
+# Catalogue structuré des fiches entraînement (niveau 1, Blackball).
+# Source : docs/sources/Fiches Entrainement CFA blackball.pdf [S]
+# Les positions des billes sont dans les schémas du PDF (non transcrites).
+# `rate` = [réussites requises, tentatives] pour passer à l'exercice suivant.
+# `bronze: true` = l'exercice porte la mention « Billard de bronze » dans la source.
+version: 1
+source: "Fiches Entrainement CFA blackball.pdf"
+level: 1
+sessions_unit_defined: false  # la source ne définit pas la durée d'une « séance »
+# [U] Décisions de l'animateur (2026-10-11) :
+#  - validation d'un exercice : plusieurs passages réussis, 5 le plus souvent (réglable) ;
+#  - ordre d'enseignement : rebond sur bande AVANT rejet naturel (teaching_order).
+validation:
+  passes_required_default: 5
+  configurable: true
+  source: "[U]"
+blocks:
+  - id: puissance
+    teaching_order: 1
+    title: La puissance
+    sessions: {min: 1, max: 2}
+    technical_sheet: 2
+    exercises:
+      - {n: 1, rate: [7, 9], bridge: cadre, note: "3 x 3 billes; blanche dans la zone grise"}
+      - {n: 2, rate: [5, 10], bridge: cadre, note: "2 x 5 billes"}
+      - {n: 3, rate: [5, 10], bridge: surface, note: "2 x 5 billes"}
+      - {n: 4, rate: [5, 8], bridge: surface, note: "4 x 2 billes"}
+  - id: bille-pleine
+    teaching_order: 2
+    title: La quantité de bille pleine
+    sessions: {min: 2, max: 3}
+    technical_sheet: 4
+    exercises:
+      - {n: 1, rate: [6, 8], bridge: cadre, bronze: true, note: "8 billes"}
+      - {n: 2, rate: [4, 6], bridge: surface, bronze: true, note: "6 billes"}
+      - {n: 3, rate: [6, 8], bridge: surface, bronze: true, note: "8 billes"}
+      - {n: 4, rate: [6, 8], bridge: cadre, bronze: true, note: "8 billes en poches du milieu"}
+  - id: demi-bille
+    teaching_order: 3
+    title: La quantité demi-bille
+    sessions: {min: 2, max: 3}
+    technical_sheet: 5
+    exercises:
+      - {n: 1, rate: [4, 6], bronze: true, note: "6 billes, distances différentes"}
+      - {n: 2, rate: [6, 8], bridge: surface, bronze: true, note: "8 billes"}
+      - {n: 3, rate: [6, 8], bridge: cadre, bronze: true, note: "8 billes"}
+      - {n: 4, rate: [4, 8], bronze: true, note: "8 billes, distances différentes"}
+  - id: trois-quarts
+    teaching_order: 4
+    title: La quantité trois-quarts
+    sessions: {min: 1, max: 2}
+    technical_sheet: 6
+    exercises:
+      - {n: 1, rate: [6, 8], bridge: cadre, bronze: true, note: "2 fois chaque jaune puis chaque rouge"}
+      - {n: 2, rate: [6, 8], bronze: true, note: "8 billes, distances différentes"}
+      - {n: 3, rate: [6, 8], bridge: surface, bronze: true, note: "8 billes"}
+      - {n: 4, rate: [6, 8], bridge: cadre, bronze: true, note: "8 billes"}
+  - id: quart-finesses
+    teaching_order: 5
+    title: Quart de bille et finesses
+    sessions: {min: 1, max: 2}
+    technical_sheet: [7, 8]
+    exercises:
+      - {n: 1, rate: [6, 8], bridge: surface, bronze: true, note: "8 billes en quart"}
+      - {n: 2, rate: [8, 12], bronze: true, note: "8 billes en quart"}
+      - {n: 3, rate: [4, 8], bronze: true, note: "8 billes en finesse"}
+      - {n: 4, rate: [4, 8], bronze: true, note: "8 billes en finesse"}
+  - id: quantites-de-billes
+    teaching_order: 6
+    title: Les quantités de billes
+    sessions: {min: 1, max: 2}
+    technical_sheet: [4, 5, 6, 7, 8]
+    exercises:
+      - {n: 1, rate: [5, 7], bronze: true, note: "7 billes, quantités différentes"}
+      - {n: 2, rate: [6, 8], bronze: true, note: "8 billes"}
+      - {n: 3, rate: [6, 9], bronze: true, note: "9 billes"}
+      - {n: 4, rate: [5, 8], bronze: true, note: "4 x 2 billes"}
+  - id: rejet-naturel
+    teaching_order: 8  # [U] après le rebond sur bande
+    title: Le rejet naturel
+    sessions: {min: 2, max: 2}
+    technical_sheet: 10
+    duplicate_in_source: true  # le bloc apparaît deux fois (2e occurrence : 1 à 2 séances)
+    exercises:
+      - {n: 1, rate: [3, 5], note: "replacer 5 fois la blanche pour jouer la noire"}
+      - {n: 2, rate: [3, 5]}
+      - {n: 3, rate: [3, 5]}
+      - {n: 4, rate: [3, 5]}
+  - id: rebond-bande
+    teaching_order: 7  # [U] rebond sur bande avant rejet naturel
+    title: Le rebond d'une bille sur une bande
+    sessions: {min: 2, max: 2}
+    technical_sheet: 9
+    exercises:
+      - {n: 1, rate: [3, 5], note: "jouer une bande avant"}
+      - {n: 2, rate: [3, 5], note: "jouer une bande avant"}
+      - {n: 3, rate: [2, 3], note: "deux bandes avant de toucher une bille"}
+      - {n: 4, rate: [2, 3], note: "deux bandes avant de toucher une bille"}
+  - id: coule
+    teaching_order: 9
+    title: Le coulé
+    sessions: {min: 2, max: 3}
+    technical_sheet: 11
+    exercises:
+      - {n: 1, rate: [3, 5], note: "avancer la blanche au-delà du trait"}
+      - {n: 2, rate: [3, 5]}
+      - {n: 3, rate: [8, 12], note: "4 séries de 3 billes, zones 1 à 4"}
+      - {n: 4, rate: [6, 10], note: "2 séries de 5 billes"}
+      - {n: 5, rate: [3, 5]}
+      - {n: 6, rate: [3, 5]}
+      - {n: 7, rate: [4, 6], note: "6 billes, 3 par zone"}
+      - {n: 8, rate: [3, 5]}
+  - id: carreau
+    teaching_order: 10
+    title: Le carreau
+    sessions: {min: 1, max: 2}
+    technical_sheet: 12
+    exercises:
+      - {n: 1, rate: [3, 5]}
+      - {n: 2, rate: [3, 5]}
+      - {n: 3, rate: [3, 5]}
+      - {n: 4, rate: [3, 5]}
+  - id: angle-droit
+    teaching_order: 11
+    title: Le coup en angle droit
+    sessions: {min: 2, max: 3}
+    technical_sheet: 13
+    exercises:
+      - {n: 1, rate: [3, 5]}
+      - {n: 2, rate: [3, 5], note: "replacement par bande"}
+      - {n: 3, rate: [3, 5], note: "replacement par bande"}
+      - {n: 4, rate: [3, 5], note: "replacement par bandes"}
+  - id: retro
+    teaching_order: 12
+    title: Le rétro
+    sessions: {min: 3, max: 4}
+    technical_sheet: 14
+    exercises:
+      - {n: 1, rate: [3, 5]}
+      - {n: 2, rate: [3, 5], bridge: cadre}
+      - {n: 3, rate: [4, 6], note: "6 billes, 3 par zone"}
+      - {n: 4, rate: [4, 6], note: "6 billes, 3 par zone"}
+      - {n: 5, rate: [3, 5]}
+      - {n: 6, rate: [3, 5], bridge: cadre}
+      - {n: 7, rate: [4, 6], note: "6 billes, 3 par zone"}
+      - {n: 8, rate: [3, 5]}
+      - {n: 9, rate: [3, 5]}
+      - {n: 10, rate: [4, 6], note: "6 billes, 3 par zone"}
+  - id: trajectoires-blanche
+    teaching_order: 13
+    title: Les trajectoires de blanche
+    sessions: {min: 3, max: 4}
+    technical_sheet: [10, 11, 14]
+    exercises:
+      - {n: 1, rate: [6, 9], note: "9 billes, hauteur d'attaque variée, 3 sur chaque jaune"}
+      - {n: 2, rate: [6, 10], note: "10 billes, alterner haut/bas, replacer sur la noire"}
+      - {n: 3, rate: [6, 9]}
+      - {n: 4, rate: [6, 10]}
+      - {n: 5, rate: [6, 9], note: "3 replacements différents en zones croissantes, x3"}
+      - {n: 6, rate: [10, 15], note: "5 replacements sur les noires, x3"}

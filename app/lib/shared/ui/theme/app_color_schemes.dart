@@ -1,0 +1,86 @@
+import 'package:flutter/material.dart';
+
+/// Schémas de couleurs Material 3 explicites (jamais `fromSeed`).
+///
+/// Bleu `#1964af` : couleur du logotype de la FFB (charte graphique v1.0).
+/// Rouge `#b80d1a` : rouge FFB `#e10a19` assombri pour atteindre 4,5:1 en
+/// texte. Les autres valeurs (conteneurs, surfaces) sont des **propositions**
+/// non publiées par la FFB ; chaque paire est vérifiée par le test de
+/// contraste.
+abstract final class AppColorSchemes {
+  static const light = ColorScheme(
+    brightness: Brightness.light,
+    primary: Color(0xFF1964AF),
+    onPrimary: Color(0xFFFFFFFF),
+    primaryContainer: Color(0xFFD6E6F7),
+    onPrimaryContainer: Color(0xFF0D3258),
+    secondary: Color(0xFFB80D1A),
+    onSecondary: Color(0xFFFFFFFF),
+    secondaryContainer: Color(0xFFFDDAD7),
+    onSecondaryContainer: Color(0xFF5C0008),
+    tertiary: Color(0xFF2F6B8A),
+    onTertiary: Color(0xFFFFFFFF),
+    tertiaryContainer: Color(0xFFCFE6F3),
+    onTertiaryContainer: Color(0xFF0B2F40),
+    error: Color(0xFFB3261E),
+    onError: Color(0xFFFFFFFF),
+    errorContainer: Color(0xFFF9DEDC),
+    onErrorContainer: Color(0xFF410E0B),
+    surface: Color(0xFFF7F9FC),
+    onSurface: Color(0xFF10161D),
+    onSurfaceVariant: Color(0xFF45505C),
+    surfaceDim: Color(0xFFD8DEE5),
+    surfaceBright: Color(0xFFF7F9FC),
+    surfaceContainerLowest: Color(0xFFFFFFFF),
+    surfaceContainerLow: Color(0xFFF0F4F8),
+    surfaceContainer: Color(0xFFE9EEF4),
+    surfaceContainerHigh: Color(0xFFE3E9F0),
+    surfaceContainerHighest: Color(0xFFDCE3EB),
+    outline: Color(0xFF6B7683),
+    outlineVariant: Color(0xFFC3CCD6),
+    inverseSurface: Color(0xFF242B33),
+    onInverseSurface: Color(0xFFEEF2F6),
+    inversePrimary: Color(0xFFA9C8EE),
+    shadow: Color(0xFF000000),
+    scrim: Color(0xFF000000),
+    surfaceTint: Color(0xFF1964AF),
+  );
+
+  static const dark = ColorScheme(
+    brightness: Brightness.dark,
+    primary: Color(0xFFA9C8EE),
+    onPrimary: Color(0xFF08284A),
+    primaryContainer: Color(0xFF134B83),
+    onPrimaryContainer: Color(0xFFD6E6F7),
+    secondary: Color(0xFFFFB3AD),
+    onSecondary: Color(0xFF5C0008),
+    secondaryContainer: Color(0xFF8C0012),
+    onSecondaryContainer: Color(0xFFFFDAD6),
+    tertiary: Color(0xFF9FCFE8),
+    onTertiary: Color(0xFF0B2F40),
+    tertiaryContainer: Color(0xFF1F5873),
+    onTertiaryContainer: Color(0xFFCFE6F3),
+    error: Color(0xFFFFB4AB),
+    onError: Color(0xFF690005),
+    errorContainer: Color(0xFF93000A),
+    onErrorContainer: Color(0xFFFFDAD6),
+    surface: Color(0xFF0E1318),
+    onSurface: Color(0xFFE3E8EE),
+    onSurfaceVariant: Color(0xFFB5BFCA),
+    surfaceDim: Color(0xFF0E1318),
+    surfaceBright: Color(0xFF343D47),
+    surfaceContainerLowest: Color(0xFF090D11),
+    surfaceContainerLow: Color(0xFF141A20),
+    surfaceContainer: Color(0xFF1A2128),
+    surfaceContainerHigh: Color(0xFF222A32),
+    surfaceContainerHighest: Color(0xFF2B343D),
+    outline: Color(0xFF8A95A1),
+    outlineVariant: Color(0xFF3A4550),
+    inverseSurface: Color(0xFFE3E8EE),
+    onInverseSurface: Color(0xFF1F262D),
+    inversePrimary: Color(0xFF1964AF),
+    shadow: Color(0xFF000000),
+    scrim: Color(0xFF000000),
+    surfaceTint: Color(0xFFA9C8EE),
+  );
+}

@@ -1,0 +1,810 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Séances de billard",
+  "homeTitle": "Préparer une séance",
+  "homeSubtitle": "Blackball — séances enfants (1h30) et adultes (2h)",
+  "homeOpenPlanner": "Planifier une séance",
+  "plannerTitle": "Planification",
+  "plannerEmpty": "Aucune séance planifiée pour le moment.",
+  "plannerTitleField": "Titre de la séance",
+  "plannerAudienceField": "Public",
+  "plannerAdd": "Ajouter la séance",
+  "plannerInvalidTitle": "Le titre de la séance est obligatoire.",
+  "audienceChildren": "Enfants",
+  "audienceAdults": "Adultes",
+  "sessionDurationMinutes": "{minutes} min",
+  "@sessionDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "homeAudiencesTitle": "Deux publics",
+  "ballRed": "Bille rouge",
+  "ballYellow": "Bille jaune",
+  "ballBlack": "Bille noire",
+  "ballWhite": "Bille blanche",
+  "ballRedLetter": "R",
+  "ballYellowLetter": "J",
+  "ballBlackLetter": "N",
+  "ballWhiteLetter": "B",
+  "scoreOutOf": "{score} sur {total}",
+  "@scoreOutOf": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "alertAttention": "Attention",
+  "alertPersistent": "À traiter",
+  "plannerFormTitle": "Nouvelle séance",
+  "navHome": "Accueil",
+  "navStudents": "Élèves",
+  "navResults": "Résultats",
+  "navSession": "Séance",
+  "navBackup": "Sauvegarde",
+  "navigationLabel": "Navigation principale",
+  "commonSave": "Enregistrer",
+  "commonCancel": "Annuler",
+  "commonConfirm": "Confirmer",
+  "commonRetry": "Réessayer",
+  "commonLoading": "Chargement…",
+  "commonErrorTitle": "Une erreur est survenue",
+  "commonDecrease": "Diminuer",
+  "commonIncrease": "Augmenter",
+  "groupNameChildren": "Groupe enfants",
+  "groupNameAdults": "Groupe adultes",
+  "statusValidated": "Validé",
+  "statusInProgress": "En cours",
+  "statusNotStarted": "Non commencé",
+  "statusMastered": "Acquis",
+  "statusToReview": "À revoir",
+  "failBlankName": "Le prénom est obligatoire.",
+  "failPassesLimit": "Deux passages au plus par exercice et par séance.",
+  "failStudentNotPresent": "Cet élève n’est pas présent à la séance.",
+  "failStudentNotInGroup": "Cet élève n’est pas membre du groupe à cette date.",
+  "failPottedExceedsTotal": "Les billes empochées ne peuvent pas dépasser les tentatives.",
+  "failTotalOutOfRange": "Le nombre de tentatives doit être compris entre 1 et 16.",
+  "failTotalBelowSheet": "Les tentatives ne peuvent pas être inférieures à celles de la fiche.",
+  "failNegativePotted": "Le nombre de billes empochées ne peut pas être négatif.",
+  "failAudienceUnchanged": "L’élève suit déjà ce public.",
+  "failAudienceNotChronological": "La date d’effet doit être postérieure au dernier changement de public.",
+  "failScoreOutOfRange": "Chaque critère se note de 1 à 4.",
+  "failDateInFuture": "La date ne peut pas être dans le futur.",
+  "failCommentTooLong": "Le commentaire est limité à 500 caractères.",
+  "failNothingToTeach": "Tous les élèves ont terminé le niveau 1 : il n’y a plus rien à enseigner.",
+  "failNoStudents": "Sélectionnez au moins un élève.",
+  "failSeasonOutsidePeriod": "Cette date est en dehors de la saison.",
+  "failNotFound": "Élément introuvable.",
+  "failBackupUnreadable": "Ce fichier n’est pas une sauvegarde lisible.",
+  "failBackupVersion": "Cette sauvegarde provient d’une version plus récente de l’application.",
+  "failBackupInvalid": "Ce fichier contient des données invalides.",
+  "failBackupInconsistent": "Ce fichier est incohérent : références manquantes ou doublons.",
+  "failGeneric": "Une erreur est survenue. Vérifiez les données et réessayez.",
+  "studentsTitle": "Les élèves du club",
+  "studentsSubtitle": "Public et alertes de chaque groupe de la saison.",
+  "studentsEmpty": "Aucun élève pour le moment. Ajoutez le premier pour suivre sa progression.",
+  "studentsAdd": "Ajouter un élève",
+  "studentsUnassigned": "Sans groupe",
+  "studentsMemberCount": "{count, plural, =0{Aucun élève} =1{1 élève} other{{count} élèves}}",
+  "@studentsMemberCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studentsAlerts": "{count, plural, =1{1 alerte} other{{count} alertes}}",
+  "@studentsAlerts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studentsNoAlert": "Aucune alerte",
+  "studentsValidated": "{done} sur {total} exercices validés",
+  "@studentsValidated": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "studentsOpenSheet": "Ouvrir la fiche de {name}",
+  "@studentsOpenSheet": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "studentFormNewTitle": "Nouvel élève",
+  "studentFormEditTitle": "Modifier l’élève",
+  "studentFormFirstName": "Prénom",
+  "studentFormAudience": "Public",
+  "studentFormMinimalData": "Seuls le prénom et le public sont enregistrés : ce sont des données d’élèves mineurs.",
+  "studentFormAudienceLocked": "Le public ne se change pas ici : il se change depuis le bilan de maturité, toujours manuellement.",
+  "sheetTitle": "Fiche de {name}",
+  "@sheetTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetEdit": "Modifier le prénom",
+  "sheetOpenAssessment": "Bilan de maturité",
+  "sheetNext": "Exercice suivant",
+  "sheetNextNone": "Niveau 1 terminé : tous les exercices sont validés.",
+  "sheetExerciseTitle": "{block} · exercice {number}",
+  "@sheetExerciseTitle": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetRecall": "Notion à rappeler",
+  "sheetRecallNone": "Aucune notion à rappeler pour le moment.",
+  "sheetRecallValue": "{block}, exercice {number}",
+  "@sheetRecallValue": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetRecallReasonLastFailed": "Dernier passage manqué",
+  "sheetRecallReasonActiveAlert": "Alerte en cours",
+  "sheetRecallReasonStale": "Pas travaillée depuis plusieurs séances",
+  "sheetAlertsTitle": "Alertes",
+  "sheetAlertConsecutive": "{exercise} : {count} échecs consécutifs",
+  "@sheetAlertConsecutive": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetFailuresInARow": "{count} échecs consécutifs",
+  "@sheetFailuresInARow": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetBlocks": "Progression par bloc",
+  "sheetBlockRate": "{percent} % validé",
+  "@sheetBlockRate": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetBlockExercises": "{done} sur {total} exercices",
+  "@sheetBlockExercises": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetBlockSessions": "{count, plural, =0{Aucune séance} =1{1 séance} other{{count} séances}}",
+  "@sheetBlockSessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetBlockOverdue": "Plus de séances que recommandé",
+  "sheetCurves": "Courbes de performance",
+  "sheetCurvesEmpty": "Aucun passage enregistré pour le moment.",
+  "sheetRequired": "Objectif : {successes} sur {attempts}",
+  "@sheetRequired": {
+    "placeholders": {
+      "successes": {
+        "type": "int"
+      },
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetPasses": "{done} sur {required} passages réussis",
+  "@sheetPasses": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetBest": "Meilleur résultat : {potted} sur {total}",
+  "@sheetBest": {
+    "placeholders": {
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetTrendUp": "En progression",
+  "sheetTrendFlat": "Stable",
+  "sheetTrendDown": "En baisse",
+  "sheetStagnating": "Stagne : variez l’approche ou revenez à la notion.",
+  "sheetAttemptRow": "Essai {index} : {potted} sur {total}",
+  "@sheetAttemptRow": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetPassMet": "objectif atteint",
+  "sheetPassMissed": "objectif manqué",
+  "sheetValidatedTotal": "{done} sur {total} exercices validés",
+  "@sheetValidatedTotal": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetLatestAssessment": "Dernier bilan : {date}",
+  "@sheetLatestAssessment": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetNoAssessment": "Aucun bilan de maturité enregistré.",
+  "chartAxisX": "Essais",
+  "chartAxisY": "Billes empochées",
+  "chartTargetLine": "Objectif : {potted} billes",
+  "@chartTargetLine": {
+    "placeholders": {
+      "potted": {
+        "type": "int"
+      }
+    }
+  },
+  "chartSemantics": "Courbe de {count, plural, =1{1 essai} other{{count} essais}}, objectif {potted} billes sur {total}",
+  "@chartSemantics": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordTitle": "Saisir les résultats",
+  "recordSubtitle": "Choisissez le groupe, la date et les élèves présents.",
+  "recordGroup": "Groupe",
+  "recordDate": "Date de la séance",
+  "recordChangeDate": "Changer la date",
+  "recordPresent": "Élèves présents",
+  "recordOpen": "Ouvrir la séance",
+  "recordNoGroups": "Aucun groupe. Ajoutez d’abord des élèves.",
+  "recordGoStudents": "Ajouter des élèves",
+  "recordSessionTitle": "Séance du {date}",
+  "@recordSessionTitle": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordExercise": "Exercice",
+  "recordExerciseOption": "{block} · n° {number} ({successes}/{attempts})",
+  "@recordExerciseOption": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      },
+      "successes": {
+        "type": "int"
+      },
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "recordPotted": "Billes empochées",
+  "recordAttempts": "Tentatives",
+  "recordPottedMore": "Une bille empochée de plus pour {name}",
+  "@recordPottedMore": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordPottedLess": "Une bille empochée de moins pour {name}",
+  "@recordPottedLess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordAttemptsMore": "Une tentative de plus pour {name}",
+  "@recordAttemptsMore": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordAttemptsLess": "Une tentative de moins pour {name}",
+  "@recordAttemptsLess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordSubmit": "Enregistrer le passage",
+  "recordPassesDone": "{done} sur {max} passages",
+  "@recordPassesDone": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "recordLimitReached": "Maximum atteint pour cette séance",
+  "recordFeedbackReached": "Passage enregistré : {potted} sur {total}, objectif atteint",
+  "@recordFeedbackReached": {
+    "placeholders": {
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordFeedbackMissed": "Passage enregistré : {potted} sur {total}, objectif manqué",
+  "@recordFeedbackMissed": {
+    "placeholders": {
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordValidated": "Exercice validé !",
+  "recordNext": "Exercice suivant : {exercise}",
+  "@recordNext": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "recordNextNone": "Niveau 1 terminé pour cet élève.",
+  "recordAlert": "{count} échecs consécutifs : prévoir un rappel.",
+  "@recordAlert": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recordHistory": "Passages de la séance",
+  "recordHistoryEmpty": "Aucun passage saisi dans cette séance.",
+  "recordHistoryRow": "{name} · {exercise} : {potted} sur {total}",
+  "@recordHistoryRow": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "exercise": {
+        "type": "String"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordBlockHint": "Notion principale : {block}",
+  "@recordBlockHint": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      }
+    }
+  },
+  "recordCustomTotal": "Plus de tentatives que la fiche : l’objectif est évalué à la proportion.",
+  "suggestTitle": "Séance suggérée",
+  "suggestSubtitle": "Une séance de 90 minutes (enfants) ou 120 minutes (adultes), déduite des résultats.",
+  "suggestExpected": "Élèves attendus",
+  "suggestAction": "Suggérer une séance",
+  "suggestMainNotion": "Notion principale",
+  "suggestRecall": "Rappel",
+  "suggestRecallNone": "Pas de rappel pour ce groupe.",
+  "suggestExercises": "Exercices",
+  "suggestPhases": "Déroulé",
+  "suggestPhaseWelcome": "Accueil",
+  "suggestPhaseNotion": "Notion et initiation",
+  "suggestPhaseTraining": "Entraînement",
+  "suggestPhaseGame": "Jeu",
+  "suggestPhaseReview": "Bilan",
+  "suggestPhaseLine": "{phase} · {minutes} min",
+  "@suggestPhaseLine": {
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "suggestMaxPasses": "Chaque exercice : {max} passages au plus par élève.",
+  "@suggestMaxPasses": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "suggestSource": "Fiche source",
+  "suggestRecord": "Saisir les résultats de cette séance",
+  "suggestReasonGroupFailure": "Plusieurs élèves ont manqué le dernier passage",
+  "suggestReasonActiveAlert": "Une alerte est en cours",
+  "suggestReasonLastFailed": "Un élève a manqué le dernier passage",
+  "suggestReasonStale": "Notion non travaillée depuis plusieurs séances",
+  "exerciseSheetTitle": "Fiche de l’exercice",
+  "exerciseSheetNumbers": "Fiche technique n° {sheets}",
+  "@exerciseSheetNumbers": {
+    "placeholders": {
+      "sheets": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseRequired": "Objectif : {successes} sur {attempts}",
+  "@exerciseRequired": {
+    "placeholders": {
+      "successes": {
+        "type": "int"
+      },
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseBridgeFrame": "Pont sur le cadre",
+  "exerciseBridgeSurface": "Pont sur la surface",
+  "exerciseBronze": "Mention « Billard de bronze » dans la fiche",
+  "exerciseRecommended": "{min} à {max} séances conseillées pour ce bloc",
+  "@exerciseRecommended": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseSource": "Source : Fiches Entraînement CFA Blackball (fiches fédérales).",
+  "exerciseNote": "Consigne : {note}",
+  "@exerciseNote": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "assessTitle": "Bilan de maturité de {name}",
+  "@assessTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "assessIntro": "Trois critères notés de 1 à 4. Le bilan n’est qu’une aide : le passage en cours adultes reste votre décision.",
+  "assessConcentration": "Concentration",
+  "assessEndurance": "Endurance",
+  "assessFrustration": "Gestion de la frustration",
+  "assessScoreSemantics": "{criterion} : {score} sur 4",
+  "@assessScoreSemantics": {
+    "placeholders": {
+      "criterion": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "assessScoreMeaning": "1 = à construire · 4 = acquis",
+  "assessComment": "Commentaire (facultatif)",
+  "assessSave": "Enregistrer le bilan",
+  "assessSaved": "Bilan enregistré.",
+  "assessHintReady": "Les trois critères atteignent {min} : le passage en cours adultes peut être envisagé.",
+  "@assessHintReady": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "assessHintNotReady": "Au moins un critère est sous {min} : le passage n’est pas indiqué pour le moment.",
+  "@assessHintNotReady": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "assessHintDisclaimer": "Aide à la décision uniquement : le public ne change jamais sans votre action.",
+  "assessNone": "Aucun bilan enregistré.",
+  "assessCount": "{count, plural, =1{1 bilan enregistré} other{{count} bilans enregistrés}}",
+  "@assessCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "assessLatest": "Dernier bilan du {date} : concentration {concentration}, endurance {endurance}, frustration {frustration}",
+  "@assessLatest": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "concentration": {
+        "type": "int"
+      },
+      "endurance": {
+        "type": "int"
+      },
+      "frustration": {
+        "type": "int"
+      }
+    }
+  },
+  "assessLatestComment": "Commentaire : {comment}",
+  "@assessLatestComment": {
+    "placeholders": {
+      "comment": {
+        "type": "String"
+      }
+    }
+  },
+  "audienceTitle": "Public de l’élève",
+  "audienceCurrent": "Public actuel : {audience}",
+  "@audienceCurrent": {
+    "placeholders": {
+      "audience": {
+        "type": "String"
+      }
+    }
+  },
+  "audienceHistory": "Historique des publics",
+  "audienceHistoryRow": "{audience} depuis le {date}",
+  "@audienceHistoryRow": {
+    "placeholders": {
+      "audience": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "audienceMoveTo": "Passer au public {audience}",
+  "@audienceMoveTo": {
+    "placeholders": {
+      "audience": {
+        "type": "String"
+      }
+    }
+  },
+  "audienceManualNote": "Le changement de public est toujours une décision manuelle : l’historique et les résultats sont conservés.",
+  "audienceConfirmTitle": "Changer de public ?",
+  "audienceConfirmBody": "{name} suivra le public {audience} à partir du {date}. Son historique et ses résultats sont conservés.",
+  "@audienceConfirmBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "audienceWarnNoAssessment": "Aucun bilan de maturité n’a été enregistré.",
+  "audienceWarnNotReady": "Le dernier bilan n’indique pas le passage.",
+  "audienceChanged": "Public modifié : {audience}, à compter du {date}.",
+  "@audienceChanged": {
+    "placeholders": {
+      "audience": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupTitle": "Sauvegarder vos données",
+  "backupIntro": "Exportez régulièrement vos données dans un fichier JSON, que vous pourrez réimporter.",
+  "backupVolatile": "Les données ne sont conservées qu’en mémoire sur ce navigateur : elles seront perdues à la fermeture de l’onglet. Exportez une sauvegarde avant de quitter.",
+  "backupVolatileReasons": "Raison : {reasons}",
+  "@backupVolatileReasons": {
+    "placeholders": {
+      "reasons": {
+        "type": "String"
+      }
+    }
+  },
+  "backupExport": "Exporter une sauvegarde (JSON)",
+  "backupExported": "Sauvegarde enregistrée.",
+  "backupExportCancelled": "Export annulé.",
+  "backupImport": "Importer une sauvegarde",
+  "backupPreviewTitle": "Contenu de la sauvegarde",
+  "backupMergeNote": "L’import fusionne par identifiant : les données identiques sont remplacées, rien n’est supprimé.",
+  "backupConfirmImport": "Importer ces données",
+  "backupImported": "Import terminé.",
+  "backupFileName": "sauvegarde-billard-{date}.json",
+  "@backupFileName": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSeasons": "{count, plural, =1{1 saison} other{{count} saisons}}",
+  "@backupSeasons": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupStudents": "{count, plural, =1{1 élève} other{{count} élèves}}",
+  "@backupStudents": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupGroups": "{count, plural, =1{1 groupe} other{{count} groupes}}",
+  "@backupGroups": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupSessionRecords": "{count, plural, =1{1 séance donnée} other{{count} séances données}}",
+  "@backupSessionRecords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupAttempts": "{count, plural, =1{1 passage} other{{count} passages}}",
+  "@backupAttempts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupAssessments": "{count, plural, =1{1 bilan} other{{count} bilans}}",
+  "@backupAssessments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupPlannedSessions": "{count, plural, =1{1 séance planifiée} other{{count} séances planifiées}}",
+  "@backupPlannedSessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notFoundTitle": "Page introuvable",
+  "notFoundMessage": "Cette adresse ne correspond à aucun écran.",
+  "notFoundGoHome": "Retour à l’accueil",
+  "eraseTitle": "Effacer cet élève",
+  "eraseBody": "Supprime définitivement {name}, ses résultats, ses bilans et ses appartenances à un groupe de cet appareil. Les sauvegardes déjà exportées ne sont pas touchées. Les données des enfants doivent être effacées en fin de saison.",
+  "@eraseBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eraseAction": "Effacer {name}",
+  "@eraseAction": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eraseConfirmTitle": "Effacer {name} définitivement ?",
+  "@eraseConfirmTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eraseConfirmBody": "Tout ce qui concerne {name} est supprimé de cet appareil et ne peut pas être récupéré. Exportez d’abord une sauvegarde si vous voulez en garder une copie.",
+  "@eraseConfirmBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
+}
