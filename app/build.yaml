@@ -1,0 +1,14 @@
+targets:
+  $default:
+    builders:
+      bdd_widget_test|featureBuilder:
+        options:
+          stepFolderName: step
+      drift_dev:
+        options:
+          # Instantanés du schéma SQL (drift_schemas/) et tests de migration
+          # générés (test/drift/) : `dart run drift_dev make-migrations`.
+          databases:
+            app_database: lib/shared/persistence/app_database.dart
+          schema_dir: drift_schemas
+          test_dir: test/drift

@@ -1,0 +1,367 @@
+import 'dart:convert';
+
+import 'package:billard_cfa/entities/group/domain/group.dart';
+import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
+import 'package:billard_cfa/entities/season/domain/season.dart';
+import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
+import 'package:billard_cfa/entities/student/domain/student.dart';
+import 'package:billard_cfa/features/backup_data/domain/backup_codec.dart';
+import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
+import 'package:billard_cfa/features/backup_data/domain/json_reader.dart';
+import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import '../../../support/fixtures.dart';
+
+final _exportedAt = DateTime.utc(2026, 10, 12, 8);
+
+final _season = Season(
+  id: const SeasonId('season'),
+  label: '2026-2027',
+  startDate: DateTime(2026, 9),
+  endDate: DateTime.utc(2027, 6, 30),
+);
+
+final _student = Student.enroll(
+  id: const StudentId('s1'),
+  firstName: 'Léa',
+  audience: Audience.children,
+  since: DateTime(2026, 9, 1, 14, 30, 15, 123, 456),
+);
+
+final Group _group =
+    Group(
+          id: const GroupId('g1'),
+          seasonId: const SeasonId('season'),
+          name: 'Jeunes',
+          audience: Audience.children,
+        )
+        .admit(
+          studentId: const StudentId('s1'),
+          studentAudience: Audience.children,
+          from: DateTime(2026, 9),
+        )
+        .release(studentId: const StudentId('s1'), to: DateTime(2027));
+
+final _record = SessionRecord(
+  id: const SessionId('x1'),
+  groupId: const GroupId('g1'),
+  seasonId: const SeasonId('season'),
+  date: DateTime(2026, 10, 3),
+  audience: Audience.children,
+  present: {const StudentId('s1')},
+);
+
+final _snapshot = BackupSnapshot(
+  seasons: [_season],
+  students: [_student],
+  groups: [_group],
+  sessionRecords: [_record],
+  attempts: [attempt(ref('a', 1), potted: 3)],
+);
+
+InvariantCode _codeOf(String content) {
+  try {
+    BackupCodec().decode(content);
+  } on InvariantViolation catch (violation) {
+    return violation.code;
+  }
+  fail('le fichier aurait dû être refusé');
+}
+
+void main() {
+  final codec = BackupCodec();
+
+  test('writes the format, its own version and the export date', () {
+    final document = jsonDecode(
+      codec.encode(const BackupSnapshot(), exportedAt: _exportedAt),
+    ) as Map<String, Object?>;
+
+    expect(document['format'], BackupCodec.format);
+    expect(document['schemaVersion'], 1);
+    expect(document['exportedAt'], '2026-10-12T08:00:00.000Z');
+    expect(document['data'], {
+      'seasons': <Object?>[],
+      'students': <Object?>[],
+      'groups': <Object?>[],
+      'sessionRecords': <Object?>[],
+      'attempts': <Object?>[],
+      'assessments': <Object?>[],
+      'plannedSessions': <Object?>[],
+    });
+  });
+
+  test('writes the assessment comment and reads a file without it', () {
+    final assessment = MaturityAssessment(
+      id: const AssessmentId('m1'),
+      studentId: const StudentId('s1'),
+      date: DateTime(2026, 11),
+      concentration: 3,
+      endurance: 3,
+      frustration: 2,
+      comment: 'Calme',
+    );
+    final content = codec.encode(
+      _snapshot.copyWith(assessments: [assessment]),
+      exportedAt: _exportedAt,
+    );
+    final document = jsonDecode(content) as Map<String, Object?>
+      ..['schemaVersion'] = 1;
+    final stored =
+        ((document['data']! as Map<String, Object?>)['assessments']!
+                    as List<Object?>)
+                .single!
+            as Map<String, Object?>;
+
+    expect(stored['comment'], 'Calme');
+    expect(codec.decode(content).assessments.single, assessment);
+
+    stored.remove('comment');
+    expect(
+      codec.decode(jsonEncode(document)).assessments.single,
+      assessment.copyWith(comment: null),
+    );
+  });
+
+  test('exposes the supported versions', () {
+    expect(BackupCodec.supportedVersions, {BackupCodec.currentVersion});
+  });
+
+  test('round-trips every entity with exact dates and UTC flags', () {
+    final content = codec.encode(_snapshot, exportedAt: _exportedAt);
+
+    final decoded = codec.decode(content);
+
+    expect(decoded, _snapshot);
+    expect(decoded.seasons.single.endDate.isUtc, isTrue);
+    expect(decoded.seasons.single.startDate.isUtc, isFalse);
+    expect(
+      decoded
+          .students
+          .single
+          .audienceHistory
+          .single
+          .effectiveFrom
+          .microsecondsSinceEpoch,
+      DateTime(2026, 9, 1, 14, 30, 15, 123, 456).microsecondsSinceEpoch,
+    );
+  });
+
+  test('writes open memberships with a null end and keeps closed ones', () {
+    final document = jsonDecode(
+      codec.encode(_snapshot, exportedAt: _exportedAt),
+    ) as Map<String, Object?>;
+    final groups =
+        (document['data']! as Map<String, Object?>)['groups']! as List<Object?>;
+    final memberships =
+        (groups.single! as Map<String, Object?>)['memberships']!
+            as List<Object?>;
+
+    expect((memberships.single! as Map<String, Object?>)['to'], isNotNull);
+  });
+
+  test('accepts a file whose version is the current one', () {
+    final content = codec.encode(_snapshot, exportedAt: _exportedAt);
+
+    expect(() => codec.decode(content), returnsNormally);
+  });
+
+  group('refuses', () {
+    Map<String, Object?> document() =>
+        jsonDecode(codec.encode(_snapshot, exportedAt: _exportedAt))
+            as Map<String, Object?>;
+    Map<String, Object?> data(Map<String, Object?> d) =>
+        d['data']! as Map<String, Object?>;
+    Map<String, Object?> first(Map<String, Object?> d, String key) =>
+        (data(d)[key]! as List<Object?>).first! as Map<String, Object?>;
+
+    test('a file larger than the maximum, before decoding it', () {
+      final content = ' ' * (BackupCodec.maxContentLength + 1);
+
+      expect(_codeOf(content), InvariantCode.backupUnreadable);
+    });
+
+    test('a file just at the maximum size is still parsed', () {
+      final content = ' ' * BackupCodec.maxContentLength;
+
+      expect(_codeOf(content), InvariantCode.backupUnreadable);
+      expect(
+        () => codec.decode(content),
+        throwsA(isA<InvariantViolation>()),
+        reason: 'refused as unreadable JSON, not as too large',
+      );
+    });
+
+    test('a document nested deeper than the maximum depth', () {
+      const depth = BackupCodec.maxDepth + 1;
+      final content = '${'[' * depth}${']' * depth}';
+
+      expect(_codeOf(content), InvariantCode.backupUnreadable);
+    });
+
+    test('a very deep document without overflowing the stack', () {
+      final content = '${'[' * 200000}${']' * 200000}';
+
+      expect(_codeOf(content), InvariantCode.backupUnreadable);
+    });
+
+    test('brackets inside strings do not count as depth', () {
+      final d = document()
+        ..['note'] = '[' * (BackupCodec.maxDepth * 4)
+        ..['other'] = r'\"[[[[[[[[[[[[[[[[[[[[';
+
+      expect(() => codec.decode(jsonEncode(d)), returnsNormally);
+    });
+
+    test('a string longer than the maximum length', () {
+      final d = document();
+      first(d, 'students')['firstName'] =
+          'x' * (JsonReader.maxStringLength + 1);
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('a string exactly at the maximum length', () {
+      final d = document();
+      first(d, 'groups')['name'] = 'x' * JsonReader.maxStringLength;
+
+      expect(() => codec.decode(jsonEncode(d)), returnsNormally);
+    });
+
+    test('a list exactly at the maximum number of items', () {
+      final items = List<Object?>.filled(JsonReader.maxItems, 1);
+
+      expect(const JsonReader().list(items), hasLength(JsonReader.maxItems));
+    });
+
+    test('a list with more items than the maximum', () {
+      final d = document();
+      data(d)['plannedSessions'] = List<Object?>.filled(
+        JsonReader.maxItems + 1,
+        <String, Object?>{},
+      );
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('a root that is not an object', () {
+      expect(_codeOf('[]'), InvariantCode.backupUnreadable);
+      expect(_codeOf('"texte"'), InvariantCode.backupUnreadable);
+    });
+
+    test('another format name', () {
+      final d = document()..['format'] = 'autre';
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupUnreadable);
+    });
+
+    test('a non-integer version', () {
+      final d = document()..['schemaVersion'] = 1.5;
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupVersionUnsupported);
+    });
+
+    test('a data section that is not an object', () {
+      final d = document()..['data'] = <Object?>[];
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('a list that is not a list', () {
+      final d = document();
+      data(d)['students'] = 'Léa';
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('a list item that is not an object', () {
+      final d = document();
+      data(d)['students'] = [1];
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('a fractional number', () {
+      final d = document();
+      first(d, 'attempts')['potted'] = 3.5;
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('a number stored as text', () {
+      final d = document();
+      first(d, 'attempts')['total'] = '5';
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('a presence that is not an identifier', () {
+      final d = document();
+      first(d, 'sessionRecords')['present'] = [3];
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('a block identifier that is not text', () {
+      final d = document();
+      first(d, 'sessionRecords')['mainBlockId'] = 4;
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('a membership end that is not a date', () {
+      final d = document();
+      final memberships = first(d, 'groups')['memberships']! as List<Object?>;
+      (memberships.single! as Map<String, Object?>)['to'] = 'jamais';
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('a membership closed before it opens', () {
+      final d = document();
+      final memberships = first(d, 'groups')['memberships']! as List<Object?>;
+      (memberships.single! as Map<String, Object?>)['to'] =
+          '2020-01-01T00:00:00.000';
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+  });
+
+  test('reads optional block identifiers and open memberships', () {
+    final record = SessionRecord(
+      id: const SessionId('x1'),
+      groupId: const GroupId('g1'),
+      seasonId: const SeasonId('season'),
+      date: DateTime(2026, 10, 3),
+      audience: Audience.adults,
+      present: {const StudentId('s1')},
+      mainBlockId: 'puissance',
+      recallBlockId: 'rebond',
+    );
+    final open =
+        Group(
+          id: const GroupId('g1'),
+          seasonId: const SeasonId('season'),
+          name: 'Adultes',
+          audience: Audience.adults,
+        ).admit(
+          studentId: const StudentId('s1'),
+          studentAudience: Audience.adults,
+          from: DateTime(2026, 9),
+        );
+    final snapshot = _snapshot.copyWith(
+      sessionRecords: [record],
+      groups: [open],
+    );
+
+    final decoded = codec.decode(
+      codec.encode(snapshot, exportedAt: _exportedAt),
+    );
+
+    expect(decoded.sessionRecords.single.mainBlockId, 'puissance');
+    expect(decoded.sessionRecords.single.recallBlockId, 'rebond');
+    expect(decoded.groups.single.memberships.single.to, isNull);
+  });
+}

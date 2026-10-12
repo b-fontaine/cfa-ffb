@@ -1,0 +1,810 @@
+{
+  "@@locale": "en",
+  "appTitle": "Billiard sessions",
+  "homeTitle": "Prepare a session",
+  "homeSubtitle": "Blackball — children (1h30) and adult (2h) sessions",
+  "homeOpenPlanner": "Plan a session",
+  "plannerTitle": "Planning",
+  "plannerEmpty": "No session planned yet.",
+  "plannerTitleField": "Session title",
+  "plannerAudienceField": "Audience",
+  "plannerAdd": "Add session",
+  "plannerInvalidTitle": "The session title is required.",
+  "audienceChildren": "Children",
+  "audienceAdults": "Adults",
+  "sessionDurationMinutes": "{minutes} min",
+  "@sessionDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "homeAudiencesTitle": "Two audiences",
+  "ballRed": "Red ball",
+  "ballYellow": "Yellow ball",
+  "ballBlack": "Black ball",
+  "ballWhite": "White ball",
+  "ballRedLetter": "R",
+  "ballYellowLetter": "Y",
+  "ballBlackLetter": "B",
+  "ballWhiteLetter": "W",
+  "scoreOutOf": "{score} out of {total}",
+  "@scoreOutOf": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "alertAttention": "Warning",
+  "alertPersistent": "Action needed",
+  "plannerFormTitle": "New session",
+  "navHome": "Home",
+  "navStudents": "Students",
+  "navResults": "Results",
+  "navSession": "Session",
+  "navBackup": "Backup",
+  "navigationLabel": "Main navigation",
+  "commonSave": "Save",
+  "commonCancel": "Cancel",
+  "commonConfirm": "Confirm",
+  "commonRetry": "Retry",
+  "commonLoading": "Loading…",
+  "commonErrorTitle": "Something went wrong",
+  "commonDecrease": "Decrease",
+  "commonIncrease": "Increase",
+  "groupNameChildren": "Children group",
+  "groupNameAdults": "Adults group",
+  "statusValidated": "Validated",
+  "statusInProgress": "In progress",
+  "statusNotStarted": "Not started",
+  "statusMastered": "Mastered",
+  "statusToReview": "To review",
+  "failBlankName": "The first name is required.",
+  "failPassesLimit": "At most two passes per exercise and per session.",
+  "failStudentNotPresent": "This student is not present at the session.",
+  "failStudentNotInGroup": "This student is not a member of the group on that date.",
+  "failPottedExceedsTotal": "Balls potted cannot exceed the attempts.",
+  "failTotalOutOfRange": "The number of attempts must be between 1 and 16.",
+  "failTotalBelowSheet": "The attempts cannot be fewer than the exercise sheet requires.",
+  "failNegativePotted": "Balls potted cannot be negative.",
+  "failAudienceUnchanged": "The student already follows this audience.",
+  "failAudienceNotChronological": "The effective date must be after the last audience change.",
+  "failScoreOutOfRange": "Each criterion is scored from 1 to 4.",
+  "failDateInFuture": "The date cannot be in the future.",
+  "failCommentTooLong": "The comment is limited to 500 characters.",
+  "failNothingToTeach": "All students have completed level 1: there is nothing left to teach.",
+  "failNoStudents": "Select at least one student.",
+  "failSeasonOutsidePeriod": "This date is outside the season.",
+  "failNotFound": "Item not found.",
+  "failBackupUnreadable": "This file is not a readable backup.",
+  "failBackupVersion": "This backup comes from a newer version of the app.",
+  "failBackupInvalid": "This file contains invalid data.",
+  "failBackupInconsistent": "This file is inconsistent: missing references or duplicates.",
+  "failGeneric": "Something went wrong. Check the data and try again.",
+  "studentsTitle": "Club students",
+  "studentsSubtitle": "Audience and alerts of every group this season.",
+  "studentsEmpty": "No student yet. Add the first one to follow their progress.",
+  "studentsAdd": "Add a student",
+  "studentsUnassigned": "No group",
+  "studentsMemberCount": "{count, plural, =0{No student} =1{1 student} other{{count} students}}",
+  "@studentsMemberCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studentsAlerts": "{count, plural, =1{1 alert} other{{count} alerts}}",
+  "@studentsAlerts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studentsNoAlert": "No alert",
+  "studentsValidated": "{done} of {total} exercises validated",
+  "@studentsValidated": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "studentsOpenSheet": "Open the sheet of {name}",
+  "@studentsOpenSheet": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "studentFormNewTitle": "New student",
+  "studentFormEditTitle": "Edit student",
+  "studentFormFirstName": "First name",
+  "studentFormAudience": "Audience",
+  "studentFormMinimalData": "Only the first name and the audience are stored: these are minors’ data.",
+  "studentFormAudienceLocked": "The audience is not changed here: it is changed from the maturity review, always manually.",
+  "sheetTitle": "Sheet of {name}",
+  "@sheetTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetEdit": "Edit the first name",
+  "sheetOpenAssessment": "Maturity review",
+  "sheetNext": "Next exercise",
+  "sheetNextNone": "Level 1 completed: every exercise is validated.",
+  "sheetExerciseTitle": "{block} · exercise {number}",
+  "@sheetExerciseTitle": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetRecall": "Notion to recall",
+  "sheetRecallNone": "No notion to recall for now.",
+  "sheetRecallValue": "{block}, exercise {number}",
+  "@sheetRecallValue": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetRecallReasonLastFailed": "Last pass missed",
+  "sheetRecallReasonActiveAlert": "Alert in progress",
+  "sheetRecallReasonStale": "Not practised for several sessions",
+  "sheetAlertsTitle": "Alerts",
+  "sheetAlertConsecutive": "{exercise}: {count} consecutive failures",
+  "@sheetAlertConsecutive": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetFailuresInARow": "{count} consecutive failures",
+  "@sheetFailuresInARow": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetBlocks": "Progress by block",
+  "sheetBlockRate": "{percent} % validated",
+  "@sheetBlockRate": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetBlockExercises": "{done} of {total} exercises",
+  "@sheetBlockExercises": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetBlockSessions": "{count, plural, =0{No session} =1{1 session} other{{count} sessions}}",
+  "@sheetBlockSessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetBlockOverdue": "More sessions than recommended",
+  "sheetCurves": "Performance curves",
+  "sheetCurvesEmpty": "No pass recorded yet.",
+  "sheetRequired": "Target: {successes} out of {attempts}",
+  "@sheetRequired": {
+    "placeholders": {
+      "successes": {
+        "type": "int"
+      },
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetPasses": "{done} of {required} successful passes",
+  "@sheetPasses": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetBest": "Best result: {potted} out of {total}",
+  "@sheetBest": {
+    "placeholders": {
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetTrendUp": "Improving",
+  "sheetTrendFlat": "Steady",
+  "sheetTrendDown": "Declining",
+  "sheetStagnating": "Stagnating: vary the approach or go back to the notion.",
+  "sheetAttemptRow": "Attempt {index}: {potted} of {total}",
+  "@sheetAttemptRow": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetPassMet": "target reached",
+  "sheetPassMissed": "target missed",
+  "sheetValidatedTotal": "{done} of {total} exercises validated",
+  "@sheetValidatedTotal": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetLatestAssessment": "Latest review: {date}",
+  "@sheetLatestAssessment": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetNoAssessment": "No maturity review recorded.",
+  "chartAxisX": "Attempts",
+  "chartAxisY": "Balls potted",
+  "chartTargetLine": "Target: {potted} balls",
+  "@chartTargetLine": {
+    "placeholders": {
+      "potted": {
+        "type": "int"
+      }
+    }
+  },
+  "chartSemantics": "Curve of {count, plural, =1{1 attempt} other{{count} attempts}}, target {potted} balls out of {total}",
+  "@chartSemantics": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordTitle": "Record the results",
+  "recordSubtitle": "Choose the group, the date and the students present.",
+  "recordGroup": "Group",
+  "recordDate": "Session date",
+  "recordChangeDate": "Change the date",
+  "recordPresent": "Students present",
+  "recordOpen": "Open the session",
+  "recordNoGroups": "No group yet. Add students first.",
+  "recordGoStudents": "Add students",
+  "recordSessionTitle": "Session of {date}",
+  "@recordSessionTitle": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordExercise": "Exercise",
+  "recordExerciseOption": "{block} · no. {number} ({successes}/{attempts})",
+  "@recordExerciseOption": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      },
+      "successes": {
+        "type": "int"
+      },
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "recordPotted": "Balls potted",
+  "recordAttempts": "Attempts",
+  "recordPottedMore": "More balls potted for {name}",
+  "@recordPottedMore": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordPottedLess": "Fewer balls potted for {name}",
+  "@recordPottedLess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordAttemptsMore": "More attempts for {name}",
+  "@recordAttemptsMore": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordAttemptsLess": "Fewer attempts for {name}",
+  "@recordAttemptsLess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordSubmit": "Record the pass",
+  "recordPassesDone": "{done} of {max} passes",
+  "@recordPassesDone": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "recordLimitReached": "Maximum reached for this session",
+  "recordFeedbackReached": "Pass recorded: {potted} of {total}, target reached",
+  "@recordFeedbackReached": {
+    "placeholders": {
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordFeedbackMissed": "Pass recorded: {potted} of {total}, target missed",
+  "@recordFeedbackMissed": {
+    "placeholders": {
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordValidated": "Exercise validated!",
+  "recordNext": "Next exercise: {exercise}",
+  "@recordNext": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "recordNextNone": "Level 1 completed for this student.",
+  "recordAlert": "{count} consecutive failures: plan a recall.",
+  "@recordAlert": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recordHistory": "Passes of this session",
+  "recordHistoryEmpty": "No pass recorded in this session yet.",
+  "recordHistoryRow": "{name} · {exercise}: {potted} of {total}",
+  "@recordHistoryRow": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "exercise": {
+        "type": "String"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordBlockHint": "Main notion: {block}",
+  "@recordBlockHint": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      }
+    }
+  },
+  "recordCustomTotal": "More attempts than the sheet: the target is judged proportionally.",
+  "suggestTitle": "Suggested session",
+  "suggestSubtitle": "A 90-minute (children) or 120-minute (adults) session, derived from the results.",
+  "suggestExpected": "Students expected",
+  "suggestAction": "Suggest a session",
+  "suggestMainNotion": "Main notion",
+  "suggestRecall": "Recall",
+  "suggestRecallNone": "No recall for this group.",
+  "suggestExercises": "Exercises",
+  "suggestPhases": "Timeline",
+  "suggestPhaseWelcome": "Welcome",
+  "suggestPhaseNotion": "Notion and initiation",
+  "suggestPhaseTraining": "Training",
+  "suggestPhaseGame": "Game",
+  "suggestPhaseReview": "Review",
+  "suggestPhaseLine": "{phase} · {minutes} min",
+  "@suggestPhaseLine": {
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "suggestMaxPasses": "Each exercise: at most {max} passes per student.",
+  "@suggestMaxPasses": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "suggestSource": "Source sheet",
+  "suggestRecord": "Record the results of this session",
+  "suggestReasonGroupFailure": "Several students missed the last pass",
+  "suggestReasonActiveAlert": "An alert is in progress",
+  "suggestReasonLastFailed": "A student missed the last pass",
+  "suggestReasonStale": "Notion not practised for several sessions",
+  "exerciseSheetTitle": "Exercise sheet",
+  "exerciseSheetNumbers": "Technical sheet no. {sheets}",
+  "@exerciseSheetNumbers": {
+    "placeholders": {
+      "sheets": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseRequired": "Required: {successes} out of {attempts}",
+  "@exerciseRequired": {
+    "placeholders": {
+      "successes": {
+        "type": "int"
+      },
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseBridgeFrame": "Bridge on the rail",
+  "exerciseBridgeSurface": "Bridge on the surface",
+  "exerciseBronze": "« Bronze billiards » mention on the sheet",
+  "exerciseRecommended": "{min} to {max} sessions recommended for this block",
+  "@exerciseRecommended": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseSource": "Source: CFA Blackball training sheets (federal sheets).",
+  "exerciseNote": "Instruction: {note}",
+  "@exerciseNote": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "assessTitle": "Maturity review of {name}",
+  "@assessTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "assessIntro": "Three criteria scored from 1 to 4. The review is only an aid: moving to the adults course remains your decision.",
+  "assessConcentration": "Concentration",
+  "assessEndurance": "Endurance",
+  "assessFrustration": "Frustration management",
+  "assessScoreSemantics": "{criterion}: {score} out of 4",
+  "@assessScoreSemantics": {
+    "placeholders": {
+      "criterion": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "assessScoreMeaning": "1 = to build · 4 = secure",
+  "assessComment": "Comment (optional)",
+  "assessSave": "Save the review",
+  "assessSaved": "Review saved.",
+  "assessHintReady": "All three criteria reach {min}: moving to the adults course can be considered.",
+  "@assessHintReady": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "assessHintNotReady": "At least one criterion is below {min}: the move is not indicated for now.",
+  "@assessHintNotReady": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "assessHintDisclaimer": "Decision aid only: the audience never changes without your action.",
+  "assessNone": "No review has been recorded.",
+  "assessCount": "{count, plural, =1{1 review recorded} other{{count} reviews recorded}}",
+  "@assessCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "assessLatest": "Latest review of {date}: concentration {concentration}, endurance {endurance}, frustration {frustration}",
+  "@assessLatest": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "concentration": {
+        "type": "int"
+      },
+      "endurance": {
+        "type": "int"
+      },
+      "frustration": {
+        "type": "int"
+      }
+    }
+  },
+  "assessLatestComment": "Comment: {comment}",
+  "@assessLatestComment": {
+    "placeholders": {
+      "comment": {
+        "type": "String"
+      }
+    }
+  },
+  "audienceTitle": "Student audience",
+  "audienceCurrent": "Current audience: {audience}",
+  "@audienceCurrent": {
+    "placeholders": {
+      "audience": {
+        "type": "String"
+      }
+    }
+  },
+  "audienceHistory": "Audience history",
+  "audienceHistoryRow": "{audience} since {date}",
+  "@audienceHistoryRow": {
+    "placeholders": {
+      "audience": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "audienceMoveTo": "Move to the {audience} audience",
+  "@audienceMoveTo": {
+    "placeholders": {
+      "audience": {
+        "type": "String"
+      }
+    }
+  },
+  "audienceManualNote": "Changing the audience is always a manual decision: the history and the results are kept.",
+  "audienceConfirmTitle": "Change the audience?",
+  "audienceConfirmBody": "{name} will follow the {audience} audience from {date}. The history and results are kept.",
+  "@audienceConfirmBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "audienceWarnNoAssessment": "No maturity review has been recorded.",
+  "audienceWarnNotReady": "The latest review does not indicate the move.",
+  "audienceChanged": "Audience changed: now {audience}, effective {date}.",
+  "@audienceChanged": {
+    "placeholders": {
+      "audience": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupTitle": "Back up your data",
+  "backupIntro": "Export your data regularly to a JSON file that you can import again.",
+  "backupVolatile": "Data is kept in memory only on this browser: it will be lost when the tab is closed. Export a backup before leaving.",
+  "backupVolatileReasons": "Reason: {reasons}",
+  "@backupVolatileReasons": {
+    "placeholders": {
+      "reasons": {
+        "type": "String"
+      }
+    }
+  },
+  "backupExport": "Export a backup (JSON)",
+  "backupExported": "Backup saved.",
+  "backupExportCancelled": "Export cancelled.",
+  "backupImport": "Import a backup",
+  "backupPreviewTitle": "Backup content",
+  "backupMergeNote": "The import merges by identifier: identical data is replaced, nothing is deleted.",
+  "backupConfirmImport": "Import these data",
+  "backupImported": "Import complete.",
+  "backupFileName": "billiards-backup-{date}.json",
+  "@backupFileName": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSeasons": "{count, plural, =1{1 season} other{{count} seasons}}",
+  "@backupSeasons": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupStudents": "{count, plural, =1{1 student} other{{count} students}}",
+  "@backupStudents": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupGroups": "{count, plural, =1{1 group} other{{count} groups}}",
+  "@backupGroups": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupSessionRecords": "{count, plural, =1{1 session given} other{{count} sessions given}}",
+  "@backupSessionRecords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupAttempts": "{count, plural, =1{1 pass} other{{count} passes}}",
+  "@backupAttempts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupAssessments": "{count, plural, =1{1 review} other{{count} reviews}}",
+  "@backupAssessments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupPlannedSessions": "{count, plural, =1{1 planned session} other{{count} planned sessions}}",
+  "@backupPlannedSessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notFoundTitle": "Page not found",
+  "notFoundMessage": "This address does not match any screen.",
+  "notFoundGoHome": "Back to home",
+  "eraseTitle": "Erase this student",
+  "eraseBody": "Permanently deletes {name}, their results, their assessments and their group memberships from this device. Backup files already exported are not affected. Children’s data should be erased at the end of the season.",
+  "@eraseBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eraseAction": "Erase {name}",
+  "@eraseAction": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eraseConfirmTitle": "Erase {name} permanently?",
+  "@eraseConfirmTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eraseConfirmBody": "Everything about {name} is deleted from this device and cannot be recovered. Export a backup first if you want to keep a copy.",
+  "@eraseConfirmBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
+}

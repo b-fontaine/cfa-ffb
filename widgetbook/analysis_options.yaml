@@ -1,0 +1,18 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  exclude:
+    - "**/*.g.dart"
+    - build/**
+    - web/**
+
+linter:
+  rules:
+    # Les identifiants de code sont en anglais mais la doc publique est en français :
+    public_member_api_docs: false
+    # Syntaxe de constructeur classique conservée (cohérence avec app/).
+    unnecessary_type_name_in_constructor: false

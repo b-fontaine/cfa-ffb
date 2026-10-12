@@ -1,0 +1,4 @@
+tags:
+  # Tests d'outillage (scripts shell du dépôt) : lourds et sans rapport avec
+  # lib/. Exécutés par `flutter test` ; exclus des mutants (-x tooling).
+  tooling:
