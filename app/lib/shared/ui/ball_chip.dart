@@ -1,9 +1,9 @@
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/ui/ball_kind.dart';
 import 'package:billard_cfa/shared/ui/theme/ball_colors.dart';
 import 'package:flutter/material.dart';
 
-/// Les quatre groupes de billes du Blackball.
-enum BallKind { red, yellow, black, white }
+export 'package:billard_cfa/shared/ui/ball_kind.dart';
 
 /// Pastille de bille : couleur **et** lettre (R/J/N/B), jamais la couleur seule.
 class BallChip extends StatelessWidget {

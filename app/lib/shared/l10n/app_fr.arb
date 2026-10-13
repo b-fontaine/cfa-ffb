@@ -29,6 +29,47 @@
   "ballYellowLetter": "J",
   "ballBlackLetter": "N",
   "ballWhiteLetter": "B",
+  "billiardTableLabel": "Table de billard, vue de dessus",
+  "billiardCueLabel": "Queue de billard",
+  "ballWithLabel": "{ball}, {label}",
+  "@ballWithLabel": {
+    "placeholders": {
+      "ball": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "contactFull": "Bille pleine",
+  "contactThreeQuarter": "Trois-quarts de bille",
+  "contactHalf": "Demi-bille",
+  "contactQuarter": "Quart de bille",
+  "contactThin": "Finesse",
+  "tipPointCenter": "Procédé au centre de la blanche",
+  "tipPointTop": "Procédé en haut de la blanche",
+  "tipPointBottom": "Procédé en bas de la blanche",
+  "tipPointLeft": "Procédé à gauche de la blanche",
+  "tipPointRight": "Procédé à droite de la blanche",
+  "contactDiagramLabel": "{contact} ; {tip}",
+  "@contactDiagramLabel": {
+    "placeholders": {
+      "contact": {
+        "type": "String"
+      },
+      "tip": {
+        "type": "String"
+      }
+    }
+  },
+  "diagramPlay": "Lire",
+  "diagramPause": "Pause",
+  "diagramReplay": "Rejouer",
+  "diagramSpeedHalf": "Vitesse ×0,5",
+  "diagramSpeedNormal": "Vitesse ×1",
+  "diagramSpeedDouble": "Vitesse ×2",
+  "diagramInvalid": "Le schéma de cet exercice est invalide : il ne peut pas être affiché.",
   "scoreOutOf": "{score} sur {total}",
   "@scoreOutOf": {
     "placeholders": {
@@ -531,6 +572,40 @@
   },
   "exerciseBridgeFrame": "Pont sur le cadre",
   "exerciseBridgeSurface": "Pont sur la surface",
+  "exerciseDiagramTitle": "Schéma de table",
+  "exerciseDiagramNumbered": "Schéma {index} sur {total}",
+  "@exerciseDiagramNumbered": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseDiagramContact": "Quantité de bille : {contact}",
+  "@exerciseDiagramContact": {
+    "placeholders": {
+      "contact": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseDiagramContactUnspecified": "Quantité de bille : non précisée sur la fiche",
+  "listSeparator": ", ",
+  "exerciseDiagramMissing": "Aucun schéma n’est disponible pour cet exercice.",
+  "exerciseDiagramSemantics": "Schéma de table de l’exercice {number}, {sheet}",
+  "@exerciseDiagramSemantics": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "sheet": {
+        "type": "String"
+      }
+    }
+  },
   "exerciseBronze": "Mention « Billard de bronze » dans la fiche",
   "exerciseRecommended": "{min} à {max} séances conseillées pour ce bloc",
   "@exerciseRecommended": {

@@ -3,6 +3,7 @@ import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:billard_cfa/shared/ui/theme/app_typography.dart';
 import 'package:billard_cfa/shared/ui/theme/ball_colors.dart';
 import 'package:billard_cfa/shared/ui/theme/status_colors.dart';
+import 'package:billard_cfa/shared/ui/theme/table_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Thèmes clair et sombre de l'application.
@@ -17,6 +18,7 @@ abstract final class AppTheme {
     AppColorSchemes.light,
     BallColors.light,
     StatusColors.light,
+    TableColors.light,
     fontFamily,
     density,
   );
@@ -28,6 +30,7 @@ abstract final class AppTheme {
     AppColorSchemes.dark,
     BallColors.dark,
     StatusColors.dark,
+    TableColors.dark,
     fontFamily,
     density,
   );
@@ -36,6 +39,7 @@ abstract final class AppTheme {
     ColorScheme scheme,
     BallColors balls,
     StatusColors status,
+    TableColors table,
     String fontFamily,
     VisualDensity density,
   ) {
@@ -51,7 +55,7 @@ abstract final class AppTheme {
       fontFamily: fontFamily,
       textTheme: AppTypography.textTheme(fontFamily),
       visualDensity: density,
-      extensions: [balls, status],
+      extensions: [balls, status, table],
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
         foregroundColor: scheme.onSurface,

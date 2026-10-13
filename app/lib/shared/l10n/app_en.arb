@@ -29,6 +29,47 @@
   "ballYellowLetter": "Y",
   "ballBlackLetter": "B",
   "ballWhiteLetter": "W",
+  "billiardTableLabel": "Billiard table, seen from above",
+  "billiardCueLabel": "Billiard cue",
+  "ballWithLabel": "{ball}, {label}",
+  "@ballWithLabel": {
+    "placeholders": {
+      "ball": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "contactFull": "Full ball",
+  "contactThreeQuarter": "Three-quarter ball",
+  "contactHalf": "Half ball",
+  "contactQuarter": "Quarter ball",
+  "contactThin": "Thin cut",
+  "tipPointCenter": "Tip at the centre of the cue ball",
+  "tipPointTop": "Tip at the top of the cue ball",
+  "tipPointBottom": "Tip at the bottom of the cue ball",
+  "tipPointLeft": "Tip on the left of the cue ball",
+  "tipPointRight": "Tip on the right of the cue ball",
+  "contactDiagramLabel": "{contact}; {tip}",
+  "@contactDiagramLabel": {
+    "placeholders": {
+      "contact": {
+        "type": "String"
+      },
+      "tip": {
+        "type": "String"
+      }
+    }
+  },
+  "diagramPlay": "Play",
+  "diagramPause": "Pause",
+  "diagramReplay": "Replay",
+  "diagramSpeedHalf": "Speed ×0.5",
+  "diagramSpeedNormal": "Speed ×1",
+  "diagramSpeedDouble": "Speed ×2",
+  "diagramInvalid": "This exercise diagram is invalid and cannot be displayed.",
   "scoreOutOf": "{score} out of {total}",
   "@scoreOutOf": {
     "placeholders": {
@@ -531,6 +572,40 @@
   },
   "exerciseBridgeFrame": "Bridge on the rail",
   "exerciseBridgeSurface": "Bridge on the surface",
+  "exerciseDiagramTitle": "Table diagram",
+  "exerciseDiagramNumbered": "Diagram {index} of {total}",
+  "@exerciseDiagramNumbered": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseDiagramContact": "Ball contact: {contact}",
+  "@exerciseDiagramContact": {
+    "placeholders": {
+      "contact": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseDiagramContactUnspecified": "Ball contact: not specified on the sheet",
+  "listSeparator": ", ",
+  "exerciseDiagramMissing": "No diagram is available for this exercise.",
+  "exerciseDiagramSemantics": "Table diagram of exercise {number}, {sheet}",
+  "@exerciseDiagramSemantics": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "sheet": {
+        "type": "String"
+      }
+    }
+  },
   "exerciseBronze": "« Bronze billiards » mention on the sheet",
   "exerciseRecommended": "{min} to {max} sessions recommended for this block",
   "@exerciseRecommended": {

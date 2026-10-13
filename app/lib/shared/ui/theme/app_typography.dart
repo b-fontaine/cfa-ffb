@@ -9,6 +9,9 @@ abstract final class AppTypography {
   /// (Widgetbook) : Flutter préfixe les polices des paquets.
   static const packageFontFamily = 'packages/billard_cfa/$fontFamily';
 
+  /// Taille minimale d'un texte, y compris posé sur un schéma ou une bille.
+  static const double minTextSize = 12;
+
   static TextStyle _style(
     String family,
     double size,
@@ -31,6 +34,6 @@ abstract final class AppTypography {
     bodyLarge: _style(family, 16, 24),
     bodyMedium: _style(family, 14, 20),
     labelLarge: _style(family, 14, 20, FontWeight.w600),
-    labelSmall: _style(family, 12, 16, FontWeight.w600),
+    labelSmall: _style(family, minTextSize, 16, FontWeight.w600),
   );
 }
