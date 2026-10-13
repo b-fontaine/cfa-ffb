@@ -3,15 +3,17 @@ import 'dart:math' show Point;
 import 'package:billard_cfa/entities/session_sheet/presentation/illustration_mapper.dart';
 import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
+import 'package:billard_cfa/shared/lib/power_ratio.dart' as ratio;
 import 'package:billard_cfa/shared/lib/table_pocket.dart';
 import 'package:billard_cfa/shared/ui/angle_mark.dart';
 import 'package:billard_cfa/shared/ui/ball_contact_diagram.dart';
+import 'package:billard_cfa/shared/ui/ball_size_comparison.dart';
 import 'package:billard_cfa/shared/ui/contact_strip.dart';
-import 'package:billard_cfa/shared/ui/cue_side_view.dart';
+import 'package:billard_cfa/shared/ui/cue_ball_target.dart';
 import 'package:billard_cfa/shared/ui/ghost_aim_diagram.dart';
 import 'package:billard_cfa/shared/ui/pdf_page_chip.dart';
-import 'package:billard_cfa/shared/ui/power_scale.dart';
-import 'package:billard_cfa/shared/ui/stance_diagram.dart';
+import 'package:billard_cfa/shared/ui/player_figure.dart';
+import 'package:billard_cfa/shared/ui/power_ratio.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_player.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_spec.dart'
     as ui;
@@ -109,7 +111,7 @@ final _all = <(Illustration, Type)>[
       id: 'aim',
       caption: 'Légende',
       alt: 'Alt aim',
-      cue: Point(1.84, 2.31),
+      cue: Point(1.84, 2.26),
       object: Point(5, 2),
       pocket: TablePocket.tr,
       fraction: ContactFraction.half,
@@ -117,34 +119,49 @@ final _all = <(Illustration, Type)>[
     GhostAimDiagram,
   ),
   (
-    const Illustration.cueSide(
-      id: 'side',
+    const Illustration.cueBallTarget(
+      id: 'target',
       caption: 'Légende',
-      alt: 'Alt side',
+      alt: 'Alt target',
       tipPoint: TipPoint.top,
       cueHeight: CueHeight.high,
     ),
-    CueSideView,
+    CueBallTarget,
   ),
   (
-    const Illustration.stanceTop(
-      id: 'stance',
+    const Illustration.playerFigure(
+      id: 'figure',
       caption: 'Légende',
-      alt: 'Alt stance',
-      annotations: ['Pieds écartés.'],
+      alt: 'Alt figure',
+      view: PlayerView.both,
+      focus: [PlayerMark.feet, PlayerMark.head],
+      headCase: HeadCase.cueBetweenEyes,
     ),
-    StanceDiagram,
+    PlayerFigure,
   ),
   (
-    const Illustration.powerScale(
+    const Illustration.ballSize(
+      id: 'size',
+      caption: 'Légende',
+      alt: 'Alt size',
+    ),
+    BallSizeComparison,
+  ),
+  (
+    const Illustration.powerRatio(
       id: 'power',
       caption: 'Légende',
       alt: 'Alt power',
-      levels: 5,
-      highlight: 3,
+      points: [
+        ratio.PowerPoint(
+          amplitude: ratio.AmplitudeLevel.short,
+          speed: ratio.SpeedLevel.slow,
+        ),
+      ],
+      highlight: 0,
       distanceLabel: 'Zone grise',
     ),
-    PowerScale,
+    PowerRatio,
   ),
   (
     const Illustration.angle(
@@ -170,7 +187,7 @@ final _all = <(Illustration, Type)>[
 ];
 
 void main() {
-  group('the ten illustration types', () {
+  group('the eleven illustration types', () {
     for (final (illustration, type) in _all) {
       testWidgets('${illustration.id} renders as $type', (tester) async {
         await pumpUi(

@@ -301,7 +301,15 @@ class DiagramTimeline {
 
     final cuePoints = arrow != null
         ? [start, ...arrow.path.skip(1)]
-        : [start, _impactPoint(start, hit.at, pocket)];
+        : [
+            start,
+            _impactPoint(
+              start,
+              hit.at,
+              pocket,
+              contact: cue.color.radius + hit.color.radius,
+            ),
+          ];
 
     return DiagramTimelineStep(
       cueId: cue.id,
@@ -383,14 +391,16 @@ class DiagramTimeline {
     return null;
   }
 
-  /// Centre de la blanche au contact : deux rayons derrière la bille touchée,
-  /// dans l'axe de la poche (la bille part selon la ligne des centres) ou, sans
-  /// poche, dans l'axe de la visée.
+  /// Centre de la bille jouée au contact : à [contact] (somme des rayons de la
+  /// bille jouée et de la bille touchée : `r_c + r_o` pour la blanche) derrière
+  /// la bille touchée, dans l'axe de la poche (la bille part selon la ligne des
+  /// centres) ou, sans poche, dans l'axe de la visée.
   static DiagramPoint _impactPoint(
     DiagramPoint start,
     DiagramPoint target,
-    DiagramPocket? pocket,
-  ) {
+    DiagramPocket? pocket, {
+    required double contact,
+  }) {
     final towards = pocket != null && pocket.point != target
         ? pocket.point
         : target;
@@ -399,10 +409,7 @@ class DiagramTimeline {
     if (length == 0) return start;
     final ux = (towards.x - origin.x) / length;
     final uy = (towards.y - origin.y) / length;
-    return DiagramPoint(
-      target.x - ux * 2 * DiagramLayout.ballRadius,
-      target.y - uy * 2 * DiagramLayout.ballRadius,
-    );
+    return DiagramPoint(target.x - ux * contact, target.y - uy * contact);
   }
 
   static List<DiagramPoint> _objectPoints(

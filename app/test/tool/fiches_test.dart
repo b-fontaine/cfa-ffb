@@ -882,6 +882,277 @@ void main() {
     });
   });
 
+  group('V17 cohérence géométrique de ghost_aim', () {
+    test("la séance telle qu'écrite est cohérente", () {
+      expect(broken((d) {}), isEmpty);
+    });
+    test('demi-bille annoncée pleine : écart d = r_o = 0,1098 case', () {
+      expectRule(
+        broken((d) => _illustration(d, 'visee-demi')['fraction'] = 'full'),
+        'V17',
+        mention: 'incohérente avec la géométrie',
+      );
+    });
+    test('demi-bille annoncée en quart : écart r_c / 2 = 0,05 case', () {
+      // d nominal du quart = 0,1617 ; celui du demi = 0,1098 ; l'écart de
+      // ≈ 0,05 dépasse la tolérance 0,07 s = 0,01495.
+      expectRule(
+        broken((d) => _illustration(d, 'visee-demi')['fraction'] = 'quarter'),
+        'V17',
+        mention: 'écart 0.05',
+      );
+    });
+    test('demi-bille annoncée en trois-quarts (snake_case) : refusée', () {
+      expectRule(
+        broken(
+          (d) => _illustration(d, 'visee-demi')['fraction'] = 'three_quarter',
+        ),
+        'V17',
+        mention: 'three_quarter',
+      );
+    });
+  });
+
+  group('ball_size : comparaison de taille de la blanche', () {
+    List<String> withIllustration(Json extra) => broken((d) {
+      (d['illustrations']! as List).add({
+        'id': 'nouvelle',
+        'caption': 'c',
+        'alt': 'a',
+        ...extra,
+      });
+    });
+
+    test('est acceptée sans paramètre', () {
+      expect(withIllustration({'type': 'ball_size'}), isEmpty);
+    });
+
+    test('refuse tout paramètre', () {
+      expect(
+        withIllustration({'type': 'ball_size', 'diameter': 48}),
+        isNotEmpty,
+      );
+    });
+  });
+
+  group('V25 à V27 : cue_ball_target, player_figure, power_ratio', () {
+    /// Ajoute l'illustration [extra] au pilote et rend les erreurs.
+    List<String> withIllustration(Json extra) => broken((d) {
+      (d['illustrations']! as List).add({
+        'id': 'nouvelle',
+        'caption': 'c',
+        'alt': 'a',
+        ...extra,
+      });
+    });
+
+    test('les trois nouveaux types valides sont acceptés', () {
+      expect(
+        withIllustration({
+          'type': 'cue_ball_target',
+          'tip_point': 'bottom',
+          'cue_height': 'high',
+          'compare': ['center', 'top'],
+        }),
+        isEmpty,
+      );
+      expect(
+        withIllustration({
+          'type': 'player_figure',
+          'view': 'both',
+          'focus': ['feet', 'head'],
+          'lead_eye': 'left',
+          'head_case': 'left_eye_over_cue',
+          'bridge': 'surface',
+        }),
+        isEmpty,
+      );
+      expect(
+        withIllustration({
+          'type': 'power_ratio',
+          'points': [
+            {'amplitude': 'short', 'speed': 'slow', 'label': 'proche'},
+            {'amplitude': 'long', 'speed': 'fast'},
+          ],
+          'highlight': 1,
+          'distance_label': 'loin',
+        }),
+        isEmpty,
+      );
+    });
+
+    test('les trois anciens types sont hors de la liste fermée', () {
+      for (final extra in [
+        {'type': 'cue_side', 'tip_point': 'top', 'cue_height': 'level'},
+        {'type': 'stance_top', 'view': 'top'},
+        {'type': 'power_scale', 'levels': 5},
+      ]) {
+        expectRule(withIllustration(extra), 'V7', mention: 'type');
+      }
+    });
+
+    test('V25 : tip_point inconnu', () {
+      expectRule(
+        withIllustration({'type': 'cue_ball_target', 'tip_point': 'dessous'}),
+        'V25',
+        mention: 'tip_point',
+      );
+    });
+    test('V25 : tip_point obligatoire', () {
+      expectRule(
+        withIllustration({'type': 'cue_ball_target'}),
+        'V7',
+        mention: 'tip_point',
+      );
+    });
+    test('V25 : compare avec doublon ou avec le point lui-même', () {
+      expectRule(
+        withIllustration({
+          'type': 'cue_ball_target',
+          'tip_point': 'top',
+          'compare': ['center', 'center'],
+        }),
+        'V25',
+        mention: 'compare',
+      );
+      expectRule(
+        withIllustration({
+          'type': 'cue_ball_target',
+          'tip_point': 'top',
+          'compare': ['top'],
+        }),
+        'V25',
+        mention: 'compare',
+      );
+    });
+    test('V25 : cue_height hors de high | level | low', () {
+      expectRule(
+        withIllustration({
+          'type': 'cue_ball_target',
+          'tip_point': 'top',
+          'cue_height': 'medium',
+        }),
+        'V25',
+        mention: 'cue_height',
+      );
+    });
+
+    test('V26 : view hors de side | top | both', () {
+      expectRule(
+        withIllustration({'type': 'player_figure', 'view': 'front'}),
+        'V26',
+        mention: 'view',
+      );
+    });
+    test('V26 : focus vide, inconnu ou en double', () {
+      for (final focus in [
+        <String>[],
+        ['nez'],
+        ['feet', 'feet'],
+      ]) {
+        expectRule(
+          withIllustration({
+            'type': 'player_figure',
+            'view': 'side',
+            'focus': focus,
+          }),
+          'V26',
+          mention: 'focus',
+        );
+      }
+    });
+    test('V26 : head_case seulement quand la vue contient le dessus', () {
+      expectRule(
+        withIllustration({
+          'type': 'player_figure',
+          'view': 'side',
+          'head_case': 'cue_between_eyes',
+        }),
+        'V26',
+        mention: 'head_case',
+      );
+    });
+    test('V26 : lead_eye et bridge hors des listes', () {
+      expectRule(
+        withIllustration({
+          'type': 'player_figure',
+          'view': 'top',
+          'lead_eye': 'both',
+        }),
+        'V26',
+        mention: 'lead_eye',
+      );
+      expectRule(
+        withIllustration({
+          'type': 'player_figure',
+          'view': 'side',
+          'bridge': 'air',
+        }),
+        'V26',
+        mention: 'bridge',
+      );
+    });
+    test('V26 : annotations (ancienne clé de stance_top) refusée', () {
+      expectRule(
+        withIllustration({
+          'type': 'player_figure',
+          'view': 'top',
+          'annotations': ['x'],
+        }),
+        'V1',
+        mention: 'annotations',
+      );
+    });
+
+    test('V27 : niveaux hors des listes fermées', () {
+      expectRule(
+        withIllustration({
+          'type': 'power_ratio',
+          'points': [
+            {'amplitude': 'huge', 'speed': 'slow'},
+          ],
+        }),
+        'V27',
+        mention: 'amplitude',
+      );
+      expectRule(
+        withIllustration({
+          'type': 'power_ratio',
+          'points': [
+            {'amplitude': 'short', 'speed': 3},
+          ],
+        }),
+        'V27',
+        mention: 'speed',
+      );
+    });
+    test('V27 : highlight hors des points', () {
+      expectRule(
+        withIllustration({'type': 'power_ratio', 'highlight': 0}),
+        'V27',
+        mention: 'highlight',
+      );
+    });
+    test('V27 : au plus deux exemples par illustration', () {
+      final point = {'amplitude': 'short', 'speed': 'slow'};
+      expectRule(
+        withIllustration({
+          'type': 'power_ratio',
+          'points': [point, point, point],
+        }),
+        'V27',
+        mention: 'points',
+      );
+    });
+    test('V27 : aucune clé levels ni cran', () {
+      expectRule(
+        withIllustration({'type': 'power_ratio', 'levels': 5}),
+        'V1',
+        mention: 'levels',
+      );
+    });
+  });
+
   group('V18 sources', () {
     test('sources vides', () {
       expectRule(broken((d) => d['sources'] = <Object?>[]), 'V18');

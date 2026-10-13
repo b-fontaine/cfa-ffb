@@ -2,16 +2,17 @@ import 'dart:math' as math;
 
 import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
+import 'package:billard_cfa/shared/lib/power_ratio.dart';
 import 'package:billard_cfa/shared/lib/table_pocket.dart';
 import 'package:billard_cfa/shared/ui/angle_mark.dart';
-import 'package:billard_cfa/shared/ui/ball_contact_diagram.dart';
 import 'package:billard_cfa/shared/ui/contact_strip.dart';
+import 'package:billard_cfa/shared/ui/cue_ball_target.dart';
 import 'package:billard_cfa/shared/ui/cue_side_view.dart';
 import 'package:billard_cfa/shared/ui/ghost_aim_diagram.dart';
 import 'package:billard_cfa/shared/ui/pdf_page_chip.dart';
-import 'package:billard_cfa/shared/ui/power_scale.dart';
+import 'package:billard_cfa/shared/ui/player_figure.dart';
+import 'package:billard_cfa/shared/ui/power_ratio.dart';
 import 'package:billard_cfa/shared/ui/presentation_scope.dart';
-import 'package:billard_cfa/shared/ui/stance_diagram.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -92,7 +93,7 @@ Widget buildGhostAimUseCase(BuildContext context) {
     GhostAimDiagram(
       cue: math.Point(
         slider('blanche x', 1.84, 7.7),
-        slider('blanche y', 2.31, 3.7),
+        slider('blanche y', 2.26, 3.7),
       ),
       object: math.Point(slider('cible x', 5, 7.7), slider('cible y', 2, 3.7)),
       pocket: context.knobs.object.dropdown<TablePocket>(
@@ -192,6 +193,20 @@ Widget buildCueSideViewAllUseCase(BuildContext context) => Padding(
 );
 
 @widgetbook.UseCase(
+  name: "Contact au-dessus de l'équateur de la blanche (écart exagéré ×10)",
+  type: CueSideView,
+  path: _path,
+)
+Widget buildCueSideViewContactUseCase(BuildContext context) => _page(
+  _width(context, initial: 560),
+  const CueSideView(
+    tipPoint: TipPoint.center,
+    cueHeight: CueHeight.level,
+    showContact: true,
+  ),
+);
+
+@widgetbook.UseCase(
   name: 'Point du procédé de côté (gauche : au centre)',
   type: CueSideView,
   path: _path,
@@ -211,102 +226,299 @@ Widget buildCueSideViewTipsUseCase(BuildContext context) => Padding(
   ),
 );
 
-// --- StanceDiagram ----------------------------------------------------------
+// --- CueBallTarget ----------------------------------------------------------
 
-@widgetbook.UseCase(name: 'Interactif', type: StanceDiagram, path: _path)
-Widget buildStanceDiagramUseCase(BuildContext context) => _page(
-  _width(context, initial: 560),
-  StanceDiagram(
-    leadEye: context.knobs.object.dropdown<StanceLeadEye>(
-      label: 'œil directeur',
-      options: StanceLeadEye.values,
+@widgetbook.UseCase(name: 'Interactif', type: CueBallTarget, path: _path)
+Widget buildCueBallTargetUseCase(BuildContext context) => _page(
+  _width(context, initial: 420),
+  CueBallTarget(
+    tipPoint: context.knobs.object.dropdown<TipPoint>(
+      label: 'point d’impact du procédé',
+      options: TipPoint.values,
       labelBuilder: (value) => value.name,
     ),
-    annotations: [
-      for (
-        var i = 1;
-        i <= context.knobs.int.slider(label: 'annotations', max: 4);
-        i++
-      )
-        'Point d’attention $i',
+    cueHeight: context.knobs.objectOrNull.dropdown<CueHeight>(
+      label: 'profil de la queue',
+      options: CueHeight.values,
+      initialOption: CueHeight.level,
+      labelBuilder: (value) => value.name,
+    ),
+    compare: [
+      for (final tip in TipPoint.values)
+        if (context.knobs.boolean(label: 'comparer : ${tip.name}')) tip,
     ],
   ),
 );
 
 @widgetbook.UseCase(
-  name: 'Avec annotations de la séance',
-  type: StanceDiagram,
+  name: 'Les neuf points d’impact',
+  type: CueBallTarget,
   path: _path,
 )
-Widget buildStanceDiagramNotesUseCase(BuildContext context) => _page(
+Widget buildCueBallTargetAllUseCase(BuildContext context) => Padding(
+  padding: const EdgeInsets.all(16),
+  child: Wrap(
+    spacing: 16,
+    runSpacing: 16,
+    children: [
+      for (final tip in TipPoint.values)
+        SizedBox(width: 300, child: CueBallTarget(tipPoint: tip)),
+    ],
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Comparaison centre, haut, bas',
+  type: CueBallTarget,
+  path: _path,
+)
+Widget buildCueBallTargetCompareUseCase(BuildContext context) => _page(
+  _width(context, initial: 420),
+  const CueBallTarget(
+    tipPoint: TipPoint.center,
+    compare: [TipPoint.top, TipPoint.bottom],
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Avec le profil de la queue',
+  type: CueBallTarget,
+  path: _path,
+)
+Widget buildCueBallTargetProfileUseCase(BuildContext context) => Padding(
+  padding: const EdgeInsets.all(16),
+  child: Wrap(
+    spacing: 16,
+    runSpacing: 16,
+    children: [
+      for (final height in CueHeight.values)
+        SizedBox(
+          width: 320,
+          child: CueBallTarget(tipPoint: TipPoint.bottom, cueHeight: height),
+        ),
+    ],
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Largeur réduite (procédé agrandi)',
+  type: CueBallTarget,
+  path: _path,
+)
+Widget buildCueBallTargetNarrowUseCase(BuildContext context) => _page(
+  _width(context, initial: 240),
+  const CueBallTarget(tipPoint: TipPoint.topRight),
+);
+
+// --- PlayerFigure -----------------------------------------------------------
+
+@widgetbook.UseCase(name: 'Interactif', type: PlayerFigure, path: _path)
+Widget buildPlayerFigureUseCase(BuildContext context) => _page(
   _width(context, initial: 560),
-  const StanceDiagram(
-    annotations: [
-      'Le pied droit est sous la main droite qui tient la queue.',
-      'L’avant-bras droit est vertical.',
+  PlayerFigure(
+    view: context.knobs.object.dropdown<PlayerView>(
+      label: 'vue',
+      options: PlayerView.values,
+      labelBuilder: (value) => value.name,
+    ),
+    focus: [
+      for (final mark in PlayerMark.values)
+        if (context.knobs.boolean(
+          label: 'repère : ${mark.name}',
+          initialValue: true,
+        ))
+          mark,
+    ],
+    leadEye: context.knobs.object.dropdown<LeadEye>(
+      label: 'œil directeur',
+      options: LeadEye.values,
+      labelBuilder: (value) => value.name,
+    ),
+    headCase: context.knobs.objectOrNull.dropdown<HeadCase>(
+      label: 'place de la tête',
+      options: HeadCase.values,
+      labelBuilder: (value) => value.name,
+    ),
+    bridge: context.knobs.object.dropdown<CueBridge>(
+      label: 'chevalet',
+      options: CueBridge.values,
+      labelBuilder: (value) => value.name,
+    ),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Profil, chevalet sur surface',
+  type: PlayerFigure,
+  path: _path,
+)
+Widget buildPlayerFigureSurfaceUseCase(BuildContext context) => _page(
+  _width(context, initial: 560),
+  const PlayerFigure(bridge: CueBridge.surface),
+);
+
+@widgetbook.UseCase(
+  name: 'Vue de dessus, œil droit sur la queue',
+  type: PlayerFigure,
+  path: _path,
+)
+Widget buildPlayerFigureTopUseCase(BuildContext context) => _page(
+  _width(context, initial: 560),
+  const PlayerFigure(view: PlayerView.top, headCase: HeadCase.rightEyeOverCue),
+);
+
+@widgetbook.UseCase(
+  name: 'Les trois places de la tête',
+  type: PlayerFigure,
+  path: _path,
+)
+Widget buildPlayerFigureHeadCasesUseCase(BuildContext context) => Padding(
+  padding: const EdgeInsets.all(16),
+  child: Wrap(
+    spacing: 16,
+    runSpacing: 16,
+    children: [
+      for (final headCase in HeadCase.values)
+        SizedBox(
+          width: 420,
+          child: PlayerFigure(
+            view: PlayerView.top,
+            focus: const [PlayerMark.head],
+            headCase: headCase,
+            leadEye: headCase == HeadCase.leftEyeOverCue
+                ? LeadEye.left
+                : LeadEye.right,
+          ),
+        ),
     ],
   ),
 );
 
 @widgetbook.UseCase(
-  name: 'Largeur réduite, œil gauche',
-  type: StanceDiagram,
+  name: 'Trois repères seulement (séance enfants)',
+  type: PlayerFigure,
   path: _path,
 )
-Widget buildStanceDiagramNarrowUseCase(BuildContext context) => _page(
-  _width(context, initial: 260),
-  const StanceDiagram(leadEye: StanceLeadEye.left),
+Widget buildPlayerFigureFocusUseCase(BuildContext context) => _page(
+  _width(context, initial: 560),
+  const PlayerFigure(
+    focus: [PlayerMark.feet, PlayerMark.legsAndHips, PlayerMark.cue],
+  ),
 );
 
-// --- PowerScale -------------------------------------------------------------
+@widgetbook.UseCase(
+  name: 'Profil et dessus (large)',
+  type: PlayerFigure,
+  path: _path,
+)
+Widget buildPlayerFigureBothUseCase(BuildContext context) => _page(
+  _width(context, initial: 960),
+  const PlayerFigure(view: PlayerView.both),
+);
 
-@widgetbook.UseCase(name: 'Interactif', type: PowerScale, path: _path)
-Widget buildPowerScaleUseCase(BuildContext context) {
-  final levels = context.knobs.int.slider(
-    label: 'niveaux',
-    initialValue: 5,
-    min: 1,
-    max: 5,
-  );
+// --- PowerRatio -------------------------------------------------------------
+
+@widgetbook.UseCase(name: 'Interactif', type: PowerRatio, path: _path)
+Widget buildPowerRatioUseCase(BuildContext context) {
+  PowerPoint? point(String name, {required bool initial}) {
+    if (!context.knobs.boolean(label: 'exemple $name', initialValue: initial)) {
+      return null;
+    }
+    return PowerPoint(
+      amplitude: context.knobs.object.dropdown<AmplitudeLevel>(
+        label: 'amplitude $name',
+        options: AmplitudeLevel.values,
+        labelBuilder: (value) => value.name,
+      ),
+      speed: context.knobs.object.dropdown<SpeedLevel>(
+        label: 'vitesse $name',
+        options: SpeedLevel.values,
+        labelBuilder: (value) => value.name,
+      ),
+    );
+  }
+
+  final points = [?point('1', initial: true), ?point('2', initial: false)];
   final highlight = context.knobs.int.slider(
-    label: 'niveau en évidence (0 : aucun)',
-    initialValue: 3,
-    max: 5,
+    label: 'exemple en évidence (0 : aucun)',
+    max: 2,
   );
-  final distance = context.knobs.string(
-    label: 'repère de distance',
-    initialValue: 'La blanche s’arrête dans la zone grise',
-  );
+  final distance = context.knobs.string(label: 'repère de distance');
   return _page(
-    _width(context, initial: 360),
-    PowerScale(
-      levels: levels,
-      highlight: highlight < 1 || highlight > levels ? null : highlight,
+    _width(context, initial: 420),
+    PowerRatio(
+      points: points,
+      highlight: highlight < 1 || highlight > points.length
+          ? null
+          : highlight - 1,
       distanceLabel: distance.isEmpty ? null : distance,
     ),
   );
 }
 
+@widgetbook.UseCase(name: 'Plan seul', type: PowerRatio, path: _path)
+Widget buildPowerRatioEmptyUseCase(BuildContext context) =>
+    _page(_width(context, initial: 420), const PowerRatio());
+
 @widgetbook.UseCase(
-  name: 'Un seul niveau, sans repère',
-  type: PowerScale,
+  name: 'Les deux extrêmes de la fiche n° 2',
+  type: PowerRatio,
   path: _path,
 )
-Widget buildPowerScaleSingleUseCase(BuildContext context) => _page(
-  _width(context, initial: 200),
-  const PowerScale(levels: 1, highlight: 1),
+Widget buildPowerRatioExtremesUseCase(BuildContext context) => _page(
+  _width(context, initial: 420),
+  const PowerRatio(
+    points: [
+      PowerPoint(
+        amplitude: AmplitudeLevel.short,
+        speed: SpeedLevel.slow,
+        label: 'Bille proche',
+      ),
+      PowerPoint(
+        amplitude: AmplitudeLevel.long,
+        speed: SpeedLevel.fast,
+        label: 'Bille lointaine',
+      ),
+    ],
+    highlight: 1,
+  ),
 );
 
 @widgetbook.UseCase(
-  name: 'Cinq niveaux, largeur réduite',
-  type: PowerScale,
+  name: 'Les neuf combinaisons',
+  type: PowerRatio,
   path: _path,
 )
-Widget buildPowerScaleNarrowUseCase(BuildContext context) => _page(
-  _width(context, initial: 160),
-  const PowerScale(
-    levels: 5,
-    highlight: 5,
+Widget buildPowerRatioGridUseCase(BuildContext context) => Padding(
+  padding: const EdgeInsets.all(16),
+  child: Wrap(
+    spacing: 16,
+    runSpacing: 16,
+    children: [
+      for (final amplitude in AmplitudeLevel.values)
+        for (final speed in SpeedLevel.values)
+          SizedBox(
+            width: 300,
+            child: PowerRatio(
+              points: [PowerPoint(amplitude: amplitude, speed: speed)],
+            ),
+          ),
+    ],
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Largeur réduite, avec repère',
+  type: PowerRatio,
+  path: _path,
+)
+Widget buildPowerRatioNarrowUseCase(BuildContext context) => _page(
+  _width(context, initial: 260),
+  const PowerRatio(
+    points: [
+      PowerPoint(amplitude: AmplitudeLevel.long, speed: SpeedLevel.fast),
+    ],
+    highlight: 0,
     distanceLabel: 'Jusqu’à la bande du fond et retour',
   ),
 );
@@ -444,7 +656,7 @@ Widget buildPresentationScopeAimUseCase(BuildContext context) =>
           const SizedBox(
             width: 520,
             child: GhostAimDiagram(
-              cue: math.Point(1.84, 2.31),
+              cue: math.Point(1.84, 2.26),
               object: math.Point(5, 2),
               pocket: TablePocket.tr,
               fraction: ContactFraction.half,

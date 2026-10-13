@@ -9,8 +9,9 @@ import 'package:flutter/material.dart';
 
 /// Visée à la bille fantôme : la table avec la blanche, la bille de couleur,
 /// la poche visée, la ligne de visée de la blanche vers la bille fantôme (trait
-/// et point) et la bille fantôme elle-même, **calculée** (`G = O - 2r · unit(P
-/// - O)`, voir `ghostBallPosition`).
+/// et point) et la bille fantôme elle-même, **calculée** (`G = O - s · unit(P
+/// - O)` avec `s = r_c + r_o`, voir `ghostBallPosition`), dessinée au rayon de
+/// la blanche. Le point de contact `O - r_o · unit(P - O)` est marqué.
 ///
 /// [fraction] est la quantité de bille annoncée : elle nomme l'illustration
 /// pour les lecteurs d'écran ; la cohérence avec la géométrie est contrôlée
@@ -45,6 +46,7 @@ class GhostAimDiagram extends StatelessWidget {
     required String ghostName,
   }) {
     final ghost = ghostBallPosition(object: object, pocket: pocket);
+    final contact = contactPoint(object: object, pocket: pocket);
     return TableDiagramSpec(
       id: 'ghost-aim',
       balls: [
@@ -68,6 +70,13 @@ class GhostAimDiagram extends StatelessWidget {
           role: DiagramGhostRole.impact,
           forBallId: 'object',
         ),
+        if (contact != null)
+          DiagramGhost(
+            id: 'contact',
+            at: contact,
+            role: DiagramGhostRole.contact,
+            forBallId: 'object',
+          ),
       ],
       arrows: [
         DiagramArrow(

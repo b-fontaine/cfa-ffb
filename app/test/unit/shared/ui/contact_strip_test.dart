@@ -20,6 +20,54 @@ void main() {
     expect(diagrams.map((d) => d.contact), _all);
   });
 
+  testWidgets('draws the balls only: the tip belongs to the target', (
+    tester,
+  ) async {
+    await pumpUi(tester, const ContactStrip(fractions: _all));
+
+    final diagrams = tester.widgetList<BallContactDiagram>(
+      find.byType(BallContactDiagram),
+    );
+    expect(diagrams.map((d) => d.showTip), everyElement(isFalse));
+  });
+
+  testWidgets('writes the cue ball and object ball sizes under the strip', (
+    tester,
+  ) async {
+    await pumpUi(
+      tester,
+      const ContactStrip(fractions: _all),
+      locale: const Locale('fr'),
+    );
+
+    expect(
+      find.text(
+        'La blanche (48,0 mm) est un peu plus petite que les billes de but '
+        '(50,8 mm).',
+      ),
+      findsOneWidget,
+    );
+
+    await pumpUi(tester, const ContactStrip(fractions: _all));
+
+    expect(
+      find.text(
+        'The cue ball (48.0 mm) is slightly smaller than the object balls '
+        '(50.8 mm).',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('can hide the size note', (tester) async {
+    await pumpUi(
+      tester,
+      const ContactStrip(fractions: _all, showSizeNote: false),
+    );
+
+    expect(find.textContaining('48.0'), findsNothing);
+  });
+
   testWidgets('is spoken as one list of fractions, in French', (tester) async {
     await pumpUi(
       tester,

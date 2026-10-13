@@ -77,3 +77,23 @@ Widget buildBallContactDiagramTipUseCase(BuildContext context) => Padding(
     ],
   ),
 );
+
+@widgetbook.UseCase(
+  name: 'Sans le procédé (billes aux tailles réelles)',
+  type: BallContactDiagram,
+  path: '[Design system]/Composants',
+)
+Widget buildBallContactDiagramBallsOnlyUseCase(BuildContext context) => Padding(
+  padding: const EdgeInsets.all(16),
+  child: Wrap(
+    spacing: 16,
+    runSpacing: 16,
+    children: [
+      for (final contact in ContactFraction.values)
+        SizedBox(
+          width: 180,
+          child: BallContactDiagram(contact: contact, showTip: false),
+        ),
+    ],
+  ),
+);

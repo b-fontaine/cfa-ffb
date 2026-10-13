@@ -22,8 +22,8 @@ void main() {
     expect(identical(ui.TipPoint.top, TipPoint.top), isTrue);
   });
 
-  test('keeps the quantity geometry of the contact fractions', () {
-    expect(ContactFraction.full.centerOffset, 0);
-    expect(ContactFraction.half.centerOffset, 1);
+  test('keeps the aim offset of the contact fractions', () {
+    expect(ContactFraction.full.aimOffset(), 0);
+    expect(ContactFraction.half.aimOffset(), closeTo(0.109838, 1e-6));
   });
 }

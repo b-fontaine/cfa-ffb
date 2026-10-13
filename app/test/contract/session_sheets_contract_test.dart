@@ -4,6 +4,7 @@ import 'package:billard_cfa/entities/session_sheet/data/session_sheet_yaml_parse
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_timing.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/blackball_dimensions.dart';
 import 'package:billard_cfa/shared/lib/ghost_ball_geometry.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
@@ -234,8 +235,14 @@ void main() {
 
           expect(
             gap,
-            lessThanOrEqualTo(ghostAimTolerance),
+            lessThanOrEqualTo(ghostAimTolerance()),
             reason: '${aim.id} : ${aim.fraction.name}, écart $gap',
+          );
+          // Marge de 0,02 s sous la tolérance (0,07 s) : 0,05 s au plus.
+          expect(
+            gap,
+            lessThanOrEqualTo(0.05 * BallSizes.standard.ghostDistance),
+            reason: '${aim.id} : marge, écart $gap',
           );
         }
       });

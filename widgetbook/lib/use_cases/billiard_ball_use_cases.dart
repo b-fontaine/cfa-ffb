@@ -1,4 +1,5 @@
 import 'package:billard_cfa/shared/ui/ball_chip.dart';
+import 'package:billard_cfa/shared/ui/ball_size_comparison.dart';
 import 'package:billard_cfa/shared/ui/billiard_ball.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
@@ -77,3 +78,35 @@ Widget buildBilliardBallSmallUseCase(BuildContext context) => const Center(
     child: BilliardBall(kind: BallKind.yellow, diameter: 10, label: '3'),
   ),
 );
+
+@widgetbook.UseCase(
+  name: 'Comparaison de tailles (blanche 48,0 mm, bille de but 50,8 mm)',
+  type: BallSizeComparison,
+  path: '[Design system]/Composants',
+)
+Widget buildBallSizeComparisonUseCase(BuildContext context) => Center(
+  child: Padding(
+    padding: const EdgeInsets.all(32),
+    child: BallSizeComparison(
+      objectDiameter: context.knobs.double.slider(
+        label: 'diamètre de la bille de but',
+        initialValue: 160,
+        min: 48,
+        max: 320,
+      ),
+    ),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Comparaison de tailles (largeur réduite)',
+  type: BallSizeComparison,
+  path: '[Design system]/Composants',
+)
+Widget buildBallSizeComparisonNarrowUseCase(BuildContext context) =>
+    const Center(
+      child: SizedBox(
+        width: 240,
+        child: BallSizeComparison(objectDiameter: 72),
+      ),
+    );

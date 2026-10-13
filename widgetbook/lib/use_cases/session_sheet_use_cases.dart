@@ -98,7 +98,7 @@ Widget buildSheetIllustrationViewUseCase(BuildContext context) => _scroll(
       id: 'visee',
       caption: 'La bille fantôme montre où la blanche touche la cible.',
       alt: 'Blanche, bille de couleur, poche et bille fantôme.',
-      cue: Point(1.84, 2.31),
+      cue: Point(1.84, 2.26),
       object: Point(5, 2),
       pocket: TablePocket.tr,
       fraction: ContactFraction.half,

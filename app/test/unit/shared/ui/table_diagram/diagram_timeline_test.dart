@@ -7,10 +7,15 @@ import 'package:flutter_test/flutter_test.dart';
 /// Les positions attendues sont calculées à la main (triangles 3-4-5,
 /// segments axiaux) et ne dépendent pas de l'implémentation.
 
-Matcher _at(double x, double y) => predicate<DiagramPoint>(
-  (p) => (p.x - x).abs() < 1e-9 && (p.y - y).abs() < 1e-9,
-  'is at ($x, $y)',
-);
+Matcher _at(double x, double y, [double epsilon = 1e-9]) =>
+    predicate<DiagramPoint>(
+      (p) => (p.x - x).abs() < epsilon && (p.y - y).abs() < epsilon,
+      'is at ($x, $y)',
+    );
+
+/// Distance blanche - bille de but au contact : s = (24,0 + 25,4) / 231,25
+/// = 0,213622 case (et non plus 2 x 0,1).
+const _s = 0.213622;
 
 const _cue = DiagramBall(
   id: 'w',
@@ -73,8 +78,9 @@ void main() {
   });
 
   group('DiagramTimeline without arrows', () {
-    // Cible en (4, 2), poche tm en (4, 0) : la blanche vise (4, 2.2) (deux
-    // rayons derrière la cible) depuis (4, 3.2), soit 1 ; la cible parcourt 2.
+    // Cible en (4, 2), poche tm en (4, 0) : la blanche vise (4, 2,213622) (à
+    // s = r_c + r_o derrière la cible) depuis (4, 3.2), soit 0,986378 ; la
+    // cible parcourt 2.
     const spec = TableDiagramSpec(
       id: 's',
       balls: [_cue, _target],
@@ -89,14 +95,21 @@ void main() {
     );
     final timeline = DiagramTimeline.from(spec);
 
-    test('uses the ball radius of the table geometry', () {
-      expect(DiagramLayout.ballRadius, TableGeometry.ballRadius);
+    test('stops the cue ball at r_c + r_o from the target, not 2 r_o', () {
+      final end = timeline.steps.single.cuePath.points.last;
+
+      expect(end, _at(4, 2 + _s, 1e-6));
+      expect(end.y - 2, isNot(closeTo(0.2, 1e-3)));
+      expect(
+        end.y - 2,
+        closeTo(BallKind.white.radius + BallKind.yellow.radius, 1e-12),
+      );
     });
 
     test('totals the cue path and the object path', () {
-      expect(timeline.totalLength, closeTo(3, 1e-9));
+      expect(timeline.totalLength, closeTo(3.2 - 2 - _s + 2, 1e-6));
       expect(timeline.steps, hasLength(1));
-      expect(timeline.steps.single.cuePath.length, closeTo(1, 1e-9));
+      expect(timeline.steps.single.cuePath.length, closeTo(1.2 - _s, 1e-6));
       expect(timeline.steps.single.objectPath.length, closeTo(2, 1e-9));
       expect(timeline.steps.single.pocketed, isTrue);
     });
@@ -111,16 +124,18 @@ void main() {
     });
 
     test('moves the cue ball first, the target only after the contact', () {
-      final frame = timeline.frameAt(0.5 / 3);
-      expect(frame.balls['w']!.position, _at(4, 2.7));
+      final frame = timeline.frameAt(0.5 / (3.2 - _s));
+      expect(frame.balls['w']!.position, _at(4, 2.7, 1e-6));
       expect(frame.balls['y1']!.position, _at(4, 2));
       expect(frame.cueAngle, isNull);
     });
 
     test('sends the target on after the contact', () {
+      // Longueur totale 2,986378 : à la moitié, 1,493189 ; la blanche a fini
+      // ses 0,986378, la cible a parcouru 0,506811.
       final frame = timeline.frameAt(0.5);
-      expect(frame.balls['w']!.position, _at(4, 2.2));
-      expect(frame.balls['y1']!.position, _at(4, 1.5));
+      expect(frame.balls['w']!.position, _at(4, 2 + _s, 1e-6));
+      expect(frame.balls['y1']!.position, _at(4, 1.493189, 1e-6));
       expect(frame.balls['y1']!.pocketed, isFalse);
     });
 
@@ -128,7 +143,7 @@ void main() {
       final frame = timeline.frameAt(1);
       expect(frame.balls['y1']!.position, _at(4, 0));
       expect(frame.balls['y1']!.pocketed, isTrue);
-      expect(frame.balls['w']!.position, _at(4, 2.2));
+      expect(frame.balls['w']!.position, _at(4, 2 + _s, 1e-6));
     });
 
     test('clamps the time to [0, 1]', () {
@@ -138,9 +153,11 @@ void main() {
 
     test('converts a duration into a time at constant speed', () {
       final slow = DiagramTimeline.from(spec, casesPerSecond: 2);
-      expect(slow.duration, const Duration(milliseconds: 1500));
+      // 2,986378 cases à 2 cases par seconde : 1,493189 s.
+      expect(slow.duration, const Duration(milliseconds: 1493));
       final frame = slow.frameAtTime(const Duration(milliseconds: 750));
-      expect(frame.balls['y1']!.position, _at(4, 1.5));
+      // 0,75 s = 1,5 case : 0,986378 pour la blanche, 0,513622 pour la cible.
+      expect(frame.balls['y1']!.position, _at(4, 1.486378, 1e-3));
       expect(
         slow.frameAtTime(const Duration(seconds: 60)).balls['y1']!.pocketed,
         isTrue,
@@ -205,7 +222,8 @@ void main() {
 
   group('DiagramTimeline with numbered cue positions', () {
     // La blanche part de g1 (4, 3.4) puis de g2 (3.1, 3.4) ; la flèche issue de
-    // g2 mesure 1,5 (0,9 ; 1,2) ; celle issue de g1 est absente (1,2).
+    // g2 mesure 1,5 (0,9 ; 1,2) ; celle issue de g1 est absente : la blanche
+    // vise le contact en (4, 2,213622), soit 3,4 - 2,213622 = 1,186378.
     const spec = TableDiagramSpec(
       id: 'quantities',
       balls: [
@@ -259,25 +277,30 @@ void main() {
     final timeline = DiagramTimeline.from(spec);
 
     test('chooses the arrow that leaves the numbered position', () {
-      expect(timeline.steps[0].cuePath.length, closeTo(1.2, 1e-9));
+      expect(timeline.steps[0].cuePath.length, closeTo(1.4 - _s, 1e-6));
       expect(timeline.steps[1].cuePath.length, closeTo(1.5, 1e-9));
-      expect(timeline.totalLength, closeTo(1.2 + 2 + 1.5 + 2, 1e-9));
+      expect(timeline.totalLength, closeTo(1.4 - _s + 2 + 1.5 + 2, 1e-6));
     });
 
     test('starts the second shot from the second position', () {
-      final frame = timeline.frameAt(3.2 / 6.7);
+      final frame = timeline.frameAt(
+        timeline.steps[1].startLength / timeline.totalLength,
+      );
       expect(frame.stepIndex, 1);
       expect(frame.balls['w']!.position, _at(3.1, 3.4));
       expect(frame.cueAngle, isNotNull);
     });
 
     test('puts the target back for the second shot', () {
-      final earlier = timeline.frameAt(3.1 / 6.7);
+      // Longueur totale 6,686378 ; le premier tir finit à 3,186378. À 0,1 case
+      // avant, la cible est à 0,1 de la poche.
+      const total = 1.4 - _s + 5.5;
+      final earlier = timeline.frameAt((1.4 - _s + 2 - 0.1) / total);
       expect(earlier.balls['y1']!.pocketed, isFalse);
-      expect(earlier.balls['y1']!.position, _at(4, 0.1));
+      expect(earlier.balls['y1']!.position, _at(4, 0.1, 1e-6));
 
-      final frame = timeline.frameAt(3.95 / 6.7);
-      expect(frame.balls['w']!.position, _at(3.55, 2.8));
+      final frame = timeline.frameAt((1.4 - _s + 2 + 0.75) / total);
+      expect(frame.balls['w']!.position, _at(3.55, 2.8, 1e-6));
       expect(frame.balls['y1']!.position, _at(4, 2));
       expect(frame.balls['y1']!.pocketed, isFalse);
     });
@@ -309,9 +332,26 @@ void main() {
       final timeline = DiagramTimeline.from(spec);
       expect(timeline.steps.single.pocketed, isFalse);
       expect(timeline.steps.single.objectPath.length, 0);
-      // Visée droite : la blanche s'arrête deux rayons avant la cible.
-      expect(timeline.finalFrame.balls['w']!.position, _at(4, 2.2));
+      // Visée droite : la blanche s'arrête à r_c + r_o avant la cible.
+      expect(timeline.finalFrame.balls['w']!.position, _at(4, 2 + _s, 1e-6));
       expect(timeline.finalFrame.balls['y1']!.position, _at(4, 2));
+    });
+
+    test('a played object ball stops at 2 r_o from the ball it touches', () {
+      // Jeu de placement : une bille jaune touche une bille rouge. Les deux
+      // rayons sont ceux d'une bille de but : 2 x 0,109838 = 0,219676.
+      const spec = TableDiagramSpec(
+        id: 'object-on-object',
+        balls: [
+          DiagramBall(id: 'y1', color: BallKind.yellow, at: DiagramPoint(4, 3)),
+          DiagramBall(id: 'r1', color: BallKind.red, at: DiagramPoint(4, 2)),
+        ],
+        steps: [DiagramStep(cueId: 'y1', hitId: 'r1')],
+      );
+
+      final end = DiagramTimeline.from(spec).finalFrame.balls['y1']!.position;
+
+      expect(end, _at(4, 2.219676, 1e-6));
     });
 
     test('a cue arrow far from the target is replaced by a straight aim', () {
@@ -330,7 +370,7 @@ void main() {
       );
       expect(
         DiagramTimeline.from(spec).steps.single.cuePath.length,
-        closeTo(1, 1e-9),
+        closeTo(1.2 - _s, 1e-6),
       );
     });
 
@@ -442,7 +482,7 @@ void main() {
       final once = DiagramTimeline.from(spec(1));
       final four = DiagramTimeline.from(spec(4));
       expect(four.steps, hasLength(1));
-      expect(four.totalLength, closeTo(3, 1e-9));
+      expect(four.totalLength, closeTo(3.2 - _s, 1e-6));
       expect(four.totalLength, once.totalLength);
       expect(four.duration, once.duration);
       expect(four.finalFrame.balls['y1']!.pocketed, isTrue);
@@ -452,7 +492,7 @@ void main() {
 
   group('DiagramTimeline tolerances', () {
     // Blanche (4 ; 3), cible (4 ; 0) : sans flèche retenue, la blanche vise la
-    // cible et s'arrête deux rayons avant elle, soit 3 - 0,2 = 2,8.
+    // cible et s'arrête à r_c + r_o avant elle, soit 3 - 0,213622 = 2,786378.
     const cue = DiagramBall(
       id: 'w',
       color: BallKind.white,
@@ -490,13 +530,13 @@ void main() {
     });
 
     test('replaces a cue arrow that ends beyond 0,6 by a straight aim', () {
-      expect(cueLength(0.61), closeTo(2.8, 1e-9));
+      expect(cueLength(0.61), closeTo(3 - _s, 1e-6));
     });
 
     // Cercle `cue_start` en (0 ; 3) ; la flèche de la blanche part de
     // (d ; 3) vers (4 ; 3) (longueur 4 - d + d = 4 depuis le cercle). Sans
     // flèche retenue, la blanche vise la cible (4 ; 0) depuis le cercle :
-    // 5 - 0,2 = 4,8.
+    // 5 - 0,213622 = 4,786378.
     double ghostCueLength(double startX) {
       final spec = TableDiagramSpec(
         id: 'ghost-$startX',
@@ -530,7 +570,7 @@ void main() {
     });
 
     test('ignores an arrow that leaves 0,21 from its cue position', () {
-      expect(ghostCueLength(0.21), closeTo(4.8, 1e-9));
+      expect(ghostCueLength(0.21), closeTo(5 - _s, 1e-6));
     });
   });
 
@@ -925,7 +965,8 @@ void main() {
       expect(TableGeometry.columns, DiagramLayout.columns);
       expect(TableGeometry.rows, DiagramLayout.rows);
       expect(TableGeometry.headStringX, DiagramLayout.headStringX);
-      expect(TableGeometry.ballRadius, DiagramLayout.ballRadius);
+      expect(TableGeometry.objectBallRadius, BallKind.red.radius);
+      expect(TableGeometry.cueBallRadius, BallKind.white.radius);
     });
 
     test('every table pocket is a diagram pocket with the same position', () {

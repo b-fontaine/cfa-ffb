@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:billard_cfa/shared/ui/ball_kind.dart';
 import 'package:billard_cfa/shared/ui/table_geometry.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -25,9 +26,40 @@ void main() {
       expect(back.dy, closeTo(point.dy, 1e-9));
     });
 
-    test('a ball is a tenth of a cell in radius', () {
-      expect(TableGeometry.ballRadius, 0.1);
-      expect(geometry.ballRadiusPx, closeTo(5, 1e-9));
+    test('an object ball has a radius of 25.4 mm = 0.109838 cell', () {
+      expect(TableGeometry.objectBallRadius, closeTo(0.109838, 1e-6));
+      expect(geometry.radiusPxOf(BallKind.red), closeTo(5.4919, 1e-3));
+      expect(geometry.radiusPxOf(BallKind.yellow), closeTo(5.4919, 1e-3));
+      expect(geometry.radiusPxOf(BallKind.black), closeTo(5.4919, 1e-3));
+    });
+
+    test('the cue ball has a radius of 24.0 mm = 0.103784 cell', () {
+      expect(TableGeometry.cueBallRadius, closeTo(0.103784, 1e-6));
+      expect(geometry.radiusPxOf(BallKind.white), closeTo(5.1892, 1e-3));
+      expect(geometry.ghostRadiusPx, geometry.radiusPxOf(BallKind.white));
+    });
+
+    test('on an 800 px wide surface the radii are 10.3784 and 10.9838 px', () {
+      const wide = TableGeometry(surface: Rect.fromLTWH(0, 0, 800, 400));
+
+      expect(wide.radiusPxOf(BallKind.white), closeTo(10.3784, 1e-3));
+      expect(wide.radiusPxOf(BallKind.red), closeTo(10.9838, 1e-3));
+    });
+
+    test('the cue ball is always smaller, at any scale', () {
+      for (final width in [40.0, 360.0, 800.0, 1280.0]) {
+        final g = TableGeometry(surface: Rect.fromLTWH(0, 0, width, width / 2));
+
+        expect(
+          g.radiusPxOf(BallKind.white) / g.radiusPxOf(BallKind.red),
+          closeTo(24.0 / 25.4, 1e-9),
+        );
+      }
+    });
+
+    test('a pocket opens 76.2 mm = 0.329514 cell (radius 0.164757)', () {
+      expect(TableGeometry.pocketRadius, closeTo(0.164757, 1e-6));
+      expect(geometry.pocketRadiusPx, closeTo(8.2379, 1e-3));
     });
 
     test('the head string is at x = 2', () {
@@ -59,12 +91,16 @@ void main() {
       expect(table.bottom, 220 + 0.5 * 50);
     });
 
-    test('ballRect is a square centred on the ball', () {
-      final rect = geometry.ballRect(const Offset(2, 1));
+    test('ballRect is a square centred on the ball, sized by its kind', () {
+      final red = geometry.ballRect(const Offset(2, 1), BallKind.red);
+      final white = geometry.ballRect(const Offset(2, 1), BallKind.white);
 
-      expect(rect.center, const Offset(150, 70));
-      expect(rect.width, closeTo(10, 1e-9));
-      expect(rect.height, closeTo(10, 1e-9));
+      expect(red.center, const Offset(150, 70));
+      expect(white.center, const Offset(150, 70));
+      expect(red.width, closeTo(10.9838, 1e-3));
+      expect(red.height, closeTo(10.9838, 1e-3));
+      expect(white.width, closeTo(10.3784, 1e-3));
+      expect(white.height, closeTo(10.3784, 1e-3));
     });
   });
 
@@ -108,7 +144,8 @@ void main() {
         expect(g.unit, 0, reason: '$size');
         expect(g.toPixel(const Offset(3, 2)).dx.isNaN, isFalse);
         expect(g.toPixel(const Offset(3, 2)).dy.isNaN, isFalse);
-        expect(g.ballRadiusPx, 0);
+        expect(g.radiusPxOf(BallKind.red), 0);
+        expect(g.radiusPxOf(BallKind.white), 0);
       }
     });
 

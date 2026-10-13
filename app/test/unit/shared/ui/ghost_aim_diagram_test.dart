@@ -10,11 +10,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'pump_ui.dart';
 
 void main() {
-  const cue = math.Point<double>(1.84, 2.31);
+  const cue = math.Point<double>(1.84, 2.26);
   const object = math.Point<double>(5, 2);
 
   group('spec', () {
-    test('puts the ghost ball two radii behind the object, on the pocket '
+    test('puts the ghost ball r_c + r_o behind the object, on the pocket '
         'line', () {
       final spec = GhostAimDiagram.buildSpec(
         cue: cue,
@@ -24,11 +24,40 @@ void main() {
       );
 
       // Poche tr = (8, 0) : direction (3, -2), longueur sqrt 13 ; la bille
-      // fantôme est à 0,2 de la cible dans le sens opposé.
-      final ghost = spec.ghosts.single;
-      expect(ghost.role, DiagramGhostRole.impact);
-      expect(ghost.at.x, closeTo(5 - 0.2 * 3 / math.sqrt(13), 1e-9));
-      expect(ghost.at.y, closeTo(2 + 0.2 * 2 / math.sqrt(13), 1e-9));
+      // fantôme (une blanche) est à s = 0,213622 de la cible dans le sens
+      // opposé, et non plus à 0,2.
+      final ghost = spec.ghosts.singleWhere(
+        (g) => g.role == DiagramGhostRole.impact,
+      );
+      expect(ghost.at.x, closeTo(5 - 0.213622 * 3 / math.sqrt(13), 1e-6));
+      expect(ghost.at.y, closeTo(2 + 0.213622 * 2 / math.sqrt(13), 1e-6));
+    });
+
+    test('marks the contact point on the object ball side of the ghost', () {
+      final spec = GhostAimDiagram.buildSpec(
+        cue: cue,
+        object: object,
+        pocket: TablePocket.tr,
+        ghostName: 'G',
+      );
+
+      // Point de contact : O - r_o · u, r_o = 0,109838.
+      final contact = spec.ghosts.singleWhere(
+        (g) => g.role == DiagramGhostRole.contact,
+      );
+      expect(contact.at.x, closeTo(5 - 0.109838 * 3 / math.sqrt(13), 1e-6));
+      expect(contact.at.y, closeTo(2 + 0.109838 * 2 / math.sqrt(13), 1e-6));
+      // Il est à r_c du centre de la bille fantôme.
+      final ghost = spec.ghosts.singleWhere(
+        (g) => g.role == DiagramGhostRole.impact,
+      );
+      expect(
+        math.sqrt(
+          math.pow(contact.at.x - ghost.at.x, 2) +
+              math.pow(contact.at.y - ghost.at.y, 2),
+        ),
+        closeTo(0.103784, 1e-6),
+      );
     });
 
     test('draws the cue ball, the object ball and both lines', () {
@@ -45,7 +74,10 @@ void main() {
         (a) => a.kind == DiagramArrowKind.aim,
       );
       expect(aim.path.first, cue);
-      expect(aim.path.last, spec.ghosts.single.at);
+      expect(
+        aim.path.last,
+        spec.ghosts.singleWhere((g) => g.role == DiagramGhostRole.impact).at,
+      );
       final toPocket = spec.arrows.singleWhere(
         (a) => a.kind == DiagramArrowKind.object,
       );
@@ -62,7 +94,10 @@ void main() {
       );
 
       expect(spec.annotations.single.text, 'Fantôme');
-      expect(spec.annotations.single.at, spec.ghosts.single.at);
+      expect(
+        spec.annotations.single.at,
+        spec.ghosts.singleWhere((g) => g.role == DiagramGhostRole.impact).at,
+      );
       expect(spec.arrows.last.pocket, DiagramPocket.bm);
     });
   });

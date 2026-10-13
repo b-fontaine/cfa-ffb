@@ -14,9 +14,11 @@ typedef TableOverlayBuilder = Widget Function(
 ///
 /// Tapis, bandes, rails gris bois avec losanges, six poches ; en option la
 /// grille pointillée 8 × 4 ([showGrid]) et la ligne de départ à x = 2
-/// ([showHeadString]). [overlay] reçoit la [TableGeometry] pour placer billes,
-/// flèches et queue dans le repère de la table. Le widget a le rapport
-/// (8 + 1) : (4 + 1) : la surface 2:1 plus un rail d'une demi-case autour.
+/// ([showHeadString]). Les poches ont l'ouverture réelle (76,2 mm, 1,5 bille
+/// de but). [overlay] reçoit la [TableGeometry] pour placer billes, flèches et
+/// queue dans le repère de la table (blanche plus petite que les billes de
+/// but). Le widget a le rapport (8 + 1) : (4 + 1) : la surface 2:1 plus un rail
+/// d'une demi-case autour.
 class BilliardTable extends StatelessWidget {
   const BilliardTable({
     this.showGrid = false,
@@ -84,7 +86,9 @@ class _TablePainter extends CustomPainter {
   final bool showHeadString;
 
   static const double _cushion = 0.18;
-  static const double _pocketRadius = 0.28;
+
+  /// Demi-diagonale d'un losange en cases : repère de lecture, agrandi par
+  /// rapport aux cibles réelles (≈ 12 mm) pour rester visible en projection.
   static const double _diamond = 0.07;
 
   @override
@@ -122,7 +126,7 @@ class _TablePainter extends CustomPainter {
     for (final pocket in TablePocket.values) {
       canvas.drawCircle(
         g.pocketCenter(pocket),
-        _pocketRadius * u,
+        g.pocketRadiusPx,
         Paint()..color = table.pocket,
       );
     }

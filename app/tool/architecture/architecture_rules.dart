@@ -54,6 +54,19 @@ final _directive = RegExp(
   multiLine: true,
 );
 
+/// Seul fichier qui déclare des cotes de matériel (rayons de billes).
+const _dimensionsFile = 'shared/lib/blackball_dimensions.dart';
+
+/// Un rayon de bille unique (`ballRadius`) ou un littéral `0.1` / `2 * ...Radius`
+/// à côté d'un rayon suppose des billes toutes égales : la blanche est plus
+/// petite que les billes de but (`BlackballDimensions`, `BallKind.radius`).
+final _singleRadius = RegExp(
+  r'\bballRadius(Px)?\b'
+  r'|[Rr]adius[^;\n]*\b0\.1\b'
+  r'|\b0\.1\b[^;\n]*[Rr]adius'
+  r'|\b2\s*\*\s*[A-Za-z_.]*[Rr]adius\b',
+);
+
 bool _isGenerated(String path) =>
     path.endsWith('.g.dart') ||
     path.endsWith('.freezed.dart') ||
@@ -119,6 +132,19 @@ List<Violation> checkArchitecture(
     }
 
     final text = entity.readAsStringSync();
+    if (relative != _dimensionsFile) {
+      final lines = text.split('\n');
+      for (var i = 0; i < lines.length; i++) {
+        final code = lines[i].split('//').first;
+        if (_singleRadius.hasMatch(code)) {
+          report(
+            i + 1,
+            'rayon de bille unique : utiliser BlackballDimensions '
+            '(blanche et bille de but ont des rayons différents)',
+          );
+        }
+      }
+    }
     final isPure =
         source.segment == 'domain' ||
         (source.layer == 'shared' && source.segment == 'lib');

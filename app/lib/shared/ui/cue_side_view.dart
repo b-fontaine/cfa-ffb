@@ -1,8 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/blackball_dimensions.dart';
 import 'package:billard_cfa/shared/lib/cue_side_geometry.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
+import 'package:billard_cfa/shared/lib/player_figure_layout.dart';
 import 'package:billard_cfa/shared/ui/ball_chip.dart';
 import 'package:billard_cfa/shared/ui/ball_contact_diagram.dart';
 import 'package:billard_cfa/shared/ui/billiard_ball.dart';
@@ -11,15 +13,10 @@ import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:billard_cfa/shared/ui/theme/ball_colors.dart';
 import 'package:billard_cfa/shared/ui/theme/table_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-/// Appui de la main sur lequel repose la queue (vue de côté).
-enum CueBridge {
-  /// Chevalet sur cadre : la main s'appuie sur le rail de la table.
-  frame,
-
-  /// Chevalet sur surface : la main est posée sur le tapis.
-  surface,
-}
+export 'package:billard_cfa/shared/lib/player_figure_layout.dart'
+    show CueBridge;
 
 /// Vue de côté de la blanche et de la queue : hauteur du talon, point
 /// d'impact vertical du procédé et appui du chevalet.
@@ -27,16 +24,30 @@ enum CueBridge {
 /// Schéma non à l'échelle `[Prop]`. De côté, un impact à gauche ou à droite ne
 /// se voit pas : il est dessiné à hauteur du centre ; le point exact est dit
 /// dans la description parlée.
+///
+/// Avec [showContact], une bille de but touche la blanche : toutes deux posées
+/// sur le tapis, le contact est **légèrement au-dessus de l'équateur de la
+/// blanche** (fiche n° 4 `[S]` : 0,68 mm en réalité). L'écart de taille est
+/// exagéré [contactExaggeration] fois pour être visible, et la légende le dit.
 class CueSideView extends StatelessWidget {
   const CueSideView({
     required this.tipPoint,
     required this.cueHeight,
     this.bridge,
+    this.showContact = false,
     super.key,
   });
 
   final TipPoint tipPoint;
   final CueHeight cueHeight;
+
+  /// Dessine une bille de but au contact de la blanche, avec l'équateur de la
+  /// blanche et le point de contact.
+  final bool showContact;
+
+  /// Facteur d'exagération de l'écart de rayon entre la blanche et la bille de
+  /// but dans la vue de côté.
+  static const double contactExaggeration = 10;
 
   /// Appui du chevalet ; absent, aucune main n'est dessinée.
   final CueBridge? bridge;
@@ -62,10 +73,21 @@ class CueSideView extends StatelessWidget {
     final height = heightLabel(l10n, cueHeight);
     final tip = BallContactDiagram.tipLabel(l10n, tipPoint);
     final bridgeName = bridge == null ? null : bridgeLabel(l10n, bridge!);
+    final format = NumberFormat(
+      '0.0',
+      Localizations.localeOf(context).toString(),
+    );
+    final contactNote = showContact
+        ? l10n.cueSideContactNote(
+            format.format(BlackballDimensions.cueBallDiameterMm),
+            format.format(BlackballDimensions.objectBallDiameterMm),
+          )
+        : null;
+    final base = bridgeName == null
+        ? l10n.cueSideLabel(height, tip)
+        : l10n.cueSideLabelWithBridge(height, tip, bridgeName);
     return Semantics(
-      label: bridgeName == null
-          ? l10n.cueSideLabel(height, tip)
-          : l10n.cueSideLabelWithBridge(height, tip, bridgeName),
+      label: contactNote == null ? base : '$base $contactNote',
       container: true,
       excludeSemantics: true,
       child: Column(
@@ -79,6 +101,7 @@ class CueSideView extends StatelessWidget {
                 tipPoint: tipPoint,
                 cueHeight: cueHeight,
                 bridge: bridge,
+                showContact: showContact,
               ),
             ),
           ),
@@ -94,11 +117,25 @@ class CueSideView extends StatelessWidget {
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium,
             ),
+          if (contactNote != null)
+            Text(
+              contactNote,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium,
+            ),
+          Text(
+            l10n.cueNotToScale,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium,
+          ),
         ],
       ),
     );
   }
 }
+
+/// Rayon du repère du point de contact, en pixels.
+const double _markerRadius = 5;
 
 class _Scene extends StatelessWidget {
   const _Scene({
@@ -106,12 +143,14 @@ class _Scene extends StatelessWidget {
     required this.tipPoint,
     required this.cueHeight,
     required this.bridge,
+    required this.showContact,
   });
 
   final Size size;
   final TipPoint tipPoint;
   final CueHeight cueHeight;
   final CueBridge? bridge;
+  final bool showContact;
 
   @override
   Widget build(BuildContext context) {
@@ -123,11 +162,37 @@ class _Scene extends StatelessWidget {
     final diameter = h * 0.42;
     final radius = diameter / 2;
     final clothTop = h * 0.82;
-    final centre = Offset(w * 0.64, clothTop - radius);
+    // Avec la bille de but à droite, la blanche est décalée vers la gauche.
+    final centre = Offset(w * (showContact ? 0.5 : 0.64), clothTop - radius);
+
+    // Bille de but posée sur le même tapis : rayon exagéré (écart x10), centre
+    // plus haut que celui de la blanche, contact au-dessus de l'équateur.
+    final objectRadius =
+        radius *
+        exaggeratedObjectRadius(
+          cueRadius: BlackballDimensions.cueBallDiameterMm / 2,
+          objectRadius: BlackballDimensions.objectBallDiameterMm / 2,
+          factor: CueSideView.contactExaggeration,
+        ) /
+        (BlackballDimensions.cueBallDiameterMm / 2);
+    final objectCentre = Offset(
+      centre.dx + 2 * math.sqrt(radius * objectRadius),
+      clothTop - objectRadius,
+    );
+    final contactGeometry = contactHeight(
+      cueRadius: radius,
+      objectRadius: objectRadius,
+    );
+    final contact =
+        centre +
+        Offset(
+          radius * math.cos(contactGeometry.tilt),
+          -radius * math.sin(contactGeometry.tilt),
+        );
 
     // Point d'impact : sur le bord gauche de la bille, à la hauteur du procédé
-    // (0,55 rayon au plus, comme le point bleu de `BallContactDiagram`).
-    final dy = -tipHeightFactor(tipPoint) * radius * 0.55;
+    // (mi-rayon, comme le point bleu de `BallContactDiagram`).
+    final dy = -tipHeightFactor(tipPoint) * radius * tipOffsetShare;
     final tip = Offset(
       centre.dx - math.sqrt(radius * radius - dy * dy),
       centre.dy + dy,
@@ -161,6 +226,46 @@ class _Scene extends StatelessWidget {
           height: diameter,
           child: BilliardBall(kind: BallKind.white, diameter: diameter),
         ),
+        if (showContact) ...[
+          Positioned(
+            left: objectCentre.dx - objectRadius,
+            top: objectCentre.dy - objectRadius,
+            width: objectRadius * 2,
+            height: objectRadius * 2,
+            child: BilliardBall(kind: BallKind.red, diameter: objectRadius * 2),
+          ),
+          Positioned(
+            key: const ValueKey('cue-side-contact'),
+            left: contact.dx - _markerRadius,
+            top: contact.dy - _markerRadius,
+            width: _markerRadius * 2,
+            height: _markerRadius * 2,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: table.chalk,
+                border: Border.all(
+                  color: theme.colorScheme.onSurface,
+                  width: 2,
+                ),
+              ),
+            ),
+          ),
+          // Équateur de la blanche, peint par-dessus les billes : c'est lui qui
+          // montre que le contact est au-dessus de l'axe horizontal.
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                key: const ValueKey('cue-side-equator'),
+                painter: _EquatorPainter(
+                  from: Offset(centre.dx - radius * 1.25, centre.dy),
+                  to: Offset(contact.dx + radius * 0.6, centre.dy),
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+          ),
+        ],
         Positioned(
           left: tip.dx - length,
           top: tip.dy - thickness / 2,
@@ -265,4 +370,36 @@ class _ScenePainter extends CustomPainter {
       old.scheme != scheme ||
       old.balls != balls ||
       old.table != table;
+}
+
+/// Équateur de la blanche : trait horizontal pointillé, peint au-dessus des
+/// billes.
+class _EquatorPainter extends CustomPainter {
+  const _EquatorPainter({
+    required this.from,
+    required this.to,
+    required this.color,
+  });
+
+  final Offset from;
+  final Offset to;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final line = Paint()
+      ..color = color
+      ..strokeWidth = 2;
+    final length = (to - from).distance;
+    const dash = 6.0;
+    for (var d = 0.0; d < length; d += dash * 2) {
+      final a = from + (to - from) * (d / length);
+      final b = from + (to - from) * (math.min(d + dash, length) / length);
+      canvas.drawLine(a, b, line);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_EquatorPainter old) =>
+      old.from != from || old.to != to || old.color != color;
 }

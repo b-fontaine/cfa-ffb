@@ -1,5 +1,6 @@
 import 'dart:math' show Point;
 
+import 'package:billard_cfa/shared/lib/blackball_dimensions.dart';
 import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/ui/ball_kind.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -14,22 +15,20 @@ part 'table_diagram_spec.freezed.dart';
 // Dart pur (aucune dépendance Flutter ni domaine) : le repère est celui de la
 // table, en cases (`x` ∈ [0, 8] le long de la table, `y` ∈ [0, 4] en travers,
 // départ à gauche). Source unique des notions partagées : poches, couleur de
-// bille (`BallKind`), quantité de bille (`ContactFraction`), dimensions. Les
-// modèles ont une égalité de valeur (freezed).
+// bille (`BallKind`), quantité de bille (`ContactFraction`), dimensions
+// (`BlackballDimensions`). Les modèles ont une égalité de valeur (freezed).
 
 /// Dimensions de la table dans le repère des schémas, en cases.
 abstract final class DiagramLayout {
   /// Nombre de cases dans la longueur.
-  static const double columns = 8;
+  static const double columns = BlackballDimensions.columns;
 
   /// Nombre de cases dans la largeur.
-  static const double rows = 4;
+  static const double rows = BlackballDimensions.rows;
 
-  /// Position de la ligne de départ (`[Prop]`, voir FORMAT.md).
-  static const double headStringX = 2;
-
-  /// Rayon d'une bille, en cases (`[Prop]` : 50,8 mm sur ≈ 0,9 m).
-  static const double ballRadius = 0.1;
+  /// Position de la ligne de départ (`[Prop]`, voir FORMAT.md) : x = 2, alors
+  /// que la règle `[FFB]` donne 1,6 (1/5 de la longueur).
+  static const double headStringX = BlackballDimensions.headStringDrawn;
 }
 
 /// Point du repère de la table, en cases (`x` le long, `y` en travers).
@@ -45,8 +44,10 @@ extension DiagramPointMath on DiagramPoint {
 /// Rôle d'une bille (FORMAT : `cue`, `object`, `obstacle`).
 enum DiagramBallRole { cue, object, obstacle }
 
-/// Rôle d'un cercle creux (FORMAT : `cue_start`, `impact`).
-enum DiagramGhostRole { cueStart, impact }
+/// Rôle d'un repère circulaire (FORMAT : `cue_start`, `impact`) ; `contact`
+/// est le point de contact entre deux billes, petit point plein des
+/// illustrations de visée (hors FORMAT).
+enum DiagramGhostRole { cueStart, impact, contact }
 
 /// Nature d'une flèche (FORMAT : `object`, `cue`, `indication`) ; `aim` est la
 /// ligne de visée des illustrations de séance (blanche vers bille fantôme),

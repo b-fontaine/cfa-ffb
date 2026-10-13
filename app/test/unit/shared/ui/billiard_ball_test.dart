@@ -26,7 +26,31 @@ void main() {
       const BilliardBall(kind: BallKind.white, geometry: geometry),
     );
 
-    expect(tester.getSize(find.byType(BilliardBall)), const Size(20, 20));
+    // Surface de 800 px : 1 case = 100 px, rayon blanche 0,103784 case.
+    final size = tester.getSize(find.byType(BilliardBall));
+    expect(size.width, closeTo(20.7568, 1e-3));
+    expect(size.height, closeTo(20.7568, 1e-3));
+  });
+
+  testWidgets('a cue ball is smaller than an object ball on the same table', (
+    tester,
+  ) async {
+    const geometry = TableGeometry(surface: Rect.fromLTWH(0, 0, 800, 400));
+    await pumpUi(
+      tester,
+      const Row(
+        children: [
+          BilliardBall(kind: BallKind.white, geometry: geometry),
+          BilliardBall(kind: BallKind.red, geometry: geometry),
+        ],
+      ),
+    );
+
+    final white = tester.getSize(find.byType(BilliardBall).first).width;
+    final red = tester.getSize(find.byType(BilliardBall).last).width;
+    expect(white, closeTo(20.7568, 1e-3));
+    expect(red, closeTo(21.9676, 1e-3));
+    expect(white / red, closeTo(24.0 / 25.4, 1e-6));
   });
 
   testWidgets('shows the localised letter inside a large ball', (tester) async {

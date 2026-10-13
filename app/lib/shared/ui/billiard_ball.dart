@@ -94,11 +94,12 @@ void paintBilliardBall(
 
 /// Bille de billard peinte (dégradé, reflet) avec nom parlé localisé.
 ///
-/// Le diamètre vient de [diameter] (pixels) ou, à défaut, de [geometry] (une
-/// bille de la table). À partir de 28 px, la bille porte sa lettre (R/J/N/B)
-/// ou son [label] ; en dessous, le [label] est posé à côté de la bille. Sur une
-/// table réduite, la bille reste identifiée par son nom parlé et par la
-/// légende de l'exercice : la couleur n'est jamais le seul indice.
+/// Le diamètre vient de [diameter] (pixels) ou, à défaut, de [geometry] et de
+/// [kind] (la blanche est plus petite qu'une bille de but). À partir de 28 px,
+/// la bille porte sa lettre (R/J/N/B) ou son [label] ; en dessous, le [label]
+/// est posé à côté de la bille. Sur une table réduite, la bille reste
+/// identifiée par son nom parlé et par la légende de l'exercice : la couleur
+/// n'est jamais le seul indice.
 class BilliardBall extends StatelessWidget {
   const BilliardBall({
     required this.kind,
@@ -114,7 +115,7 @@ class BilliardBall extends StatelessWidget {
 
   final BallKind kind;
 
-  /// Géométrie de la table : le diamètre est celui d'une bille.
+  /// Géométrie de la table : le diamètre est celui d'une bille de [kind].
   final TableGeometry? geometry;
 
   /// Diamètre en pixels (prioritaire sur [geometry]).
@@ -134,7 +135,7 @@ class BilliardBall extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final balls = theme.extension<BallColors>() ?? BallColors.light;
     final table = theme.extension<TableColors>() ?? TableColors.light;
-    final size = diameter ?? geometry!.ballRadiusPx * 2;
+    final size = diameter ?? geometry!.radiusPxOf(kind) * 2;
     final name = ballKindName(l10n, kind);
     final text = label ?? (showLetter ? ballKindLetter(l10n, kind) : null);
     final inside = size >= _insideThreshold;

@@ -1,6 +1,8 @@
 import 'dart:math' show Point;
 
 import 'package:billard_cfa/shared/lib/contact_fraction.dart';
+import 'package:billard_cfa/shared/lib/player_figure_layout.dart';
+import 'package:billard_cfa/shared/lib/power_ratio.dart';
 import 'package:billard_cfa/shared/lib/table_pocket.dart';
 import 'package:billard_cfa/shared/lib/tip_point.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -159,32 +161,48 @@ sealed class Illustration with _$Illustration {
     required ContactFraction fraction,
   }) = GhostAimIllustration;
 
-  /// Vue de côté de la bille et du procédé.
-  const factory Illustration.cueSide({
+  /// Cible sur la blanche vue de face : le point d'impact du procédé, avec
+  /// en option des points de comparaison et la hauteur de la queue.
+  const factory Illustration.cueBallTarget({
     required String id,
     required String caption,
     required String alt,
     required TipPoint tipPoint,
-    required CueHeight cueHeight,
-  }) = CueSideIllustration;
+    @Default(<TipPoint>[]) List<TipPoint> compare,
+    CueHeight? cueHeight,
+  }) = CueBallTargetIllustration;
 
-  /// Vue de dessus schématique de la posture (pas de silhouette).
-  const factory Illustration.stanceTop({
+  /// Joueur schématique (pictogramme neutre) : de profil, de dessus ou les
+  /// deux, avec des repères numérotés et légendés.
+  const factory Illustration.playerFigure({
     required String id,
     required String caption,
     required String alt,
-    @Default(<String>[]) List<String> annotations,
-  }) = StanceTopIllustration;
+    @Default(PlayerView.side) PlayerView view,
+    @Default(PlayerMark.values) List<PlayerMark> focus,
+    LeadEye? leadEye,
+    HeadCase? headCase,
+    @Default(CueBridge.frame) CueBridge bridge,
+  }) = PlayerFigureIllustration;
 
-  /// Échelle de puissance de 1 à 5.
-  const factory Illustration.powerScale({
+  /// Comparaison de taille à l'échelle : la blanche (48,0 mm) à côté d'une
+  /// bille de but (50,8 mm), avec les deux diamètres écrits.
+  const factory Illustration.ballSize({
     required String id,
     required String caption,
     required String alt,
-    required int levels,
+  }) = BallSizeIllustration;
+
+  /// Plan amplitude × vitesse avec trois zones (doux, moyen, puissant) et des
+  /// exemples placés.
+  const factory Illustration.powerRatio({
+    required String id,
+    required String caption,
+    required String alt,
+    @Default(<PowerPoint>[]) List<PowerPoint> points,
     int? highlight,
     String? distanceLabel,
-  }) = PowerScaleIllustration;
+  }) = PowerRatioIllustration;
 
   /// Marque d'angle sur une table.
   const factory Illustration.angle({

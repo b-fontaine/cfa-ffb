@@ -38,7 +38,7 @@ Widget buildBilliardTableUseCase(BuildContext context) {
         overlay: (context, geometry) => Stack(
           children: [
             Positioned.fromRect(
-              rect: geometry.ballRect(const Offset(1.4, 1.5)),
+              rect: geometry.ballRect(const Offset(1.4, 1.5), BallKind.yellow),
               child: BilliardBall(
                 kind: BallKind.yellow,
                 geometry: geometry,
@@ -46,7 +46,7 @@ Widget buildBilliardTableUseCase(BuildContext context) {
               ),
             ),
             Positioned.fromRect(
-              rect: geometry.ballRect(const Offset(3, 1.2)),
+              rect: geometry.ballRect(const Offset(3, 1.2), BallKind.red),
               child: BilliardBall(kind: BallKind.red, geometry: geometry),
             ),
             if (withCue)
@@ -56,7 +56,7 @@ Widget buildBilliardTableUseCase(BuildContext context) {
                 angle: angle,
               ),
             Positioned.fromRect(
-              rect: geometry.ballRect(const Offset(5, 3)),
+              rect: geometry.ballRect(const Offset(5, 3), BallKind.white),
               child: BilliardBall(kind: BallKind.white, geometry: geometry),
             ),
           ],
@@ -87,7 +87,7 @@ Widget buildBilliardTableGridUseCase(BuildContext context) => const Padding(
 );
 
 @widgetbook.UseCase(
-  name: 'Les quatre groupes de billes',
+  name: 'Les quatre groupes de billes (la blanche est plus petite)',
   type: BilliardTable,
   path: '[Design system]/Composants',
 )
@@ -101,7 +101,7 @@ Widget buildBilliardTableBallsUseCase(BuildContext context) => Padding(
         children: [
           for (final (index, kind) in BallKind.values.indexed)
             Positioned.fromRect(
-              rect: geometry.ballRect(Offset(1.5 + index * 1.5, 2)),
+              rect: geometry.ballRect(Offset(1.5 + index * 1.5, 2), kind),
               child: BilliardBall(kind: kind, geometry: geometry),
             ),
         ],

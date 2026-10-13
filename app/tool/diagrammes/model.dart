@@ -1,13 +1,27 @@
 // Constantes du FORMAT des diagrammes (docs/knowledge/03-exercices/
 // diagrammes/FORMAT.md) et types partagés par le validateur et les rendus.
+//
+// Les cotes viennent de `BlackballDimensions` (fichier Dart pur de l'app,
+// source unique) : un test impose que `tool/` n'en redéclare aucune.
+import 'package:billard_cfa/shared/lib/blackball_dimensions.dart';
 
 /// Document YAML converti en structures Dart simples.
 typedef Json = Map<String, Object?>;
 
-const tableLength = 8.0;
-const tableWidth = 4.0;
-const ballRadius = 0.1;
-const startLineX = 2.0;
+const double tableLength = BlackballDimensions.columns;
+const double tableWidth = BlackballDimensions.rows;
+
+/// Rayons en cases (cotes `[FFB]` : blanche 48,0 mm, bille de but 50,8 mm sur
+/// une case de 231,25 mm). La blanche est plus petite que les billes de but.
+const double cueBallRadius = BlackballDimensions.cueBallRadius;
+const double objectBallRadius = BlackballDimensions.objectBallRadius;
+
+/// Précision de transcription des coordonnées (le PDF se mesure à 0,01 case) :
+/// les billes tangentes ou posées contre une bande à ce près sont tolérées.
+const double placementTolerance = 0.01;
+
+/// Ligne de départ dessinée `[Prop]` (la règle `[FFB]` donne 1,6).
+const double startLineX = BlackballDimensions.headStringDrawn;
 
 /// Bornes tolérées pour les coordonnées (poches, bords).
 const minX = -0.5;

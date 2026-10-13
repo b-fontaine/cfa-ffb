@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:billard_cfa/shared/ui/ball_kind.dart';
 import 'package:billard_cfa/shared/ui/billiard_cue.dart';
 import 'package:billard_cfa/shared/ui/table_geometry.dart';
 import 'package:billard_cfa/shared/ui/theme/app_theme.dart';
@@ -98,13 +99,63 @@ void main() {
 
         final tip = tester.getRect(find.byType(BilliardCue)).centerRight;
         final centre = geometry.toPixel(ball);
-        expect((tip - centre).distance, closeTo(geometry.ballRadiusPx, 0.01));
+        // La pointe touche la blanche : rayon 0,103784 case = 5,1892 px.
+        expect((tip - centre).distance, closeTo(5.1892, 0.01));
+        expect(
+          (tip - centre).distance,
+          closeTo(geometry.radiusPxOf(BallKind.white), 0.01),
+        );
         final direction = Offset(math.cos(angle), math.sin(angle));
-        final expected = centre - direction * geometry.ballRadiusPx;
+        final expected =
+            centre - direction * geometry.radiusPxOf(BallKind.white);
         final stack = tester.getTopLeft(find.byType(Stack).first);
         expect(tip - stack, offsetMoreOrLessEquals(expected, epsilon: 0.01));
       });
     }
+
+    testWidgets('puts the tip against the radius of the ball it hits', (
+      tester,
+    ) async {
+      await pumpUi(
+        tester,
+        Stack(
+          children: [
+            BilliardCue.positionedAgainst(
+              geometry: geometry,
+              ball: const Offset(5, 2),
+              touching: BallKind.red,
+            ),
+          ],
+        ),
+      );
+
+      final tip = tester.getRect(find.byType(BilliardCue)).centerRight;
+      // Rayon d'une bille de but : 0,109838 case = 5,4919 px.
+      expect(
+        (tip - geometry.toPixel(const Offset(5, 2))).distance,
+        closeTo(5.4919, 0.01),
+      );
+    });
+
+    testWidgets('is 1450 mm = 6.27 cells long by default', (tester) async {
+      await pumpUi(
+        tester,
+        Stack(
+          children: [
+            BilliardCue.positionedAgainst(
+              geometry: geometry,
+              ball: const Offset(5, 2),
+            ),
+          ],
+        ),
+      );
+
+      // 1450 mm / 231,25 mm = 6,2703 cases de 50 px.
+      expect(
+        tester.getSize(find.byType(BilliardCue)).width,
+        closeTo(6.2703 * 50, 0.01),
+      );
+    });
 
     testWidgets('has a length given in cells', (tester) async {
       await pumpUi(
@@ -252,14 +303,23 @@ void main() {
       expect(await thicknessFor(tester, 160), 7);
     });
 
-    testWidgets('follows 20 % of a case on a large table (unit 50)', (
+    testWidgets('follows the butt of 30 mm = 0.1297 case (unit 100)', (
       tester,
     ) async {
-      expect(await thicknessFor(tester, 400), closeTo(10, 1e-9));
+      // 30 mm / 231,25 mm = 0,129730 case.
+      expect(await thicknessFor(tester, 800), closeTo(12.973, 1e-3));
     });
 
-    testWidgets('switches at unit 35 (7 px both ways)', (tester) async {
-      expect(await thicknessFor(tester, 280), closeTo(7, 1e-9));
+    testWidgets('still has the floor of 7 px at unit 50', (tester) async {
+      expect(await thicknessFor(tester, 400), closeTo(7, 1e-9));
+    });
+
+    testWidgets('is slimmer than an object ball (0.13 case < 0.22 case)', (
+      tester,
+    ) async {
+      final thickness = await thicknessFor(tester, 800);
+
+      expect(thickness, lessThan(2 * 0.109838 * 100));
     });
   });
 }

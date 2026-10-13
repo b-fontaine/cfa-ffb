@@ -350,7 +350,31 @@ void main() {
       expect(rect.bottomRight, g.toPixel(const Offset(3, 2)));
     });
 
-    for (final role in DiagramGhostRole.values) {
+    testWidgets('a contact point is a filled dot, no outline', (tester) async {
+      final g = await _pump(
+        tester,
+        const TableDiagramSpec(
+          id: 'contact',
+          balls: [],
+          ghosts: [
+            DiagramGhost(
+              id: 'c',
+              at: DiagramPoint(3, 2),
+              role: DiagramGhostRole.contact,
+            ),
+          ],
+        ),
+      );
+
+      final center = g.toPixel(const Offset(3, 2));
+      final dots = _guides(tester, #drawCircle);
+      expect(dots, hasLength(1));
+      expect(dots.single.args[0], center);
+      expect(dots.single.paint.style, PaintingStyle.fill);
+      expect(_strokes(tester), isEmpty);
+    });
+
+    for (final role in [DiagramGhostRole.cueStart, DiagramGhostRole.impact]) {
       testWidgets('a $role circle is an outline around its position', (
         tester,
       ) async {
@@ -365,7 +389,9 @@ void main() {
           ),
         );
         final center = g.toPixel(const Offset(3, 2));
-        final radius = g.ballRadiusPx;
+        // Cercle creux : une blanche posée là, rayon 0,103784 case (50 px).
+        final radius = g.ghostRadiusPx;
+        expect(radius, closeTo(0.103784 * 50, 1e-3));
 
         expect(_guides(tester, #drawCircle), isEmpty);
         expect(_fills(tester), isEmpty);

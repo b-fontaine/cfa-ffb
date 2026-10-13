@@ -7,7 +7,10 @@ import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/ghost_ball_geometry.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
+import 'package:billard_cfa/shared/lib/player_figure_layout.dart';
+import 'package:billard_cfa/shared/lib/power_ratio.dart';
 import 'package:billard_cfa/shared/lib/provenance.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/lib/table_pocket.dart';
@@ -79,7 +82,11 @@ void main() {
       expect(sections[0].weight.of(Audience.children), 3);
       expect(sections[0].adultExtra, hasLength(1));
       expect(sections[0].demo, startsWith('Tirer sans empocher'));
-      expect(sections[0].illustrationIds, ['contact-demi', 'visee-demi']);
+      expect(sections[0].illustrationIds, [
+        'contact-demi',
+        'visee-demi',
+        'taille-billes',
+      ]);
       expect(sections[0].src, Provenance.s);
       expect(sections[1].weight.isShownFor(Audience.adults), isFalse);
       expect(sections[1].src, Provenance.prop);
@@ -104,17 +111,29 @@ void main() {
         const Illustration.contact(
           id: 'contact-demi',
           caption:
-              'Demi-bille : la blanche couvre la moitié de la bille de '
-              'couleur.',
+              'Demi-bille : la blanche, un peu plus petite, couvre la moitié '
+              'de la bille de couleur ; le procédé vise le centre de la '
+              'blanche.',
           alt:
-              'La blanche recouvre la moitié de la bille de couleur, '
-              'vue de dessus.',
+              'Vue de dessus : la blanche, un peu plus petite que la bille '
+              'de couleur, recouvre la moitié de celle-ci ; à droite, la '
+              'blanche vue de face avec le point du procédé au centre.',
           fraction: ContactFraction.half,
           tipPoint: TipPoint.center,
         ),
       );
+      expect(byId['taille-billes'], isA<BallSizeIllustration>());
       final aim = byId['visee-demi']! as GhostAimIllustration;
-      expect(aim.cue, const Point<double>(1.84, 2.31));
+      expect(aim.cue, const Point<double>(1.84, 2.26));
+      expect(
+        isGhostAimConsistent(
+          cue: aim.cue,
+          object: aim.object,
+          pocket: aim.pocket,
+          fraction: aim.fraction,
+        ),
+        isTrue,
+      );
       expect(aim.object, const Point<double>(5, 2));
       expect(aim.pocket, TablePocket.tr);
       expect(aim.fraction, ContactFraction.half);
@@ -246,13 +265,14 @@ void main() {
   });
 
   group('the other illustration types', () {
-    test('reads cue_side, stance_top, power_scale, angle and pdf_ref', () {
+    test('reads cue_ball_target, player_figure, power_ratio, angle and '
+        'pdf_ref', () {
       final parsed = parseSessionSheet(
         _withIllustration(
           '''
-  - {id: cote, type: cue_side, tip_point: bottom_right, cue_height: low, caption: "Côté.", alt: "Vue de côté."}
-  - {id: posture, type: stance_top, view: top, annotations: ["Pieds écartés"], caption: "Posture.", alt: "Vue de dessus."}
-  - {id: echelle, type: power_scale, levels: 5, highlight: 3, distance_label: "Table entière", caption: "Puissance.", alt: "Échelle."}
+  - {id: cible, type: cue_ball_target, tip_point: bottom_right, cue_height: low, compare: [center, top], caption: "Cible.", alt: "Cible sur la blanche."}
+  - {id: posture, type: player_figure, view: both, focus: [feet, head], lead_eye: left, head_case: left_eye_over_cue, bridge: surface, caption: "Posture.", alt: "Joueur."}
+  - {id: dosage, type: power_ratio, points: [{amplitude: short, speed: slow, label: "bille proche"}, {amplitude: long, speed: fast}], highlight: 1, distance_label: "Table entière", caption: "Puissance.", alt: "Plan."}
   - {id: bande, type: angle, kind: natural_rejection, vertex: [4, 0], rays: [[2, 2], [6, 2]], caption: "Angle.", alt: "Angle."}
   - {id: pdf, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 15, caption: "Voir.", alt: "Renvoi."}''',
         ),
@@ -260,22 +280,43 @@ void main() {
       final byId = {for (final i in parsed.illustrations) i.id: i};
 
       expect(
-        byId['cote'],
-        const Illustration.cueSide(
-          id: 'cote',
-          caption: 'Côté.',
-          alt: 'Vue de côté.',
+        byId['cible'],
+        const Illustration.cueBallTarget(
+          id: 'cible',
+          caption: 'Cible.',
+          alt: 'Cible sur la blanche.',
           tipPoint: TipPoint.bottomRight,
+          compare: [TipPoint.center, TipPoint.top],
           cueHeight: CueHeight.low,
         ),
       );
-      expect((byId['posture']! as StanceTopIllustration).annotations, [
-        'Pieds écartés',
+      expect(
+        byId['posture'],
+        const Illustration.playerFigure(
+          id: 'posture',
+          caption: 'Posture.',
+          alt: 'Joueur.',
+          view: PlayerView.both,
+          focus: [PlayerMark.feet, PlayerMark.head],
+          leadEye: LeadEye.left,
+          headCase: HeadCase.leftEyeOverCue,
+          bridge: CueBridge.surface,
+        ),
+      );
+      final ratio = byId['dosage']! as PowerRatioIllustration;
+      expect(ratio.points, [
+        const PowerPoint(
+          amplitude: AmplitudeLevel.short,
+          speed: SpeedLevel.slow,
+          label: 'bille proche',
+        ),
+        const PowerPoint(
+          amplitude: AmplitudeLevel.long,
+          speed: SpeedLevel.fast,
+        ),
       ]);
-      final scale = byId['echelle']! as PowerScaleIllustration;
-      expect(scale.levels, 5);
-      expect(scale.highlight, 3);
-      expect(scale.distanceLabel, 'Table entière');
+      expect(ratio.highlight, 1);
+      expect(ratio.distanceLabel, 'Table entière');
       final angle = byId['bande']! as AngleIllustration;
       expect(angle.kind, AngleKind.naturalRejection);
       expect(angle.rays, hasLength(2));
@@ -283,29 +324,116 @@ void main() {
       expect(pdf.page, 15);
     });
 
-    String scale(String highlight) => _withIllustration(
-      '  - {id: echelle, type: power_scale, levels: 5, highlight: $highlight, '
-      'caption: "Puissance.", alt: "Échelle."}',
-    );
+    test('a cue_ball_target needs only the tip point', () {
+      final parsed = parseSessionSheet(
+        _withIllustration(
+          '  - {id: c, type: cue_ball_target, tip_point: top, '
+          'caption: "C.", alt: "A."}',
+        ),
+      );
+      final target = parsed.illustrations
+          .whereType<CueBallTargetIllustration>()
+          .single;
 
-    test('accepts a power_scale highlight of 1 and of 5', () {
-      for (final value in [1, 5]) {
-        final parsed = parseSessionSheet(scale('$value'));
-        final found = parsed.illustrations.whereType<PowerScaleIllustration>();
+      expect(target.compare, isEmpty);
+      expect(target.cueHeight, isNull);
+    });
 
-        expect(found.single.highlight, value);
+    test('a player_figure takes its defaults from the side view', () {
+      final parsed = parseSessionSheet(
+        _withIllustration(
+          '  - {id: p, type: player_figure, view: side, '
+          'caption: "C.", alt: "A."}',
+        ),
+      );
+      final figure = parsed.illustrations
+          .whereType<PlayerFigureIllustration>()
+          .single;
+
+      expect(figure.focus, PlayerMark.values);
+      expect(figure.leadEye, isNull);
+      expect(figure.headCase, isNull);
+    });
+
+    test('refuses the three retired types', () {
+      for (final fields in [
+        'type: cue_side, tip_point: top, cue_height: level',
+        'type: stance_top, view: top',
+        'type: power_scale, levels: 5',
+      ]) {
+        _refuses(
+          _withIllustration('  - {id: a, $fields, caption: "C.", alt: "A."}'),
+          mentioning: 'type',
+        );
       }
     });
 
-    test('refuses a power_scale highlight of 0 and of 6', () {
-      _refuses(scale('0'), mentioning: 'highlight');
-      _refuses(scale('6'), mentioning: 'highlight');
-    });
-
-    test('refuses a power_scale of 0 or 6 levels', () {
+    test('refuses a head case on a side view', () {
       _refuses(
         _withIllustration(
-          '  - {id: e, type: power_scale, levels: 6, caption: "P.", alt: "É."}',
+          '  - {id: p, type: player_figure, view: side, '
+          'head_case: cue_between_eyes, caption: "C.", alt: "A."}',
+        ),
+        mentioning: 'head_case',
+      );
+    });
+
+    test('refuses an empty or unknown focus', () {
+      _refuses(
+        _withIllustration(
+          '  - {id: p, type: player_figure, view: side, focus: [], '
+          'caption: "C.", alt: "A."}',
+        ),
+        mentioning: 'focus',
+      );
+      _refuses(
+        _withIllustration(
+          '  - {id: p, type: player_figure, view: side, focus: [nose], '
+          'caption: "C.", alt: "A."}',
+        ),
+        mentioning: 'focus',
+      );
+    });
+
+    test('refuses a power point out of the closed lists', () {
+      _refuses(
+        _withIllustration(
+          '  - {id: p, type: power_ratio, points: [{amplitude: huge, '
+          'speed: slow}], caption: "C.", alt: "A."}',
+        ),
+        mentioning: 'amplitude',
+      );
+      _refuses(
+        _withIllustration(
+          '  - {id: p, type: power_ratio, points: [{amplitude: short, '
+          'speed: 3}], caption: "C.", alt: "A."}',
+        ),
+        mentioning: 'speed',
+      );
+    });
+
+    test('refuses a power_ratio highlight out of the points', () {
+      _refuses(
+        _withIllustration(
+          '  - {id: p, type: power_ratio, points: [{amplitude: short, '
+          'speed: slow}], highlight: 1, caption: "C.", alt: "A."}',
+        ),
+        mentioning: 'highlight',
+      );
+      _refuses(
+        _withIllustration(
+          '  - {id: p, type: power_ratio, highlight: 0, '
+          'caption: "C.", alt: "A."}',
+        ),
+        mentioning: 'highlight',
+      );
+    });
+
+    test('refuses a level key on a power_ratio', () {
+      _refuses(
+        _withIllustration(
+          '  - {id: p, type: power_ratio, levels: 5, '
+          'caption: "C.", alt: "A."}',
         ),
         mentioning: 'levels',
       );
@@ -498,7 +626,7 @@ void main() {
     test('refuses an illustration cited but not defined', () {
       _refuses(
         _edit(
-          'illustrations: [contact-demi, visee-demi]',
+          'illustrations: [contact-demi, visee-demi, taille-billes]',
           'illustrations: [absente]',
         ),
       );
@@ -605,12 +733,12 @@ void main() {
       });
 
       test('a point that is not a numeric [x, y]', () {
-        _refuses(_edit('cue: [1.84, 2.31]', 'cue: [1.84]'), mentioning: 'cue');
+        _refuses(_edit('cue: [1.84, 2.26]', 'cue: [1.84]'), mentioning: 'cue');
         _refuses(
-          _edit('cue: [1.84, 2.31]', 'cue: [1.84, haut]'),
+          _edit('cue: [1.84, 2.26]', 'cue: [1.84, haut]'),
           mentioning: 'cue',
         );
-        _refuses(_edit('cue: [1.84, 2.31]', 'cue: 1.84'), mentioning: 'cue');
+        _refuses(_edit('cue: [1.84, 2.26]', 'cue: 1.84'), mentioning: 'cue');
       });
 
       test('an enum value outside its closed list', () {

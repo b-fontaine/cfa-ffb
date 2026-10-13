@@ -52,7 +52,7 @@ Widget buildBilliardCueAloneUseCase(BuildContext context) => const Center(
 );
 
 @widgetbook.UseCase(
-  name: 'Pointe contre la blanche',
+  name: "Pointe contre la blanche (queue de 1450 mm à l'échelle)",
   type: BilliardCue,
   path: '[Design system]/Composants',
 )
@@ -76,7 +76,7 @@ Widget buildBilliardCueOnTableUseCase(BuildContext context) {
               angle: angle,
             ),
             Positioned.fromRect(
-              rect: geometry.ballRect(const Offset(6, 2)),
+              rect: geometry.ballRect(const Offset(6, 2), BallKind.white),
               child: BilliardBall(kind: BallKind.white, geometry: geometry),
             ),
           ],

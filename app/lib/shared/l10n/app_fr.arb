@@ -919,6 +919,37 @@
       }
     }
   },
+  "ballSizeComparisonLabel": "Comparaison de taille : la blanche mesure {cue} mm, une bille de but {object} mm.",
+  "@ballSizeComparisonLabel": {
+    "placeholders": {
+      "cue": {
+        "type": "String"
+      },
+      "object": {
+        "type": "String"
+      }
+    }
+  },
+  "ballSizeDiameter": "{mm} mm",
+  "@ballSizeDiameter": {
+    "placeholders": {
+      "mm": {
+        "type": "String"
+      }
+    }
+  },
+  "ballSizeComparisonNote": "La blanche est un peu plus petite et plus légère que les billes de but.",
+  "ballSizeNote": "La blanche ({cue} mm) est un peu plus petite que les billes de but ({object} mm).",
+  "@ballSizeNote": {
+    "placeholders": {
+      "cue": {
+        "type": "String"
+      },
+      "object": {
+        "type": "String"
+      }
+    }
+  },
   "contactStripLabel": "Les quantités de bille : {fractions}",
   "@contactStripLabel": {
     "placeholders": {
@@ -972,6 +1003,21 @@
       }
     }
   },
+  "cueNotToScale": "Queue non à l'échelle.",
+  "@cueNotToScale": {
+    "description": "Mention sous les schémas où la queue est dessinée plus mince que nature."
+  },
+  "cueSideContactNote": "Écart de taille et hauteur du contact exagérés ×10 : en réalité, la blanche ({cue} mm) est à peine plus petite que la bille de but ({object} mm) et le contact est légèrement au-dessus de son équateur.",
+  "@cueSideContactNote": {
+    "placeholders": {
+      "cue": {
+        "type": "String"
+      },
+      "object": {
+        "type": "String"
+      }
+    }
+  },
   "cueSideLabelWithBridge": "Vue de côté : {height}. {tip}. {bridge}.",
   "@cueSideLabelWithBridge": {
     "placeholders": {
@@ -986,41 +1032,138 @@
       }
     }
   },
-  "stancePartFeet": "Pieds",
-  "stancePartHips": "Hanches",
-  "stancePartCue": "Queue",
-  "stancePartBridge": "Main de chevalet",
-  "stancePartEye": "Œil directeur",
-  "stanceLabel": "Posture vue de dessus : pieds, hanches, queue, main de chevalet et œil directeur.",
-  "stanceLabelWithNotes": "Posture vue de dessus : pieds, hanches, queue, main de chevalet et œil directeur. {notes}",
-  "@stanceLabelWithNotes": {
+  "playerFigureLabel": "Figure schématique d'un joueur droitier, {view}, billes non à l'échelle. Repères : {marks}",
+  "@playerFigureLabel": {
     "placeholders": {
-      "notes": {
+      "view": {
+        "type": "String"
+      },
+      "marks": {
         "type": "String"
       }
     }
   },
-  "powerScaleLabel": "Échelle de puissance : niveau {level} sur {levels}",
-  "@powerScaleLabel": {
+  "playerViewSide": "vue de profil",
+  "playerViewTop": "vue de dessus",
+  "playerViewBoth": "vue de profil et vue de dessus",
+  "playerMarkFeet": "Pieds : ni trop serrés, ni trop espacés ; le pied droit sous la main qui tient la queue",
+  "playerMarkLegs": "Jambes et bassin : bassin légèrement pivoté à gauche ; jambe droite tendue et gauche fléchie, ou jambe gauche en avant, les deux fléchies",
+  "playerMarkHead": "Tête : dans l'axe de la queue, l'œil directeur au-dessus",
+  "playerMarkForearm": "Avant-bras : vertical, seul le coude bouge",
+  "playerMarkBridge": "Main de chevalet : {where}",
+  "@playerMarkBridge": {
     "placeholders": {
-      "level": {
-        "type": "int"
+      "where": {
+        "type": "String"
+      }
+    }
+  },
+  "playerBridgeFrame": "sur le cadre, le rail de la table",
+  "playerBridgeSurface": "à plat sur le tapis",
+  "playerMarkCue": "Queue : dans l'axe de la visée, vers le centre de la blanche",
+  "playerLeadEye": "Œil directeur (marqué d'une cible) : {eye}",
+  "@playerLeadEye": {
+    "placeholders": {
+      "eye": {
+        "type": "String"
+      }
+    }
+  },
+  "leadEyeRight": "l'œil droit",
+  "leadEyeLeft": "l'œil gauche",
+  "headCaseRightEye": "Cas 1 : l'œil droit au-dessus de la queue",
+  "headCaseBetweenEyes": "Cas 2 : la queue entre les deux yeux",
+  "headCaseLeftEye": "Cas 3 : l'œil gauche au-dessus de la queue",
+  "cueBallTargetLabel": "Cible sur la blanche vue de face : {tip}.",
+  "@cueBallTargetLabel": {
+    "placeholders": {
+      "tip": {
+        "type": "String"
+      }
+    }
+  },
+  "cueBallTargetProfile": "Profil de la queue : {height}.",
+  "@cueBallTargetProfile": {
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "cueBallTargetCompareLabel": "Points de comparaison : {points}.",
+  "@cueBallTargetCompareLabel": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "cueBallTargetAxisTop": "Haut",
+  "cueBallTargetAxisBottom": "Bas",
+  "cueBallTargetAxisLeft": "Gauche",
+  "cueBallTargetAxisRight": "Droite",
+  "cueBallTargetScaleNote": "Le procédé ({tip} mm) est dessiné à l'échelle de la blanche ({cue} mm).",
+  "@cueBallTargetScaleNote": {
+    "placeholders": {
+      "tip": {
+        "type": "String"
       },
-      "levels": {
-        "type": "int"
+      "cue": {
+        "type": "String"
       }
     }
   },
-  "powerScaleRangeLabel": "Échelle de puissance de 1 à {levels}",
-  "@powerScaleRangeLabel": {
+  "powerRatioEmptyLabel": "Plan amplitude et vitesse : trois zones, doux, moyen, puissant.",
+  "powerRatioPoint": "Amplitude {amplitude}, vitesse {speed} : {zone}",
+  "@powerRatioPoint": {
     "placeholders": {
-      "levels": {
-        "type": "int"
+      "amplitude": {
+        "type": "String"
+      },
+      "speed": {
+        "type": "String"
+      },
+      "zone": {
+        "type": "String"
       }
     }
   },
-  "powerScaleWeak": "Faible",
-  "powerScaleStrong": "Forte",
+  "powerRatioPointWithLabel": "{label} : amplitude {amplitude}, vitesse {speed} : {zone}",
+  "@powerRatioPointWithLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "amplitude": {
+        "type": "String"
+      },
+      "speed": {
+        "type": "String"
+      },
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
+  "powerRatioHighlightNote": "Exemple mis en évidence : {number}.",
+  "@powerRatioHighlightNote": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "powerRatioAxisAmplitude": "Amplitude, le recul de la main : de courte à longue",
+  "powerRatioAxisSpeed": "Vitesse du coup de queue : de lente à rapide",
+  "amplitudeShort": "courte",
+  "amplitudeMedium": "moyenne",
+  "amplitudeLong": "longue",
+  "speedSlow": "lente",
+  "speedMedium": "moyenne",
+  "speedFast": "rapide",
+  "powerZoneSoft": "doux",
+  "powerZoneMedium": "moyen",
+  "powerZoneStrong": "puissant",
   "angleKindBounce": "Angle de rebond",
   "angleKindNaturalRejection": "Rejet naturel",
   "angleKindRightAngle": "Angle droit",

@@ -120,6 +120,37 @@ void main() {
     expect(_ball(BallKind.white), findsOneWidget);
   });
 
+  testWidgets('draws the cue ball smaller than every object ball', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const TableDiagram(spec: _spec, semanticLabel: 'Full ball, 4 times'),
+    );
+
+    // Table de 450 px : 9 unités de 50 px. Rayons 0,103784 et 0,109838 case.
+    final white = tester.getSize(_ball(BallKind.white)).width;
+    expect(white, closeTo(2 * 0.103784 * 50, 1e-3));
+    for (final kind in [BallKind.yellow, BallKind.red, BallKind.black]) {
+      final size = tester.getSize(_ball(kind)).width;
+      expect(size, closeTo(2 * 0.109838 * 50, 1e-3), reason: '$kind');
+      expect(white / size, closeTo(24.0 / 25.4, 1e-6), reason: '$kind');
+    }
+  });
+
+  testWidgets('puts the cue tip against the cue ball radius', (tester) async {
+    await _pump(
+      tester,
+      const TableDiagram(spec: _spec, semanticLabel: 'Full ball, 4 times'),
+    );
+
+    // La blanche est en (4 ; 3,2) : visant (4 ; 2,2) vers le haut, la pointe
+    // est sous elle à 0,103784 case = 5,1892 px (et non 0,1098).
+    final tip = tester.getRect(find.byType(BilliardCue)).centerRight;
+    final ball = tester.getCenter(_ball(BallKind.white));
+    expect((tip - ball).distance, closeTo(5.1892, 0.05));
+  });
+
   testWidgets('exposes the description given by the caller', (tester) async {
     await _pump(
       tester,

@@ -1,3 +1,4 @@
+import 'package:billard_cfa/shared/ui/ball_kind.dart';
 import 'package:billard_cfa/shared/ui/billiard_table.dart';
 import 'package:billard_cfa/shared/ui/table_geometry.dart';
 import 'package:billard_cfa/shared/ui/theme/app_theme.dart';
@@ -145,6 +146,24 @@ void main() {
           ),
           hasLength(1),
           reason: '$pocket',
+        );
+      }
+    });
+
+    testWidgets('paints each pocket at its real opening of 76.2 mm', (
+      tester,
+    ) async {
+      final all = await record(tester, const BilliardTable());
+      final geometry = geometryOf(tester);
+
+      // 76,2 mm / 231,25 mm = 0,329514 case d'ouverture : rayon 0,164757 case,
+      // soit 1,5 fois le diamètre d'une bille de but (50,8 mm).
+      for (final circle in calls(all, #drawCircle)) {
+        final radius = circle.positionalArguments[1] as double;
+        expect(radius, closeTo(0.164757 * geometry.unit, 1e-3));
+        expect(
+          2 * radius / (2 * geometry.radiusPxOf(BallKind.red)),
+          closeTo(1.5, 1e-3),
         );
       }
     });

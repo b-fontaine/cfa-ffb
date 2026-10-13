@@ -1,8 +1,13 @@
 // Règles V1 à V24 appliquées à une séance (FORMAT.md § 7). V12 (minutage)
-// et V17 (cohérence géométrique de ghost_aim) sont vérifiées par le test de
-// contrat Dart : ici V17 ne contrôle que les bornes.
+// est vérifiée par le test de contrat Dart ; V17 (cohérence géométrique de
+// ghost_aim : |d - d_nominal| <= 0,07 s, avec s = r_c + r_o) l'est ici et par
+// le test de contrat.
 import 'dart:convert';
+import 'dart:math' show Point;
 
+import 'package:billard_cfa/shared/lib/contact_fraction.dart';
+import 'package:billard_cfa/shared/lib/ghost_ball_geometry.dart';
+import 'package:billard_cfa/shared/lib/table_pocket.dart';
 import 'package:yaml/yaml.dart';
 
 import '../diagrammes/model.dart';
@@ -19,9 +24,10 @@ const _illustrationTypes = {
   'contact',
   'contact_strip',
   'ghost_aim',
-  'cue_side',
-  'stance_top',
-  'power_scale',
+  'cue_ball_target',
+  'player_figure',
+  'ball_size',
+  'power_ratio',
   'angle',
   'pdf_ref',
 };
@@ -38,6 +44,29 @@ const _tipPoints = {
   'bottom_right',
 };
 const _cueHeights = {'high', 'level', 'low'};
+const _playerViews = {'side', 'top', 'both'};
+const _playerMarks = {
+  'feet',
+  'legs_and_hips',
+  'head',
+  'back_forearm',
+  'bridge_hand',
+  'cue',
+};
+const _leadEyes = {'left', 'right'};
+const _headCases = {
+  'right_eye_over_cue',
+  'cue_between_eyes',
+  'left_eye_over_cue',
+};
+const _bridges = {'frame', 'surface'};
+const _amplitudes = {'short', 'medium', 'long'};
+const _speeds = {'slow', 'medium', 'fast'};
+const _powerPointKeys = {'amplitude', 'speed', 'label'};
+
+/// Nombre maximal d'exemples d'un `power_ratio` (charge pour des débutants :
+/// les deux extrêmes de la fiche n° 2).
+const _maxPowerPoints = 2;
 const _angleKinds = {'bounce', 'natural_rejection', 'right_angle'};
 const _forbiddenIllustrationKeys = {'photo', 'image', 'path', 'url', 'asset'};
 
@@ -160,9 +189,13 @@ const _illustrationParams = <String, _Keys>{
   'contact': _Keys({'fraction', 'tip_point'}),
   'contact_strip': _Keys({'fractions'}, {'highlight'}),
   'ghost_aim': _Keys({'cue', 'object', 'pocket', 'fraction'}),
-  'cue_side': _Keys({'tip_point', 'cue_height'}),
-  'stance_top': _Keys({'view'}, {'annotations'}),
-  'power_scale': _Keys({'levels'}, {'highlight', 'distance_label'}),
+  'cue_ball_target': _Keys({'tip_point'}, {'compare', 'cue_height'}),
+  'player_figure': _Keys(
+    {'view'},
+    {'focus', 'lead_eye', 'head_case', 'bridge'},
+  ),
+  'ball_size': _Keys({}),
+  'power_ratio': _Keys({}, {'points', 'highlight', 'distance_label'}),
   'angle': _Keys({'kind', 'vertex', 'rays'}),
   'pdf_ref': _Keys({'file', 'page'}),
 };
@@ -723,22 +756,14 @@ class _Session {
         }
       case 'ghost_aim':
         _ghostAim(ill, path);
-      case 'cue_side':
-        _enum(ill['tip_point'], _tipPoints, '$path.tip_point');
-        _enum(ill['cue_height'], _cueHeights, '$path.cue_height');
-      case 'stance_top':
-        if (ill['view'] != 'top') {
-          _e('V7', '$path.view', 'doit valoir top');
-        }
-      case 'power_scale':
-        final levels = ill['levels'];
-        if (levels is! int || levels < 1 || levels > 5) {
-          _e('V7', '$path.levels', 'entier de 1 à 5 attendu');
-        }
-        final h = ill['highlight'];
-        if (h != null && (h is! int || h < 1 || h > 5)) {
-          _e('V7', '$path.highlight', 'entier de 1 à 5 attendu');
-        }
+      case 'cue_ball_target':
+        _cueBallTarget(ill, path);
+      case 'player_figure':
+        _playerFigure(ill, path);
+      case 'ball_size':
+        break;
+      case 'power_ratio':
+        _powerRatio(ill, path);
       case 'angle':
         _enum(ill['kind'], _angleKinds, '$path.kind');
         _point(ill['vertex'], '$path.vertex', 'V7');
@@ -759,9 +784,142 @@ class _Session {
     }
   }
 
-  void _enum(Object? v, Set<String> allowed, String path) {
+  void _enum(
+    Object? v,
+    Set<String> allowed,
+    String path, {
+    String rule = 'V7',
+  }) {
     if (v is! String || !allowed.contains(v)) {
-      _e('V7', path, 'valeur hors de ${allowed.join(' | ')} : $v');
+      _e(rule, path, 'valeur hors de ${allowed.join(' | ')} : $v');
+    }
+  }
+
+  /// Liste de valeurs d'une liste fermée, sans doublon ; vide refusée si
+  /// [nonEmpty]. Rend les valeurs valides lues.
+  List<String> _enumList(
+    Object? v,
+    Set<String> allowed,
+    String path,
+    String rule, {
+    bool nonEmpty = false,
+  }) {
+    if (v is! List) {
+      _e(rule, path, 'liste attendue, trouvé : $v');
+      return const [];
+    }
+    if (nonEmpty && v.isEmpty) {
+      _e(rule, path, 'au moins une valeur attendue');
+    }
+    final seen = <String>[];
+    for (final item in v) {
+      _enum(item, allowed, path, rule: rule);
+      if (item is String && allowed.contains(item)) {
+        if (seen.contains(item)) {
+          _e(rule, path, 'valeur en double : $item');
+        } else {
+          seen.add(item);
+        }
+      }
+    }
+    return seen;
+  }
+
+  /// V25 : cible sur la blanche.
+  void _cueBallTarget(Json ill, String path) {
+    final tip = ill['tip_point'];
+    _enum(tip, _tipPoints, '$path.tip_point', rule: 'V25');
+    if (ill.containsKey('compare')) {
+      final compare = _enumList(
+        ill['compare'],
+        _tipPoints,
+        '$path.compare',
+        'V25',
+      );
+      if (tip is String && compare.contains(tip)) {
+        _e(
+          'V25',
+          '$path.compare',
+          "ne doit pas contenir le point d'impact lui-même : $tip",
+        );
+      }
+    }
+    if (ill.containsKey('cue_height')) {
+      _enum(ill['cue_height'], _cueHeights, '$path.cue_height', rule: 'V25');
+    }
+  }
+
+  /// V26 : joueur schématique.
+  void _playerFigure(Json ill, String path) {
+    final view = ill['view'];
+    _enum(view, _playerViews, '$path.view', rule: 'V26');
+    if (ill.containsKey('focus')) {
+      _enumList(
+        ill['focus'],
+        _playerMarks,
+        '$path.focus',
+        'V26',
+        nonEmpty: true,
+      );
+    }
+    if (ill.containsKey('lead_eye')) {
+      _enum(ill['lead_eye'], _leadEyes, '$path.lead_eye', rule: 'V26');
+    }
+    if (ill.containsKey('head_case')) {
+      _enum(ill['head_case'], _headCases, '$path.head_case', rule: 'V26');
+      if (view == 'side') {
+        _e(
+          'V26',
+          '$path.head_case',
+          'la place de la tête se lit de dessus (view: top ou both)',
+        );
+      }
+    }
+    if (ill.containsKey('bridge')) {
+      _enum(ill['bridge'], _bridges, '$path.bridge', rule: 'V26');
+    }
+  }
+
+  /// V27 : plan amplitude × vitesse.
+  void _powerRatio(Json ill, String path) {
+    final raw = ill['points'];
+    var count = 0;
+    if (ill.containsKey('points')) {
+      if (raw is! List) {
+        _e('V27', '$path.points', 'liste attendue, trouvé : $raw');
+      } else {
+        count = raw.length;
+        if (raw.length > _maxPowerPoints) {
+          _e(
+            'V27',
+            '$path.points',
+            'au plus $_maxPowerPoints exemples par illustration',
+          );
+        }
+        for (var i = 0; i < raw.length; i++) {
+          final point = raw[i];
+          final at = '$path.points[$i]';
+          if (point is! Json) {
+            _e('V27', at, 'objet attendu');
+            continue;
+          }
+          _enum(point['amplitude'], _amplitudes, '$at.amplitude', rule: 'V27');
+          _enum(point['speed'], _speeds, '$at.speed', rule: 'V27');
+          for (final key in point.keys) {
+            if (!_powerPointKeys.contains(key)) {
+              _e('V1', '$at.$key', 'clé inconnue pour un exemple');
+            }
+          }
+        }
+      }
+    }
+    final h = ill['highlight'];
+    if (ill.containsKey('highlight') && (h is! int || h < 0 || h >= count)) {
+      _e(
+        'V27',
+        '$path.highlight',
+        "indice d'un exemple de points attendu (0 à ${count - 1}) : $h",
+      );
     }
   }
 
@@ -788,7 +946,65 @@ class _Session {
     if (fraction is! String || !_fractions.contains(fraction)) {
       _e('V17', '$path.fraction', 'fraction inconnue : $fraction');
     }
+    _ghostAimGeometry(ill, path);
   }
+
+  /// V17 : la quantité annoncée est cohérente avec la géométrie.
+  ///
+  /// `d = s · sin θ` (distance entre la ligne de visée et le centre de la
+  /// bille de but, en cases) est comparée à la valeur nominale de l'étiquette,
+  /// à 0,07 · s près.
+  void _ghostAimGeometry(Json ill, String path) {
+    final cue = _quiet(ill['cue']);
+    final object = _quiet(ill['object']);
+    final pocketName = ill['pocket'];
+    final fractionName = ill['fraction'];
+    if (cue == null || object == null) return;
+    if (pocketName is! String || fractionName is! String) return;
+    if ([...cue, ...object].any((v) => v < 0) ||
+        cue[0] > 8 ||
+        object[0] > 8 ||
+        cue[1] > 4 ||
+        object[1] > 4) {
+      return;
+    }
+    TablePocket? pocket;
+    for (final p in TablePocket.values) {
+      if (p.name == pocketName) pocket = p;
+    }
+    ContactFraction? fraction;
+    for (final f in ContactFraction.values) {
+      if (_snake(f.name) == fractionName) fraction = f;
+    }
+    if (pocket == null || fraction == null) return;
+    final gap = ghostAimDeviation(
+      cue: Point(cue[0], cue[1]),
+      object: Point(object[0], object[1]),
+      pocket: pocket,
+      fraction: fraction,
+    );
+    final tolerance = ghostAimTolerance();
+    if (gap > tolerance) {
+      _e(
+        'V17',
+        '$path.fraction',
+        'incohérente avec la géométrie : écart ${gap.toStringAsFixed(4)} case '
+            '> ${tolerance.toStringAsFixed(4)} (0,07 s) pour « $fractionName »',
+      );
+    }
+  }
+
+  static List<double>? _quiet(Object? value) {
+    if (value is List && value.length == 2) {
+      final x = value[0];
+      final y = value[1];
+      if (x is num && y is num) return [x.toDouble(), y.toDouble()];
+    }
+    return null;
+  }
+
+  static String _snake(String camel) =>
+      camel.replaceAllMapped(RegExp('[A-Z]'), (m) => '_${m[0]!.toLowerCase()}');
 
   /// Une illustration `table` a la forme d'un diagramme (FORMAT des
   /// diagrammes) : on le fait contrôler par le validateur de diagrammes.

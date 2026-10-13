@@ -24,7 +24,7 @@ Feature: Guided session
     Then I see {'Step 2 of 9'} text
     And I see {'Notion and initiation · 20 min'} text
     And I see {'Viser la moitié de la bille'} text
-    And I see {'Demi-bille : la blanche couvre la moitié de la bille de couleur.'} text
+    And I see {'Demi-bille : la blanche, un peu plus petite, couvre la moitié de la bille de couleur ; le procédé vise le centre de la blanche.'} text
     And the element {'theory:tangente'} is marked as sourced
 
   Scenario: An exercise shows its diagram, set-up, instruction and expected result
@@ -59,7 +59,7 @@ Feature: Guided session
     Given the app is running
     When I go to the address {'/catalogue/demi-bille-1/presentation?audience=children&step=1'}
     Then the presentation is open
-    And I see {'Demi-bille : la blanche couvre la moitié de la bille de couleur.'} text
+    And I see {'Demi-bille : la blanche, un peu plus petite, couvre la moitié de la bille de couleur ; le procédé vise le centre de la blanche.'} text
 
   Scenario: An initiation is counted locally and is not recorded
     Given the app is running

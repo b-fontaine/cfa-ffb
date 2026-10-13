@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/blackball_dimensions.dart';
 import 'package:billard_cfa/shared/ui/billiard_ball.dart';
 import 'package:billard_cfa/shared/ui/billiard_cue.dart';
 import 'package:billard_cfa/shared/ui/billiard_table.dart';
@@ -76,7 +77,9 @@ class TableDiagram extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final balls = theme.extension<BallColors>() ?? BallColors.light;
     final table = theme.extension<TableColors>() ?? TableColors.light;
-    final diameter = geometry.ballRadiusPx * 2;
+    // Repère de taille des étiquettes : une bille de but (la blanche est un
+    // peu plus petite, voir `BallKind.radius`).
+    final diameter = geometry.radiusPxOf(BallKind.red) * 2;
     final textStyle = theme.textTheme.labelSmall?.copyWith(
       color: balls.onCloth,
     );
@@ -85,6 +88,7 @@ class TableDiagram extends StatelessWidget {
         ? spec.steps[current.stepIndex].cueId
         : null;
     final cuePosition = cueId == null ? null : current.balls[cueId]?.position;
+    final cueKind = cueId == null ? BallKind.white : _colorOf(cueId);
 
     return ClipRect(
       child: Stack(
@@ -117,7 +121,7 @@ class TableDiagram extends StatelessWidget {
               geometry: geometry,
               ball: _offset(cuePosition),
               angle: current.cueAngle!,
-              lengthCells: 3,
+              touching: cueKind,
             ),
           for (final ball in spec.balls)
             if (!(current.balls[ball.id]?.pocketed ?? false))
@@ -125,16 +129,29 @@ class TableDiagram extends StatelessWidget {
                 key: ValueKey('ball-${ball.id}'),
                 rect: geometry.ballRect(
                   _offset(current.balls[ball.id]?.position ?? ball.at),
+                  _kind(ball.color),
                 ),
                 child: BilliardBall(
                   kind: _kind(ball.color),
-                  diameter: diameter,
-                  label: _label(l10n, ball, diameter),
+                  diameter: geometry.radiusPxOf(_kind(ball.color)) * 2,
+                  label: _label(
+                    l10n,
+                    ball,
+                    geometry.radiusPxOf(_kind(ball.color)) * 2,
+                  ),
                 ),
               ),
         ],
       ),
     );
+  }
+
+  /// Couleur de la bille [id] du schéma (la blanche à défaut).
+  BallKind _colorOf(String id) {
+    for (final ball in spec.balls) {
+      if (ball.id == id) return _kind(ball.color);
+    }
+    return BallKind.white;
   }
 
   static String? _label(
@@ -195,11 +212,26 @@ class _GuidePainter extends CustomPainter {
     }
 
     for (final ghost in spec.ghosts) {
+      if (ghost.role == DiagramGhostRole.contact) {
+        // Point de contact : petit disque plein (rayon du procédé, 8,5 mm).
+        canvas.drawCircle(
+          geometry.toPixel(_offset(ghost.at)),
+          math.max(
+            2.5,
+            BlackballDimensions.tipDiameterMm /
+                2 /
+                BlackballDimensions.cellMm *
+                u,
+          ),
+          Paint()..color = ink,
+        );
+        continue;
+      }
       final circle = Path()
         ..addOval(
           Rect.fromCircle(
             center: geometry.toPixel(_offset(ghost.at)),
-            radius: geometry.ballRadiusPx,
+            radius: geometry.ghostRadiusPx,
           ),
         );
       _drawDashed(canvas, circle, line, dash: u * 0.06, gap: u * 0.05);

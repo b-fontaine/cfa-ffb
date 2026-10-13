@@ -5,6 +5,7 @@ import 'package:billard_cfa/entities/exercise_diagram/presentation/table_diagram
 import 'package:billard_cfa/entities/session_sheet/presentation/illustration_mapper.dart';
 import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
+import 'package:billard_cfa/shared/lib/power_ratio.dart';
 import 'package:billard_cfa/shared/lib/table_pocket.dart';
 import 'package:billard_cfa/shared/lib/tip_point.dart';
 import 'package:billard_cfa/shared/ui/presentation_scope.dart';
@@ -27,7 +28,7 @@ class GalleryEntry {
   final bool fromPilot;
 }
 
-/// Les 10 types du FORMAT, dans l'ordre du § 6. Pour chaque type, la première
+/// Les 11 types du FORMAT, dans l'ordre du § 6. Pour chaque type, la première
 /// illustration du pilote, sinon un exemple écrit ici.
 List<GalleryEntry> galleryEntries(List<Illustration> pilot) {
   Illustration? pick(bool Function(Illustration) test) {
@@ -115,46 +116,53 @@ List<GalleryEntry> galleryEntries(List<Illustration> pilot) {
         id: 'ex-aim',
         caption: 'La bille fantôme montre où la blanche touche la cible.',
         alt: 'Blanche, bille de couleur, poche et bille fantôme.',
-        cue: math.Point(1.84, 2.31),
+        cue: math.Point(1.84, 2.26),
         object: math.Point(5, 2),
         pocket: TablePocket.tr,
         fraction: ContactFraction.half,
       ),
     ),
     entry(
-      'cue_side',
-      pick((i) => i is CueSideIllustration),
-      const Illustration.cueSide(
-        id: 'ex-side',
-        caption: 'Procédé en haut de la blanche, talon relevé.',
-        alt: 'Vue de côté de la blanche et de la queue.',
-        tipPoint: TipPoint.top,
+      'cue_ball_target',
+      pick((i) => i is CueBallTargetIllustration),
+      const Illustration.cueBallTarget(
+        id: 'ex-target',
+        caption: 'Procédé en bas de la blanche, talon relevé.',
+        alt: 'La blanche vue de face avec une cible et le point d’impact.',
+        tipPoint: TipPoint.bottom,
         cueHeight: CueHeight.high,
       ),
     ),
     entry(
-      'stance_top',
-      pick((i) => i is StanceTopIllustration),
-      const Illustration.stanceTop(
-        id: 'ex-stance',
-        caption: 'La posture vue de dessus.',
-        alt: 'Pieds, hanches, queue et tête vus de dessus.',
-        annotations: [
-          'Le pied droit est sous la main droite.',
-          'La tête est au-dessus de la queue.',
-        ],
+      'player_figure',
+      pick((i) => i is PlayerFigureIllustration),
+      const Illustration.playerFigure(
+        id: 'ex-figure',
+        caption: 'La posture : pieds, jambes, tête, avant-bras, chevalet.',
+        alt: 'Un joueur schématique de profil, six repères numérotés.',
       ),
     ),
     entry(
-      'power_scale',
-      pick((i) => i is PowerScaleIllustration),
-      const Illustration.powerScale(
+      'ball_size',
+      pick((i) => i is BallSizeIllustration),
+      const Illustration.ballSize(
+        id: 'ex-size',
+        caption: 'La blanche est un peu plus petite que la bille de couleur.',
+        alt: 'La blanche, 48,0 mm, et une bille de couleur, 50,8 mm.',
+      ),
+    ),
+    entry(
+      'power_ratio',
+      pick((i) => i is PowerRatioIllustration),
+      const Illustration.powerRatio(
         id: 'ex-power',
-        caption: 'Puissance moyenne.',
-        alt: 'Échelle de puissance, niveau 3 sur 5.',
-        levels: 5,
-        highlight: 3,
-        distanceLabel: 'La blanche s’arrête dans la zone grise',
+        caption: 'Doser : recul de la main et vitesse du coup.',
+        alt: 'Plan amplitude et vitesse avec trois zones.',
+        points: [
+          PowerPoint(amplitude: AmplitudeLevel.long, speed: SpeedLevel.fast),
+        ],
+        highlight: 0,
+        distanceLabel: 'La blanche va loin',
       ),
     ),
     entry(

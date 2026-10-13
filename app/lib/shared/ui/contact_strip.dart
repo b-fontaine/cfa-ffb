@@ -1,19 +1,31 @@
 import 'dart:math' as math;
 
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/blackball_dimensions.dart';
 import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/ui/ball_contact_diagram.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 /// Bande des quantités de bille : une rangée de [BallContactDiagram], l'une
 /// pouvant être mise en évidence.
+///
+/// Chaque schéma montre les deux billes **à leurs tailles réelles** (blanche
+/// de 48,0 mm, bille de but de 50,8 mm) ; le procédé n'y est pas dessiné (il
+/// reste au centre : voir `BallContactDiagram` pour la vue de face). Une ligne
+/// de légende donne les deux diamètres ([showSizeNote]).
 ///
 /// La mise en évidence ne tient pas à la couleur seule : cadre épais et coche,
 /// et la quantité est nommée dans la description parlée. Les schémas passent à
 /// la ligne quand la place manque.
 class ContactStrip extends StatelessWidget {
-  const ContactStrip({required this.fractions, this.highlight, super.key});
+  const ContactStrip({
+    required this.fractions,
+    this.highlight,
+    this.showSizeNote = true,
+    super.key,
+  });
 
   /// Quantités à montrer, dans l'ordre.
   final List<ContactFraction> fractions;
@@ -21,6 +33,9 @@ class ContactStrip extends StatelessWidget {
   /// Quantité mise en évidence ; sans effet si elle n'est pas dans
   /// [fractions].
   final ContactFraction? highlight;
+
+  /// Écrit sous la bande les diamètres de la blanche et d'une bille de but.
+  final bool showSizeNote;
 
   /// Largeur minimale d'un schéma avant de passer à la ligne.
   static const double _minItemWidth = 96;
@@ -44,7 +59,7 @@ class ContactStrip extends StatelessWidget {
             names,
             BallContactDiagram.contactLabel(l10n, marked),
           );
-    return Semantics(
+    final strip = Semantics(
       label: label,
       container: true,
       excludeSemantics: true,
@@ -83,6 +98,26 @@ class ContactStrip extends StatelessWidget {
         },
       ),
     );
+    if (!showSizeNote) return strip;
+    final format = NumberFormat(
+      '0.0',
+      Localizations.localeOf(context).toString(),
+    );
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        strip,
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          l10n.ballSizeNote(
+            format.format(BlackballDimensions.cueBallDiameterMm),
+            format.format(BlackballDimensions.objectBallDiameterMm),
+          ),
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ],
+    );
   }
 }
 
@@ -97,7 +132,7 @@ class _StripItem extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final diagram = Padding(
       padding: const EdgeInsets.all(AppSpacing.xs),
-      child: BallContactDiagram(contact: fraction),
+      child: BallContactDiagram(contact: fraction, showTip: false),
     );
     if (!highlighted) {
       return DecoratedBox(

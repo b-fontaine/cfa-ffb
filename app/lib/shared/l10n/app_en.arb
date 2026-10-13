@@ -919,6 +919,37 @@
       }
     }
   },
+  "ballSizeComparisonLabel": "Size comparison: the cue ball is {cue} mm, an object ball is {object} mm.",
+  "@ballSizeComparisonLabel": {
+    "placeholders": {
+      "cue": {
+        "type": "String"
+      },
+      "object": {
+        "type": "String"
+      }
+    }
+  },
+  "ballSizeDiameter": "{mm} mm",
+  "@ballSizeDiameter": {
+    "placeholders": {
+      "mm": {
+        "type": "String"
+      }
+    }
+  },
+  "ballSizeComparisonNote": "The cue ball is slightly smaller and lighter than the object balls.",
+  "ballSizeNote": "The cue ball ({cue} mm) is slightly smaller than the object balls ({object} mm).",
+  "@ballSizeNote": {
+    "placeholders": {
+      "cue": {
+        "type": "String"
+      },
+      "object": {
+        "type": "String"
+      }
+    }
+  },
   "contactStripLabel": "Ball fractions: {fractions}",
   "@contactStripLabel": {
     "placeholders": {
@@ -972,6 +1003,21 @@
       }
     }
   },
+  "cueNotToScale": "Cue not to scale.",
+  "@cueNotToScale": {
+    "description": "Mention sous les schémas où la queue est dessinée plus mince que nature."
+  },
+  "cueSideContactNote": "Size gap and contact height exaggerated ×10: in reality the cue ball ({cue} mm) is only slightly smaller than the object ball ({object} mm) and the contact is slightly above its equator.",
+  "@cueSideContactNote": {
+    "placeholders": {
+      "cue": {
+        "type": "String"
+      },
+      "object": {
+        "type": "String"
+      }
+    }
+  },
   "cueSideLabelWithBridge": "Side view: {height}. {tip}. {bridge}.",
   "@cueSideLabelWithBridge": {
     "placeholders": {
@@ -986,41 +1032,138 @@
       }
     }
   },
-  "stancePartFeet": "Feet",
-  "stancePartHips": "Hips",
-  "stancePartCue": "Cue",
-  "stancePartBridge": "Bridge hand",
-  "stancePartEye": "Lead eye",
-  "stanceLabel": "Stance seen from above: feet, hips, cue, bridge hand and lead eye.",
-  "stanceLabelWithNotes": "Stance seen from above: feet, hips, cue, bridge hand and lead eye. {notes}",
-  "@stanceLabelWithNotes": {
+  "playerFigureLabel": "Schematic figure of a right-handed player, {view}, balls not to scale. Marks: {marks}",
+  "@playerFigureLabel": {
     "placeholders": {
-      "notes": {
+      "view": {
+        "type": "String"
+      },
+      "marks": {
         "type": "String"
       }
     }
   },
-  "powerScaleLabel": "Power scale: level {level} of {levels}",
-  "@powerScaleLabel": {
+  "playerViewSide": "side view",
+  "playerViewTop": "view from above",
+  "playerViewBoth": "side view and view from above",
+  "playerMarkFeet": "Feet: neither too close nor too far apart; the right foot under the hand that holds the cue",
+  "playerMarkLegs": "Legs and hips: hips turned slightly to the left; right leg straight and left leg bent, or left leg forward with both bent",
+  "playerMarkHead": "Head: in line with the cue, the lead eye above it",
+  "playerMarkForearm": "Forearm: vertical, only the elbow moves",
+  "playerMarkBridge": "Bridge hand: {where}",
+  "@playerMarkBridge": {
     "placeholders": {
-      "level": {
-        "type": "int"
+      "where": {
+        "type": "String"
+      }
+    }
+  },
+  "playerBridgeFrame": "on the frame, the rail of the table",
+  "playerBridgeSurface": "flat on the cloth",
+  "playerMarkCue": "Cue: in line with the aim, towards the centre of the cue ball",
+  "playerLeadEye": "Lead eye (marked with a target): {eye}",
+  "@playerLeadEye": {
+    "placeholders": {
+      "eye": {
+        "type": "String"
+      }
+    }
+  },
+  "leadEyeRight": "the right eye",
+  "leadEyeLeft": "the left eye",
+  "headCaseRightEye": "Case 1: the right eye above the cue",
+  "headCaseBetweenEyes": "Case 2: the cue between the two eyes",
+  "headCaseLeftEye": "Case 3: the left eye above the cue",
+  "cueBallTargetLabel": "Target on the cue ball seen from the front: {tip}.",
+  "@cueBallTargetLabel": {
+    "placeholders": {
+      "tip": {
+        "type": "String"
+      }
+    }
+  },
+  "cueBallTargetProfile": "Cue seen from the side: {height}.",
+  "@cueBallTargetProfile": {
+    "placeholders": {
+      "height": {
+        "type": "String"
+      }
+    }
+  },
+  "cueBallTargetCompareLabel": "Points to compare: {points}.",
+  "@cueBallTargetCompareLabel": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "cueBallTargetAxisTop": "Top",
+  "cueBallTargetAxisBottom": "Bottom",
+  "cueBallTargetAxisLeft": "Left",
+  "cueBallTargetAxisRight": "Right",
+  "cueBallTargetScaleNote": "The tip ({tip} mm) is drawn to the scale of the cue ball ({cue} mm).",
+  "@cueBallTargetScaleNote": {
+    "placeholders": {
+      "tip": {
+        "type": "String"
       },
-      "levels": {
-        "type": "int"
+      "cue": {
+        "type": "String"
       }
     }
   },
-  "powerScaleRangeLabel": "Power scale from 1 to {levels}",
-  "@powerScaleRangeLabel": {
+  "powerRatioEmptyLabel": "Amplitude and speed plane: three zones, soft, medium, strong.",
+  "powerRatioPoint": "Amplitude {amplitude}, speed {speed}: {zone}",
+  "@powerRatioPoint": {
     "placeholders": {
-      "levels": {
-        "type": "int"
+      "amplitude": {
+        "type": "String"
+      },
+      "speed": {
+        "type": "String"
+      },
+      "zone": {
+        "type": "String"
       }
     }
   },
-  "powerScaleWeak": "Weak",
-  "powerScaleStrong": "Strong",
+  "powerRatioPointWithLabel": "{label}: amplitude {amplitude}, speed {speed}: {zone}",
+  "@powerRatioPointWithLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "amplitude": {
+        "type": "String"
+      },
+      "speed": {
+        "type": "String"
+      },
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
+  "powerRatioHighlightNote": "Highlighted example: {number}.",
+  "@powerRatioHighlightNote": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "powerRatioAxisAmplitude": "Amplitude, how far the hand goes back: from short to long",
+  "powerRatioAxisSpeed": "Speed of the cue stroke: from slow to fast",
+  "amplitudeShort": "short",
+  "amplitudeMedium": "medium",
+  "amplitudeLong": "long",
+  "speedSlow": "slow",
+  "speedMedium": "medium",
+  "speedFast": "fast",
+  "powerZoneSoft": "soft",
+  "powerZoneMedium": "medium",
+  "powerZoneStrong": "strong",
   "angleKindBounce": "Bounce angle",
   "angleKindNaturalRejection": "Natural rejection",
   "angleKindRightAngle": "Right angle",

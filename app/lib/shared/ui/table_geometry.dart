@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:billard_cfa/shared/lib/blackball_dimensions.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_spec.dart';
 
 /// Les six poches, avec leur position dans le repère de la table.
@@ -58,8 +59,15 @@ class TableGeometry {
   /// Position de la ligne de départ (`[Prop]`, voir FORMAT.md).
   static const double headStringX = DiagramLayout.headStringX;
 
-  /// Rayon d'une bille, en cases (`[Prop]` : 50,8 mm sur ≈ 0,9 m).
-  static const double ballRadius = DiagramLayout.ballRadius;
+  /// Rayon d'une bille de but, en cases (25,4 mm sur une case de 231,25 mm).
+  static const double objectBallRadius = BlackballDimensions.objectBallRadius;
+
+  /// Rayon de la blanche, en cases (24,0 mm) : plus petite que les billes de
+  /// but.
+  static const double cueBallRadius = BlackballDimensions.cueBallRadius;
+
+  /// Rayon de l'ouverture d'une poche, en cases (76,2 mm de large).
+  static const double pocketRadius = BlackballDimensions.pocketOpening / 2;
 
   /// Épaisseur des rails autour de la surface, en cases (`[Prop]`).
   static const double railWidth = 0.5;
@@ -70,8 +78,14 @@ class TableGeometry {
   /// Côté d'une case en pixels.
   double get unit => surface.width / columns;
 
-  /// Rayon d'une bille en pixels.
-  double get ballRadiusPx => ballRadius * unit;
+  /// Rayon en pixels d'une bille de la couleur [kind].
+  double radiusPxOf(BallKind kind) => kind.radius * unit;
+
+  /// Rayon en pixels d'une bille fantôme : celui de la blanche.
+  double get ghostRadiusPx => cueBallRadius * unit;
+
+  /// Rayon en pixels de l'ouverture d'une poche.
+  double get pocketRadiusPx => pocketRadius * unit;
 
   /// Table entière (surface + rails) en pixels.
   Rect get tableRect => surface.inflate(railWidth * unit);
@@ -89,7 +103,8 @@ class TableGeometry {
   /// Centre d'une poche en pixels.
   Offset pocketCenter(TablePocket pocket) => toPixel(pocket.position);
 
-  /// Carré englobant une bille posée en [table] (pour `Positioned.fromRect`).
-  Rect ballRect(Offset table) =>
-      Rect.fromCircle(center: toPixel(table), radius: ballRadiusPx);
+  /// Carré englobant une bille de couleur [kind] posée en [table] (pour
+  /// `Positioned.fromRect`).
+  Rect ballRect(Offset table, BallKind kind) =>
+      Rect.fromCircle(center: toPixel(table), radius: radiusPxOf(kind));
 }

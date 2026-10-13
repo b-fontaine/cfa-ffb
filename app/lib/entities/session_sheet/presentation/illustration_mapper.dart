@@ -3,12 +3,13 @@ import 'package:billard_cfa/shared/lib/illustration.dart';
 import 'package:billard_cfa/shared/lib/table_pocket.dart';
 import 'package:billard_cfa/shared/ui/angle_mark.dart';
 import 'package:billard_cfa/shared/ui/ball_contact_diagram.dart';
+import 'package:billard_cfa/shared/ui/ball_size_comparison.dart';
 import 'package:billard_cfa/shared/ui/contact_strip.dart';
-import 'package:billard_cfa/shared/ui/cue_side_view.dart';
+import 'package:billard_cfa/shared/ui/cue_ball_target.dart';
 import 'package:billard_cfa/shared/ui/ghost_aim_diagram.dart';
 import 'package:billard_cfa/shared/ui/pdf_page_chip.dart';
-import 'package:billard_cfa/shared/ui/power_scale.dart';
-import 'package:billard_cfa/shared/ui/stance_diagram.dart';
+import 'package:billard_cfa/shared/ui/player_figure.dart';
+import 'package:billard_cfa/shared/ui/power_ratio.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_player.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_spec.dart'
     as ui;
@@ -16,7 +17,7 @@ import 'package:flutter/material.dart';
 
 /// Rendu d'une [Illustration] de séance par les composants du design system.
 ///
-/// Les 10 types de la liste fermée du FORMAT des séances (§ 6) sont rendus
+/// Les 11 types de la liste fermée du FORMAT des séances (§ 6) sont rendus
 /// ici, sans photo. Le texte alternatif (`alt`) de l'illustration est celui
 /// que lisent les lecteurs d'écran. Un `diagram_ref` est résolu par
 /// l'appelant (`diagrams`, par identifiant de diagramme) : cette entité
@@ -68,22 +69,47 @@ abstract final class IllustrationMapper {
             fraction: fraction,
           ),
         );
-      case CueSideIllustration(:final tipPoint, :final cueHeight):
+      case CueBallTargetIllustration(
+        :final tipPoint,
+        :final compare,
+        :final cueHeight,
+      ):
         return _described(
           alt,
-          CueSideView(tipPoint: tipPoint, cueHeight: cueHeight),
+          CueBallTarget(
+            tipPoint: tipPoint,
+            compare: compare,
+            cueHeight: cueHeight,
+          ),
         );
-      case StanceTopIllustration(:final annotations):
-        return _described(alt, StanceDiagram(annotations: annotations));
-      case PowerScaleIllustration(
-        :final levels,
+      case BallSizeIllustration():
+        return _described(alt, const BallSizeComparison());
+      case PlayerFigureIllustration(
+        :final view,
+        :final focus,
+        :final leadEye,
+        :final headCase,
+        :final bridge,
+      ):
+        return _described(
+          alt,
+          PlayerFigure(
+            view: view,
+            focus: focus,
+            leadEye: leadEye,
+            headCase: headCase,
+            bridge: bridge,
+          ),
+        );
+      case PowerRatioIllustration(
+        :final points,
         :final highlight,
         :final distanceLabel,
       ):
         return _described(
           alt,
-          PowerScale(
-            levels: levels,
+          PowerRatio(
+            points: points,
             highlight: highlight,
             distanceLabel: distanceLabel,
           ),

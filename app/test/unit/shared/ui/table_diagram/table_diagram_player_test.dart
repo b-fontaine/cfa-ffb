@@ -20,6 +20,16 @@ const _spec = TableDiagramSpec(
     ),
     DiagramBall(id: 'y1', color: BallKind.yellow, at: DiagramPoint(4, 2)),
   ],
+  // Flèche de la blanche transcrite : elle fixe le trajet à 1 case, ce qui
+  // garde des durées simples (le contact réel est à r_c + r_o = 0,213622).
+  arrows: [
+    DiagramArrow(
+      id: 'a1',
+      kind: DiagramArrowKind.cue,
+      ballId: 'w',
+      path: [DiagramPoint(4, 3.2), DiagramPoint(4, 2.2)],
+    ),
+  ],
   steps: [DiagramStep(cueId: 'w', hitId: 'y1', pocket: DiagramPocket.tm)],
 );
 
@@ -376,6 +386,14 @@ void main() {
       balls: [
         DiagramBall(id: 'w', color: BallKind.white, at: DiagramPoint(4, 3.2)),
         DiagramBall(id: 'y1', color: BallKind.yellow, at: DiagramPoint(4, 2)),
+      ],
+      arrows: [
+        DiagramArrow(
+          id: 'a1',
+          kind: DiagramArrowKind.cue,
+          ballId: 'w',
+          path: [DiagramPoint(4, 3.2), DiagramPoint(4, 2.2)],
+        ),
       ],
       steps: [
         DiagramStep(cueId: 'w', hitId: 'y1', pocket: DiagramPocket.tm),

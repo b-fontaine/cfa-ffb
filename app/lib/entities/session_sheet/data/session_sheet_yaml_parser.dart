@@ -14,6 +14,8 @@ import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
+import 'package:billard_cfa/shared/lib/player_figure_layout.dart';
+import 'package:billard_cfa/shared/lib/power_ratio.dart';
 import 'package:billard_cfa/shared/lib/provenance.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/lib/table_pocket.dart';
@@ -557,15 +559,20 @@ Illustration _illustration(_Obj o) {
       pocket: o.enumOf(TablePocket.values, 'pocket'),
       fraction: o.enumOf(ContactFraction.values, 'fraction'),
     ),
-    'cue_side' => Illustration.cueSide(
+    'cue_ball_target' => Illustration.cueBallTarget(
       id: id,
       caption: caption,
       alt: alt,
       tipPoint: o.enumOf(TipPoint.values, 'tip_point'),
-      cueHeight: o.enumOf(CueHeight.values, 'cue_height'),
+      compare: [
+        for (final (i, v) in o.optionalList('compare').indexed)
+          _enum(TipPoint.values, v, '${o.at('compare')}[$i]'),
+      ],
+      cueHeight: o.optionalEnum(CueHeight.values, 'cue_height'),
     ),
-    'stance_top' => _stance(o, id, caption, alt),
-    'power_scale' => _powerScale(o, id, caption, alt),
+    'ball_size' => Illustration.ballSize(id: id, caption: caption, alt: alt),
+    'player_figure' => _playerFigure(o, id, caption, alt),
+    'power_ratio' => _powerRatio(o, id, caption, alt),
     'angle' => Illustration.angle(
       id: id,
       caption: caption,
@@ -587,28 +594,59 @@ Illustration _illustration(_Obj o) {
   return illustration;
 }
 
-Illustration _stance(_Obj o, String id, String caption, String alt) {
-  if (o.raw('view') != 'top') o.fail('view', 'doit valoir top');
-  return Illustration.stanceTop(
+Illustration _playerFigure(_Obj o, String id, String caption, String alt) {
+  final view = o.enumOf(PlayerView.values, 'view');
+  final focus = [
+    for (final (i, v) in o.optionalList('focus').indexed)
+      _enum(PlayerMark.values, v, '${o.at('focus')}[$i]'),
+  ];
+  if (o.has('focus') && focus.isEmpty) {
+    o.fail('focus', 'au moins un repère attendu');
+  }
+  if (focus.toSet().length != focus.length) {
+    o.fail('focus', 'repère en double');
+  }
+  final headCase = o.optionalEnum(HeadCase.values, 'head_case');
+  if (headCase != null && view == PlayerView.side) {
+    o.fail('head_case', 'la place de la tête se lit de dessus (view: top)');
+  }
+  return Illustration.playerFigure(
     id: id,
     caption: caption,
     alt: alt,
-    annotations: o.strings('annotations', optional: true),
+    view: view,
+    focus: focus.isEmpty ? PlayerMark.values : focus,
+    leadEye: o.optionalEnum(LeadEye.values, 'lead_eye'),
+    headCase: headCase,
+    bridge: o.optionalEnum(CueBridge.values, 'bridge') ?? CueBridge.frame,
   );
 }
 
-Illustration _powerScale(_Obj o, String id, String caption, String alt) {
-  final levels = o.integer('levels');
+Illustration _powerRatio(_Obj o, String id, String caption, String alt) {
+  final points = [
+    for (final p in o.objects('points', optional: true))
+      () {
+        final point = PowerPoint(
+          amplitude: p.enumOf(AmplitudeLevel.values, 'amplitude'),
+          speed: p.enumOf(SpeedLevel.values, 'speed'),
+          label: p.looseStr('label'),
+        );
+        p.done();
+        return point;
+      }(),
+  ];
   final highlight = o.optionalInt('highlight');
-  if (levels < 1 || levels > 5) o.fail('levels', 'entier de 1 à 5 attendu');
-  if (highlight != null && (highlight < 1 || highlight > 5)) {
-    o.fail('highlight', 'entier de 1 à 5 attendu');
+  if (highlight != null && (highlight < 0 || highlight >= points.length)) {
+    o.fail(
+      'highlight',
+      "indice d'un exemple de points attendu (0 à ${points.length - 1})",
+    );
   }
-  return Illustration.powerScale(
+  return Illustration.powerRatio(
     id: id,
     caption: caption,
     alt: alt,
-    levels: levels,
+    points: points,
     highlight: highlight,
     distanceLabel: o.looseStr('distance_label'),
   );

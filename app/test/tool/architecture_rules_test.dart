@@ -26,6 +26,45 @@ void main() {
     expect(checkArchitecture(Directory('lib')), isEmpty);
   });
 
+  group('single ball radius', () {
+    test('rejects a ballRadius identifier', () {
+      write('shared/lib/g.dart', 'const double ballRadius = 0.1;');
+
+      expect(messages().join('\n'), contains('rayon de bille unique'));
+    });
+
+    test('rejects a 0.1 literal next to a radius', () {
+      write('shared/ui/g.dart', 'final r = unit * 0.1; final radius = 0.1;');
+
+      expect(messages().join('\n'), contains('rayon de bille unique'));
+    });
+
+    test('rejects two radii used as the contact distance', () {
+      write('shared/lib/g.dart', 'final s = 2 * objectRadius;');
+
+      expect(messages().join('\n'), contains('rayon de bille unique'));
+    });
+
+    test('accepts a radius that is not a ball radius literal', () {
+      write(
+        'shared/ui/g.dart',
+        'final w = math.max(0.75, radius * 0.08); // radius 0.1 rule',
+      );
+
+      expect(messages(), isEmpty);
+    });
+
+    test('allows the dimensions module to declare the radii', () {
+      write(
+        'shared/lib/blackball_dimensions.dart',
+        'const double objectBallRadius = 25.4;\n'
+            'const double ballRadius = 0.1;',
+      );
+
+      expect(messages(), isEmpty);
+    });
+  });
+
   test('accepts a clean layered layout', () {
     write('entities/a/domain/a.dart', 'class A {}');
     write(

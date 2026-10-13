@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/blackball_dimensions.dart';
+import 'package:billard_cfa/shared/ui/ball_kind.dart';
 import 'package:billard_cfa/shared/ui/table_geometry.dart';
 import 'package:billard_cfa/shared/ui/theme/table_colors.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +13,9 @@ import 'package:flutter/material.dart';
 /// milieu du bord droit**. [angle] (radians, sens horaire, 0 = pointe vers la
 /// droite) fait pivoter la queue **autour de la pointe** : la boîte, donc la
 /// position de la pointe, ne bouge pas. Posée sur une table, utiliser
-/// [BilliardCue.positionedAgainst].
+/// [BilliardCue.positionedAgainst] : la queue y a les proportions du matériel
+/// (1450 mm de long, talon de 30 mm, procédé de 8,5 mm) par rapport aux billes
+/// et à la table.
 class BilliardCue extends StatelessWidget {
   const BilliardCue({
     this.length = 200,
@@ -30,18 +34,24 @@ class BilliardCue extends StatelessWidget {
   final double angle;
 
   /// Queue posée dans la pile d'un `BilliardTable.overlay`, la pointe contre
-  /// la bille en [ball] (repère de la table), visant dans la direction [angle].
+  /// la bille en [ball] (repère de la table, de couleur [touching] : la blanche
+  /// est plus petite qu'une bille de but), visant dans la direction [angle].
   static Positioned positionedAgainst({
     required TableGeometry geometry,
     required Offset ball,
     double angle = 0,
-    double lengthCells = 5,
+    double lengthCells = BlackballDimensions.cueLength,
+    BallKind touching = BallKind.white,
     Key? key,
   }) {
     final length = lengthCells * geometry.unit;
-    final thickness = math.max<double>(7, geometry.unit * 0.2);
+    final thickness = math.max<double>(
+      7,
+      geometry.unit * BlackballDimensions.cueButtThickness,
+    );
     final direction = Offset(math.cos(angle), math.sin(angle));
-    final tip = geometry.toPixel(ball) - direction * geometry.ballRadiusPx;
+    final tip =
+        geometry.toPixel(ball) - direction * geometry.radiusPxOf(touching);
     return Positioned(
       key: key,
       left: tip.dx - length,
@@ -80,10 +90,14 @@ class _CuePainter extends CustomPainter {
 
   final TableColors table;
 
-  /// Épaisseur relative à la distance [s] (0..1) depuis la pointe.
-  static double _width(double s) => s <= 0.6
-      ? 0.45 + (0.7 - 0.45) * (s / 0.6)
-      : 0.7 + (1 - 0.7) * ((s - 0.6) / 0.4);
+  /// Épaisseur relative à la distance [s] (0..1) depuis la pointe : de la
+  /// finesse du procédé (8,5 mm sur un talon de 30 mm) à l'épaisseur du talon.
+  static double _width(double s) {
+    const tip = BlackballDimensions.cueTipToButt;
+    return s <= 0.6
+        ? tip + (0.7 - tip) * (s / 0.6)
+        : 0.7 + (1 - 0.7) * ((s - 0.6) / 0.4);
+  }
 
   @override
   void paint(Canvas canvas, Size size) {

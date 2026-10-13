@@ -28,22 +28,21 @@ PaintPattern _circle(Offset center, double radius, {Color? color}) =>
 
 void main() {
   group('ContactFraction', () {
-    test('overlap decreases from the full ball to the thin cut', () {
-      expect(ContactFraction.values.map((c) => c.overlap), [
-        1,
-        0.75,
-        0.5,
-        0.25,
-        0.05,
-      ]);
+    test('the offsets d grow from the full ball to the thin cut', () {
+      final offsets = [for (final c in ContactFraction.values) c.aimOffset()];
+
+      expect(offsets.first, 0);
+      for (var i = 1; i < offsets.length; i++) {
+        expect(offsets[i], greaterThan(offsets[i - 1]));
+      }
     });
 
-    test('centres are offset by two radii times the missing overlap', () {
-      expect(ContactFraction.full.centerOffset, 0);
-      expect(ContactFraction.threeQuarter.centerOffset, 0.5);
-      expect(ContactFraction.half.centerOffset, 1);
-      expect(ContactFraction.quarter.centerOffset, 1.5);
-      expect(ContactFraction.thin.centerOffset, closeTo(1.9, 1e-9));
+    test('offsets follow the FFB definitions with unequal balls', () {
+      // r_o = 0,109838 ; r_c = 0,103784 ; s = 0,213622.
+      expect(ContactFraction.threeQuarter.aimOffset(), closeTo(0.054919, 1e-6));
+      expect(ContactFraction.half.aimOffset(), closeTo(0.109838, 1e-6));
+      expect(ContactFraction.quarter.aimOffset(), closeTo(0.161730, 1e-6));
+      expect(ContactFraction.thin.aimOffset(), closeTo(0.202941, 1e-6));
     });
   });
 
@@ -154,6 +153,37 @@ void main() {
     expect(area.width / area.height, closeTo(2, 1e-9));
   });
 
+  testWidgets('without the tip, the drawing is 1.3:1 and has no front ball', (
+    tester,
+  ) async {
+    await pumpUi(
+      tester,
+      const Align(
+        alignment: Alignment.topLeft,
+        child: SizedBox(
+          width: 260,
+          child: BallContactDiagram(
+            contact: ContactFraction.half,
+            showTip: false,
+          ),
+        ),
+      ),
+    );
+
+    final finder = find
+        .descendant(
+          of: find.byType(BallContactDiagram),
+          matching: find.byType(CustomPaint),
+        )
+        .first;
+    final area = tester.getSize(finder);
+    expect(area.width / area.height, closeTo(1.3, 1e-9));
+    // h = 200 : rayon de bille de but 40 ; pas de bille de face (rayon 56).
+    final paint = tester.renderObject(finder);
+    expect(paint, isNot(_circle(const Offset(300, 100), 56)));
+    expect(paint, _circle(const Offset(90, 128), 40 * 24.0 / 25.4));
+  });
+
   group('text scale', () {
     for (final scale in [1.5, 2.0]) {
       testWidgets('keeps the label and the drawing at x$scale', (tester) async {
@@ -245,7 +275,6 @@ void main() {
     // Zone de dessin de 400 x 200 : h = 200, rayon des billes = 0,2 h = 40,
     // blanche en (90 ; 128). Valeurs calculées à la main.
     const width = 400.0;
-    const radius = 40.0;
     const cue = Offset(90, 128);
 
     Future<RenderObject> area(
@@ -286,33 +315,65 @@ void main() {
       );
     }
 
-    testWidgets('full ball: the target sits on the line of aim', (
+    // Rayons : bille de but 0,2 h = 40 px (25,4 mm) ; blanche
+    // 40 x 24,0 / 25,4 = 37,7953 px. s = 40 x 49,4 / 25,4 = 77,7953 px.
+    const objectRadius = 40.0;
+    const cueRadius = objectRadius * 24.0 / 25.4;
+    const contact = objectRadius * 49.4 / 25.4;
+
+    testWidgets('full ball: the cue ball is smaller than the target', (
       tester,
     ) async {
       final paint = await area(tester, contact: ContactFraction.full);
-      // Centres à 2 rayons, sur la même ligne horizontale.
-      expect(paint, _circle(const Offset(90, 128), radius));
-      expect(paint, _circle(const Offset(170, 128), radius));
+
+      expect(paint, _circle(const Offset(90, 128), cueRadius));
+      expect(paint, _circle(const Offset(90 + contact, 128), objectRadius));
+      expect(cueRadius, lessThan(objectRadius));
+      expect(cueRadius / objectRadius, closeTo(0.944882, 1e-6));
     });
 
-    testWidgets('half ball: centres 2r apart, shifted by one radius', (
+    testWidgets('half ball: centre distance s = r_c + r_o, offset r_o', (
       tester,
     ) async {
       final paint = await area(tester, contact: ContactFraction.half);
-      final dx = math.sqrt(3) * radius;
-      expect(paint, _circle(const Offset(90, 128), radius));
-      expect(paint, _circle(Offset(cue.dx + dx, cue.dy - radius), radius));
+
+      // d = r_o = 40 px ; dx = sqrt(s^2 - d^2) = 66,72 px (billes égales :
+      // 69,28 px).
+      final dx = math.sqrt(contact * contact - 40.0 * 40.0);
+      expect(dx, closeTo(66.72, 0.01));
+      expect(paint, _circle(const Offset(90, 128), cueRadius));
+      expect(paint, _circle(Offset(cue.dx + dx, cue.dy - 40), objectRadius));
     });
 
-    testWidgets('quarter ball: shifted by one and a half radius', (
+    testWidgets('quarter ball: offset r_o + r_c / 2 = 58.90 px', (
       tester,
     ) async {
       final paint = await area(tester, contact: ContactFraction.quarter);
-      final dx = math.sqrt(4 - 2.25) * radius;
-      expect(
-        paint,
-        _circle(Offset(cue.dx + dx, cue.dy - 1.5 * radius), radius),
-      );
+
+      const d = objectRadius + cueRadius / 2;
+      expect(d, closeTo(58.8976, 1e-3));
+      final dx = math.sqrt(contact * contact - d * d);
+      expect(paint, _circle(Offset(cue.dx + dx, cue.dy - d), objectRadius));
+    });
+
+    testWidgets('three quarters: offset r_o / 2', (tester) async {
+      final paint = await area(tester, contact: ContactFraction.threeQuarter);
+
+      const d = objectRadius / 2;
+      final dx = math.sqrt(contact * contact - d * d);
+      expect(paint, _circle(Offset(cue.dx + dx, cue.dy - d), objectRadius));
+    });
+
+    testWidgets('the balls always touch: centre distance is s', (tester) async {
+      for (final fraction in ContactFraction.values) {
+        final paint = await area(tester, contact: fraction);
+        final d = fraction.aimOffset() / (25.4 / 231.25) * objectRadius;
+        final dx = math.sqrt(contact * contact - d * d);
+        final target = Offset(cue.dx + dx, cue.dy - d);
+
+        expect((target - cue).distance, closeTo(contact, 1e-6));
+        expect(paint, _circle(target, objectRadius), reason: '$fraction');
+      }
     });
 
     testWidgets('the front ball is a ball of radius 0.28 h at (1.5 h ; h/2)', (
@@ -323,7 +384,7 @@ void main() {
     });
 
     for (final tip in TipPoint.values) {
-      testWidgets('tip point ${tip.name}: blue dot at 0.55 radius', (
+      testWidgets('tip point ${tip.name}: dot at half the radius, to scale', (
         tester,
       ) async {
         final paint = await area(
@@ -333,10 +394,15 @@ void main() {
         );
         const front = Offset(300, 100);
         const frontRadius = 56.0;
-        final expected = front + tip.direction * (0.55 * frontRadius);
+        // Procédé 8,5 mm sur 48,0 mm : 0,177083 du rayon de la blanche.
+        final expected = front + tip.direction * (0.5 * frontRadius);
         expect(
           paint,
-          _circle(expected, 0.17 * frontRadius, color: TableColors.light.chalk),
+          _circle(
+            expected,
+            8.5 / 48.0 * frontRadius,
+            color: TableColors.light.chalk,
+          ),
         );
       });
     }
@@ -377,7 +443,7 @@ void main() {
           target: kind,
           boundary: key,
         );
-        final pixel = await pixelAt(tester, key, const Offset(170, 128));
+        final pixel = await pixelAt(tester, key, const Offset(167, 128));
         final nearest = BallKind.values.reduce(
           (a, b) =>
               distance(pixel, BallColors.light.fillOf(a)) <=
