@@ -67,6 +67,17 @@ dans l'ordre d'enseignement. Une technique compte une à quatre séances, notée
 - Touchez une séance pour la lire : rappel de la séance précédente, théorie
   illustrée, exercices, jeu, bilan. Le contenu est en **lecture seule** : rien
   n'y est modifiable.
+- Les schémas ont été redessinés pour être lisibles d'un coup d'œil :
+  - **Se placer** : un joueur schématique, de profil et de dessus, avec des
+    repères numérotés (pieds, jambes et hanches, tête, avant-bras, main
+    d'appui, queue).
+  - **Où viser** : la blanche vue de face avec une cible, et le point d'impact
+    du procédé dessiné à l'échelle.
+  - **Puissance** : un plan amplitude du geste par vitesse de la queue, à trois
+    zones (doux, moyen, puissant), sans niveaux numérotés.
+  - **Tailles** : la blanche est plus petite que les autres billes (48,0 mm
+    contre 50,8 mm) ; tous les schémas respectent cet écart, et une figure
+    place les deux billes côte à côte.
 - Choisissez le public (**Enfants 90 min** ou **Adultes 120 min**) : les minutes
   de chaque phase sont calculées pour la durée du public. Elles sont indicatives.
 - Chaque exercice renvoie vers le catalogue d'entraînement : le taux de réussite,

@@ -45,7 +45,8 @@ Widgetbook séparé `widgetbook/`.
 | Ligne de départ `#0b2f40` / `#e6eef3`, grille pointillée `#3f7596` / `#8cc1dd` | `table_colors.dart` | **Proposition** |
 | Queue : fût `#e8c98f`, talon `#3b2412` (contour `#f1ddb5` en sombre), virole `#f6f1e4`, procédé `#2b4a63` | `table_colors.dart` | **Proposition** |
 | Craie bleue (point d'impact du procédé) `#1b55b5` | `table_colors.dart` | **Proposition** (point bleu des fiches) |
-| Dimensions : bille = 0,1 case de rayon, ligne de départ x = 2, rails = 0,5 case | `table_geometry.dart` | **Proposition** `[Prop]` (voir `docs/knowledge/03-exercices/diagrammes/FORMAT.md`) |
+| Dimensions du matériel : blanche 48,0 mm, bille de but 50,8 mm, poche 76,2 mm, surface 1850 × 925 mm (1 case = 231,25 mm) | `blackball_dimensions.dart` (source unique) | **`[FFB]`** (voir `docs/knowledge/02-techniques/06-dimensions-du-materiel.md`) ; la blanche est plus petite que les billes de but `[S]` |
+| Dessin : ligne de départ x = 2, rails = 0,5 case | `table_geometry.dart` | **Proposition** `[Prop]` (voir `docs/knowledge/03-exercices/diagrammes/FORMAT.md`) |
 
 Toute couleur « non publiée par la FFB » est une **proposition** : ne jamais la
 présenter comme la couleur officielle.
@@ -81,9 +82,11 @@ app/lib/shared/ui/
 ├── proposal_badge.dart          # badge « Proposition » : élément [Prop], non fédéral, à valider (texte + icône)
 ├── contact_strip.dart           # bande des cinq quantités de bille (une en évidence)
 ├── ghost_aim_diagram.dart       # visée à la bille fantôme (table, ligne de visée, fantôme calculé)
-├── cue_side_view.dart           # queue et blanche vues de côté (hauteur, point du procédé, chevalet)
-├── stance_diagram.dart          # posture vue de dessus (pieds, hanches, queue, tête, main de chevalet)
-├── power_scale.dart             # échelle de puissance 1 à 5
+├── cue_ball_target.dart         # la blanche de face avec une cible et le point d'impact du procédé (à l'échelle), profil de la queue
+├── cue_side_view.dart           # queue et blanche vues de côté (hauteur, chevalet) ; contact au-dessus de l'équateur (écart ×10)
+├── player_figure.dart           # joueur schématique de profil / de dessus, six repères numérotés et légendés
+├── ball_size_comparison.dart    # la blanche (48,0 mm) et une bille de but (50,8 mm) côte à côte, à l'échelle, diamètres écrits
+├── power_ratio.dart             # plan amplitude × vitesse : trois zones (doux, moyen, puissant), exemples placés
 ├── angle_mark.dart              # marque d'angle sur la table (rebond, rejet, angle droit)
 ├── pdf_page_chip.dart           # renvoi « Voir la page n du PDF » (texte seul)
 ├── presentation_scope.dart      # affichage agrandi pour montrer aux élèves
@@ -124,8 +127,14 @@ Primitives de dessin des schémas d'exercices (les diagrammes YAML de
 
 - **Repère** : `TableGeometry` convertit les cases (`x` ∈ [0, 8], `y` ∈ [0, 4],
   origine en haut à gauche de la surface, départ à gauche) en pixels, donne le
-  rayon d'une bille (0,1 case) et le centre des six poches. Classe Dart pure
-  (seulement `dart:ui`), sans widget.
+  rayon d'une bille **selon sa couleur** (`radiusPxOf(kind)` : blanche 0,1038
+  case, bille de but 0,1098 case, cotes de `BlackballDimensions`), celui de la
+  bille fantôme (`ghostRadiusPx`, une blanche), celui de l'ouverture d'une poche
+  (`pocketRadiusPx`, 76,2 mm : 0,165 case) et le centre des six poches. Classe
+  Dart pure (seulement `dart:ui`), sans widget. La blanche est toujours plus
+  petite que la bille de but : à 360 px de large l'écart de diamètre n'est que
+  d'environ 0,5 px (1,7 px à 1280 px), il se montre par la comparaison de tailles
+  de Widgetbook, sans exagération silencieuse dans les schémas de table.
 - **`BilliardTable`** : surface 2:1 plus rails d'une demi-case (le widget a donc le
   rapport 9:5). `showGrid` (grille 8 × 4 pointillée), `showHeadString` (x = 2) et
   `overlay` (`Widget Function(BuildContext, TableGeometry)`) pour poser billes,
@@ -165,7 +174,7 @@ table, en cases.
 | `DiagramZone` | zone grisée (rectangle) | `zones` (`shape: rect`, `from`, `to`) |
 | `DiagramStep`, `ContactFraction` | un tir | `sequence` (`cue`, `hit`, `contact`, `pocket`, `repeat`, `from`) |
 | `DiagramPocket` | poche (source unique des coordonnées ; `TablePocket` en dérive) | `tl`/`tm`/`tr`/`bl`/`bm`/`br` |
-| `DiagramLayout` | dimensions de la table (cases, ligne de départ, rayon de bille) ; `TableGeometry` en dérive | : |
+| `DiagramLayout` | dimensions de la table (colonnes, rangées, ligne de départ ; les rayons de bille viennent de `BlackballDimensions`, blanche et bille de but distincts) ; `TableGeometry` en dérive | : |
 | `DiagramPoint` (alias de `Point<double>`) | point `[x, y]` | `at`, `path`, `from`, `to` |
 
 `contact: none` du FORMAT devient `DiagramStep.contact == null`. Le modèle se
@@ -220,7 +229,8 @@ Choix de lecture `[Prop]` (le FORMAT ne le précise pas) :
 - **Flèche de la blanche** : celle qui part du cercle `from` du tir ; sinon la
   flèche `cue` de la blanche qui finit le plus près de la bille touchée (à
   0,6 case au plus). Sans flèche, la blanche vise en ligne droite le point situé
-  deux rayons derrière la bille, dans l'axe de la poche.
+  à `r_c + r_o` (0,2136 case ; `2 r_o` pour deux billes de but) derrière la
+  bille, dans l'axe de la poche.
 - **Poche** : `DiagramStep.pocket`, sinon `DiagramArrow.pocket`. La flèche est
   prolongée (ou complétée) jusqu'au centre de la poche.
 - Sans poche, la bille touchée ne bouge pas.
@@ -325,12 +335,13 @@ alternatif (`alt`) de la séance remplace la description générée du composant
 |---|---|---|---|
 | `diagram_ref` | `TableDiagram` / `TableDiagramPlayer` | schéma transcrit, résolu par l'appelant | : |
 | `table` | `TableDiagram` | `TableDiagramSpec` | : |
-| `contact` | `BallContactDiagram` | `contact`, `tipPoint` (9 valeurs) | : |
-| `contact_strip` | `ContactStrip` | `fractions`, `highlight?` | : |
-| `ghost_aim` | `GhostAimDiagram` | `cue`, `object`, `pocket`, `fraction` | `ghostBallPosition`, `cutAngle`, `contactQuantity` (`ghost_ball_geometry.dart`) |
-| `cue_side` | `CueSideView` | `tipPoint`, `cueHeight`, `bridge?` | `tipHeightFactor`, `cueElevation` (`cue_side_geometry.dart`) |
-| `stance_top` | `StanceDiagram` | `annotations`, `leadEye` | `StanceLayout` (positions relatives) |
-| `power_scale` | `PowerScale` | `levels` (1 à 5), `highlight?`, `distanceLabel?` | : |
+| `contact` | `BallContactDiagram` | `contact`, `tipPoint` (9 valeurs), `showTip` | `ContactFraction.aimOffset` (`contact_fraction.dart`) |
+| `contact_strip` | `ContactStrip` | `fractions`, `highlight?`, `showSizeNote` | : |
+| `ghost_aim` | `GhostAimDiagram` | `cue`, `object`, `pocket`, `fraction` | `ghostBallPosition`, `contactPoint`, `cutAngle`, `aimDistance`, `contactQuantity` (`ghost_ball_geometry.dart`) |
+| `cue_ball_target` | `CueBallTarget` | `tipPoint`, `compare`, `cueHeight?` | `tipHeightFactor`, `cueElevation`, `tipOffsetShare` (`cue_side_geometry.dart`) ; `CueBallTargetGeometry` (rayon du procédé 0,177 R) |
+| `player_figure` | `PlayerFigure` | `view`, `focus`, `leadEye?`, `headCase?`, `bridge` | `SidePose`, `TopPose`, `PlayerMark`, `HeadCase` (`player_figure_layout.dart`) |
+| `ball_size` | `BallSizeComparison` | aucun | `BallSizes` (`blackball_dimensions.dart`) : rapport 48,0 / 50,8 = 0,945 |
+| `power_ratio` | `PowerRatio` | `points` (≤ 2 : `amplitude`, `speed`, `label?`), `highlight?`, `distanceLabel?` | `powerZone`, `AmplitudeLevel`, `SpeedLevel` (`power_ratio.dart`) ; `PowerPlaneGeometry` |
 | `angle` | `AngleMark` | `kind`, `vertex`, `rays` | `angleBetween`, `angleDegrees` (`angle_geometry.dart`) |
 | `pdf_ref` | `PdfPageChip` | `file`, `page` | : |
 
@@ -339,8 +350,11 @@ agrandi, légende en gros, `PresentationScope.isActive(context)`),
 `ProvenanceBadge` (pastille de la source `[S]`/`[FFB]`/`[Web]`, ou badge
 « Proposition » pour un `[Prop]` : le sens est écrit, jamais porté par la seule
 couleur) et `FrenchContentNotice` (bandeau « contenu en français » sous une
-interface qui n'est pas en français, ADR 0004 décision 12). `PowerScale` allonge
-ses barres avec le texte agrandi : aucun débordement à 200 %.
+interface qui n'est pas en français, ADR 0004 décision 12). `CueBallTarget`,
+`PlayerFigure` et `PowerRatio` réservent la largeur de leurs légendes selon la
+taille du texte système : aucun débordement à 200 %. `CueSideView` n'est plus
+rendu par une séance (le type `cue_side` est retiré) : il reste le composant de
+la vue de côté avec contact (`showContact`), décision D5 ouverte.
 `MissingPageView` est l'écran « page introuvable » (message localisé et retour à
 l'accueil) partagé par `NotFoundPage` et par les pages de séance dont
 l'identifiant est bien formé mais inconnu.
@@ -351,13 +365,17 @@ l'identifiant est bien formé mais inconnu.
   rendu dans un `Semantics` unique (`excludeSemantics`), qui dit ce qui est
   montré (quantité, poche, hauteur, niveau, angle en degrés).
 - **Jamais la couleur seule** : mise en évidence par cadre épais et coche
-  (`ContactStrip`, `PowerScale`), nature de la flèche par le trait, parties de
-  la posture nommées par une étiquette et un trait de repère, angle écrit en
-  degrés.
+  (`ContactStrip`, `PowerRatio`), zones de puissance par un motif (aucun,
+  hachures, croisillons) et par leur nom écrit dans la zone, nature de la
+  flèche par le trait, parties du joueur par une pastille numérotée et une
+  légende, angle écrit en degrés.
+- **Projection** : textes à 14 ou plus, traits d'au moins 3 px, pastilles de
+  28 px ; la légende du joueur est une liste hors du dessin.
 - **Thème** : couleurs lues dans `ColorScheme`, `BallColors` et `TableColors` ;
   aucune teinte en dur.
-- **Schématique** : aucune de ces illustrations n'est à l'échelle ni une
-  mesure (`[Prop]`) ; l'illustration prend la provenance de l'élément de séance
+- **Échelle** : les tables et les contacts sont à l'échelle du matériel (blanche
+  48,0 mm, bille de but 50,8 mm) ; le joueur, le profil de la queue et le plan
+  de dosage sont schématiques (`[Prop]`, billes agrandies pour le joueur) ; l'illustration prend la provenance de l'élément de séance
   qui la référence, le badge « Proposition » est posé par la page.
 - **Largeur** : les composants s'adaptent à la largeur donnée (passage à la
   ligne de `ContactStrip`, étiquettes sans retour à la ligne de la posture) ;
@@ -365,9 +383,16 @@ l'identifiant est bien formé mais inconnu.
 
 ### Choix de rendu `[Prop]`
 
-- **Bille fantôme** : `G = O - 2r · unit(P - O)` ; la quantité de bille
+- **Bille fantôme** : `G = O - s · unit(P - O)` avec `s = r_c + r_o` (0,2136
+  case : c'est une blanche, dessinée au rayon `r_c`) ; le point de contact
+  `O - r_o · unit(P - O)` est un petit point plein. La quantité de bille
   annoncée (`fraction`) nomme l'illustration, sa cohérence avec la géométrie
-  est contrôlée par la règle V17 du test de contrat, pas par le composant.
+  (`|d - d_nominal| ≤ 0,07 s`) est contrôlée par la règle V17 (outil et test de
+  contrat), pas par le composant.
+- **Vue de côté avec contact** (`CueSideView.showContact`) : une bille de but
+  touche la blanche, toutes deux posées sur le tapis ; le contact est au-dessus
+  de l'équateur de la blanche (0,68 mm en réalité). L'écart de rayon est
+  **exagéré ×10** pour être visible, et la légende le dit.
 - **Hauteur de la queue** (`CueHeight`, schématique) : `low` talon presque à
   plat (0°), `level` inclinaison moyenne (10°), `high` talon relevé (25°).
   De côté, un impact à gauche ou à droite ne se voit pas : il est dessiné à
@@ -375,23 +400,38 @@ l'identifiant est bien formé mais inconnu.
   (`CueBridge.frame` sur le rail, `CueBridge.surface` sur le tapis) est un
   paramètre du composant que le FORMAT ne porte pas encore ; absent, aucune main
   n'est dessinée.
-- **Posture** : joueur droitier, regard vers la droite du dessin, donc sa droite
-  est en bas ; `StanceLeadEye.right` par défaut (œil directeur, voir la fiche
-  technique n° 1). Les `annotations` sont des puces sous le schéma.
+- **Joueur** (`PlayerFigure`) : pictogramme neutre (ni visage, ni sexe, ni âge,
+  une seule couleur de figure, les membres éloignés plus clairs), droitier, qui
+  regarde vers la droite du dessin ; de dessus, sa droite est donc en bas.
+  Proportions `[Prop]` (plateau 0,48 H, queue 0,83 H, talon relevé de 10°) ;
+  billes agrandies, dit dans la description parlée. L'œil marqué d'une cible
+  est `leadEye`, sinon celui de `headCase` ; aucun quand la queue passe entre
+  les deux yeux. Cette figure renverse la décision « pas de silhouette
+  humaine » de l'ADR 0004 : voir l'ADR 0005.
+- **Cible sur la blanche** (`CueBallTarget`) : anneaux à mi-rayon et au bord,
+  point d'impact à mi-rayon du centre `[Prop]` ; le procédé (8,5 mm) est dessiné
+  à l'échelle de la blanche (48,0 mm), plancher de 10 px de rayon avec un anneau
+  pointillé, et la phrase « à l'échelle » n'est alors pas écrite.
+- **Tailles des billes** (`BallSizeComparison`) : la blanche (48,0 mm) et une
+  bille de but (50,8 mm) côte à côte, à la même échelle, diamètres écrits sous
+  les billes ; c'est la seule figure où la différence se voit à l'écran. Toute
+  autre figure tire ses rayons de `blackball_dimensions.dart`.
+- **Dosage** (`PowerRatio`) : la zone est le produit `amplitude × vitesse`
+  (limites hyperboliques, 0,2 et 0,5), seuls les deux extrêmes viennent de la
+  fiche n° 2 ; aucun « cran » ni niveau numéroté. Un `highlight` hors de
+  `points` n'est pas mis en évidence (le parseur de séance le refuse).
 - **Angle** : la valeur en degrés est **calculée** depuis les deux premiers
   rayons (`angleDegrees`) ; `right_angle` dessine un carré plutôt qu'un arc. Avec
   moins de deux rayons, aucun angle n'est tracé ni écrit.
-- **Échelle de puissance** : `levels` hors de 1 à 5 ou `highlight` hors de
-  l'échelle est refusé par une assertion (le parseur de séance fait de même).
 
 ### Galerie Widgetbook
 
 Use case **« Galerie des illustrations »** (`[Design system]/Illustrations`) :
-les 10 types côte à côte, chacun avec sa légende. Les illustrations du pilote
+les 11 types côte à côte, chacun avec sa légende. Les illustrations du pilote
 `09-demi-bille-1.yaml` sont lues par le vrai parseur (`parseSessionSheet`) et
 résolues dans la vraie bibliothèque de schémas ; les types que le pilote
-n'utilise pas (`table`, `cue_side`, `stance_top`, `power_scale`, `angle`,
-`pdf_ref`) sont des exemples, signalés « exemple hors pilote ». Le
+n'utilise pas (`table`, `cue_ball_target`, `player_figure`, `power_ratio`,
+`angle`, `pdf_ref`) sont des exemples, signalés « exemple hors pilote ». Le
 commutateur « affichage élèves » montre chaque illustration dans un
 `PresentationScope`.
 

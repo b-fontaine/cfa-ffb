@@ -53,4 +53,4 @@ L'animateur veut un catalogue de séances couvrant les 14 fiches techniques (pos
 - **Tolérer un `sheetId` inconnu à l'import** (le ramener à `null`) : incohérent avec la règle d'autonomie de la sauvegarde (`BackupReferences` rejette les références orphelines).
 - **Sixième destination du shell** : au-delà de 5 sur mobile ; la suggestion par groupe reste un bouton du catalogue.
 - **Photos des PDF embarquées** : écarté par l'utilisateur.
-- **Silhouette humaine pour la posture** : remplacée par une vue de dessus schématique (pieds, axe queue-épaule, main de chevalet), plus sobre et sans risque de représentation d'enfant.
+- **Silhouette humaine pour la posture** : remplacée par une vue de dessus schématique (pieds, axe queue-épaule, main de chevalet), plus sobre et sans risque de représentation d'enfant (décision renversée par l'[ADR 0005](0005-illustrations-joueur-cible-dosage.md) : personnage neutre).
