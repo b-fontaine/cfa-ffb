@@ -121,11 +121,11 @@ illustrations:
       - {id: wi, color: white, at: [0.8, 3.3]}
       - {id: wf, color: white, at: [6.6, 3.5]}
     ghosts:
-      - {id: g-important, at: [3.0, 0.1], role: impact, for: wi, label: "impact"}
-      - {id: g-faible, at: [6.9, 0.1], role: impact, for: wf, label: "impact"}
+      - {id: g-important, at: [3.0, 0.104], role: impact, for: wi, label: "impact"}
+      - {id: g-faible, at: [6.9, 0.104], role: impact, for: wf, label: "impact"}
     arrows:
-      - {id: a-important, ball: wi, kind: cue, path: [[0.8, 3.3], [3.0, 0.1], [5.2, 3.3]], bounces: [top], label: "angle important"}
-      - {id: a-faible, ball: wf, kind: cue, path: [[6.6, 3.5], [6.9, 0.1], [7.2, 3.5]], bounces: [top], label: "angle faible"}
+      - {id: a-important, ball: wi, kind: cue, path: [[0.8, 3.3], [3.0, 0.104], [5.2, 3.3]], bounces: [top], label: "angle important"}
+      - {id: a-faible, ball: wf, kind: cue, path: [[6.6, 3.5], [6.9, 0.104], [7.2, 3.5]], bounces: [top], label: "angle faible"}
     zones: []
     caption: "Angle d'arrivée important à gauche, faible à droite (angle mesuré par rapport à la perpendiculaire à la bande) : la blanche repart chaque fois avec le même angle. Le point visé n'est pas dessiné ici : voir la situation B de l'initiation 11 (schéma non à l'échelle)."
     alt: "Table vue de dessus : deux blanches jouent vers la bande du haut ; celle de gauche arrive très en biais et repart symétriquement, celle de droite arrive presque perpendiculaire et repart presque droit vers le bas."
@@ -134,16 +134,16 @@ illustrations:
     balls:
       - {id: w, color: white, at: [1.0, 3.5]}
     ghosts:
-      - {id: g-impact, at: [3.0, 0.1], role: impact, for: w, label: "impact"}
+      - {id: g-impact, at: [3.0, 0.104], role: impact, for: w, label: "impact"}
     arrows:
-      - {id: a-mesure, ball: w, kind: cue, path: [[1.0, 3.5], [3.0, 0.1], [5.0, 3.5]], bounces: [top], label: "coup à la mesure"}
-      - {id: a-puissant, ball: w, kind: cue, path: [[1.0, 3.5], [3.0, 0.1], [4.2, 3.5]], bounces: [top], label: "coup puissant"}
+      - {id: a-mesure, ball: w, kind: cue, path: [[1.0, 3.5], [3.0, 0.104], [5.0, 3.5]], bounces: [top], label: "coup à la mesure"}
+      - {id: a-puissant, ball: w, kind: cue, path: [[1.0, 3.5], [3.0, 0.104], [4.2, 3.5]], bounces: [top], label: "coup puissant"}
     zones: []
     caption: "Un coup puissant a tendance à refermer l'angle de rebond (schéma non à l'échelle)."
     alt: "Table vue de dessus : la blanche monte vers un point de la bande du haut ; un premier trajet repart symétriquement, un second repart avec un angle plus resserré, plus près de la perpendiculaire à la bande."
-  - {id: attaque-centre, type: cue_side, tip_point: center, cue_height: level,
+  - {id: attaque-centre, type: cue_ball_target, tip_point: center, cue_height: level,
      caption: "On vise le centre de la blanche : le procédé la frappe au centre.",
-     alt: "Vue de côté : la queue à plat frappe la blanche au milieu de sa hauteur."}
+     alt: "Cible sur la blanche vue de face : le procédé touche le centre ; le profil montre la queue à hauteur moyenne."}
   - {id: schema-initiation-a, type: diagram_ref, diagram: initiation-p11-sa,
      caption: "Initiation 11, situation A : la blanche touche la bande au point d'impact, puis la rouge.",
      alt: "Table vue de dessus : la blanche, une jaune obstacle à mi-chemin et une rouge alignées ; la blanche monte vers la bande du haut au point d'impact puis redescend toucher la rouge ; la ligne de visée se prolonge au-delà de la bande."}

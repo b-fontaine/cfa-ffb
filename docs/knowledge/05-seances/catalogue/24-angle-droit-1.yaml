@@ -78,6 +78,7 @@ theory:
         - Seul le plein est exclu, car il donne un carreau.
       adult_extra:
         - "Refaire le coup avec des quantités différentes : l'angle reste droit si l'attaque est au centre et le coup à la mesure."
+        - "Au Blackball, la blanche est plus petite que les autres billes : pour le quart de bille, la mesure est prise par rapport à la blanche (fiche technique n° 7)."
       key_point: Toute quantité va bien, sauf le plein.
       demo: null
       illustrations: [quantites-angle]
@@ -100,21 +101,21 @@ illustrations:
   - {id: angle-plus-90, type: angle, kind: right_angle, vertex: [4.0, 2.0], rays: [[4.0, 0.6], [5.5, 2.2]],
      caption: "Trop puissant : l'angle dépasse 90° (schéma indicatif).",
      alt: "Angle en vue de dessus : à partir du point d'impact, un côté monte vers le haut et l'autre part vers la droite en s'inclinant légèrement vers le bas ; l'angle est plus ouvert qu'un angle droit."}
-  - {id: attaque-centre, type: cue_side, tip_point: center, cue_height: level,
+  - {id: attaque-centre, type: cue_ball_target, tip_point: center, cue_height: level,
      caption: "Attaque au centre : le procédé frappe la blanche en son centre (schéma indicatif).",
-     alt: "Bille blanche vue de côté avec la queue à plat ; le procédé touche la blanche en son centre."}
+     alt: "Cible sur la blanche vue de face, le procédé dessiné à l'échelle de la blanche : il touche le centre ; le profil montre la queue à hauteur moyenne."}
   - {id: quantites-angle, type: contact_strip, fractions: [three_quarter, half, quarter], highlight: half,
      caption: "Trois-quarts, demi, quart, parmi toutes les quantités qui conviennent : seul le plein est exclu.",
      alt: "Trois schémas de contact côte à côte : le trois-quarts, la demi-bille mise en évidence, le quart."}
   - {id: trajectoires-croisees, type: table,
-     balls: [{id: r, color: red, at: [4.0, 1.8]}, {id: w, color: white, at: [4.43, 2.35], role: cue}],
-     ghosts: [{id: g-impact, at: [4.0, 2.0], role: impact, for: w}],
-     arrows: [{id: a1, ball: w, kind: cue, path: [[4.43, 2.35], [4.0, 2.0]], bounces: []},
+     balls: [{id: r, color: red, at: [4.0, 1.8]}, {id: w, color: white, at: [4.42, 2.37], role: cue}],
+     ghosts: [{id: g-impact, at: [4.0, 2.014], role: impact, for: w}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[4.42, 2.37], [4.0, 2.014]], bounces: []},
               {id: a2, ball: r, kind: object, path: [[4.0, 1.8], [4.0, 0.0]], bounces: [], to: tm},
-              {id: a3, ball: w, kind: cue, path: [[4.0, 2.0], [2.0, 2.0]], bounces: []}],
+              {id: a3, ball: w, kind: cue, path: [[4.0, 2.014], [2.0, 2.014]], bounces: []}],
      zones: [],
      caption: "La rouge part vers la poche, la blanche part sur le côté : les deux trajectoires forment un angle droit.",
-     alt: "Table vue de dessus : une bille rouge sous la poche du milieu du haut, la blanche en bas à droite ; après le contact, la rouge monte droit vers la poche et la blanche part horizontalement vers la gauche."}
+     alt: "Table vue de dessus : une bille rouge sous la poche du milieu du haut, la blanche, un peu plus petite que la rouge, en bas à droite ; après le contact, la rouge monte droit vers la poche et la blanche part horizontalement vers la gauche."}
   - {id: schema-initiation, type: diagram_ref, diagram: initiation-p16-e1,
      caption: "Initiation 16 : la rouge est jouée à angle droit depuis trois repères.",
      alt: "Table vue de dessus : une bille rouge sous la poche du milieu du haut, trois repères de blanche en bas à gauche de la rouge, à courte distance ; la rouge part vers la poche et la blanche part à angle droit vers la droite."}
@@ -187,6 +188,7 @@ review:
     - Comment expliquerais-tu l'angle droit à un copain ?
 sources:
   - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 23, note: "Fiche technique n° 13 (coup en angle droit : attaque au centre, toute quantité sauf le plein, 90°, trop puissant : angle supérieur à 90°)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 17, note: "Fiche technique n° 7 (quart de bille : au Blackball, mesure prise en référence à la blanche, plus petite)"}
   - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 22, note: "Fiche technique n° 12 (carreau, pour le rappel : bille pleine, attaque au centre, blanche arrêtée)"}
   - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 16, note: "Initiation 16 (coup en angle droit : consignes à l'élève et conseils à l'animateur)"}
   - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 25, note: "Entraînement « Le coup en angle droit », exercices 1 et 2"}
@@ -200,4 +202,4 @@ uncertainties:
   - "Exercices 1 et 2 : le schéma [S] ne légende pas la zone grisée ni le rôle des jaunes (obstacles ou repères) ; la quantité de bille du schéma est estimée (demi à l'exercice 1, trois-quarts à l'exercice 2) et la séance ne l'impose pas."
   - "Le schéma [S] de l'exercice 2 n'indique pas explicitement le rebond comme un angle droit exact : la séance parle d'un coup à angle droit suivi d'un rebond sur la bande du haut."
   - "Le rappel reprend ce que carreau-2 enseigne (fiche technique n° 12 : bille pleine, attaque au centre, glissement, courte distance, recul si trop fort, roulement si trop doux) ; `recall.reuse` cite l'illustration `carreau-distance` de carreau-2."
-  - "Les illustrations générées (angle, attaque, trajectoires) sont indicatives, non à l'échelle."
+  - "Les marques d'angle sont indicatives, non à l'échelle. Le schéma des trajectoires est tracé avec les rayons réels de Blackball (blanche 48,0 mm, bille de but 50,8 mm [FFB] : docs/knowledge/02-techniques/06-dimensions-du-materiel.md) : la bille fantôme est une blanche posée à la distance r_c + r_o du centre de la rouge ; la quantité du schéma est un quart environ, choisie pour la lisibilité. La source [S] dit seulement que la blanche est plus petite et plus légère, sans chiffres."

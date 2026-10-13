@@ -72,7 +72,7 @@ theory:
       body:
         - On frappe la blanche en son centre, avec la queue bien à l'horizontale.
       key_point: Je frappe la blanche en son centre.
-      demo: "Montrer la queue vue de côté, le procédé au centre de la blanche. Attention : sur le schéma 1 de la fiche d'initiation, le point d'impact est légèrement au-dessus du centre ; ici on enseigne le centre (proposition), à dire aux élèves qui comparent les deux schémas."
+      demo: "Montrer la cible sur la blanche, le procédé au centre de la croix, avec la queue bien à l'horizontale (petit profil). Attention : sur le schéma 1 de la fiche d'initiation, le point d'impact est légèrement au-dessus du centre ; ici on enseigne le centre (proposition), à dire aux élèves qui comparent les deux schémas."
       illustrations: [cue-centre]
       src: Prop
 initiation:
@@ -89,16 +89,16 @@ initiation:
 illustrations:
   - {id: contact-plein, type: contact, fraction: full, tip_point: center,
      caption: "Bille pleine : la blanche vise le centre de la bille de couleur.",
-     alt: "La blanche, vue de dessus, est exactement derrière la bille de couleur : leurs centres sont alignés."}
+     alt: "La blanche, vue de dessus et un peu plus petite que la bille de couleur, est exactement derrière elle : leurs centres sont alignés sur la ligne de visée ; à droite, la blanche vue de face avec son point d'impact au centre."}
   - {id: visee-plein, type: ghost_aim, cue: [4.0, 3.0], object: [2.0, 1.5], pocket: tl, fraction: full,
      caption: "La bille fantôme est collée à la bille de couleur, sur la ligne de la poche.",
-     alt: "Blanche en bas à droite, bille de couleur au milieu, poche en haut à gauche : la blanche, la bille fantôme, la bille de couleur et la poche sont sur une même ligne droite."}
+     alt: "Blanche en bas à droite, bille de couleur au milieu, poche en haut à gauche : la bille fantôme, cercle creux de la taille de la blanche (un peu plus petite que la bille de couleur), est collée à la bille de couleur ; la blanche, la bille fantôme, la bille de couleur et la poche sont sur une même ligne droite."}
   - {id: quantites, type: contact_strip, fractions: [full], highlight: full,
      caption: "Bille pleine : presque toute l'énergie passe à la bille de couleur.",
-     alt: "Schéma de contact : la blanche, exactement derrière la bille de couleur, la touche en bille pleine."}
-  - {id: cue-centre, type: cue_side, tip_point: center, cue_height: level,
-     caption: "La queue à l'horizontale, le procédé au centre de la blanche.",
-     alt: "Vue de côté : la queue est horizontale et son procédé touche la blanche en son centre."}
+     alt: "Schéma de contact : la blanche, un peu plus petite que la bille de couleur et exactement derrière elle, la touche en bille pleine."}
+  - {id: cue-centre, type: cue_ball_target, tip_point: center, cue_height: level,
+     caption: "Bille pleine : le procédé frappe la blanche au centre de la cible, queue à hauteur moyenne.",
+     alt: "La blanche vue de face avec une cible (deux anneaux, une croix aux quatre côtés nommés Haut, Bas, Gauche, Droite) : le point d'impact du procédé, dessiné à l'échelle de la blanche, est au centre de la croix ; un petit profil montre la queue à hauteur moyenne."}
   - {id: schema-aligne, type: diagram_ref, diagram: initiation-p06-e2,
      caption: "Bille et blanche exactement alignées avec la poche du milieu du haut.",
      alt: "Table vue de dessus : une bille jaune et la blanche sont alignées sur une même verticale avec la poche du milieu du haut ; la jaune part droit dans la poche."}

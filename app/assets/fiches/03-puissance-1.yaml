@@ -12,11 +12,11 @@ previous: posture-2
 catalogue_block: puissance
 notion: Doser la puissance du coup en réglant la vitesse du coup de queue et l'amplitude du geste.
 theme:
-  name: Le curseur de puissance
+  name: Les deux curseurs
   pitch: >-
-    Chaque joueur a un curseur de puissance gradué de 1 (doux) à 5 (fort).
-    Aujourd'hui on apprend à le régler : la blanche doit s'arrêter dans la
-    zone qu'on a choisie.
+    Chaque joueur a deux curseurs : le recul de la main et la vitesse du
+    coup. Aujourd'hui on apprend à les régler ensemble : la blanche doit
+    s'arrêter dans la zone qu'on a choisie.
 recall:
   points:
     - Quand la blanche est loin de la bande, la main d'appui est à plat sur la surface de jeu.
@@ -45,14 +45,14 @@ theory:
       illustrations: []
       src: S
     - id: curseur
-      title: Le curseur de 1 à 5
+      title: "Deux curseurs : le recul et la vitesse"
       weight: {children: 1, adults: 1}
       body:
-        - Pour s'entraîner, on imagine un curseur de puissance de 1 (doux) à 5 (fort).
-        - Les crans sont une image de la séance, pas une graduation fédérale.
-      key_point: Cran 1, peu de recul et peu de vitesse ; cran 5, grand recul et grande vitesse.
-      demo: "Montrer deux tirs à vide, un au cran 1, un au cran 5, et nommer ce qui change."
-      illustrations: [echelle-douce, echelle-forte]
+        - "Pour s'entraîner, on imagine deux curseurs : le recul de la main, court ou long, et la vitesse du coup, lente ou rapide."
+        - "Le plan recul et vitesse est une image de la séance : le doux est en bas à gauche, le puissant en haut à droite ; ce n'est pas une graduation fédérale."
+      key_point: Peu de recul et peu de vitesse, c'est doux ; grand recul et grande vitesse, c'est puissant.
+      demo: "Montrer deux tirs à vide, l'un avec peu de recul et peu de vitesse, l'autre avec grand recul et grande vitesse, et nommer ce qui change."
+      illustrations: [plan-doux, plan-puissant]
       src: Prop
     - id: mots-queue
       title: Les mots de la queue
@@ -84,7 +84,7 @@ theory:
         - "Mais la blanche part aussi avec la vitesse du geste : plus on accélère, plus elle part loin."
       key_point: Plus on arme et plus on accélère, plus la blanche part loin.
       demo: "Montrer deux armés, un petit puis un grand, sans toucher la blanche."
-      illustrations: [echelle-forte]
+      illustrations: [plan-puissant]
       src: Prop
     - id: mesure
       title: À la mesure de la distance
@@ -108,12 +108,14 @@ initiation:
     illustration: schema-initiation
     src: S
 illustrations:
-  - {id: echelle-douce, type: power_scale, levels: 5, highlight: 1, distance_label: "bille proche",
-     caption: "Coup doux : peu de recul, peu de vitesse (cran 1 sur 5, une image proposée).",
-     alt: "Échelle de puissance à cinq crans, le premier cran, le plus doux, est mis en évidence pour une bille proche."}
-  - {id: echelle-forte, type: power_scale, levels: 5, highlight: 5, distance_label: "bille lointaine",
-     caption: "Coup puissant : grand recul, grande vitesse (cran 5 sur 5, une image proposée).",
-     alt: "Échelle de puissance à cinq crans, le dernier cran, le plus fort, est mis en évidence pour une bille lointaine."}
+  - {id: plan-doux, type: power_ratio,
+     points: [{amplitude: short, speed: slow}], distance_label: "bille proche",
+     caption: "Coup doux : peu de recul, peu de vitesse (le plan est une image proposée, pas une graduation fédérale).",
+     alt: "Plan amplitude (recul de la main) et vitesse : un point en bas à gauche, amplitude courte et vitesse lente, zone douce, pour une bille proche."}
+  - {id: plan-puissant, type: power_ratio,
+     points: [{amplitude: long, speed: fast}], distance_label: "bille lointaine",
+     caption: "Coup puissant : grand recul, grande vitesse (le plan est une image proposée, pas une graduation fédérale).",
+     alt: "Plan amplitude (recul de la main) et vitesse : un point en haut à droite, amplitude longue et vitesse rapide, zone puissante, pour une bille lointaine."}
   - {id: fleche-courte-longue, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 12,
      caption: "Voir page 12 de la fiche technique : main près du centre de gravité, flèche courte ; main vers le talon, flèche longue.",
      alt: "Renvoi vers la page 12 de la fiche technique n° 2, dont les photos montrent la main près du centre de gravité de la queue (flèche courte, recul faible) puis vers le talon (flèche longue, grand recul)."}
@@ -125,8 +127,8 @@ illustrations:
     ghosts:
       - {id: g1, at: [4.86, 3.2], role: cue_start, for: w, label: "tir lointain"}
     arrows:
-      - {id: a1, kind: cue, ball: w, path: [[4.4, 1.7], [4.0, 0.4]], label: "tir doux"}
-      - {id: a2, kind: cue, ball: w, path: [[4.86, 3.2], [4.0, 0.4]], label: "tir puissant"}
+      - {id: a1, kind: cue, ball: w, path: [[4.4, 1.7], [4.0, 0.414]], label: "tir doux"}
+      - {id: a2, kind: cue, ball: w, path: [[4.86, 3.2], [4.0, 0.414]], label: "tir puissant"}
     zones:
       - {id: z1, from: [3.0, 0.0], to: [5.0, 1.0], shape: rect, label: "zone grise"}
     caption: "Même cible, deux distances : la puissance change, la blanche reste dans la zone grise."
@@ -199,7 +201,7 @@ review:
   prompts:
     - Pour envoyer la blanche plus loin, as-tu reculé la main, accéléré, ou les deux ?
     - Où as-tu placé ta main sur la queue pour le tir le plus long ?
-    - Quel cran du curseur était le plus difficile à régler ?
+    - Quel dosage du recul et de la vitesse était le plus difficile à régler ?
 sources:
   - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 12, note: "Fiche technique n° 2 (puissance : vitesse, amplitude, flèche)"}
   - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 10, note: "Fiche technique n° 1 (coup de queue : avant-bras, coude, pour le rappel)"}
@@ -209,9 +211,9 @@ sources:
 uncertainties:
   - "Mises en place en texte, défis ludiques, variante de jeu (jetons compris), règle de lien et adaptation du jeu : [Prop], à valider par un animateur dans l'application. La différenciation enfants / adultes (poids, compléments, adaptation du jeu) est aussi une proposition."
   - "Entraînement 1 et 2 : le schéma ne dit pas si les billes de couleur d'appoint (jaunes de l'exercice 1, rouges de l'exercice 2) sont des obstacles ou des repères ; la séance les lit comme des paires entre lesquelles passe la blanche (flèches du schéma)."
-  - "Les sections « Le ressort » et « Les mots de la queue » (enfants) et « Le curseur de 1 à 5 » sont des images ou des gloses [Prop] absentes de la fiche n° 2 ; la définition de la flèche vient du glossaire de la base, le talon et le centre de gravité sont glosés par la séance."
-  - "Initiation 5 : la fiche ne dit pas quelles positions vont avec le chevalet sur cadre ou sur surface ; la séance ne l'impose pas. Les positions de la blanche et les flèches de l'illustration « court-long » sont indicatives, non à l'échelle ; les deux tirs visent la même bille fantôme avec une coupe voisine (environ trois-quarts de bille) pour n'isoler que la distance."
-  - "Le recul et la vitesse ne sont pas chiffrés par la source : les crans 1 à 5 du curseur sont une image [Prop], isolée dans la section « Le curseur de 1 à 5 » (pas une graduation fédérale)."
+  - "Les sections « Le ressort » et « Les mots de la queue » (enfants) et « Deux curseurs : le recul et la vitesse » sont des images ou des gloses [Prop] absentes de la fiche n° 2 ; la définition de la flèche vient du glossaire de la base, le talon et le centre de gravité sont glosés par la séance."
+  - "Initiation 5 : la fiche ne dit pas quelles positions vont avec le chevalet sur cadre ou sur surface ; la séance ne l'impose pas. Les positions de la blanche et les flèches de l'illustration « court-long » sont indicatives, non à l'échelle ; les deux tirs visent la même bille fantôme avec une coupe voisine (environ trois-quarts de bille) pour n'isoler que la distance. Tailles : les billes sont dessinées à l'échelle réelle (blanche plus petite, rayon 0,1038 case contre 0,1098) ; la bille fantôme est une blanche posée au contact de la jaune, à s = r_c + r_o = 0,2136 case de son centre, d'où l'arrivée des flèches en (4,0 ; 0,414). La séance ne traite pas le quart de bille ni le rétro : aucune mention de la taille de la blanche n'est ajoutée au texte."
+  - "Le recul et la vitesse ne sont pas chiffrés par la source : le plan recul et vitesse et ses trois zones (doux, moyen, puissant) sont une image [Prop], isolée dans la section « Deux curseurs : le recul et la vitesse » ; seuls les deux extrêmes (peu de recul et peu de vitesse : doux ; grand recul et grande vitesse : puissant) viennent de la fiche n° 2 (pas une graduation fédérale)."
   - "Le rappel porte sur ce que posture-2 enseigne et réutilise son illustration `posture-surface` (V7), qui n'appuie que le premier point (main d'appui à plat). Le point 2 vient de la fiche technique n° 1 ; le point 3 reprend un contrôle de la fiche d'initiation (p. 3-4) et un contenu [Prop] de posture-2 (immobilité jusqu'à la fin du tir)."
   - "Jeu 3 : la fiche dit à la fois « 5 tirs à tour de rôle » et « le premier à placer 5 fois la blanche gagne » ; les deux sont repris tels quels, la condition de fin est ambiguë (un 5 sur 5 seul rend la partie gagnable à la lettre). La fin proposée (nombre de tirs, plus de placements gagne, égalité départagée par un tir de plus chacun) remplace la fin de la fiche : c'est une proposition (adaptation), comme qui commence et la taille de la zone. Le schéma place la blanche au bord de la zone grise du camp du tireur."
   - "Entraînement 1 : le schéma ne donne pas l'ordre des tirs (milieu, gauche, droite est une proposition) ; le « x3 » vaut trois tirs par rouge, soit neuf tirs. La correspondance doux / moyen / fort avec les trois rouges est une proposition. L'encart du schéma (attaque un peu au-dessus du centre) est approximatif ; l'initiation 5 montre le centre ou un peu au-dessus."

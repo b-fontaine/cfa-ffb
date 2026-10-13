@@ -27,10 +27,11 @@ cd app
 dart run tool/diagrammes.dart ../docs/knowledge/03-exercices/diagrammes/entrainement/p03.yaml
 dart run tool/diagrammes.dart --ascii <fichier.yaml…>     # rendu texte 8x4 + légende
 dart run tool/diagrammes.dart --summary <fichier.yaml…>   # une ligne par diagramme
+dart run tool/diagrammes.dart --ghosts <fichier.yaml…>    # cercles impact des propositions = G calculé
 ```
 
 - Code de sortie `0` : valide ; `1` : erreur de validation ; `2` : usage ou fichier introuvable.
-- Une bille hors table ou deux billes qui se chevauchent produisent un **avertissement** (pas une erreur).
+- Une bille hors table ou deux billes qui se chevauchent (seuils `r_c + r_o` blanche - bille de but, `2 r_o` entre billes de but, à 0,01 case près) ou une bille qui mord sur une bande produisent un **avertissement** (pas une erreur).
 - Le rendu ASCII sert de contrôle : le comparer au PDF (`pdftoppm -r 110 -f N -l N -png`).
 - Code : `app/tool/diagrammes.dart` et `app/tool/diagrammes/` ; tests : `app/test/tool/diagrammes_test.dart`.
 

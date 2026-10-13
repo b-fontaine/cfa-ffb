@@ -12,10 +12,10 @@ previous: puissance-1
 catalogue_block: puissance
 notion: Doser la puissance du coup en réglant la vitesse du coup de queue et l'amplitude du geste.
 theme:
-  name: Le curseur de puissance
+  name: Les deux curseurs
   pitch: >-
-    Épisode 2 : le curseur de puissance, gradué de 1 (doux) à 5 (fort), sert
-    à garer la blanche. Chaque zone grise est un garage : elle doit s'y
+    Épisode 2 : les deux curseurs, le recul de la main et la vitesse du coup,
+    servent à garer la blanche. Chaque zone grise est un garage : elle doit s'y
     arrêter en douceur, sans filer trop vite. Les garages sont de tailles et
     de distances variées : le coin est loin, le milieu est proche. Le
     chevalet se pose sur le tapis.
@@ -44,7 +44,7 @@ theory:
         - Entre les deux, le joueur évalue la longueur de flèche selon la puissance désirée.
       key_point: Plus la main est près du talon, plus le recul peut être grand.
       demo: "Montrer deux positions de la main sur la queue, chevalet près puis loin de la blanche. Insister sur le recul : le débutant pense d'abord à la vitesse."
-      illustrations: [flecheaxe, photos-amplitude]
+      illustrations: [fleche-personnage, photos-amplitude]
       src: S
     - id: distances
       title: Plus loin, plus de recul
@@ -59,7 +59,7 @@ theory:
         - Comparer un tir proche et un tir lointain vers la même zone grise ; noter ce qui change dans la main arrière.
       key_point: Je choisis mon amplitude et ma vitesse avant de tirer, selon la distance.
       demo: "Tirer vers la même zone grise depuis un repère proche, puis depuis un repère lointain, en montrant le recul de la main."
-      illustrations: [echelle-puissance, zones-distances]
+      illustrations: [plan-puissance, zones-distances]
       src: Prop
 initiation:
   - id: ini-5
@@ -73,24 +73,24 @@ initiation:
     illustration: schema-initiation
     src: S
 illustrations:
-  - {id: flecheaxe, type: stance_top, view: top,
-     annotations: ["Main arrière près du centre de gravité : chevalet près de la blanche, peu de flèche", "Main arrière vers le talon : chevalet plus loin, beaucoup de flèche"],
-     caption: "Deux positions de la main arrière : peu de flèche, ou beaucoup de flèche.",
-     alt: "Vue de dessus schématique : à gauche, la main arrière près du centre de la queue et le chevalet près de la blanche ; à droite, la main vers le talon et le chevalet plus éloigné."}
+  - {id: fleche-personnage, type: player_figure, view: side, bridge: surface, focus: [bridge_hand, cue],
+     caption: "Le joueur de profil, une seule position montrée : la main de chevalet à plat sur le tapis et la queue dans l'axe de la visée. À dire : main arrière près du centre de gravité, le chevalet est près de la blanche (peu de flèche) ; main vers le talon, il est plus loin (beaucoup de flèche).",
+     alt: "Un joueur schématique de profil, billes agrandies et non à l'échelle, la main de chevalet posée à plat sur le tapis et la queue qui vise le centre de la blanche ; deux repères numérotés, la main de chevalet et la queue. Plus la main arrière est vers le talon, plus le chevalet est loin de la blanche."}
   - {id: photos-amplitude, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 12,
      caption: "Fiche technique n° 2 : recul, situation initiale, pénétration.",
      alt: "Renvoi à la page 12 du PDF des fiches techniques, qui montre le recul, la situation initiale et la pénétration."}
-  - {id: echelle-puissance, type: power_scale, levels: 5, distance_label: "Distance à parcourir par la blanche",
-     caption: "Plus la blanche doit aller loin, plus le geste est ample.",
-     alt: "Échelle de cinq niveaux de puissance, du plus doux au plus puissant, reliée à la distance à parcourir."}
+  - {id: plan-puissance, type: power_ratio,
+     points: [{amplitude: short, speed: slow, label: "Zone proche"}, {amplitude: long, speed: fast, label: "Zone lointaine"}],
+     caption: "Plus la blanche doit aller loin, plus le recul est grand et plus le coup est rapide.",
+     alt: "Plan amplitude (recul de la main, en abscisse) et vitesse du coup (en ordonnée), à trois zones doux, moyen, puissant, avec deux exemples dont la zone est écrite sous le plan : en bas à gauche, peu de recul et peu de vitesse pour une zone proche (doux) ; en haut à droite, grand recul et grande vitesse pour une zone lointaine (puissant)."}
   - {id: zones-distances, type: table,
      balls: [{id: r1, color: red, at: [0.35, 0.35]}, {id: w, color: white, at: [6.0, 2.0], role: cue}],
      ghosts: [{id: g1, at: [2.4, 1.6], role: cue_start, for: w, label: "tir proche"}],
-     arrows: [{id: a1, ball: w, kind: cue, path: [[6.0, 2.0], [0.54, 0.41]], bounces: [], label: "tir lointain"},
-              {id: a2, ball: w, kind: cue, path: [[2.4, 1.6], [0.52, 0.45]], bounces: [], label: "tir proche"}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[6.0, 2.0], [0.555, 0.41]], bounces: [], label: "tir lointain"},
+              {id: a2, ball: w, kind: cue, path: [[2.4, 1.6], [0.532, 0.461]], bounces: [], label: "tir proche"}],
      zones: [{id: z1, shape: rect, from: [0, 0], to: [1, 1], label: "zone grise"}],
      caption: "Même zone grise, deux distances : tir proche et tir lointain.",
-     alt: "Table vue de dessus : une bille rouge dans la zone grise du coin haut gauche ; deux flèches y mènent, une courte depuis un repère proche au centre gauche (tir proche) et une longue depuis la blanche à droite (tir lointain)."}
+     alt: "Table vue de dessus, billes à leur taille réelle (la blanche un peu plus petite que la rouge) : une bille rouge dans la zone grise du coin haut gauche ; deux flèches de la blanche y mènent jusqu'au contact, une courte depuis un repère proche au centre gauche (tir proche) et une longue depuis la blanche à droite (tir lointain)."}
   - {id: schema-initiation, type: diagram_ref, diagram: initiation-p05-e1,
      caption: "Initiation 5 : la rouge et la jaune sont jouées depuis deux repères, la blanche s'arrête dans la zone grise.",
      alt: "Table vue de dessus : une rouge près de la poche d'angle haut gauche, une jaune sous la poche du milieu du haut, deux repères de blanche, des zones grises autour des billes."}
@@ -169,13 +169,14 @@ sources:
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 4, note: "Jeu 4 (pétanque avec la blanche) ; jeu 5 pour la variante adultes"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 5, note: "Jeu 5 (pétanque avec la noire), variante adultes"}
 uncertainties:
-  - "Liaison avec puissance-1 (écrite) : notion et nom du thème alignés (V23) ; le pitch porte l'épisode 2. Partie 1 : jeu 3 et défi du cran de curseur ; partie 2 : jeu 4 et défi du garage. La liaison de jeu (annonce du recul) prolonge l'annonce des crans de la partie 1 ; le choix petit / moyen / grand est une proposition."
+  - "Liaison avec puissance-1 (écrite) : notion et nom du thème alignés (V23) ; le pitch porte l'épisode 2. Partie 1 : jeu 3 et défi du dosage annoncé (doux, moyen, fort) ; partie 2 : jeu 4 et défi du garage. La liaison de jeu (annonce du recul) prolonge l'annonce « doux, moyen, fort » de la partie 1 ; le choix petit / moyen / grand est une proposition."
   - "Jeu 4 : la fiche [S] ne définit pas « points restants », à qui « la main passe », la règle de la pétanque (plus grand nombre de billes d'un même groupe au plus près), qui commence la manche suivante, ni le rôle de la noire ; le texte [S] est gardé intact, les précisions de décompte sont des propositions [Prop] dans l'adaptation. Matériel : un seul groupe de quatre billes par camp (schéma jeux-p04-j1) ; le tirage au sort du groupe est [Prop]."
-  - "Illustration flecheaxe de type stance_top : le type est défini pour une vue de dessus du corps ; il sert ici à comparer deux positions de la main sur la queue (annotations), comme dans puissance-1. Usage à valider côté rendu StanceDiagram."
+  - "Illustration `fleche-personnage` de type `player_figure` : le joueur de profil montre la main de chevalet et la queue ; les deux positions de la main arrière (flèche courte, flèche longue) sont dites en légende, un personnage ne montrant qu'une position. Le plan `plan-puissance` est une image [Prop] (seuls les deux extrêmes viennent de la fiche n° 2)."
   - "Le rôle des rouges (obstacles à passer entre) est lu d'après la flèche du schéma ; la consigne l'indique (« d'après la flèche du schéma »)."
   - "Chevalet : le catalogue place les exercices 1-2 (partie 1) sur cadre et 3-4 (partie 2) sur la surface ; l'initiation 5 est jouée avec les deux chevalets dans les deux séances (fiche d'initiation)."
   - "La section « Plus loin, plus de recul » (distances, chevalet sur surface) est une proposition [Prop] : la fiche technique n° 2 ne détaille ni la distance ni le type de chevalet. Les schémas de flèche et de distance sont générés."
   - "Le rôle des rouges dans les exercices 3 et 4 n'est pas précisé par le schéma [S] (obstacles à passer entre, ou billes à toucher) ; la consigne suit la flèche du schéma. Rôle des jaunes : billes à empocher, déduit du libellé « empocher »."
   - "L'initiation 5 est reprise de la partie 1 comme échauffement ; le choix de la rejouer est une proposition, la fiche l'attribue à la technique entière."
   - "La règle de rappel (annonce du recul), le jeton, le garage, l'adaptation enfants (5 points, 15 minutes) et la variante adultes sont des propositions [Prop] ; la variante noire s'appuie sur le jeu 5 [S]."
+  - "Tailles : la blanche (48,0 mm) est plus petite que la bille de but (50,8 mm) [S], sans effet sur la notion de puissance : aucune mention ajoutée dans le texte. Dans `zones-distances`, les flèches s'arrêtent au contact, centre de la blanche à 0,2136 case du centre de la rouge (r_c + r_o, et non 2 r) [Prop]."
   - "Les minutes sont calculées à partir des poids et sont des propositions."

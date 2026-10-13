@@ -7,7 +7,8 @@
 - Règles officielles du Blackball (à ingérer depuis la FFB ou la WPA).
 - Contenu de l'épreuve du billard de bronze.
 - Positions exactes des billes : les schémas sont transcrits dans `03-exercices/diagrammes/` mais en lecture **approchée** (≈ 0,15 case), jamais publiée par la FFB sous cette forme.
-- Rayon de bille (0,1 unité) et ligne de départ (x = 2,0) : `[Prop]` ; la ligne dessinée est lue vers x ≈ 1,75 à 1,85.
+- Rayon de bille (0,1 unité) et ligne de départ (x = 2,0) : `[Prop]` ; la ligne dessinée est lue vers x ≈ 1,75 à 1,85. **Écart à corriger** : `FORMAT.md` et le code utilisent un rayon unique pour toutes les billes, alors que la blanche est plus petite (48,0 contre 50,8 mm `[FFB]`, rapport 0,945 ; voir `02-techniques/06-dimensions-du-materiel.md`). La règle `[FFB]` place la ligne à 1/5 de la longueur (x = 1,6 sur 8 cases).
+- Dimensions du matériel : aucune dans les PDF `[S]`. Introuvables : longueur et masse officielles de la queue, graduation fédérale de la hauteur d'attaque du procédé, masses des billes en source fédérale (94 g / 116 g `[Web]` seulement), ouverture de poche WEPF. Elles restent `[Prop]` ou « non spécifiées » dans `06-dimensions-du-materiel.md`.
 - Éléments incertains récurrents des diagrammes (détail dans le champ `uncertainties` de chaque YAML) : rôle des billes d'obstacle, ordre des tirs, poches déduites, type de chevalet non précisé, blanche absente du dessin, quantité de bille des encarts, enchaînement « huit billes » / nombre de tirs (entraînement p09, ex. 2), énoncé « six billes » pour cinq ou quatre billes colorées dessinées (entraînement p22 ex. 7, p31 ex. 10), champ `sessions` non prévu par `FORMAT.md`.
 - Niveaux techniques 2 et 3, hors scope des fiches fournies.
 - Sécurité, matériel adapté à l'enfant, échauffement.

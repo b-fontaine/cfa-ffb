@@ -48,8 +48,9 @@ theory:
         - Le quart de bille se vise au-delà de la bille de couleur.
         - Le point de visée n'est plus sur la bille de couleur, mais en dehors d'elle.
         - On vise à un demi-rayon de bille au-delà de la bille de couleur.
+        - "La blanche est un peu plus petite que la bille de couleur : ce demi-rayon se compte avec la blanche."
       adult_extra:
-        - Au Blackball, cette mesure se prend par rapport à la blanche, plus petite que les billes de couleur.
+        - "Fiche technique n° 7 : au Blackball, cette mesure est prise en référence à la blanche, plus petite que les billes de couleur."
         - La visée et le point de contact sont donc un peu plus rapprochés que dans les autres disciplines.
       key_point: On vise en dehors de la bille de couleur, à un demi-rayon au-delà.
       demo: "Fiche technique n° 3 : poser une blanche au contact de la bille de couleur, en quart, montrer que la ligne de visée passe à côté de la bille, puis retirer la blanche avant le tir."
@@ -115,27 +116,27 @@ initiation:
     src: Prop
 illustrations:
   - {id: contact-quart, type: contact, fraction: quarter, tip_point: center,
-     caption: "Quart de bille : la blanche ne recouvre qu'une petite partie de la bille de couleur.",
-     alt: "Vue de face : la blanche est devant la bille de couleur, qui la déborde largement ; seule une petite partie des deux billes se recouvre."}
-  - {id: visee-quart, type: ghost_aim, cue: [1.15, 3.0], object: [1.0, 1.0], pocket: tl, fraction: quarter,
+     caption: "Quart de bille : vue de dessus, la blanche, un peu plus petite, frôle le bord de la bille de couleur ; à droite, la blanche de face avec le procédé au centre.",
+     alt: "À gauche, vue de dessus : la blanche, un peu plus petite que la bille de couleur, arrive par la gauche sur la ligne de visée en pointillés et ne touche que le bord de la bille de couleur, placée plus haut ; à droite, la blanche vue de face avec une croix et un anneau à mi-rayon, le point du procédé au centre."}
+  - {id: visee-quart, type: ghost_aim, cue: [1.02, 3.0], object: [1.0, 1.0], pocket: tl, fraction: quarter,
      caption: "La bille fantôme montre où la blanche touche la bille de couleur : la visée reste à côté de la bille.",
-     alt: "Table vue de dessus : la blanche en bas à gauche, la bille de couleur près de la poche du haut à gauche ; la bille fantôme est collée à la bille de couleur, sur son côté bas droit, et la ligne de visée passe à côté de la bille."}
+     alt: "Table vue de dessus : la blanche en bas à gauche, la bille de couleur près de la poche du haut à gauche ; la bille fantôme, de la taille de la blanche (plus petite que la bille de couleur), est collée à la bille de couleur sur son côté bas droit, avec le point de contact marqué ; la ligne de visée va de la blanche à la bille fantôme et passe à côté de la bille de couleur."}
   - {id: quantites, type: contact_strip, fractions: [full, three_quarter, half, quarter], highlight: quarter,
-     caption: "Plein, trois-quarts, demi et quart, du plus plein au plus fin.",
-     alt: "Quatre schémas de contact alignés, du plus plein au plus fin : bille pleine, trois-quarts, demi-bille, puis quart de bille mis en évidence."}
+     caption: "Plein, trois-quarts, demi et quart, du plus plein au plus fin ; la blanche est dessinée un peu plus petite que la bille de couleur.",
+     alt: "Quatre schémas de contact alignés vus de dessus, du plus plein au plus fin : bille pleine, trois-quarts, demi-bille, puis quart de bille mis en évidence ; dans chacun, la blanche est un peu plus petite que la bille de couleur, et une note rappelle les diamètres de la blanche et des billes de but."}
   - id: trajectoires
     type: table
     balls:
-      - {id: w, color: white, at: [1.15, 3.0], role: cue}
+      - {id: w, color: white, at: [1.02, 3.0], role: cue}
       - {id: r, color: red, at: [1.0, 1.0]}
     arrows:
-      - {id: a-blanche, ball: w, kind: cue, path: [[1.15, 3.0], [1.15, 1.14], [2.08, 0.2]], label: "la blanche dévie moins qu'au demi"}
+      - {id: a-blanche, ball: w, kind: cue, path: [[1.02, 3.0], [1.15, 1.15], [2.08, 0.2]], label: "la blanche dévie moins qu'au demi"}
       - {id: a-rouge, ball: r, kind: object, path: [[1.0, 1.0], [0.0, 0.0]], to: tl, label: "la rouge part vers la poche"}
     caption: "Au quart de bille, la blanche garde une grande part de son énergie et dévie moins qu'au demi et au trois-quarts (tracé indicatif) ; la bille de couleur part vers la poche."
     alt: "Table vue de dessus : la blanche monte vers une bille rouge près de la poche du haut à gauche, puis repart en biais vers le haut à droite, moins déviée qu'au demi et au trois-quarts ; la rouge part vers la poche."
-  - {id: attaque-queue, type: cue_side, tip_point: center, cue_height: level,
-     caption: "Le procédé frappe la blanche au centre.",
-     alt: "Vue de côté : la queue à plat frappe la blanche au milieu de sa hauteur."}
+  - {id: attaque-queue, type: cue_ball_target, tip_point: center, cue_height: level,
+     caption: "Le procédé frappe la blanche au centre : cible vue de face, point d'impact à l'échelle du procédé.",
+     alt: "Cible sur la blanche vue de face, avec ses anneaux à mi-rayon et au bord : le point du procédé est au centre ; un petit profil montre la queue à hauteur moyenne."}
   - {id: schema-initiation, type: diagram_ref, diagram: initiation-p09-e1,
      caption: "Initiation 9 : deux situations en haut de la table ; la jaune de gauche est jouée en quart de bille.",
      alt: "Table vue de dessus : deux billes jaunes en haut, chacune avec une blanche à courte distance ; à gauche, la blanche passe en dehors de la jaune près de la poche du haut à gauche et la touche sur son côté, près du bord."}
@@ -223,6 +224,6 @@ uncertainties:
   - "Le schéma de l'initiation 9 n'est pas légendé : l'association gauche = quart, droite = finesse est déduite des schémas de quantité (voir la transcription) ; le décalage mesuré à gauche est plus épais que le quart dessiné."
   - "Exercice 2 : l'énoncé du PDF dit « huit billes » mais le schéma porte 4 x 3 = 12 tirs ; le type de chevalet n'est pas indiqué. L'ordre de pose de la blanche entre les deux repères n'est pas explicite."
   - "Le schéma du jeu 9 [S] ne montre que deux billes (une rouge près de la poche du milieu du haut, une jaune près de celle du bas) et leurs trajectoires de blanche ; composition des groupes, place de la noire, tirage au sort et limite de temps sont des propositions communes aux deux publics (adaptation). Depuis la zone de replacement, l'angle de coupe est élevé : un trois-quarts n'y est pas jouable, d'où l'échauffement hors partie (link_previous). Recalculé sur le schéma [S] (blanche en 1,8 ; 2,0, bille fantôme en 4,0 ; 1,0 sous la rouge en 4,0 ; 0,77), l'angle de coupe mesuré est d'environ 65° (quantité d'environ 0,09 selon FORMAT § 6), soit une finesse plutôt qu'un quart (environ 49°) ; la fiche, elle, étiquette ces tirs « quart » (sequence du diagramme jeux-p09-j1). Un vrai quart n'est atteignable dans la zone que depuis un point plus bas de la ligne de départ (environ y = 2,9)."
-  - "Les illustrations générées (visée avec bille fantôme, trajectoires, queue de côté) ne sont pas à l'échelle ; la déviation de la blanche dans « trajectoires » est qualitative, la fiche ne la chiffre pas ; le tracé, calculé avec la bille fantôme et la règle des 90° (angle de coupe d'environ 45°), montre une sortie à environ 45°, moins déviée qu'au demi et au trois-quarts, sans valeur [S]. La section « Un quart, c'est près du bord » (enfants) est une glose [Prop] : le mot « frôlement » est réservé à la finesse (fiche technique n° 8)."
+  - "Les illustrations générées (visée avec bille fantôme, trajectoires, cible sur la blanche) sont indicatives pour les distances ; la déviation de la blanche dans « trajectoires » est qualitative, la fiche ne la chiffre pas ; le tracé, calculé avec la bille fantôme et la règle des 90° (angle de coupe d'environ 45°), montre une sortie à environ 45°, moins déviée qu'au demi et au trois-quarts, sans valeur [S]. La section « Un quart, c'est près du bord » (enfants) est une glose [Prop] : le mot « frôlement » est réservé à la finesse (fiche technique n° 8)."
   - "La fiche technique n° 7 ne donne pas la déviation de la bille de couleur au quart (seulement qu'elle reçoit peu d'énergie) : l'adulte ne peut pas la comparer aux 15° du rappel ; la démonstration avec blanche retirée vient de la fiche technique n° 3. Le glossaire (07-glossaire.md) n'a pas d'entrée « Quart de bille » : à proposer dans un lot connaissances."
   - "La fiche technique n° 7 est citée telle quelle pour le demi-rayon ; la mesure par rapport à la blanche (plus petite au Blackball) est celle de la fiche, non transposée d'une autre discipline."

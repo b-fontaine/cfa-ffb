@@ -102,30 +102,30 @@ initiation:
     illustration: schema-initiation
     src: S
 illustrations:
-  - {id: deviation-45, type: angle, kind: natural_rejection, vertex: [4.0, 2.23], rays: [[3.61, 1.46], [1.55, 1.43]],
+  - {id: deviation-45, type: angle, kind: natural_rejection, vertex: [4.0, 2.21], rays: [[3.49, 1.35], [1.58, 1.60]],
      caption: "Après l'impact, la blanche dévie d'environ 45° par rapport à sa trajectoire initiale (marque d'angle seule ; voir le chemin de la blanche pour les billes).",
      alt: "Table vue de dessus, sans bille : deux traits partent du point d'impact et un arc d'environ 45° marque l'écart entre le prolongement de la trajectoire initiale de la blanche et sa nouvelle direction, vers la gauche. Les billes sont visibles dans l'illustration « chemin de la blanche »."}
   - {id: contact-haut, type: contact, fraction: half, tip_point: top,
-     caption: "Demi-bille, attaque un peu au-dessus du centre de la blanche, pas au bord (point dessiné en haut pour être lisible).",
-     alt: "La blanche recouvre la moitié de la bille de couleur ; le point d'impact du procédé est dans la partie haute de la blanche, un peu au-dessus du centre et non au bord."}
-  - {id: attaque-haute, type: cue_side, tip_point: top, cue_height: level,
-     caption: "Le procédé frappe la blanche un peu au-dessus de son centre, pas au bord (schéma indicatif, point dessiné en haut pour être lisible).",
-     alt: "Vue de côté : la queue est horizontale et son procédé touche la blanche dans sa partie haute, un peu au-dessus du centre et non à son bord."}
+     caption: "Demi-bille : la blanche, un peu plus petite que la bille de couleur, vise la tangente. À droite, le procédé frappe la blanche un peu au-dessus de son centre, pas au bord (point dessiné à mi-rayon).",
+     alt: "À gauche, vue de dessus : la blanche, un peu plus petite que la bille de couleur, la touche en demi-bille, sa trajectoire passant par la tangente de la bille de couleur. À droite, la blanche vue de face avec un anneau à mi-rayon : le point d'impact du procédé est entre le centre et le bord, dans la partie haute."}
+  - {id: attaque-haute, type: cue_ball_target, tip_point: top, cue_height: level,
+     caption: "Le procédé frappe la blanche un peu au-dessus de son centre, pas au bord : le point est dessiné entre le centre et le bord, à mi-rayon (schéma indicatif).",
+     alt: "Cible sur la blanche vue de face : le procédé touche la moitié haute, un peu au-dessus du centre et non au bord ; le profil montre la queue à hauteur moyenne."}
   - id: chemin-blanche
     type: table
     balls:
       - {id: y1, color: yellow, at: [4.0, 2.0], role: object}
-      - {id: w, color: white, at: [4.39, 3.0], role: cue}
-      - {id: repere, color: red, at: [1.55, 1.35], role: obstacle}
+      - {id: w, color: white, at: [4.46, 2.99], role: cue}
+      - {id: repere, color: red, at: [1.58, 1.60], role: obstacle}
     ghosts:
-      - {id: g1, at: [4.0, 2.23], role: impact, for: w}
+      - {id: g1, at: [4.0, 2.21], role: impact, for: w}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[4.39, 3.0], [4.0, 2.23]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[4.46, 2.99], [4.0, 2.21]], bounces: []}
       - {id: a2, ball: y1, kind: object, path: [[4.0, 2.0], [4.0, 0.3]], bounces: [], to: tm}
-      - {id: a3, ball: w, kind: cue, path: [[4.0, 2.23], [1.55, 1.35]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[4.0, 2.21], [1.58, 1.60]], bounces: []}
     zones: []
-    caption: "Une bille posée sur le chemin prévu permet de vérifier où la blanche arrive (schéma indicatif)."
-    alt: "Table vue de dessus : la jaune sous la poche du milieu du haut, la blanche en bas à droite ; la blanche touche la jaune puis repart vers la gauche où une bille est posée sur son chemin."
+    caption: "La blanche (plus petite que la jaune) touche la jaune en demi-bille ; le cercle creux est la blanche au moment du contact. Une bille posée sur le chemin prévu permet de vérifier où la blanche arrive (schéma indicatif)."
+    alt: "Table vue de dessus : la jaune sous la poche du milieu du haut, la blanche, un peu plus petite, en bas à droite ; un cercle creux montre la blanche au contact de la jaune, directement sous elle ; la blanche touche la jaune en demi-bille puis repart vers la gauche, où une bille est posée sur son chemin."
   - {id: schema-initiation, type: diagram_ref, diagram: initiation-p12-e1,
      caption: "Initiation 12 : la jaune est empochée et la blanche est rejetée vers la zone de replacement.",
      alt: "Table vue de dessus : une jaune alignée avec la poche du milieu du haut, la blanche en bas à droite ; la blanche touche la jaune en demi puis part vers la gauche."}
@@ -204,10 +204,10 @@ uncertainties:
   - "Thème, défis, sections « Qui envoie la blanche de côté ? » et « Le mot replacement », rappel (transition vers le rejet), variante de jeu (jetons, annonce, tolérance de deux largeurs de main), règle de lien et adaptations : [Prop], à valider par un animateur dans l'application. Le minutage et la différenciation enfants / adultes sont aussi des propositions."
   - "Le jeu est le jeu 14 [S] repris tel quel (`adapted: false`) : la fiche ne propose aucun jeu dédié au rejet naturel ; le conseil de replacer par rejet et le rappel des règles classiques sont des propositions placées dans `adaptation`. Les règles de la partie classique ne figurent pas dans les sources du dépôt : le rappel est à valider (fautes : règlement fédéral)."
   - "La fiche n° 10 réunit demi-bille et attaque haute sans dire laquelle fait partir la blanche de côté et laquelle l'empêche de reculer : la répartition des rôles est une explication [Prop] (section `de-cote`), les sections [S] ne la portent pas."
-  - "Illustrations `contact-haut` et `attaque-haute` : le type `TipPoint` n'a pas de valeur « un peu au-dessus du centre » ; `top` dessine le point en haut de la bille, alors que la fiche n° 10 et l'entraînement p. 13 (« légèrement au-dessus du centre ») placent le point d'impact plus bas. Les légendes le précisent ; le schéma est indicatif."
+  - "Illustrations `contact-haut` et `attaque-haute` : le type `TipPoint` n'a pas de valeur « un peu au-dessus du centre » ; `top` dessine le point à mi-rayon du centre (convention [Prop] de la cible), ce qui reste « un peu au-dessus du centre » sans être au bord ; la hauteur exacte n'est pas graduée par la source. Les légendes le précisent ; le schéma est indicatif."
   - "Le rappel reprend trois points sourcés de rebond-bande-2 (angle égal, point de la bande visé, puissance qui referme l'angle) ; les sections `deux-bandes` et `chemin-long` de cette séance étant [Prop], elles ne sont pas rappelées comme sourcées. Le rappel est [Prop] à cause de la phrase de transition. Écart connu (00-provenance) : sur la puissance, le texte de la fiche n° 9 dit que l'angle se referme, la légende du schéma note « angle d'arrivée < angle de rebond » ; le texte est retenu, à signaler à l'animateur pour les enfants. `recall.reuse` réutilise l'illustration `angle-ouvert` de rebond-bande-2."
   - "Thème « Le virage à 45° » : nom distinct de celui de rebond-bande (« Le ricochet »), pour ne pas faire porter la même métaphore à deux techniques ; il est identique dans rejet-naturel-1 et 2 (V23). Le pion sur un chemin au tableau (e1) reste l'accroche d'e1."
   - "Initiation 12 et schémas d'entraînement : le type de chevalet n'est pas indiqué ; la quantité est lue comme proche de la demi-bille, le texte ne précisant pas le taux sur le schéma. Sur le schéma, la flèche d'arrivée de la blanche (exercice 1) est à droite de la ligne de départ, alors que l'initiation 12 place la zone à gauche : la séance matérialise la zone par un jeton posé au bout de la flèche, sans la décrire par rapport à la ligne."
   - "Exercices : la fiche dit « replacer cinq fois la blanche afin de jouer la noire » ; la séance garde cette consigne (cinq tirs, jaune et blanche replacées à chaque fois). La noire dégagée est une lecture [Prop] de « pour jouer la noire » (géométrie du schéma), à valider ; elle ne change pas le taux 3/5 repris de la source."
   - "Le bloc « Le rejet naturel » figure deux fois dans le PDF d'entraînement (pp. 13-14 puis 17-18, schémas avec bandes) ; la séance utilise les exercices de la 1re occurrence (p. 13) ; la 2e (pp. 17-18, avec rebond) n'est pas utilisée."
-  - "L'illustration `chemin-blanche` et la marque d'angle sont indicatives (non à l'échelle). `chemin-blanche` reprend le schéma d'initiation 12 [S] auquel s'ajoute une bille de repère rouge, qui est le conseil de vérification de la fiche (bille posée sur la trajectoire estimée) : c'est une bille de repère, pas la rouge d'un exercice."
+  - "L'illustration `chemin-blanche` et la marque d'angle sont indicatives (non à l'échelle). `chemin-blanche` reprend la disposition du schéma d'initiation 12 [S], avec des positions recalculées [Prop] à la géométrie réelle (bille fantôme à r_c + r_o = 0,2136 case de la jaune, blanche plus petite, départ de la blanche à environ 31° pour la demi-bille ; le schéma transcrit `initiation-p12-e1` garde les cotes lues sur le PDF) ; s'ajoute une bille de repère rouge, qui est le conseil de vérification de la fiche (bille posée sur la trajectoire estimée) : c'est une bille de repère, pas la rouge d'un exercice."

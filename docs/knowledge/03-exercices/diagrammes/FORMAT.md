@@ -17,8 +17,15 @@ non sourcée n'est écrite ici.
   `y ∈ [0, 4]` en travers (haut → bas). Origine = coin haut-gauche de la **surface de jeu** (bord intérieur
   des bandes). Rapport longueur/largeur = 2:1.
 - Ligne de départ (trait plein vertical du schéma) : `x = 2.0` (`[Prop]` à vérifier visuellement ; l'écart
-  éventuel est consigné dans `uncertainties`).
-- Rayon d'une bille : `0.1` unité (bille ≈ 1/20 de la largeur : billes de Blackball 50,8 mm sur 0,9 m ; `[Prop]`).
+  éventuel est consigné dans `uncertainties`). La règle `[FFB]` (1/5 de la longueur) donne `x = 1.6` : conflit
+  non arbitré, voir `../../02-techniques/06-dimensions-du-materiel.md` § 4.
+- **Rayons de bille, aux tailles réelles** (une case = 925 / 4 = 231,25 mm ; cotes `[FFB]`, voir
+  `../../02-techniques/06-dimensions-du-materiel.md`) : bille de but (rouge, jaune, noire) 50,8 mm, soit
+  **rayon `0.1098`** ; **blanche 48,0 mm, rayon `0.1038`**. La blanche est **plus petite** que les billes de but
+  (rapport 0,945) `[S]`. Distance entre centres au contact blanche / bille de but : `s = r_c + r_o = 0.2136` ;
+  entre deux billes de but : `2 r_o = 0.2197`. Les positions transcrites sont des mesures à 0,01 case près : le
+  validateur tolère ce jeu pour deux billes tangentes ou une bille contre une bande.
+- Poche : ouverture réelle 76,2 mm (`0.3295` case, 1,5 bille de but) ; l'application la dessine à cette taille.
 - Poches (id) : `tl`, `tm`, `tr` (haut gauche / milieu / droite), `bl`, `bm`, `br` (bas). Centres :
   `tl=(0,0)`, `tm=(4,0)`, `tr=(8,0)`, `bl=(0,4)`, `bm=(4,4)`, `br=(8,4)`.
 - Couleurs de billes : `red`, `yellow`, `black`, `white` (blanche = bille de choc).
@@ -95,11 +102,12 @@ photo illustre selon le texte voisin), `adjacent_text_summary`.
 
 Tout fichier des dossiers `entrainement/`, `initiation/`, `jeux/` et `techniques/` est une **transcription de source `[S]`** : le PDF fait foi (`rank: S`).
 
-Le dossier `proposition/` fait exception : ses pages portent `source: {file: "Proposition (hors PDF)", page: <rang de la page proposition>, rank: Prop}`. Un diagramme y est la **mise en place `[Prop]`** d'un exercice d'un bloc proposé du catalogue (`source: Prop`) : `kind: exercise`, `sheet` = titre du bloc, `exercise` = numéro, `success_rate` = taux `[Prop]` du bloc, jamais de `bronze`. Les positions sont reprises, ou calculées (bille fantôme : `G = O - 2r·u`), à partir de schémas `[S]` ; elles sont illustratives, non mesurées, et les annotations de provenance commencent par `[Prop]`. Ne jamais présenter ces schémas comme fédéraux. Le validateur n'accepte que `rank: S` ou `rank: Prop` (champ facultatif). Les valeurs numériques
-de position des transcriptions sont des mesures approchées (jamais publiées par la FFB sous cette forme). Les rayons de bille,
-la position de la ligne de départ et les couleurs sont des `[Prop]` documentés.
+Le dossier `proposition/` fait exception : ses pages portent `source: {file: "Proposition (hors PDF)", page: <rang de la page proposition>, rank: Prop}`. Un diagramme y est la **mise en place `[Prop]`** d'un exercice d'un bloc proposé du catalogue (`source: Prop`) : `kind: exercise`, `sheet` = titre du bloc, `exercise` = numéro, `success_rate` = taux `[Prop]` du bloc, jamais de `bronze`. Les positions sont reprises, ou calculées (bille fantôme : `G = O - s·u` avec `s = r_c + r_o = 0.2136`, la bille fantôme étant une blanche ; contrôle : `dart run tool/diagrammes.dart --ghosts`), à partir de schémas `[S]` ; elles sont illustratives, non mesurées, et les annotations de provenance commencent par `[Prop]`. Ne jamais présenter ces schémas comme fédéraux. Le validateur n'accepte que `rank: S` ou `rank: Prop` (champ facultatif). Les valeurs numériques
+de position des transcriptions sont des mesures approchées (jamais publiées par la FFB sous cette forme). Les rayons de bille
+viennent des cotes `[FFB]` (`06-dimensions-du-materiel.md`) ; la position de la ligne de départ et les couleurs sont
+des `[Prop]` documentés.
 
 ## 4. Outils
 
-- Validation + rendu ASCII : `cd app && dart run tool/diagrammes.dart [--ascii] <fichier.yaml…>` (voir README de ce dossier).
+- Validation + rendu ASCII : `cd app && dart run tool/diagrammes.dart [--ascii] [--ghosts] <fichier.yaml…>` (voir README de ce dossier).
 - Le contrôle indépendant compare le rendu ASCII au PDF (`pdftoppm -r 110 -f N -l N -png`).

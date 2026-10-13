@@ -2,7 +2,7 @@
 
 Statut : **proposé (2026-10-13), révisé après les décisions de l'utilisateur** (voir `docs/engineering/adr/0004-catalogue-fiches-seances.md`). **29 séances rédigées** (lot L7), `fiches.dart --complete` vert ; le pilote `09-demi-bille-1.yaml` (section 9) reste le modèle normatif. Les éléments `[Prop]` restent à valider par l'animateur.
 
-Le catalogue compte **14 techniques**. Chaque technique est enseignée en **une ou plusieurs séances** (ses « parties »), soit **29 séances** au total. Une séance décrit **une partie d'une technique** pour **les deux publics** ; elle est lue par l'application en lecture seule (asset copié par `scripts/sync_fiches.sh`), contrôlée par `app/tool/fiches.dart` (`cd app && dart run tool/fiches.dart [--complete]`, paquet `yaml` de l'application, comme `tool/diagrammes.dart` ; `scripts/` n'a pas de `pubspec.yaml` et n'est que `dart:io`) et par un test de contrat Dart sur les vrais fichiers (V12 et V17 n'y sont vérifiées que par ce test, car elles lisent du code de `app/lib`).
+Le catalogue compte **14 techniques**. Chaque technique est enseignée en **une ou plusieurs séances** (ses « parties »), soit **29 séances** au total. Une séance décrit **une partie d'une technique** pour **les deux publics** ; elle est lue par l'application en lecture seule (asset copié par `scripts/sync_fiches.sh`), contrôlée par `app/tool/fiches.dart` (`cd app && dart run tool/fiches.dart [--complete]`, paquet `yaml` de l'application, comme `tool/diagrammes.dart` ; `scripts/` n'a pas de `pubspec.yaml` et n'est que `dart:io`) et par un test de contrat Dart sur les vrais fichiers (V12 n'y est vérifiée que par ce test, car elle lit du code de `app/lib` ; V17 l'est aussi par l'outil, qui importe la géométrie pure de `app/lib/shared/lib`).
 
 Règle d'or : **ne rien inventer qui se présente comme officiel**. Le contenu sourcé est repris des sources (`[S]` PDF, `[FFB]`, `[Web]`). Le ludique, le minutage, les jeux adaptés et les blocs d'entraînement ajoutés (posture, bille fantôme) sont `[Prop]`, déclarés comme tels et **affichés comme tels, élément par élément, dans l'application** (section 5).
 
@@ -241,7 +241,7 @@ Les éléments `[Prop]` par définition (thème, défis, variante, poids, minute
 
 ## 6. Illustrations : types autorisés (liste fermée)
 
-Repère de table : celui de `docs/knowledge/03-exercices/diagrammes/FORMAT.md` (x ∈ [0, 8], y ∈ [0, 4], origine en haut à gauche, rayon de bille 0.1, poches `tl tm tr bl bm br`). Chaque illustration porte `caption` (affichée aux élèves) et `alt` (non vide). **Illustrations générées uniquement** : aucune photo de PDF.
+Repère de table : celui de `docs/knowledge/03-exercices/diagrammes/FORMAT.md` (x ∈ [0, 8], y ∈ [0, 4], origine en haut à gauche, rayons de bille **réels** : bille de but 0.1098, blanche 0.1038 (la blanche est plus petite `[S]`), poches `tl tm tr bl bm br`). Chaque illustration porte `caption` (affichée aux élèves) et `alt` (non vide). **Illustrations générées uniquement** : aucune photo de PDF.
 
 | `type` | Paramètres | Rendu | Statut |
 |---|---|---|---|
@@ -250,29 +250,39 @@ Repère de table : celui de `docs/knowledge/03-exercices/diagrammes/FORMAT.md` (
 | `contact` | `fraction`: `full\|three_quarter\|half\|quarter\|thin`, `tip_point` | `BallContactDiagram` | existant ; `tip_point` à étendre (voir ci-dessous) |
 | `contact_strip` | `fractions[]`, `highlight` | rangée de `BallContactDiagram` | nouveau `ContactStrip` |
 | `ghost_aim` | `cue: [x,y]`, `object: [x,y]`, `pocket`, `fraction` | table + bille fantôme + ligne de visée | nouveau : flèche `aim`, bille fantôme calculée |
-| `cue_side` | `tip_point`, `cue_height`: `high\|level\|low` | vue de côté bille + queue | nouveau `CueSideView` |
-| `stance_top` | `view`: `top`, `annotations[]` | vue de dessus schématique (pieds, axe queue-épaule, main de chevalet) ; pas de silhouette | nouveau `StanceDiagram` |
-| `power_scale` | `levels`: 1-5, `highlight`, `distance_label` | échelle de puissance | nouveau `PowerScale` |
+| `cue_ball_target` | `tip_point` ; facultatifs : `compare[]` (points de comparaison, sans doublon ni `tip_point`), `cue_height`: `high\|level\|low` | la blanche vue de face avec une **cible** (anneaux à mi-rayon et au bord, croix nommée) et le point d'impact du procédé **à l'échelle** (8,5 mm sur 48,0 mm, § 6.1) ; avec `cue_height`, un petit profil de la queue | nouveau `CueBallTarget` (V25) |
+| `player_figure` | `view`: `side\|top\|both` ; facultatifs : `focus[]` (`feet legs_and_hips head back_forearm bridge_hand cue`, non vide, sans doublon ; défaut : les six), `lead_eye`: `left\|right`, `head_case`: `right_eye_over_cue\|cue_between_eyes\|left_eye_over_cue` (seulement si la vue contient `top`), `bridge`: `frame\|surface` | joueur droitier schématique (pictogramme neutre : ni visage, ni sexe, ni âge) de profil et / ou de dessus, repères numérotés légendés ; billes agrandies, non à l'échelle | nouveau `PlayerFigure` (V26) |
+| `ball_size` | aucun paramètre | la blanche (48,0 mm) et une bille de but (50,8 mm) **côte à côte, à l'échelle** (rapport 0,945 `[FFB]`), les deux diamètres écrits sous les billes : la seule figure où la différence se voit à l'écran | nouveau `BallSizeComparison` |
+| `power_ratio` | facultatifs : `points[]` (au plus 2 : `amplitude`: `short\|medium\|long`, `speed`: `slow\|medium\|fast`, `label`), `highlight` (indice de `points`, à partir de 0), `distance_label` | plan **amplitude × vitesse** à trois zones (doux, moyen, puissant) ; les exemples sont placés et leur zone est écrite sous le plan | nouveau `PowerRatio` (V27) |
 | `angle` | `kind`: `bounce\|natural_rejection\|right_angle`, `vertex: [x,y]`, `rays[]` | marque d'angle sur une table | nouveau `AngleMark` |
 | `pdf_ref` | `file`, `page` | pastille « voir page n du PDF » (jamais d'image) | nouveau, texte seul |
 
 `tip_point` : `center`, `top`, `bottom`, `left`, `right`, `top_left`, `top_right`, `bottom_left`, `bottom_right` (les 4 diagonales sont à ajouter à `TipPoint`).
 
+Les trois types `cue_side`, `stance_top` et `power_scale` sont **retirés** (V1 non livrée, aucune compatibilité) : leur type est refusé comme hors de la liste fermée. `cue_side` devient `cue_ball_target` (mêmes `tip_point` et `cue_height`), `stance_top` devient `player_figure` (`annotations[]` disparaît : le texte passe en `focus`, `head_case` et `caption`), `power_scale` devient `power_ratio` (aucun « cran » : un point `amplitude` × `vitesse`).
+
 Contrainte d'architecture : `ContactFraction` et `TipPoint` vivent aujourd'hui dans `shared/ui` ; or le modèle `Illustration` (domaine, `shared/lib`) et la géométrie ne peuvent importer que `shared/lib`. Les deux énumérations pures sont donc **déplacées en `shared/lib`** (`ContactFraction` tel quel, importé directement depuis `shared/lib` partout : aucun réexport ; `TipPoint` sans `Offset`, la `direction` devenant une extension de `shared/ui`, qui réexporte l'énumération). La provenance `[S]`/`[FFB]`/`[Web]`/`[Prop]` est un **type unique** `Provenance` (`shared/lib`), partagé par le catalogue d'entraînement et les séances : les deux contenus ne peuvent pas diverger sur cette notion.
+
+Géométrie de `cue_ball_target` (`CueBallTargetGeometry`, rayon `R` de la blanche en pixels) : anneaux à `0,5 R` et `R` ; le procédé est dessiné à `0,177 R` de rayon (8,5 mm / 48,0 mm), avec un plancher de 10 px pour la projection (anneau pointillé quand le plancher est actif, et la phrase « à l'échelle » est alors omise) ; le centre du repère est à mi-rayon du centre de la blanche dans la direction du `tip_point` `[Prop]` (diagonales : `0,354 R` sur chaque axe). Un impact à gauche ou à droite ne se voit pas de profil : le profil de `cue_height` le dessine à hauteur du centre.
+
+Géométrie de `power_ratio` (`PowerPlaneGeometry`) : l'amplitude (recul de la main) en abscisse, la vitesse en ordonnée, valeurs relatives `[Prop]` `short` = `slow` = 0,3, `medium` = 0,6, `long` = `fast` = 1 ; zone = produit `amplitude × vitesse` : `< 0,2` doux, `< 0,5` moyen, sinon puissant (limites hyperboliques, donc un **rapport**). Seuls les deux extrêmes (peu de recul et peu de vitesse = doux ; grand recul et grande vitesse = puissant) viennent de la fiche n° 2 `[S]` ; la grille intermédiaire est `[Prop]` et ne s'écrit jamais « officielle » (V19). Au plus deux exemples par illustration (charge pour des débutants).
+
+Géométrie de `player_figure` (`SidePose`, `TopPose` en `shared/lib`) : joueur droitier de taille `H` ; plateau à `0,48 H`, queue de `0,83 H` au talon relevé de 10° (jamais strictement horizontale), pied droit sous la main arrière, avant-bras vertical, tête au-dessus de la queue ; la main de chevalet repose sur le tapis (`surface`) ou sur le rail (`frame`) et la queue repose sur le haut de la main. Au plus trois repères par illustration pour des enfants (`focus`) ; les six pour les adultes et le rappel.
 
 Géométrie de `ghost_aim` (fonction pure en `shared/lib`, testée par valeurs indépendantes) :
 
-- Bille fantôme : `G = O - 2r · unit(P - O)`, où `O` = centre de la bille cible, `P` = centre de la poche, `r = 0.1`.
+- La blanche (48,0 mm) est **plus petite** que la bille de but (50,8 mm) : rayons `r_c = 0.1038` et `r_o = 0.1098` case (une case = 231,25 mm ; `02-techniques/06-dimensions-du-materiel.md`). Distance entre centres au contact : `s = r_c + r_o = 0.2136` (et non `2 r`).
+- Bille fantôme : `G = O - s · unit(P - O)`, où `O` = centre de la bille cible, `P` = centre de la poche ; c'est une blanche : le cercle creux est dessiné au rayon `r_c`. Le point de contact est `O - r_o · unit(P - O)`.
 - Angle de coupe `θ` = angle entre `G - C` (queue-fantôme, `C` = blanche) et `P - O`.
-- Quantité de bille dérivée : `f = 1 - sin θ` (identique à `ContactFraction.centerOffset = 2 (1 - overlap)` en rayons) ; `θ = 0` donne `full` (1.0) ; `θ = 30°` donne `half` (0.5, en accord avec la déviation ≈ 30° de la fiche technique n° 5) ; `θ ≈ 14.5°` donne `three_quarter` ; `θ ≈ 48.6°` donne `quarter`.
-- Valeur nominale : `ContactFraction.overlap` (1, 0.75, 0.5, 0.25 et `thin` = 0.05 ; `thin` correspond à θ ≈ 71.8°). La fonction de `shared/lib` renvoie `f` (un `double`) ; la comparaison à l'étiquette se fait dans le test de contrat.
-- Étiquette admise si `|f - valeur nominale| ≤ 0.07`.
+- Distance de visée `d = s · sin θ` : écart entre la ligne de visée (centre de la blanche) et le centre de la bille cible. **Définition d'une quantité** (`ContactFraction.aimOffset`, en cases ; `[S]` fiches techniques n° 5 à 8) : `full` : `d = 0` ; `three_quarter` : `r_o / 2` (0.0549, θ ≈ 14.9°) ; `half` : `r_o`, le centre de la blanche passe par la tangente (0.1098, θ ≈ 30.9°) ; `quarter` : `r_o + r_c / 2`, mesuré par rapport à la blanche (0.1617, θ ≈ 49.2°) ; `thin` : `0.95 · s` `[Prop]` (0.2029, θ ≈ 71.8°). Avec des billes égales, `half` donnerait exactement 30° : l'écart de 0,9° est celui de la source (rétro 90° impossible en demi-bille).
+- Indice continu `f = 1 - sin θ` (`contactQuantity`, 1 : plein ; 0 : coupe ≥ 90°) : indice de lecture, non utilisé pour valider l'étiquette.
+- Étiquette admise si `|d - d_nominal| ≤ 0.07 · s` (0.0150 case) ; l'écart minimal entre deux `d` nominaux est 0.19 · s : les étiquettes voisines restent distinctes. Marge exigée par le test de contrat : `|d - d_nominal| ≤ 0.05 · s` (au moins 0.02 · s sous la tolérance).
 
 Interdits : toute clé `photo`, `image`, `path`, `url`, `asset` **au niveau de l'illustration** (la clé `path` des éléments de `arrows[]`, polyligne de la trajectoire, est la forme du FORMAT des diagrammes et reste permise).
 
 ## 7. Règles de validation (vérifiables par outil)
 
-Chaque règle est numérotée ; `app/tool/fiches.dart` et le test de contrat citent le numéro dans leur message. Le validateur a deux modes : par défaut il contrôle chaque fichier présent (contre la structure du § 1, calculée depuis le catalogue, pour les séances absentes) ; avec `--complete` il exige en plus les 29 fichiers (fin du lot L7). Une illustration `pdf_ref` seule ne se présente pas aux élèves (texte pour l'animateur) : une étape qui n'a qu'un renvoi est lisible dans le guide mais n'est pas « présentable ». Les règles V12 et V17 ne sont vérifiées que par le test de contrat Dart. Le validateur contrôle en plus (règle `T1`) que les tableaux des § 1.2 et § 1.3 sont égaux à la structure calculée depuis le catalogue, et `dart run tool/fiches.dart --structure` affiche cette structure.
+Chaque règle est numérotée ; `app/tool/fiches.dart` et le test de contrat citent le numéro dans leur message. Le validateur a deux modes : par défaut il contrôle chaque fichier présent (contre la structure du § 1, calculée depuis le catalogue, pour les séances absentes) ; avec `--complete` il exige en plus les 29 fichiers (fin du lot L7). Une illustration `pdf_ref` seule ne se présente pas aux élèves (texte pour l'animateur) : une étape qui n'a qu'un renvoi est lisible dans le guide mais n'est pas « présentable ». La règle V12 n'est vérifiée que par le test de contrat Dart (V17 l'est par l'outil et par le test de contrat). Le validateur contrôle en plus (règle `T1`) que les tableaux des § 1.2 et § 1.3 sont égaux à la structure calculée depuis le catalogue, et `dart run tool/fiches.dart --structure` affiche cette structure.
 
 | N° | Règle |
 |---|---|
@@ -292,7 +302,7 @@ Chaque règle est numérotée ; `app/tool/fiches.dart` et le test de contrat cit
 | V14 | `game.link_previous` présent pour `order > 1`, avec `notion_of` = `previous`, `rule` et `note` non vides ; absent pour `order == 1` |
 | V15 | `notion` tient en une seule phrase (aucun `. ` ni `;` interne, ≤ 25 mots) ; `technical_sheets` est cohérent avec le § 1 |
 | V16 | Texte enfants : chaque élément de `body` ≤ 60 mots ; `key_point` ≤ 20 mots |
-| V17 | `ghost_aim` (test de contrat Dart uniquement) : fraction dérivée cohérente avec l'étiquette (section 6) ; coordonnées dans [0,8] × [0,4] ; l'outil `fiches.dart` ne contrôle que les bornes |
+| V17 | `ghost_aim` : coordonnées dans [0,8] × [0,4] ; poche et fraction connues ; distance de visée `d = s · sin θ` cohérente avec l'étiquette, `|d - d_nominal| ≤ 0.07 · s` (section 6) ; le test de contrat exige en plus une marge (≤ 0.05 · s) |
 | V18 | `sources` non vide ; tout `rank: S` cite un fichier présent dans `docs/sources/` ; un exercice `src: Prop` a au moins une source `[S]` citée dont il est adapté |
 | V19 | Le mot `officiel` (insensible à la casse) n'apparaît dans aucun élément `src: Prop`, `playful`, `theme` ni `game` adapté ; aucun chemin `docs/sources/` hors de `sources[].file` (l'intégrité de `docs/sources/` est garantie par le hook `pre-tool-guard`, pas par ce validateur) |
 | V20 | `theme` présent ; `playful` (`hook` et `challenge` non vides) sur **chaque** exercice ; `game.playful_variant` non vide |
@@ -300,6 +310,9 @@ Chaque règle est numérotée ; `app/tool/fiches.dart` et le test de contrat cit
 | V22 | `order == 1` : `recall.reuse` absent, `previous` nul et `link_previous` absent ; `order > 1` : `recall.points` porte sur `previous` (relecture indépendante) et `recall.reuse.sheet == previous` quand présent ; pour `part > 1`, `previous` est la partie `part - 1` de la même technique |
 | V23 | Cohérence des parties d'une technique : mêmes `technique`, `title`, `notion`, `theme.name`, `catalogue_block` et `technical_sheets` ; `part` de 1 à n sans trou (`--complete`) ; `game.playful_variant` différente de celle de la partie précédente |
 | V24 | Toute illustration est citée par une section de théorie, une initiation ou le jeu (`setup_illustration`), ou reprise en rappel (`recall.reuse`) par la séance suivante : une illustration jamais citée n'est jamais visible. Contrôlée quand la séance suivante est présente |
+| V25 | `cue_ball_target` : `tip_point` ∈ 9 valeurs ; `compare` sans doublon ni `tip_point` ; `cue_height` ∈ {`high`, `level`, `low`} |
+| V26 | `player_figure` : `view` ∈ {`side`, `top`, `both`} ; `focus` non vide, sans doublon, repères connus ; `lead_eye`, `head_case`, `bridge` dans leurs listes ; `head_case` seulement si la vue contient `top` ; aucune clé `annotations` |
+| V27 | `power_ratio` : `amplitude` et `speed` dans leurs listes, au plus 2 `points`, `highlight` indice d'un exemple (0 à `points` − 1), aucune clé `levels` ni `cran` |
 
 Hors outil (relecture indépendante par `relecteur-pedagogique`) : une seule notion, charge cognitive enfants, ton ludique, exactitude face aux sources, pertinence des blocs `[Prop]` (voir aussi la validation par l'utilisateur dans l'application, section 5).
 

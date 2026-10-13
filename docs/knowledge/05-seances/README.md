@@ -40,8 +40,8 @@ Fichiers : `catalogue/NN-<id>.yaml` (format : `catalogue/FORMAT.md`). Contrôle 
 |---|---|---|---|---|
 | `posture-1` (1) | Le tireur d'élite | rappel ; théorie : cible, gauchers, attaque ; exercices (bloc `[Prop]`) : e1, e2 | jeu n° 1 repris tel quel | 12 |
 | `posture-2` (2) | Le tireur d'élite | théorie : distance ; exercices (bloc `[Prop]`) : e1, e2 | jeu n° 2 repris tel quel | 7 |
-| `puissance-1` (3) | Le curseur de puissance | théorie : curseur, mots-queue, ressort | jeu n° 3 repris tel quel | 9 |
-| `puissance-2` (4) | Le curseur de puissance | théorie : distances | jeu n° 4 repris tel quel | 10 |
+| `puissance-1` (3) | Les deux curseurs | théorie : curseur, mots-queue, ressort | jeu n° 3 repris tel quel | 9 |
+| `puissance-2` (4) | Les deux curseurs | théorie : distances | jeu n° 4 repris tel quel | 10 |
 | `bille-fantome-1` (5) | Le chasseur de fantômes | théorie : mot-fantome ; exercices (bloc `[Prop]`) : e1, e2 | adapté du jeu n° 1 | 7 |
 | `bille-fantome-2` (6) | Le chasseur de fantômes | théorie : fantome-decalee, surface-distance ; exercices (bloc `[Prop]`) : e3, e4 | adapté du jeu n° 10 | 7 |
 | `bille-pleine-1` (7) | Tir plein cœur | théorie : attaque | jeu n° 6 repris tel quel | 8 |

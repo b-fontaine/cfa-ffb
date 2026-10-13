@@ -81,6 +81,7 @@ theory:
         - Les deux exercices du jour se jouent avec des quantités différentes.
         - Le premier est proche du demi, le second entre le demi et le trois-quarts.
         - "Pour une même rouge et une même poche, la ligne de la blanche ne change pas quand on change de quantité : c'est la place de départ qui change."
+        - Sur les schémas, la blanche est dessinée un peu plus petite que la bille de couleur, comme sur la table.
       key_point: "Même rouge, même poche : la ligne de la blanche reste la même, seule la place de départ change."
       demo: null
       illustrations: [quantites]
@@ -128,18 +129,18 @@ illustrations:
       - {id: r, color: red, at: [5.0, 2.0]}
       - {id: w, color: white, at: [4.4, 3.1], role: cue}
     ghosts:
-      - {id: g-impact, at: [4.83, 2.11], role: impact, for: w}
+      - {id: g-impact, at: [4.819, 2.114], role: impact, for: w}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[4.4, 3.1], [4.83, 2.11], [3.21, 0.62]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[4.4, 3.1], [4.819, 2.114], [3.21, 0.62]], bounces: []}
       - {id: a2, ball: r, kind: object, path: [[5.0, 2.0], [7.86, 0.19]], bounces: [], to: tr}
     caption: "Coup trop puissant : la blanche part plus ouverte que l'angle droit, au-delà de 90° (schéma indicatif)."
     alt: "Table vue de dessus : la rouge au centre, la blanche en bas à gauche de la rouge ; après le contact, la rouge part vers la poche du haut à droite et la blanche part vers le haut à gauche, plus à l'horizontale que l'angle droit, soit plus de 90° entre les deux billes."
-  - {id: pointe-centre, type: cue_side, tip_point: center, cue_height: level,
+  - {id: pointe-centre, type: cue_ball_target, tip_point: center, cue_height: level,
      caption: "Attaque au centre : le procédé frappe la blanche en son centre, la queue à plat (schéma indicatif).",
-     alt: "Bille blanche vue de côté avec la queue à plat ; le procédé touche la blanche en son centre."}
+     alt: "Cible sur la blanche vue de face : le procédé touche le centre ; le profil montre la queue à hauteur moyenne."}
   - {id: quantites, type: contact_strip, fractions: [half, three_quarter], highlight: three_quarter,
      caption: "Les quantités des deux exercices : autour du demi, puis entre le demi et le trois-quarts.",
-     alt: "Deux schémas de contact côte à côte, repères des deux exercices : la demi-bille, puis le trois-quarts de bille mis en évidence."}
+     alt: "Deux schémas de contact côte à côte, billes à leur taille réelle (la blanche un peu plus petite que la bille de couleur), avec une légende des deux diamètres : la demi-bille, puis le trois-quarts de bille mis en évidence."}
   - id: bande-90
     type: table
     balls:
@@ -147,9 +148,9 @@ illustrations:
       - {id: w, color: white, at: [5.98, 1.94], role: cue}
       - {id: n, color: black, at: [3.4, 3.2]}
     ghosts:
-      - {id: g-impact, at: [5.19, 2.07], role: impact, for: w}
+      - {id: g-impact, at: [5.2, 2.075], role: impact, for: w}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[5.98, 1.94], [5.19, 2.07], [4.5, 3.9], [3.94, 2.4]], bounces: [bottom]}
+      - {id: a1, ball: w, kind: cue, path: [[5.98, 1.94], [5.2, 2.075], [4.5, 3.9], [3.94, 2.4]], bounces: [bottom]}
       - {id: a2, ball: r, kind: object, path: [[5.0, 2.0], [0.14, 0.19]], bounces: [], to: tl}
     zones:
       - {id: z1, shape: rect, from: [3.2, 1.9], to: [4.5, 2.8], label: "zone"}

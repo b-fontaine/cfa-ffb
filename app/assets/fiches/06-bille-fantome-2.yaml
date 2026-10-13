@@ -87,20 +87,20 @@ illustrations:
   - {id: quantites, type: contact_strip, fractions: [full, half], highlight: full,
      caption: "Du plein au demi-bille : les deux quantités à connaître pour la bille fantôme.",
      alt: "Deux schémas de contact côte à côte : la bille pleine, mise en évidence, puis la demi-bille."}
-  - {id: procede-centre, type: cue_side, tip_point: center, cue_height: level,
+  - {id: procede-centre, type: cue_ball_target, tip_point: center, cue_height: level,
      caption: "Le procédé se place au centre de la blanche.",
-     alt: "Vue de côté : le procédé de la queue touche la blanche en son centre."}
+     alt: "Cible sur la blanche vue de face : le procédé touche le centre ; le profil montre la queue à hauteur moyenne."}
   - id: distances
     type: table
     balls:
       - {id: o1, color: red, at: [6.0, 1.0]}
       - {id: w, color: white, at: [4.21, 1.89], role: cue, label: "A"}
     ghosts:
-      - {id: g1, at: [5.82, 1.09], role: impact, for: w}
+      - {id: g1, at: [5.81, 1.1], role: impact, for: w}
       - {id: gb, at: [1.08, 3.46], role: cue_start, for: w, label: "B"}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[4.21, 1.89], [5.82, 1.09]], bounces: []}
-      - {id: a2, ball: w, kind: cue, path: [[1.08, 3.46], [5.82, 1.09]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[4.21, 1.89], [5.81, 1.1]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[1.08, 3.46], [5.81, 1.1]], bounces: []}
       - {id: b1, ball: o1, kind: object, path: [[6.0, 1.0], [8.0, 0.0]], to: tr}
     zones: []
     caption: "La bille fantôme reste à la même place, que la blanche parte de A (près) ou de B (loin)."
@@ -184,5 +184,5 @@ uncertainties:
   - "La section « La fantôme se décale » est une déduction [Prop] : les fiches 3, 4 et 5 parlent de trajectoire et de 30° par rapport à l'axe de visée, pas d'une fantôme décalée."
   - "La section « Blanche près, blanche loin » (adultes seulement) est une proposition pédagogique : la fiche technique n° 3 ne traite pas de la distance de la blanche."
   - "Le schéma de l'exercice 4 présente des coupes de 7 à 18° environ, proches du plein : il illustre peu le demi-bille ; aucun nouveau diagramme n'est ajouté."
-  - "Les schémas de bille fantôme sont générés avec un rayon de bille identique pour toutes les billes ; au Blackball la blanche est plus petite, donc ils sont illustratifs et non à l'échelle."
+  - "Les schémas de bille fantôme sont générés aux tailles réelles du matériel : la blanche (48,0 mm) est plus petite que la bille de couleur (50,8 mm), rapport 0,945, et la bille fantôme est dessinée au rayon de la blanche ; les distances entre billes restent indicatives."
   - "Le rappel s'appuie sur ce que bille-fantome-1 enseigne (ligne poche-bille, fantôme posée puis retirée, plein) et réutilise son illustration `visee-fantome` ; la règle de lien reprend la pose puis le retrait de la fantôme du duel de la partie 1, mais la pose par l'adversaire est une nouveauté de cette séance (en partie 1, l'animateur ou un 3e joueur la pose) : proposition, à valider."

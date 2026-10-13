@@ -98,12 +98,12 @@ initiation:
     illustration: schema-initiation
     src: S
 illustrations:
-  - {id: attaque-basse, type: cue_side, tip_point: bottom, cue_height: level,
+  - {id: attaque-basse, type: cue_ball_target, tip_point: bottom, cue_height: level,
      caption: "Attaque basse : le procédé frappe la blanche sous son centre (schéma indicatif).",
-     alt: "Bille blanche vue de côté avec la queue ; le procédé touche la blanche sous son centre."}
-  - {id: talon-leve, type: cue_side, tip_point: bottom, cue_height: high,
+     alt: "Cible sur la blanche vue de face : le procédé touche la partie basse, sous le centre ; le profil montre la queue à hauteur moyenne."}
+  - {id: talon-leve, type: cue_ball_target, tip_point: bottom, cue_height: high,
      caption: "Sur le cadre : le talon de la queue est légèrement levé pour attaquer bas (schéma indicatif).",
-     alt: "Bille blanche vue de côté, la queue inclinée, talon levé ; le procédé touche la blanche dans sa partie basse."}
+     alt: "Cible sur la blanche vue de face : le procédé touche la partie basse, sous le centre ; le profil montre la queue haute, talon levé."}
   - {id: contact-trois-quarts, type: contact, fraction: three_quarter, tip_point: bottom,
      caption: "Trois-quarts : la blanche couvre les trois quarts de la bille de couleur ; l'attaque est basse.",
      alt: "La blanche recouvre les trois quarts de la bille de couleur, vue de dessus, avec le point d'attaque en bas de la blanche."}
@@ -113,10 +113,10 @@ illustrations:
   - {id: retour-plein, type: table,
      balls: [{id: o, color: red, at: [4.0, 1.0]},
              {id: w, color: white, at: [4.0, 3.0], role: cue}],
-     ghosts: [{id: g-impact, at: [4.0, 1.2], role: impact, for: w}],
-     arrows: [{id: a1, ball: w, kind: cue, path: [[4.0, 3.0], [4.0, 1.2]], bounces: []},
+     ghosts: [{id: g-impact, at: [4.0, 1.2136], role: impact, for: w}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[4.0, 3.0], [4.0, 1.2136]], bounces: []},
               {id: a2, ball: o, kind: object, path: [[4.0, 1.0], [4.0, 0.0]], bounces: [], to: tm},
-              {id: a3, ball: w, kind: cue, path: [[4.0, 1.2], [4.0, 2.6]], bounces: []}],
+              {id: a3, ball: w, kind: cue, path: [[4.0, 1.2136], [4.0, 2.6]], bounces: []}],
      zones: [],
      caption: "En bille pleine, la blanche revient sur sa ligne de départ (schéma indicatif).",
      alt: "Table vue de dessus : la blanche en bas du centre, une bille rouge au-dessus vers la poche du milieu du haut ; la blanche monte, touche la rouge, puis redescend sur la même ligne."}

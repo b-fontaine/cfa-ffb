@@ -1,6 +1,8 @@
 # [Prop] Mise en place des exercices du bloc proposé « Viser pour empocher (bille fantôme) ».
-# Ce n'est PAS une transcription d'un PDF : la bille fantôme est CALCULÉE (G = O - 2r·u, u = vecteur
-# unitaire bille -> poche, r = 0,1) ; les positions sont des propositions illustratives, non mesurées.
+# Ce n'est PAS une transcription d'un PDF : la bille fantôme est CALCULÉE (G = O - s·u, u = vecteur
+# unitaire bille -> poche, s = r_c + r_o = 0,2136 case : blanche 48,0 mm et bille de but 50,8 mm, voir
+# 02-techniques/06-dimensions-du-materiel.md) ; les positions sont des propositions illustratives, non
+# mesurées. Contrôle : dart run tool/diagrammes.dart --ghosts.
 # Aucun de ces exercices n'est fédéral ; ils appliquent la fiche technique n° 3 [S] et la fiche
 # d'initiation 6 [S] (bille pleine) puis la demi-bille (≈ 30°, fiche technique n° 5 [S]).
 version: 1
@@ -21,18 +23,18 @@ diagrams:
       - {id: o4, color: yellow, at: [5.0, 1.1]}
       - {id: w, color: white, at: [3.6, 3.6], role: cue, label: "1"}
     ghosts:
-      - {id: g1, at: [1.14, 1.14], role: impact, for: w, label: "1"}
-      - {id: g2, at: [4.0, 1.4], role: impact, for: w, label: "2"}
-      - {id: g3, at: [6.86, 1.14], role: impact, for: w, label: "3"}
-      - {id: g4, at: [5.13, 1.25], role: impact, for: w, label: "4"}
+      - {id: g1, at: [1.15, 1.15], role: impact, for: w, label: "1"}
+      - {id: g2, at: [4.0, 1.41], role: impact, for: w, label: "2"}
+      - {id: g3, at: [6.85, 1.15], role: impact, for: w, label: "3"}
+      - {id: g4, at: [5.14, 1.26], role: impact, for: w, label: "4"}
       - {id: c2, at: [4.0, 3.6], role: cue_start, for: w, label: "2"}
       - {id: c3, at: [4.4, 3.6], role: cue_start, for: w, label: "3"}
       - {id: c4, at: [7.27, 3.6], role: cue_start, for: w, label: "4"}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[3.6, 3.6], [1.14, 1.14]], bounces: []}
-      - {id: a2, ball: w, kind: cue, path: [[4.0, 3.6], [4.0, 1.4]], bounces: []}
-      - {id: a3, ball: w, kind: cue, path: [[4.4, 3.6], [6.86, 1.14]], bounces: []}
-      - {id: a4, ball: w, kind: cue, path: [[7.27, 3.6], [5.13, 1.25]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[3.6, 3.6], [1.15, 1.15]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[4.0, 3.6], [4.0, 1.41]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[4.4, 3.6], [6.85, 1.15]], bounces: []}
+      - {id: a4, ball: w, kind: cue, path: [[7.27, 3.6], [5.14, 1.26]], bounces: []}
       - {id: b1, ball: o1, kind: object, path: [[1.0, 1.0], [0.0, 0.0]], to: tl}
       - {id: b2, ball: o2, kind: object, path: [[4.0, 1.2], [4.0, 0.0]], to: tm}
       - {id: b3, ball: o3, kind: object, path: [[7.0, 1.0], [8.0, 0.0]], to: tr}
@@ -57,7 +59,7 @@ diagrams:
       numéroté, collé à chaque bille côté blanche, marque la bille fantôme ; une flèche relie l'emplacement de
       la blanche au centre de la fantôme. Chevalet sur cadre.
     uncertainties:
-      - "[Prop] Positions illustratives, non mesurées ; la bille fantôme est calculée selon FORMAT (r = 0,1)."
+      - "[Prop] Positions illustratives, non mesurées ; la bille fantôme est calculée selon FORMAT (G = O - (r_c + r_o)·u, s = 0,2136)."
 
   - id: proposition-p02-e2
     kind: exercise
@@ -74,18 +76,18 @@ diagrams:
       - {id: o4, color: yellow, at: [5.0, 2.9]}
       - {id: w, color: white, at: [3.6, 0.4], role: cue, label: "1"}
     ghosts:
-      - {id: g1, at: [1.14, 2.86], role: impact, for: w, label: "1"}
-      - {id: g2, at: [4.0, 2.6], role: impact, for: w, label: "2"}
-      - {id: g3, at: [6.86, 2.86], role: impact, for: w, label: "3"}
-      - {id: g4, at: [5.13, 2.75], role: impact, for: w, label: "4"}
+      - {id: g1, at: [1.15, 2.85], role: impact, for: w, label: "1"}
+      - {id: g2, at: [4.0, 2.59], role: impact, for: w, label: "2"}
+      - {id: g3, at: [6.85, 2.85], role: impact, for: w, label: "3"}
+      - {id: g4, at: [5.14, 2.74], role: impact, for: w, label: "4"}
       - {id: c2, at: [4.0, 0.4], role: cue_start, for: w, label: "2"}
       - {id: c3, at: [4.4, 0.4], role: cue_start, for: w, label: "3"}
       - {id: c4, at: [7.27, 0.4], role: cue_start, for: w, label: "4"}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[3.6, 0.4], [1.14, 2.86]], bounces: []}
-      - {id: a2, ball: w, kind: cue, path: [[4.0, 0.4], [4.0, 2.6]], bounces: []}
-      - {id: a3, ball: w, kind: cue, path: [[4.4, 0.4], [6.86, 2.86]], bounces: []}
-      - {id: a4, ball: w, kind: cue, path: [[7.27, 0.4], [5.13, 2.75]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[3.6, 0.4], [1.15, 2.85]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[4.0, 0.4], [4.0, 2.59]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[4.4, 0.4], [6.85, 2.85]], bounces: []}
+      - {id: a4, ball: w, kind: cue, path: [[7.27, 0.4], [5.14, 2.74]], bounces: []}
       - {id: b1, ball: o1, kind: object, path: [[1.0, 3.0], [0.0, 4.0]], to: bl}
       - {id: b2, ball: o2, kind: object, path: [[4.0, 2.8], [4.0, 4.0]], to: bm}
       - {id: b3, ball: o3, kind: object, path: [[7.0, 3.0], [8.0, 4.0]], to: br}
@@ -107,7 +109,7 @@ diagrams:
       près de la bande du haut (y = 0,4). Les cercles creux numérotés montrent la bille fantôme, qui n'est pas
       posée sur la table : l'élève l'imagine. Chevalet sur cadre.
     uncertainties:
-      - "[Prop] Positions illustratives, non mesurées ; la bille fantôme est calculée selon FORMAT (r = 0,1)."
+      - "[Prop] Positions illustratives, non mesurées ; la bille fantôme est calculée selon FORMAT (G = O - (r_c + r_o)·u, s = 0,2136)."
 
   - id: proposition-p02-e3
     kind: exercise
@@ -126,20 +128,20 @@ diagrams:
       - {id: o6, color: yellow, at: [5.5, 1.1]}
       - {id: w, color: white, at: [2.0, 2.0], role: cue, label: "A"}
     ghosts:
-      - {id: g1, at: [3.06, 0.94], role: impact, for: w, label: "1"}
-      - {id: g2, at: [0.94, 3.06], role: impact, for: w, label: "2"}
-      - {id: g3, at: [1.64, 1.64], role: impact, for: w, label: "3"}
-      - {id: g4, at: [7.04, 1.47], role: impact, for: w, label: "4"}
-      - {id: g5, at: [6.78, 2.34], role: impact, for: w, label: "5"}
-      - {id: g6, at: [5.66, 1.22], role: impact, for: w, label: "6"}
+      - {id: g1, at: [3.05, 0.95], role: impact, for: w, label: "1"}
+      - {id: g2, at: [0.95, 3.05], role: impact, for: w, label: "2"}
+      - {id: g3, at: [1.65, 1.65], role: impact, for: w, label: "3"}
+      - {id: g4, at: [7.03, 1.48], role: impact, for: w, label: "4"}
+      - {id: g5, at: [6.77, 2.33], role: impact, for: w, label: "5"}
+      - {id: g6, at: [5.67, 1.23], role: impact, for: w, label: "6"}
       - {id: cb, at: [6.0, 2.0], role: cue_start, for: w, label: "B"}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[2.0, 2.0], [3.06, 0.94]], bounces: []}
-      - {id: a2, ball: w, kind: cue, path: [[2.0, 2.0], [0.94, 3.06]], bounces: []}
-      - {id: a3, ball: w, kind: cue, path: [[2.0, 2.0], [1.64, 1.64]], bounces: []}
-      - {id: a4, ball: w, kind: cue, path: [[6.0, 2.0], [7.04, 1.47]], bounces: []}
-      - {id: a5, ball: w, kind: cue, path: [[6.0, 2.0], [6.78, 2.34]], bounces: []}
-      - {id: a6, ball: w, kind: cue, path: [[6.0, 2.0], [5.66, 1.22]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[2.0, 2.0], [3.05, 0.95]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[2.0, 2.0], [0.95, 3.05]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[2.0, 2.0], [1.65, 1.65]], bounces: []}
+      - {id: a4, ball: w, kind: cue, path: [[6.0, 2.0], [7.03, 1.48]], bounces: []}
+      - {id: a5, ball: w, kind: cue, path: [[6.0, 2.0], [6.77, 2.33]], bounces: []}
+      - {id: a6, ball: w, kind: cue, path: [[6.0, 2.0], [5.67, 1.23]], bounces: []}
       - {id: b1, ball: o1, kind: object, path: [[3.2, 0.8], [4.0, 0.0]], to: tm}
       - {id: b2, ball: o2, kind: object, path: [[0.8, 3.2], [0.0, 4.0]], to: bl}
       - {id: b3, ball: o3, kind: object, path: [[1.5, 1.5], [0.0, 0.0]], to: tl}
@@ -167,7 +169,7 @@ diagrams:
       Un cercle creux numéroté marque, pour chaque bille, la position de la bille fantôme à viser, calculée
       selon la règle du FORMAT. Chevalet sur la surface de jeu.
     uncertainties:
-      - "[Prop] Positions illustratives, non mesurées ; la bille fantôme est calculée selon FORMAT (r = 0,1)."
+      - "[Prop] Positions illustratives, non mesurées ; la bille fantôme est calculée selon FORMAT (G = O - (r_c + r_o)·u, s = 0,2136)."
       - "[Prop] Seul l'emplacement A porte la bille blanche ; B est un cercle creux (emplacement de départ du second groupe de tirs)."
 
   - id: proposition-p02-e4
@@ -187,19 +189,19 @@ diagrams:
       - {id: o6, color: yellow, at: [5.0, 2.5]}
       - {id: w, color: white, at: [2.0, 2.0], role: cue}
     ghosts:
-      - {id: g1, at: [4.81, 1.27], role: impact, for: w, label: "1"}
-      - {id: g2, at: [4.81, 2.73], role: impact, for: w, label: "2"}
-      - {id: g3, at: [3.21, 1.35], role: impact, for: w, label: "3"}
-      - {id: g4, at: [3.21, 2.65], role: impact, for: w, label: "4"}
-      - {id: g5, at: [4.82, 1.59], role: impact, for: w, label: "5"}
-      - {id: g6, at: [4.82, 2.41], role: impact, for: w, label: "6"}
+      - {id: g1, at: [4.8, 1.28], role: impact, for: w, label: "1"}
+      - {id: g2, at: [4.8, 2.72], role: impact, for: w, label: "2"}
+      - {id: g3, at: [3.19, 1.36], role: impact, for: w, label: "3"}
+      - {id: g4, at: [3.19, 2.64], role: impact, for: w, label: "4"}
+      - {id: g5, at: [4.81, 1.6], role: impact, for: w, label: "5"}
+      - {id: g6, at: [4.81, 2.4], role: impact, for: w, label: "6"}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[2.0, 2.0], [4.81, 1.27]], bounces: []}
-      - {id: a2, ball: w, kind: cue, path: [[2.0, 2.0], [4.81, 2.73]], bounces: []}
-      - {id: a3, ball: w, kind: cue, path: [[2.0, 2.0], [3.21, 1.35]], bounces: []}
-      - {id: a4, ball: w, kind: cue, path: [[2.0, 2.0], [3.21, 2.65]], bounces: []}
-      - {id: a5, ball: w, kind: cue, path: [[2.0, 2.0], [4.82, 1.59]], bounces: []}
-      - {id: a6, ball: w, kind: cue, path: [[2.0, 2.0], [4.82, 2.41]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[2.0, 2.0], [4.8, 1.28]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[2.0, 2.0], [4.8, 2.72]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[2.0, 2.0], [3.19, 1.36]], bounces: []}
+      - {id: a4, ball: w, kind: cue, path: [[2.0, 2.0], [3.19, 2.64]], bounces: []}
+      - {id: a5, ball: w, kind: cue, path: [[2.0, 2.0], [4.81, 1.6]], bounces: []}
+      - {id: a6, ball: w, kind: cue, path: [[2.0, 2.0], [4.81, 2.4]], bounces: []}
       - {id: b1, ball: o1, kind: object, path: [[5.0, 1.2], [8.0, 0.0]], to: tr}
       - {id: b2, ball: o2, kind: object, path: [[5.0, 2.8], [8.0, 4.0]], to: br}
       - {id: b3, ball: o3, kind: object, path: [[3.4, 1.3], [8.0, 0.0]], to: tr}
@@ -226,5 +228,5 @@ diagrams:
       (5,0 ; 1,5) et (5,0 ; 2,5) plus loin avec une coupe un peu plus marquée (environ 18°). Un cercle creux
       numéroté montre pour chaque bille la bille fantôme à viser. Chevalet sur la surface de jeu.
     uncertainties:
-      - "[Prop] Positions illustratives, non mesurées ; la bille fantôme est calculée selon FORMAT (r = 0,1)."
+      - "[Prop] Positions illustratives, non mesurées ; la bille fantôme est calculée selon FORMAT (G = O - (r_c + r_o)·u, s = 0,2136)."
       - "[Prop] Les poches visées sont une proposition ; l'élève peut choisir une autre poche si la trajectoire est libre."

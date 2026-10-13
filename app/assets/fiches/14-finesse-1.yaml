@@ -19,7 +19,7 @@ theme:
     fait avancer le frôleur d'une case sur la piste.
 recall:
   points:
-    - Au quart de bille, on vise en dehors de la bille de couleur, à un demi-rayon au-delà.
+    - Au quart de bille, on vise en dehors de la bille de couleur, à un demi-rayon au-delà, compté avec la blanche, qui est plus petite.
     - Les deux billes se touchent bien, même si la visée passe à côté.
     - La blanche garde une grande part de son énergie et dévie peu.
     - La blanche parcourt plus de chemin que la bille de couleur.
@@ -40,6 +40,7 @@ theory:
         - La blanche ne touche la bille de couleur que sur son bord.
         - On vise un peu plus loin de la bille que pour le quart.
       adult_extra:
+        - "La blanche est un peu plus petite que la bille de couleur : au Blackball, la mesure du quart se prend par rapport à la blanche, et la finesse commence au-delà de ce quart."
         - "Il n'existe pas une seule finesse : le joueur apprécie la quantité selon la trajectoire que doit suivre la bille de couleur."
       key_point: En finesse, on vise un peu plus loin qu'au quart ; seul le bord de la bille est touché.
       demo: "Poser la blanche au contact du bord de la bille de couleur (bille fantôme), montrer le point de contact, retirer la blanche, puis jouer sans empocher."
@@ -99,18 +100,18 @@ initiation:
     src: S
 illustrations:
   - {id: contact-fin, type: contact, fraction: thin, tip_point: center,
-     caption: "Finesse : la blanche ne touche la bille de couleur que par le bord.",
-     alt: "Vue de dessus : la blanche et la bille de couleur se touchent seulement par le bord, avec un très faible recouvrement."}
-  - {id: visee-finesse, type: ghost_aim, cue: [1.4, 3.45], object: [1.5, 1.0], pocket: tl, fraction: thin,
-     caption: "La bille fantôme est tout au bord de la bille de couleur : la visée passe à côté d'elle.",
-     alt: "Table vue de dessus : la blanche en bas à gauche, la bille de couleur près de la poche du haut à gauche ; la bille fantôme est collée au bord de la bille de couleur et la ligne de visée monte presque droit, très légèrement vers la droite, à côté d'elle."}
+     caption: "Finesse : vue de dessus, la blanche, un peu plus petite, ne touche la bille de couleur que par le bord ; à droite, la blanche de face avec le procédé au centre.",
+     alt: "À gauche, vue de dessus : la blanche, un peu plus petite que la bille de couleur, arrive par la gauche sur la ligne de visée en pointillés et ne touche la bille de couleur, placée bien plus haut, que par son bord, avec un très faible recouvrement ; à droite, la blanche vue de face avec une croix et un anneau à mi-rayon, le point du procédé au centre."}
+  - {id: visee-finesse, type: ghost_aim, cue: [1.03, 3.45], object: [1.5, 1.0], pocket: tl, fraction: thin,
+     caption: "La bille fantôme, de la taille de la blanche, est collée à la bille de couleur, côté opposé à la poche : la visée passe à côté de la bille de couleur.",
+     alt: "Table vue de dessus : la blanche en bas à gauche, la bille de couleur près de la poche du haut à gauche ; la bille fantôme, de la taille de la blanche (un peu plus petite que la bille de couleur), est collée à la bille de couleur sur son côté bas droit, avec le point de contact marqué ; la ligne de visée monte presque droit, un peu vers la droite, de la blanche à la bille fantôme et passe à côté de la bille de couleur."}
   - {id: quantites, type: contact_strip, fractions: [quarter, thin], highlight: thin,
-     caption: "Quart de bille, puis finesse : le recouvrement devient de plus en plus faible.",
-     alt: "Deux schémas de contact côte à côte : le quart de bille, puis la finesse mise en évidence."}
+     caption: "Quart de bille, puis finesse : le recouvrement devient de plus en plus faible ; la blanche est dessinée un peu plus petite que la bille de couleur.",
+     alt: "Deux schémas de contact côte à côte, vus de dessus : le quart de bille, puis la finesse mise en évidence ; dans chacun, la blanche est un peu plus petite que la bille de couleur, et une note donne les diamètres de la blanche (48,0 mm) et des billes de but (50,8 mm)."}
   - {id: trajectoires-finesse, type: table,
-     balls: [{id: r, color: red, at: [1.5, 1.0]}, {id: w, color: white, at: [1.4, 3.45], role: cue}],
-     ghosts: [{id: g-impact, at: [1.67, 1.11], role: impact, for: w}],
-     arrows: [{id: a1, ball: w, kind: cue, path: [[1.4, 3.45], [1.67, 1.11], [2.14, 0.4]], bounces: []},
+     balls: [{id: r, color: red, at: [1.5, 1.0]}, {id: w, color: white, at: [1.03, 3.45], role: cue}],
+     ghosts: [{id: g-impact, at: [1.68, 1.12], role: impact, for: w}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[1.03, 3.45], [1.68, 1.12], [2.14, 0.4]], bounces: []},
               {id: a2, ball: r, kind: object, path: [[1.5, 1.0], [0.2, 0.2]], bounces: [], to: tl}],
      zones: [],
      caption: "En finesse, la blanche dévie peu et continue vers la droite ; la bille de couleur part vers la poche.",
@@ -127,10 +128,10 @@ illustrations:
       - {id: r2, color: red, at: [4.45, 3.0]}
       - {id: w, color: white, at: [4.0, 2.0], role: cue}
     ghosts:
-      - {id: g1, at: [3.56, 1.19], role: impact, for: w}
-      - {id: g2, at: [4.44, 1.19], role: impact, for: w}
-      - {id: g3, at: [3.47, 2.82], role: impact, for: w}
-      - {id: g4, at: [4.53, 2.82], role: impact, for: w}
+      - {id: g1, at: [3.56, 1.2], role: impact, for: w}
+      - {id: g2, at: [4.44, 1.2], role: impact, for: w}
+      - {id: g3, at: [3.46, 2.81], role: impact, for: w}
+      - {id: g4, at: [4.54, 2.81], role: impact, for: w}
     arrows:
       - {id: a1, ball: y1, kind: object, path: [[3.63, 1.0], [4.0, 0.2]], bounces: [], to: tm}
       - {id: a2, ball: y2, kind: object, path: [[4.37, 1.0], [4.0, 0.2]], bounces: [], to: tm}
@@ -192,7 +193,7 @@ game:
   link_previous:
     notion_of: quart-1
     rule: "Exception aux règles du jeu 10 : les deux billes du haut sont jouées en quart de bille, comme à la séance précédente, avant celles du bas jouées en finesse ; le tireur annonce la quantité avant chaque tir."
-    note: "Le jeu 10 tel quel (quatorze billes sur la grille, blanche au centre) ne donne aucun tir en quart ni en finesse ; cette mise en place, calculée (quart ≈ 49° en haut, finesse ≈ 57° en bas, comme les finesses des exercices 3 et 4), rejoue le quart de bille puis la finesse. Règle facultative : le jeu 10 reste jouable sans elle."
+    note: "Le jeu 10 tel quel (quatorze billes sur la grille, blanche au centre) ne donne aucun tir en quart ni en finesse ; cette mise en place, calculée (quart ≈ 49° en haut, finesse ≈ 58° en bas, proche des finesses des exercices 3 et 4), rejoue le quart de bille puis la finesse. Règle facultative : le jeu 10 reste jouable sans elle."
   weight: {children: 1, adults: 1}
   adaptation:
     children: "Un binôme : un tireur, un contrôleur qui pose la bille fantôme. Commencer par les deux billes du haut, puis celles du bas. Défi sans limite de temps."
@@ -212,8 +213,8 @@ sources:
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 10, note: "Jeu 10 (14 billes depuis une seule position de la blanche) : dont le jeu de la séance est adapté"}
 uncertainties:
   - "Sections « Effleurer » et « Régler la puissance », « Lire la blanche », thème et défis : [Prop], à valider par un animateur dans l'application. Les gloses de la visée avec bille fantôme (poser puis retirer) reprennent la fiche technique n° 3."
-  - "Jeu : le jeu 10 [S] (14 billes sur la grille, blanche au centre) ne permet aucun quart ni finesse : le meilleur angle de coupe est 0° (plein) ou environ 30° (demi). Le jeu de la séance est donc un jeu adapté [Prop], inspiré de ses règles (un tir par bille, blanche replacée sur son origine, billes non empochées replacées) avec quatre billes posées pour donner un quart (angle de coupe d'environ 49°, soit 48,7°, billes à 0,37 case de l'axe) et une finesse (environ 57°, billes à 0,45 case de l'axe, la même coupe que les finesses [S] des exercices 3 et 4) vers les poches du milieu, prises en (4 ; 0) et (4 ; 4) avec la blanche en (4 ; 2). Formule : fantôme G = O − 2r·unit(P − O), angle de coupe θ entre G − C et P − O (FORMAT § 6). Positions calculées, non lues sur un PDF ; à valider sur une table."
+  - "Jeu : le jeu 10 [S] (14 billes sur la grille, blanche au centre) ne permet aucun quart ni finesse : le meilleur angle de coupe est 0° (plein) ou environ 30° (demi). Le jeu de la séance est donc un jeu adapté [Prop], inspiré de ses règles (un tir par bille, blanche replacée sur son origine, billes non empochées replacées) avec quatre billes posées pour donner un quart (angle de coupe d'environ 49°, soit 49,3°, billes à 0,37 case de l'axe) et une finesse (environ 58°, billes à 0,45 case de l'axe, une coupe proche de celle des finesses [S] des exercices 3 et 4) vers les poches du milieu, prises en (4 ; 0) et (4 ; 4) avec la blanche en (4 ; 2). Formule : fantôme G = O − s·unit(P − O) avec s = r_c + r_o (la blanche, de 48,0 mm, est plus petite que la bille de but de 50,8 mm), angle de coupe θ entre G − C et P − O (FORMAT § 6). La finesse du jeu (d ≈ 0,18 case) est au-delà du quart (0,162 case) mais en deçà de la finesse nominale du schéma de visée (0,203 case). Toutes les cotes utilisent les rayons réels (blanche 24,0 mm, bille de but 25,4 mm, s = 49,4 mm) ; la blanche est dessinée plus petite, écart à peine visible à l'échelle d'une table, d'où les légendes qui le disent. Positions calculées, non lues sur un PDF ; à valider sur une table."
   - "Les schémas des exercices 3 et 4 sont lus approximativement : le type de chevalet n'est pas commenté sur le schéma, la séance ne l'impose pas ; la blanche n'est pas dessinée sur la table (repères)."
   - "Initiation 9 : le schéma [S] n'est pas légendé ; l'association gauche = quart de bille et droite = finesse est déduite des deux schémas de quantité (voir la transcription du diagramme). La formule « un peu plus loin qu'au quart » vient de la fiche d'initiation n° 9."
-  - "La bille fantôme du schéma de visée est calculée pour une finesse nominale (coupe d'environ 63°, quantité 0,11) ; elle ne reprend pas la position du schéma du PDF. Les finesses des exercices 3 et 4 [S] se jouent avec une coupe d'environ 55 à 60° : l'étiquette `thin` du contrôle V17 exige une coupe d'au moins 62° (tolérance 0,07 autour de 0,05), d'où un écart résiduel de quelques degrés, assumé. La blanche dévie d'environ 27° dans « trajectoires-finesse » (trajet perpendiculaire à celui de la bille de couleur, sans effet) : tracé indicatif."
+  - "La bille fantôme du schéma de visée est calculée pour une finesse nominale (coupe d'environ 72°, distance de visée 0,95 · s [Prop], s = r_c + r_o) ; elle ne reprend pas la position du schéma du PDF. Les finesses des exercices 3 et 4 [S] se jouent avec une coupe d'environ 55 à 60° : l'étiquette `thin` du contrôle V17 correspond à une coupe d'environ 72° (tolérance 0,07 · s), d'où un écart résiduel de plusieurs degrés avec ces finesses [S], assumé. La blanche dévie d'environ 18° dans « trajectoires-finesse » (trajet perpendiculaire à celui de la bille de couleur, sans effet, billes supposées de même masse) : tracé indicatif."
   - "Le rappel reprend ce que quart-1 a enseigné (visée à un demi-rayon au-delà, billes qui se touchent, grande part d'énergie conservée, blanche qui va plus loin) et réutilise son illustration `visee-quart` : quart-1 doit la conserver."

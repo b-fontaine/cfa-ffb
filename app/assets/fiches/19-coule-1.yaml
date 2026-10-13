@@ -40,7 +40,7 @@ theory:
         - Au Blackball, l'adaptation de la puissance est plus prononcée, la blanche étant plus légère et plus petite (fiche technique n° 11).
       key_point: Attaque en haut, geste ample plutôt que rapide.
       demo: Montrer sur la blanche le point d'impact, au-dessus du centre, puis le geste ample.
-      illustrations: [attaque-haute]
+      illustrations: [attaque-haute, amplitude-vitesse]
       src: S
     - id: plein-suit
       title: En plein, la blanche suit la couleur
@@ -75,7 +75,7 @@ theory:
         - Sur la surface de jeu, on place le chevalet de façon à pouvoir attaquer en haut.
       key_point: On commence sur le cadre, puis on passe à la surface.
       demo: null
-      illustrations: [attaque-haute]
+      illustrations: [chevalet-cadre, chevalet-surface]
       src: S
     - id: contraste
       title: Rejet naturel ou coulé ?
@@ -108,46 +108,55 @@ initiation:
     illustration: schema-initiation-13
     src: S
 illustrations:
-  - {id: attaque-haute, type: cue_side, tip_point: top, cue_height: level,
-     caption: "Coulé : le procédé frappe la blanche au-dessus de son centre (schéma indicatif : le point d'impact est entre le centre et le haut, pas tout au sommet).",
-     alt: "Vue de côté : le procédé touche la blanche dans sa moitié haute, au-dessus du milieu de sa hauteur ; le schéma place le point au sommet par simplification."}
+  - {id: attaque-haute, type: cue_ball_target, tip_point: top, cue_height: level,
+     caption: "Coulé : le procédé frappe la blanche au-dessus de son centre (cible vue de face, indicative : le point d'impact est à mi-chemin entre le centre et le haut, pas tout au sommet ; le procédé est dessiné à l'échelle de la blanche, qui est plus petite que les autres billes).",
+     alt: "Cible sur la blanche vue de face : le procédé touche la moitié haute, à mi-rayon au-dessus du centre ; le profil montre la queue à hauteur moyenne."}
+  - {id: amplitude-vitesse, type: power_ratio, points: [{amplitude: long, speed: slow, label: "Coulé"}], highlight: 0,
+     caption: "Coulé : on privilégie le geste ample au geste rapide, avec une grande amplitude et une vitesse faible (le plan est une image proposée, pas une graduation fédérale).",
+     alt: "Plan amplitude (recul de la main, en abscisse) et vitesse du coup (en ordonnée), à trois zones doux, moyen, puissant : un exemple placé loin à droite et bas, grande amplitude et vitesse lente, dans la zone moyenne."}
+  - {id: chevalet-cadre, type: player_figure, view: side, bridge: frame, focus: [bridge_hand, cue],
+     caption: "Début du coulé, chevalet sur cadre : le joueur de profil, la main de chevalet sur le rail et la queue dans l'axe de la blanche (billes agrandies, non à l'échelle).",
+     alt: "Un joueur schématique de profil, billes agrandies et non à l'échelle, la main de chevalet posée sur le cadre de la table et la queue qui vise la blanche ; deux repères numérotés, la main de chevalet et la queue."}
+  - {id: chevalet-surface, type: player_figure, view: side, bridge: surface, focus: [bridge_hand, cue],
+     caption: "Ensuite, chevalet sur la surface de jeu : la main de chevalet à plat sur le tapis, placée pour pouvoir attaquer la blanche en haut (billes agrandies, non à l'échelle).",
+     alt: "Un joueur schématique de profil, billes agrandies et non à l'échelle, la main de chevalet posée à plat sur le tapis et la queue qui vise la blanche ; deux repères numérotés, la main de chevalet et la queue."}
   - {id: visee-plein, type: ghost_aim, cue: [4.0, 3.2], object: [4.0, 1.8], pocket: tm, fraction: full,
-     caption: "En plein, la blanche vise le centre de la bille de couleur, alignée avec la poche.",
-     alt: "Table vue de dessus : la blanche en bas, la bille de couleur au centre, la poche du milieu en haut, tout sur une même ligne verticale ; la bille fantôme est collée sous la bille de couleur."}
+     caption: "En plein, la blanche vise le centre de la bille de couleur, alignée avec la poche ; la bille fantôme est une blanche au contact, un peu plus petite que la bille de couleur.",
+     alt: "Table vue de dessus : la blanche en bas, la bille de couleur au centre, la poche du milieu en haut, tout sur une même ligne verticale ; la bille fantôme, une blanche un peu plus petite que la bille de couleur, est collée sous elle."}
   - id: trajectoire-plein
     type: table
     balls:
       - {id: y, color: yellow, at: [4.0, 2.0]}
       - {id: w, color: white, at: [4.0, 3.4], role: cue}
     ghosts:
-      - {id: g-impact, at: [4.0, 2.2], role: impact, for: w}
+      - {id: g-impact, at: [4.0, 2.2136], role: impact, for: w}
     arrows:
-      - {id: a-avant, ball: w, kind: cue, path: [[4.0, 3.4], [4.0, 2.2]], bounces: []}
+      - {id: a-avant, ball: w, kind: cue, path: [[4.0, 3.4], [4.0, 2.2136]], bounces: []}
       - {id: a-couleur, ball: y, kind: object, path: [[4.0, 2.0], [4.0, 0.0]], bounces: [], to: tm}
-      - {id: a-apres, ball: w, kind: cue, path: [[4.0, 2.2], [4.0, 1.1]], bounces: [], label: "la blanche suit"}
+      - {id: a-apres, ball: w, kind: cue, path: [[4.0, 2.2136], [4.0, 1.1]], bounces: [], label: "la blanche suit"}
     zones: []
     caption: "Coulé plein : la blanche prolonge la trajectoire de la bille de couleur (schéma indicatif)."
     alt: "Table vue de dessus : la blanche, la bille de couleur et la poche du milieu du haut sont alignées ; après le choc, la bille de couleur file vers la poche et la blanche avance dans la même direction."
   - {id: quantites, type: contact_strip, fractions: [full, three_quarter], highlight: three_quarter,
-     caption: "Plein et trois-quarts, côte à côte : le coulé se joue entre les deux.",
-     alt: "Deux schémas de contact : la bille pleine, puis le trois-quarts mis en évidence."}
+     caption: "Plein et trois-quarts, côte à côte : le coulé se joue entre les deux (billes à leurs tailles réelles, la blanche est un peu plus petite ; le procédé n'est pas dessiné).",
+     alt: "Deux schémas de contact de dessus, la blanche un peu plus petite que la bille de couleur : la bille pleine, puis le trois-quarts mis en évidence."}
   - {id: quantites-contraste, type: contact_strip, fractions: [half, full], highlight: full,
-     caption: "Demi-bille : la blanche s'écarte. Plein : la blanche suit la couleur.",
-     alt: "Deux schémas de contact : le demi-bille, puis la bille pleine mise en évidence."}
+     caption: "Demi-bille : la blanche s'écarte. Plein : la blanche suit la couleur (billes à leurs tailles réelles, la blanche est un peu plus petite).",
+     alt: "Deux schémas de contact de dessus, la blanche un peu plus petite que la bille de couleur : le demi-bille, puis la bille pleine mise en évidence."}
   - {id: visee-trois-quarts, type: ghost_aim, cue: [4.4, 3.25], object: [4.0, 1.5], pocket: tm, fraction: three_quarter,
      caption: "En trois-quarts, la blanche touche la bille de couleur un peu de côté.",
-     alt: "Table vue de dessus : la blanche en bas à droite, la bille de couleur au centre, la poche du milieu en haut ; la bille fantôme est collée sous la bille de couleur et la ligne de visée arrive légèrement de côté."}
+     alt: "Table vue de dessus : la blanche en bas à droite, la bille de couleur au centre, la poche du milieu en haut ; la bille fantôme, une blanche un peu plus petite que la bille de couleur, est collée sous elle et la ligne de visée arrive légèrement de côté."}
   - id: trajectoire-trois-quarts
     type: table
     balls:
       - {id: r, color: red, at: [4.0, 1.5]}
       - {id: w, color: white, at: [4.4, 3.25], role: cue}
     ghosts:
-      - {id: g-impact, at: [4.0, 1.7], role: impact, for: w}
+      - {id: g-impact, at: [4.0, 1.7136], role: impact, for: w}
     arrows:
-      - {id: a-avant, ball: w, kind: cue, path: [[4.4, 3.25], [4.0, 1.7]], bounces: []}
+      - {id: a-avant, ball: w, kind: cue, path: [[4.4, 3.25], [4.0, 1.7136]], bounces: []}
       - {id: a-couleur, ball: r, kind: object, path: [[4.0, 1.5], [4.0, 0.0]], bounces: [], to: tm}
-      - {id: a-apres, ball: w, kind: cue, path: [[4.0, 1.7], [3.3, 0.4]], bounces: [], label: "la blanche s'écarte"}
+      - {id: a-apres, ball: w, kind: cue, path: [[4.0, 1.7136], [3.3, 0.4]], bounces: [], label: "la blanche s'écarte"}
     zones: []
     caption: "Coulé en trois-quarts : la bille de couleur part droit vers la poche, la blanche s'écarte (schéma indicatif, angle non mesuré)."
     alt: "Table vue de dessus : la bille de couleur file droit vers la poche du milieu du haut ; la blanche, arrivée de la droite, repart en biais vers le haut à gauche, vers la grande bande."
@@ -250,9 +259,11 @@ uncertainties:
   - "Quantité de bille des exercices 1 à 3 : « en plein » est lu sur l'encart des schémas [S], non légendé ; le plein est estimé."
   - "Le trois-quarts n'est enseigné qu'aux adultes dans cette séance (théorie et schémas indicatifs) ; l'initiation 14 n'est jouée qu'en coule-2, pour ne pas la rejouer."
   - "La section « Rejet naturel ou coulé ? » est un contraste [Prop] : la fiche n° 11 ne l'énonce pas."
-  - "Le schéma « attaque en haut » rend le point d'impact au sommet (valeur `top`) alors que la fiche le place entre le centre et le haut : la légende le précise."
+  - "Le schéma « attaque en haut » est une cible sur la blanche (valeur `top` : point à mi-rayon au-dessus du centre) ; la fiche dit seulement « au-dessus du centre »."
+  - "Tailles : la blanche (48,0 mm) plus petite que la bille de but (50,8 mm) vient de [FFB] ; [S] dit seulement qu'elle est plus petite et plus légère. Les schémas de table et de contact sont calculés avec ces rayons (fantôme à 0,2136 case du centre de la bille de couleur) ; les billes du schéma de posture sont agrandies, non à l'échelle."
+  - "Le plan amplitude × vitesse est [Prop] ; seule l'idée « amplitude plutôt que vitesse » vient de la fiche n° 11 [S]. L'exemple placé (amplitude longue, vitesse lente) est une image proposée, non une graduation."
   - "La section « Le sillage » (enfants) est une glose [Prop] : la fiche n° 11 ne donne pas cette image."
   - "Le rappel est écrit d'après la fiche technique n° 10 et ce que rejet-naturel-2 a enseigné (attaque en haut, demi-bille, 45°, bille repère) ; recall.reuse reprend l'illustration angle-45 de cette séance."
   - "Exercice 3 : le schéma [S] n'indique pas quelle bille appartient à quelle zone ; la séance ne l'impose pas. Exercices 1 et 2 : le schéma ne dit pas le type de chevalet."
   - "Les schémas de trajectoire (plein, trois-quarts) sont calculés et indicatifs : l'angle de sortie de la blanche en trois-quarts n'est pas mesuré par la fiche, qui dit seulement qu'il dépend de la quantité de bille."
-  - "L'illustration « attaque en haut » est une vue de côté indicative : la hauteur de la queue n'est pas précisée par la fiche."
+  - "L'illustration « attaque en haut » est une cible sur la blanche indicative (le point est à mi-rayon au-dessus du centre) : la hauteur de la queue n'est pas précisée par la fiche."

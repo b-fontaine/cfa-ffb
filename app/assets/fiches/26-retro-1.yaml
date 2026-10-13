@@ -113,15 +113,15 @@ initiation:
     illustration: schema-initiation
     src: S
 illustrations:
-  - {id: attaque-basse, type: cue_side, tip_point: bottom, cue_height: level,
+  - {id: attaque-basse, type: cue_ball_target, tip_point: bottom, cue_height: level,
      caption: "Rétro : le procédé frappe la blanche sous son centre (schéma indicatif).",
-     alt: "Bille blanche vue de côté, la queue à plat ; le procédé touche la blanche dans sa partie basse, sous le centre."}
-  - {id: talon-leve, type: cue_side, tip_point: bottom, cue_height: high,
+     alt: "Cible sur la blanche vue de face : le procédé touche la partie basse, sous le centre ; le profil montre la queue à hauteur moyenne."}
+  - {id: talon-leve, type: cue_ball_target, tip_point: bottom, cue_height: high,
      caption: "Sur le cadre : le talon de la queue est légèrement levé pour attaquer bas (schéma indicatif).",
-     alt: "Bille blanche vue de côté, la queue inclinée, talon levé ; le procédé touche la blanche dans sa partie basse."}
+     alt: "Cible sur la blanche vue de face : le procédé touche la partie basse, sous le centre ; le profil montre la queue haute, talon levé."}
   - {id: contact-retro, type: contact, fraction: full, tip_point: bottom,
-     caption: "Rétro plein : la blanche couvre la bille de couleur, le procédé est sous le centre de la blanche.",
-     alt: "La blanche recouvre entièrement la bille de couleur, vue de dessus ; le point d'impact du procédé est dans le bas de la blanche."}
+     caption: "Rétro plein : la blanche, un peu plus petite, arrive face au centre de la bille de couleur ; à droite, le procédé frappe la blanche sous son centre.",
+     alt: "À gauche, vue de dessus : la blanche, un peu plus petite que la bille de couleur, touche celle-ci en plein, centres alignés sur la ligne de visée ; à droite, la blanche vue de face avec une cible et le point d'impact du procédé dans la partie basse."}
   - {id: visee-plein, type: ghost_aim, cue: [4.0, 3.0], object: [4.0, 1.8], pocket: tm, fraction: full,
      caption: "En plein, la blanche vise le centre de la bille de couleur, alignée avec la poche.",
      alt: "Table vue de dessus : la blanche en bas, la bille de couleur au centre, la poche du milieu en haut, tout sur une même ligne verticale ; la bille fantôme est collée sous la bille de couleur."}
@@ -131,18 +131,18 @@ illustrations:
       - {id: r, color: red, at: [4.0, 1.8]}
       - {id: w, color: white, at: [4.0, 3.0], role: cue}
     ghosts:
-      - {id: g-impact, at: [4.0, 2.0], role: impact, for: w}
+      - {id: g-impact, at: [4.0, 2.01], role: impact, for: w}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[4.0, 3.0], [4.0, 2.0]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[4.0, 3.0], [4.0, 2.01]], bounces: []}
       - {id: a2, ball: r, kind: object, path: [[4.0, 1.8], [4.0, 0.0]], bounces: [], to: tm}
-      - {id: a3, ball: w, kind: cue, path: [[4.0, 2.0], [4.0, 3.4]], bounces: [], label: "la blanche revient droit vers toi"}
+      - {id: a3, ball: w, kind: cue, path: [[4.0, 2.01], [4.0, 3.4]], bounces: [], label: "la blanche revient droit vers toi"}
     zones:
       - {id: trait, shape: rect, from: [3.0, 2.97], to: [5.0, 3.03], label: "trait"}
     caption: "Rétro plein : la rouge part vers la poche, la blanche repart en sens inverse, droit vers toi, et dépasse le trait."
     alt: "Table vue de dessus : la blanche posée sur un trait horizontal en bas, une bille rouge au centre sous la poche du milieu du haut ; la blanche touche la rouge en plein, la rouge monte droit vers la poche et la blanche redescend sur la même ligne, au-delà du trait."
   - {id: quantites, type: contact_strip, fractions: [full, three_quarter, half], highlight: full,
      caption: "Plein, trois-quarts et demi-bille : en plein, la blanche revient droit (180°).",
-     alt: "Trois schémas de contact côte à côte : la bille pleine mise en évidence, puis le trois-quarts, puis la demi-bille."}
+     alt: "Trois schémas de contact vus de dessus, côte à côte : la bille pleine mise en évidence, puis le trois-quarts, puis la demi-bille ; la blanche y est dessinée un peu plus petite que la bille de couleur, et leurs diamètres sont écrits sous les schémas."}
   - {id: schema-retro-demi, type: diagram_ref, diagram: initiation-p19-e1,
      caption: "Initiation 19 : en demi-bille, la blanche dévie de 90° par rapport à sa trajectoire d'arrivée et repart parallèlement à la grande bande.",
      alt: "Table vue de dessus : une bille rouge près de la bande de gauche, la blanche en dessous ; la blanche touche la rouge en demi-bille, la rouge part vers la poche du haut à gauche et la blanche, arrivée par le bas, tourne de 90° et repart vers la droite, parallèlement à la grande bande."}
@@ -266,6 +266,7 @@ uncertainties:
   - "Exercice 3 : les zones 1 et 2 ne sont pas délimitées sur le schéma [S], seuls les libellés « Zone 1 x3 » et « Zone 2 x3 » figurent (vers 1,3 ; 1,8 et vers 2,7 ; 3,3) ; leur taille (carré d'une case), leur position sur la ligne de retour et le fait qu'on les règle par la vitesse sont des lectures [Prop] du schéma et de la fiche n° 14 (déviations selon la quantité et la puissance), non formulées telles quelles ; l'ordre « zone 1 puis zone 2 » n'est pas imposé."
   - "Exercice 3 : le schéma montre une seule rouge, deux jaunes et la noire alors que l'énoncé parle de six tirs ; la rouge est replacée à chaque tir."
   - "Exercices 1 et 3 : le type de chevalet n'est pas précisé par la source ; il est lu dans le catalogue (cadre à l'exercice 2)."
+  - "Tailles des illustrations : la blanche est dessinée plus petite que la bille de couleur (48,0 mm contre 50,8 mm, `02-techniques/06-dimensions-du-materiel.md`, valeurs [FFB] ; la source [S] dit seulement que la blanche est plus petite) et la bille fantôme à r_c + r_o ; le point d'impact du procédé est à l'échelle de la blanche, la cible et la vue de face sont des agrandissements indicatifs [Prop]."
   - "Section « Le boomerang » (enfants) : glose [Prop], absente des fiches."
   - "Illustration `talon-leve` : la fiche n° 14 et l'initiation 17 donnent le conseil (lever légèrement le talon sur cadre), mais pas d'angle ; l'inclinaison du schéma est indicative."
   - "Section « En plein, la blanche revient » : « certaine vitesse » et « billes pas trop éloignées » viennent de l'initiation 17 ; la source ne donne ni vitesse ni distance chiffrée. La section adultes « Régler le retour » est une lecture [Prop]."

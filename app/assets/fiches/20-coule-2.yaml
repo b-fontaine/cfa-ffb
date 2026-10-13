@@ -65,7 +65,7 @@ theory:
         - Attention, une blanche trop vite jouée peut finir dans une poche.
       key_point: Amplitude plutôt que vitesse, pour garder la blanche en rotation avant.
       demo: null
-      illustrations: []
+      illustrations: [attaque-haute]
       src: S
     - id: lire-arret
       title: Lire où la blanche s'arrête
@@ -101,31 +101,34 @@ illustrations:
       - {id: r, color: red, at: [4.0, 1.4]}
       - {id: w, color: white, at: [4.0, 3.2], role: cue}
     ghosts:
-      - {id: g-impact, at: [4.0, 1.6], role: impact, for: w}
+      - {id: g-impact, at: [4.0, 1.6136], role: impact, for: w}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[4.0, 3.2], [4.0, 1.6]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[4.0, 3.2], [4.0, 1.6136]], bounces: []}
       - {id: a2, ball: r, kind: object, path: [[4.0, 1.4], [4.0, 0.0]], bounces: [], to: tm}
-      - {id: a3, ball: w, kind: cue, path: [[4.0, 1.6], [4.0, 0.9]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[4.0, 1.6136], [4.0, 0.9]], bounces: []}
     zones: []
     caption: "Coulé en bille pleine : la blanche suit la bille de couleur sur la même ligne (schéma indicatif)."
     alt: "Table vue de dessus : la blanche et la bille rouge sont alignées avec la poche du milieu du haut ; après le choc, la rouge part vers la poche et la blanche continue sur la même ligne."
+  - {id: attaque-haute, type: cue_ball_target, tip_point: top,
+     caption: "Coulé : le procédé frappe la blanche vue de face au-dessus de son centre (schéma indicatif : le point d'impact est dessiné à l'échelle du procédé sur la blanche).",
+     alt: "Cible sur la blanche vue de face : le procédé touche la moitié haute, au-dessus du centre."}
   - id: coule-trois-quarts
     type: table
     balls:
       - {id: r, color: red, at: [4.0, 1.5]}
       - {id: w, color: white, at: [4.38, 3.15], role: cue}
     ghosts:
-      - {id: g-impact, at: [4.0, 1.7], role: impact, for: w}
+      - {id: g-impact, at: [4.0, 1.7136], role: impact, for: w}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[4.38, 3.15], [4.0, 1.7]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[4.38, 3.15], [4.0, 1.7136]], bounces: []}
       - {id: a2, ball: r, kind: object, path: [[4.0, 1.5], [4.0, 0.0]], bounces: [], to: tm}
-      - {id: a3, ball: w, kind: cue, path: [[4.0, 1.7], [3.11, 0.24]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[4.0, 1.7136], [3.11, 0.24]], bounces: []}
     zones: []
     caption: "Coulé en trois-quarts : la rouge part vers la poche, la blanche s'écarte vers la grande bande (schéma indicatif)."
     alt: "Table vue de dessus : la rouge est sous la poche du milieu du haut, la blanche arrive en bas à droite ; après le choc en trois-quarts, la rouge monte vers la poche et la blanche part en diagonale vers la gauche, vers la bande du haut."
   - {id: visee-trois-quarts, type: ghost_aim, cue: [4.38, 3.15], object: [4.0, 1.5], pocket: tm, fraction: three_quarter,
-     caption: "La bille fantôme montre où la blanche touche la rouge en trois-quarts.",
-     alt: "Table vue de dessus : la blanche en bas à droite, la rouge sous la poche du milieu du haut ; la bille fantôme est collée sous la rouge, sur la ligne de la poche ; la blanche arrive de la droite en visant la bille fantôme, donc en trois-quarts."}
+     caption: "La bille fantôme, de la taille de la blanche (un peu plus petite que la rouge), montre où la blanche touche la rouge en trois-quarts.",
+     alt: "Table vue de dessus : la blanche en bas à droite, la rouge sous la poche du milieu du haut ; la bille fantôme, de la taille de la blanche, est collée sous la rouge, sur la ligne de la poche ; la blanche arrive de la droite en visant la bille fantôme, donc en trois-quarts."}
   - {id: schema-initiation, type: diagram_ref, diagram: initiation-p14-e1,
      caption: "Initiation 14 : un coulé en trois-quarts depuis le bas de la table.",
      alt: "Table vue de dessus : une bille rouge sous la poche du milieu du haut, la blanche plus bas ; la blanche touche la rouge en trois-quarts et part en diagonale vers la grande bande."}
@@ -222,8 +225,8 @@ uncertainties:
   - "Thème, défis, mot « coulé » pour les enfants, lecture de l'arrêt (adultes), variante à jetons, zone d'arrêt (largeur d'une main), tournante, règle de lien et adaptations : [Prop], à valider par un animateur dans l'application. La différenciation enfants / adultes (poids, compléments, adaptation du jeu) est aussi une proposition."
   - "La variante à jetons ne réénonce pas les règles de la partie classique (faute, placement de la blanche, visites de l'adversaire) : elle renvoie aux règles du club ; seule la continuité du tour tant qu'on empoche vient de la fiche du jeu 14."
   - "Exercice 6, erreur « la blanche monte trop loin » : [Prop], déduite du schéma (la blanche monte vers la noire) ; la fiche n'énonce pas d'erreur typique pour cet exercice."
-  - "La hauteur de la queue n'est pas précisée par les fiches n° 11 et initiation 13-14 : la séance n'illustre pas la queue vue de côté et ne donne pas de hauteur de queue ; l'attaque en haut n'est rappelée que par le point d'impact sur la blanche."
+  - "La hauteur de la queue n'est pas précisée par les fiches n° 11 et initiation 13-14 : la séance n'illustre pas le profil de la queue et ne donne pas de hauteur de queue ; l'attaque en haut n'est rappelée que par le point d'impact sur la blanche."
   - "Aucun jeu spécifique au coulé dans la source : le jeu est la partie à difficulté réduite (jeu 14) [S], adaptée [Prop] ; les règles de victoire (groupe puis noire) sont celles de la partie classique, pas écrites dans la fiche du jeu 14."
   - "Les erreurs fréquentes et leurs corrections sont des lectures [Prop] des conseils des fiches (amplitude plutôt que vitesse, risque d'empocher la blanche) ; la fiche d'entraînement n'en donne pas."
   - "Exercice 4 : le type de chevalet n'est pas indiqué sur la fiche ; l'ordre des deux séries (alternées ou successives) n'est pas précisé. Exercices 5 et 6 : la position finale de la blanche est une lecture approchée du schéma. Exercice 5 : « sans heurter la jaune posée sur le trait » est une lecture [Prop] du schéma (la fiche ne le dit pas) ; le nombre de tirs (cinq) vient de la répétition marquée sur les schémas et de l'énoncé de la fiche."
-  - "Les schémas du coulé en plein et en trois-quarts sont générés, indicatifs et non à l'échelle ; la trajectoire de la blanche après le choc est dessinée d'après les schémas de la fiche technique n° 11 et de l'initiation 14."
+  - "Les schémas du coulé en plein et en trois-quarts sont générés ; les billes y sont dessinées à leurs rayons réels (blanche 48,0 mm, un peu plus petite que la bille de but 50,8 mm, écart à peine visible) et la bille fantôme est une blanche au contact (distance entre centres r_c + r_o), mais les positions et les trajectoires restent indicatives ; la trajectoire de la blanche après le choc est dessinée d'après les schémas de la fiche technique n° 11 et de l'initiation 14."

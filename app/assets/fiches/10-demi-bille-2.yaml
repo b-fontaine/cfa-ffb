@@ -47,7 +47,8 @@ theory:
       weight: {children: 1, adults: 1}
       body:
         - La bille fantôme se pose collée à la bille de couleur, côté opposé à la poche, sur la ligne qui joint le centre de la bille au centre de la poche.
-        - Viser le centre de la bille fantôme revient à viser la tangente de la bille de couleur.
+        - La bille fantôme est une blanche, donc un peu plus petite que la bille de couleur.
+        - En demi-bille, viser le centre de la bille fantôme revient à viser la tangente de la bille de couleur.
       key_point: La bille fantôme est collée à la bille de couleur, côté opposé à la poche.
       demo: null
       illustrations: [visee-autre-cote]
@@ -97,14 +98,14 @@ initiation:
     src: Prop
 illustrations:
   - {id: visee-autre-cote, type: ghost_aim, cue: [1.24, 3.28], object: [3.0, 2.0], pocket: tm, fraction: half,
-     caption: "Même visée en demi, depuis un autre endroit : la bille fantôme est collée à la bille de couleur, sur la ligne de la poche, côté opposé à la poche.",
+     caption: "Même visée en demi, depuis un autre endroit : la bille fantôme (une blanche, un peu plus petite que la bille de couleur) est collée à la bille de couleur, sur la ligne de la poche, côté opposé à la poche.",
      alt: "Table vue de dessus : la blanche en bas à gauche, la bille de couleur au centre, la poche du milieu du haut ; la bille fantôme est collée à la bille de couleur, côté opposé à la poche, et la ligne de visée y arrive."}
   - {id: pres-loin, type: table,
      balls: [{id: r, color: red, at: [4.0, 1.2]}, {id: w, color: white, at: [2.7, 3.65], role: cue}],
      ghosts: [{id: g-pres, at: [3.4, 2.44], role: cue_start, label: "1"},
               {id: g-loin, at: [2.7, 3.65], role: cue_start, label: "2"},
-              {id: g-impact, at: [4.0, 1.4], role: impact, for: w}],
-     arrows: [{id: a1, ball: w, kind: cue, path: [[2.7, 3.65], [4.0, 1.4]], bounces: []},
+              {id: g-impact, at: [4.0, 1.41], role: impact, for: w}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[2.7, 3.65], [4.0, 1.41]], bounces: []},
               {id: a2, ball: r, kind: object, path: [[4.0, 1.2], [4.0, 0.0]], bounces: [], to: tm}],
      zones: [],
      caption: "Même demi-bille depuis deux distances : repère 1 près, repère 2 loin ; la visée est la même, la ligne est plus longue.",
@@ -192,6 +193,6 @@ uncertainties:
   - "Chevalets : l'exercice 2 (séance 1/2) est sur surface, l'exercice 3 sur cadre ; le PDF ne précise pas l'appui de l'exercice 4. L'ordre de la source est donc surface puis cadre, pas une progression « cadre vers surface » ; la séance n'impose rien pour l'exercice 4."
   - "Exercice 4 : le schéma [S] montre des distances blanche-rouge presque égales des deux côtés malgré l'intitulé « distances différentes » ; la séance demande de faire varier la distance (proposition)."
   - "Point d'impact sur la blanche : les schémas des exercices 3 et 4 le montrent au centre, l'initiation 7 au-dessus du centre ; la séance ne tranche pas, n'impose rien et ne propose aucune illustration de hauteur de queue."
-  - "La bille fantôme du schéma « visée » est calculée pour une demi-bille nominale (environ 30°) ; elle ne reprend pas la position du schéma du PDF."
+  - "La bille fantôme du schéma « visée » est calculée pour une demi-bille nominale (environ 30°), au rayon de la blanche (plus petite que la bille de couleur) et à la distance r_c + r_o du centre de la bille de couleur ; elle ne reprend pas la position du schéma du PDF."
   - "Le schéma du jeu 7 [S] montre deux billes, un point rouge et un point jaune ; les billes d'un groupe sont replacées sur ces points. La composition des groupes, la place de la noire et la limite de temps sont des propositions (adaptation.children)."
   - "Règle de lien : distances chiffrées en cases du schéma (point d'origine du jeu 7 à environ 1,1 case de la bille visée ; repères de l'initiation 7 à environ 1,0 et 2,1 cases) ; le repère éloigné à environ deux cases et le repère de la noire sont des propositions."

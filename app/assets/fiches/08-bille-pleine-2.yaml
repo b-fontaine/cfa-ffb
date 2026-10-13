@@ -79,16 +79,16 @@ initiation:
     src: S
 illustrations:
   - {id: contact-plein, type: contact, fraction: full, tip_point: center,
-     caption: "Bille pleine : la blanche vise le centre de la bille de couleur.",
-     alt: "La blanche est alignée sur le centre de la bille de couleur, vue de dessus : le contact est plein."}
+     caption: "Bille pleine : la blanche, un peu plus petite, vise le centre de la bille de couleur ; à droite, le point bleu est le point d'impact du procédé, au centre de la blanche (agrandie).",
+     alt: "À gauche, vue de dessus, la blanche, légèrement plus petite que la bille de couleur, arrive dans l'axe du centre de la bille de couleur : le contact est plein. À droite, la blanche vue de face avec un point bleu en son centre, le point d'impact du procédé."}
   - {id: visee-plein-milieu, type: ghost_aim, cue: [4.0, 2.5], object: [4.0, 1.4], pocket: tm, fraction: full,
-     caption: "La bille fantôme est dans l'axe : blanche, bille et poche sont alignées.",
-     alt: "Blanche en bas, bille de couleur au-dessus, poche du milieu en haut, tout sur une même ligne ; la bille fantôme touche la bille de couleur dans cet axe."}
+     caption: "La bille fantôme (une blanche, plus petite que la bille de couleur) est dans l'axe : blanche, bille et poche sont alignées.",
+     alt: "Blanche en bas, bille de couleur au-dessus, poche du milieu en haut, tout sur une même ligne ; la bille fantôme, dessinée à la taille de la blanche, touche la bille de couleur dans cet axe et le point de contact est marqué."}
   - {id: alignement-trois, type: table,
      balls: [{id: w, color: white, at: [2.93, 3.04], role: cue},
              {id: r, color: red, at: [5.5, 1.5], role: object}],
-     ghosts: [{id: g, at: [5.33, 1.6], role: impact, for: w}],
-     arrows: [{id: a1, ball: w, kind: cue, path: [[2.93, 3.04], [5.33, 1.6]], bounces: []},
+     ghosts: [{id: g, at: [5.32, 1.61], role: impact, for: w}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[2.93, 3.04], [5.32, 1.61]], bounces: []},
               {id: a2, ball: r, kind: object, path: [[5.5, 1.5], [8, 0]], bounces: [], to: tr}],
      zones: [],
      sequence: [{step: 1, cue: w, hit: r, contact: full, pocket: tr}],

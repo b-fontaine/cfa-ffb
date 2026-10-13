@@ -1,6 +1,6 @@
 # Fiches techniques — index
 
-Source unique `[S]` : *Fiches techniques CFA BàP.pdf* (Mémento animateur, niveau technique 1, billards à poches, édition 2023, 25 pages, 14 fiches).
+Source `[S]` (sauf `06-dimensions-du-materiel.md`, qui est `[FFB]` / `[Web]` / `[Prop]`) : *Fiches techniques CFA BàP.pdf* (Mémento animateur, niveau technique 1, billards à poches, édition 2023, 25 pages, 14 fiches).
 
 | Fichier | Fiches techniques | Notions |
 |---------|-------------------|---------|
@@ -9,5 +9,6 @@ Source unique `[S]` : *Fiches techniques CFA BàP.pdf* (Mémento animateur, nive
 | `03-viser-et-quantites-de-bille.md` | n° 3 à 8 | Bille fantôme, plein, demi, trois-quarts, quart, finesses |
 | `04-rebond-sur-bande.md` | n° 9 | Angle d'arrivée / de rebond |
 | `05-replacement-sans-effet.md` | n° 10 à 14 | Rejet naturel, coulé, carreau, angle droit, rétro |
+| `06-dimensions-du-materiel.md` | n° 4, 7 (tailles) | Blanche plus petite (48,0 contre 50,8 mm), table, poches, procédé ; conséquences géométriques `[FFB]` + `[Prop]` |
 
 Les QR codes renvoient à des vidéos : leur contenu n'est pas dans la base.

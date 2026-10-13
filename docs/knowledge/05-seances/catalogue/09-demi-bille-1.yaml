@@ -42,7 +42,7 @@ theory:
         - Le point de visée n'est pas le point d'impact ; la bille de couleur est déviée d'environ 30° par rapport à l'axe de visée.
       key_point: La trajectoire du centre de la blanche passe par la tangente.
       demo: "Tirer sans empocher, à courte distance : les deux billes s'arrêtent presque en même temps."
-      illustrations: [contact-demi, visee-demi]
+      illustrations: [contact-demi, visee-demi, taille-billes]
       src: S
     - id: mot-tangente
       title: Le mot « tangente »
@@ -86,15 +86,18 @@ initiation:
     illustration: schema-initiation
     src: S
 illustrations:
+  - {id: taille-billes, type: ball_size,
+     caption: "La blanche (48,0 mm) est un peu plus petite que la bille de couleur (50,8 mm) : le contact se fait légèrement au-dessus de l'axe horizontal de la blanche.",
+     alt: "Deux billes côte à côte, à l'échelle : à gauche la blanche, 48,0 mm, à droite une bille de couleur, 50,8 mm ; la blanche est un peu plus petite."}
   - {id: contact-demi, type: contact, fraction: half, tip_point: center,
-     caption: "Demi-bille : la blanche couvre la moitié de la bille de couleur.",
-     alt: "La blanche recouvre la moitié de la bille de couleur, vue de dessus."}
-  - {id: visee-demi, type: ghost_aim, cue: [1.84, 2.31], object: [5.0, 2.0], pocket: tr, fraction: half,
-     caption: "La bille fantôme montre où la blanche touche la bille de couleur.",
-     alt: "Blanche à gauche, bille de couleur au centre, poche en haut à droite ; la bille fantôme est décalée pour que la moitié de la bille soit couverte."}
+     caption: "Demi-bille : la blanche, un peu plus petite, couvre la moitié de la bille de couleur ; le procédé vise le centre de la blanche.",
+     alt: "Vue de dessus : la blanche, un peu plus petite que la bille de couleur, recouvre la moitié de celle-ci ; à droite, la blanche vue de face avec le point du procédé au centre."}
+  - {id: visee-demi, type: ghost_aim, cue: [1.84, 2.26], object: [5.0, 2.0], pocket: tr, fraction: half,
+     caption: "La bille fantôme (à la taille de la blanche) montre où la blanche touche la bille de couleur.",
+     alt: "Table vue de dessus : blanche à gauche, bille de couleur au centre, poche en haut à droite. La bille fantôme, un cercle de la taille de la blanche, est au contact de la bille de couleur, côté opposé à la poche ; la ligne de visée y mène et le point de contact est marqué. Le centre de la blanche passe par la tangente : la moitié de la bille est couverte."}
   - {id: quantites, type: contact_strip, fractions: [full, half], highlight: half,
      caption: "Plein et demi-bille, côte à côte.",
-     alt: "Deux schémas de contact : la bille pleine, puis la demi-bille mise en évidence."}
+     alt: "Deux schémas de contact vus de dessus, avec la blanche (48,0 mm) un peu plus petite que la bille de couleur (50,8 mm) : la bille pleine, puis la demi-bille mise en évidence."}
   - {id: schema-initiation, type: diagram_ref, diagram: initiation-p07-e1,
      caption: "Initiation 7 : la rouge est jouée en demi depuis deux repères.",
      alt: "Table vue de dessus : une bille rouge sous la poche du milieu du haut, deux repères de blanche à courte distance, la blanche touche la rouge en demi."}

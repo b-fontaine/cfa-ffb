@@ -66,7 +66,7 @@ theory:
         - "Pour l'aisance du balancier, pivoter légèrement le bassin à gauche, jambe droite tendue et gauche fléchie, ou avancer la jambe gauche, les deux jambes fléchies."
       key_point: Pieds stables, pied droit sous la main droite, avant-bras vertical.
       demo: "Se placer devant la table et montrer de profil l'avant-bras vertical ; ne pas imposer une attitude très précise, elle s'acquiert avec le temps."
-      illustrations: [posture-dessus, posture-profil]
+      illustrations: [posture-personnage, posture-dessus, posture-profil]
       src: S
     - id: gauchers
       title: "Et pour un gaucher ?"
@@ -85,7 +85,7 @@ theory:
         - "Test : deux yeux ouverts, pointer un objet à 5 m avec le doigt, puis fermer l'œil gauche ; si le doigt pointe toujours l'objet, l'œil droit est directeur, sinon c'est le gauche."
       key_point: Connaître l'œil directeur évite de corriger la tête inutilement.
       demo: "Faire le test de l'œil directeur avec un élève."
-      illustrations: [tete-oeil]
+      illustrations: [tete-cas-1, tete-cas-2, tete-cas-3]
       src: S
     - id: cadre
       title: "Premier chevalet : sur le cadre"
@@ -101,10 +101,10 @@ theory:
       illustrations: [chevalet-cadre-ref, chevalet-plat-ref]
       src: S
     - id: attaque
-      title: "La queue vue de côté"
+      title: "Où la queue touche la blanche"
       weight: {adults: 1}
       body:
-        - "Vue de côté, on pense d'abord au centre de la blanche pour guider la queue à l'horizontale."
+        - "On pense d'abord au centre de la blanche pour guider la queue à l'horizontale : la cible montre où le procédé touche."
         - "Le schéma d'initiation 1 [S] place le procédé légèrement au-dessus du centre avec un chevalet sur cadre : ne pas chercher ce détail aujourd'hui."
       key_point: "Pour viser, la queue reste à l'horizontale et pense au centre de la blanche."
       demo: null
@@ -128,33 +128,50 @@ illustrations:
       - {id: w, color: white, at: [2.0, 3.0], role: cue}
       - {id: r1, color: red, at: [5.0, 2.0]}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[2.05, 2.98], [4.78, 2.14]], bounces: []}
-      - {id: a2, ball: r1, kind: object, path: [[5.083, 1.945], [7.9, 0.07]], bounces: [], to: tr}
+      - {id: a1, ball: w, kind: cue, path: [[2.1, 2.969], [4.822, 2.119]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[5.091, 1.939], [7.9, 0.07]], bounces: [], to: tr}
     caption: "La queue et la blanche visent le point de contact : le côté de la bille opposé à la poche."
-    alt: "Table vue de dessus : la blanche en bas à gauche, une bille rouge au centre et la poche en haut à droite. Une flèche va de la blanche vers le bas gauche de la bille rouge, côté opposé à la poche, puis une seconde flèche part de la rouge vers la poche."
-  - {id: pointe-centre, type: cue_side, tip_point: center, cue_height: level,
-     caption: "Pour viser : la queue à l'horizontale, vers le centre de la blanche.",
-     alt: "Bille blanche vue de côté, avec la queue à l'horizontale dont la pointe touche le centre de la bille."}
+    alt: "Table vue de dessus : la blanche en bas à gauche, une bille rouge un peu à droite du centre et la poche en haut à droite. Une flèche va de la blanche vers le bas gauche de la bille rouge, côté opposé à la poche, puis une seconde flèche part de la rouge vers la poche."
+  - {id: pointe-centre, type: cue_ball_target, tip_point: center, cue_height: level,
+     caption: "Pour viser : le procédé au centre de la blanche, la queue à hauteur moyenne, presque à l'horizontale.",
+     alt: "Cible sur la blanche vue de face : le procédé touche le centre, avec la queue à hauteur moyenne dans le profil, vers le centre de la bille."}
+  - id: posture-personnage
+    type: player_figure
+    view: side
+    focus: [feet, back_forearm]
+    bridge: frame
+    caption: "Le joueur de profil : le pied droit est sous la main droite qui tient la queue, et l'avant-bras est vertical. Billes agrandies, non à l'échelle."
+    alt: "Un joueur schématique, de profil, penché sur la table : les deux pieds, le pied droit sous la main droite qui tient la queue, l'avant-bras droit vertical, la tête au-dessus de la queue, la main gauche posée sur le cadre et la queue qui vise la blanche. Deux repères numérotés : les pieds et l'avant-bras. Billes agrandies, non à l'échelle."
   - id: posture-dessus
-    type: stance_top
+    type: player_figure
     view: top
-    annotations:
-      - "Pieds ni trop serrés ni trop espacés"
-      - "Pied droit sous la main droite qui tient la queue : à lire page 6 de la fiche"
-    caption: "Vue de dessus schématique : pieds, bassin, tête, main de chevalet, queue et blanche. Le pied droit sous la main droite et l'avant-bras vertical se lisent page 6 de la fiche."
-    alt: "Schéma de la posture vue de dessus : deux pieds, le bassin, la tête, la main de chevalet, la queue et la blanche. Le schéma ne montre pas la main droite ; le pied droit sous la main droite et l'avant-bras vertical sont à lire sur la page 6 de la fiche."
+    focus: [legs_and_hips, bridge_hand, cue]
+    caption: "Le même joueur vu de dessus : bassin, main de chevalet et queue dans l'axe de la blanche. Billes agrandies, non à l'échelle."
+    alt: "Le joueur schématique vu de dessus : les deux pieds, le bassin pivoté, la main de chevalet et la queue, alignée sur la blanche. Trois repères numérotés : le bassin, la main de chevalet et la queue. Billes agrandies, non à l'échelle."
   - {id: posture-profil, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 6,
      caption: "Voir page 6 de la fiche technique : la posture vue de profil, avant-bras vertical.",
      alt: "Renvoi vers la page 6 de la fiche technique n° 1, qui montre la posture de profil avec l'avant-bras vertical."}
-  - id: tete-oeil
-    type: stance_top
+  - id: tete-cas-1
+    type: player_figure
     view: top
-    annotations:
-      - "Cas 1 : l'œil droit au-dessus de la queue"
-      - "Cas 2 : la queue entre les deux yeux"
-      - "Cas 3 : l'œil gauche au-dessus de la queue"
-    caption: "Trois places possibles de la tête, selon l'œil directeur : le schéma dessine le cas 1, les cas 2 et 3 sont donnés en texte."
-    alt: "Schéma de la posture vue de dessus, avec l'œil droit mis en évidence au-dessus de la queue (cas 1). Les deux autres cas, la queue entre les deux yeux et l'œil gauche au-dessus de la queue, sont donnés seulement par les annotations écrites sous le schéma."
+    focus: [head]
+    head_case: right_eye_over_cue
+    caption: "Cas 1 : l'œil droit est au-dessus de la queue ; il est l'œil directeur. Billes agrandies, non à l'échelle."
+    alt: "Le joueur schématique vu de dessus : la tête est décalée pour que l'œil droit, marqué d'une cible, soit exactement au-dessus de la queue. Billes agrandies, non à l'échelle."
+  - id: tete-cas-2
+    type: player_figure
+    view: top
+    focus: [head]
+    head_case: cue_between_eyes
+    caption: "Cas 2 : la queue passe entre les deux yeux. Billes agrandies, non à l'échelle."
+    alt: "Le joueur schématique vu de dessus : la tête est centrée sur l'axe, la queue passe entre les deux yeux. Billes agrandies, non à l'échelle."
+  - id: tete-cas-3
+    type: player_figure
+    view: top
+    focus: [head]
+    head_case: left_eye_over_cue
+    caption: "Cas 3 : l'œil gauche est au-dessus de la queue ; il est l'œil directeur. Billes agrandies, non à l'échelle."
+    alt: "Le joueur schématique vu de dessus : la tête est décalée pour que l'œil gauche, marqué d'une cible, soit exactement au-dessus de la queue. Billes agrandies, non à l'échelle."
   - {id: chevalet-cadre-ref, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 8,
      caption: "Voir page 8 de la fiche technique : le chevalet sur cadre.",
      alt: "Renvoi vers la page 8 de la fiche technique n° 1, qui montre le chevalet sur cadre."}
@@ -250,12 +267,13 @@ uncertainties:
   - "Les exercices 1 et 2 appartiennent au bloc `posture` [Prop] : taux, consignes et mise en place sont des propositions adaptées des initiations 1 et 2 [S], à valider par un animateur dans l'application."
   - "L'initiation 1 et l'exercice 1 reprennent la même mise en place : l'initiation sert à laisser essayer sans corriger (conseil de la fiche), l'exercice est noté et porte les points de contrôle. Le bloc [Prop] ne remplace pas l'initiation."
   - "Le jeu 1 [S] ne fixe pas le décompte entre les deux joueurs, le nombre de manches ni si la blanche est posée une fois ou avant chaque tir : tentatives, départage, pose de la blanche, liste de fautes, étoiles, binômes, relais et rotations sont des propositions (playful_variant, adaptation). La fiche ne définit pas non plus la « faute »."
-  - "Accueil (règles de conduite, matériel), section « Où envoyer la blanche ? » (côté de la bille opposé à la poche : lecture [Prop] du schéma « point de contact / point de visée » de la fiche, sans parler de bille fantôme, qui est l'objet d'une séance ultérieure), section gauchers et section « La queue vue de côté » (adultes) : propositions, la fiche ne les traite pas."
+  - "Accueil (règles de conduite, matériel), section « Où envoyer la blanche ? » (côté de la bille opposé à la poche : lecture [Prop] du schéma « point de contact / point de visée » de la fiche, sans parler de bille fantôme, qui est l'objet d'une séance ultérieure), section gauchers et section « Où la queue touche la blanche » (adultes) : propositions, la fiche ne les traite pas."
+  - "Tailles : l'illustration `alignement` est dessinée avec les rayons réels (blanche 0,1038 plus petite que la bille de but 0,1098, `06-dimensions-du-materiel.md`) ; la flèche de la blanche s'arrête là où son centre serait au contact (distance des centres 0,2136, soit r_c + r_o) et la flèche de la rouge part de son bord vers la poche, positions [Prop]. La séance n'enseigne pas la différence de taille (quart de bille, rétro 90°, contact au-dessus de l'équateur : séances ultérieures, où elle est sourcée [S], voir 06-dimensions-du-materiel.md § 1)."
   - "L'illustration `alignement` est un schéma de coupe [Prop] construit pour être cohérent avec les tirs de l'initiation 1 et de l'exercice 1 (coupes d'environ 16° à 36°) ; la fiche [S] ne montre qu'un schéma de dessus avec bille fantôme, non repris."
   - "La fiche technique n° 1 conseille une première séance courte sur la posture (risque de rejet) : la durée de 90 ou 120 min est une contrainte de projet ; le poids de l'initiation et du jeu est relevé pour limiter l'explication. Pour les enfants, le chevalet main à plat (page 9) est réservé aux adultes en théorie et annoncé au moment de l'exercice 2."
-  - "L'avant-bras vertical se lit de profil (photos des pages 3 et 6 de la fiche) : la vue de dessus générée ne le porte pas, un renvoi à la page 6 le remplace. Le type `stance_top` ne produit qu'un schéma ; `tete-oeil` porte trois annotations sur ce schéma."
+  - "Le joueur est un pictogramme neutre généré (type `player_figure`) : les proportions sont des propositions [Prop] et les billes y sont agrandies, la fiche n° 1 ne donne que des photos. L'avant-bras vertical se lit de profil (`posture-personnage`), que la vue de dessus ne montre pas ; le renvoi à la page 6 de la fiche reste proposé. Les trois places de la tête (`tete-cas-1` à `tete-cas-3`) sont trois illustrations, une par cas."
   - "Initiation 1 : le PDF dit « 4 billes » alors que trois billes sont dessinées (la jaune du milieu est jouée deux fois) ; lecture du schéma reprise dans le diagramme transcrit, la consigne de replacer la jaune avant le troisième tir, comme celles de poser la blanche sur l'emplacement suivant et de replacer une bille non empochée, n'est pas dans la fiche : elle figure seulement dans l'exercice 1 [Prop] (le diagramme de proposition l'indique), pas dans le texte [S] de l'initiation."
   - "L'exercice 1 ne discrimine pas la visée au centre de la bille et la visée du côté opposé à la poche : avec les billes au ras de la bande devant leur poche, une bille jouée plein centre entre aussi dans la poche (coupes théoriques de 16° à 37°, bille pleine suffisante). Le point de contrôle « côté opposé à la poche » est donc enseigné par la théorie [Prop] et le schéma `alignement`, mais non mis à l'épreuve par cet exercice ; à valider par l'animateur."
-  - "Le schéma d'initiation 1 [S] place le procédé légèrement au-dessus du centre (`upper_center`) ; la vue de côté de la séance (centre, queue à l'horizontale) est une simplification [Prop] pour la visée, signalée comme telle dans la section `attaque`."
+  - "Le schéma d'initiation 1 [S] place le procédé légèrement au-dessus du centre (`upper_center`) ; la cible de la séance (procédé au centre, profil de la queue à hauteur moyenne) est une simplification [Prop] pour la visée, signalée comme telle dans la section `attaque`."
   - "Le type de chevalet de l'exercice 2 (sur la surface) vient du catalogue [Prop] ; la fiche d'initiation 2 dit seulement « adapter le chevalet »."
   - "Le nom du thème « Le tireur d'élite » est conservé (identique dans posture-2, règle V23) ; l'image est adoucie dans le pitch. Le glossaire (07-glossaire.md) définit flèche et procédé ; la séance les glose en une parenthèse pour les enfants."

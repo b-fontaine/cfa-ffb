@@ -54,7 +54,7 @@ theory:
         - Cette adaptation est plus prononcée au Blackball, la blanche étant plus légère et plus petite.
       key_point: Attaque en haut, amplitude plutôt que vitesse.
       demo: "Jouer un coulé avec un petit geste rapide puis avec un grand geste plus lent, et comparer la distance parcourue par la blanche."
-      illustrations: [contact-haut]
+      illustrations: [attaque-haute, contact-haut, plan-geste]
       src: S
     - id: empoche
       title: Attention à la blanche en plein
@@ -104,20 +104,27 @@ illustrations:
       - {id: r, color: red, at: [4.0, 1.6]}
       - {id: w, color: white, at: [4.0, 3.2], role: cue}
     ghosts:
-      - {id: g-impact, at: [4.0, 1.8], role: impact, for: w}
+      - {id: g-impact, at: [4.0, 1.814], role: impact, for: w}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[4.0, 3.2], [4.0, 1.8]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[4.0, 3.2], [4.0, 1.814]], bounces: []}
       - {id: a2, ball: r, kind: object, path: [[4.0, 1.6], [4.0, 0.0]], bounces: [], to: tm}
-      - {id: a3, ball: w, kind: cue, path: [[4.0, 1.8], [4.0, 1.1]], bounces: [], label: "elle suit"}
+      - {id: a3, ball: w, kind: cue, path: [[4.0, 1.814], [4.0, 1.1]], bounces: [], label: "elle suit"}
     zones: []
     caption: "Pour comparer : en bille pleine, la blanche suit la même ligne que la couleur ; en trois-quarts, elle part de côté."
     alt: "Table vue de dessus : la blanche en bas, une bille rouge au centre sous la poche du milieu du haut ; la blanche touche la rouge en plein, la rouge part droit vers la poche et la blanche avance sur la même ligne."
   - {id: schema-coule-trois-quarts, type: diagram_ref, diagram: initiation-p14-e1,
      caption: "Coulé en trois-quarts : la bille de couleur monte vers la poche, la blanche part de côté vers la bande.",
      alt: "Table vue de dessus : une rouge sur l'axe de la poche du milieu du haut, la blanche en bas ; la rouge monte droit vers la poche et la blanche repart en biais vers la bande du haut."}
+  - {id: attaque-haute, type: cue_ball_target, tip_point: top, cue_height: high,
+     caption: "Cible sur la blanche vue de face : le procédé la frappe en haut, à mi-rayon au-dessus du centre, queue plus haute (point dessiné entre le centre et le bord, schéma indicatif).",
+     alt: "Cible sur la blanche vue de face : deux anneaux (mi-rayon et bord) et une croix aux côtés nommés haut, bas, gauche, droite ; le procédé, dessiné à l'échelle de la blanche, touche la partie haute de la cible ; un petit profil montre la queue relevée."}
   - {id: contact-haut, type: contact, fraction: three_quarter, tip_point: top,
-     caption: "Trois-quarts avec attaque en haut : le procédé touche la blanche au-dessus de son centre (schéma indicatif).",
-     alt: "Schéma de contact : la blanche couvre environ les trois quarts de la bille de couleur ; le point d'impact sur la blanche est dans sa partie haute."}
+     caption: "Trois-quarts avec attaque en haut : la blanche, un peu plus petite que la bille de couleur, la recouvre aux trois quarts ; à droite, le procédé touche la blanche au-dessus de son centre (schéma indicatif).",
+     alt: "Schéma de contact vu de dessus : la blanche, légèrement plus petite que la bille de couleur, la touche en recouvrant environ les trois quarts ; à droite, la blanche vue de face avec le point d'impact du procédé dans sa partie haute."}
+  - {id: plan-geste, type: power_ratio,
+     points: [{amplitude: short, speed: fast, label: "Petit geste rapide"}, {amplitude: long, speed: slow, label: "Grand geste plus lent"}], highlight: 1,
+     caption: "Deux façons d'arriver à une puissance moyenne : le petit geste rapide, ou le grand geste plus lent, qu'on privilégie (le plan est une image proposée, pas une graduation fédérale).",
+     alt: "Plan amplitude (recul de la main, en abscisse) et vitesse du coup (en ordonnée), à trois zones doux, moyen, puissant : un exemple à gauche et en haut, petit recul et grande vitesse, un exemple à droite et en bas, grand recul et vitesse lente, mis en évidence ; la zone de chacun, moyen, est écrite sous le plan."}
   - {id: schema-e7, type: diagram_ref, diagram: entrainement-p22-e7,
      caption: "Exercice 7 : la blanche est replacée trois fois en zone 1, tout droit, puis trois fois en zone 2, par la bande du haut.",
      alt: "Table vue de dessus : une rouge, trois jaunes et la noire ; la blanche à gauche de la rouge ; une flèche courte mène la blanche en zone 1 tout droit, une flèche plus longue en zone 2 en passant par la bande du haut."}
@@ -218,4 +225,5 @@ uncertainties:
   - "Exercice 8 : la fiche dit seulement « avancer la blanche au-delà du trait ». Le critère retenu en [S] est de repasser le trait au retour, après la bande de gauche (la blanche franchit le trait à l'aller et au retour). L'arrêt juste à droite du trait, en haut de la table, et le chemin de retour sont une lecture du schéma [Prop] : la fin de la flèche (pointe à environ 0,08 case du trait) est sous la précision de lecture."
   - "Théorie « Attaque en haut, grand geste » : l'adaptation de la puissance en plein et son caractère plus prononcé au Blackball viennent de la fiche n° 11 (p.21). Le risque d'empoche de la blanche (section « Attention à la blanche en plein », adultes) vient du mémento d'initiation 13 et est présenté en [Prop] ; il n'est pas dans la fiche n° 11. La section « Où va la blanche en trois-quarts ? » ne dit plus rien de l'influence de l'endroit où se trouve la blanche, qui n'est dans aucune source."
   - "Exercices 7 et 8 : le type de chevalet n'est pas précisé par la source ; la quantité de bille est lue sur l'encart (trois-quarts environ), non légendée. Les erreurs fréquentes et leurs corrections sont des lectures [Prop] des fiches, la fiche d'entraînement n'en donne pas."
+  - "Illustrations de la théorie « Attaque en haut, grand geste » : `attaque-haute` (cible `cue_ball_target`, point à mi-rayon au-dessus du centre, position indicative `[Prop]`, la source ne gradue pas la hauteur d'attaque) ; `contact-haut` dessine la blanche plus petite que la bille de couleur ; `plan-geste` (plan amplitude × vitesse) est une image `[Prop]` : la source (fiche n° 11) dit seulement « amplitude plutôt que vitesse » ; les deux exemples tombent dans la même zone moyenne du plan pour montrer que seule la manière change."
   - "Section « Annoncer où la blanche s'arrête » : glose pédagogique [Prop], non formulée par la source (le reste de la théorie vient des fiches n° 11 et 14 et des schémas de la page 22)."

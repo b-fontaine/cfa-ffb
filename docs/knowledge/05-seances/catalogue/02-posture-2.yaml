@@ -26,8 +26,8 @@ recall:
   question:
     ask: Dans quel ordre prépare-t-on un tir ?
     answer: On vise, on se place les pieds stables, puis on installe la main d'appui, sur le cadre ou à plat sur la surface de jeu.
-  # Illustration `posture-dessus` de la séance précédente (posture-1), non recopiée ici.
-  reuse: {sheet: posture-1, illustration: posture-dessus}
+  # Illustration `posture-personnage` de la séance précédente (posture-1), non recopiée ici.
+  reuse: {sheet: posture-1, illustration: posture-personnage}
   src: S
 theory:
   sections:
@@ -81,10 +81,13 @@ theory:
       illustrations: [distances]
       src: Prop
 illustrations:
-  - {id: posture-surface, type: stance_top, view: top,
-     annotations: ["Pied droit sous la main droite", "Avant-bras droit vertical", "Main d'appui à plat sur la surface de jeu", "Tête au plus près de la queue"],
-     caption: "Posture avec la main d'appui sur la surface de jeu.",
-     alt: "Schéma de dessus : les pieds écartés, le pied droit sous la main qui tient la queue, la main d'appui à plat sur la surface et la queue alignée sur la blanche."}
+  - id: posture-surface
+    type: player_figure
+    view: side
+    bridge: surface
+    focus: [feet, back_forearm, bridge_hand]
+    caption: "Posture avec la main d'appui à plat sur la surface de jeu : le pied droit sous la main droite, l'avant-bras vertical, la tête au plus près de la queue."
+    alt: "Un joueur schématique de profil, la tête près de la queue, la main d'appui posée à plat sur le tapis et la queue qui vise la blanche (billes agrandies, non à l'échelle) ; trois repères numérotés : les pieds, l'avant-bras vertical et la main d'appui."
   - {id: chevalet-pdf, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 9,
      caption: "Voir la page 9 de la fiche technique n° 1 : le chevalet main à plat.",
      alt: "Renvoi vers la page 9 de la fiche technique n° 1, qui montre le chevalet main à plat."}
@@ -103,11 +106,11 @@ illustrations:
       - {id: g-milieu, at: [4.0, 2.2], role: cue_start, for: w, label: "milieu"}
       - {id: g-pres, at: [4.0, 1.2], role: cue_start, for: w, label: "près"}
     arrows:
-      - {id: a-loin, kind: cue, ball: w, path: [[4.0, 3.2], [4.0, 0.35]], to: tm}
-      - {id: a-milieu, kind: cue, ball: w, path: [[4.0, 2.2], [4.0, 0.35]], to: tm}
-      - {id: a-pres, kind: cue, ball: w, path: [[4.0, 1.2], [4.0, 0.35]], to: tm}
+      - {id: a-loin, kind: cue, ball: w, path: [[4.0, 3.2], [4.0, 0.364]], to: tm}
+      - {id: a-milieu, kind: cue, ball: w, path: [[4.0, 2.2], [4.0, 0.364]], to: tm}
+      - {id: a-pres, kind: cue, ball: w, path: [[4.0, 1.2], [4.0, 0.364]], to: tm}
     caption: "La même bille, jouée en ligne droite depuis trois emplacements : près, au milieu, loin."
-    alt: "Table vue de dessus : une bille rouge devant la poche du milieu du haut et trois emplacements pour la blanche alignés sur une même droite avec la rouge et la poche, de plus en plus éloignés, chacun avec une flèche vers la rouge."
+    alt: "Table vue de dessus : une bille rouge devant la poche du milieu du haut et trois emplacements pour la blanche (un peu plus petite que la rouge) alignés sur une même droite avec la rouge et la poche, de plus en plus éloignés, chacun avec une flèche vers la rouge."
   - {id: schema-jeu, type: diagram_ref, diagram: jeux-p02-j1,
      caption: "Jeu 2 : six billes à un espace de bille des poches ; la blanche se place librement.",
      alt: "Table vue de dessus : six billes rouges, une près de chacune des six poches, à environ une bille d'écart ; pas de blanche dessinée."}
@@ -185,10 +188,11 @@ sources:
   - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 4, note: "Initiation 4 : exercice 4 du bloc posture adapté"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 2, note: "Jeu 2 : billes à un espace de bille des poches"}
 uncertainties:
+  - "Tailles : la séance ne mesure aucune quantité de bille ; la blanche plus petite (48,0 contre 50,8 mm, 06-dimensions-du-materiel.md) n'est donc pas dite dans les textes, seulement respectée dans le schéma `distances` (blanche au rayon r_c, flèches arrêtées au contact à s = r_c + r_o = 0,2136 case de la rouge, soit y = 0,364). La posture et la puissance n'utilisent plus aucun « cran »."
   - "Les exercices 3 et 4 du bloc posture, leurs taux et leurs mises en place sont [Prop], adaptés des fiches d'initiation 3 et 4 et du jeu 1 [S] ; à valider par un animateur dans l'application."
   - "Thème, défis, tirelire, tournante, règle de lien et adaptations du jeu : [Prop]. Titre, thème « Le tireur d'élite », notion, bloc et fiches techniques sont identiques à ceux de posture-1 (V23) ; la notion reprend la phrase de posture-1. Fil de la séance : rester stable autour de la ligne de visée (chevalet à plat, coup de queue droit, même geste de près et de loin) ; reformuler `notion` pour y nommer le coup de queue suppose de modifier posture-1 dans le même changement."
   - "La fiche du jeu 2 ne dit pas comment on désigne le gagnant ; le décompte proposé (adaptation.children) est une proposition."
-  - "Le rappel ne porte que sur ce que posture-1 a enseigné (alignement, posture, appui sur le cadre, main à plat) ; il réutilise l'illustration `posture-dessus` de posture-1. Le coup de queue (seul l'avant-bras bouge) est nouveau et n'est pas rappelé."
+  - "Le rappel ne porte que sur ce que posture-1 a enseigné (alignement, posture, appui sur le cadre, main à plat) ; il réutilise l'illustration `posture-personnage` de posture-1. Le coup de queue (seul l'avant-bras bouge) est nouveau et n'est pas rappelé."
   - "Pas de section d'initiation : les fiches d'initiation 3 et 4 sont déjà la base des exercices 3 et 4 ; les ajouter ferait doublon ; les deux sections nouvelles ont une démonstration que les élèves reproduisent aussitôt (chevalet à plat, trois balanciers à vide)."
   - "La section « Près ou loin, le même geste » est une glose [Prop] : la fiche technique n° 1 ne traite pas de la distance de la blanche ; son schéma aligne les trois emplacements avec la bille et la poche pour que seule la distance change."
   - "Dans l'exercice 3, les emplacements 1 et 4 sont à moins d'une demi-case d'une bande et la main reste à plat : choix volontaire repris de la fiche d'initiation 3 [S] pour travailler ce chevalet ; la fiche technique recommande plutôt le cadre près de la bande."

@@ -50,6 +50,7 @@ theory:
         - Même rouge, même poche, deux rétros.
         - En trois-quarts, la blanche recule plus ou moins ouverte selon la puissance du coup.
         - En quantité proche du demi-bille, un peu plus pleine, elle repart à peu près à angle droit.
+        - La blanche est plus petite que la bille de couleur, donc au demi-bille exact elle n'atteint pas tout à fait 90° ; on vise un peu plus plein.
       key_point: Quantité et puissance changent l'arrivée de la blanche.
       demo: "Jouer deux rétros depuis la même place, l'un en trois-quarts, l'autre proche du demi-bille un peu plus plein, et marquer où la blanche s'arrête."
       illustrations: [retro-trois-quarts, retro-demi]
@@ -61,12 +62,12 @@ illustrations:
       - {id: r, color: red, at: [4.0, 1.0]}
       - {id: w, color: white, at: [4.55, 3.33], role: cue}
     ghosts:
-      - {id: g-impact, at: [4.0, 1.2], role: impact, for: w}
+      - {id: g-impact, at: [4.0, 1.21], role: impact, for: w}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[4.55, 3.33], [4.0, 1.2]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[4.55, 3.33], [4.0, 1.21]], bounces: []}
       - {id: a2, ball: r, kind: object, path: [[4.0, 1.0], [4.0, 0.0]], bounces: [], to: tm}
-      - {id: a3, ball: w, kind: cue, path: [[4.0, 1.2], [3.35, 3.5]], bounces: [], label: "recule moins ouvert"}
-      - {id: a4, ball: w, kind: cue, path: [[4.0, 1.2], [2.6, 3.5]], bounces: [], label: "recule plus ouvert"}
+      - {id: a3, ball: w, kind: cue, path: [[4.0, 1.21], [3.35, 3.5]], bounces: [], label: "recule moins ouvert"}
+      - {id: a4, ball: w, kind: cue, path: [[4.0, 1.21], [2.6, 3.5]], bounces: [], label: "recule plus ouvert"}
     zones: []
     caption: "Même trois-quarts, deux rétros : selon la puissance, la blanche recule plus ou moins ouverte (schéma indicatif, proposition)."
     alt: "Table vue de dessus : la rouge sous la poche du milieu du haut, la blanche en bas à droite ; après le contact en trois-quarts, la rouge monte dans la poche et la blanche repart vers le bas par deux trajets vers la gauche : l'un moins ouvert, l'autre plus ouvert."
@@ -76,13 +77,13 @@ illustrations:
       - {id: r, color: red, at: [3.99, 1.39]}
       - {id: w, color: white, at: [4.41, 2.44], role: cue}
     ghosts:
-      - {id: g-impact, at: [4.0, 1.62], role: impact, for: w}
+      - {id: g-impact, at: [3.99, 1.60], role: impact, for: w}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[4.41, 2.44], [4.0, 1.62]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[4.41, 2.44], [3.99, 1.60]], bounces: []}
       - {id: a2, ball: r, kind: object, path: [[3.99, 1.39], [4.0, 0.0]], bounces: [], to: tm}
-      - {id: a3, ball: w, kind: cue, path: [[4.0, 1.62], [1.5, 2.87]], bounces: [], label: "la blanche recule à environ 90°"}
+      - {id: a3, ball: w, kind: cue, path: [[3.99, 1.60], [1.5, 2.87]], bounces: [], label: "la blanche recule à environ 90°"}
     zones: []
-    caption: "Quantité proche du demi-bille, légèrement plus pleine : la blanche recule à environ 90° (reprise du schéma de l'exercice 8, indicatif)."
+    caption: "Quantité proche du demi-bille, légèrement plus pleine (la blanche, plus petite, est dessinée un peu moins grosse que la rouge) : elle recule à environ 90° (reprise du schéma de l'exercice 8, indicatif)."
     alt: "Table vue de dessus : la rouge sous la poche du milieu du haut, la blanche en bas à droite ; après le contact, la rouge monte dans la poche et la blanche repart vers la gauche, à peu près à angle droit de sa trajectoire d'arrivée."
   - {id: schema-e7, type: diagram_ref, diagram: entrainement-p30-e7,
      caption: "Exercice 7 : un rétro, trois fois vers chaque zone ; les zones ne sont pas tracées sur le schéma, l'animateur les repère.",
@@ -181,4 +182,4 @@ uncertainties:
   - "Exercice 7 : le schéma [S] ne trace pas les zones (deux étiquettes seulement : zone 1 vers x ≈ 3,0 et zone 2 vers x ≈ 1,6, à gauche du trait) et la flèche de la blanche s'arrête à x ≈ 2,1, à droite du trait. La mise en place (zone 1 proche de la rouge, zone 2 plus reculée près du trait) est une proposition de l'animateur, [Prop]. Le trait est lu vers x ≈ 1,8 ; le type de chevalet n'est pas précisé. La rouge est replacée sous la poche après chaque tir (une seule rouge sur le schéma pour six tirs)."
   - "Exercice 8 : la quantité de bille de l'encart (demi-bille environ) est estimée d'après le recouvrement, non légendée ; la fin de la flèche de la blanche est approximative."
   - "Erreurs fréquentes : les corrections introduites par « conseil d'animateur » (exercice 7 : main desserrée et queue à plat, modification de la puissance un seul réglage à la fois ; exercice 8 : queue à plat, retour à la visée de la rouge) ne sont pas dans la fiche : ce sont des conseils pédagogiques [Prop], destinés à l'animateur et non attribués à la source."
-  - "Illustrations indicatives, [Prop] : retro-trois-quarts est redessinée avec une coupe d'environ 14,5° (trois-quarts) ; les deux trajets de retour (écarts d'environ 16° et 31° par rapport à la verticale, vers la gauche) sont d'ordre de grandeur, non mesurés ; un retour plausible est ouvert d'au moins 20° dès que la blanche recule peu, et le schéma ne prétend pas ramener la blanche sur son axe d'arrivée. retro-demi reprend le schéma de l'exercice 8 (coupe d'environ 27°, proche du demi-bille) : la fiche demande de viser un peu plus plein au Blackball pour obtenir 90°. La correspondance exacte entre puissance et déviation n'est pas donnée par la source."
+  - "Illustrations indicatives, [Prop] : retro-trois-quarts est redessinée avec une coupe d'environ 14,5° (trois-quarts) ; les deux trajets de retour (écarts d'environ 16° et 31° par rapport à la verticale, vers la gauche) sont d'ordre de grandeur, non mesurés ; un retour plausible est ouvert d'au moins 20° dès que la blanche recule peu, et le schéma ne prétend pas ramener la blanche sur son axe d'arrivée. retro-demi reprend le schéma de l'exercice 8 (coupe d'environ 27°, proche du demi-bille) : la fiche demande de viser un peu plus plein au Blackball pour obtenir 90° (la blanche étant plus petite, [S] p. 25) ; la coupe de 27° est volontairement un peu plus pleine que le demi-bille défini par la tangente (30,9°). Positions recalculées avec la géométrie réelle : la blanche est dessinée plus petite (rayon 0,1038 case contre 0,1098 pour la rouge) et la blanche à l'impact (cercle creux) est au contact à s = 0,2136 du centre de la rouge, soit (3,99 ; 1,60) pour retro-demi et (4,0 ; 1,21) pour retro-trois-quarts. La phrase « la blanche est plus petite, donc pas tout à fait 90° au demi-bille exact » est reprise de la fiche n° 14 [S] dans une section [Prop] ; le reste de la section reste [Prop]. La correspondance exacte entre puissance et déviation n'est pas donnée par la source."

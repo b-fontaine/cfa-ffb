@@ -38,7 +38,7 @@ theory:
         - Au carreau, elle touche la bille de couleur pendant qu'elle glisse, et elle s'arrête.
       adult_extra:
         - La pénétration et la vitesse sont à adapter pour garder le glissement jusqu'à l'impact.
-        - "Rappel des fiches n° 12 et initiation 15 : trop puissant, la blanche recule (écart de poids avec la bille de couleur) ; trop doux, elle roule après l'impact."
+        - "Rappel des fiches n° 12 et initiation 15 : trop puissant, la blanche recule (écarts de poids et de taille entre la blanche, plus petite et plus légère, et la bille de couleur) ; trop doux, elle roule après l'impact."
       key_point: Attaque au centre, bille pleine, blanche qui glisse jusqu'à l'impact.
       demo: "Jouer un carreau à courte distance, en bille pleine avec une attaque au centre, et montrer que la blanche glisse jusqu'à l'impact puis s'arrête."
       illustrations: [cue-centre, carreau-distance]
@@ -67,12 +67,12 @@ theory:
       weight: {children: 2, adults: 2}
       body:
         - "On reprend la mise en place de l'exercice 3 : la blanche sur son repère, à courte distance de la rouge."
-        - "On joue trois coups d'essai depuis ce repère : un cran plus doux, un cran plus fort, puis celui du milieu."
+        - "On joue trois coups d'essai depuis ce repère : un coup un peu plus doux, un coup un peu plus fort, puis celui du milieu."
         - Ces trois coups ne comptent pas dans les passages de l'exercice.
         - On garde la force qui arrête la blanche pile à l'impact.
       key_point: On essaie, on observe, on garde le coup où la blanche s'arrête pile.
       demo: "Jouer les trois coups d'essai depuis le repère de l'exercice 3 et montrer à chaque fois où la blanche s'arrête."
-      illustrations: [echelle-dosage]
+      illustrations: [plan-dosage]
       src: Prop
     - id: lire-arret
       title: Lire où la blanche s'arrête
@@ -87,20 +87,22 @@ theory:
       illustrations: [carreau-distance]
       src: Prop
 illustrations:
-  - {id: cue-centre, type: cue_side, tip_point: center, cue_height: level,
-     caption: "Attaque au centre : le procédé frappe la blanche en son centre, la queue à plat (schéma indicatif).",
-     alt: "Bille blanche vue de côté avec la queue à plat ; le procédé touche la blanche en son centre."}
+  - {id: cue-centre, type: cue_ball_target, tip_point: center, cue_height: level,
+     caption: "Attaque au centre : le procédé frappe la blanche en son centre, la queue à hauteur moyenne ; le point est à l'échelle de la blanche, plus petite que les autres billes (schéma indicatif).",
+     alt: "Cible sur la blanche vue de face : le procédé touche le centre ; le profil montre la queue à hauteur moyenne."}
   - {id: carreau-distance, type: table,
      balls: [{id: r, color: red, at: [4.0, 1.2]}, {id: w, color: white, at: [4.0, 2.6], role: cue}],
-     ghosts: [{id: g-impact, at: [4.0, 1.4], role: impact, for: w}],
-     arrows: [{id: a1, ball: w, kind: cue, path: [[4.0, 2.6], [4.0, 1.4]], bounces: []},
+     ghosts: [{id: g-impact, at: [4.0, 1.41], role: impact, for: w}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[4.0, 2.6], [4.0, 1.41]], bounces: []},
               {id: a2, ball: r, kind: object, path: [[4.0, 1.2], [4.0, 0.0]], bounces: [], to: tm}],
      zones: [{id: z1, shape: rect, from: [3.8, 1.4], to: [4.2, 2.6], label: "distance courte"}],
-     caption: "Carreau à courte distance : la blanche touche la rouge en plein et s'arrête à l'impact ; la rouge part vers la poche (schéma non à l'échelle).",
+     caption: "Carreau à courte distance : la blanche, un peu plus petite que la rouge, touche la rouge en plein et s'arrête à l'impact ; la rouge part vers la poche (schéma non à l'échelle).",
      alt: "Table vue de dessus : une bille rouge sous la poche du milieu du haut, la blanche juste en dessous sur la même ligne, à courte distance ; la blanche s'arrête au contact et la rouge part droit vers la poche."}
-  - {id: echelle-dosage, type: power_scale, levels: 5, highlight: 2, distance_label: "Courte distance : la blanche s'arrête à l'impact",
-     caption: "Proposition : un repère pour doser, ni trop fort (la blanche recule), ni trop doux (elle roule) ; les niveaux ne sont pas une graduation de la source.",
-     alt: "Échelle de puissance de 1 à 5 avec le niveau 2 mis en évidence, comme repère indicatif de dosage pour un carreau à courte distance."}
+  - {id: plan-dosage, type: power_ratio,
+     points: [{amplitude: short, speed: medium}],
+     distance_label: "Courte distance : la blanche s'arrête à l'impact",
+     caption: "Proposition : un repère pour doser, avec un coup doux (amplitude courte, vitesse moyenne) ; plus fort, la blanche recule, plus doux, elle roule ; le plan n'est pas une graduation de la source.",
+     alt: "Plan amplitude (recul de la main) et vitesse avec un exemple, amplitude courte et vitesse moyenne, dans la zone douce : repère indicatif de dosage pour un carreau à courte distance."}
   - {id: schema-jeu, type: diagram_ref, diagram: jeux-p14-j1,
      caption: "Jeu 14 : partie à difficulté réduite, quatre billes par groupe et la noire.",
      alt: "Table vue de dessus : la blanche sur la ligne de départ à gauche ; les billes rouges, jaunes et la noire groupées vers la droite du centre."}
@@ -172,7 +174,7 @@ sources:
   - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 24, note: "Entraînement « Le carreau », exercices 3 et 4"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite), dont la partie est adaptée"}
 uncertainties:
-  - "Sections « Le chevalet change, l'attaque non », « Chercher le bon dosage » et « Lire où la blanche s'arrête », échelle de dosage (niveau indicatif), thème, défis, variante de jeu (défi du créneau, jetons, garde-fous de replacement et de rejeu), règle de lien, adaptations et minutes : [Prop], à valider par un animateur dans l'application."
+  - "Sections « Le chevalet change, l'attaque non », « Chercher le bon dosage » et « Lire où la blanche s'arrête », plan de dosage (exemple indicatif), thème, défis, variante de jeu (défi du créneau, jetons, garde-fous de replacement et de rejeu), règle de lien, adaptations et minutes : [Prop], à valider par un animateur dans l'application."
   - "Le jeu est une adaptation [Prop] du jeu 14 [S] : seuls les 4 billes par groupe, la noire et le tirage à la bande viennent de la fiche. Le rappel de la partie classique (groupes, rejouer, faute, noire, tirage à la bande) n'est pas dans les sources du dépôt : c'est un rappel [Prop] à confronter au règlement en vigueur. L'annonce « carreau », le replacement de la blanche et les jetons n'y figurent pas ; aucun jeu de la source n'est dédié au carreau, et le défi du créneau est facultatif : il fabrique des occasions de carreau, rares dans une partie normale."
   - "Exercices 3 et 4 : le schéma [S] ne dessine pas la position finale de la blanche ; l'énoncé dit seulement qu'elle doit se replacer sur la noire. Le type de chevalet n'est pas indiqué : la séance ne l'impose pas, l'alternance sur cadre / sur surface est une proposition (playful, exercice 4)."
   - "Passes : l'exercice 3 (deux passes) sert de repère de dosage, au centre de la table ; l'exercice 4 (une passe) ajoute la contrainte des jaunes voisines. Cette répartition est une proposition ; la distance blanche-impact est voisine dans les deux exercices."

@@ -52,7 +52,7 @@ theory:
         - "Même idée qu'au carambole (le « miroir ») : la bande prolonge le chemin de l'autre côté ; cette méthode n'est pas dans les fiches du Blackball et reste à valider."
         - "Plus il y a de bandes, plus une petite erreur au premier rebond s'agrandit ; la qualité des bandes et du drap pèse à chaque rebond."
       key_point: On repère d'abord le point de la seconde bande, puis on vise la première.
-      demo: "Poser un repère sur la première bande, tirer, puis rejouer le même tir en déplaçant le repère de la largeur d'une bille pour voir où arrive la blanche."
+      demo: "Poser un repère sur la première bande, tirer, puis rejouer le même tir en déplaçant le repère de la largeur de la blanche pour voir où arrive la blanche."
       illustrations: [deux-bandes]
       src: Prop
     - id: visee-impact
@@ -93,12 +93,12 @@ initiation:
 illustrations:
   - {id: deux-bandes, type: table,
      balls: [{id: w, color: white, at: [2.0, 3.0], role: cue}, {id: r, color: red, at: [6.0, 3.0], role: object}],
-     ghosts: [{id: g1, at: [6.0, 0.1], role: impact, for: w, label: "1"},
-              {id: g2, at: [7.9, 1.52], role: impact, for: w, label: "2"}],
-     arrows: [{id: a1, ball: w, kind: cue, path: [[2.0, 3.0], [6.0, 0.1], [7.9, 1.52], [6.08, 2.9]], bounces: [top, right]}],
+     ghosts: [{id: g1, at: [5.9, 0.1038], role: impact, for: w, label: "1"},
+              {id: g2, at: [7.8962, 1.59], role: impact, for: w, label: "2"}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[2.0, 3.0], [5.9, 0.1038], [7.8962, 1.59], [6.17, 2.87]], bounces: [top, right]}],
      zones: [],
-     caption: "Deux bandes : la blanche touche la grande bande du haut (1), puis la petite bande de droite (2), avant d'atteindre la bille rouge.",
-     alt: "Table vue de dessus : la blanche à gauche, une bille rouge en bas à droite. La trajectoire de la blanche touche d'abord la bande du haut, puis la bande de droite, et revient vers la rouge."}
+     caption: "Deux bandes : la blanche touche la grande bande du haut (1), puis la petite bande de droite (2), avant d'atteindre la bille rouge. La blanche, un peu plus petite que la rouge, est dessinée en creux au moment de chaque contact.",
+     alt: "Table vue de dessus : la blanche à gauche, une bille rouge un peu plus grosse en bas à droite. La trajectoire de la blanche touche d'abord la bande du haut, puis la bande de droite, et revient vers la rouge ; deux cercles creux, de la taille de la blanche, marquent ses deux points de contact avec les bandes."}
   - {id: angle-ouvert, type: diagram_ref, diagram: initiation-p11-sb,
      caption: "Initiation 11, situation B : avec un angle ouvert, le point visé et le point d'impact sont éloignés.",
      alt: "Table vue de dessus : la blanche à droite, une bille obstacle au milieu et une bille objet à gauche, alignées près de la grande bande du bas ; le point d'impact est sur la bande, sous l'obstacle."}
@@ -118,7 +118,7 @@ training:
       mistakes:
         - {symptom: La blanche touche la noire ou la rouge avant la bande, fix: Suivre des yeux le chemin entier avant de tirer et décaler le point visé sur la première bande.}
         - {symptom: La blanche arrive trop court sur la seconde bande, fix: "Accompagner davantage le geste, avec une amplitude plus grande et sans à-coup."}
-        - {symptom: La blanche rate la jaune d'une largeur de bille, fix: Rejouer le même tir en déplaçant le point visé sur la première bande d'un petit pas.}
+        - {symptom: La blanche rate la jaune d'une largeur de blanche, fix: Rejouer le même tir en déplaçant le point visé sur la première bande d'un petit pas.}
       playful:
         hook: Avant chaque tir, le joueur annonce « haut puis droite » ; son binôme trace le chemin du doigt au-dessus de la table.
         challenge: "Faire avancer le galet d'une case au tableau pour chaque jaune touchée après deux bandes. Adultes (proposition) : déplacer le repère de départ d'une largeur de main entre deux tirs."

@@ -26,7 +26,7 @@ recall:
   question:
     ask: De quoi dépend la puissance d'un coup de queue ?
     answer: De la vitesse de la queue et de son amplitude, le recul de la main jusqu'à la fin de la pénétration dans la blanche.
-  reuse: {sheet: puissance-2, illustration: echelle-puissance}
+  reuse: {sheet: puissance-2, illustration: plan-puissance}
   src: S
 theory:
   sections:
@@ -50,9 +50,10 @@ theory:
         - L'animateur retire la fantôme avant le tir et fait observer le point visé sur la bille de couleur.
       adult_extra:
         - Le procédé est placé au centre de la blanche de tir (limage) ; la queue suit la ligne centre de la blanche de tir vers centre de la fantôme.
+        - "La fantôme est une blanche : elle est un peu plus petite que la bille de couleur, et c'est le centre de ta blanche qui doit arriver à sa place."
       key_point: On vise le centre de la bille fantôme, puis on la retire avant de tirer.
       demo: L'animateur pose une blanche au contact de la bille, sur la ligne de la poche, puis la retire.
-      illustrations: [visee-fantome, procede-centre]
+      illustrations: [visee-fantome, procede-centre, taille-billes]
       src: S
     - id: mot-fantome
       title: Le mot « fantôme »
@@ -76,6 +77,9 @@ theory:
       illustrations: [contact-plein]
       src: S
 illustrations:
+  - {id: taille-billes, type: ball_size,
+     caption: "La bille fantôme a la taille de la blanche (48,0 mm), un peu plus petite que la bille de couleur (50,8 mm).",
+     alt: "Deux billes côte à côte, à l'échelle : à gauche la blanche, 48,0 mm, à droite une bille de couleur, 50,8 mm ; la blanche est un peu plus petite."}
   - {id: ligne-poche, type: table,
      balls: [{id: o, color: red, at: [2.0, 1.0]},
              {id: w, color: white, at: [4.0, 2.0], role: cue}],
@@ -84,13 +88,13 @@ illustrations:
      alt: "Table vue de dessus : une bille rouge près du coin haut gauche avec une flèche vers la poche, la blanche plus bas à droite sur le prolongement de cette ligne."}
   - {id: visee-fantome, type: ghost_aim, cue: [3.6, 3.6], object: [1.0, 1.0], pocket: tl, fraction: full,
      caption: "La bille fantôme est la place de la blanche au moment du choc.",
-     alt: "Blanche en bas à droite, bille de couleur vers le coin haut gauche ; la bille fantôme est collée à la bille de couleur, sur la ligne de la poche."}
-  - {id: procede-centre, type: cue_side, tip_point: center, cue_height: level,
+     alt: "Blanche en bas à droite, bille de couleur vers le coin haut gauche ; la bille fantôme, de la taille de la blanche donc un peu plus petite que la bille de couleur, est collée à celle-ci, sur la ligne de la poche."}
+  - {id: procede-centre, type: cue_ball_target, tip_point: center, cue_height: level,
      caption: "Le procédé vise le centre de la blanche.",
-     alt: "Vue de côté : la queue horizontale, le procédé touche le centre de la bille blanche."}
+     alt: "Cible sur la blanche vue de face : le procédé touche le centre ; le profil montre la queue à hauteur moyenne."}
   - {id: contact-plein, type: contact, fraction: full, tip_point: center,
      caption: "Plein : la blanche arrive de face, centre sur centre.",
-     alt: "Vue de dessus : la blanche arrive de face sur la bille de couleur, les deux centres sont alignés."}
+     alt: "Vue de dessus : la blanche, un peu plus petite, arrive de face sur la bille de couleur, les deux centres sont alignés ; à droite, la blanche vue de face avec le procédé au centre."}
   - {id: schema-jeu, type: diagram_ref, diagram: jeux-p01-j1,
      caption: "Billes en bord de poche, comme au jeu 1 ; la blanche se place librement.",
      alt: "Table vue de dessus : six billes rouges posées chacune au bord d'une poche, quatre coins et deux poches du milieu ; la blanche n'est pas dessinée."}
@@ -168,7 +172,7 @@ uncertainties:
   - "Exercices 1 et 2, taux et mise en place : [Prop] (bloc bille-fantome, hors des PDF d'entraînement), adaptés de la fiche technique n° 3 et de l'initiation 6 ; à valider par un animateur dans l'application."
   - "Duel des fantômes : [Prop], adapté du jeu 1 ; la série réduite, la pose de la fantôme par l'adversaire, la règle de lien avec la puissance, les vignettes et l'adaptation sont des propositions. Les thèmes, défis et minutes le sont aussi."
   - "La section « Le mot fantôme » (enfants) est une glose [Prop] : la fiche n° 3 n'emploie le mot qu'en le glosant pour l'animateur."
-  - "Le rappel [S] se limite à la fiche n° 2 (vitesse et amplitude) et reprend l'illustration echelle-puissance de puissance-2 (V7) ; la distance, le recul et l'annonce « petit, moyen, grand » sont des propositions [Prop] de puissance-2, reprises seulement dans la règle de lien du jeu."
+  - "Le rappel [S] se limite à la fiche n° 2 (vitesse et amplitude) et reprend l'illustration plan-puissance de puissance-2 (V7) ; la distance, le recul et l'annonce « petit, moyen, grand » sont des propositions [Prop] de puissance-2, reprises seulement dans la règle de lien du jeu."
   - "Jeu 1 : la fiche dit seulement « blanche placée librement ». Lecture retenue ici [Prop] : placement libre au premier tir, puis blanche jouée d'où elle s'arrête ; la règle de lien (facultative) impose, en exception explicite, le placement à la main avant chaque tir."
-  - "Les positions de la bille fantôme sont schématisées avec deux billes de même rayon (cf. fiche n° 4) ; au Blackball la blanche est un peu plus petite, l'écart est minime."
-  - "Le sens de la ligne « blanche vers fantôme » et la hauteur « level » de la queue (vue de côté) sont des schématisations ; la fiche ne précise que le procédé au centre de la blanche."
+  - "La bille fantôme est dessinée avec le rayon de la blanche (48,0 mm, [FFB]) et posée à la somme des rayons de la bille de couleur (50,8 mm) et de la blanche ; la fiche n° 4 [S] dit seulement que la blanche est plus petite et ne chiffre rien. Les dimensions viennent de 06-dimensions-du-materiel.md ; à l'échelle d'un schéma de table l'écart reste à peine visible."
+  - "Le sens de la ligne « blanche vers fantôme » et la hauteur « level » de la queue (profil de la cible) sont des schématisations ; la fiche ne précise que le procédé au centre de la blanche."

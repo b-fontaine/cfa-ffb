@@ -60,7 +60,7 @@ theory:
         - Trop doux, la blanche roule encore après l'impact. Trop fort, elle recule.
       adult_extra:
         - Il faut de la pénétration et de la vitesse pour que la blanche arrive à l'impact encore en glissement.
-        - Au Blackball, le recul vient des différences de poids et de taille entre la blanche et la bille de couleur.
+        - "Au Blackball, la blanche est plus légère que la bille de couleur : c'est cette différence de poids qui la fait reculer si le coup est trop fort."
       key_point: Courte distance ; trop doux, la blanche roule ; trop fort, elle recule.
       demo: "Tirer trois fois en plein, attaque au centre, à courte distance : doux, la blanche roule encore ; juste, elle s'arrête ; fort, elle recule."
       illustrations: [attaque-centre, schema-carreau]
@@ -103,25 +103,25 @@ illustrations:
   - {id: contact-plein-centre, type: contact, fraction: full, tip_point: center,
      caption: "Carreau : bille pleine, attaque au centre de la blanche.",
      alt: "Vue de dessus : les deux billes sont alignées centre sur centre ; le point d'impact du procédé est au centre de la blanche."}
-  - {id: attaque-centre, type: cue_side, tip_point: center, cue_height: level,
+  - {id: attaque-centre, type: cue_ball_target, tip_point: center, cue_height: level,
      caption: "Le procédé frappe la blanche à son centre (schéma indicatif).",
-     alt: "Vue de côté : la queue est horizontale et son procédé touche la blanche en son centre, à hauteur de l'équateur."}
-  - {id: attaque-haute, type: cue_side, tip_point: top, cue_height: level,
+     alt: "Cible sur la blanche vue de face : le procédé touche le centre, à hauteur de l'équateur ; le profil montre la queue à hauteur moyenne."}
+  - {id: attaque-haute, type: cue_ball_target, tip_point: top, cue_height: level,
      caption: "Pour le coulé, on frappe la blanche en haut : pas pour le carreau (schéma indicatif).",
-     alt: "Vue de côté : la queue est horizontale et son procédé touche la blanche dans sa partie haute, ce qui donne le coulé."}
+     alt: "Cible sur la blanche vue de face : le procédé touche la moitié haute, ce qui donne le coulé ; le profil montre la queue à hauteur moyenne."}
   - id: schema-carreau
     type: table
     balls:
       - {id: j1, color: yellow, at: [4.0, 1.5], role: object}
       - {id: w, color: white, at: [4.0, 2.8], role: cue}
     ghosts:
-      - {id: g1, at: [4.0, 1.7], role: impact, for: w}
+      - {id: g1, at: [4.0, 1.714], role: impact, for: w}
     arrows:
-      - {id: a1, ball: w, kind: cue, path: [[4.0, 2.8], [4.0, 1.7]], bounces: []}
+      - {id: a1, ball: w, kind: cue, path: [[4.0, 2.8], [4.0, 1.714]], bounces: []}
       - {id: a2, ball: j1, kind: object, path: [[4.0, 1.5], [4.0, 0.3]], bounces: [], to: tm}
     zones: []
     caption: "Carreau : la blanche s'arrête à l'impact, la jaune part vers la poche (schéma indicatif)."
-    alt: "Table vue de dessus : la blanche en bas, la jaune alignée avec elle et avec la poche du milieu du haut ; la blanche touche la jaune en plein et s'arrête au point d'impact, juste devant la place qu'occupait la jaune ; la jaune part vers la poche."
+    alt: "Table vue de dessus : la blanche (un peu plus petite que la jaune) en bas, la jaune alignée avec elle et avec la poche du milieu du haut ; la blanche touche la jaune en plein et s'arrête au point d'impact, juste devant la place qu'occupait la jaune ; la jaune part vers la poche."
   - {id: schema-initiation, type: diagram_ref, diagram: initiation-p15-e1,
      caption: "Initiation 15 : deux carreaux, un depuis chaque position de blanche.",
      alt: "Table vue de dessus : une rouge près de la poche d'angle du haut à gauche, avec une blanche à courte distance en bas à droite ; une jaune vers la poche du milieu du haut, avec une blanche à courte distance en bas à gauche ; chaque blanche touche sa bille en plein."}
@@ -203,4 +203,5 @@ uncertainties:
   - "Initiation 15 : la fiche cite un chevalet sur surface et un chevalet sur cadre sans dire lequel va avec quel tir ; la section « Quel chevalet ? » propose cadre pour la blanche proche de la bande (seconde position du schéma), surface pour l'autre : [Prop]."
   - "Entraînement 1 et 2 : le type de chevalet n'est pas indiqué ; la fiche dit « replacer la blanche sur la bille noire », mais sur le schéma 1 la blanche s'arrête à l'impact (environ 5,1 ; 2,2) alors que la noire est en (7,0 ; 1,0), soit plus de 2 unités du repère avec une jaune entre les deux : la consigne de la séance reprend la formulation de la fiche (« replacer la blanche sur la noire ») ; l'attendu se limite à l'arrêt de la blanche à l'impact, sans prétendre qu'elle atteint la noire. Au schéma 2, le dégagement entre les deux jaunes est serré."
   - "Le complément adulte de « Carreau ou coulé ? » rapproche les fiches n° 11 (coulé, du plein au trois-quarts) et n° 12 (carreau, plein) : mise en regard pédagogique à valider ; l'opposition amplitude (fiche 11) / pénétration et vitesse (fiche 12) reprend chaque fiche."
+  - "Tailles : la blanche (48,0 mm) est un peu plus petite que la bille de couleur (50,8 mm) [FFB] ; `schema-carreau` la dessine à sa taille, avec la bille fantôme à s = r_c + r_o ; la fiche n° 12 [S] attribue le recul à la différence de poids seule, la taille n'y est pas citée pour le carreau."
   - "Les illustrations `attaque-centre`, `attaque-haute` et `schema-carreau` sont indicatives (non à l'échelle)."

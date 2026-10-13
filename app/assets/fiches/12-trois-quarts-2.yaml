@@ -38,7 +38,7 @@ theory:
         - On vise à égale distance du centre de la bille de couleur et de sa tangente.
         - Le point de visée et le point de contact sont très proches, donc c'est plus facile que les quantités plus faibles.
       adult_extra:
-        - Après le choc, la bille de couleur est déviée d'environ 15° (billes identiques) ; à la demi-bille, c'était environ 30°.
+        - "Après le choc, la bille de couleur est déviée d'environ 15° (billes identiques) ; à la demi-bille, c'était environ 30°. Au Blackball la blanche est un peu plus petite que la bille de couleur : ces valeurs sont des ordres de grandeur."
       key_point: Trois-quarts, on vise à mi-chemin entre le centre et la tangente.
       demo: "Tirer sans empocher, à courte distance : la bille de couleur parcourt plus que la blanche."
       illustrations: [visee-poche-bas, demi-et-trois-quarts, fiche-trois-quarts]
@@ -81,7 +81,7 @@ theory:
       title: "Rappel : la bille fantôme"
       weight: {adults: 1}
       body:
-        - L'animateur pose une blanche au contact de la bille à empocher, sur la ligne de la poche, puis la retire avant le tir.
+        - L'animateur pose une blanche (un peu plus petite que la bille à empocher) au contact de celle-ci, sur la ligne de la poche, puis la retire avant le tir.
       key_point: On vise le centre de la bille fantôme en plaçant le procédé au centre de la blanche.
       demo: null
       illustrations: [visee-poche-haut]
@@ -99,18 +99,18 @@ initiation:
     illustration: schema-initiation
     src: S
 illustrations:
-  - {id: visee-poche-bas, type: ghost_aim, cue: [7.7, 1.0], object: [6.0, 2.0], pocket: bm, fraction: three_quarter,
+  - {id: visee-poche-bas, type: ghost_aim, cue: [7.6, 1.0], object: [6.0, 2.0], pocket: bm, fraction: three_quarter,
      caption: "Poche du milieu du bas : la blanche est en haut, la bille fantôme est en haut à droite de la rouge.",
      alt: "Table vue de dessus : la rouge à droite du centre, la blanche en haut à droite, la poche du milieu du bas ; la bille fantôme est collée à la rouge, en haut à droite, sur le prolongement de la ligne poche-rouge, du côté opposé à la poche."}
-  - {id: visee-poche-haut, type: ghost_aim, cue: [7.7, 3.0], object: [6.0, 2.0], pocket: tm, fraction: three_quarter,
+  - {id: visee-poche-haut, type: ghost_aim, cue: [7.6, 3.0], object: [6.0, 2.0], pocket: tm, fraction: three_quarter,
      caption: "Poche du milieu du haut : la blanche est en bas, la bille fantôme est en bas à droite de la rouge.",
      alt: "Table vue de dessus : la rouge à droite du centre, la blanche en bas à droite, la poche du milieu du haut ; la bille fantôme est collée à la rouge, en bas à droite, sur le prolongement de la ligne poche-rouge, du côté opposé à la poche."}
   - {id: demi-et-trois-quarts, type: contact_strip, fractions: [half, three_quarter], highlight: three_quarter,
      caption: "Demi-bille et trois-quarts, côte à côte.",
-     alt: "Deux schémas de contact : la demi-bille, puis le trois-quarts mis en évidence."}
-  - {id: attaque-centre, type: cue_side, tip_point: center, cue_height: level,
+     alt: "Deux schémas de contact avec la blanche, un peu plus petite que la bille de couleur : la demi-bille, puis le trois-quarts mis en évidence ; une légende donne les diamètres, 48,0 mm et 50,8 mm."}
+  - {id: attaque-centre, type: cue_ball_target, tip_point: center, cue_height: level,
      caption: "Attaque au centre de la blanche, avec n'importe quel chevalet.",
-     alt: "Vue de côté : la queue touche la blanche en son centre, queue à l'horizontale."}
+     alt: "Cible sur la blanche vue de face, avec anneaux à mi-rayon et au bord : le procédé, dessiné à l'échelle, touche le centre ; le petit profil montre la queue à hauteur moyenne."}
   - {id: fiche-trois-quarts, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 16,
      caption: "Fiche technique n° 6 : la quantité trois-quarts de bille.",
      alt: "Renvoi à la page 16 du PDF des fiches techniques, fiche n° 6 sur le trois-quarts."}
@@ -198,4 +198,4 @@ uncertainties:
   - "Le jeu 8 annonce 8 billes alors que le schéma en montre quinze (7 rouges, 7 jaunes, la noire) ; la composition des groupes, le côté des poches, l'ordre des tirs après un empochage et la définition de la faute ne sont pas précisés par la fiche : ce sont des propositions (adaptation). Le terme « mouche » (conseil de la fiche) n'est défini dans aucune source du dépôt."
   - "Initiation 8 : la fiche ne précise pas le type de chevalet ; la séance ne l'impose pas. Elle rejoue volontairement la même mise en place que trois-quarts-1 (même fiche, même schéma, même jeu 8) : la progression vient de l'exercice 3 (chevalet sur surface), de l'exercice 4 et de la lecture du côté de la poche. Exercice 3 : l'ordre des deux séries n'est pas indiqué sur le schéma."
   - "Exercice 4 : le PDF ne relie pas explicitement chaque position de la blanche à une poche. Les billes fantômes du schéma (en haut à droite et en bas à droite de la rouge, sur le prolongement de la ligne poche-rouge ; calcul : coupe d'environ 16° vers la poche du milieu opposée, d'environ 81° vers l'autre) imposent la blanche du côté opposé à la poche : blanche en haut, rouge vers la poche du milieu du bas ; blanche en bas, rouge vers la poche du milieu du haut. Le diagramme transcrit `entrainement-p08-e4` associe la série du haut à la poche tm (appariement croisé à corriger dans le diagramme, hors du périmètre de cette séance : le schéma affiché contredit donc la consigne tant qu'il n'est pas corrigé, d'où la mention dans la mise en place) ; la séance suit la géométrie."
-  - "Illustrations `visee-poche-bas` et `visee-poche-haut` : fraction dérivée ≈ 0,72 (coupe d'environ 16°) par construction ; non à l'échelle, [Prop]."
+  - "Illustrations `visee-poche-bas` et `visee-poche-haut` : blanche en (7.6 ; 1.0) ou (7.6 ; 3.0), rouge en (6.0 ; 2.0) : coupe d'environ 14,6° (distance de visée 0,054 case pour 0,055 nominale), calculée avec la blanche plus petite (r 0,1038 case contre 0,1098) ; la bille fantôme, une blanche, est à 0,2136 case du centre de la rouge. Positions [Prop]."
