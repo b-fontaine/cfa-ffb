@@ -83,6 +83,8 @@ Interdits : inventer un exercice « officiel », présenter une adaptation non s
 | Valider les séances | `dart run scripts/validate_seances.dart` |
 | Copier / vérifier le catalogue (asset = `docs/knowledge`) | `scripts/sync_catalogue.sh [--check]` |
 | Copier / vérifier les diagrammes à table (asset = `docs/knowledge`) | `scripts/sync_diagrammes.sh [--check]` |
+| Copier / vérifier les séances du catalogue (asset = `docs/knowledge/05-seances/catalogue`) | `scripts/sync_fiches.sh [--check]` |
+| Valider les séances du catalogue (FORMAT.md § 7) | `cd app && dart run tool/fiches.dart [--complete]` |
 
 La CI exécute **les mêmes scripts** : voir `docs/engineering/quality-gates.md`.
 

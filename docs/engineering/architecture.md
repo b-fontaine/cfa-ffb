@@ -104,6 +104,7 @@ app/
 ├── assets/fonts/                      # Exo 2 + licence OFL
 ├── assets/catalogue/                  # copie du catalogue (scripts/sync_catalogue.sh)
 ├── assets/diagrammes/                 # copie des pages à table (scripts/sync_diagrammes.sh)
+├── assets/fiches/                     # copie des séances du catalogue (scripts/sync_fiches.sh)
 ├── tool/                              # check_architecture.dart (+ architecture/)
 ├── l10n.yaml  build.yaml  analysis_options.yaml
 └── android/ ios/ web/ linux/ macos/ windows/
@@ -203,9 +204,109 @@ pages à table (`kind` `exercise`, `game`, `initiation`) vers
 - **Correspondance avec le catalogue** : par les données, `TrainingBlock.title`
   = `sheet` et `ExerciseSpec.ref.number` = `exercise`
   (`DiagramKey.training(...)`) ; aucune table écrite à la main. Vérifiée par
-  `test/contract/catalogue_diagrammes_test.dart` (64 exercices, tous illustrés).
+  `test/contract/catalogue_diagrammes_test.dart` (72 exercices, tous illustrés : 64 par
+  les pages transcrites `[S]`, 8 par `diagrammes/proposition/` `[Prop]` pour les blocs
+  proposés `posture` et `bille-fantome`, dont `Provenance.prop` porte la mention).
 - **Non représenté** : l'encart `inset` (quantité de bille, point du procédé)
   n'est pas encore lu ; ses valeurs `tip_point` dépassent `TipPoint`.
+
+## Catalogue de séances (consultation)
+
+ADR 0004, lot L4. Lecture seule de bout en bout :
+
+- `entities/session_sheet` : modèle immuable, port `SessionSheetRepository`
+  (`getAll`, `getById`) et les règles pures qui ne dépendent que de la séance,
+  écrites une seule fois et appelées par les deux features :
+  `reviewReasonsOf` / `needsReview` / `gameNeedsReview` (motifs « à valider »),
+  `groupByTechnique` (ordre d'enseignement, rang, nombre de parties),
+  `partCountOf` et `diagramIdsOf` (schémas à lire) ; `presentation/` porte
+  `IllustrationMapper` et `SheetIllustrationView` (composent `shared/ui`, sans
+  importer `exercise_catalog` ni `exercise_diagram`).
+- Placement de la résolution (ADR 0004, décision 13 révisée) : la lecture des
+  schémas et des taux se fait **dans les features** (`GetSheet`,
+  `ResolveRunPlan`), par leurs dépendances descendantes vers `entities` ; il
+  n'y a pas de slot en `pages`. Seule la notation est composée en `pages`/`app`
+  par callbacks.
+- `features/browse_sheets` : `ListSheets` (groupes par technique, rang et
+  nombre de parties), `GetSheet` (séance, séance précédente, taux du
+  catalogue d'entraînement par `ExerciseRef`, schémas par identifiant,
+  minutage de chaque public calculé depuis `RulesConfig.shapes`),
+  `SheetCatalogueBloc` (filtres « à valider » et « jeux à valider », état
+  d'écran), `SheetDetailBloc` (public affiché, relance après échec). Des schémas illisibles ne font pas échouer la lecture.
+- `pages/sheet_catalogue`, `pages/sheet_detail` : composition par callbacks ;
+  un identifiant inconnu ou mal formé mène à `NotFoundPage`.
+- Routes `/catalogue` et `/catalogue/:sheetId` (`?audience=children|adults`),
+  destination 3 du shell (« Séances ») ; la suggestion par groupe `/session`
+  reste accessible par un bouton en tête du catalogue.
+- Lien séance planifiée ↔ séance du catalogue (lot L5) : `Session.sheetId`
+  (`SheetId?`, `shared/lib`) ; `features/plan_session` lit le catalogue par
+  `ListSheetOptions` (`SheetOption` : identifiant, technique, rang, partie) et
+  `PlanSession(title, audience, sheetId?)`. Le choix vit dans
+  `SessionPlannerBloc` (`selectedSheet`) ; le formulaire préremplit le titre,
+  qui reste modifiable. `/planner?sheet=<id>&audience=` présélectionne une
+  séance (bouton « Planifier cette séance » du détail). La liste
+  (`widgets/session_list`) ouvre le détail de la séance liée, ou affiche
+  « séance indisponible » et « Choisir une séance » (vers `/catalogue`). La
+  sauvegarde écrit `sheetId` ; `BackupRules` refuse un identifiant inconnu
+  (`backupInconsistent`), sans décodeur ancien (V1 non livrée).
+- Garde-fous : `test/contract/session_sheets_render_test.dart` rend les 29
+  séances (fr et en, deux publics, texte à 200 % sur téléphone, tablette en
+  paysage) et chaque illustration, sans erreur de rendu.
+
+## Séance guidée (lancement)
+
+ADR 0004, lot L6. La séance est suivie, montrée aux élèves et notée sans
+jamais modifier le contenu du catalogue :
+
+- `features/run_sheet` : `ResolveRunPlan(sheetId, audience?, sessionId?)` donne
+  le déroulé (`RunPlan` : accueil ou rappel, théorie, initiation, exercices,
+  jeu, bilan ; minutes calculées ; taux du catalogue d'entraînement ; schémas
+  par identifiant ; bloc du rappel de **résultats**, calculé par
+  `resultsRecallBlock` : le bloc de la plus récente séance précédente dont le
+  bloc diffère du bloc principal). Sans public demandé, celui de la séance
+  planifiée, sinon les enfants.
+- `RunSheetCubit` porte l'étape courante, les compteurs d'initiation, la grille
+  « acquis », le score du jeu et le minuteur indicatif (source `RunTicker`
+  injectable, jamais bloquant). Tout est local et jamais enregistré ; toutes
+  les étapes sont atteignables librement (relecture sans élèves). Les cubits
+  vivent dans `RunSheetSessions` (singleton, clé = séance, public demandé,
+  séance planifiée), au-dessus du routeur : `context.go` retire la page du
+  guide, mais les compteurs survivent à un aller-retour par la saisie.
+  « Terminer la séance » (après confirmation) réinitialise l'état puis
+  **libère** le cubit (`release`) ; au plus `maxRunning` séances restent en
+  cours, la moins récemment utilisée étant évincée ; le minuteur s'arrête quand
+  le guide quitte l'écran. `RunSheetCubit.syncFromRoute(step)` est la seule
+  synchronisation avec l'adresse : sans `step` et avec de la progression, il
+  propose « Reprendre à l'étape n » ou « Recommencer ».
+- Barre d'actions épinglée (sommaire, montrer, minuteur, terminer) hors du
+  défilement quand la hauteur le permet ; « Montrer » est inactif sur une étape
+  sans illustration dessinée (un simple `pdf_ref` n'est pas présentable).
+  « Retour » et « Terminer » reviennent au planificateur quand le guide a été
+  lancé depuis une séance planifiée (`?session=`), sinon à la séance du
+  catalogue.
+- Saisie depuis le guide : le groupe, la date et les absents de la première
+  saisie sont retenus (`RunSheetState.recordChoice`) et passés en
+  `/record?group=&absent=&date=` pour les exercices suivants.
+- `RunPresentationCubit` : mode présentation, qui résout son propre déroulé
+  (route de premier niveau, hors du shell) et parcourt les étapes qui ont
+  quelque chose à montrer ; son étape est locale à la présentation.
+- Pages `sheet_guide` et `sheet_presentation` : composition par callbacks.
+  `features/run_sheet` n'importe ni `record_results` ni `suggest_session` : la
+  saisie des résultats est composée par la couche `app`.
+- Routes : `/catalogue/:sheetId/guide?audience=&session=&step=` (`step` à
+  partir de 0, ramené dans la plage ; le public absent est celui de la séance
+  planifiée) et `/catalogue/:sheetId/presentation?audience=&session=&step=`
+  (hors du shell). Le guide est lancé depuis le détail d'une séance ou depuis la
+  liste des séances planifiées.
+- Notation : « Noter les résultats » ouvre `/record?main=<bloc>&recall=<bloc
+  de rappel>&exercise=<n>&from=<adresse du guide>` (sans groupe : il se choisit
+  à la saisie), puis `/record/:sessionId?exercise=<n>&from=…`. `from` n'est
+  suivi que s'il est intérieur à l'application et sous `/catalogue/` ; sinon il
+  est ignoré. `RecordResultsEvent.started` présélectionne l'exercice du bloc
+  principal ; le retour ramène au guide à la même étape.
+- Garde-fous : `test/contract/session_sheets_guide_test.dart` rend le guide et
+  la présentation sur les 29 séances, à chaque étape (fr et en, deux publics,
+  texte à 200 % sur téléphone, tablette en paysage).
 
 ## Design system et Widgetbook
 

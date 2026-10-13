@@ -78,6 +78,16 @@ app/lib/shared/ui/
 ├── page_header.dart             # titre + sous-titre de page
 ├── empty_state.dart             # état vide (icône, message, action)
 ├── audience_badge.dart          # badge enfants / adultes
+├── proposal_badge.dart          # badge « Proposition » : élément [Prop], non fédéral, à valider (texte + icône)
+├── contact_strip.dart           # bande des cinq quantités de bille (une en évidence)
+├── ghost_aim_diagram.dart       # visée à la bille fantôme (table, ligne de visée, fantôme calculé)
+├── cue_side_view.dart           # queue et blanche vues de côté (hauteur, point du procédé, chevalet)
+├── stance_diagram.dart          # posture vue de dessus (pieds, hanches, queue, tête, main de chevalet)
+├── power_scale.dart             # échelle de puissance 1 à 5
+├── angle_mark.dart              # marque d'angle sur la table (rebond, rejet, angle droit)
+├── pdf_page_chip.dart           # renvoi « Voir la page n du PDF » (texte seul)
+├── presentation_scope.dart      # affichage agrandi pour montrer aux élèves
+├── exercise_title.dart          # titre « bloc · exercice n », suffixé « · Proposition » pour un bloc [Prop]
 ├── app_alert.dart               # alerte attention / persistante
 └── responsive_body.dart         # largeur maximale tablette/desktop/web
 app/assets/fonts/                # Exo 2 (variable) + OFL.txt (licence SIL OFL 1.1)
@@ -150,7 +160,8 @@ table, en cases.
 | `TableDiagramSpec` | schéma complet | un élément de `diagrams` |
 | `DiagramBall`, `BallKind`, `DiagramBallRole` | bille posée (état initial) | `balls` (`color`, `role` : `cue`/`object`/`obstacle`, `label`) |
 | `DiagramGhost`, `DiagramGhostRole` | cercle creux | `ghosts` (`role` : `cue_start`/`impact`, `for`, `label`) |
-| `DiagramArrow`, `DiagramArrowKind`, `DiagramBand` | flèche et rebonds | `arrows` (`kind` : `object`/`cue`/`indication`, `path`, `bounces`, `to`) |
+| `DiagramArrow`, `DiagramArrowKind`, `DiagramBand` | flèche et rebonds | `arrows` (`kind` : `object`/`cue`/`indication`, `path`, `bounces`, `to`) ; `aim` (ligne de visée) n'existe que dans les illustrations de séance |
+| `DiagramAnnotation` | texte posé sur la table (« 90° », « Bille fantôme »), déjà localisé par l'appelant | : (illustrations de séance) |
 | `DiagramZone` | zone grisée (rectangle) | `zones` (`shape: rect`, `from`, `to`) |
 | `DiagramStep`, `ContactFraction` | un tir | `sequence` (`cue`, `hit`, `contact`, `pocket`, `repeat`, `from`) |
 | `DiagramPocket` | poche (source unique des coordonnées ; `TablePocket` en dérive) | `tl`/`tm`/`tr`/`bl`/`bm`/`br` |
@@ -233,7 +244,10 @@ rouge, et le lecteur n'offre alors aucun contrôle.
   l'exercice, **fournie par l'appelant** et localisée par lui.
 - **Flèches** : une seule teinte (`TableColors.headString`, contraste 3:1 déjà
   testé sur le tapis) ; la nature se lit au trait : plein (bille touchée),
-  tirets (blanche), points (indication), repère rond à chaque rebond.
+  tirets (blanche), points (indication), trait-point (`aim`, visée de la
+  blanche vers la bille fantôme), repère rond à chaque rebond.
+- **Annotations** : `TableDiagramSpec.annotations` écrit chaque texte à côté de
+  son point, dans la teinte `BallColors.onCloth`.
 - **Billes** : à 28 px et plus, la lettre est sur la bille ; en dessous, la
   lettre est écrite à côté, suivie du repère (« J x4 »).
 - **`TableDiagramPlayer(spec, semanticLabel, showGrid, showHeadString)`** :
@@ -289,6 +303,97 @@ jeu de la puissance (`jeux/p03.yaml`), deux bandes (`entrainement/p16.yaml`).
 - Les positions sont des mesures à ≈ 0,15 case : les trajectoires animées
   indiquent la direction du tir, pas une simulation physique (pas de rebond de
   la blanche après le contact, ni de choc entre billes).
+
+## Illustrations des séances
+
+Les séances du catalogue
+([FORMAT](../knowledge/05-seances/catalogue/FORMAT.md) § 6) utilisent une
+liste fermée de 10 types d'illustration, tous **générés** (aucune photo de PDF).
+Les composants vivent dans `shared/ui`, sans dépendance au domaine : ils
+reçoivent des types primitifs ou des énumérations de `shared/lib`
+(`ContactFraction`, `TipPoint`, `CueHeight`, `AngleKind`, `TablePocket`). Le
+passage de l'union `Illustration` (domaine) vers ces composants est l'affaire de
+l'`IllustrationMapper` (`entities/session_sheet/presentation`, lot L4), que la
+galerie Widgetbook (`widgetbook/lib/support/illustration_gallery.dart`) utilise
+telle quelle. `SheetIllustrationView` ajoute la légende et, quand l'élément qui
+cite l'illustration est un `[Prop]`, le badge « Proposition » ; il reçoit les
+schémas transcrits déjà résolus (`diagrams`, par identifiant de diagramme) : la
+résolution est faite par le cas d'usage `GetSheet`, pas par l'entité. Le texte
+alternatif (`alt`) de la séance remplace la description générée du composant.
+
+| `type` du FORMAT | Composant | Paramètres | Géométrie pure (Dart, `shared/lib`) |
+|---|---|---|---|
+| `diagram_ref` | `TableDiagram` / `TableDiagramPlayer` | schéma transcrit, résolu par l'appelant | : |
+| `table` | `TableDiagram` | `TableDiagramSpec` | : |
+| `contact` | `BallContactDiagram` | `contact`, `tipPoint` (9 valeurs) | : |
+| `contact_strip` | `ContactStrip` | `fractions`, `highlight?` | : |
+| `ghost_aim` | `GhostAimDiagram` | `cue`, `object`, `pocket`, `fraction` | `ghostBallPosition`, `cutAngle`, `contactQuantity` (`ghost_ball_geometry.dart`) |
+| `cue_side` | `CueSideView` | `tipPoint`, `cueHeight`, `bridge?` | `tipHeightFactor`, `cueElevation` (`cue_side_geometry.dart`) |
+| `stance_top` | `StanceDiagram` | `annotations`, `leadEye` | `StanceLayout` (positions relatives) |
+| `power_scale` | `PowerScale` | `levels` (1 à 5), `highlight?`, `distanceLabel?` | : |
+| `angle` | `AngleMark` | `kind`, `vertex`, `rays` | `angleBetween`, `angleDegrees` (`angle_geometry.dart`) |
+| `pdf_ref` | `PdfPageChip` | `file`, `page` | : |
+
+Transversal : `PresentationScope` (affichage agrandi pour les élèves : texte
+agrandi, légende en gros, `PresentationScope.isActive(context)`),
+`ProvenanceBadge` (pastille de la source `[S]`/`[FFB]`/`[Web]`, ou badge
+« Proposition » pour un `[Prop]` : le sens est écrit, jamais porté par la seule
+couleur) et `FrenchContentNotice` (bandeau « contenu en français » sous une
+interface qui n'est pas en français, ADR 0004 décision 12). `PowerScale` allonge
+ses barres avec le texte agrandi : aucun débordement à 200 %.
+`MissingPageView` est l'écran « page introuvable » (message localisé et retour à
+l'accueil) partagé par `NotFoundPage` et par les pages de séance dont
+l'identifiant est bien formé mais inconnu.
+
+### Règles communes
+
+- **Description parlée localisée** (fr et en) : chaque composant enveloppe son
+  rendu dans un `Semantics` unique (`excludeSemantics`), qui dit ce qui est
+  montré (quantité, poche, hauteur, niveau, angle en degrés).
+- **Jamais la couleur seule** : mise en évidence par cadre épais et coche
+  (`ContactStrip`, `PowerScale`), nature de la flèche par le trait, parties de
+  la posture nommées par une étiquette et un trait de repère, angle écrit en
+  degrés.
+- **Thème** : couleurs lues dans `ColorScheme`, `BallColors` et `TableColors` ;
+  aucune teinte en dur.
+- **Schématique** : aucune de ces illustrations n'est à l'échelle ni une
+  mesure (`[Prop]`) ; l'illustration prend la provenance de l'élément de séance
+  qui la référence, le badge « Proposition » est posé par la page.
+- **Largeur** : les composants s'adaptent à la largeur donnée (passage à la
+  ligne de `ContactStrip`, étiquettes sans retour à la ligne de la posture) ;
+  chaque use case a une variante en largeur réduite.
+
+### Choix de rendu `[Prop]`
+
+- **Bille fantôme** : `G = O - 2r · unit(P - O)` ; la quantité de bille
+  annoncée (`fraction`) nomme l'illustration, sa cohérence avec la géométrie
+  est contrôlée par la règle V17 du test de contrat, pas par le composant.
+- **Hauteur de la queue** (`CueHeight`, schématique) : `low` talon presque à
+  plat (0°), `level` inclinaison moyenne (10°), `high` talon relevé (25°).
+  De côté, un impact à gauche ou à droite ne se voit pas : il est dessiné à
+  hauteur du centre et dit dans la description parlée. Le chevalet
+  (`CueBridge.frame` sur le rail, `CueBridge.surface` sur le tapis) est un
+  paramètre du composant que le FORMAT ne porte pas encore ; absent, aucune main
+  n'est dessinée.
+- **Posture** : joueur droitier, regard vers la droite du dessin, donc sa droite
+  est en bas ; `StanceLeadEye.right` par défaut (œil directeur, voir la fiche
+  technique n° 1). Les `annotations` sont des puces sous le schéma.
+- **Angle** : la valeur en degrés est **calculée** depuis les deux premiers
+  rayons (`angleDegrees`) ; `right_angle` dessine un carré plutôt qu'un arc. Avec
+  moins de deux rayons, aucun angle n'est tracé ni écrit.
+- **Échelle de puissance** : `levels` hors de 1 à 5 ou `highlight` hors de
+  l'échelle est refusé par une assertion (le parseur de séance fait de même).
+
+### Galerie Widgetbook
+
+Use case **« Galerie des illustrations »** (`[Design system]/Illustrations`) :
+les 10 types côte à côte, chacun avec sa légende. Les illustrations du pilote
+`09-demi-bille-1.yaml` sont lues par le vrai parseur (`parseSessionSheet`) et
+résolues dans la vraie bibliothèque de schémas ; les types que le pilote
+n'utilise pas (`table`, `cue_side`, `stance_top`, `power_scale`, `angle`,
+`pdf_ref`) sont des exemples, signalés « exemple hors pilote ». Le
+commutateur « affichage élèves » montre chaque illustration dans un
+`PresentationScope`.
 
 ## Garde-fou : contrastes
 

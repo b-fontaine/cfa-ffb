@@ -42,7 +42,7 @@ transitivement ; SQLite vient des build hooks de `sqlite3` 3.x.
   base au lancement via `@preResolve`) et `test` (dépôts en mémoire,
   identifiants séquentiels). `configureDependencies` est asynchrone.
 
-### Schéma (version 2)
+### Schéma (version 3)
 
 - Chaque agrégat : `id` UUID texte unique, `seq` (ordre d'insertion stable,
   clé primaire), `createdAt`, `updatedAt`, `deletedAt` (suppression logique :
@@ -52,6 +52,14 @@ transitivement ; SQLite vient des build hooks de `sqlite3` 3.x.
   maturité, **500 caractères au plus**, `MaturityAssessment.maxCommentLength`),
   ajoutée en version 2. Elle peut nommer un mineur : elle suit donc la
   minimisation (facultative, bornée, jamais exigée, effacée avec l'élève).
+- `planned_sessions.sheet_id` (version 3, texte nullable) : identifiant de la
+  séance du catalogue suivie par une séance planifiée (`demi-bille-2`). Les
+  séances du catalogue sont des assets : pas de clé étrangère. Nul = séance
+  libre. La lecture ne lève jamais pour un identifiant inconnu du catalogue
+  (l'affichage dit « séance indisponible ») ; le chemin d'écriture de `add`
+  (insertion **et** `DoUpdate`) l'écrit, sans quoi une replanification ou un
+  import perdrait le lien. À l'import, un identifiant inconnu est refusé
+  (`backupInconsistent`, `BackupRules`).
 - Dates stockées en texte ISO 8601 (relues à l'identique, locale ou UTC).
 - Tables enfants (`student_audience_changes`, `group_memberships`,
   `session_presences`) remplacées avec leur parent. Aucune clé étrangère entre
@@ -59,14 +67,17 @@ transitivement ; SQLite vient des build hooks de `sqlite3` 3.x.
 
 ### Migrations
 
-- `schemaVersion = 2` (`AppDatabase.currentSchemaVersion`). Instantanés
-  `app/drift_schemas/app_database/drift_schema_v1.json` et `drift_schema_v2.json`,
+- `schemaVersion = 3` (`AppDatabase.currentSchemaVersion`). Instantanés
+  `app/drift_schemas/app_database/drift_schema_v1.json`, `drift_schema_v2.json`
+  et `drift_schema_v3.json`,
   helpers générés `app/test/drift/app_database/generated/` (`dart run drift_dev
   make-migrations`, puis `dart run drift_dev schema generate`).
 - Migration `from1To2` (`stepByStep`) : ajoute `assessments.comment`
-  (nullable). Tests (`test/unit/shared/persistence/migration_test.dart`) : le
-  schéma créé par le code égale l'instantané v2, une base v1 migre vers v2 en
-  gardant ses lignes, une base créée depuis un instantané est lisible, et
+  (nullable) ; `from2To3` ajoute `planned_sessions.sheet_id` (nullable, aucune
+  transformation de données). Tests
+  (`test/unit/shared/persistence/migration_test.dart`) : le schéma créé par le
+  code égale les instantanés v1, v2 et v3, une base v1 migre vers v2 et une
+  base v2 vers v3 en gardant ses lignes, une base créée depuis un instantané est lisible, et
   l'ouverture d'une base d'une version plus récente est **refusée**
   (`DowngradeNotSupported`). Chaque évolution suivante ajoute son instantané,
   son `fromNToN+1` et son test.

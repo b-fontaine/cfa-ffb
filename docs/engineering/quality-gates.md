@@ -11,6 +11,8 @@ COVERAGE_MIN=95 scripts/check.sh --full   # relever le seuil de couverture
 
 scripts/sync_catalogue.sh [--check]       # copie / vérifie le catalogue (docs/knowledge -> app/assets)
 scripts/sync_diagrammes.sh [--check]      # copie / vérifie les diagrammes à table (docs/knowledge -> app/assets)
+scripts/sync_fiches.sh [--check]          # copie / vérifie les séances du catalogue (docs/knowledge -> app/assets)
+(cd app && dart run tool/fiches.dart [--complete])   # valide les séances (FORMAT.md § 7)
 ```
 
 ## Tableau des garde-fous
@@ -20,6 +22,8 @@ scripts/sync_diagrammes.sh [--check]      # copie / vérifie les diagrammes à t
 | Génération de code (build_runner, gen-l10n) | `scripts/generate.sh` | si manquant | oui | via check | quality / test / build-web |
 | Catalogue : asset identique à la source | `scripts/sync_catalogue.sh --check` | oui | oui | pre-commit | quality |
 | Diagrammes : assets identiques à la source (pages à table uniquement, aucun fichier en trop, chaque dossier déclaré dans `app/pubspec.yaml`) | `scripts/sync_diagrammes.sh --check` | oui | oui | pre-commit | quality |
+| Fiches de séance : assets identiques à la source (fichiers `NN-<id>.yaml` seulement, aucun fichier en trop, dossier déclaré dans `app/pubspec.yaml`) | `scripts/sync_fiches.sh --check` | oui | oui | pre-commit | quality |
+| Fiches de séance : règles V1 à V24 de `FORMAT.md` § 7, structure et parties calculées depuis le catalogue, tableaux du § 1 à jour (lecture seule) | `dart run tool/fiches.dart --complete` (dans `app/` ; exige les 29 séances ; sans l'option, contrôle seulement les fichiers présents ; `--structure` affiche la structure) | oui | oui | pre-commit | quality |
 | Fichiers web drift : `drift_worker.js` = paquet résolu, `sqlite3.wasm` = version verrouillée | `dart run scripts/sync_web_assets.dart --check` | oui | oui | pre-commit | quality |
 | Formatage | `dart format --output=none --set-exit-if-changed` (lib, test, tool, scripts) | oui | oui | pre-commit | quality |
 | Analyse statique stricte | `flutter analyze --no-pub --fatal-infos` (`very_good_analysis` + strict-casts/inference/raw-types) | oui | oui | pre-commit | quality |
@@ -48,6 +52,15 @@ Hook agent : l'événement `Stop` lance `scripts/check.sh --fast` lorsque `app/`
   Tout `info` fait échouer (`--fatal-infos`). Le code généré est exclu de l'analyse.
 - **Architecture** : règles de [architecture.md](architecture.md). Le vérificateur
   est lui-même testé (`app/test/tool/architecture_rules_test.dart`).
+- **Fiches de séance** : `app/tool/fiches.dart` valide chaque fichier du
+  catalogue (`docs/knowledge/05-seances/catalogue/`) contre `FORMAT.md` § 7 et
+  recalcule la structure (14 techniques, parties, tranches, séance précédente)
+  depuis `catalogue-entrainement.yaml` : aucune constante pour le nombre de
+  parties. Par défaut, chaque fichier présent est contrôlé ; `--complete`
+  exige en plus les 29 séances (fin du lot L7) : c'est le mode de `check.sh` et de la CI. V12 (minutage) et V17
+  (cohérence géométrique de `ghost_aim`) relèvent du test de contrat Dart.
+  Testé par `app/test/tool/fiches_test.dart` (un cas rouge par règle) et
+  `app/test/tool/sync_fiches_test.dart`.
 - **Séances** : `scripts/validate_seances.dart` vérifie front matter (`public`,
   `duree_minutes`), cohérence public/durée (enfants 90 min, adultes 120 min),
   déroulé minuté contigu de 0 à la durée, étiquettes de source `[S]/[FFB]/[Web]/[Prop]`

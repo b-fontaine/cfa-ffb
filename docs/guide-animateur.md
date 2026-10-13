@@ -1,13 +1,13 @@
 # Guide de l'animateur : suivre une saison
 
-Ce guide explique, en cinq étapes, comment utiliser l'application pour suivre
-vos élèves de Blackball (niveau 1) pendant une saison. Il suit les décisions de
+Ce guide explique comment utiliser l'application pour préparer, mener et suivre
+vos séances de Blackball (niveau 1) pendant une saison. Il suit les décisions de
 l'animateur : discipline Blackball uniquement, public enfants (séance de 90 min)
 ou adultes (120 min), passage d'un public à l'autre toujours manuel.
 
 L'application fonctionne sur smartphone, tablette et navigateur. La navigation
 est en bas de l'écran sur smartphone, à gauche sur grand écran : **Accueil**,
-**Élèves**, **Résultats**, **Séance**, **Sauvegarde**.
+**Élèves**, **Résultats**, **Séances**, **Sauvegarde**.
 
 ## 1. Constituer le groupe
 
@@ -24,7 +24,12 @@ exercice). Le prénom peut être corrigé depuis la fiche de l'élève.
 
 ## 2. Préparer la séance
 
-1. Ouvrez **Séance**, choisissez le groupe et cochez les élèves attendus.
+Deux façons de préparer : choisir une séance du **catalogue** (rubriques
+suivantes) ou demander à l'application une **séance suggérée** pour un groupe.
+
+### La séance suggérée par groupe
+
+1. Ouvrez **Séances**, puis le bouton **Suggestion par groupe**, choisissez le groupe et cochez les élèves attendus.
 2. L'application propose une séance de **90 min** (enfants) ou **120 min**
    (adultes) : déroulé minuté, exercices à travailler, rappel d'une notion si
    un élève en a besoin, jeu final.
@@ -51,10 +56,66 @@ trajectoires.
 L'ordre d'enseignement suit le catalogue : par exemple le rebond sur bande est
 enseigné avant le rejet naturel.
 
-## 3. Saisir les résultats
+### Consulter le catalogue de séances
 
-1. Ouvrez **Résultats** (ou le bouton depuis la séance suggérée), choisissez le
-   groupe, la date et les élèves **présents**, puis ouvrez la séance.
+Ouvrez **Séances**. Le catalogue regroupe **14 techniques** (posture, puissance,
+bille fantôme, bille pleine, demi-bille, trois-quarts, quart, finesse, rebond sur
+bande, rejet naturel, coulé, carreau, angle droit, rétro) et leurs **29 séances**,
+dans l'ordre d'enseignement. Une technique compte une à quatre séances, notées
+« séance 2/3 » : la première introduit la notion, les suivantes l'approfondissent.
+
+- Touchez une séance pour la lire : rappel de la séance précédente, théorie
+  illustrée, exercices, jeu, bilan. Le contenu est en **lecture seule** : rien
+  n'y est modifiable.
+- Choisissez le public (**Enfants 90 min** ou **Adultes 120 min**) : les minutes
+  de chaque phase sont calculées pour la durée du public. Elles sont indicatives.
+- Chaque exercice renvoie vers le catalogue d'entraînement : le taux de réussite,
+  le chevalet et la mention bronze viennent de la fiche fédérale.
+- Le contenu est rédigé en français ; si l'interface est réglée en anglais, un
+  bandeau le rappelle.
+
+### Planifier une séance avec une séance du catalogue
+
+1. Dans le détail d'une séance, touchez **Planifier cette séance** (ou ouvrez la
+   planification depuis l'accueil et choisissez **Séance du catalogue**).
+2. Indiquez le public et le titre (prérempli, modifiable), puis **Ajouter la
+   séance**.
+3. La séance planifiée affiche la séance du catalogue qu'elle suit. Sans séance du
+   catalogue (« séance libre »), la liste propose **Choisir une séance**. Si la
+   séance du catalogue n'est plus disponible, la liste l'indique sans erreur.
+
+La séance planifiée conserve l'identifiant de la séance du catalogue : il est
+inclus dans la sauvegarde.
+
+## 3. Lancer et présenter la séance
+
+Depuis le détail d'une séance, ou depuis la liste des séances planifiées, touchez
+**Lancer**. Le public de la séance planifiée est repris ; depuis le détail, c'est
+celui que vous avez choisi.
+
+1. La **séance guidée** déroule les étapes dans l'ordre : rappel (avec une
+   question flash), théorie, initiation, exercices, jeu, bilan. **Précédent** et
+   **Suivant** naviguent ; le **Sommaire** permet de sauter directement à une
+   étape, par exemple au jeu.
+2. Chaque exercice affiche le schéma de mise en place, la mise en place, la
+   consigne, l'attendu et les erreurs fréquentes (notes pour l'animateur).
+3. Un **minuteur** indicatif par phase est facultatif : il ne bloque jamais.
+4. **Montrer** ouvre la présentation : le schéma seul, en grand, sans notes. Les
+   boutons d'illustration précédente et suivante font défiler les schémas de
+   l'étape ; **Fermer** revient à la même étape du guide.
+5. Les compteurs de réussites d'une initiation et le score du jeu sont gardés
+   **sur cet écran seulement**, avec la mention « non enregistré dans le suivi ».
+   **Terminer la séance** les efface après confirmation.
+
+Pour relire une séance sans élèves, lancez-la depuis le détail : aucune saisie
+n'est obligatoire et toutes les étapes sont accessibles.
+
+## 4. Noter les résultats
+
+1. Depuis la séance guidée, touchez **Noter les résultats** sur un exercice :
+   la saisie s'ouvre sur le bloc et l'exercice en cours ; choisissez le groupe,
+   la date et les élèves **présents**. Sinon, ouvrez **Résultats** (ou le bouton
+   depuis la séance suggérée) et ouvrez la séance.
 2. Choisissez l'exercice, puis, pour chaque élève, indiquez les **billes
    empochées** sur le **nombre de tentatives** de chaque passage.
 3. L'application applique les règles :
@@ -67,7 +128,10 @@ enseigné avant le rejet naturel.
 Si une saisie est refusée (par exemple un troisième passage), un message
 explique pourquoi et rien n'est enregistré.
 
-## 4. Lire la fiche d'un élève
+Depuis la séance guidée, **Retour à la séance guidée** ramène à la même étape,
+compteurs intacts.
+
+## 5. Lire la fiche d'un élève
 
 Depuis **Élèves**, touchez un élève :
 
@@ -82,7 +146,25 @@ Depuis **Élèves**, touchez un élève :
 Chaque fiche a une adresse propre : vous pouvez l'ajouter aux favoris du
 navigateur.
 
-## 5. Le bilan de maturité et le passage en cours adultes
+## 6. Valider les propositions du catalogue
+
+Le contenu **sourcé** (fiches fédérales) et le contenu **proposé** sont distingués.
+Une **proposition** est un élément sans source fédérale : jeu adapté ou sans
+source, exercices des blocs posture et bille fantôme (taux compris), règle de
+rappel ajoutée à un jeu sourcé, thème et défis ludiques, minutes. Elle porte le
+badge **Proposition** (texte, pas seulement une couleur) dans le détail, le guide
+et la présentation ; elle n'est jamais présentée comme règle fédérale.
+
+1. Dans le catalogue, activez **À valider seulement** (ou **Jeux à valider**) :
+   seules les séances concernées restent, avec le **motif** de la validation (jeu,
+   exercices, initiation, rappel).
+2. Ouvrez une séance et lancez-la : parcourez rappel, théorie, exercices, jeu et
+   bilan pour juger chaque proposition **en contexte**, sans élèves.
+3. Pour valider ou corriger, modifiez la séance dans `docs/knowledge/05-seances/`
+   (voir `catalogue/FORMAT.md`) : l'application ne garde **aucune marque « relu »**.
+   Tant que la source n'est pas modifiée, la proposition reste à valider.
+
+## 7. Le bilan de maturité et le passage en cours adultes
 
 Dès 16 ou 17 ans, un jeune peut rejoindre le cours adultes si vous le jugez
 suffisamment mature.
@@ -128,8 +210,10 @@ le **public**, sur votre appareil, et ne les envoie nulle part.
 | Quand | Action |
 |-------|--------|
 | Rentrée | Ajouter les élèves et leur public |
-| Avant chaque séance | Consulter la séance suggérée du groupe |
-| Après chaque séance | Saisir les passages de chaque élève |
+| Avant chaque séance | Choisir et planifier une séance du catalogue, ou consulter la séance suggérée du groupe |
+| Pendant la séance | Lancer la séance guidée, montrer les schémas, noter les résultats |
+| Après chaque séance | Saisir les passages de chaque élève (si pas déjà fait) |
+| Une fois | Relire les propositions « à valider » du catalogue |
 | Régulièrement | Lire les fiches, rappeler les notions signalées |
 | Vers 16-17 ans | Faire un bilan de maturité, décider du passage à la main |
 | Fin de mois / de saison | Exporter une sauvegarde |
