@@ -4,6 +4,7 @@ import 'package:billard_cfa/features/plan_session/domain/invalid_session_title.d
 import 'package:billard_cfa/features/plan_session/domain/plan_session.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/id_generator.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -43,6 +44,17 @@ void main() {
     );
     expect(session, expected);
     verify(() => repository.add(expected)).called(1);
+  });
+
+  test('keeps the chosen catalogue session', () async {
+    final session = await planSession(
+      title: 'Demi-bille',
+      audience: Audience.adults,
+      sheetId: SheetId('demi-bille-2'),
+    );
+
+    expect(session.sheetId?.value, 'demi-bille-2');
+    verify(() => repository.add(session)).called(1);
   });
 
   test('rejects a blank title without storing anything', () async {

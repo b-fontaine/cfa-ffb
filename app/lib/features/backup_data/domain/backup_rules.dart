@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
@@ -16,12 +17,15 @@ import 'package:injectable/injectable.dart';
 ///
 /// Codes : `backupInconsistent` pour une référence qui ne se résout pas (au
 /// catalogue, à la séance, au groupe) ; `backupInvalid` pour une valeur qui
-/// viole une règle (plafond de passages, période, public, date).
+/// viole une règle (plafond de passages, période, public, date). Une séance
+/// planifiée dont la séance du catalogue est inconnue est refusée par
+/// `backupUnknownSheet`, pour nommer la cause à l'animateur.
 @injectable
 class BackupRules {
-  BackupRules(this._catalogue, this._config, this._clock);
+  BackupRules(this._catalogue, this._sheets, this._config, this._clock);
 
   final CatalogueRepository _catalogue;
+  final SessionSheetRepository _sheets;
   final RulesConfig _config;
   final Clock _clock;
 
@@ -29,12 +33,16 @@ class BackupRules {
   static const _inconsistent = InvariantViolation(
     InvariantCode.backupInconsistent,
   );
+  static const _unknownSheet = InvariantViolation(
+    InvariantCode.backupUnknownSheet,
+  );
 
   Future<void> check(BackupSnapshot snapshot) async {
     final catalogue = await _catalogue.load();
     _checkSessions(snapshot, catalogue);
     _checkAttempts(snapshot, catalogue);
     _checkAssessments(snapshot);
+    await _checkPlanned(snapshot);
   }
 
   void _checkSessions(BackupSnapshot snapshot, ExerciseCatalogue catalogue) {
@@ -73,6 +81,20 @@ class BackupRules {
         throw _invalid;
       }
     }
+  }
+
+  /// Une séance planifiée ne peut suivre qu'une séance du catalogue connue :
+  /// l'application n'étant pas encore livrée, aucun identifiant d'une version
+  /// antérieure n'est à tolérer (erreur claire, `backupUnknownSheet`, plutôt
+  /// qu'un lien orphelin).
+  Future<void> _checkPlanned(BackupSnapshot snapshot) async {
+    final linked = snapshot.plannedSessions
+        .map((session) => session.sheetId)
+        .nonNulls
+        .toSet();
+    if (linked.isEmpty) return;
+    final known = {for (final sheet in await _sheets.getAll()) sheet.id};
+    if (!known.containsAll(linked)) throw _unknownSheet;
   }
 
   void _checkAssessments(BackupSnapshot snapshot) {

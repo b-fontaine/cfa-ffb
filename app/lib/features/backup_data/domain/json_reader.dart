@@ -1,5 +1,6 @@
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 
 /// Lecture typée et stricte de valeurs JSON : toute valeur de mauvais type
 /// lève `backupInvalid`.
@@ -33,6 +34,14 @@ class JsonReader {
       : throw _invalid;
 
   String? optionalString(Object? value) => value == null ? null : string(value);
+
+  /// Identifiant de séance du catalogue ; un identifiant mal formé est
+  /// refusé (`backupInvalid`), un identifiant inconnu du catalogue relève de
+  /// `BackupRules`.
+  SheetId? optionalSheetId(Object? value) {
+    if (value == null) return null;
+    return SheetId.tryParse(string(value)) ?? (throw _invalid);
+  }
 
   int integer(Object? value) => value is int ? value : throw _invalid;
 

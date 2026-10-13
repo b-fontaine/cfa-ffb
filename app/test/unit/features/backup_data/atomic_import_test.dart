@@ -25,6 +25,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/domain_world.dart';
 import '../../../support/drift_support.dart';
 import '../../../support/fixtures.dart';
+import '../../../support/session_sheet_fixtures.dart';
 
 /// Un dépôt de passages dont la deuxième écriture échoue (disque plein…).
 class _FailingSecondAttempt implements AttemptRepository {
@@ -116,6 +117,7 @@ void main() {
       BackupCodec(),
       BackupRules(
         FixedCatalogueRepository(buildCatalogue()),
+        FixtureSessionSheetRepository(catalogueFixture()),
         RulesConfig(),
         clock,
       ),
@@ -146,6 +148,7 @@ void main() {
       BackupCodec(),
       BackupRules(
         FixedCatalogueRepository(buildCatalogue()),
+        FixtureSessionSheetRepository(catalogueFixture()),
         RulesConfig(),
         clock,
       ),

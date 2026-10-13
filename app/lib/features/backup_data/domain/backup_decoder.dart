@@ -131,5 +131,6 @@ class BackupDecoder {
     id: _read.string(json['id']),
     title: _read.string(json['title']),
     audience: _read.audience(json['audience']),
+    sheetId: _read.optionalSheetId(json['sheetId']),
   );
 }

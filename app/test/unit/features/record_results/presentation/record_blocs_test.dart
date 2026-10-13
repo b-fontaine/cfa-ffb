@@ -196,6 +196,54 @@ void main() {
     );
 
     blocTest<RecordResultsBloc, RecordResultsState>(
+      'starts on the exercise of the main block asked for',
+      build: () {
+        when(() => overview(sessionId))
+            .thenAnswer((_) async => Ok(overviewOf(main: 'b')));
+        return build();
+      },
+      act: (bloc) => bloc.add(
+        const RecordResultsEvent.started(
+          sessionId: sessionId,
+          initialExercise: 2,
+        ),
+      ),
+      verify: (bloc) => expect(bloc.state.exercise, ref('b', 2)),
+    );
+
+    blocTest<RecordResultsBloc, RecordResultsState>(
+      'ignores an exercise number the main block does not have',
+      build: () {
+        when(() => overview(sessionId))
+            .thenAnswer((_) async => Ok(overviewOf(main: 'b')));
+        return build();
+      },
+      act: (bloc) => bloc.add(
+        const RecordResultsEvent.started(
+          sessionId: sessionId,
+          initialExercise: 9,
+        ),
+      ),
+      verify: (bloc) => expect(bloc.state.exercise, ref('b', 1)),
+    );
+
+    blocTest<RecordResultsBloc, RecordResultsState>(
+      'ignores an exercise number without a main block',
+      build: () {
+        when(() => overview(sessionId))
+            .thenAnswer((_) async => Ok(overviewOf()));
+        return build();
+      },
+      act: (bloc) => bloc.add(
+        const RecordResultsEvent.started(
+          sessionId: sessionId,
+          initialExercise: 2,
+        ),
+      ),
+      verify: (bloc) => expect(bloc.state.exercise, ref('a', 1)),
+    );
+
+    blocTest<RecordResultsBloc, RecordResultsState>(
       'reports an unknown session',
       build: () {
         when(() => overview(sessionId))

@@ -48,8 +48,15 @@ abstract class RosterSelectionState with _$RosterSelectionState {
 /// `RosterPicker` (ouverture d'une séance, séance suggérée).
 @injectable
 class RosterSelectionCubit extends Cubit<RosterSelectionState> {
-  RosterSelectionCubit({@factoryParam GroupId? initialGroupId})
-    : super(RosterSelectionState(groupId: initialGroupId));
+  RosterSelectionCubit({
+    @factoryParam GroupId? initialGroupId,
+    @factoryParam Set<StudentId>? initialAbsent,
+  }) : super(
+         RosterSelectionState(
+           groupId: initialGroupId,
+           absent: initialAbsent ?? const <StudentId>{},
+         ),
+       );
 
   /// Change de groupe : les absences du groupe précédent sont oubliées.
   void groupSelected(GroupId groupId) =>

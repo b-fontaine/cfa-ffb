@@ -12,5 +12,8 @@ abstract class RecallAdvice with _$RecallAdvice {
     required String blockTitle,
     required ExerciseRef exercise,
     required RecallReason reason,
+
+    /// Le bloc est une proposition `[Prop]`, non fédérale.
+    @Default(false) bool proposal,
   }) = _RecallAdvice;
 }

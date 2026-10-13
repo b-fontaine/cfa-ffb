@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_catalog/domain/training_block.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/ui/record_session_view.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
@@ -9,10 +10,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Saisie des résultats d'une séance ouverte (bloc fourni par l'appelant).
+///
+/// [fromGuide] : la saisie a été ouverte depuis une séance guidée ; le retour
+/// y ramène et le dit.
 class RecordSessionPage extends StatelessWidget {
-  const RecordSessionPage({required this.onBack, super.key});
+  const RecordSessionPage({
+    required this.onBack,
+    this.fromGuide = false,
+    super.key,
+  });
 
   final VoidCallback onBack;
+  final bool fromGuide;
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +50,18 @@ class RecordSessionPage extends StatelessWidget {
               subtitle: block == null
                   ? overview.groupName
                   : '${overview.groupName} · '
-                        '${l10n.recordBlockHint(block.title)}',
+                        '${_blockHint(l10n, block)}',
               onBack: onBack,
-              backLabel: l10n.recordTitle,
+              backLabel: fromGuide ? l10n.guideBackToGuide : l10n.recordTitle,
               children: [RecordSessionView(state: state)],
             );
         }
       },
     );
+  }
+
+  String _blockHint(AppLocalizations l10n, TrainingBlock block) {
+    final hint = l10n.recordBlockHint(block.title);
+    return block.isProposal ? l10n.proposalTagged(hint) : hint;
   }
 }

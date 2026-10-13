@@ -8,6 +8,7 @@ import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/ui/app_alert.dart';
 import 'package:billard_cfa/shared/ui/audience_badge.dart';
 import 'package:billard_cfa/shared/ui/audience_labels.dart';
+import 'package:billard_cfa/shared/ui/exercise_title.dart' as title;
 import 'package:billard_cfa/shared/ui/section_card.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -26,10 +27,15 @@ class StudentSheetView extends StatelessWidget {
     AppLocalizations l10n,
     StudentSheet sheet,
     ExerciseRef ref,
-  ) => l10n.sheetExerciseTitle(
-    sheet.catalogue.blockById(ref.blockId)?.title ?? ref.blockId,
-    ref.number,
-  );
+  ) {
+    final block = sheet.catalogue.blockById(ref.blockId);
+    return title.exerciseTitle(
+      l10n,
+      blockTitle: block?.title ?? ref.blockId,
+      number: ref.number,
+      proposal: block?.isProposal ?? false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

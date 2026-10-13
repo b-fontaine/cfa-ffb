@@ -20,6 +20,7 @@ Feature: Suivi des résultats d'entraînement
 
   Scenario: Valider un exercice au cinquième passage réussi
     Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And {'Léa'} a validé tous les exercices avant {'puissance 1'}
     And {'Léa'} a réussi {4} passages sur {'puissance 1'} lors de séances précédentes
     And la séance du groupe {'Jeunes'} le {'2026-10-03'} réunit {'Léa'}
     When j'enregistre pour {'Léa'} sur {'puissance 1'} {7} billes réussies sur {9} tentatives
@@ -28,6 +29,7 @@ Feature: Suivi des résultats d'entraînement
 
   Scenario: Le taux n'est pas atteint
     Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And {'Léa'} a validé tous les exercices avant {'puissance 1'}
     And {'Léa'} a réussi {4} passages sur {'puissance 1'} lors de séances précédentes
     And la séance du groupe {'Jeunes'} le {'2026-10-03'} réunit {'Léa'}
     When j'enregistre pour {'Léa'} sur {'puissance 1'} {6} billes réussies sur {9} tentatives

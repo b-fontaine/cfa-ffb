@@ -15,7 +15,8 @@ class AppShell extends StatelessWidget {
   static int indexOf(String location) {
     if (location.startsWith(AppRoutes.students)) return 1;
     if (location.startsWith(AppRoutes.record)) return 2;
-    if (location.startsWith(AppRoutes.session) ||
+    if (location.startsWith(AppRoutes.catalogue) ||
+        location.startsWith(AppRoutes.session) ||
         location.startsWith(AppRoutes.exercises)) {
       return 3;
     }
@@ -27,7 +28,7 @@ class AppShell extends StatelessWidget {
     AppRoutes.home,
     AppRoutes.students,
     AppRoutes.record,
-    AppRoutes.session,
+    AppRoutes.catalogue,
     AppRoutes.backup,
   ];
 
@@ -54,7 +55,7 @@ class AppShell extends StatelessWidget {
         AppDestination(
           icon: Icons.event_note_outlined,
           selectedIcon: Icons.event_note,
-          label: l10n.navSession,
+          label: l10n.navSessions,
         ),
         AppDestination(
           icon: Icons.save_alt_outlined,

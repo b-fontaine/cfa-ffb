@@ -2,6 +2,7 @@ import 'package:billard_cfa/features/track_progress/domain/block_progress.dart';
 import 'package:billard_cfa/features/track_progress/domain/student_sheet.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/ui/progress_meter.dart';
+import 'package:billard_cfa/shared/ui/proposal_badge.dart';
 import 'package:billard_cfa/shared/ui/section_card.dart';
 import 'package:billard_cfa/shared/ui/status_badge.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
@@ -32,9 +33,22 @@ class BlockProgressList extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          sheet.catalogue.blockById(progress.blockId)!.title,
-                          style: theme.textTheme.titleSmall,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              sheet.catalogue
+                                  .blockById(progress.blockId)!
+                                  .title,
+                              style: theme.textTheme.titleSmall,
+                            ),
+                            if (sheet.catalogue
+                                .blockById(progress.blockId)!
+                                .isProposal) ...[
+                              const SizedBox(height: AppSpacing.xs),
+                              const ProposalBadge(),
+                            ],
+                          ],
                         ),
                       ),
                       _statusBadge(l10n, progress.status),

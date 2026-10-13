@@ -17,10 +17,22 @@ import 'package:billard_cfa/widgets/roster_picker/presentation/roster_selection_
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+/// La séance ouverte (ou reprise) et le choix qui l'a ouverte : le groupe, la
+/// date et les élèves absents, que la séance guidée retient pour ne pas les
+/// redemander à chaque exercice.
+typedef OpenedRecord = ({
+  SessionId id,
+  GroupId group,
+  DateTime date,
+  Set<StudentId> absent,
+});
+
 /// Ouverture d'une séance : groupe, date et élèves présents. [onOpened] reçoit
-/// l'identifiant de la séance ouverte (ou reprise). Le groupe, les présents et
-/// la date vivent dans [RosterSelectionCubit] et [SessionDateCubit], fournis
-/// par le routeur ; [today] borne le choix de la date.
+/// la séance ouverte (ou reprise) et le choix qui l'a ouverte. Le groupe, les
+/// présents et la date vivent dans [RosterSelectionCubit] et
+/// [SessionDateCubit], fournis
+/// par le routeur ; [today] borne le choix de la date. [onBackToGuide], quand
+/// la saisie vient d'une séance guidée, y ramène sans rien ouvrir.
 class RecordSetupPage extends StatelessWidget {
   const RecordSetupPage({
     required this.today,
@@ -28,14 +40,16 @@ class RecordSetupPage extends StatelessWidget {
     required this.onAddStudents,
     this.mainBlockId,
     this.recallBlockId,
+    this.onBackToGuide,
     super.key,
   });
 
   final DateTime today;
-  final ValueChanged<SessionId> onOpened;
+  final ValueChanged<OpenedRecord> onOpened;
   final VoidCallback onAddStudents;
   final String? mainBlockId;
   final String? recallBlockId;
+  final VoidCallback? onBackToGuide;
 
   Future<void> _pickDate(BuildContext context) async {
     final cubit = context.read<SessionDateCubit>();
@@ -55,7 +69,15 @@ class RecordSetupPage extends StatelessWidget {
     return BlocListener<OpenSessionBloc, OpenSessionState>(
       listenWhen: (previous, current) =>
           current.status == OpenSessionStatus.opened,
-      listener: (context, state) => onOpened(state.session!.id),
+      listener: (context, state) {
+        final session = state.session!;
+        onOpened((
+          id: session.id,
+          group: session.groupId,
+          date: session.date,
+          absent: context.read<RosterSelectionCubit>().state.absent,
+        ));
+      },
       child: Scaffold(
         body: SafeArea(
           child: ResponsiveBody(
@@ -135,6 +157,15 @@ class RecordSetupPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (onBackToGuide != null)
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                onPressed: onBackToGuide,
+                icon: const Icon(Icons.arrow_back),
+                label: Text(l10n.guideBackToGuide),
+              ),
+            ),
           PageHeader(title: l10n.recordTitle, subtitle: l10n.recordSubtitle),
           const SizedBox(height: AppSpacing.md),
           RosterPicker(

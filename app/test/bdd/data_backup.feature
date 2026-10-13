@@ -44,3 +44,16 @@ Feature: Sauvegarde et restauration des données
     When j'importe cette sauvegarde dans un club vide avec un passage sur un exercice inconnu
     Then l'import est refusé avec le motif {'backupInconsistent'}
     And le club compte {0} élèves et {0} passages
+
+  Scenario: Conserver la séance du catalogue d'une séance planifiée
+    Given je planifie la séance {'Cours de demi-bille'} pour les {'enfants'} avec la séance du catalogue {'demi-bille-2'}
+    And j'exporte une sauvegarde du club
+    When j'importe cette sauvegarde dans un club vide
+    Then la séance planifiée {'Cours de demi-bille'} est liée à la séance du catalogue {'demi-bille-2'}
+
+  Scenario: Refuser une sauvegarde dont la séance du catalogue est inconnue
+    Given je planifie la séance {'Cours de demi-bille'} pour les {'enfants'} avec la séance du catalogue {'demi-bille-2'}
+    And j'exporte une sauvegarde du club
+    When j'importe cette sauvegarde dans un club vide avec une séance planifiée du catalogue inconnue
+    Then l'import est refusé avec le motif {'backupUnknownSheet'}
+    And aucune séance planifiée n'est enregistrée

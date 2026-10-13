@@ -1,7 +1,11 @@
+import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart';
+import 'package:billard_cfa/entities/exercise_catalog/domain/session_range.dart';
+import 'package:billard_cfa/entities/exercise_catalog/domain/training_block.dart';
 import 'package:billard_cfa/features/suggest_session/domain/session_plan.dart';
 import 'package:billard_cfa/features/suggest_session/domain/suggest_recall.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/provenance.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/domain_world.dart';
@@ -67,6 +71,48 @@ void main() {
     expect(advice.blockTitle, 'Bloc a');
     expect(advice.exercise, ref('a', 2));
     expect(advice.reason, RecallReason.groupFailure);
+    expect(advice.proposal, isFalse);
+  });
+
+  test('says when the recalled block is a proposal [Prop]', () async {
+    final proposed = TrainingBlock(
+      id: 'p',
+      title: 'Bloc proposé',
+      teachingOrder: 1,
+      recommendedSessions: SessionRange(min: 1, max: 2),
+      technicalSheets: const [1],
+      source: Provenance.prop,
+      exercises: [
+        for (var n = 1; n <= 2; n++)
+          ExerciseSpec(ref: ref('p', n), rate: rate(), source: Provenance.prop),
+      ],
+    );
+    final proposalWorld = DomainWorld(
+      catalogue: buildCatalogue([proposed, block('b', 2)]),
+    );
+    await proposalWorld.seedClub();
+    for (var n = 1; n <= 2; n++) {
+      for (var i = 0; i < 5; i++) {
+        await proposalWorld.attempts.add(
+          attempt(ref('p', n), potted: 4, id: 'v$n$i', dayOfMonth: 2 + i),
+        );
+      }
+    }
+    await proposalWorld.attempts.add(
+      attempt(ref('p', 2), potted: 0, id: 'late', dayOfMonth: 12),
+    );
+    final recall = SuggestRecall(
+      proposalWorld.students,
+      proposalWorld.sessions,
+      proposalWorld.attempts,
+      proposalWorld.catalogueRepository,
+      proposalWorld.config,
+    );
+
+    final advice = ok(await recall(student));
+
+    expect(advice!.blockId, 'p');
+    expect(advice.proposal, isTrue);
   });
 
   test('recalls a block left alone for several sessions', () async {

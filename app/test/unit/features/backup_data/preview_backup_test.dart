@@ -16,6 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/domain_world.dart';
 import '../../../support/fixed_clock.dart';
 import '../../../support/fixtures.dart';
+import '../../../support/session_sheet_fixtures.dart';
 
 void main() {
   final codec = BackupCodec();
@@ -24,6 +25,7 @@ void main() {
     codec,
     BackupRules(
       world.catalogueRepository,
+      FixtureSessionSheetRepository(catalogueFixture()),
       RulesConfig(),
       FixedClock(DateTime(2026, 10, 12)),
     ),

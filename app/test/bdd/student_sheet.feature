@@ -3,12 +3,13 @@ Feature: Student sheet
 
   Scenario: Progress per block and next exercise
     Given the club has the student {'Léa'} in the {'children'} audience
+    And {'Léa'} has validated the block {'posture'}
     And {'Léa'} has {5} successful passes on {'puissance 1'}
     And the app is running
     When I open the sheet of {'Léa'}
     Then I see {'La puissance · exercise 2'} text
     And I see {'25 % validated'} text
-    And I see {'1 of 64 exercises validated'} text
+    And I see {'5 of 72 exercises validated'} text
 
   Scenario: The performance curve shows each attempt with a text alternative
     Given the club has the student {'Léa'} in the {'children'} audience

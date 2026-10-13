@@ -1,8 +1,10 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.dart';
+import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/ui/pass_entry_card.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
+import 'package:billard_cfa/shared/ui/exercise_title.dart' as title;
 import 'package:billard_cfa/shared/ui/failure_message.dart';
 import 'package:billard_cfa/shared/ui/section_card.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
@@ -20,10 +22,29 @@ class RecordSessionView extends StatelessWidget {
     AppLocalizations l10n,
     ExerciseCatalogue catalogue,
     ExerciseRef ref,
-  ) => l10n.sheetExerciseTitle(
-    catalogue.blockById(ref.blockId)?.title ?? ref.blockId,
-    ref.number,
-  );
+  ) {
+    final block = catalogue.blockById(ref.blockId);
+    return title.exerciseTitle(
+      l10n,
+      blockTitle: block?.title ?? ref.blockId,
+      number: ref.number,
+      proposal: block?.isProposal ?? false,
+    );
+  }
+
+  String _optionLabel(
+    AppLocalizations l10n,
+    ExerciseCatalogue catalogue,
+    ExerciseSpec option,
+  ) {
+    final label = l10n.recordExerciseOption(
+      catalogue.blockById(option.ref.blockId)!.title,
+      option.ref.number,
+      option.rate.successes,
+      option.rate.attempts,
+    );
+    return option.isProposal ? l10n.proposalTagged(label) : label;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +67,7 @@ class RecordSessionView extends StatelessWidget {
             for (final option in catalogue.exercises)
               DropdownMenuEntry(
                 value: option.ref,
-                label: l10n.recordExerciseOption(
-                  catalogue.blockById(option.ref.blockId)!.title,
-                  option.ref.number,
-                  option.rate.successes,
-                  option.rate.attempts,
-                ),
+                label: _optionLabel(l10n, catalogue, option),
               ),
           ],
           onSelected: (selected) {

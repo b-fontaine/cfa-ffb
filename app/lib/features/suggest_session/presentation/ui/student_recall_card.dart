@@ -1,7 +1,9 @@
 import 'package:billard_cfa/features/suggest_session/domain/recall_advice.dart';
 import 'package:billard_cfa/features/suggest_session/domain/session_plan.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/ui/proposal_badge.dart';
 import 'package:billard_cfa/shared/ui/section_card.dart';
+import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
 /// Notion à rappeler à un élève, avec la raison (jamais bloquant).
@@ -30,6 +32,10 @@ class StudentRecallCard extends StatelessWidget {
                   ),
                   style: theme.textTheme.bodyLarge,
                 ),
+                if (advice.proposal) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  const ProposalBadge(),
+                ],
                 Text(switch (advice.reason) {
                   RecallReason.groupFailure ||
                   RecallReason.lastFailed => l10n.sheetRecallReasonLastFailed,

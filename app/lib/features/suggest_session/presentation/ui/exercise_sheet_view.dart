@@ -2,6 +2,7 @@ import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart'
 import 'package:billard_cfa/features/suggest_session/domain/exercise_sheet.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/ui/exercise_diagram_view.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/ui/proposal_badge.dart';
 import 'package:billard_cfa/shared/ui/section_card.dart';
 import 'package:billard_cfa/shared/ui/status_badge.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
@@ -30,6 +31,10 @@ class ExerciseSheetView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (spec.isProposal) ...[
+                const ProposalBadge(),
+                const SizedBox(height: AppSpacing.sm),
+              ],
               Text(
                 l10n.exerciseSheetNumbers(
                   block.technicalSheets.join(l10n.listSeparator),
@@ -62,7 +67,12 @@ class ExerciseSheetView extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: AppSpacing.md),
-              Text(l10n.exerciseSource, style: theme.textTheme.bodyMedium),
+              Text(
+                spec.isProposal
+                    ? l10n.exerciseSourceProposal
+                    : l10n.exerciseSource,
+                style: theme.textTheme.bodyMedium,
+              ),
             ],
           ),
         ),

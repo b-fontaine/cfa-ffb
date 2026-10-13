@@ -52,6 +52,7 @@ class SuggestRecall {
         return RecallAdvice(
           blockId: suggestion.blockId,
           blockTitle: catalogue.blockById(suggestion.blockId)!.title,
+          proposal: catalogue.blockById(suggestion.blockId)!.isProposal,
           exercise: suggestion.exercise,
           reason: suggestion.reason,
         );

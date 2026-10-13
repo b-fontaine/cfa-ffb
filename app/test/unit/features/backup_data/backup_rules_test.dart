@@ -2,6 +2,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dar
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
+import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_rules.dart';
@@ -10,11 +11,13 @@ import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/domain_world.dart';
 import '../../../support/fixed_clock.dart';
 import '../../../support/fixtures.dart';
+import '../../../support/session_sheet_fixtures.dart';
 
 const _season = SeasonId('season');
 const _group = GroupId('g1');
@@ -51,6 +54,7 @@ BackupSnapshot _snapshot({
   List<ExerciseAttempt>? attempts,
   List<MaturityAssessment> assessments = const [],
   List<Season>? seasons,
+  List<Session> planned = const [],
 }) => BackupSnapshot(
   seasons: seasons ?? [_seasonOf()],
   students: [
@@ -72,12 +76,14 @@ BackupSnapshot _snapshot({
   sessionRecords: sessions ?? [_session()],
   attempts: attempts ?? [attempt(ref('a', 1), potted: 3)],
   assessments: assessments,
+  plannedSessions: planned,
 );
 
 Future<InvariantCode?> _codeOf(BackupSnapshot snapshot) async {
   final world = DomainWorld();
   final rules = BackupRules(
     world.catalogueRepository,
+    FixtureSessionSheetRepository(catalogueFixture()),
     RulesConfig(),
     FixedClock(DateTime(2026, 10, 12, 18)),
   );
@@ -221,6 +227,29 @@ void main() {
       );
 
       expect(await _codeOf(snapshot), isNull);
+    });
+  });
+
+  group('planned sessions', () {
+    Session plannedOn(String? sheet) => Session(
+      id: 'p1',
+      title: 'Demi-bille',
+      audience: Audience.children,
+      sheetId: sheet == null ? null : SheetId(sheet),
+    );
+
+    test('accepts a free session and a known catalogue session', () async {
+      final snapshot = _snapshot(
+        planned: [plannedOn(null), plannedOn('demi-bille-2')],
+      );
+
+      expect(await _codeOf(snapshot), isNull);
+    });
+
+    test('refuses a catalogue session the catalogue does not know', () async {
+      final snapshot = _snapshot(planned: [plannedOn('inconnue-9')]);
+
+      expect(await _codeOf(snapshot), InvariantCode.backupUnknownSheet);
     });
   });
 

@@ -96,6 +96,7 @@ class BackupEncoder {
     'id': session.id,
     'title': session.title,
     'audience': session.audience.name,
+    'sheetId': session.sheetId?.value,
   };
 
   String _date(DateTime value) => value.toIso8601String();

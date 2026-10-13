@@ -38,11 +38,18 @@ class RecordResultsBloc extends Bloc<RecordResultsEvent, RecordResultsState> {
         final block = blockId == null
             ? null
             : value.catalogue.blockById(blockId);
+        final exercises = block?.exercises ?? value.catalogue.exercises;
+        final wanted = event.initialExercise;
+        final preselected = block == null || wanted == null
+            ? null
+            : block.exercises
+                  .where((spec) => spec.ref.number == wanted)
+                  .firstOrNull;
         emit(
           RecordResultsState(
             status: RecordStatus.ready,
             overview: value,
-            exercise: (block?.exercises ?? value.catalogue.exercises).first.ref,
+            exercise: (preselected ?? exercises.first).ref,
           ),
         );
       case Err(:final failure):

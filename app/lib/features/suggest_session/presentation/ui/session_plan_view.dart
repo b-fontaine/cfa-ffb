@@ -5,6 +5,8 @@ import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/session_shape.dart';
 import 'package:billard_cfa/shared/ui/audience_badge.dart';
 import 'package:billard_cfa/shared/ui/audience_labels.dart';
+import 'package:billard_cfa/shared/ui/exercise_title.dart';
+import 'package:billard_cfa/shared/ui/proposal_badge.dart';
 import 'package:billard_cfa/shared/ui/section_card.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +51,16 @@ class SessionPlanView extends StatelessWidget {
         const SizedBox(height: AppSpacing.md),
         SectionCard(
           title: l10n.suggestMainNotion,
-          child: Text(main.title, style: theme.textTheme.titleMedium),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(main.title, style: theme.textTheme.titleMedium),
+              if (main.isProposal) ...[
+                const SizedBox(height: AppSpacing.xs),
+                const ProposalBadge(),
+              ],
+            ],
+          ),
         ),
         const SizedBox(height: AppSpacing.md),
         SectionCard(
@@ -146,9 +157,11 @@ class _ExerciseLine extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n.sheetExerciseTitle(
-                    sheet.block.title,
-                    sheet.spec.ref.number,
+                  exerciseTitle(
+                    l10n,
+                    blockTitle: sheet.block.title,
+                    number: sheet.spec.ref.number,
+                    proposal: sheet.block.isProposal,
                   ),
                   style: theme.textTheme.bodyLarge,
                 ),
