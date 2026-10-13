@@ -13,6 +13,23 @@
   "plannerTitleField": "Titre de la séance",
   "plannerAudienceField": "Public",
   "plannerAdd": "Ajouter la séance",
+  "plannerDelete": "Supprimer la séance {title}",
+  "@plannerDelete": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerDeleteTitle": "Supprimer cette séance planifiée ?",
+  "plannerDeleteBody": "La séance « {title} » est retirée de la planification. La séance du catalogue qu’elle suit n’est pas modifiée.",
+  "@plannerDeleteBody": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
   "plannerInvalidTitle": "Le titre de la séance est obligatoire.",
   "audienceChildren": "Enfants",
   "audienceAdults": "Adultes",
@@ -56,6 +73,10 @@
   "tipPointBottom": "Procédé en bas de la blanche",
   "tipPointLeft": "Procédé à gauche de la blanche",
   "tipPointRight": "Procédé à droite de la blanche",
+  "tipPointTopLeft": "Procédé en haut à gauche de la blanche",
+  "tipPointTopRight": "Procédé en haut à droite de la blanche",
+  "tipPointBottomLeft": "Procédé en bas à gauche de la blanche",
+  "tipPointBottomRight": "Procédé en bas à droite de la blanche",
   "contactDiagramLabel": "{contact} ; {tip}",
   "@contactDiagramLabel": {
     "placeholders": {
@@ -91,13 +112,14 @@
   "navHome": "Accueil",
   "navStudents": "Élèves",
   "navResults": "Résultats",
-  "navSession": "Séance",
+  "navSessions": "Séances",
   "navBackup": "Sauvegarde",
   "navigationLabel": "Navigation principale",
   "commonSave": "Enregistrer",
   "commonCancel": "Annuler",
   "commonConfirm": "Confirmer",
   "commonRetry": "Réessayer",
+  "commonBack": "Retour",
   "commonLoading": "Chargement…",
   "commonErrorTitle": "Une erreur est survenue",
   "commonDecrease": "Diminuer",
@@ -130,6 +152,7 @@
   "failBackupVersion": "Cette sauvegarde provient d’une version plus récente de l’application.",
   "failBackupInvalid": "Ce fichier contient des données invalides.",
   "failBackupInconsistent": "Ce fichier est incohérent : références manquantes ou doublons.",
+  "failBackupUnknownSheet": "Ce fichier désigne une séance du catalogue que cette version de l’application ne connaît pas.",
   "failGeneric": "Une erreur est survenue. Vérifiez les données et réessayez.",
   "studentsTitle": "Les élèves du club",
   "studentsSubtitle": "Public et alertes de chaque groupe de la saison.",
@@ -623,6 +646,16 @@
     }
   },
   "exerciseSource": "Source : Fiches Entraînement CFA Blackball (fiches fédérales).",
+  "proposalBadge": "Proposition",
+  "proposalTagged": "{label} · Proposition",
+  "@proposalTagged": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseSourceProposal": "Source : proposition non fédérale, adaptée des fiches fédérales d'initiation, de jeux et techniques (à valider par l'animateur).",
   "exerciseNote": "Consigne : {note}",
   "@exerciseNote": {
     "placeholders": {
@@ -882,6 +915,762 @@
   "@eraseConfirmBody": {
     "placeholders": {
       "name": {
+        "type": "String"
+      }
+    }
+  },
+  "contactStripLabel": "Les quantités de bille : {fractions}",
+  "@contactStripLabel": {
+    "placeholders": {
+      "fractions": {
+        "type": "String"
+      }
+    }
+  },
+  "contactStripHighlightedLabel": "Les quantités de bille : {fractions}. Mise en évidence : {highlighted}",
+  "@contactStripHighlightedLabel": {
+    "placeholders": {
+      "fractions": {
+        "type": "String"
+      },
+      "highlighted": {
+        "type": "String"
+      }
+    }
+  },
+  "ghostBallName": "Bille fantôme",
+  "ghostAimLabel": "Bille fantôme, {fraction} : la blanche vise le point où elle touche la bille de couleur pour l’envoyer dans la {pocket}.",
+  "@ghostAimLabel": {
+    "placeholders": {
+      "fraction": {
+        "type": "String"
+      },
+      "pocket": {
+        "type": "String"
+      }
+    }
+  },
+  "pocketTopLeft": "poche en haut à gauche",
+  "pocketTopMiddle": "poche du milieu en haut",
+  "pocketTopRight": "poche en haut à droite",
+  "pocketBottomLeft": "poche en bas à gauche",
+  "pocketBottomMiddle": "poche du milieu en bas",
+  "pocketBottomRight": "poche en bas à droite",
+  "cueHeightLow": "Queue basse, presque à plat",
+  "cueHeightLevel": "Queue à hauteur moyenne",
+  "cueHeightHigh": "Queue haute, talon relevé",
+  "cueBridgeFrame": "Chevalet sur cadre",
+  "cueBridgeSurface": "Chevalet sur surface",
+  "cueSideLabel": "Vue de côté : {height}. {tip}.",
+  "@cueSideLabel": {
+    "placeholders": {
+      "height": {
+        "type": "String"
+      },
+      "tip": {
+        "type": "String"
+      }
+    }
+  },
+  "cueSideLabelWithBridge": "Vue de côté : {height}. {tip}. {bridge}.",
+  "@cueSideLabelWithBridge": {
+    "placeholders": {
+      "height": {
+        "type": "String"
+      },
+      "tip": {
+        "type": "String"
+      },
+      "bridge": {
+        "type": "String"
+      }
+    }
+  },
+  "stancePartFeet": "Pieds",
+  "stancePartHips": "Hanches",
+  "stancePartCue": "Queue",
+  "stancePartBridge": "Main de chevalet",
+  "stancePartEye": "Œil directeur",
+  "stanceLabel": "Posture vue de dessus : pieds, hanches, queue, main de chevalet et œil directeur.",
+  "stanceLabelWithNotes": "Posture vue de dessus : pieds, hanches, queue, main de chevalet et œil directeur. {notes}",
+  "@stanceLabelWithNotes": {
+    "placeholders": {
+      "notes": {
+        "type": "String"
+      }
+    }
+  },
+  "powerScaleLabel": "Échelle de puissance : niveau {level} sur {levels}",
+  "@powerScaleLabel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      },
+      "levels": {
+        "type": "int"
+      }
+    }
+  },
+  "powerScaleRangeLabel": "Échelle de puissance de 1 à {levels}",
+  "@powerScaleRangeLabel": {
+    "placeholders": {
+      "levels": {
+        "type": "int"
+      }
+    }
+  },
+  "powerScaleWeak": "Faible",
+  "powerScaleStrong": "Forte",
+  "angleKindBounce": "Angle de rebond",
+  "angleKindNaturalRejection": "Rejet naturel",
+  "angleKindRightAngle": "Angle droit",
+  "angleMarkLabel": "{kind} : {degrees}°",
+  "@angleMarkLabel": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "degrees": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfPageRef": "Voir la page {page} du PDF",
+  "@pdfPageRef": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "pdfPageChipLabel": "{reference} ({file})",
+  "@pdfPageChipLabel": {
+    "description": "Libellé accessible du renvoi au PDF : référence de page puis nom du fichier",
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      },
+      "file": {
+        "type": "String"
+      }
+    }
+  },
+  "presentationScopeLabel": "Affichage agrandi pour les élèves",
+  "catalogueTitle": "Catalogue de séances",
+  "catalogueSummary": "{techniques, plural, =1{1 technique} other{{techniques} techniques}} · {sheets, plural, =1{1 séance} other{{sheets} séances}} · lecture seule",
+  "@catalogueSummary": {
+    "placeholders": {
+      "techniques": {
+        "type": "int"
+      },
+      "sheets": {
+        "type": "int"
+      }
+    }
+  },
+  "catalogueSuggestion": "Suggestion par groupe",
+  "catalogueFilterToReview": "À valider seulement",
+  "catalogueNoneToReview": "Aucune séance n’a de contenu à valider.",
+  "catalogueFilterGames": "Jeux à valider",
+  "catalogueNoneGames": "Aucune séance n’a de jeu à valider.",
+  "catalogueEmpty": "Le catalogue ne contient aucune séance.",
+  "catalogueReasonGame": "Jeu à valider",
+  "catalogueReasonGameLink": "Règle de lien du jeu à valider",
+  "catalogueReasonExercise": "Exercices à valider",
+  "catalogueReasonInitiation": "Initiation à valider",
+  "catalogueReasonTheory": "Théorie à valider",
+  "catalogueReasonRecall": "Rappel à valider",
+  "catalogueTechniqueHeading": "{rank}. {title}",
+  "@catalogueTechniqueHeading": {
+    "placeholders": {
+      "rank": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetPartLabel": "Séance {part}/{parts}",
+  "@sheetPartLabel": {
+    "placeholders": {
+      "part": {
+        "type": "int"
+      },
+      "parts": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetFullTitle": "{title}, séance {part}/{parts}",
+  "@sheetFullTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "part": {
+        "type": "int"
+      },
+      "parts": {
+        "type": "int"
+      }
+    }
+  },
+  "contentInFrench": "Le contenu des séances est rédigé en français ; seule l’interface est traduite.",
+  "sheetReadOnly": "Contenu en lecture seule : rien n’est modifiable ici.",
+  "sheetToValidateNote": "Cette séance contient des propositions non sourcées à valider (repérées par le badge « Proposition »).",
+  "sheetAudienceOption": "{audience} · {minutes} min",
+  "@sheetAudienceOption": {
+    "placeholders": {
+      "audience": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetTotalDuration": "{minutes} min au total (indicatif)",
+  "@sheetTotalDuration": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetTheme": "Thème : {name}",
+  "@sheetTheme": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetNotion": "Notion : {notion}",
+  "@sheetNotion": {
+    "placeholders": {
+      "notion": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetOutline": "Aller à",
+  "sheetJumpRecall": "Rappel",
+  "sheetJumpTheory": "Théorie",
+  "sheetJumpTraining": "Exercices",
+  "sheetJumpGame": "Jeu",
+  "sheetJumpReview": "Bilan",
+  "sheetPhaseRecall": "Rappel",
+  "sheetPrevious": "Séance précédente : {title}",
+  "@sheetPrevious": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetFirstSession": "Première séance du catalogue : accueil, pas de rappel.",
+  "sheetFlashQuestion": "Question flash : {question}",
+  "@sheetFlashQuestion": {
+    "placeholders": {
+      "question": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetFlashAnswer": "Réponse attendue : {answer}",
+  "@sheetFlashAnswer": {
+    "placeholders": {
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetAdultExtra": "Pour les adultes : {text}",
+  "@sheetAdultExtra": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetKeyPoint": "À retenir : {point}",
+  "@sheetKeyPoint": {
+    "placeholders": {
+      "point": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetDemo": "Démonstration : {demo}",
+  "@sheetDemo": {
+    "placeholders": {
+      "demo": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetInitiationNumber": "Fiche d’initiation n° {number}",
+  "@sheetInitiationNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetSetup": "Mise en place : {text}",
+  "@sheetSetup": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetGoal": "Consigne : {text}",
+  "@sheetGoal": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetExpected": "Attendu : {text}",
+  "@sheetExpected": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetCounter": "Compter les réussites sur {count} essais.",
+  "@sheetCounter": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetChecklist": "Critères à observer : {criteria}",
+  "@sheetChecklist": {
+    "placeholders": {
+      "criteria": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetNotRecorded": "Non enregistré dans le suivi des élèves.",
+  "sheetExerciseHeading": "Exercice {number} · {title}",
+  "@sheetExerciseHeading": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetPassesPlanned": "{count, plural, =1{1 passage par élève} other{{count} passages par élève}}",
+  "@sheetPassesPlanned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetRateProposal": "Ce taux est une proposition, pas un chiffre fédéral.",
+  "sheetMistakes": "Erreurs fréquentes (animateur)",
+  "sheetMistakeRow": "{symptom} → {fix}",
+  "@sheetMistakeRow": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      },
+      "fix": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetPlayfulHook": "Accroche : {hook}",
+  "@sheetPlayfulHook": {
+    "placeholders": {
+      "hook": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetPlayfulChallenge": "Défi : {challenge}",
+  "@sheetPlayfulChallenge": {
+    "placeholders": {
+      "challenge": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetIllustrationMissing": "Ce schéma est indisponible.",
+  "sheetGameSource": "Jeu n° {number} des fiches fédérales",
+  "@sheetGameSource": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetGameAdapted": "Jeu adapté du jeu n° {number} : adaptation à valider.",
+  "@sheetGameAdapted": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetGameNoSource": "Jeu sans source fédérale : proposition à valider.",
+  "sheetGamePlayers": "Joueurs : {players}",
+  "@sheetGamePlayers": {
+    "placeholders": {
+      "players": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetGameMaterials": "Matériel : {materials}",
+  "@sheetGameMaterials": {
+    "placeholders": {
+      "materials": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetGameRules": "Règles",
+  "sheetGameScoring": "Score : {scoring}",
+  "@sheetGameScoring": {
+    "placeholders": {
+      "scoring": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetGameEnd": "Fin de partie : {end}",
+  "@sheetGameEnd": {
+    "placeholders": {
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetGameVariant": "Variante ludique : {variant}",
+  "@sheetGameVariant": {
+    "placeholders": {
+      "variant": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetGameLink": "Règle de rappel (notion de « {title} ») : {rule}",
+  "@sheetGameLink": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "rule": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetGameLinkNote": "Intention : {note}",
+  "@sheetGameLinkNote": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetGameAdaptation": "Adaptation pour ce public : {text}",
+  "@sheetGameAdaptation": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetReviewPrompt": "Question de bilan : {prompt}",
+  "@sheetReviewPrompt": {
+    "placeholders": {
+      "prompt": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetSources": "Sources",
+  "sheetSourceRow": "{file}, page {page} : {note}",
+  "@sheetSourceRow": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      },
+      "page": {
+        "type": "int"
+      },
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetSourceRowNoPage": "{file} : {note}",
+  "@sheetSourceRowNoPage": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      },
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetProposalsNote": "Le thème, les défis ludiques, la variante de jeu, la règle de rappel et les minutes sont des propositions à valider.",
+  "sheetUncertainties": "Points non résolus",
+  "provenanceS": "Source fédérale",
+  "provenanceFfb": "Site ffbillard.com",
+  "provenanceWeb": "Autre site",
+  "plannerSheetField": "Séance du catalogue",
+  "plannerSheetNone": "Aucune (séance libre)",
+  "plannerSheetPickerTitle": "Choisir une séance du catalogue",
+  "plannerSheetsUnavailable": "Le catalogue de séances est illisible : les séances sont planifiées sans séance du catalogue.",
+  "plannerLinkedSheet": "Séance du catalogue : {title}",
+  "@plannerLinkedSheet": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerSheetUnavailable": "Séance du catalogue indisponible",
+  "plannerChooseSheet": "Choisir une séance",
+  "sheetPlan": "Planifier cette séance",
+  "guideLaunch": "Lancer",
+  "guideStepCounter": "Étape {current} sur {total}",
+  "@guideStepCounter": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "guideOutline": "Sommaire",
+  "guideOutlineTitle": "Étapes de la séance",
+  "guideOutlineRow": "{phase} · {minutes} min",
+  "@guideOutlineRow": {
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "guideShow": "Montrer",
+  "guideShowHint": "Montrer le schéma aux élèves",
+  "guideFinish": "Terminer la séance",
+  "guideRestart": "Recommencer",
+  "guideResumeOffer": "Cette séance est déjà commencée : étape {step} sur {total}.",
+  "@guideResumeOffer": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "guideResume": "Reprendre à l’étape {step}",
+  "@guideResume": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "guideFinishBody": "Les compteurs, le score et le minuteur gardés sur cet écran seront effacés. Rien de ce qui a été saisi pour les élèves n’est perdu.",
+  "guideFinishTitle": "Terminer la séance guidée ?",
+  "guidePrevious": "Précédent",
+  "guideNext": "Suivant",
+  "guideExerciseOf": "Exercice {index} sur {total}",
+  "@guideExerciseOf": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "guidePassesToValidate": "{count, plural, =1{1 passage réussi valide l’exercice.} other{{count} passages réussis valident l’exercice.}}",
+  "@guidePassesToValidate": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "guideRecord": "Noter les résultats",
+  "guideRecordHint": "Ouvre la saisie des résultats sur « {block} ».",
+  "@guideRecordHint": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      }
+    }
+  },
+  "guideBackToGuide": "Retour à la séance guidée",
+  "guideCount": "{count} réussites sur {total}",
+  "@guideCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "guideCountAdd": "Ajouter une réussite",
+  "guideCountRemove": "Retirer une réussite",
+  "guideChecklistTitle": "Critères observés",
+  "guideChecklistCount": "{count} critères acquis sur {total}",
+  "@guideChecklistCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "guideScoreTitle": "Score du jeu",
+  "guideScoreSideA": "Joueur ou équipe A",
+  "guideScoreSideB": "Joueur ou équipe B",
+  "guideScoreAdd": "Ajouter un point pour {side}",
+  "@guideScoreAdd": {
+    "placeholders": {
+      "side": {
+        "type": "String"
+      }
+    }
+  },
+  "guideScoreRemove": "Retirer un point pour {side}",
+  "@guideScoreRemove": {
+    "placeholders": {
+      "side": {
+        "type": "String"
+      }
+    }
+  },
+  "guideScoreValue": "{side} : {points}",
+  "@guideScoreValue": {
+    "placeholders": {
+      "side": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "guideScoreLocal": "Le score reste sur cet écran : il n’est pas enregistré.",
+  "guideRecapTitle": "Compté dans le guide (effacé à la fin de la séance)",
+  "guideRecapNothing": "Rien n’a été compté sur cet écran.",
+  "guideRecapInitiation": "{title} : {count} réussites sur {total}",
+  "@guideRecapInitiation": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "guideRecapChecklist": "{title} : {count} critères acquis sur {total}",
+  "@guideRecapChecklist": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "guideRecapGame": "Jeu : {a} – {b}",
+  "@guideRecapGame": {
+    "placeholders": {
+      "a": {
+        "type": "int"
+      },
+      "b": {
+        "type": "int"
+      }
+    }
+  },
+  "guideRecapPasses": "Les passages des exercices ne s’affichent pas ici : ils s’enregistrent avec « Noter les résultats », exercice par exercice, et se retrouvent dans la fiche de chaque élève.",
+  "guideTimerTitle": "Minuteur de la phase",
+  "guideTimerStart": "Démarrer le minuteur",
+  "guideTimerPause": "Mettre le minuteur en pause",
+  "guideTimerReset": "Remettre le minuteur à zéro",
+  "guideTimerValue": "{elapsed} sur environ {minutes} min",
+  "@guideTimerValue": {
+    "placeholders": {
+      "elapsed": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "guideTimerSoon": "Il reste moins d’une minute pour cette phase.",
+  "guideTimerOver": "Temps prévu dépassé de {over}.",
+  "@guideTimerOver": {
+    "placeholders": {
+      "over": {
+        "type": "String"
+      }
+    }
+  },
+  "presentationClose": "Fermer",
+  "presentationNothing": "Rien à montrer pour cette étape.",
+  "presentationPrevious": "Illustration précédente",
+  "presentationNext": "Illustration suivante",
+  "presentationPosition": "Illustration {position} sur {total}",
+  "@presentationPosition": {
+    "placeholders": {
+      "position": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "presentationPreviousLabel": "Précédent",
+  "presentationNextLabel": "Suivant",
+  "presentationTitle": "Présentation : {title}",
+  "@presentationTitle": {
+    "placeholders": {
+      "title": {
         "type": "String"
       }
     }

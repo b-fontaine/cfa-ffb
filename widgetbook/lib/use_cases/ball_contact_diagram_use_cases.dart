@@ -1,3 +1,4 @@
+import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/ui/ball_chip.dart';
 import 'package:billard_cfa/shared/ui/ball_contact_diagram.dart';
 import 'package:flutter/material.dart';

@@ -145,4 +145,8 @@ class PlannedSessions extends Table with AuditColumns {
   TextColumn get title => text()();
 
   TextColumn get audience => text()();
+
+  /// Séance du catalogue suivie (ajoutée au schéma version 3). Les séances du
+  /// catalogue sont des assets : pas de clé étrangère ; nul = séance libre.
+  TextColumn get sheetId => text().nullable()();
 }

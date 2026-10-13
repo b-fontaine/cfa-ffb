@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/ui/ball_chip.dart';
 import 'package:billard_cfa/shared/ui/ball_contact_diagram.dart';
 import 'package:billard_cfa/shared/ui/billiard_ball.dart';

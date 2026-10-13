@@ -1,4 +1,5 @@
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'session.freezed.dart';
@@ -10,6 +11,11 @@ abstract class Session with _$Session {
     required String id,
     required String title,
     required Audience audience,
+
+    /// Séance du catalogue suivie (facultative : séance libre si `null`).
+    /// Peut désigner une séance que le catalogue ne connaît plus : l'affichage
+    /// le traite sans échouer.
+    SheetId? sheetId,
   }) = _Session;
 
   const Session._();

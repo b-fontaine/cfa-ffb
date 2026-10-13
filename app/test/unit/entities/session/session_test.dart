@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -23,5 +24,21 @@ void main() {
 
     expect(a, b);
     expect(a.copyWith(title: 'autre'), isNot(a));
+  });
+
+  test('a session is free until it follows a catalogue session', () {
+    final linked = Session(
+      id: '1',
+      title: 't',
+      audience: Audience.adults,
+      sheetId: SheetId('demi-bille-2'),
+    );
+
+    expect(
+      const Session(id: '1', title: 't', audience: Audience.adults).sheetId,
+      isNull,
+    );
+    expect(linked.sheetId?.value, 'demi-bille-2');
+    expect(linked.copyWith(sheetId: null).sheetId, isNull);
   });
 }

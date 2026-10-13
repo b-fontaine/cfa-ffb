@@ -1,7 +1,7 @@
 /// Quantité de bille : part de la bille cible recouverte par la blanche.
 ///
-/// Dart pur : source unique, partagée par le petit schéma de quantité de bille
-/// et le modèle de schéma d'exercice.
+/// Dart pur : source unique, partagée par le petit schéma de quantité de bille,
+/// le modèle de schéma d'exercice et les illustrations des séances.
 enum ContactFraction {
   full(1),
   threeQuarter(0.75),

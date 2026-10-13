@@ -1,3 +1,4 @@
+import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/diagram_timeline.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_spec.dart';
 import 'package:billard_cfa/shared/ui/table_geometry.dart';

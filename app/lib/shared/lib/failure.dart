@@ -32,6 +32,7 @@ enum InvariantCode {
   recallEqualsMainBlock,
   invalidCatalogue,
   invalidDiagram,
+  invalidSheet,
   invalidRules,
   noStudents,
   nothingToTeach,
@@ -39,6 +40,7 @@ enum InvariantCode {
   backupVersionUnsupported,
   backupInvalid,
   backupInconsistent,
+  backupUnknownSheet,
 }
 
 /// Échec métier attendu (sceller : un `switch` exhaustif suffit à le traiter).
@@ -48,12 +50,17 @@ sealed class Failure implements Exception {
 
 /// Une règle métier ou un invariant est violé.
 final class InvariantViolation extends Failure {
-  const InvariantViolation(this.code);
+  const InvariantViolation(this.code, [this.detail]);
 
   final InvariantCode code;
 
+  /// Précision technique pour le diagnostic (jamais affichée à l'utilisateur).
+  final String? detail;
+
   @override
-  String toString() => 'InvariantViolation(${code.name})';
+  String toString() => detail == null
+      ? 'InvariantViolation(${code.name})'
+      : 'InvariantViolation(${code.name}: $detail)';
 }
 
 /// L'entité demandée n'existe pas.

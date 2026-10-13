@@ -1,29 +1,16 @@
 import 'dart:math' as math;
 
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/ui/ball_chip.dart';
 import 'package:billard_cfa/shared/ui/billiard_ball.dart';
-import 'package:billard_cfa/shared/ui/contact_fraction.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:billard_cfa/shared/ui/theme/ball_colors.dart';
 import 'package:billard_cfa/shared/ui/theme/table_colors.dart';
+import 'package:billard_cfa/shared/ui/tip_point.dart';
 import 'package:flutter/material.dart';
 
-export 'package:billard_cfa/shared/ui/contact_fraction.dart';
-
-/// Point d'impact du procédé sur la blanche (vue de face).
-enum TipPoint {
-  center(Offset.zero),
-  top(Offset(0, -1)),
-  bottom(Offset(0, 1)),
-  left(Offset(-1, 0)),
-  right(Offset(1, 0));
-
-  TipPoint(this.direction);
-
-  /// Direction du point par rapport au centre (unité = rayon, 0 au centre).
-  final Offset direction;
-}
+export 'package:billard_cfa/shared/ui/tip_point.dart';
 
 /// Petit schéma de la quantité de bille, comme en bas à droite des fiches.
 ///
@@ -59,6 +46,10 @@ class BallContactDiagram extends StatelessWidget {
     TipPoint.bottom => l10n.tipPointBottom,
     TipPoint.left => l10n.tipPointLeft,
     TipPoint.right => l10n.tipPointRight,
+    TipPoint.topLeft => l10n.tipPointTopLeft,
+    TipPoint.topRight => l10n.tipPointTopRight,
+    TipPoint.bottomLeft => l10n.tipPointBottomLeft,
+    TipPoint.bottomRight => l10n.tipPointBottomRight,
   };
 
   @override

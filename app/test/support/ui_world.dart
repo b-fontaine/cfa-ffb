@@ -3,6 +3,7 @@ import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repositor
 import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/features/manage_students/domain/enroll_student.dart';
@@ -49,6 +50,7 @@ class UiWorld {
     await tester.runAsync(() async {
       await getIt<CatalogueRepository>().load();
       await getIt<DiagramRepository>().load();
+      await getIt<SessionSheetRepository>().getAll();
     });
   }
 

@@ -561,4 +561,79 @@ void main() {
       expect(guide(tester).shouldRepaint(before), isTrue);
     });
   });
+
+  group('aim arrows', () {
+    const line = [DiagramPoint(1, 2), DiagramPoint(5, 2)];
+
+    testWidgets('an aim arrow alternates long dashes and short dots', (
+      tester,
+    ) async {
+      final g = await _pump(
+        tester,
+        _arrows([_arrow(DiagramArrowKind.aim, line)]),
+      );
+      expect(g.unit, 50);
+      final lengths = [for (final c in _strokes(tester)) _length(c.path)];
+
+      // Motif : trait de 0,3 case, blanc 0,07, point de 0,03, blanc 0,07.
+      final long = lengths.where((l) => (l - 15).abs() < 0.5).length;
+      final dots = lengths.where((l) => (l - 1.5).abs() < 0.5).length;
+      expect(long, greaterThanOrEqualTo(8));
+      expect(dots, greaterThanOrEqualTo(8));
+      // Seul le dernier trait peut être tronqué par la fin de la ligne.
+      expect(lengths.length - long - dots, lessThanOrEqualTo(1));
+    });
+
+    testWidgets('a cue arrow keeps one dash length, unlike an aim arrow', (
+      tester,
+    ) async {
+      await _pump(tester, _arrows([_arrow(DiagramArrowKind.cue, line)]));
+      final lengths = {
+        for (final c in _strokes(tester)) _length(c.path).round(),
+      };
+
+      expect(lengths.length, lessThanOrEqualTo(2));
+      expect(lengths, isNot(contains(2)));
+    });
+  });
+
+  group('annotations', () {
+    testWidgets('writes the text of an annotation on the table', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        const TableDiagramSpec(
+          id: 'a',
+          balls: [],
+          annotations: [
+            DiagramAnnotation(id: 'n', at: DiagramPoint(4, 2), text: '90°'),
+          ],
+        ),
+      );
+
+      expect(find.text('90°'), findsOneWidget);
+    });
+
+    testWidgets('puts the text next to its point, not at the origin', (
+      tester,
+    ) async {
+      final g = await _pump(
+        tester,
+        const TableDiagramSpec(
+          id: 'a',
+          balls: [],
+          annotations: [
+            DiagramAnnotation(id: 'n', at: DiagramPoint(6, 3), text: 'Zone'),
+          ],
+        ),
+      );
+
+      final at =
+          tester.getTopLeft(find.byType(BilliardTable)) +
+          g.toPixel(const Offset(6, 3));
+      final box = tester.getRect(find.text('Zone'));
+      expect((box.center - at).distance, lessThan(g.unit * 1.5));
+    });
+  });
 }

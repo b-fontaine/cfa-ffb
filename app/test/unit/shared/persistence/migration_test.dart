@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/maturity_assessment/data/drift_assessment_repository.dart';
+import 'package:billard_cfa/entities/session/data/drift_session_repository.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
@@ -37,6 +38,39 @@ void main() {
 
     await verifier.migrateAndValidate(db, 2);
   });
+
+  test('a fresh database matches the committed v3 snapshot', () async {
+    final connection = await verifier.startAt(3);
+    final db = AppDatabase(connection);
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 3);
+  });
+
+  test(
+    'upgrading v2 to v3 adds the sheet and keeps planned sessions',
+    () async {
+      final schema = await verifier.schemaAt(2);
+      schema.rawDatabase.execute(
+        'INSERT INTO planned_sessions (id, created_at, updated_at, title, '
+        'audience) '
+        "VALUES ('p1', '2026-10-01T00:00:00.000Z', "
+        "'2026-10-01T00:00:00.000Z', 'Rebond', 'children')",
+      );
+      final db = AppDatabase(schema.newConnection());
+      addTearDown(db.close);
+
+      await verifier.migrateAndValidate(db, 3);
+
+      final session = (await DriftSessionRepository(
+        db,
+        TickingClock(),
+      ).getAll()).single;
+      expect(session.id, 'p1');
+      expect(session.title, 'Rebond');
+      expect(session.sheetId, isNull);
+    },
+  );
 
   test('upgrading v1 to v2 adds the comment and keeps assessments', () async {
     final schema = await verifier.schemaAt(1);
@@ -88,7 +122,7 @@ void main() {
   test('refuses to open a database written by a newer version', () async {
     final db = AppDatabase(
       NativeDatabase.memory(
-        setup: (raw) => raw.execute('PRAGMA user_version = 3'),
+        setup: (raw) => raw.execute('PRAGMA user_version = 4'),
       ),
     );
     addTearDown(db.close);
@@ -97,9 +131,9 @@ void main() {
       db.customSelect('SELECT 1').get(),
       throwsA(
         isA<DowngradeNotSupported>()
-            .having((e) => e.from, 'from', 3)
-            .having((e) => e.to, 'to', 2)
-            .having((e) => e.toString(), 'message', contains('version 3')),
+            .having((e) => e.from, 'from', 4)
+            .having((e) => e.to, 'to', 3)
+            .having((e) => e.toString(), 'message', contains('version 4')),
       ),
     );
   });

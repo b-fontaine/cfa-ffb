@@ -4,12 +4,21 @@ import 'package:billard_cfa/entities/exercise_catalog/domain/session_range.dart'
 import 'package:billard_cfa/entities/exercise_catalog/domain/training_block.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/provenance.dart';
 import 'package:billard_cfa/shared/lib/success_rate.dart';
 import 'package:yaml/yaml.dart';
 
 const _bridges = <String, Bridge>{
   'cadre': Bridge.frame,
   'surface': Bridge.surface,
+};
+
+/// Champ `source` : absent ou `S` = `[S]`, `Prop` = proposition ; toute autre
+/// valeur est refusée.
+Provenance _source(Object? raw) => switch (raw) {
+  null || 'S' => Provenance.s,
+  'Prop' => Provenance.prop,
+  _ => throw const InvariantViolation(InvariantCode.invalidCatalogue),
 };
 
 /// Lit le YAML versionné `docs/knowledge/03-exercices/catalogue-entrainement.yaml`
@@ -51,6 +60,7 @@ TrainingBlock _parseBlock(YamlMap block) {
     ),
     technicalSheets: sheets is YamlList ? sheets.cast<int>() : [sheets as int],
     duplicateInSource: block['duplicate_in_source'] == true,
+    source: _source(block['source']),
     exercises: [
       for (final exercise in block['exercises'] as YamlList)
         _parseExercise(id, exercise as YamlMap),
@@ -67,5 +77,6 @@ ExerciseSpec _parseExercise(String blockId, YamlMap exercise) {
     bridge: bridge == null ? null : _bridges[bridge]!,
     bronze: exercise['bronze'] == true,
     note: exercise['note'] as String?,
+    source: _source(exercise['source']),
   );
 }

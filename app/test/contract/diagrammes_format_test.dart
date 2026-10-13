@@ -210,8 +210,11 @@ diagrams:
     uncertainties: []
 ''';
 
-const _minFiles = 92;
-const _minTables = 103;
+// 92 pages transcrites des PDF [S] + 2 pages proposées [Prop] (8 diagrammes).
+// Totaux exacts : ajouter ou retirer une page impose de mettre ces nombres à
+// jour dans le même changement.
+const _expectedFiles = 94;
+const _expectedTables = 111;
 
 void main() {
   group('contrat FORMAT -> TableDiagramSpec', () {
@@ -225,9 +228,9 @@ void main() {
               .where((f) => f.path.endsWith('.yaml'))
               .toList()
             ..sort((a, b) => a.path.compareTo(b.path));
-      // Nombre de transcriptions au moment de l'écriture : une disparition
-      // silencieuse (dossier vidé, fichier perdu) fait échouer le contrat.
-      expect(files.length, greaterThanOrEqualTo(_minFiles));
+      // Nombre exact de transcriptions : une disparition silencieuse (dossier
+      // vidé, fichier perdu) ou un ajout non déclaré fait échouer le contrat.
+      expect(files.length, _expectedFiles);
 
       final problems = <String>[];
       var tables = 0;
@@ -243,8 +246,30 @@ void main() {
         }
       }
 
-      expect(tables, greaterThanOrEqualTo(_minTables));
+      expect(tables, _expectedTables);
       expect(problems, isEmpty, reason: problems.join('\n'));
+    });
+
+    test('le rang de chaque page correspond à son dossier', () {
+      final root = Directory(_diagramsDir);
+      final wrong = <String>[];
+      for (final file in root.listSync(recursive: true).whereType<File>()) {
+        if (!RegExp(r'p\d\d\.yaml$').hasMatch(file.path)) continue;
+        final label = file.path.substring(root.path.length + 1);
+        final source =
+            (loadYaml(file.readAsStringSync()) as YamlMap)['source'] as YamlMap;
+        final proposed = label.startsWith('proposition/');
+        final expected = proposed ? 'Prop' : 'S';
+        if (source['rank'] != expected) {
+          wrong.add('$label : rank ${source['rank']} au lieu de $expected');
+        }
+        final file0 = source['file'] as String;
+        if (proposed != (file0 == 'Proposition (hors PDF)')) {
+          wrong.add('$label : file « $file0 » incohérent avec le dossier');
+        }
+      }
+
+      expect(wrong, isEmpty, reason: wrong.join('\n'));
     });
 
     test('une valeur invalide est signalée avec le fichier', () {

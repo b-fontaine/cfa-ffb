@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Point d'entrée UNIQUE des garde-fous déterministes (hooks, agent, CI).
 #
-#   scripts/check.sh --fast   catalogue + diagrammes + fichiers web drift + format + analyse + architecture + séances
+#   scripts/check.sh --fast   catalogue + diagrammes + fiches + fichiers web drift + format + analyse
+#                             + architecture + séances + validation des fiches
 #   scripts/check.sh --full   --fast + l10n + tests + couverture + Widgetbook
 #                             (génération, format, analyse, use cases)
 #
@@ -37,6 +38,9 @@ step "Catalogue (asset identique à docs/knowledge)"
 step "Diagrammes (assets identiques à docs/knowledge)"
 "$ROOT/scripts/sync_diagrammes.sh" --check
 
+step "Fiches de séance (assets identiques à docs/knowledge)"
+"$ROOT/scripts/sync_fiches.sh" --check
+
 step "Fichiers web drift (sqlite3.wasm, drift_worker.js)"
 (cd "$ROOT" && dart run scripts/sync_web_assets.dart --check)
 
@@ -58,6 +62,9 @@ dart run tool/check_architecture.dart
 
 step "Séances (front matter, durées, déroulé)"
 (cd "$ROOT" && dart run scripts/validate_seances.dart seances)
+
+step "Fiches de séance (FORMAT.md § 7, 29 séances, lecture seule)"
+dart run tool/fiches.dart --complete
 
 if [[ "$MODE" == "--fast" ]]; then
   printf '\n✔ check --fast OK\n'

@@ -23,6 +23,7 @@ const diagramKinds = {
   'technique-photo',
 };
 const tableKinds = {'exercise', 'game', 'initiation'};
+const sourceRanks = {'S', 'Prop'};
 const bridges = {'frame', 'surface', 'none', 'unknown'};
 const ballColors = {'red', 'yellow', 'black', 'white'};
 const ghostRoles = {'impact', 'cue_start'};

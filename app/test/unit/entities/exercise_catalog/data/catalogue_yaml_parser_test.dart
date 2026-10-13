@@ -1,6 +1,7 @@
 import 'package:billard_cfa/entities/exercise_catalog/data/catalogue_yaml_parser.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/provenance.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../support/fixtures.dart';
@@ -19,6 +20,14 @@ blocks:
     duplicate_in_source: true
     exercises:
       - {n: 1, rate: [3, 5]}
+  - id: proposed
+    source: Prop
+    teaching_order: 3
+    title: Bloc proposé
+    sessions: {min: 1, max: 2}
+    technical_sheet: 1
+    exercises:
+      - {n: 1, source: Prop, rate: [3, 4], bridge: cadre}
   - id: first
     teaching_order: 1
     title: Premier bloc
@@ -39,7 +48,7 @@ void main() {
   });
 
   test('orders blocks by teaching_order, not by file order', () {
-    expect(parsed.blocks.map((b) => b.id), ['first', 'second']);
+    expect(parsed.blocks.map((b) => b.id), ['first', 'second', 'proposed']);
   });
 
   test('reads sessions, sheets and the duplicate flag', () {
@@ -73,6 +82,54 @@ void main() {
 
   test('maps the surface bridge', () {
     expect(parsed.exercise(ref('first', 2))!.bridge, Bridge.surface);
+  });
+
+  test('a block and its exercises are sourced unless they say Prop', () {
+    expect(parsed.blockById('first')!.source, Provenance.s);
+    expect(parsed.exercise(ref('first', 1))!.source, Provenance.s);
+  });
+
+  test('reads the Prop source of a proposed block and its exercises', () {
+    final block = parsed.blockById('proposed')!;
+
+    expect(block.source, Provenance.prop);
+    expect(block.isProposal, isTrue);
+    expect(block.exercises.single.source, Provenance.prop);
+  });
+
+  test('accepts an explicit S source, same as an absent one', () {
+    final explicit = parseCatalogue(
+      _yaml.replaceFirst(
+        '  - id: first\n    teaching_order: 1',
+        '  - id: first\n    source: S\n    teaching_order: 1',
+      ),
+    );
+
+    expect(explicit.blockById('first')!.source, Provenance.s);
+  });
+
+  test('rejects an unknown source', () {
+    final bad = _yaml.replaceFirst(
+      'source: Prop\n    teaching_order: 3',
+      'source: Web\n    teaching_order: 3',
+    );
+
+    expect(
+      () => parseCatalogue(bad),
+      violation(InvariantCode.invalidCatalogue),
+    );
+  });
+
+  test('rejects an exercise whose source differs from its block', () {
+    final bad = _yaml.replaceFirst(
+      '{n: 1, source: Prop, rate: [3, 4]',
+      '{n: 1, rate: [3, 4]',
+    );
+
+    expect(
+      () => parseCatalogue(bad),
+      violation(InvariantCode.invalidCatalogue),
+    );
   });
 
   test('rejects a document that is not a catalogue', () {

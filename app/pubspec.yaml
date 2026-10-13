@@ -58,6 +58,12 @@ flutter:
     - assets/diagrammes/entrainement/
     - assets/diagrammes/initiation/
     - assets/diagrammes/jeux/
+    # Pages [Prop] (hors PDF) : mise en place des blocs d'entraînement proposés.
+    - assets/diagrammes/proposition/
+
+    # Copie des séances du catalogue (source : docs/knowledge/05-seances/
+    # catalogue) ; produite par scripts/sync_fiches.sh, vérifiée par check.sh.
+    - assets/fiches/
 
   # Exo 2 (charte FFB) : police libre SIL OFL 1.1, source
   # https://github.com/google/fonts/tree/main/ofl/exo2 ; licence dans

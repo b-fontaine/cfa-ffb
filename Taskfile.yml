@@ -8,6 +8,7 @@
 #   task run DEVICE=chrome
 #   task check      vérification rapide ; task check:full pour tout
 #   task diagrammes:sync | diagrammes:check | diagrammes:validate
+#   task fiches:sync | fiches:check | fiches:validate
 version: '3'
 
 vars:
@@ -79,6 +80,22 @@ tasks:
     dir: app
     cmds:
       - dart run tool/diagrammes.dart --ascii {{.CLI_ARGS}}
+
+  fiches:sync:
+    desc: Copie les séances du catalogue (docs/knowledge) vers les assets de l'app
+    cmds:
+      - scripts/sync_fiches.sh
+
+  fiches:check:
+    desc: Vérifie que les assets de séances sont identiques à la source (lecture seule)
+    cmds:
+      - scripts/sync_fiches.sh --check
+
+  fiches:validate:
+    desc: Valide les séances du catalogue (FORMAT.md § 7) ; FLAGS=--complete exige les 29 séances
+    dir: app
+    cmds:
+      - dart run tool/fiches.dart {{.FLAGS}}
 
   web-assets:sync:
     desc: Vérifie sqlite3.wasm et drift_worker.js (web)

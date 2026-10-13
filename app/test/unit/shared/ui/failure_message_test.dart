@@ -91,6 +91,12 @@ const _expected = <InvariantCode, (String, String)>{
     'This file is inconsistent: missing references or duplicates.',
     'Ce fichier est incohérent : références manquantes ou doublons.',
   ),
+  InvariantCode.backupUnknownSheet: (
+    'This file refers to a catalogue session that this version of the app '
+        'does not know.',
+    'Ce fichier désigne une séance du catalogue que cette version de '
+        'l’application ne connaît pas.',
+  ),
   InvariantCode.invalidPeriod: (_genericEn, _genericFr),
   InvariantCode.invalidRange: (_genericEn, _genericFr),
   InvariantCode.invalidExerciseRef: (_genericEn, _genericFr),
@@ -107,6 +113,7 @@ const _expected = <InvariantCode, (String, String)>{
   InvariantCode.recallEqualsMainBlock: (_genericEn, _genericFr),
   InvariantCode.invalidCatalogue: (_genericEn, _genericFr),
   InvariantCode.invalidDiagram: (_genericEn, _genericFr),
+  InvariantCode.invalidSheet: (_genericEn, _genericFr),
   InvariantCode.invalidRules: (_genericEn, _genericFr),
 };
 
@@ -145,6 +152,6 @@ void main() {
         if (entry.value.$1 == _genericEn) entry.key,
     };
 
-    expect(generic, hasLength(17));
+    expect(generic, hasLength(18));
   });
 }

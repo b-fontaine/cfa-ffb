@@ -1,11 +1,10 @@
 import 'dart:math' show Point;
 
+import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/ui/ball_kind.dart';
-import 'package:billard_cfa/shared/ui/contact_fraction.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 export 'package:billard_cfa/shared/ui/ball_kind.dart';
-export 'package:billard_cfa/shared/ui/contact_fraction.dart';
 
 part 'table_diagram_spec.freezed.dart';
 
@@ -49,8 +48,10 @@ enum DiagramBallRole { cue, object, obstacle }
 /// Rôle d'un cercle creux (FORMAT : `cue_start`, `impact`).
 enum DiagramGhostRole { cueStart, impact }
 
-/// Nature d'une flèche (FORMAT : `object`, `cue`, `indication`).
-enum DiagramArrowKind { object, cue, indication }
+/// Nature d'une flèche (FORMAT : `object`, `cue`, `indication`) ; `aim` est la
+/// ligne de visée des illustrations de séance (blanche vers bille fantôme),
+/// tracée en trait-point.
+enum DiagramArrowKind { object, cue, indication, aim }
 
 /// Bande sur laquelle une bille rebondit.
 enum DiagramBand { top, bottom, left, right }
@@ -155,6 +156,18 @@ abstract class DiagramZone with _$DiagramZone {
   }) = _DiagramZone;
 }
 
+/// Texte posé sur la table, à côté d'un point (« 90° », « Bille fantôme »).
+///
+/// Le texte est fourni tel quel par l'appelant, déjà localisé.
+@freezed
+abstract class DiagramAnnotation with _$DiagramAnnotation {
+  const factory DiagramAnnotation({
+    required String id,
+    required DiagramPoint at,
+    required String text,
+  }) = _DiagramAnnotation;
+}
+
 /// Un tir du déroulé : la blanche touche une bille, qui part vers une poche.
 @freezed
 abstract class DiagramStep with _$DiagramStep {
@@ -194,5 +207,8 @@ abstract class TableDiagramSpec with _$TableDiagramSpec {
     @Default(<DiagramArrow>[]) List<DiagramArrow> arrows,
     @Default(<DiagramZone>[]) List<DiagramZone> zones,
     @Default(<DiagramStep>[]) List<DiagramStep> steps,
+
+    /// Textes posés sur la table.
+    @Default(<DiagramAnnotation>[]) List<DiagramAnnotation> annotations,
   }) = _TableDiagramSpec;
 }

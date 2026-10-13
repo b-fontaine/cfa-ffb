@@ -105,6 +105,13 @@ class TableDiagram extends StatelessWidget {
                 top: geometry.toPixel(_offset(ghost.at)).dy - diameter * 1.6,
                 child: Text(ghost.label!, softWrap: false, style: textStyle),
               ),
+          for (final note in spec.annotations)
+            Positioned(
+              key: ValueKey('annotation-${note.id}'),
+              left: geometry.toPixel(_offset(note.at)).dx + diameter * 0.8,
+              top: geometry.toPixel(_offset(note.at)).dy - diameter * 2.2,
+              child: Text(note.text, softWrap: false, style: textStyle),
+            ),
           if (cuePosition != null)
             BilliardCue.positionedAgainst(
               geometry: geometry,
@@ -210,6 +217,13 @@ class _GuidePainter extends CustomPainter {
           canvas.drawPath(path, line);
         case DiagramArrowKind.cue:
           _drawDashed(canvas, path, line, dash: u * 0.18, gap: u * 0.12);
+        case DiagramArrowKind.aim:
+          _drawPattern(canvas, path, line, [
+            u * 0.3,
+            u * 0.07,
+            u * 0.03,
+            u * 0.07,
+          ]);
         case DiagramArrowKind.indication:
           _drawDashed(
             canvas,
@@ -251,6 +265,31 @@ class _GuidePainter extends CustomPainter {
       )
       ..close();
     canvas.drawPath(head, Paint()..color = line.color);
+  }
+
+  /// Trait-point : [pattern] alterne longueurs tracées et blancs.
+  void _drawPattern(
+    Canvas canvas,
+    Path path,
+    Paint paint,
+    List<double> pattern,
+  ) {
+    final steps = [for (final p in pattern) math.max(p, 0.5)];
+    for (final metric in path.computeMetrics()) {
+      var d = 0.0;
+      var i = 0;
+      while (d < metric.length) {
+        final length = steps[i % steps.length];
+        if (i.isEven) {
+          canvas.drawPath(
+            metric.extractPath(d, math.min(d + length, metric.length)),
+            paint,
+          );
+        }
+        d += length;
+        i++;
+      }
+    }
   }
 
   void _drawDashed(

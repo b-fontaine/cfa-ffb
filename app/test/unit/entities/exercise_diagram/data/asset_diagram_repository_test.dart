@@ -26,19 +26,28 @@ void main() {
   group('with the real assets', () {
     final repository = AssetDiagramRepository.fromBundle();
 
-    test('loads the 103 table diagrams of the three transcriptions', () async {
+    test('loads the 103 transcribed and 8 proposed table diagrams', () async {
       final library = await repository.load();
 
-      expect(library.diagrams, hasLength(103));
+      expect(library.diagrams, hasLength(111));
+      expect(
+        library.diagrams.where((d) => d.id.startsWith('proposition-')),
+        hasLength(8),
+      );
     });
 
     test(
-      'holds the entrainement, initiation and jeux transcriptions only',
+      'holds the three transcriptions and the [Prop] proposition pages only',
       () async {
         final library = await repository.load();
         final families = library.diagrams.map((d) => d.id.split('-').first);
 
-        expect(families.toSet(), {'entrainement', 'initiation', 'jeux'});
+        expect(families.toSet(), {
+          'entrainement',
+          'initiation',
+          'jeux',
+          'proposition',
+        });
       },
     );
 

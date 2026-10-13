@@ -9,6 +9,7 @@ import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/features/assess_maturity/domain/assessment_outcome.dart';
@@ -240,8 +241,11 @@ class TrackingWorld {
   Future<void> importIntoEmptyClub(WidgetTester tester, String content) async {
     await getIt.reset();
     await configureDependencies(environment: Environment.test);
-    // Les règles d'import lisent le catalogue : E/S réelle, hors faux temps.
-    await tester.runAsync(() => getIt<CatalogueRepository>().load());
+    // Les règles d'import lisent les catalogues : E/S réelle, hors faux temps.
+    await tester.runAsync(() async {
+      await getIt<CatalogueRepository>().load();
+      await getIt<SessionSheetRepository>().getAll();
+    });
     await importAgain(content);
   }
 
@@ -275,6 +279,18 @@ class TrackingWorld {
     final first =
         (data['attempts']! as List<Object?>).first! as Map<String, Object?>;
     first['blockId'] = 'exercice-inconnu';
+    return jsonEncode(document);
+  }
+
+  /// La sauvegarde exportée, dont la première séance planifiée vise une
+  /// séance absente du catalogue (la forme du fichier reste valide).
+  String backupWithUnknownSheet() {
+    final document = jsonDecode(backup) as Map<String, Object?>;
+    final data = document['data']! as Map<String, Object?>;
+    final first =
+        (data['plannedSessions']! as List<Object?>).first!
+            as Map<String, Object?>;
+    first['sheetId'] = 'inconnue-9';
     return jsonEncode(document);
   }
 

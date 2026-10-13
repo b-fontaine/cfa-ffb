@@ -103,6 +103,54 @@ void main() {
     expect(differences, isEmpty, reason: differences.join('\n'));
   });
 
+  test(
+    'the diagrams of a proposal block are proposals, never PDF pages',
+    () async {
+      final library = await AssetDiagramRepository.fromBundle().load();
+
+      final wrong = <String>[];
+      for (final block in catalogue.blocks) {
+        for (final spec in block.exercises) {
+          final diagrams = library.find(
+            DiagramKey.training(sheet: block.title, exercise: spec.ref.number),
+          );
+          for (final diagram in diagrams) {
+            final fromProposal = diagram.id.startsWith('proposition-');
+            if (fromProposal != block.isProposal) {
+              wrong.add('${diagram.id} pour ${spec.ref.blockId}');
+            }
+            if (block.isProposal) {
+              // Un exercice proposé ne porte jamais de mention fédérale.
+              if (diagram.bronze || spec.bronze) {
+                wrong.add('${diagram.id} : bronze');
+              }
+              if (diagram.successRate != spec.rate) {
+                wrong.add('${diagram.id} : taux différent du bloc');
+              }
+            }
+          }
+        }
+      }
+
+      expect(wrong, isEmpty, reason: wrong.join('\n'));
+    },
+  );
+
+  test('each proposal exercise has exactly one proposition diagram', () async {
+    final library = await AssetDiagramRepository.fromBundle().load();
+
+    for (final block in catalogue.blocks.where((b) => b.isProposal)) {
+      for (final spec in block.exercises) {
+        final found = library.find(
+          DiagramKey.training(sheet: block.title, exercise: spec.ref.number),
+        );
+
+        expect(found, hasLength(1), reason: '${spec.ref}');
+        expect(found.single.sourceFile, 'Proposition (hors PDF)');
+      }
+    }
+  });
+
   test('no training diagram is orphaned from the catalogue', () async {
     final library = await AssetDiagramRepository.fromBundle().load();
     final reached = <String>{

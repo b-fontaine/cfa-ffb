@@ -120,6 +120,29 @@ diagrams: []
       expect(errorsOf(yaml).single, contains('source.page'));
     });
 
+    test('accepts the S and Prop ranks of a source', () {
+      for (final rank in ['S', 'Prop']) {
+        final yaml =
+            '''
+version: 1
+source: {file: "f", page: 1, rank: $rank}
+no_illustration: true
+diagrams: []
+''';
+        expect(errorsOf(yaml), isEmpty, reason: rank);
+      }
+    });
+
+    test('rejects an unknown source rank', () {
+      const yaml = '''
+version: 1
+source: {file: "f.pdf", page: 1, rank: Web}
+no_illustration: true
+diagrams: []
+''';
+      expect(errorsOf(yaml).single, contains('source.rank'));
+    });
+
     test('requires mandatory diagram fields', () {
       const yaml = '''
 version: 1

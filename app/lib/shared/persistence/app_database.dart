@@ -28,7 +28,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Version du schéma SQL. Elle est indépendante de la version du format de
   /// sauvegarde JSON (`BackupCodec.currentVersion`).
-  static const currentSchemaVersion = 2;
+  static const currentSchemaVersion = 3;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -46,6 +46,13 @@ class AppDatabase extends _$AppDatabase {
         // Version 2 : remarque libre sur le bilan de maturité.
         from1To2: (m, schema) async {
           await m.addColumn(schema.assessments, schema.assessments.comment);
+        },
+        // Version 3 : séance du catalogue liée à une séance planifiée.
+        from2To3: (m, schema) async {
+          await m.addColumn(
+            schema.plannedSessions,
+            schema.plannedSessions.sheetId,
+          );
         },
       )(migrator, from, to);
     },

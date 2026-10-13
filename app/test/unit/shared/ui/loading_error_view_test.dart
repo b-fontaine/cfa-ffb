@@ -41,4 +41,14 @@ void main() {
 
     expect(find.byType(FilledButton), findsNothing);
   });
+
+  testWidgets('error view offers a way back when given one', (tester) async {
+    var back = 0;
+    await pumpUi(tester, ErrorView(message: 'Nope', onBack: () => back++));
+
+    await tester.tap(find.text('Back'));
+
+    expect(back, 1);
+    expect(find.text('Retry'), findsNothing);
+  });
 }

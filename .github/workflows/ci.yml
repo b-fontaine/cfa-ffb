@@ -19,7 +19,7 @@ env:
 
 jobs:
   quality:
-    name: Qualité (format, analyse, architecture, séances)
+    name: Qualité (format, analyse, architecture, séances, fiches)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -28,6 +28,8 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
+      # Inclut la synchro et la validation des fiches de séance (sync_fiches.sh --check,
+      # tool/fiches.dart --complete, 29 séances) : une seule définition des garde-fous, dans check.sh.
       - name: Garde-fous rapides
         run: scripts/check.sh --fast
 

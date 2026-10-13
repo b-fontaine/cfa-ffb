@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_table.dart';
 import 'package:billard_cfa/entities/exercise_diagram/domain/exercise_diagram.dart';
+import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_spec.dart'
     as ui;
 
@@ -103,10 +104,10 @@ ui.DiagramPocket _pocket(TablePocket pocket) => switch (pocket) {
 };
 
 /// Quantité de bille du design system pour [contact] (mêmes valeurs).
-ui.ContactFraction contactFractionOf(TableContact contact) => switch (contact) {
-  TableContact.full => ui.ContactFraction.full,
-  TableContact.threeQuarter => ui.ContactFraction.threeQuarter,
-  TableContact.half => ui.ContactFraction.half,
-  TableContact.quarter => ui.ContactFraction.quarter,
-  TableContact.thin => ui.ContactFraction.thin,
+ContactFraction contactFractionOf(TableContact contact) => switch (contact) {
+  TableContact.full => ContactFraction.full,
+  TableContact.threeQuarter => ContactFraction.threeQuarter,
+  TableContact.half => ContactFraction.half,
+  TableContact.quarter => ContactFraction.quarter,
+  TableContact.thin => ContactFraction.thin,
 };

@@ -22,8 +22,10 @@ import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/session_sheet_fixtures.dart';
 import 'repository_harness.dart';
 
 /// Le vrai catalogue de l'application, lu depuis l'asset sur disque.
@@ -62,7 +64,12 @@ ImportBackup _import(RepositoryHarness r) => ImportBackup(
   r.assessments,
   r.sessions,
   BackupCodec(),
-  BackupRules(_catalogue, RulesConfig(), _FixedClock()),
+  BackupRules(
+    _catalogue,
+    FixtureSessionSheetRepository(catalogueFixture()),
+    RulesConfig(),
+    _FixedClock(),
+  ),
   r.unitOfWork,
 );
 
@@ -175,6 +182,14 @@ Future<void> _seed(RepositoryHarness r) async {
   await r.sessions.add(
     const Session(id: 'p1', title: 'Rebond', audience: Audience.children),
   );
+  await r.sessions.add(
+    Session(
+      id: 'p2',
+      title: 'Demi-bille',
+      audience: Audience.adults,
+      sheetId: SheetId('demi-bille-2'),
+    ),
+  );
 }
 
 Map<String, Object?> _parse(String content) =>
@@ -236,8 +251,20 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
           sessionRecords: 2,
           attempts: 3,
           assessments: 1,
-          plannedSessions: 1,
+          plannedSessions: 2,
         ),
+      );
+    });
+
+    test('keeps the catalogue session of a planned session', () async {
+      await _imported(target, backup);
+
+      final sessions = await target.sessions.getAll();
+      expect(sessions.map((s) => s.sheetId?.value), [null, 'demi-bille-2']);
+      final document = _parse(backup);
+      expect(
+        _list(document, 'plannedSessions').map((s) => (s! as Map)['sheetId']),
+        [null, 'demi-bille-2'],
       );
     });
 
@@ -352,6 +379,10 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
             _first(d, 'sessionRecords')['audience'] = 'adults',
         'an assessment dated in the future': (d) =>
             _first(d, 'assessments')['date'] = '2027-05-01T00:00:00.000',
+        'a sheet identifier that is not text': (d) =>
+            _first(d, 'plannedSessions')['sheetId'] = 7,
+        'a malformed sheet identifier': (d) =>
+            _first(d, 'plannedSessions')['sheetId'] = 'Pas un slug',
         'a comment that is not text': (d) =>
             _first(d, 'assessments')['comment'] = 7,
         'a comment longer than the maximum': (d) =>
@@ -423,6 +454,19 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
             'an assessment of an unknown student': (d) =>
                 _first(d, 'assessments')['studentId'] = 'ghost',
           };
+      test('a planned session on an unknown catalogue session', () async {
+        final document = _parse(backup);
+        (_list(document, 'plannedSessions').last!
+                as Map<String, Object?>)['sheetId'] =
+            'inconnue-9';
+
+        expect(
+          await _refused(target, jsonEncode(document)),
+          InvariantCode.backupUnknownSheet,
+        );
+        await expectEmpty(target);
+      });
+
       for (final MapEntry(key: name, value: mutate)
           in inconsistentMutations.entries) {
         test('inconsistent data: $name', () async {

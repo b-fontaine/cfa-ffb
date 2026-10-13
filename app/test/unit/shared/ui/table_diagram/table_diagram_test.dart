@@ -1,3 +1,4 @@
+import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/ui/billiard_ball.dart';
 import 'package:billard_cfa/shared/ui/billiard_cue.dart';
 import 'package:billard_cfa/shared/ui/billiard_table.dart';

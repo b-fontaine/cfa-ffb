@@ -4,6 +4,8 @@ import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repositor
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.dart';
 import 'package:billard_cfa/entities/exercise_diagram/data/asset_diagram_repository.dart';
 import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_repository.dart';
+import 'package:billard_cfa/entities/session_sheet/data/asset_session_sheet_repository.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/manage_students/domain/enroll_student.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
@@ -31,16 +33,22 @@ Future<void> _useBundledPackageAssets() async {
   getIt.registerLazySingleton<CatalogueRepository>(
     () => AssetCatalogueRepository(load),
   );
+  Future<List<String>> listPackageAssets() async {
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    return [
+      for (final key in manifest.listAssets())
+        if (key.startsWith(_packageAssets))
+          key.substring(_packageAssets.length),
+    ];
+  }
+
   await getIt.unregister<DiagramRepository>();
   getIt.registerLazySingleton<DiagramRepository>(
-    () => AssetDiagramRepository(load, () async {
-      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-      return [
-        for (final key in manifest.listAssets())
-          if (key.startsWith(_packageAssets))
-            key.substring(_packageAssets.length),
-      ];
-    }),
+    () => AssetDiagramRepository(load, listPackageAssets),
+  );
+  await getIt.unregister<SessionSheetRepository>();
+  getIt.registerLazySingleton<SessionSheetRepository>(
+    () => AssetSessionSheetRepository(load, listPackageAssets),
   );
 }
 

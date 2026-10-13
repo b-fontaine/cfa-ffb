@@ -1,6 +1,7 @@
 import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_table.dart';
 import 'package:billard_cfa/entities/exercise_diagram/domain/exercise_diagram.dart';
 import 'package:billard_cfa/entities/exercise_diagram/presentation/table_diagram_mapper.dart';
+import 'package:billard_cfa/shared/lib/contact_fraction.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_spec.dart'
     as ui;
 import 'package:flutter_test/flutter_test.dart';
@@ -149,7 +150,7 @@ void main() {
         ui.DiagramStep(
           cueId: 'w',
           hitId: 'r1',
-          contact: ui.ContactFraction.half,
+          contact: ContactFraction.half,
           pocket: ui.DiagramPocket.tl,
           repeat: 3,
           fromGhostId: 'g',

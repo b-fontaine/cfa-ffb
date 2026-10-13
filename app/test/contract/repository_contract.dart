@@ -8,6 +8,7 @@ import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'repository_harness.dart';
@@ -435,6 +436,26 @@ void repositoryContract(
         await repos.sessions.delete('p1');
         await repos.sessions.delete('unknown');
         expect(await repos.sessions.getAll(), [second]);
+      });
+
+      test('keeps the catalogue session, replaced or cleared by add', () async {
+        final linked = Session(
+          id: 'p1',
+          title: 'Demi-bille',
+          audience: Audience.adults,
+          sheetId: SheetId('demi-bille-2'),
+        );
+        final unknown = linked.copyWith(sheetId: SheetId('inconnue-9'));
+        final free = linked.copyWith(sheetId: null);
+
+        await repos.sessions.add(linked);
+        expect((await repos.sessions.getAll()).single.sheetId, linked.sheetId);
+
+        await repos.sessions.add(unknown);
+        expect(await repos.sessions.getAll(), [unknown]);
+
+        await repos.sessions.add(free);
+        expect(await repos.sessions.getAll(), [free]);
       });
 
       test('exposes an unmodifiable snapshot', () async {

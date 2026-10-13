@@ -27,6 +27,7 @@ String failureMessage(AppLocalizations l10n, Failure failure) =>
         InvariantCode.backupVersionUnsupported => l10n.failBackupVersion,
         InvariantCode.backupInvalid => l10n.failBackupInvalid,
         InvariantCode.backupInconsistent => l10n.failBackupInconsistent,
+        InvariantCode.backupUnknownSheet => l10n.failBackupUnknownSheet,
         InvariantCode.invalidPeriod ||
         InvariantCode.invalidRange ||
         InvariantCode.invalidExerciseRef ||
@@ -43,6 +44,7 @@ String failureMessage(AppLocalizations l10n, Failure failure) =>
         InvariantCode.recallEqualsMainBlock ||
         InvariantCode.invalidCatalogue ||
         InvariantCode.invalidDiagram ||
+        InvariantCode.invalidSheet ||
         InvariantCode.invalidRules => l10n.failGeneric,
       },
     };

@@ -48,6 +48,15 @@ class _Checker {
       if (!_isPositiveInt(source['page'])) {
         _err('source.page', 'entier positif obligatoire');
       }
+      // `S` : transcription d'un PDF ; `Prop` : page proposée, hors PDF
+      // (dossier proposition/, voir FORMAT.md § 3).
+      if (source.containsKey('rank') && !sourceRanks.contains(source['rank'])) {
+        _err(
+          'source.rank',
+          'valeur inconnue : ${source['rank']} (attendu : '
+              '${sourceRanks.join(' | ')})',
+        );
+      }
     }
     final diagrams = doc['diagrams'];
     if (diagrams is! List) {
