@@ -21,3 +21,14 @@ Source `[S]` : fiche technique n° 9 et fiche initiation correspondante.
 ## Exercices associés
 
 Entraînement « Le rebond d'une bille sur une bande » (2 séances ; bande avant puis deux bandes). Jeu « pétanque » avec obligation d'une bande avant impact. Voir `../03-exercices/`.
+
+## Illustrations
+
+Photos et schémas du PDF (fiche n° 9) transcrits en français dans `../03-exercices/diagrammes/techniques/pNN.yaml` `[S]` (lecture de l'image : voir le champ `uncertainties` de chaque entrée avant de s'y fier). Les vidéos pointées par les QR codes ne sont pas intégrées.
+
+**Page 19** — `../03-exercices/diagrammes/techniques/p19.yaml`
+
+- `angle-faible` — Avec un angle d'arrivée faible de la bille sur la bande, le point de contact (point d'impact) et le point de visée sont proches.
+- `angle-important` — Plus l'angle d'arrivée est important, plus le point de visée s'éloigne du point d'impact (point de contact sur la bande) : le joueur doit tenir compte de la sphéricité et du rayon de la bille.
+- `coup-a-la-mesure` — Pour un coup joué à la mesure, l'angle d'arrivée est égal à l'angle de rebond.
+- `coup-puissant` — Plus le coup est puissant, plus l'angle de rebond aura tendance à se refermer : la bille repart plus près de la perpendiculaire à la bande que ne le voudrait l'égalité des angles.

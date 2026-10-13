@@ -1,0 +1,87 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 16, rank: S}
+diagrams:
+  - id: techniques-p16-vue-axe-trois-quarts
+    kind: technique-photo
+    sheet: "Fiche Technique N°6 : La quantité trois-quarts de bille"
+    caption: "La quantité trois-quarts de bille (schéma en haut à droite de la page, sans légende dans le PDF)"
+    subject: >-
+      Schéma en couleur, en haut à droite de la page, d'une bille blanche (crème) vue de face, de l'axe du tir,
+      devant une bille de couleur rouge foncé (bordeaux) qui la déborde sur la droite. La bille blanche est au
+      premier plan ; la bille rouge, derrière elle, n'est visible que par un croissant à droite de la blanche.
+      Un cercle en pointillés fins, tracé à l'intérieur de la blanche, matérialise le contour caché de la bille
+      rouge : son centre est décalé vers la droite par rapport au centre de la blanche (d'environ un quart de
+      diamètre de bille). Un point bleu plein marque le centre de la bille blanche, à l'intersection de deux
+      traits noirs fins en croix (un trait vertical qui traverse tout le schéma, un trait horizontal qui
+      s'étend de part et d'autre des billes). Un trait horizontal plus épais, de couleur bleu-vert (teal),
+      passe sous les billes : le plan de la table (le tapis).
+    elements:
+      - "bille blanche (crème) au premier plan, vue dans l'axe du tir"
+      - "bille de couleur rouge foncé derrière la blanche, décalée vers la droite : seul un croissant à droite est visible"
+      - "cercle en pointillés fins à l'intérieur de la blanche : contour caché de la bille rouge"
+      - "point bleu plein au centre de la bille blanche (rôle non nommé dans le PDF)"
+      - "deux traits noirs fins en croix passant par le point bleu : axe vertical et axe horizontal de la bille blanche"
+      - "trait épais bleu-vert horizontal sous les billes : plan de la table (tapis)"
+    teaching_point: >-
+      Pour la quantité trois-quarts, le point de visée sur la bille de couleur se situe, environ, « à égale
+      distance du centre de la bille de couleur et de sa tangente » : ce n'est ni son centre (bille pleine) ni
+      sa tangente, mais un point intermédiaire, moins précis que ces deux repères (texte de la fiche). Le schéma
+      montre la blanche en recouvrement partiel de la bille de couleur, dont un croissant reste visible sur le côté.
+    adjacent_text_summary: >-
+      « La quantité de bille "trois-quarts" est la dernière quantité de bille de référence, qui trouve son
+      point de visée sur la bille de couleur. Ce point se situe, environ, à égale distance du centre de la
+      bille de couleur et de sa tangente. » « A l'impact, la bille blanche confère les trois quarts de son
+      énergie à la bille de couleur. Celle-ci parcourra plus de distance que la bille blanche. » Troisième
+      quantité à enseigner au joueur débutant ; son point de visée n'est pas aussi précis que le centre de la
+      bille de couleur ou la tangente ; l'expérience acquise sur les deux premières quantités aide à
+      visualiser le point de visée du « trois-quarts ».
+    description: >-
+      Schéma de face (dans l'axe du tir) : une bille blanche devant une bille rouge décalée vers la droite, le
+      contour caché de la rouge figuré par un cercle pointillé. Le point bleu marque le centre de la blanche
+      (rôle non précisé par le PDF). Trait teal sous les billes : table. Schéma placé à côté du texte
+      définissant la quantité trois-quarts, sans légende propre.
+    uncertainties:
+      - "Aucune légende ni titre dans le PDF pour ce schéma ; le rôle du point bleu (centre de la bille blanche / point de visée) est déduit de la position et du texte voisin, non écrit explicitement."
+      - "Le décalage (≈ un quart de diamètre) est mesuré sur l'image, non indiqué par le PDF."
+      - "Le trait teal est lu comme le plan de la table ; le PDF ne le nomme pas."
+  - id: techniques-p16-schema-deviation-15
+    kind: technique-schema
+    sheet: "Fiche Technique N°6 : La quantité trois-quarts de bille"
+    caption: "Point de visée / Point de contact / 15°"
+    bridge: none
+    bronze: false
+    table: {view: top, head_end: bottom}
+    subject: >-
+      Schéma en couleur, vu de dessus, orienté verticalement (tir de bas en haut) : une bille jaune en haut et
+      une bille blanche en dessous, au contact. Aucune grille de table ni bande n'est dessinée ; le schéma
+      n'est donc pas transposable en coordonnées de table.
+    elements:
+      - "bille jaune au centre du schéma (bille de couleur), traversée par deux traits noirs fins en croix (centre de la bille)"
+      - "bille blanche (crème, avec petits points rouges de marquage) juste en dessous de la jaune, légèrement décalée vers la droite (son centre est sur la ligne de tir), en contact avec elle"
+      - "trait vertical fin bleu-gris passant par le centre de la bille blanche et montant vers le haut jusqu'au-dessus de la jaune : ligne de tir de la blanche : elle traverse toute la blanche par son centre et coupe la jaune à mi-chemin entre son centre et son bord droit (ni tangente, ni centrée)"
+      - "ligne noire inclinée, trait fin avec une seule pointe de flèche en haut à gauche : elle part du centre de la bille blanche (où elle rejoint la ligne bleu-gris), traverse le contact puis le centre de la jaune, soit la ligne des centres, et monte vers le haut à gauche à environ 15° de la verticale : trajectoire de la bille de couleur après l'impact"
+      - "arc de cercle sans pointes propres, au-dessus de la jaune, entre la pointe de la flèche noire (extrémité gauche) et le haut de la ligne bleu-gris (extrémité droite), avec la mesure « 15° » sous l'arc : déviation de la bille de couleur par rapport à la verticale"
+      - "légende « Point de visée » à droite de la jaune, avec une flèche partant de la légende vers le bas à gauche et pointant juste à droite de la jonction jaune/blanche, là où la ligne bleu-gris rejoint le contour inférieur droit de la jaune"
+      - "légende « Point de contact » en bas à gauche de la blanche, avec une flèche montante vers la droite pointant vers la jonction entre la jaune et la blanche, à gauche de la ligne bleu-gris (sous le centre de la jaune), donc juste à gauche du point de visée"
+    teaching_point: >-
+      Pour la quantité trois-quarts, le point de visée (sur la bille de couleur, entre son centre et sa tangente)
+      et le point de contact entre les deux billes sont très proches ; la visée pour empocher est donc plus
+      aisée pour le débutant que pour des quantités de bille plus faibles. Après l'impact, la bille de couleur
+      est déviée d'environ 15° lorsque les billes sont identiques.
+    adjacent_text_summary: >-
+      « Le schéma ci-dessus, démontre que le point de visée et le point de contact entre les deux billes sont
+      très proches. La visée pour empocher est donc plus aisée pour le joueur débutant lorsqu'il se retrouve
+      dans cette configuration, que lorsqu'il doit jouer des quantités de billes "plus faibles". » « Après
+      l'impact, la bille de couleur obtient une déviation d'environ 15° lorsque les billes sont identiques. »
+    description: >-
+      Schéma vertical : bille jaune (cible) au-dessus d'une bille blanche en contact. Une ligne verticale
+      (trajectoire de la blanche) passe par le centre de la blanche et rejoint le contour de la jaune à mi-chemin
+      entre son centre et son bord droit (« Point de visée »). Le « Point de contact » est à la jonction des
+      deux billes, juste à gauche du point de visée, très proche de lui. Une ligne noire fléchée, qui suit la ligne des centres, part du centre de la blanche, traverse le contact et
+      le centre de la jaune, puis monte en s'inclinant vers la gauche : la bille jaune est déviée d'environ 15° de la
+      verticale, angle noté « 15° » par un arc au-dessus de la jaune.
+    uncertainties:
+      - "Pas de grille de table : aucune coordonnée x/y n'est donnée, la disposition est qualitative."
+      - "L'orientation du schéma (tir vers le haut) est lue sur l'image ; elle n'est pas écrite dans le PDF."
+      - "La ligne verticale bleu-gris est lue comme la ligne de tir de la blanche ; le PDF ne la nomme pas."
+      - "La ligne noire fléchée est lue comme la trajectoire de la bille de couleur (ligne des centres) ; le PDF ne la nomme pas, et elle est tracée depuis le centre de la blanche, pas depuis le point de contact. La position exacte des pointes de flèche « Point de visée » / « Point de contact » est lue à l'œil."

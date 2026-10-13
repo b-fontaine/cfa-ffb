@@ -1,0 +1,63 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 8, rank: S}
+diagrams:
+  - id: jeux-p08-g1
+    kind: game
+    sheet: "La quantité trois-quarts de bille."
+    caption: "Objectif : Empocher 8 billes en ligne, en quantité trois-quarts de bille."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.84, 2.08]}
+      - {id: y1, color: yellow, at: [1.30, 2.08]}
+      - {id: r2, color: red, at: [1.73, 2.08]}
+      - {id: y2, color: yellow, at: [2.19, 2.08]}
+      - {id: r3, color: red, at: [2.63, 2.08]}
+      - {id: y3, color: yellow, at: [3.09, 2.08]}
+      - {id: r4, color: red, at: [3.55, 2.08]}
+      - {id: y4, color: yellow, at: [3.98, 2.08]}
+      - {id: r5, color: red, at: [4.43, 2.08]}
+      - {id: y5, color: yellow, at: [4.89, 2.08]}
+      - {id: r6, color: red, at: [5.34, 2.08]}
+      - {id: y6, color: yellow, at: [5.80, 2.08]}
+      - {id: r7, color: red, at: [6.26, 2.08]}
+      - {id: y7, color: yellow, at: [6.71, 2.08]}
+      - {id: b8, color: black, at: [7.16, 2.08], label: "8"}
+    ghosts:
+      - {id: g1, at: [2.14, 1.08], role: cue_start}
+      - {id: g2, at: [1.40, 1.88], role: impact, for: y1}
+      - {id: g3, at: [1.42, 3.07], role: cue_start}
+      - {id: g4, at: [0.91, 2.28], role: impact, for: r1}
+    arrows:
+      - {id: a1, kind: indication, path: [[2.14, 1.08], [1.40, 1.88]], bounces: []}
+      - {id: a2, ball: y1, kind: object, path: [[1.30, 2.08], [0.21, 3.88]], to: bl}
+      - {id: a3, kind: indication, path: [[1.42, 3.07], [0.91, 2.28]], bounces: []}
+      - {id: a4, ball: r1, kind: object, path: [[0.84, 2.08], [0.13, 0.30]], to: tl}
+    zones: []
+    annotations:
+      - "Règles : le jeu se déroule en une partie qui oppose deux joueurs ; chaque joueur doit empocher toutes les billes de son groupe, puis la noire, dans un seul côté du billard ; les joueurs tirent à tour de rôle ; la bille blanche est repositionnée après chaque tir pour viser en quantité trois-quarts de bille ; lorsqu'une bille de couleur est empochée, le joueur passe à la bille suivante ; toute bille non empochée est repositionnée sur son point d'origine."
+      - "Victoire : le joueur qui gagne la partie est celui qui a empoché toutes les billes de son groupe puis la noire ; en cas d'égalité, les joueurs rejouent une série intégralement ; un coup n'est pas valable si le joueur commet une faute."
+      - "Conseil : vérifier que les billes sont positionnées à chaque fois en quantité trois-quarts de bille et à distance d'une mouche le long de la grande bande."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, ligne de départ (trait plein vertical) à x vers 1,8.
+      Quinze billes sont alignées sur une même ligne horizontale, à y vers 2,1 (un peu sous la ligne centrale de la
+      grille), en alternance rouge, jaune, rouge, jaune... : sept rouges, sept jaunes puis la bille noire marquée 8 à
+      l'extrémité droite (x vers 7,2). Le pas entre deux billes est d'environ 0,45 case ; la première bille
+      rouge est à x vers 0,85. Deux situations de tir sont dessinées à gauche de la ligne. Première : une blanche
+      (cercle creux avec points rouges) en (2,14 ; 1,08), au-dessus de la ligne de billes, vise la première bille
+      jaune ; un trait relie cette position au cercle pointillé d'impact en (1,40 ; 1,88), collé à la jaune ;
+      la jaune part ensuite vers la poche d'angle bas gauche (flèche pleine). Seconde : une blanche en
+      (1,42 ; 3,07), sous la ligne de billes, vise la première bille rouge ; un trait relie cette position au
+      cercle pointillé d'impact en (0,91 ; 2,28), collé à la rouge ; la rouge part ensuite vers la poche d'angle haut
+      gauche (flèche pleine). Aucune bille blanche pleine, aucun
+      taux de réussite, aucune pastille Billard de bronze, aucun encart de quantité de bille.
+    uncertainties:
+      - "Les billes blanches ne sont pas dessinées pleines : seuls des cercles creux à points rouges marquent leurs emplacements (ghosts cue_start, sans bille w)."
+      - "Le contact trois-quarts est déduit du titre de la fiche et de la géométrie des cercles d'impact ; aucun encart de quantité de bille n'est dessiné."
+      - "Le sens d'exécution (jaune d'abord ou rouge d'abord) n'est pas précisé : les deux situations sont des exemples simultanés de repositionnement de la blanche ; aucune séquence n'est donc transcrite (pas de bille blanche pleine pour porter le coup)."
+      - "Le cercle d'impact près de la rouge (0,91 ; 2,28) est très pâle et partiellement masqué par la bille : lecture à ± 0,1 case."
+      - "Le chiffre « 8 » est celui de la bille noire ; le texte de l'objectif parle de 8 billes en ligne alors que quinze billes sont dessinées (7 rouges, 7 jaunes, 1 noire) : le dessin montre 7 rouges, 7 jaunes et la noire, sans que la fiche précise la composition des groupes."
+      - "Les billes sont à y ≈ 2,08, légèrement sous la ligne de grille centrale (y = 2) : lecture à ± 0,1 case."
+      - "Le type de chevalet n'est pas indiqué (bridge: unknown). Aucun taux de réussite ni « Nombre de séances » sur cette page."
+      - "Ligne de départ mesurée à x ≈ 1,8 (FORMAT : 2,0 [Prop])."

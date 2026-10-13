@@ -1,0 +1,113 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 28, rank: S}
+diagrams:
+  - id: entrainement-p28-e3
+    kind: exercise
+    sheet: "Le rétro"
+    exercise: 3
+    caption: "Empocher six billes, en effectuant un rétro pour replacer la bille blanche trois fois dans chaque zone, afin de jouer la bille noire."
+    success_rate: [4, 6]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.53, 0.55]}
+      - {id: y1, color: yellow, at: [0.65, 2.0]}
+      - {id: y2, color: yellow, at: [1.80, 2.49]}
+      - {id: b1, color: black, at: [0.76, 3.50]}
+      - {id: w, color: white, at: [1.80, 1.99], role: cue}
+    ghosts:
+      - {id: g1, at: [0.70, 0.73], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.80, 1.99], [0.70, 0.73]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[0.53, 0.55], [0.18, 0.17]], to: tl}
+      - {id: a3, ball: w, kind: cue, path: [[0.70, 0.73], [1.21, 1.35]], bounces: []}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: full, pocket: tl, repeat: 3}
+    inset:
+      contact: full
+      tip_point: below_center
+      bridge_height: unknown
+    annotations:
+      - "Zone 1 x3 : libellé placé vers (1.3 ; 1.8), à gauche de la bille blanche ; la blanche doit être replacée trois fois dans la zone 1 grâce au rétro."
+      - "Zone 2 x3 : libellé placé vers (2.7 ; 3.3) ; la blanche doit être replacée trois fois dans la zone 2 grâce au rétro (six billes au total)."
+      - "Un trait vertical plein est tracé sur la surface de jeu vers x = 1.8, sur toute la largeur de la table."
+    description: >-
+      Table vue de dessus, tête à gauche. Un trait vertical plein est tracé sur toute la largeur vers 1,8 case du
+      bord gauche. Une bille rouge près du coin haut gauche (environ 0,5 ; 0,55), une bille jaune vers (0,65 ; 2),
+      une bille jaune posée sur le trait vers (1,8 ; 2,5), la bille noire (8) vers (0,75 ; 3,5). Une bille blanche
+      (cercle blanc cerclé de points rouges) est posée sur le trait vers (1,8 ; 2). Un cercle creux pointillé collé
+      en bas à droite de la rouge (environ 0,7 ; 0,75) marque la position de la blanche à l'impact. Une flèche part
+      de la blanche vers ce cercle ; la rouge part vers la poche haut gauche. Une pointe de flèche sur le segment
+      entre le cercle d'impact et la blanche (vers 1,2 ; 1,35) indique le retour de la blanche après le contact :
+      c'est le rétro. Les libellés « Zone 1 x3 » (près de la blanche)
+      et « Zone 2 x3 » (au centre bas) indiquent les deux zones où replacer la blanche trois fois chacune. Petit
+      schéma en bas à droite : grosse bille blanche vue de face recouvrant presque entièrement la bille rouge (seul
+      un fin croissant rouge reste visible en haut) ; point bleu sous le centre de la blanche, croix de visée et
+      trait bleu-vert sous la bille.
+    uncertainties:
+      - "Les zones 1 et 2 ne sont pas délimitées sur le schéma : seuls les libellés « Zone 1 x3 » et « Zone 2 x3 » sont écrits ; leur étendue n'est pas connue."
+      - "On ne sait pas lequel des deux jaunes, ni quelles billes, correspond à quelle zone."
+      - "Le nombre de billes dessinées (rouge, 2 jaunes, noire) ne correspond pas aux « six billes » de l'énoncé ; l'énoncé ne précise pas comment les six billes sont disposées."
+      - "La bille blanche est dessinée comme une bille (cercle blanc et points rouges) et non comme un cercle creux pointillé ; son rôle de blanche est déduit."
+      - "Une seule ligne relie la blanche au cercle d'impact ; la pointe de flèche à mi-parcours est lue comme le retour de la blanche (rétro) et la longueur exacte du retour n'est pas indiquée."
+      - "Type de chevalet non indiqué dans l'énoncé."
+      - "Recouvrement de la bille dans l'inset estimé à bille pleine (recouvrement presque total) ; point bleu sous le centre (rétro, non légendé)."
+      - "Pas de pastille Billard de bronze visible sur la page."
+  - id: entrainement-p28-e4
+    kind: exercise
+    sheet: "Le rétro"
+    exercise: 4
+    caption: "Empocher six billes, en effectuant un rétro pour replacer la bille blanche trois fois dans chaque zone, afin de jouer la bille noire."
+    success_rate: [4, 6]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [4.33, 0.76]}
+      - {id: y1, color: yellow, at: [5.02, 0.97]}
+      - {id: y2, color: yellow, at: [6.0, 2.0]}
+      - {id: y3, color: yellow, at: [7.0, 3.0]}
+      - {id: b1, color: black, at: [7.0, 0.99]}
+      - {id: w, color: white, at: [5.02, 2.0], role: cue}
+    ghosts:
+      - {id: g1, at: [4.45, 0.95], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[5.02, 2.0], [4.45, 0.95]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[4.33, 0.76], [4.15, 0.42]], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[4.45, 0.95], [5.02, 2.0], [5.30, 2.50], [6.05, 3.84], [6.42, 3.20]], bounces: [bottom]}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: full, pocket: tm, repeat: 3}
+    inset:
+      contact: full
+      tip_point: below_center
+      bridge_height: unknown
+    annotations:
+      - "Zone 1 x3 : libellé placé vers (5.4 ; 1.4), près de la blanche ; la blanche doit être replacée trois fois dans la zone 1 grâce au rétro."
+      - "Zone 2 x3 : libellé placé vers (6.5 ; 2.6) ; la blanche doit être replacée trois fois dans la zone 2 grâce au rétro (six billes au total)."
+      - "Un trait vertical plein est tracé sur la surface de jeu vers x = 1.8, sur toute la largeur de la table."
+    description: >-
+      Table vue de dessus, tête à gauche. Un trait vertical plein est tracé sur toute la largeur vers 1,8 case du
+      bord gauche (sans bille dessus). Une bille rouge vers (4,3 ; 0,75) près de la poche milieu haut, une bille
+      jaune vers (5 ; 1), la bille noire (8) vers (7 ; 1), une bille jaune vers (6 ; 2), une bille jaune vers
+      (7 ; 3). Une bille blanche (cercle blanc cerclé de points rouges) vers (5 ; 2). Un cercle creux pointillé
+      collé en bas à droite de la rouge (environ 4,45 ; 0,95) marque la position de la blanche à l'impact. La
+      rouge part vers la poche milieu haut (flèche pleine jusque vers 4,15 ; 0,4). La blanche, après le rétro,
+      revient en arrière vers le bas droite (pointe de flèche vers 5,3 ; 2,5), touche la bande du bas vers
+      (6,05 ; 3,85) et repart vers le haut droite (flèche jusque vers 6,4 ; 3,2). Les libellés « Zone 1 x3 »
+      (près de la jaune du haut) et « Zone 2 x3 » (près de la jaune du centre) indiquent les deux zones où replacer
+      la blanche trois fois chacune. Petit schéma en bas à gauche : grosse bille blanche vue de face recouvrant
+      presque entièrement la bille rouge (seul un fin croissant rouge reste visible en haut) ; point bleu sous le
+      centre de la blanche, croix de visée et trait bleu-vert sous la bille.
+    uncertainties:
+      - "Les zones 1 et 2 ne sont pas délimitées sur le schéma : seuls les libellés « Zone 1 x3 » et « Zone 2 x3 » sont écrits ; leur étendue n'est pas connue."
+      - "On ne sait pas quelles billes correspondent à quelle zone."
+      - "Le nombre de billes dessinées (rouge, 3 jaunes, noire) ne correspond pas aux « six billes » de l'énoncé ; l'énoncé ne précise pas comment les six billes sont disposées."
+      - "La bille blanche est dessinée comme une bille (cercle blanc et points rouges) et non comme un cercle creux pointillé ; son rôle de blanche est déduit."
+      - "Le tracé de la blanche est une seule ligne qui passe par la blanche ; le sens de parcours (aller vers la rouge puis retour en rétro, rebond sur la bande du bas) est déduit de la pointe de flèche vers (5,3 ; 2,5) et de la flèche finale."
+      - "Le point de rebond sur la bande du bas est lu à y ≈ 3.84 (trait de la flèche) et non exactement à y = 4."
+      - "Type de chevalet non indiqué dans l'énoncé."
+      - "Recouvrement de la bille dans l'inset estimé à bille pleine (recouvrement presque total) ; point bleu sous le centre (rétro, non légendé)."
+      - "Pas de pastille Billard de bronze visible sur la page."

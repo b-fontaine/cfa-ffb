@@ -1,0 +1,103 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 2, rank: S}
+diagrams:
+  - id: entrainement-p02-e3
+    kind: exercise
+    sheet: "La puissance"
+    exercise: 3
+    caption: "Empocher deux fois cinq billes avec un chevalet sur la surface de jeu. La bille blanche ne doit pas sortir de la zone grise après impact."
+    success_rate: [5, 10]
+    bridge: surface
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [0.15, 0.2], label: "x5"}
+      - {id: y2, color: yellow, at: [0.15, 3.85], label: "x5"}
+      - {id: r1, color: red, at: [2.0, 0.45]}
+      - {id: r2, color: red, at: [2.0, 1.1]}
+      - {id: r3, color: red, at: [4.0, 2.3]}
+      - {id: r4, color: red, at: [4.0, 2.95]}
+      - {id: w, color: white, at: [6.0, 2.0], role: cue}
+    ghosts: []
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[6.0, 2.0], [0.4, 0.3]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[6.0, 2.0], [0.4, 3.65]], bounces: []}
+    zones:
+      - {id: z1, shape: rect, from: [0, 0], to: [1, 1], label: "zone grise (haut), x5"}
+      - {id: z2, shape: rect, from: [0, 3], to: [1, 4], label: "zone grise (bas), x5"}
+    inset:
+      contact: none
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "x5 écrit dans chaque zone grise (haut gauche et bas gauche) ; énoncé : deux fois cinq billes."
+      - "La bille blanche doit rester dans la zone grise après l'impact (texte de l'énoncé)."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, ligne de départ verticale (trait plein) un peu à gauche
+      de la colonne x = 2. Deux zones grisées carrées (1 x 1 case) occupent les deux coins gauches de la table,
+      devant les poches d'angle gauches ; dans chacune une bille jaune est posée près de la poche d'angle, avec
+      l'indication « x5 ». Quatre billes rouges sont disposées en deux paires verticales : deux billes
+      rouges à x = 2 (y = 0,45 et 1,1) et deux à x = 4 (y = 2,3 et 2,95). Une bille blanche (cercle creux avec
+      un petit point rouge) est placée à (6 ; 2), au centre de la hauteur de la table, dans la moitié droite.
+      Deux flèches partent de la blanche : l'une vers la zone grise du haut, passant entre les deux rouges
+      de x = 2, l'autre vers la zone grise du bas, passant entre les deux rouges de x = 4. Aucun rebond
+      sur bande. Petit schéma en bas à droite (quantité de bille) : bille blanche vue de face avec un point
+      bleu au centre (impact au centre de la bille) et un trait turquoise sous la bille (chevalet sur la
+      surface de jeu).
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,8 sur le schéma (la convention du FORMAT donne 2,0)."
+      - "Le schéma ne dit pas explicitement si les billes jaunes sont des billes à empocher, des repères de zone, ou des billes que la blanche doit toucher : seule la position des zones grises et l'indication « x5 » sont certaines."
+      - "La blanche est dessinée en cercle creux (symbole de position de départ) avec un point rouge ; elle est transcrite comme bille blanche role cue."
+      - "Les flèches se terminent près des billes jaunes ; le sens exact (trajectoire de la blanche ou indication de la direction de tir) n'est pas précisé par le texte."
+      - "Seulement quatre billes rouges et deux jaunes sont dessinées alors que l'énoncé parle de deux fois cinq billes : la mention « x5 » est seule à indiquer la répétition."
+      - "Le point bleu du schéma de quantité de bille est transcrit tip_point: center ; contact: none car aucune quantité de bille n'est dessinée."
+
+  - id: entrainement-p02-e4
+    kind: exercise
+    sheet: "La puissance"
+    exercise: 4
+    caption: "Empocher quatre fois deux billes avec un chevalet sur la surface de jeu. La bille blanche ne doit pas sortir de la zone grise après impact."
+    success_rate: [5, 8]
+    bridge: surface
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [4.0, 0.2], label: "x4"}
+      - {id: y2, color: yellow, at: [4.0, 3.85], label: "x4"}
+      - {id: r1, color: red, at: [5.15, 0.95]}
+      - {id: r2, color: red, at: [4.75, 1.35]}
+      - {id: r3, color: red, at: [4.65, 2.75]}
+      - {id: r4, color: red, at: [5.0, 3.15]}
+      - {id: w, color: white, at: [6.0, 2.0], role: cue}
+    ghosts: []
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[6.0, 2.0], [4.0, 0.4]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[6.0, 2.0], [4.0, 3.6]], bounces: []}
+    zones:
+      - {id: z1, shape: rect, from: [3, 0], to: [4, 1], label: "zone grise (haut), x4"}
+      - {id: z2, shape: rect, from: [3, 3], to: [4, 4], label: "zone grise (bas), x4"}
+    inset:
+      contact: none
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "x4 écrit dans chaque zone grise (haut et bas, devant la poche du milieu) ; énoncé : quatre fois deux billes."
+      - "La bille blanche doit rester dans la zone grise après l'impact (texte de l'énoncé)."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, ligne de départ verticale (trait plein) un peu à gauche
+      de la colonne x = 2. Deux zones grisées carrées (1 x 1 case, de x = 3 à 4) sont accolées aux bandes
+      haute et basse, à gauche des poches du milieu ; dans chacune une bille jaune est posée contre la
+      poche du milieu, avec l'indication « x4 ». Quatre billes rouges forment deux paires en diagonale :
+      deux rouges en haut à droite de la zone du haut (5,15 ; 0,95 et 4,75 ; 1,35) et deux en bas à droite de
+      la zone du bas (4,65 ; 2,75 et 5,0 ; 3,15). Une bille blanche (cercle creux avec un petit point rouge) est
+      placée à (6 ; 2). Deux flèches partent de la blanche en V vers les billes jaunes : l'une vers la zone du
+      haut, l'autre vers la zone du bas, chacune passant entre les deux rouges de sa paire. Aucun rebond
+      sur bande. Petit schéma en bas à droite (quantité de bille) : bille blanche vue de face avec un point
+      bleu au centre et un trait turquoise sous la bille (chevalet sur la surface de jeu).
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,8 sur le schéma (la convention du FORMAT donne 2,0)."
+      - "Le schéma ne dit pas explicitement si les billes jaunes sont des billes à empocher, des repères de zone, ou des billes que la blanche doit toucher."
+      - "La blanche est dessinée en cercle creux (symbole de position de départ) avec un point rouge ; elle est transcrite comme bille blanche role cue."
+      - "Les flèches se terminent près des billes jaunes ; le sens exact (trajectoire de la blanche ou direction de tir) n'est pas précisé par le texte."
+      - "Positions des billes rouges lues à ≈ 0,15 case près ; les billes rouges ne sont pas alignées sur la grille."
+      - "Le point bleu du schéma de quantité de bille est transcrit tip_point: center ; contact: none car aucune quantité de bille n'est dessinée."

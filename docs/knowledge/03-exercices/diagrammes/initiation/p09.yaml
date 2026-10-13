@@ -1,0 +1,58 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 9, rank: S}
+diagrams:
+  - id: initiation-p09-e1
+    kind: initiation
+    sheet: "Les quantités quart-de-bille et finesses."
+    caption: "Empocher 2 billes en quantité quart de bille et finesse."
+    bridge: surface
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [0.98, 1.0], label: "quart de bille"}
+      - {id: y2, color: yellow, at: [7.0, 1.0], label: "finesse"}
+      - {id: w1, color: white, at: [1.28, 2.0], role: cue}
+      - {id: w2, color: white, at: [6.99, 2.0], role: cue}
+    ghosts:
+      - {id: g1, at: [1.15, 1.16], role: impact, for: w1}
+      - {id: g2, at: [6.83, 1.15], role: impact, for: w2}
+    arrows:
+      - {id: a1, ball: w1, kind: cue, path: [[1.28, 2.0], [1.15, 1.16]], bounces: []}
+      - {id: a2, ball: y1, kind: object, path: [[0.98, 1.0], [0.18, 0.22]], to: tl}
+      - {id: a3, ball: w2, kind: cue, path: [[6.99, 2.0], [6.83, 1.15]], bounces: []}
+      - {id: a4, ball: y2, kind: object, path: [[7.0, 1.0], [7.82, 0.2]], to: tr}
+    zones: []
+    sequence:
+      - {step: 1, cue: w1, hit: y1, contact: quarter, pocket: tl}
+      - {step: 2, cue: w2, hit: y2, contact: thin, pocket: tr}
+    inset:
+      contact: quarter
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "Titre de la fiche : « Les quantités 1/4 de bille et finesses » (bandeau FICHE INITIATION, Niveau 1)."
+      - "Deux schémas de quantité agrandis en bas de la table : à gauche une bille rouge en chevauchement partiel avec la bille blanche (quart de bille), à droite une bille rouge presque tangente à la bille blanche (finesse). Dans les deux, point bleu du tip au centre de la blanche, trait turquoise sous les billes (surface de jeu)."
+      - "Objectif : Viser pour empocher en quantité quart de bille et finesse."
+      - "Consignes à l'élève : viser en dehors de la bille de couleur, proche de la tangente pour le quart de bille, et un peu plus éloigné pour une finesse ; en quart de bille, la bille blanche conserve deux fois plus d'énergie qu'elle n'en transfère à la bille de couleur ; en finesse, la bille blanche transfère très peu d'énergie à la bille de couleur."
+      - "Conseils à l'animateur : démontrer, lors d'un coup joué sans empocher, que la bille blanche parcourt plus de trajet que la bille de couleur en quantité quart de bille ; vérifier que le joueur vise au-delà de la bille de couleur, proche de la tangente ; adapter la puissance pour que la bille de couleur soit empochée ; positionner les billes afin que l'empoche soit facile."
+    description: >-
+      Table vue de dessus, départ à gauche, ligne de départ (trait plein vertical) à x environ 1,8. Deux situations
+      symétriques en haut de la table. À gauche : une bille jaune à (1,0 ; 1,0) avec une flèche pleine vers la poche
+      haut gauche (tl) ; un petit cercle pointillé collé à son bas-droit (position d'impact de la blanche, environ
+      1,15 ; 1,16) ; plus bas, un cercle creux à points rouges (la bille blanche, environ 1,28 ; 2,0), relié au cercle
+      pointillé par un trait : la blanche vise la jaune avec un décalage sur son côté bas-droit, ce qui correspond au quart de bille.
+      À droite : même disposition en miroir, bille jaune à (7,0 ; 1,0) avec une flèche vers la poche haut droite (tr),
+      cercle d'impact pointillé à son bas-gauche (environ 6,83 ; 1,15) et blanche (cercle creux à points rouges) à
+      (7,0 ; 2,0) ; la blanche passe plus à l'écart, contact très fin : la finesse. En bas, deux grands schémas de
+      quantité sur la table : à gauche, bille rouge et bille blanche qui se chevauchent sur environ un quart du diamètre
+      (point bleu au centre de la blanche, viseur en croix) ; à droite, bille blanche puis bille rouge presque tangentes
+      (point bleu au centre de la blanche, viseur en croix). Un trait turquoise sous chaque schéma représente la surface de jeu.
+    uncertainties:
+      - "Les deux situations ne sont pas légendées sur le schéma : l'association gauche = quart de bille et droite = finesse est déduite des deux schémas de quantité (chevauchement d'environ 0,2 diamètre à gauche, quasi tangence à droite) et de l'ordre du texte."
+      - "Le contact mesuré sur la table à gauche (décalage d'impact d'environ 0,6 diamètre) est plus épais que le quart de bille dessiné dans le schéma de gauche ; valeurs de position approximatives (≈ 0,15 case)."
+      - "Le schéma montre deux situations (une par côté) ; le texte « Empocher 2 billes » est lu comme une bille par situation."
+      - "Le chevalet n'est pas précisé par le texte ; bridge: surface est déduit du trait turquoise sous les billes des schémas de quantité."
+      - "Les points rouges sur les cercles creux de la blanche (marques de la bille) ne sont pas interprétés."
+      - "Ligne de départ lue à x ≈ 1,8 (et non 2,0 comme dans FORMAT.md)."
+      - "Pas de taux de réussite, de nombre de séances ni de pastille Billard de bronze visibles sur cette page."
+      - "Seul l'inset de gauche (quarter) est reporté dans le champ inset ; celui de droite (finesse, contact thin) est décrit dans annotations et description car le format n'a qu'un seul inset."

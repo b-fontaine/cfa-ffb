@@ -1,0 +1,12 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 1, rank: S}
+no_illustration: true
+note: >-
+  Page de couverture du « MEMENTO à l'usage de l'animateur », « Partie spécifique à l'option "billards à
+  poches" », « Niveau Technique 1 », « Edition 2023 », logo FF Billard. Elle ne porte aucun exercice ni
+  schéma exploitable : seulement un dessin décoratif au trait vert (table de billard à six poches vue de
+  dessus avec une bille verte, une bille « 8 », deux billes claires (l'une avec un ghost) reliées par une
+  trajectoire en flèche vers la poche haut gauche, et une
+  grande bille stylisée avec un réticule en bas à droite). Ce dessin n'est pas un schéma d'exercice et n'est
+  pas transcrit.
+diagrams: []

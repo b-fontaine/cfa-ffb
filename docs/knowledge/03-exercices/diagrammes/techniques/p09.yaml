@@ -1,0 +1,147 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 9, rank: S}
+diagrams:
+  - id: techniques-p09-a-plat-large
+    kind: technique-photo
+    sheet: "Les chevalets"
+    caption: "Le chevalet main à plat (photo de gauche, vue d'ensemble)."
+    subject: >-
+      Vue d'ensemble, en plongée oblique, d'un chevalet main à plat sur un tapis gris : la main est posée
+      à plat sur la surface de jeu, doigts écartés, avec la queue appuyée sur elle et pointée vers la bille
+      blanche.
+    elements:
+      - "Main posée entièrement à plat sur le tapis gris, arrivant par le bord gauche de la photo, doigts écartés et dirigés vers la droite"
+      - "Queue en bois clair, traversant la photo du coin inférieur gauche vers le haut à droite, appuyée sur la main ; le bout (procédé) s'arrête juste avant la bille blanche, sans la toucher"
+      - "Bille blanche à points rouges, à environ le centre de la photo, juste au-delà du bout de la queue ; aucune bande n'est visible autour d'elle"
+      - "Bille foncée à bande blanche (marquage non lisible, probablement une bille de numéro) au fond à droite, plus loin que la blanche, dans la direction de visée"
+    teaching_point: >-
+      Le chevalet main à plat est utilisé dès lors que la bille blanche se situe éloignée de la bande : toute
+      la main repose sur la surface de jeu, doigts écartés.
+    adjacent_text_summary: >-
+      « Le chevalet main à plat, est utilisé dès lors que la bille blanche se situe éloignée de la bande. Ce
+      chevalet est formé en posant toute la main sur la surface de jeu, et en écartant les doigts. Le pouce,
+      collé à l'index est relevé afin de guider la flèche. Pour faciliter ce support, l'intérieur de la main
+      est légèrement relevé. Ce chevalet a la particularité de permettre au joueur de baisser sa tête au plus
+      près de la queue et ainsi augmenter sa précision de visée. »
+    description: >-
+      Photo de gauche de la première rangée. Une main à plat, doigts écartés, sert d'appui à la queue ; le
+      bout de la queue est dirigé vers une bille blanche à points rouges, derrière laquelle se trouve une
+      bille foncée. Aucune bande n'est visible sur la photo.
+    uncertainties:
+      - "Le numéro de la bille foncée au fond n'est pas lisible."
+      - "Sur cette vue d'ensemble, la position exacte du pouce par rapport à la queue n'est pas lisible (main vue de profil, pouce en partie caché sous la queue)."
+      - "Le tapis est gris et aucune bande n'est visible ; la distance réelle à la bande n'est pas mesurable."
+  - id: techniques-p09-a-plat-gros-plan
+    kind: technique-photo
+    sheet: "Les chevalets"
+    caption: "Le chevalet main à plat (photo de droite, gros plan)."
+    subject: >-
+      Gros plan sur la main à plat vue de dessus : doigts écartés, pouce relevé contre l'index, queue qui
+      passe dans le creux formé entre le pouce et l'index et dont le bout est dirigé vers la bille blanche.
+    elements:
+      - "Main vue de dessus, posée sur le tapis gris, doigts écartés (plusieurs doigts visibles dirigés vers le bas à droite, pointes sur le tapis)"
+      - "Pouce relevé, en haut à gauche de la main, collé à l'index"
+      - "Queue en bois clair arrivant du coin supérieur droit et descendant vers le bas à gauche ; elle passe entre le pouce relevé et l'index (la flèche repose dans ce creux) ; bout bleu (procédé) tourné vers la bille blanche"
+      - "Bille blanche à points rouges, au premier plan à gauche, grande sur la photo, très proche du bout de la queue"
+      - "Montre noire au poignet, en haut à droite"
+    teaching_point: >-
+      Pouce relevé et collé à l'index pour guider la flèche ; l'intérieur de la main est légèrement relevé ;
+      toute la main est posée sur la surface de jeu, doigts écartés.
+    adjacent_text_summary: >-
+      Même paragraphe que pour la photo de gauche : main entière sur la surface de jeu, doigts écartés,
+      pouce collé à l'index et relevé pour guider la flèche, intérieur de la main légèrement relevé.
+    description: >-
+      Photo de droite de la première rangée : détail du chevalet main à plat. La flèche de la queue repose
+      dans l'angle entre le pouce relevé et l'index, doigts écartés posés à plat sur le tapis, le bout de la
+      queue très près de la bille blanche.
+    uncertainties:
+      - "Main droite ou gauche non déterminable avec certitude."
+      - "Le nombre exact de doigts visibles (trois ou quatre) n'est pas tranché."
+      - "Le degré de relèvement de l'intérieur de la main (paume) n'est pas mesurable sur la photo."
+  - id: techniques-p09-boucle-profil
+    kind: technique-photo
+    sheet: "Les chevalets"
+    caption: "Le chevalet bouclé (photo de gauche, vue de profil)."
+    subject: >-
+      Gros plan de profil, sur un tapis bleu, d'un chevalet bouclé : l'index est replié vers le bas devant
+      la queue (boucle avec le pouce selon le texte voisin), les autres doigts étendus sur le tapis.
+    elements:
+      - "Main vue de côté sur un tapis bleu"
+      - "Queue en bois clair, quasi horizontale, traversant toute la photo de gauche à droite"
+      - "Index replié vers le bas devant la queue, la queue passant au-dessus du dos de la main ; le pouce n'est pas distinctement visible (probablement derrière la queue)"
+      - "Doigt étendu à plat sur le tapis, sous la queue, qui porte la flèche (le majeur d'après le texte voisin)"
+      - "Autres doigts (annulaire, auriculaire) étendus vers l'avant sur le tapis, sous la queue"
+      - "Poignet à gauche, avec un bracelet sombre en bord de photo"
+    teaching_point: >-
+      Le chevalet bouclé offre une meilleure stabilité de la queue : la flèche repose sur le majeur et est
+      entourée par le pouce et l'index.
+    adjacent_text_summary: >-
+      « Le chevalet bouclé offre une meilleure stabilité de la queue, puisque la flèche repose sur le
+      majeur, entourée par le pouce et l'index. Plus souvent utilisé au Billard Américain, ce chevalet
+      nécessite que la tête du joueur soit légèrement relevée afin d'éviter que sa visée soit gênée par
+      l'index. »
+    description: >-
+      Photo de gauche de la seconde rangée. Vue latérale rapprochée : la queue est posée sur un doigt à plat
+      sur le tapis bleu (le majeur d'après le texte voisin), l'index replié vers le bas devant la queue ; le
+      pouce n'est pas distinctement visible.
+    uncertainties:
+      - "L'index replié et le majeur d'appui sont plausibles mais partiellement masqués par les autres doigts."
+      - "Quel doigt exact porte la queue (majeur d'après le texte voisin) est cohérent avec la photo mais les doigts étendus se recouvrent partiellement."
+      - "Le pouce n'est pas distinctement visible : la boucle index-pouce décrite par le texte voisin n'est pas vérifiable sur la photo."
+  - id: techniques-p09-boucle-dessus
+    kind: technique-photo
+    sheet: "Les chevalets"
+    caption: "Le chevalet bouclé (photo de droite, vue de dessus)."
+    subject: >-
+      Vue de dessus, sur un tapis gris, d'un chevalet bouclé : la queue repose sur la main, doigts posés sur le
+      tapis, le bout de la queue est tourné vers une bille blanche.
+    elements:
+      - "Bille blanche à points rouges, en haut à gauche de la photo"
+      - "Queue en bois clair, du bout bleu (près de la bille blanche) en diagonale vers le coin inférieur droit de la photo, où figure le poignet ; elle n'est pas parallèle au bord droit"
+      - "Main vue de dessus, en bas à droite : la queue longe la main ; un doigt étendu en direction de la gauche sur le tapis, autres doigts regroupés derrière la queue (boucle non distincte)"
+      - "Montre noire au poignet, en bas à droite"
+    teaching_point: >-
+      Même chevalet bouclé vu du dessus : l'index et le pouce entourent la queue (selon le texte) ; la tête du joueur doit être légèrement relevée pour que l'index ne gêne pas la
+      visée.
+    adjacent_text_summary: >-
+      Même paragraphe que pour la photo de gauche : chevalet bouclé, flèche posée sur le majeur et
+      entourée par le pouce et l'index, plus souvent utilisé au Billard Américain, tête légèrement relevée.
+    description: >-
+      Photo de droite de la seconde rangée : le bout de la queue, appuyée sur la main,
+      pointe vers la bille blanche placée en haut à gauche ; la main repose sur le tapis gris, un doigt
+      étendu vers la gauche et les autres regroupés derrière la queue.
+    uncertainties:
+      - "Le doigt qui sert d'appui sous la queue n'est pas identifiable avec certitude depuis cette vue de dessus."
+      - "La boucle index-pouce n'est pas distinctement visible sur cette vue de dessus."
+      - "La présence éventuelle d'une bande le long de la queue sur le bord droit de la photo n'est pas établie."
+  - id: techniques-p09-video-chevalets
+    kind: technique-photo
+    sheet: "Les chevalets"
+    caption: "Scannez le QR code pour consulter la vidéo « Les chevalets de base »"
+    subject: >-
+      Vignette d'une vidéo (joueur au chevalet bouclé sur un billard à tapis bleu) accompagnée d'un QR code
+      renvoyant à la vidéo « Les chevalets de base ».
+    elements:
+      - "Vignette encadrée : table à tapis bleu vue de côté, bras d'un joueur en chevalet bouclé, queue horizontale, bille blanche devant le bout de la queue"
+      - "Bandeau en haut à droite de la vignette indiquant « CHEVALET BOUCLÉ » (précédé d'un petit logo)"
+      - "Logo de marque en bas à droite de la vignette"
+      - "QR code noir et blanc à droite de la vignette"
+    teaching_point: "Renvoi vers la vidéo « Les chevalets de base » pour voir les chevalets en situation."
+    adjacent_text_summary: "« Scannez le QR code pour consulter la vidéo « Les chevalets de base » » (texte bleu, centré en bas de page)."
+    description: >-
+      Élément multimédia sans contenu de table : capture d'écran d'une vidéo et QR code. Le contenu du QR
+      code (adresse de la vidéo) n'est pas décodé ici.
+    uncertainties:
+      - "L'adresse encodée dans le QR code n'est pas transcrite."
+      - "Le logo de marque de la vignette est trop petit pour être lu avec certitude."
+  - id: techniques-p09-onglet
+    kind: technique-photo
+    sheet: "Les chevalets"
+    caption: "Onglet « FICHE TECHNIQUE — Les chevalets »."
+    subject: "Onglet rose vertical sur le bord droit de la page, repère du type de fiche et de son titre."
+    elements:
+      - "Onglet magenta avec le texte vertical « FICHE TECHNIQUE » et, sur la ligne suivante (à gauche, texte tourné), « Les chevalets »"
+    teaching_point: "Repère de navigation : fiche technique, thème « Les chevalets »."
+    adjacent_text_summary: "Page entièrement consacrée aux deux chevalets de base : main à plat et bouclé."
+    description: "Repère graphique de navigation ; aucun contenu technique de billard."
+    uncertainties: []

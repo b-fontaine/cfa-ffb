@@ -1,0 +1,113 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 25, rank: S}
+diagrams:
+  - id: techniques-p25-retro-90
+    kind: technique-photo
+    sheet: "Fiche Technique N°14 : Le rétro"
+    caption: "90°"
+    subject: >-
+      Schéma en vue de dessus (billes rendues en 3D, sans table ni grille) de la déviation de 90° de la bille
+      blanche en rotation arrière, avec en haut à droite un petit schéma de côté de la quantité de bille et du
+      point d'impact du tip. Deux représentations de la blanche : une blanche de départ à droite (avec trois
+      petits points rouges) et la blanche au contact de la bille rouge à gauche.
+    elements:
+      - "Bille blanche de départ, à droite du schéma, avec trois petits points rouges sur sa surface ; un trait noir horizontal part de son centre vers la gauche."
+      - "Trait noir horizontal : relie le centre de la blanche de départ au centre de la blanche placée au contact de la rouge (ligne de visée, la blanche est jouée vers la gauche)."
+      - "Bille blanche au contact de la bille rouge, à gauche, au bout du trait horizontal (position de la blanche à l'impact)."
+      - "Bille rouge en bas à gauche, collée à la blanche, du côté bas-gauche de celle-ci."
+      - "Flèche noire pleine partant du centre de la rouge vers le bas gauche, au-delà de la bille : trajectoire de la bille de couleur."
+      - "Flèche bleue-grise pointillée partant du centre de la blanche au contact et montant verticalement : trajectoire de la blanche après l'impact, perpendiculaire à la ligne de visée."
+      - "Arc de cercle noir entre le trait horizontal (à droite de la blanche d'impact) et la flèche pointillée verticale, avec l'indication « 90° » : angle de déviation."
+      - "Petit schéma en haut à droite (vue de côté) : bille rouge à gauche partiellement masquée par la blanche, qui la recouvre vers la droite ; deux traits noirs fins en croix passent par le centre de la blanche ; un point bleu plein est situé sur l'axe vertical, légèrement en dessous du centre de la blanche ; un trait épais vert-bleu foncé horizontal figure le plan de la table sous les billes."
+    teaching_point: >-
+      Au Blackball, la blanche étant petite, elle ne peut pas obtenir une déviation de 90° en demi-bille ; il
+      faut une quantité proche de la demi-bille mais avec une visée un peu plus à « l'intérieur » de la bille de
+      couleur (quantité légèrement plus pleine). Le point bleu sous le centre de la blanche se lit comme le point
+      d'impact du tip, en bas de la blanche (rotation arrière, rétro) ; il n'est pas légendé dans la fiche.
+    adjacent_text_summary: >-
+      « De par sa petite taille, la bille blanche au Blackball ne peut obtenir une déviation de 90° si l'on
+      joue le coup en demi-bille. Pour obtenir cette déviation, le coup doit être joué dans une quantité proche
+      de demi-bille, mais avec une visée un peu plus à "l'intérieur" de la bille de couleur (quantité de bille
+      légèrement plus pleine). »
+    bridge: none
+    bronze: false
+    description: >-
+      La blanche est jouée vers la gauche le long d'un trait horizontal et touche la bille rouge sur son côté
+      haut-droit ; après l'impact elle repart à 90° de sa direction initiale, vers le haut du schéma (flèche
+      pointillée verticale, arc « 90° »), tandis que la rouge part vers le bas gauche (flèche noire). Le petit
+      schéma de côté montre la blanche recouvrant en grande partie la rouge, avec le point d'impact du tip
+      (point bleu) en dessous du centre de la blanche.
+    uncertainties:
+      - "Le point bleu du petit schéma de côté n'est pas légendé : son sens (point d'impact du tip, en bas de la blanche) est une lecture cohérente avec la mention du rétro."
+      - "La quantité de bille du petit schéma (recouvrement de la rouge par la blanche) n'est pas chiffrée ; le texte ne donne que « proche de demi-bille, légèrement plus pleine »."
+      - "La légende « 90° » est portée par l'arc ; la rouge n'est pas légendée et la longueur de ses flèches n'est pas significative."
+      - "La flèche noire de la rouge est lue comme la trajectoire de la bille de couleur ; elle n'est pas légendée."
+      - "Les trois petits points rouges sur la blanche sont des marques de la bille rendue en 3D ; le texte ne les commente pas."
+  - id: techniques-p25-retro-trois-quarts
+    kind: technique-photo
+    sheet: "Fiche Technique N°14 : Le rétro"
+    caption: "Quantités de billes proches du trois-quarts"
+    subject: >-
+      Trois schémas côte à côte en bas de page (billes rendues en 3D, sans table ni grille) : à gauche et à
+      droite, deux coups en quantité proche du trois-quarts (vue de dessus) où la blanche, jouée droit vers le
+      haut, touche une bille de couleur placée juste au-dessus d'elle et repart avec deux déviations différentes ;
+      au centre, un schéma de côté de la quantité de bille avec le point d'impact du tip.
+    elements:
+      - "Schéma de gauche : bille de couleur rouge unie portant le numéro « 3 » en haut ; sous elle la blanche au contact (position à l'impact, légèrement décalée vers la droite par rapport à la bille de couleur, soit environ un quart de diamètre : contact aux trois-quarts) ; plus bas la blanche de départ (trois petits points rouges) ; un trait noir vertical relie le centre de la blanche de départ au centre de la blanche au contact."
+      - "Schéma de gauche : flèche bleue-grise pointillée partant du centre de la blanche au contact et descendant vers le bas, légèrement inclinée vers la droite (environ 15 à 20° de la verticale : déviation faible, proche de l'axe de la visée)."
+      - "Schéma de droite : bille de couleur jaune à bande portant le numéro « 9 » en haut ; sous elle la blanche au contact (même léger décalage vers la droite par rapport à la bille de couleur) ; plus bas la blanche de départ (trois petits points rouges) ; même trait noir vertical entre les deux blanches."
+      - "Schéma de droite : flèche bleue-grise pointillée partant du centre de la blanche au contact et partant vers le bas droit, fortement inclinée (environ 35° sous l'horizontale, à vue d'œil) : déviation beaucoup plus ouverte qu'à gauche."
+      - "Schéma central (vue de côté) : bille rouge à gauche partiellement recouverte par la blanche (recouvrement important, la rouge n'apparaît que comme un croissant à gauche) ; deux traits noirs en croix passent par le centre de la blanche ; point bleu plein sous le centre de la blanche, sur l'axe vertical ; trait épais vert-bleu foncé horizontal figurant le plan de la table."
+      - "Légende sous le schéma central : « Quantités de billes proches du trois-quarts »."
+    teaching_point: >-
+      Entre le plein de bille et la demi-bille, la blanche en rotation arrière peut obtenir de nombreuses
+      déviations, qui dépendent de la quantité de bille et de la puissance du coup : un même coup en
+      trois-quarts de bille, joué avec des puissances différentes et une légère différence de quantité de
+      bille, donne des déviations différentes (faible à gauche, plus ouverte à droite).
+    adjacent_text_summary: >-
+      « Dans toutes les disciplines du billard, entre le plein de bille et la demi-bille, il existe un nombre
+      considérable de déviations que la bille blanche peut obtenir en rotation arrière après l'impact. Ces
+      déviations sont fonction de la quantité de bille jouée mais également de la puissance du coup. Par
+      exemple, un coup joué en trois-quarts de bille avec des puissances différentes, et une légère différence
+      de quantité de bille provoquera des déviations différentes de la bille blanche. »
+    bridge: none
+    bronze: false
+    description: >-
+      Deux coups de rétro en quantité proche du trois-quarts : la blanche, placée juste sous la bille de couleur
+      (une « 3 » rouge à gauche, une « 9 » jaune à droite), la touche puis repart vers le bas avec une
+      déviation faible dans le schéma de gauche et une déviation ample vers le bas droit dans celui de droite.
+      Entre les deux, le schéma de côté montre le point d'impact du tip (point bleu) sous le centre de la
+      blanche, avec la légende « Quantités de billes proches du trois-quarts ».
+    uncertainties:
+      - "Le PDF ne dit pas quel schéma correspond à quelle puissance ; seule la différence de déviation est lisible."
+      - "Les angles des flèches pointillées ne sont pas chiffrés ; les valeurs « environ 15 à 20° de la verticale » (gauche) et « environ 35° sous l'horizontale » (droite) sont des lectures visuelles."
+      - "Le point bleu du schéma central n'est pas légendé : lecture comme point d'impact du tip, sous le centre de la blanche."
+      - "Les billes « 3 » et « 9 » sont des billes de couleur d'illustration (rouge unie, jaune à bande) ; le texte ne leur donne aucun rôle précis hors « bille de couleur »."
+      - "La blanche de départ et la blanche au contact sont lues comme deux positions de la même bille (départ / impact) ; le PDF ne les légende pas."
+  - id: techniques-p25-video-utilite-retro
+    kind: technique-photo
+    sheet: "Fiche Technique N°14 : Le rétro"
+    caption: "Scannez le QR code pour consulter la vidéo « L'utilité du rétro »"
+    subject: >-
+      En bas de page, à gauche, vignette de vidéo encadrée (photo d'une table à tapis bleu, vue en perspective)
+      ; à droite, un QR code noir et blanc.
+    elements:
+      - "Vignette vidéo : table à tapis bleu vue en perspective, avec les mains d'un joueur (deux bras visibles) et une queue qui vise la bille blanche, entourée d'un cercle blanc contenant une petite flèche circulaire ; quelques billes de couleur sur le tapis ; une bande sombre en bas à droite avec une inscription."
+      - "Bandeau incrusté en haut à droite de la vignette : « 2 LE RÉTRO PLEINE BILLE » (texte petit)."
+      - "QR code à droite de la vignette donnant accès à la vidéo."
+    teaching_point: >-
+      Renvoi vers la vidéo « L'utilité du rétro » qui complète la fiche ; aucun contenu technique
+      supplémentaire n'est lisible sur la vignette.
+    adjacent_text_summary: >-
+      « Scannez le QR code pour consulter la vidéo « L'utilité du rétro » ». Le QR code renvoie à la vidéo ;
+      son contenu n'est pas transcrit.
+    bridge: none
+    bronze: false
+    description: >-
+      Vignette de vidéo montrant une table de billard bleue avec un joueur qui vise la blanche à la queue
+      (bille cerclée), un bandeau « LE RÉTRO PLEINE BILLE », accompagnée de son QR code. Aucune donnée de
+      position exploitable.
+    uncertainties:
+      - "L'URL encodée dans le QR code n'est pas décodée."
+      - "Le détail des billes, des mains et de la queue dans la vignette est trop petit pour une transcription fiable ; le texte du bandeau est lu à petite taille."
+      - "L'intitulé de la fiche (N°14) vient de l'en-tête de la page 24 ; la page 25 n'en porte que la mention « Le rétro » sur l'onglet latéral."

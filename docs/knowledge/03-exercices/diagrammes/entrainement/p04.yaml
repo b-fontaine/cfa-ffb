@@ -1,0 +1,101 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 4, rank: S}
+diagrams:
+  - id: entrainement-p04-e3
+    kind: exercise
+    sheet: "La quantité de bille pleine"
+    exercise: 3
+    caption: "Empocher huit billes en quantité de bille pleine avec un chevalet sur la surface de jeu."
+    success_rate: [6, 8]
+    bridge: surface
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [2.0, 1.25], label: "x4"}
+      - {id: y1, color: yellow, at: [6.0, 1.25], label: "x4"}
+      - {id: w, color: white, at: [4.0, 2.45], role: cue}
+    ghosts:
+      - {id: g1, at: [2.2, 1.4], role: impact, for: w}
+      - {id: g2, at: [5.8, 1.4], role: impact, for: w}
+      - {id: g3, at: [4.0, 2.45], role: cue_start, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[4.0, 2.45], [2.2, 1.4]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[2.0, 1.25], [0, 0]], to: tl}
+      - {id: a3, ball: w, kind: cue, path: [[4.0, 2.45], [5.8, 1.4]], bounces: []}
+      - {id: a4, ball: y1, kind: object, path: [[6.0, 1.25], [8, 0]], to: tr}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: full, pocket: tl, repeat: 4}
+      - {step: 2, cue: w, hit: y1, contact: full, pocket: tr, repeat: 4}
+    inset:
+      contact: full
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "x 4 à côté de la bille rouge : la situation est répétée 4 fois"
+      - "x 4 à côté de la bille jaune : la situation est répétée 4 fois (soit huit billes au total)"
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, avec la ligne de départ (trait plein vertical).
+      Une bille rouge est placée en haut à gauche, à droite de la ligne de départ, et une bille jaune en haut
+      à droite, de part et d'autre de la poche du milieu. La blanche se pose au milieu de la longueur, dans la moitié basse de la table (cercle
+      pointillé) et le même emplacement sert aux deux tirs : elle vise d'abord le cercle pointillé collé à la
+      bille rouge (position d'impact, bille pleine), et la rouge part vers la poche du haut à gauche ; puis elle
+      vise le cercle pointillé collé à la bille jaune, et la jaune part vers la poche du haut à droite.
+      Chaque situation (« x 4 ») est répétée quatre fois, soit huit billes. Le petit schéma en bas à droite
+      montre une bille blanche avec le point d'impact de la queue au centre, et un trait horizontal turquoise
+      au niveau du bas de la bille (chevalet sur la surface de jeu d'après l'énoncé).
+    uncertainties:
+      - "La ligne de départ est mesurée à x ≈ 1,8 sur le schéma (valeur de référence du format : 2,0 [Prop])."
+      - "Le cercle pointillé central est lu comme l'emplacement de départ de la blanche (pas d'autre numéro) ; le PDF ne précise pas lequel des deux tirs se fait en premier (ordre rouge puis jaune supposé de gauche à droite)."
+      - "Le rôle de bille blanche w en bas de table est déduit du cercle pointillé à points rouges ; aucune blanche pleine n'est dessinée sur le schéma."
+
+  - id: entrainement-p04-e4
+    kind: exercise
+    sheet: "La quantité de bille pleine"
+    exercise: 4
+    caption: "Empocher huit billes en quantité de bille pleine en poches du milieu avec un chevalet sur cadre."
+    success_rate: [6, 8]
+    bridge: frame
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [3.0, 0.85], label: "x4"}
+      - {id: y2, color: yellow, at: [3.0, 3.2], label: "x4"}
+      - {id: w, color: white, at: [0.55, 1.5], role: cue}
+    ghosts:
+      - {id: g1, at: [2.8, 1.0], role: impact, for: w}
+      - {id: g2, at: [2.8, 3.1], role: impact, for: w}
+      - {id: g3, at: [0.55, 1.5], role: cue_start, for: w}
+      - {id: g4, at: [0.55, 2.5], role: cue_start, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[0.55, 2.5], [2.8, 1.0]], bounces: []}
+      - {id: a2, ball: y1, kind: object, path: [[3.0, 0.85], [4, 0]], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[0.55, 1.5], [2.8, 3.1]], bounces: []}
+      - {id: a4, ball: y2, kind: object, path: [[3.0, 3.2], [4, 4]], to: bm}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: y1, contact: full, pocket: tm, repeat: 4}
+      - {step: 2, cue: w, hit: y2, contact: full, pocket: bm, repeat: 4}
+    inset:
+      contact: full
+      tip_point: above_center
+      bridge_height: frame
+    annotations:
+      - "x 4 à côté de la bille jaune du haut : la situation est répétée 4 fois"
+      - "x 4 à côté de la bille jaune du bas : la situation est répétée 4 fois (soit huit billes au total)"
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, avec la ligne de départ (trait plein vertical).
+      Deux billes jaunes sont alignées verticalement, à droite de la ligne de départ et à gauche du milieu de la
+      longueur : l'une en haut, près de la poche du milieu du haut, l'autre en bas, près de la poche du milieu du bas. Deux cercles
+      pointillés à points rouges, dans la zone de départ à gauche, marquent les emplacements où poser la blanche.
+      Les deux trajets de la blanche se croisent : du cercle le plus bas vers le cercle pointillé collé à la
+      bille jaune du haut (bille pleine), et du cercle le plus haut vers le cercle collé à la bille jaune du bas.
+      La jaune du haut part vers la poche du milieu du haut, la jaune du bas vers la poche du milieu du bas.
+      Chaque situation (« x 4 ») est répétée quatre fois, soit huit billes. Le petit schéma en bas à droite
+      montre une bille blanche avec le point d'impact de la queue au-dessus du centre, et un trait horizontal
+      turquoise au niveau du bas de la bille (chevalet sur cadre d'après l'énoncé).
+    uncertainties:
+      - "La ligne de départ est mesurée à x ≈ 1,8 sur le schéma (valeur de référence du format : 2,0 [Prop])."
+      - "Les deux cercles pointillés de départ de la blanche ne portent pas de numéro : l'ordre des tirs n'est pas indiqué ; la blanche w est placée sur le cercle du haut par défaut."
+      - "Dans le petit schéma, le point bleu semble légèrement au-dessus du centre de la blanche (≈ 0,4 rayon) ; lecture approximative."
+      - "Le petit schéma est identique à celui de l'exercice 3 hormis la hauteur du point d'impact ; la hauteur du chevalet n'est pas cotée."

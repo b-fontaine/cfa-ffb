@@ -1,0 +1,96 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 10, rank: S}
+diagrams:
+  - id: entrainement-p10-e3
+    kind: exercise
+    sheet: "Quart de bille et finesses"
+    exercise: 3
+    caption: "Empocher huit billes en finesse."
+    success_rate: [4, 8]
+    bridge: surface
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [1.44, 1.0], label: "x4"}
+      - {id: y2, color: yellow, at: [6.68, 0.99], label: "x4"}
+      - {id: w, color: white, at: [1.54, 3.46], role: cue}
+    ghosts:
+      - {id: g1, at: [1.65, 1.12], role: impact, for: w}
+      - {id: g2, at: [1.54, 3.46], role: cue_start, for: w}
+      - {id: g3, at: [6.48, 1.11], role: impact, for: w}
+      - {id: g4, at: [6.51, 3.46], role: cue_start, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.54, 3.46], [1.65, 1.12]], bounces: []}
+      - {id: a2, ball: y1, kind: object, path: [[1.44, 1.0], [0.2, 0.24]], to: tl}
+      - {id: a3, ball: w, kind: cue, path: [[6.51, 3.46], [6.48, 1.11]], bounces: []}
+      - {id: a4, ball: y2, kind: object, path: [[6.68, 0.99], [7.82, 0.18]], to: tr}
+    sequence:
+      - {step: 1, cue: w, hit: y1, contact: thin, pocket: tl, repeat: 4}
+      - {step: 2, cue: w, hit: y2, contact: thin, pocket: tr, repeat: 4}
+    inset:
+      contact: thin
+      tip_point: above_center
+      bridge_height: surface
+    annotations: ["« x 4 » à côté de chaque bille jaune ; énoncé : huit billes (2 billes × 4)."]
+    description: >-
+      Deux billes jaunes, l'une à gauche (environ 1,4 case du bord gauche, 1 case du bord haut), l'autre à droite
+      (environ 6,7 cases du bord gauche, 1 case du bord haut), chacune marquée « x4 ». Pour chacune, la blanche est
+      posée sur un cercle creux pointillé à environ 3,5 cases du bord haut, presque dans l'axe vertical de la bille,
+      et monte en ligne droite vers un cercle creux d'impact collé à la bille, côté droit de la jaune gauche et
+      côté gauche de la jaune droite (contact fin, en finesse). La jaune gauche part vers la poche haut gauche,
+      la jaune droite vers la poche haut droite. Le schéma central montre la blanche et la rouge côte à côte, qui
+      se touchent seulement par le bord (contact fin), point bleu un peu au-dessus du centre de la blanche,
+      trait bleu-vert sous les billes (chevalet sur la surface de jeu).
+    uncertainties:
+      - "L'énoncé ne précise pas le type de chevalet ; « surface » est déduit du trait bleu-vert sous les billes du schéma central, non commenté."
+      - "Le schéma central n'a pas de légende : le contact « thin » (finesse) est déduit du titre « finesse » et des billes qui se touchent par le bord."
+      - "Le point bleu est légèrement au-dessus du centre de la blanche (≈ 1/3 de rayon) : tip_point lu approximativement."
+      - "La blanche n'est pas dessinée sur la table : son rôle est déduit des cercles creux pointillés ; elle est déclarée au départ gauche (1,54 ; 3,46), la même blanche est reposée au départ droit (g4) pour la seconde bille."
+      - "Ligne de départ lue à x ≈ 1.83 sur le schéma (et non 2.0)."
+      - "Positions lues à ≈ 0,15 case près ; ordre de tir entre les deux billes non indiqué."
+  - id: entrainement-p10-e4
+    kind: exercise
+    sheet: "Quart de bille et finesses"
+    exercise: 4
+    caption: "Empocher huit billes en finesse."
+    success_rate: [4, 8]
+    bridge: surface
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [4.19, 0.99], label: "x4"}
+      - {id: r2, color: red, at: [4.21, 3.01], label: "x4"}
+      - {id: w, color: white, at: [6.0, 2.0], role: cue}
+    ghosts:
+      - {id: g1, at: [4.22, 1.23], role: impact, for: w}
+      - {id: g2, at: [4.24, 2.78], role: impact, for: w}
+      - {id: g3, at: [6.0, 2.0], role: cue_start, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[6.0, 2.0], [4.22, 1.23]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[4.19, 0.99], [4.03, 0.21]], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[6.0, 2.0], [4.24, 2.78]], bounces: []}
+      - {id: a4, ball: r2, kind: object, path: [[4.21, 3.01], [4.03, 3.87]], to: bm}
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: thin, pocket: tm, repeat: 4}
+      - {step: 2, cue: w, hit: r2, contact: thin, pocket: bm, repeat: 4}
+    inset:
+      contact: thin
+      tip_point: center
+      bridge_height: surface
+    annotations: ["« x 4 » à côté de chaque bille rouge ; énoncé : huit billes (2 billes × 4)."]
+    description: >-
+      Deux billes rouges alignées verticalement au milieu de la table, juste à droite de l'axe des poches
+      milieu (environ 4,2 cases du bord gauche), l'une près du bord haut (1 case), l'autre près du bord bas
+      (3 cases du bord haut), chacune marquée « x4 ». Un seul cercle creux pointillé de départ de la blanche est
+      situé à droite, au centre de la hauteur (environ 6 cases du bord gauche, 2 cases du bord haut). De là, la
+      blanche vise successivement chaque rouge : une flèche rejoint un cercle creux d'impact collé sous la rouge
+      haute, l'autre un cercle collé au-dessus de la rouge basse (contact fin, en finesse). La rouge haute part vers la poche milieu haut, la rouge basse vers la poche milieu bas. Le schéma
+      central, à gauche, montre la blanche et la rouge côte à côte qui se touchent par le bord, point bleu au
+      centre de la blanche, trait bleu-vert sous les billes (chevalet sur la surface).
+    uncertainties:
+      - "L'énoncé ne précise pas le type de chevalet ; « surface » est déduit du trait bleu-vert sous les billes du schéma, non commenté."
+      - "Le schéma central n'a pas de légende : le contact « thin » est déduit du titre « finesse » et des billes qui se touchent par le bord."
+      - "La blanche n'est pas dessinée sur la table : son rôle est déduit du cercle creux de départ (déclarée en (6 ; 2))."
+      - "Ordre de tir entre les deux rouges non indiqué."
+      - "Ligne de départ lue à x ≈ 1.82 sur le schéma (et non 2.0)."
+      - "Positions lues à ≈ 0,15 case près."

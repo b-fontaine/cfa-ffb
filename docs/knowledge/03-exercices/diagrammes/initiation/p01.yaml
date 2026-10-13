@@ -1,0 +1,58 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 1, rank: S}
+diagrams:
+  - id: initiation-p01-e1
+    kind: initiation
+    sheet: "Posture, visée et coup de queue."
+    exercise: 1
+    caption: "Empocher 4 billes avec un chevalet sur cadre."
+    bridge: frame
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.16, 0.13]}
+      - {id: y1, color: yellow, at: [4.0, 0.13]}
+      - {id: r2, color: red, at: [7.84, 0.18]}
+      - {id: w, color: white, at: [1.01, 3.57], role: cue, label: "1"}
+    ghosts:
+      - {id: g2, at: [3.0, 3.57], role: cue_start, for: w, label: "2"}
+      - {id: g3, at: [5.02, 3.57], role: cue_start, for: w, label: "3"}
+      - {id: g4, at: [6.97, 3.57], role: cue_start, for: w, label: "4"}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.01, 3.45], [0.36, 0.68]], bounces: [], to: tl}
+      - {id: a2, ball: w, kind: cue, path: [[3.0, 3.45], [3.96, 0.56]], bounces: [], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[5.02, 3.45], [4.06, 0.56]], bounces: [], to: tm}
+      - {id: a4, ball: w, kind: cue, path: [[6.97, 3.45], [7.66, 0.56]], bounces: [], to: tr}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: r1, pocket: tl}
+      - {step: 2, cue: w, hit: y1, pocket: tm}
+      - {step: 3, cue: w, hit: y1, pocket: tm}
+      - {step: 4, cue: w, hit: r2, pocket: tr}
+    inset:
+      contact: none
+      tip_point: upper_center
+      bridge_height: surface
+    annotations:
+      - "Quatre tirs, un depuis chacun des quatre emplacements de la blanche : la bille rouge de gauche, la bille jaune du milieu (deux tirs) puis la bille rouge de droite."
+      - "Énoncé : « Exercice à réaliser : Empocher 4 billes avec un chevalet sur cadre. »"
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, avec la ligne de départ (trait plein vertical) à x vers 1,8.
+      Trois billes sont posées au ras de la bande du haut, chacune devant une poche : une bille rouge dans le coin haut
+      gauche (poche tl), une bille jaune devant la poche du milieu du haut (tm), une bille rouge dans le coin haut droit
+      (poche tr). Quatre cercles creux à points rouges (emplacements où poser la bille blanche) sont alignés en bas de
+      la table, à y vers 3,6 et x vers 1,0, 3,0, 5,0 et 7,0. De chacun part une flèche pleine vers le haut : la première
+      vise la bille rouge de gauche, les deux du milieu visent chacune la bille jaune (l'une venant de la gauche,
+      l'autre de la droite, en V), la dernière vise la bille rouge de droite. Les flèches s'arrêtent juste avant la
+      bille. Il n'y a ni bille blanche posée, ni numéro, ni zone grisée. Dans la moitié droite de la table, un encart montre
+      une grosse bille blanche vue de face, au liseré rouge sur le haut, avec le point bleu du tip légèrement au-dessus du centre (environ à mi-rayon),
+      une ligne horizontale et une ligne verticale par le centre, et une ligne turquoise sous la bille (surface de la table).
+    uncertainties:
+      - "Aucune bille blanche pleine n'est dessinée : les quatre emplacements sont des cercles creux. La bille w est posée par convention sur le premier (gauche) et les trois autres sont des ghosts cue_start ; les labels 1 à 4 sont ajoutés (ordre gauche-droite, non indiqué par le PDF)."
+      - "Aucun taux de réussite, aucun « Nombre de séances » ni pastille Billard de bronze sur cette page."
+      - "Le texte ne précise pas que les quatre tirs se font depuis les quatre emplacements ; c'est la lecture du schéma (une flèche par cercle). L'ordre d'exécution n'est pas indiqué."
+      - "Les poches visées (tl, tm, tr) sont déduites de la position des billes au ras des poches."
+      - "L'énoncé parle de « 4 billes » alors que seules trois billes colorées sont dessinées : la jaune du milieu est visée par deux flèches (quatre tirs, quatre emplacements)."
+      - "Le point bleu du tip est estimé à mi-rayon au-dessus du centre (valeur approchée)."
+      - "L'encart (bille avec point de tip) est placé au centre-droit de la table, pas en bas à droite ; il ne montre pas de bille cible, donc contact: none."
+      - "Ligne de départ mesurée à x ≈ 1,8 (FORMAT : 2,0 [Prop])."

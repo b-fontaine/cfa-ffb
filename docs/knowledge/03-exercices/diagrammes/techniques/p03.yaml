@@ -1,0 +1,43 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 3, rank: S}
+note: >-
+  Page « Présentation » du mémento : texte pur expliquant l'organisation en fiches techniques, fiches
+  initiation et fiches entraînement (pastilles latérales roses « FICHE TECHNIQUE », bleues « FICHE INITIATION »,
+  vertes « FICHE ENTRAÎNEMENT »). Aucun schéma de table ni exercice. Seule illustration à contenu technique :
+  la vignette d'une vidéo de résumé (image fixe) accompagnée de son QR code. Le QR code (lien vers la vidéo)
+  n'est pas transcrit.
+diagrams:
+  - id: techniques-p03-photo1
+    kind: technique-photo
+    sheet: "Présentation"
+    caption: "Vignette de la vidéo « 4 VERTICALITÉ DU BRAS qui tient la queue de billard » (image fixe illustrant le QR code de résumé vidéo)"
+    subject: >-
+      Capture d'écran d'une vidéo (logo DECATHLON en bas à droite) montrant, en gros plan de profil, le bras
+      d'un joueur qui tient la queue au moment du coup, avec un trait blanc vertical entre le coude et le
+      poing pour matérialiser la verticalité de l'avant-bras.
+    elements:
+      - "Incrustation de titre en haut à droite : bandeau bleu « 4 VERTICALITÉ DU BRAS » (pastille « 4 » bleue) puis, en dessous, « qui tient la queue de billard »."
+      - "Avant-bras du bras de queue vu de face/profil, orienté verticalement, du coude (en haut) à la main (en bas)."
+      - "Trait blanc vertical reliant un cercle blanc autour du coude (haut de l'image) à un cercle blanc autour de la main/du poing qui tient la queue (bas de l'image)."
+      - "Main sur la queue : poing fermé autour du manche, en bas ; la queue, noire avec des bagues claires, est horizontale derrière la main."
+      - "Joueur penché sur la table, vêtement sombre, cheveux longs ; une autre personne (avant-bras poilu et main d'homme à gauche, en travers ; polo sombre et main avec montre en haut à droite) se trouve à l'arrière-plan."
+      - "Arrière-plan : tapis bleu de billard et gradins rouges flous."
+    teaching_point: >-
+      L'avant-bras qui tient la queue doit être vertical : le coude est à l'aplomb de la main qui tient la
+      queue (la ligne coude–main est verticale). Le texte de la page ne détaille pas ce point : il est donné
+      par le titre incrusté dans la vidéo ; la page 6 du mémento le confirme : « L'avant-bras droit se place naturellement vertical pour opérer un mouvement de balancier. »
+    adjacent_text_summary: >-
+      Texte voisin : « Un résumé de la notion technique abordée est accessible en vidéo à partir du QR code
+      présent sur la page concernée. » La vignette et le QR code illustrent ce principe ; ce n'est pas un
+      exercice et il n'y a aucun taux de réussite ni chevalet.
+    bridge: none
+    bronze: false
+    description: >-
+      Image fixe d'une vidéo pédagogique de résumé : vue rapprochée d'un joueur penché sur la table, l'avant-bras
+      du bras de queue à la verticale, souligné par un trait blanc allant d'un cercle au coude à un cercle à la
+      main, avec le titre « 4 VERTICALITÉ DU BRAS qui tient la queue de billard ». Elle sert à présenter
+      l'usage des QR codes du mémento ; à droite se trouve le QR code (non transcrit).
+    uncertainties:
+      - "Le numéro « 4 » du titre est lu sur une très petite incrustation ; lecture confirmée à fort agrandissement."
+      - "Le texte de la page ne commente pas cette photo : le point pédagogique vient du titre incrusté."
+      - "Le QR code est présent à droite de la vignette mais son contenu (URL) n'est pas décodé."

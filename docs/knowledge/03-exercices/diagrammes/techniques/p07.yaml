@@ -1,0 +1,115 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 7, rank: S}
+diagrams:
+  - id: techniques-p07-cas1
+    kind: technique-photo
+    sheet: "Visée et posture"
+    caption: "Cas N°1 : La joueuse droitière place sa tête avec l’œil droit positionné au-dessus de la queue de billard. Son œil directeur est le droit."
+    subject: "Photo en gros plan d'une joueuse (haut noir, cheveux bruns attachés) penchée sur la table, le visage tourné vers l'objectif, l'œil droit placé au-dessus de la queue."
+    elements:
+      - "tête : penchée et légèrement inclinée, au-dessus de la queue ; l'œil droit est au-dessus de la queue de billard"
+      - "queue : vient de la gauche de l'image (côté joueuse), en diagonale descendante vers la bille blanche, en bas à droite de l'image"
+      - "main d'appui (chevalet) : main posée sur la bande près de la bille blanche, poignet (avec montre) à droite, doigts écartés tendus vers la gauche de l'image, la queue passant sur la main"
+      - "bille visée : bille blanche (bille de choc) au premier plan, dans le tiers inférieur de l'image, à droite du centre, entourée de billes rouges et jaunes"
+      - "autres billes : plusieurs billes rouges et jaunes visibles au premier plan sur la table bleue"
+      - "regard : tourné vers l'objectif, tête penchée et proche de la queue"
+    teaching_point: "Cas où la joueuse droitière place sa tête avec l'œil droit au-dessus de la queue : son œil directeur est le droit."
+    adjacent_text_summary: "Légende sous la photo : « Cas N°1 — La joueuse droitière place sa tête avec l’œil droit positionné au-dessus de la queue de billard. Son œil directeur est le droit. »"
+    description: >-
+      Première des trois photos de la rangée du haut (à gauche), légendée « Cas N°1 ». Une joueuse droitière,
+      vue de face et de trois quarts, est penchée sur la table (tapis bleu). Sa queue arrive de la gauche de
+      l'image en diagonale vers la bille blanche, en bas à droite ; sa main d'appui (poignet à droite, doigts vers la bille) est posée
+      près de la bande et la queue passe au-dessus. Son œil droit est directement au-dessus de la queue,
+      le visage étant décalé vers la gauche de l'image par rapport à la bille blanche. Des billes rouges et
+      jaunes sont visibles au premier plan. Le texte indique que son œil directeur est le droit.
+    uncertainties:
+      - "Le détail exact des doigts de la main d'appui (pont ouvert ou fermé) n'est pas lisible avec certitude sur la photo."
+      - "Le nombre exact et la disposition des billes rouges/jaunes au premier plan n'ont pas de signification pédagogique indiquée par la source."
+  - id: techniques-p07-cas2
+    kind: technique-photo
+    sheet: "Visée et posture"
+    caption: "Cas N°2 : La joueuse place la queue de billard entre les deux yeux. Son œil directeur peut être le droit ou le gauche."
+    subject: "Photo en gros plan d'une joueuse (haut bleu, cheveux bouclés) vue de face, la queue passant exactement entre les deux yeux, face à la bille blanche."
+    elements:
+      - "tête : penchée en avant, visage de face, centrée sur la queue"
+      - "queue : passe verticalement dans l'image, au milieu du visage, entre les deux yeux, jusqu'à la bille blanche au bas de l'image"
+      - "main d'appui (chevalet) : main posée sur le tapis devant la joueuse, doigts écartés, la queue passant sur la main"
+      - "bille visée : bille blanche (bille de choc) en bas de l'image, légèrement à droite du centre, pointée par la queue"
+      - "regard : tourné vers l'objectif, dans l'axe de la queue"
+    teaching_point: "Cas où la queue est placée entre les deux yeux : l'œil directeur peut être le droit ou le gauche."
+    adjacent_text_summary: "Légende sous la photo : « Cas N°2 — La joueuse place la queue de billard entre les deux yeux. Son œil directeur peut être le droit ou le gauche. »"
+    description: >-
+      Deuxième photo de la rangée du haut (au centre), légendée « Cas N°2 ». La joueuse est vue de face,
+      le visage au-dessus de la queue qui passe entre ses deux yeux. Son bras avant est tendu vers
+      la table, la main d'appui posée sur le tapis (bleu) avec les doigts écartés ; la queue repose sur cette
+      main et pointe vers la bille blanche située en bas de l'image. Le texte précise que son œil directeur
+      peut être le droit ou le gauche.
+    uncertainties:
+      - "La forme exacte du pont (position du pouce) n'est pas lisible avec certitude sur la photo."
+  - id: techniques-p07-cas3
+    kind: technique-photo
+    sheet: "Visée et posture"
+    caption: "Cas N°3 : Le joueur droitier place sa tête avec l’œil gauche positionné au-dessus de la queue de billard. Son œil directeur est le gauche."
+    subject: "Photo en gros plan d'un joueur (polo noir et orange, cheveux châtains courts) vu de face, penché sur la table, l'œil gauche au-dessus de la queue, face à la bille blanche."
+    elements:
+      - "tête : penchée en avant, face à l'objectif ; l'œil gauche est au-dessus de la queue (selon la légende)"
+      - "queue : passe presque verticalement dans l'image, de la tête du joueur vers la bille blanche, en bas de l'image"
+      - "main d'appui (chevalet) : main posée sur le tapis (bleu), doigts écartés, la queue passant sur la main"
+      - "bille visée : bille blanche (bille de choc) en bas de l'image, sous la queue"
+      - "regard : tourné vers l'objectif, dans l'axe de la queue"
+    teaching_point: "Cas où le joueur droitier place sa tête avec l'œil gauche au-dessus de la queue : son œil directeur est le gauche."
+    adjacent_text_summary: "Légende sous la photo : « Cas N°3 — Le joueur droitier place sa tête avec l’œil gauche positionné au-dessus de la queue de billard. Son œil directeur est le gauche. »"
+    description: >-
+      Troisième photo de la rangée du haut (à droite), légendée « Cas N°3 ». Un joueur droitier, vu de face,
+      est penché sur la table (tapis bleu) ; sa queue descend vers la bille blanche, en bas de l'image, et
+      son œil gauche est au-dessus de la queue. La main d'appui est posée sur le tapis, doigts écartés, la
+      queue passant sur la main. Le texte indique que son œil directeur est le gauche.
+    uncertainties:
+      - "La forme exacte du pont (position du pouce) n'est pas lisible avec certitude sur la photo."
+  - id: techniques-p07-oeil-1
+    kind: technique-photo
+    sheet: "Visée et posture"
+    caption: "Les deux yeux ouverts"
+    subject: "Schéma illustré (photo d'une main, index pointé vers le haut, sous une bille rouge) : test de l'œil directeur, première étape, les deux yeux ouverts."
+    elements:
+      - "bille rouge : l'objet visé, placée au-dessus du bout de l'index"
+      - "main : poing fermé avec l'index tendu vers le haut, pointant la bille rouge"
+    teaching_point: "Première étape du test : les deux yeux ouverts, pointer un objet situé à 5 mètres avec le doigt (l'index est aligné sur la bille rouge)."
+    adjacent_text_summary: "« Comment reconnaître l’œil directeur ? Les deux yeux ouverts, pointer avec le doigt un objet à 5 mètres de distance, puis fermer l’œil gauche. Si le doigt pointe toujours l’objet, c’est que l’œil droit est directeur. Sinon c’est l’œil gauche. »"
+    description: >-
+      Vignette de gauche de la rangée du bas, légendée « Les deux yeux ouverts ». Une bille rouge est
+      alignée au-dessus d'une main dont l'index est pointé vers elle : le doigt pointe la bille.
+    uncertainties:
+      - "La vignette ne montre pas les yeux : le fait que les deux yeux soient ouverts vient uniquement de la légende."
+  - id: techniques-p07-oeil-2
+    kind: technique-photo
+    sheet: "Visée et posture"
+    caption: "Seul l’œil droit est ouvert"
+    subject: "Schéma illustré (main, index pointé vers le haut, sous une bille rouge) : test de l'œil directeur, deuxième étape, seul l'œil droit ouvert (œil gauche fermé)."
+    elements:
+      - "bille rouge : l'objet visé, située juste au-dessus du bout de l'index"
+      - "main : poing fermé avec l'index tendu vers le haut, toujours aligné sur la bille rouge"
+    teaching_point: "Œil gauche fermé, seul l'œil droit est ouvert : le doigt continue de pointer la bille, donc l'œil droit est directeur."
+    adjacent_text_summary: "« … puis fermer l’œil gauche. Si le doigt pointe toujours l’objet, c’est que l’œil droit est directeur. Sinon c’est l’œil gauche. » ; « Dans ce cas, l’œil directeur est le droit. »"
+    description: >-
+      Vignette centrale de la rangée du bas, légendée « Seul l’œil droit est ouvert ». Même image que la
+      précédente : la bille rouge reste alignée avec l'index pointé. Le doigt pointe toujours la bille,
+      ce qui, selon le texte, indique que l'œil droit est directeur.
+    uncertainties:
+      - "Les deux premières vignettes semblent identiques ; l'information (œil ouvert/fermé) ne vient que des légendes."
+  - id: techniques-p07-oeil-3
+    kind: technique-photo
+    sheet: "Visée et posture"
+    caption: "Seul l’œil droit est fermé"
+    subject: "Schéma illustré (main, index pointé vers le haut, sous une bille rouge) : test de l'œil directeur, troisième étape, seul l'œil droit fermé (œil gauche ouvert)."
+    elements:
+      - "bille rouge : l'objet visé, au-dessus du bout de l'index"
+      - "main : poing fermé avec l'index tendu vers le haut ; la main est décalée vers la droite par rapport à la bille (≈ 1 cm sur la page)"
+    teaching_point: "Œil droit fermé, seul l'œil gauche est ouvert : la conclusion du texte est « Dans ce cas, l'œil directeur est le droit »."
+    adjacent_text_summary: "« Dans ce cas, l’œil directeur est le droit. » (phrase sous la rangée de trois vignettes)."
+    description: >-
+      Vignette de droite de la rangée du bas, légendée « Seul l’œil droit est fermé ». Une bille rouge est
+      placée au-dessus d'une main à l'index pointé, la main étant décalée vers la droite (≈ 1 cm sur la page) sous la
+      bille. Sous les trois vignettes figure la conclusion : « Dans ce cas, l’œil directeur est le droit. »
+    uncertainties:
+      - "Le décalage de l'index vers la droite par rapport à la bille est une lecture de l'image (≈ 1 cm sur la page, contre ≈ 0 dans les deux autres vignettes) ; il est cohérent avec le texte mais non écrit par la source."

@@ -1,0 +1,45 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 14, rank: S}
+diagrams:
+  - id: jeux-p14-j1
+    kind: game
+    sheet: "Fiche Jeu"
+    caption: "Objectif : jouer une partie à difficulté réduite."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: w,  color: white,  at: [1.82, 2.0], role: cue}
+      - {id: b8, color: black,  at: [6.0, 2.0], label: "8"}
+      - {id: r1, color: red,    at: [5.6, 2.02]}
+      - {id: r2, color: red,    at: [5.8, 1.89]}
+      - {id: r3, color: red,    at: [6.22, 2.11]}
+      - {id: r4, color: red,    at: [6.42, 2.0]}
+      - {id: y1, color: yellow, at: [6.0, 1.78]}
+      - {id: y2, color: yellow, at: [6.21, 1.89]}
+      - {id: y3, color: yellow, at: [5.81, 2.11]}
+      - {id: y4, color: yellow, at: [6.02, 2.22]}
+    ghosts: []
+    arrows: []
+    zones: []
+    annotations:
+      - "Règles du jeu : le jeu se déroule en une partie qui oppose deux joueurs."
+      - "Les règles sont identiques à une partie classique, excepté que l'on utilise uniquement 4 billes de chaque groupe de couleur et la bille noire."
+      - "Le joueur qui casse est désigné par le tirage à la bande."
+    description: >-
+      Table vue de dessus, en paysage, départ à gauche, avec la grille pointillée (8 colonnes x 4 lignes) et le
+      trait plein vertical de la ligne de départ à gauche (environ x = 1,8). La bille blanche est posée sur
+      cette ligne, au centre de la largeur (environ 1,8 ; 2,0) ; elle porte deux petits repères rouges
+      (probablement des marques de l'illustration, sans consigne dans le texte). Au centre-droit de la table,
+      à environ x = 6,0 sur l'axe longitudinal (y = 2,0), les neuf billes de la partie sont groupées en losange : la bille noire numérotée 8 au centre, entourée de 4 billes
+      rouges et 4 billes jaunes. Disposition : une rouge à chaque extrémité de la longueur (gauche et droite) ;
+      au-dessus de la noire, une jaune au sommet, une rouge en haut à gauche et une jaune en haut à droite ;
+      au-dessous, une jaune en bas à gauche, une jaune au point bas et une rouge en bas à droite. Total 4 rouges +
+      4 jaunes + 1 noire = 9 billes, conforme au texte « 4 billes de chaque groupe de couleur et la
+      bille noire ». Aucune flèche, aucun cercle creux, aucune zone grisée, aucun schéma de quantité de bille.
+    uncertainties:
+      - "Ligne de départ lue vers x ≈ 1,8 (et non 2,0 comme dans FORMAT.md)."
+      - "Positions lues à environ 0,05 à 0,15 case près ; les billes du groupement se touchent et leur diamètre apparent est ≈ 0,23 case (rayon ≈ 0,115, un peu supérieur au 0,1 de FORMAT.md)."
+      - "Le losange est lu comme un groupement de 9 billes en contact ; l'alternance exacte rouge/jaune autour de la noire est lue sur l'image (haut : jaune, rouge à gauche, jaune à droite ; bas : jaune à gauche, jaune, rouge à droite)."
+      - "Les deux petits points rouges sur la bille blanche ne sont pas expliqués dans le texte."
+      - "Le texte ne précise ni type de chevalet, ni taux de réussite, ni nombre de séances ; pas de pastille Billard de bronze."

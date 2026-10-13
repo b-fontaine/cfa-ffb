@@ -6,7 +6,9 @@
 - Distinction enfants/adultes autre que la casse.
 - Règles officielles du Blackball (à ingérer depuis la FFB ou la WPA).
 - Contenu de l'épreuve du billard de bronze.
-- Schémas des exercices (positions des billes) : uniquement dans les PDF.
+- Positions exactes des billes : les schémas sont transcrits dans `03-exercices/diagrammes/` mais en lecture **approchée** (≈ 0,15 case), jamais publiée par la FFB sous cette forme.
+- Rayon de bille (0,1 unité) et ligne de départ (x = 2,0) : `[Prop]` ; la ligne dessinée est lue vers x ≈ 1,75 à 1,85.
+- Éléments incertains récurrents des diagrammes (détail dans le champ `uncertainties` de chaque YAML) : rôle des billes d'obstacle, ordre des tirs, poches déduites, type de chevalet non précisé, blanche absente du dessin, quantité de bille des encarts, enchaînement « huit billes » / nombre de tirs (entraînement p09, ex. 2), énoncé « six billes » pour cinq ou quatre billes colorées dessinées (entraînement p22 ex. 7, p31 ex. 10), champ `sessions` non prévu par `FORMAT.md`.
 - Niveaux techniques 2 et 3, hors scope des fiches fournies.
 - Sécurité, matériel adapté à l'enfant, échauffement.
 - Contenu des vidéos QR référencées par les fiches techniques.
@@ -22,9 +24,10 @@
 
 ## Questions encore ouvertes
 
-1. Quelle valeur de « séance » pour les nombres conseillés (1 séance = 90 min enfant / 120 min adulte) ?
-2. Combien d'élèves par groupe et de groupes par saison (dimensionnement du suivi) ?
-3. Besoin de synchronisation multi-appareils (téléphone + ordinateur) ? Si oui, Firebase devient pertinent.
+1. Faut-il valider les positions approchées des diagrammes par un animateur (comparaison au PDF) avant de les afficher dans l'application ?
+2. Quelle valeur de « séance » pour les nombres conseillés (1 séance = 90 min enfant / 120 min adulte) ?
+3. Combien d'élèves par groupe et de groupes par saison (dimensionnement du suivi) ?
+4. Besoin de synchronisation multi-appareils (téléphone + ordinateur) ? Si oui, Firebase devient pertinent.
 
 ## Sources web vérifiées (rang 2/3)
 

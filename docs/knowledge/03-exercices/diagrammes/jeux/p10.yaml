@@ -1,0 +1,49 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 10, rank: S}
+diagrams:
+  - id: jeux-p10-j1
+    kind: game
+    sheet: "Les quantités de bille."
+    caption: "Objectif : Empocher 14 billes à partir d'une seule position de la bille blanche."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [1.0, 1.0]}
+      - {id: y2, color: yellow, at: [2.0, 1.0]}
+      - {id: y3, color: yellow, at: [3.0, 1.0]}
+      - {id: r1, color: red,    at: [4.0, 1.0]}
+      - {id: r2, color: red,    at: [5.0, 1.0]}
+      - {id: r3, color: red,    at: [6.0, 1.0]}
+      - {id: r4, color: red,    at: [7.0, 1.0]}
+      - {id: y4, color: yellow, at: [1.0, 3.0]}
+      - {id: y5, color: yellow, at: [2.0, 3.0]}
+      - {id: y6, color: yellow, at: [3.0, 3.0]}
+      - {id: y7, color: yellow, at: [4.0, 3.0]}
+      - {id: r5, color: red,    at: [5.0, 3.0]}
+      - {id: r6, color: red,    at: [6.0, 3.0]}
+      - {id: r7, color: red,    at: [7.0, 3.0]}
+    ghosts:
+      - {id: g1, at: [4.0, 2.0], role: cue_start}
+    arrows: []
+    zones: []
+    annotations:
+      - "Règles du jeu : le jeu se déroule en un défi à réaliser seul."
+      - "Le joueur doit empocher toutes les billes dans les poches de son choix."
+      - "La bille blanche est repositionnée après chaque tir sur son point d'origine. On ne replace pas les billes empochées. Toute bille non empochée est repositionnée sur son point d'origine."
+      - "Le défi est réalisé complètement lorsque le joueur a utilisé un tir pour chaque bille."
+      - "Un coup n'est pas valable si le joueur commet une faute."
+    description: >-
+      Table vue de dessus, en paysage, avec la grille pointillée 8 x 4 et la ligne de départ (trait plein
+      vertical, à gauche). Quatorze billes de couleur sont posées sur deux rangées horizontales, une à y = 1
+      (haut) et une à y = 3 (bas), sur les intersections de la grille aux colonnes x = 1 à 7. Rangée du haut :
+      trois billes jaunes (x = 1, 2, 3) puis quatre billes rouges (x = 4, 5, 6, 7). Rangée du bas : quatre
+      billes jaunes (x = 1, 2, 3, 4) puis trois billes rouges (x = 5, 6, 7). Total : 7 jaunes et 7 rouges,
+      soit 14 billes. La bille blanche n'est pas dessinée pleine : un cercle creux pointillé avec petits
+      points rouges, au centre de la table (x = 4, y = 2), marque son point d'origine. Aucune flèche, aucune
+      zone grisée, aucun schéma de quantité de bille, aucune bille noire.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,8 (trait plein vertical entre les colonnes 1 et 2), et non 2,0 comme dans le repère [Prop]."
+      - "Positions des billes sur les intersections de la grille (x entiers, y = 1 ou 3) ; précision ≈ 0,1 case."
+      - "La bille blanche est un cercle creux (ghost cue_start) et non une bille pleine ; pas de bille w dans balls."
+      - "Le type de chevalet n'est pas indiqué sur cette page (bridge: unknown) ; pas de pastille Billard de bronze, ni taux de réussite, ni nombre de séances."

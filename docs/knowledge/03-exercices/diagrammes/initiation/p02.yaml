@@ -1,0 +1,54 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 2, rank: S}
+diagrams:
+  - id: initiation-p02-e1
+    kind: initiation
+    sheet: "Posture, visée et coup de queue."
+    caption: "Empocher 4 billes avec un chevalet sur la surface de jeu."
+    bridge: surface
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red,    at: [0.15, 0.16]}
+      - {id: y1, color: yellow, at: [3.89, 0.16]}
+      - {id: y2, color: yellow, at: [0.21, 3.82]}
+      - {id: r2, color: red,    at: [3.96, 3.84]}
+      - {id: w,  color: white,  at: [1.82, 2.01], role: cue}
+    ghosts: []
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.82, 2.01], [0.33, 0.33]], bounces: [], to: tl}
+      - {id: a2, ball: w, kind: cue, path: [[1.82, 2.01], [3.75, 0.38]], bounces: [], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[1.82, 2.01], [0.35, 3.67]], bounces: [], to: bl}
+      - {id: a4, ball: w, kind: cue, path: [[1.82, 2.01], [3.86, 3.67]], bounces: [], to: bm}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: none, pocket: tl}
+      - {step: 2, cue: w, hit: y1, contact: none, pocket: tm}
+      - {step: 3, cue: w, hit: y2, contact: none, pocket: bl}
+      - {step: 4, cue: w, hit: r2, contact: none, pocket: bm}
+    inset:
+      contact: full
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "Énoncé : « Exercice à réaliser : Empocher 4 billes avec un chevalet sur la surface de jeu. »"
+      - "Conseil à l'animateur : « Replacer la bille blanche après chaque tir. »"
+      - "Objectifs : « Adopter une posture permettant la pratique du Billard. Exécuter un coup de queue pour empocher une bille. »"
+    description: >-
+      Table vue de dessus, départ à gauche, ligne de départ (trait plein vertical) vers x = 1,8. Quatre billes
+      sont posées chacune tout près d'une poche : une rouge dans l'angle haut gauche (tl, environ 0,15 ; 0,15),
+      une jaune juste à gauche de la poche du milieu haut (tm, environ 3,9 ; 0,15), une jaune dans l'angle bas
+      gauche (bl, environ 0,2 ; 3,8) et une rouge juste à gauche de la poche du milieu bas (bm, environ 4,0 ; 3,85).
+      Au centre de la ligne de départ (environ 1,8 ; 2,0), un petit cercle creux à point rouge marque la position
+      de la bille blanche, à l'intersection de quatre flèches pleines qui partent de là en croix vers chacune des
+      quatre billes : les quatre billes sont à empocher depuis cette même position (l'énoncé conseille de replacer
+      la bille blanche après chaque tir). Aucune
+      bille intermédiaire, aucun rebond. Petit schéma en haut à droite de la table (centré vers x = 6 ; y = 1,3) :
+      bille blanche vue de face avec viseur en croix, point bleu au centre (point d'impact du tip), arc rouge au
+      sommet de la bille, trait turquoise tangent au bas de la bille (surface de jeu / chevalet sur la surface).
+    uncertainties:
+      - "La bille blanche centrale est dessinée plus petite et creuse (contour fin avec un point rouge) : transcrite comme bille blanche posée en (1,82 ; 2,01), peut aussi être un emplacement (cercle) où poser la blanche."
+      - "L'ordre de tir des quatre billes n'est pas indiqué : l'ordre de sequence est arbitraire (haut gauche, haut milieu, bas gauche, bas milieu)."
+      - "Le schéma ne montre aucun taux de réussite, nombre de séances ni pastille Billard de bronze : bronze: false, pas de success_rate."
+      - "Dans l'inset, le niveau du trait turquoise (bas de la bille) est interprété comme la surface de jeu ; contact: full est repris par analogie avec l'inset des fiches d'entraînement, la bille cible n'est pas dessinée."
+      - "Ligne de départ lue à x ≈ 1,82 (et non 2,0 comme dans FORMAT.md)."

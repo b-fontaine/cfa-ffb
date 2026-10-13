@@ -1,0 +1,52 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 6, rank: S}
+diagrams:
+  - id: jeux-p06-j1
+    kind: game
+    sheet: "La quantité de bille pleine."
+    caption: "Viser et placer la bille noire, en quantité de bille pleine, dans une zone. Utiliser un chevalet sur cadre pour viser en quantité de bille pleine."
+    bridge: frame
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: k, color: black, at: [1.82, 2.08], role: object, label: "8"}
+      - {id: w, color: white, at: [1.08, 2.08], role: cue}
+      - {id: r1, color: red, at: [0.17, 1.5]}
+      - {id: r2, color: red, at: [1.0, 1.5]}
+      - {id: r3, color: red, at: [0.17, 2.63]}
+      - {id: r4, color: red, at: [1.0, 2.63]}
+      - {id: y1, color: yellow, at: [7.07, 1.5]}
+      - {id: y2, color: yellow, at: [7.87, 1.5]}
+      - {id: y3, color: yellow, at: [7.07, 2.63]}
+      - {id: y4, color: yellow, at: [7.87, 2.63]}
+    ghosts: []
+    arrows:
+      - {id: a1, ball: k, kind: object, path: [[1.82, 2.08], [6.82, 2.08]], bounces: []}
+    zones:
+      - {id: z1, shape: rect, from: [0.1, 1.5], to: [1.0, 2.63], label: "camp (zone grise) entouré de 4 billes rouges"}
+      - {id: z2, shape: rect, from: [7.0, 1.5], to: [7.94, 2.63], label: "camp adverse (zone grise) entouré de 4 billes jaunes"}
+    sequence:
+      - {step: 1, cue: k, contact: none, repeat: 5}
+    annotations:
+      - "Le jeu se déroule en une partie qui oppose deux joueurs ; les joueurs tirent 5 fois à tour de rôle."
+      - "But : placer la bille noire en un tir dans le camp adverse matérialisé par 4 billes ; la visée s'effectue en quantité de bille pleine ; la bille noire peut rebondir sur la petite bande."
+      - "Le coup n'est pas valable si le joueur commet une faute ou si la bille noire touche une bille."
+      - "Le premier joueur à placer 5 fois la bille noire dans le camp adverse a gagné la partie."
+      - "Conseil : la zone de placement peut être modifiée afin d'adapter la difficulté du coup ; faire jouer cet exercice également avec un chevalet sur la surface de jeu en espaçant davantage la bille blanche et la bille noire de la bande."
+    description: >-
+      Table vue de dessus, en paysage, extrémité de départ à gauche. Deux camps symétriques à mi-largeur : à gauche
+      un rectangle gris entouré de quatre billes rouges (aux quatre coins du rectangle, x vers 0,2 et 1,0 ; y vers 1,5
+      et 2,63) ; à droite un rectangle gris entouré de quatre billes jaunes (x vers 7,1 et 7,9 ; y vers 1,5 et 2,63).
+      Sur la ligne médiane (y vers 2,08) se trouvent la bille noire, marquée du chiffre 8, posée sur la ligne de départ
+      (x vers 1,8), et, juste à sa gauche, à la limite du camp rouge, la bille blanche dessinée en cercle creux avec des
+      points rouges (x vers 1,1). Une flèche pleine horizontale part de la bille noire et va vers la droite jusqu'à
+      x vers 6,8, devant le camp jaune : c'est la trajectoire visée de la bille noire, qui doit s'arrêter dans le camp
+      adverse sans toucher de bille. Aucun encart de quantité de bille, aucun taux de réussite, aucune pastille
+      Billard de bronze. Le type de chevalet vient de l'objectif (chevalet sur cadre).
+    uncertainties:
+      - "Ligne de départ mesurée à x ≈ 1,8 (FORMAT : 2,0 [Prop])."
+      - "Positions lues à ≈ 0,15 case près ; la ligne médiane du schéma est lue vers y = 2,08 et les billes de camp à y ≈ 1,5 et 2,63 (centrées sur la ligne médiane)."
+      - "Le schéma ne montre pas explicitement qui tire depuis quel camp ni le rôle de la bille blanche ; la bille noire (8) est celle qui est tirée selon le texte, et la flèche part de la noire."
+      - "La bille blanche, dessinée en cercle creux avec points rouges, est posée juste à gauche de la noire ; sa fonction (bille de choc ou repère) n'est pas explicitée par le texte."
+      - "La flèche s'arrête à x ≈ 6,8 ; le texte parle de « placer la bille noire dans le camp adverse » sans position d'arrêt précise."
+      - "Pas de « Nombre de séances » ni de taux de réussite sur cette page."

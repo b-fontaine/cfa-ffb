@@ -1,0 +1,125 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 8, rank: S}
+diagrams:
+  - id: techniques-p08-cadre-1
+    kind: technique-photo
+    sheet: "Etape 3 : les chevalets"
+    caption: "Chevalet sur cadre (photo de gauche, première rangée)."
+    subject: >-
+      Chevalet sur cadre vu de côté-dessus : la main du joueur est posée à plat sur le cadre (le rebord du
+      billard), la queue passe le long de la main et pointe vers une bille blanche posée sur la surface de
+      jeu, en bas à droite de la photo.
+    elements:
+      - "Main posée à plat sur le cadre, doigts allongés et légèrement écartés, dirigés vers la droite de la photo"
+      - "Queue (flèche en bois clair) passant le long du bord de la main, côté pouce, puis le long du cadre"
+      - "Pouce et majeur contre la flèche ; index posé par-dessus selon le texte voisin (non distinct sur la photo)"
+      - "Embout de la queue (virole grise) proche de la bille blanche, à quelques centimètres"
+      - "Bille blanche à points rouges, en bas à droite, sur la surface de jeu"
+      - "Montre noire au poignet du joueur"
+      - "Cadre gris-bleu avec losanges blancs (repères), poche visible en bas à gauche"
+    teaching_point: >-
+      Chevalet sur cadre : le cadre sert de « support naturel » autour duquel former le chevalet ; on applique
+      le pouce et le majeur le long de la flèche, puis l'index par-dessus. Peu de flèche, tête du joueur un peu
+      relevée. Chevalet préconisé pour les premiers tirs.
+    adjacent_text_summary: >-
+      « On préconise, lors des premiers tirs, de jouer avec un chevalet sur cadre. Celui-ci présente un
+      "support naturel", autour duquel le joueur pourra former son chevalet. Il pourra ainsi opérer de la manière
+      suivante : appliquer le pouce et le majeur le long de la flèche, puis poser l'index par-dessus celle-ci.
+      Ce chevalet a la particularité de présenter
+      peu de flèche et de laisser la tête du joueur un peu relevée. »
+    description: >-
+      Première des deux photos de la rangée « chevalet sur cadre » (à gauche). La main du joueur (droite ou
+      gauche non déterminée) est à plat sur le cadre, la queue descend en diagonale du haut gauche vers
+      le bas droite, peu relevée, et son embout est tout près d'une bille blanche (points rouges) située
+      en bas à droite. Vue plongeante rapprochée.
+    uncertainties:
+      - "Le placement exact de l'index par-dessus la flèche n'est pas distinct sur la photo ; il vient du texte."
+      - "Main de tir (droite ou gauche) non certaine ; c'est une main d'appui vue de profil."
+  - id: techniques-p08-cadre-2
+    kind: technique-photo
+    sheet: "Etape 3 : les chevalets"
+    caption: "Chevalet sur cadre (photo de droite, première rangée)."
+    subject: >-
+      Chevalet sur cadre vu du dessus depuis le côté du joueur : main ouverte à plat sur le cadre noir, queue
+      posée contre la main et dirigée en diagonale vers une bille blanche en haut à droite, dont l'embout la touche
+      presque.
+    elements:
+      - "Main posée à plat sur le cadre noir, doigts étirés vers la droite, poignet à gauche"
+      - "Queue diagonale, du bas (milieu de la photo) vers la bille en haut à droite, passant contre le pouce et le majeur"
+      - "Embout de la queue à très faible distance de la bille blanche (quasi au contact)"
+      - "Bille blanche à points rouges, en haut à droite, sur le tapis gris"
+      - "Cadre noir avec losanges blancs (repères)"
+      - "Poignet avec bracelet noir à gauche"
+    teaching_point: >-
+      Même chevalet sur cadre : pouce et majeur le long de la flèche, main à plat sur le cadre qui sert de
+      support ; vue de dessus de la position de la main par rapport à la queue et à la bille.
+    adjacent_text_summary: >-
+      Même paragraphe que pour la photo voisine : le chevalet sur cadre, préconisé pour les premiers tirs,
+      donne un « support naturel » ; pouce et majeur le long de la flèche, index par-dessus ; peu de flèche,
+      tête un peu relevée.
+    description: >-
+      Seconde photo de la rangée « chevalet sur cadre » (à droite). Vue plongeante : la main est à plat sur le
+      cadre, la queue la longe en diagonale et vise une bille blanche à points rouges placée en haut à droite
+      de l'image. L'embout est quasi au contact de la bille.
+    uncertainties:
+      - "Rôle précis de l'index non distinct sur la photo."
+  - id: techniques-p08-angle-1
+    kind: technique-photo
+    sheet: "Etape 3 : les chevalets"
+    caption: "Chevalet en angle (photo de gauche, seconde rangée)."
+    subject: >-
+      Chevalet en angle vu de côté, à hauteur du cadre : la main est appliquée sur le côté du billard (paume
+      contre le côté du cadre) avec les doigts posés sur le cadre, le pouce relevé servant de support à la
+      queue, quasi horizontale, dirigée vers une bille blanche à droite.
+    elements:
+      - "Paume appliquée sur un côté du billard (flanc bleu du cadre)"
+      - "Doigts posés sur le dessus du cadre"
+      - "Pouce relevé contre la flèche, qui forme le support de guidage"
+      - "Queue (flèche en bois) horizontale, passant au-dessus des doigts, embout gris à droite"
+      - "Bille blanche à points rouges, au premier plan à droite, sur la surface de jeu"
+      - "Montre noire au poignet du joueur, à gauche"
+      - "Cadre bleu, poche et fond de salle visibles à l'arrière-plan"
+    teaching_point: >-
+      Chevalet en angle : angle entre la paume (sur un côté du billard) et les doigts (sur le cadre), pouce
+      relevé pour guider la flèche. Permet une visée plus précise et plus de puissance : plus de flèche, tête
+      abaissée près de la queue.
+    adjacent_text_summary: >-
+      « Lorsque le coup nécessite une visée plus précise et une puissance plus importante, le joueur peut
+      adapter son chevalet en angle entre la paume, appliquée sur un côté du billard, et les doigts posés sur
+      le cadre. Le pouce relevé permettra de créer un support pour guider la flèche. En utilisant ce chevalet, le
+      joueur peut prendre plus de flèche et abaisser sa tête près de la queue pour une visée plus précise. »
+    description: >-
+      Première des deux photos de la rangée « chevalet en angle » (à gauche). Vue à ras du cadre : la main
+      est contre le flanc du billard, doigts sur le cadre, pouce relevé d'après le texte voisin, contre la queue, laquelle est quasi
+      horizontale et dirigée vers une bille blanche à points rouges à droite.
+    uncertainties:
+      - "Le contact exact entre le pouce et la flèche est partiellement caché par la main."
+      - "Le pouce relevé est peu distinct sur la photo (main vue de profil, sous la queue) ; il vient surtout du texte voisin."
+  - id: techniques-p08-angle-2
+    kind: technique-photo
+    sheet: "Etape 3 : les chevalets"
+    caption: "Chevalet en angle (photo de droite, seconde rangée)."
+    subject: >-
+      Chevalet en angle vu du dessus : la main est posée sur le cadre noir, doigts écartés, pouce relevé
+      contre la flèche ; la queue est en diagonale vers une bille blanche en haut à gauche.
+    elements:
+      - "Main ouverte, doigts écartés posés sur le cadre noir, poignet en bas à droite"
+      - "Pouce relevé selon le texte voisin (peu distinct sur la photo), formant l'appui le long duquel la queue est guidée"
+      - "Queue en diagonale, du bas à droite vers le haut à gauche, embout gris proche de la bille"
+      - "Bille blanche à points rouges, en haut à gauche, sur le tapis gris, avec son ombre"
+      - "Cadre noir avec losanges blancs (repères), bord bleu en bas à droite"
+      - "Montre noire au poignet, en bas à droite"
+    teaching_point: >-
+      Chevalet en angle vu du dessus : doigts écartés sur le cadre, pouce relevé pour guider la flèche ; ce
+      chevalet permet de prendre plus de flèche et d'abaisser la tête près de la queue (texte du PDF).
+    adjacent_text_summary: >-
+      Même paragraphe que la photo voisine : chevalet en angle entre la paume sur un côté du billard et les
+      doigts sur le cadre, pouce relevé comme support de la flèche, plus de flèche, tête abaissée près de la
+      queue pour une visée plus précise.
+    description: >-
+      Seconde photo de la rangée « chevalet en angle » (à droite). Vue plongeante : la main a les doigts
+      écartés sur le cadre noir, le pouce, relevé d'après le texte voisin, est contre la queue, qui part en diagonale vers une bille blanche
+      à points rouges située en haut à gauche.
+    uncertainties:
+      - "La distance entre l'embout et la bille n'est pas mesurable (perspective)."
+      - "Le pouce relevé n'est pas clairement distinct sur la photo ; il vient surtout du texte voisin."

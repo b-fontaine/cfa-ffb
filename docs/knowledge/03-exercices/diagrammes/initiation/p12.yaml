@@ -1,0 +1,51 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 12, rank: S}
+diagrams:
+  - id: initiation-p12-e1
+    kind: initiation
+    sheet: "Le rejet naturel"
+    caption: "Empocher une bille avec un rejet naturel."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [4.0, 2.0]}
+      - {id: w, color: white, at: [4.39, 3.0], role: cue}
+    ghosts:
+      - {id: g1, at: [4.0, 2.23], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[4.39, 3.0], [4.0, 2.23]], bounces: [], note: "de la blanche vers la position d'impact, collée sous la bille jaune"}
+      - {id: a2, ball: y1, kind: object, path: [[4.0, 2.0], [4.0, 0.3]], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[4.0, 2.23], [1.55, 1.35]], bounces: [], note: "rejet naturel de la blanche vers la zone de replacement, à gauche de la ligne de départ"}
+    sequence:
+      - {step: 1, cue: w, hit: y1, contact: half, pocket: tm}
+    inset:
+      contact: half
+      tip_point: top
+      bridge_height: surface
+    annotations:
+      - "Objectif : empocher une bille, en dirigeant la bille blanche dans la zone de replacement, grâce à un rejet naturel."
+      - "Consignes à l'élève : viser la tangente de la bille de couleur ; utiliser une attaque en haut ; ne pas exécuter un coup trop rapide afin d'éviter un recul de la bille blanche."
+      - "Conseils à l'animateur : laisser le joueur placer la bille blanche afin de s'assurer que la notion de demi-bille est bien intégrée ; aider le joueur au positionnement du chevalet pour une attaque en haut ; conseiller un coup « à la mesure » pour que la bille blanche ne ressorte pas de la zone."
+      - "Conseil à l'animateur : afin de vérifier si le joueur visualise correctement un rejet de 45°, lui faire placer une bille, dans la zone de replacement, sur la trajectoire estimée de la bille blanche ; lui faire réaliser le coup et constater si la bille blanche entre en contact avec cette bille."
+    description: >-
+      Table vue de dessus, départ à gauche. Une seule bille de couleur : une jaune au centre de la
+      table (x = 4,0 ; y = 2,0), alignée avec la poche du milieu du haut (tm). Une petite bille
+      blanche (cercle blanc cerclé, avec deux points rouges) est dessinée en bas à droite de la
+      jaune (x ≈ 4,4 ; y = 3,0). Un cercle pointillé (position d'impact de la blanche) est collé sous
+      la jaune (x = 4,0 ; y ≈ 2,2). Un trait relie la blanche à cette position, puis une flèche pleine
+      repart vers le haut-gauche et s'arrête en x ≈ 1,55 ; y ≈ 1,35, à gauche de la ligne de départ
+      (x ≈ 1,8) : c'est le rejet naturel de la blanche vers la zone de replacement. Une seconde
+      flèche pleine part de la jaune droit vers la poche tm (en x = 4,0, du centre vers le haut). Le
+      schéma de quantité de bille en bas à droite montre la blanche recouvrant environ la moitié de
+      la rouge (demi-bille), point bleu du tip en haut de la blanche (attaque en haut), ligne
+      turquoise sous les billes. La pastille Billard de bronze n'est pas présente ;
+      l'onglet bleu indique « FICHE INITIATION Le rejet naturel ». Le texte précise « attaque en
+      haut » et « demi-bille ».
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,82 (et non 2,0) sur le schéma."
+      - "La zone de replacement n'est pas dessinée en zone grisée ; elle est déduite de la fin de la flèche de rejet, à gauche de la ligne de départ."
+      - "Le contact demi-bille est une estimation visuelle du schéma de quantité (la bille blanche chevauche environ la moitié de la rouge) ; le texte cite la notion de demi-bille."
+      - "Le type de chevalet (cadre ou surface) n'est pas indiqué ; la ligne turquoise du schéma de quantité est lue comme le plan de la surface."
+      - "La bille blanche est dessinée en petit avec points rouges (comme les cercles de pose d'autres fiches) ; elle est lue comme la position de départ de la blanche."
+      - "Pas de taux de réussite ni de nombre de séances sur cette page."

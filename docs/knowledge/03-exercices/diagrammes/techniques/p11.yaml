@@ -1,0 +1,123 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 11, rank: S}
+diagrams:
+  - id: techniques-p11-queue-desaxee-gauche
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Queue désaxée à gauche"
+    subject: >-
+      Photo verticale, prise de derrière et au-dessus du joueur (droitier) penché sur la table, à la fin du
+      coup : la queue est désaxée vers la gauche de la ligne de visée. Marquée d'une grande croix rouge
+      (mauvais geste).
+    elements:
+      - "Joueur en polo bleu marine vu de dos, penché sur la table de billard au tapis gris, tête au centre-bas de la photo"
+      - "Ligne blanche en pointillé partant de la tête du joueur vers la bille blanche au centre de la photo : axe de visée (direction attendue de la queue)"
+      - "Queue en bois, tracée en rouge pointillé sur la photo, partant de l'épaule/du joueur et partant en biais vers le haut à gauche, nettement à gauche de la ligne blanche : l'avant de la flèche se dirige vers la gauche"
+      - "Bille claire (blanc cassé) au centre de la table sur la ligne pointillée blanche ; une autre bille jaune à gauche, près de la bande"
+      - "Grande croix rouge en bas à gauche de la photo (geste à ne pas reproduire)"
+    teaching_point: >-
+      Queue désaxée sur le plan horizontal (fauchage latéral) : si l'avant de la flèche se dirige vers la
+      gauche (joueur droitier), le coude est le plus souvent éloigné du corps en fin de geste ; c'est
+      l'articulation de l'épaule qui a été sollicitée sur le plan horizontal.
+    adjacent_text_summary: >-
+      « Si la queue est désaxée sur le plan horizontal (fauchage latéral), le joueur a fait intervenir
+      l'articulation de l'épaule. Si l'avant de la flèche se dirige vers la gauche (pour un joueur droitier),
+      on observe que le coude est, dans la plupart des cas, éloigné du corps à la fin du geste. Dans ce cas
+      c'est que l'articulation de l'épaule a été sollicitée sur le plan horizontal. » Texte d'introduction :
+      « L'animateur doit repérer si le joueur a fait intervenir d'autres articulations lors de l'exécution du
+      coup. La position de la queue, à la fin du coup, est révélatrice de bon ou mauvais geste. »
+    description: >-
+      Photo de gauche de la première rangée (portrait). Vue de dos et en plongée du joueur penché sur la
+      table ; une ligne blanche pointillée indique l'axe de visée vers la bille blanche, et la queue,
+      surlignée en rouge pointillé, s'en écarte vers la gauche. Croix rouge = geste incorrect.
+    uncertainties:
+      - "Les positions précises de la main arrière, du coude et du chevalet ne sont pas lisibles sur la photo (joueur vu de dos, bras masqués par le corps)."
+      - "La bille cible exacte n'est pas identifiable ; seule une bille claire sur la ligne de visée est visible."
+  - id: techniques-p11-queue-desaxee-droite
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Queue désaxée à droite"
+    subject: >-
+      Photo verticale, prise de derrière et au-dessus du joueur penché sur la table, à la fin du
+      coup : la queue est désaxée vers la droite de la ligne de visée. Marquée d'une grande croix rouge
+      (mauvais geste).
+    elements:
+      - "Joueur en polo bleu marine vu de dos, penché sur la table de billard au tapis gris, tête au centre-bas de la photo"
+      - "Ligne blanche en pointillé partant de la tête du joueur vers la bille blanche en haut à gauche de la photo, près d'une poche : axe de visée"
+      - "Queue, tracée en rouge pointillé, partant du joueur et allant en biais vers le haut à droite, nettement à droite de la ligne blanche : la queue se dirige vers la droite"
+      - "Bille blanche (jaunâtre) en haut à gauche du tapis, près d'une poche, au bout de la ligne pointillée blanche"
+      - "Grande croix rouge en bas à gauche de la photo (geste à ne pas reproduire)"
+    teaching_point: >-
+      Si la queue se dirige vers la droite, l'épaule a légèrement été sollicitée, mais c'est surtout
+      l'articulation du poignet qui a joué un grand rôle.
+    adjacent_text_summary: >-
+      « Si la queue se dirige vers la droite, l'épaule a légèrement été sollicitée, mais c'est surtout
+      l'articulation du poignet qui a joué un grand rôle. » (suite du paragraphe sur la queue désaxée sur le
+      plan horizontal, fauchage latéral).
+    description: >-
+      Photo de droite de la première rangée (portrait). Même configuration que la photo de gauche mais
+      inversée : la ligne de visée blanche pointillée part vers le haut à gauche, la queue surlignée en rouge
+      pointillé part vers le haut à droite. Croix rouge = geste incorrect.
+    uncertainties:
+      - "Les positions précises de la main arrière, du coude et du chevalet ne sont pas lisibles sur la photo (joueur vu de dos)."
+      - "La bille blanche est petite et seule une bille claire est visible ; sa nature exacte n'est pas certaine."
+  - id: techniques-p11-epaule-en-mouvement
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Articulation de l'épaule en mouvement lors du coup."
+    subject: >-
+      Photo horizontale, vue de profil, d'un joueur en polo sombre penché sur une table au tapis gris, à
+      la fin du coup : la queue est relevée (talon près de la hanche, pointe plus haute au-dessus du tapis) et le
+      coude est plus bas que sa position initiale. Les articulations de l'épaule, du coude et du poignet sont marquées de cercles blancs reliés
+      par des segments. Grande croix rouge (mauvais geste).
+    elements:
+      - "Joueur debout, penché en avant, vu de profil de la gauche de la photo ; bras arrière plié, le coude vers le bas et l'arrière"
+      - "Trois repères blancs reliés par des segments : un cercle à l'épaule, un petit cercle au coude (en arrière, plus bas), une ellipse à la main arrière / poignet"
+      - "Queue en bois clair, partant de la main arrière en bas à gauche et montant vers le haut à droite, au-dessus du tapis : la queue est relevée à la fin du coup"
+      - "Main avant posée à plat sur le tapis gris, à droite, sous la queue (chevalet non précisé par le texte)"
+      - "Table de billard avec le numéro « 23 » sur le pied, bande avec inscription « LAMBERT FFB » à l'arrière-plan"
+      - "Grande croix rouge en bas à droite de la photo"
+    teaching_point: >-
+      Si la queue se relève à la fin du coup (fauchage vertical) et que le coude se situe plus bas que sa
+      position initiale, l'articulation de l'épaule a été sollicitée sur le plan vertical.
+    adjacent_text_summary: >-
+      « Si la queue se relève à la fin du coup (fauchage vertical), et que le coude se situe plus bas que sa
+      position initiale, c'est que l'articulation de l'épaule a été sollicitée sur le plan vertical. »
+    description: >-
+      Photo de gauche de la seconde rangée (paysage). Joueur de profil, queue relevée en fin de coup, coude
+      descendu ; les points blancs et segments repèrent épaule, coude et poignet. Croix rouge = geste
+      incorrect.
+    uncertainties:
+      - "Les trois repères blancs (épaule, coude, main arrière) ne sont pas légendés : leur attribution est une lecture de la photo."
+      - "Le type exact de chevalet n'est pas précisé par le texte voisin ; la main avant semble à plat sur le tapis."
+  - id: techniques-p11-poignet-rigide
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Poignet rigide et main trop serrée."
+    subject: >-
+      Photo horizontale, vue de profil, d'une joueuse aux cheveux blonds penchée sur une table au tapis gris,
+      à la fin du coup : la queue est relevée alors que le coude est resté au même niveau que sa position
+      initiale. Articulations marquées de cercles blancs reliés par des segments. Grande croix rouge
+      (mauvais geste).
+    elements:
+      - "Joueuse penchée en avant, vue de profil de la gauche de la photo, tête dirigée vers la droite, haut sombre"
+      - "Bras arrière plié avec cercles blancs à l'épaule, au coude et au poignet reliés par des segments blancs ; le coude reste à hauteur de sa position initiale"
+      - "Queue en bois clair montant de la main arrière vers le haut à droite : la queue se relève"
+      - "Main avant posée à plat sur le tapis gris à droite, sous la queue"
+      - "Table de billard avec le numéro « 23 » sur le pied, bleu de la salle en arrière-plan"
+      - "Grande croix rouge en bas à droite de la photo"
+    teaching_point: >-
+      Dans la même configuration (queue relevée), si le coude se situe au même niveau que sa position
+      initiale, le joueur a trop serré sa main lors de l'exécution du coup et l'articulation du poignet
+      n'est pas sollicitée ; le bras créant un mouvement de balancier, la queue se relève.
+    adjacent_text_summary: >-
+      « Dans la même configuration, si le coude se situe au même niveau que sa position initiale, c'est que
+      le joueur a trop serré sa main lors de l'exécution du coup et l'articulation du poignet n'est pas
+      sollicitée. Le bras créant un mouvement de balancier, la queue se relève. »
+    description: >-
+      Photo de droite de la seconde rangée (paysage). Joueuse de profil, queue relevée en fin de coup, coude
+      toujours à la même hauteur ; schéma d'articulations en blanc (épaule, coude, poignet). Croix rouge =
+      geste incorrect.
+    uncertainties:
+      - "Le niveau du coude par rapport à sa position initiale est déduit du texte et de la légende ; la photo ne montre que la position finale."
+      - "Le type exact de chevalet n'est pas précisé par le texte voisin ; la main avant semble à plat sur le tapis."

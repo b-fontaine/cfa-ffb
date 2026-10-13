@@ -1,0 +1,58 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 8, rank: S}
+diagrams:
+  - id: initiation-p08-e1
+    kind: initiation
+    sheet: "La quantité trois-quarts de bille."
+    caption: "Empocher 2 billes en quantité trois-quarts de bille."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [1.97, 0.96]}
+      - {id: y1, color: yellow, at: [6.64, 1.99]}
+      - {id: w, color: white, at: [3.36, 2.0], role: cue}
+    ghosts:
+      - {id: g2, at: [5.99, 3.67], role: cue_start, for: w}
+      - {id: gi1, at: [2.2, 1.04], role: impact, for: w}
+      - {id: gi2, at: [6.54, 2.16], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[3.36, 2.0], [2.2, 1.04]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[1.97, 0.96], [0.15, 0.14]], bounces: [], to: tl}
+      - {id: a3, ball: w, kind: cue, path: [[5.99, 3.67], [6.54, 2.16]], bounces: []}
+      - {id: a4, ball: y1, kind: object, path: [[6.64, 1.99], [7.87, 0.09]], bounces: [], to: tr}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: three_quarter, pocket: tl}
+      - {step: 2, cue: w, hit: y1, contact: three_quarter, pocket: tr}
+    inset:
+      contact: three_quarter
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "Énoncé : « Exercice à réaliser : Empocher 2 billes en quantité trois-quarts de bille. »"
+      - "Objectif : « Viser pour empocher en quantité trois-quarts de bille. Utiliser un chevalet sur la surface de jeu et un chevalet sur cadre. »"
+      - "Consigne à l'élève : viser entre le centre et la tangente de la bille de couleur ; la bille blanche transfère deux fois plus d'énergie à la bille de couleur qu'elle n'en conserve."
+      - "Deux encarts en quantité trois-quarts, symétriques : le premier (à gauche, sur la ligne de départ) montre la bille rouge dépassant à gauche de la blanche, le second (à droite) la bille rouge dépassant à droite. Le point bleu du tip est au centre de la blanche dans l'encart de gauche, au-dessus du centre dans celui de droite."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, ligne de départ (trait plein vertical) à x vers 1,8.
+      Deux tirs. Premier tir : une bille rouge à (2,0 ; 1,0), dans la moitié haute gauche, avec un petit cercle
+      creux pointillé collé contre elle (position de la blanche à l'impact) ; un cercle creux à points rouges plus
+      bas à droite, à (3,4 ; 2,0), marque l'emplacement de la blanche ; un fin trait relie cet emplacement à
+      la bille rouge, puis une flèche pleine part de la rouge vers la poche du coin haut gauche (tl). Second
+      tir : une bille jaune à (6,6 ; 2,0) avec un cercle creux pointillé collé contre elle ; un cercle creux à points
+      rouges en bas, à (6,0 ; 3,7), marque l'emplacement de la blanche ; un trait le relie à la jaune, puis une flèche
+      pleine part de la jaune vers la poche du coin haut droit (tr). Deux gros encarts montrent une bille blanche
+      vue de face devant une bille rouge décalée d'environ un quart de diamètre (trois-quarts de bille), point
+      bleu du tip, lignes en croix et trait turquoise sous la blanche ; le point bleu est au centre de la blanche dans
+      l'encart de gauche et au-dessus du centre (environ à mi-rayon) dans l'encart de droite. Aucune bille blanche pleine
+      n'est posée ; il n'y a ni numéro, ni zone grisée.
+    uncertainties:
+      - "Le texte parle d'un chevalet sur la surface de jeu et d'un chevalet sur cadre sans dire quel tir utilise lequel : bridge: unknown."
+      - "Aucun taux de réussite, nombre de séances ni pastille Billard de bronze sur cette page."
+      - "Aucune bille blanche pleine : seuls des cercles creux marquent ses emplacements ; la bille w est posée par convention sur le premier emplacement (3,36 ; 2,0) et le second est un ghost cue_start g2."
+      - "Les deux encarts sont au centre de la table et non en bas à droite ; un seul inset est exprimé, l'asymétrie gauche/droite est en annotations. Le décalage trois-quarts est estimé à environ un quart de diamètre."
+      - "Le lien entre chaque encart et chaque tir (gauche : bille rouge, droite : bille jaune) est une lecture de la symétrie, non indiquée par le PDF."
+      - "Les poches visées (tl, tr) sont lues sur la pointe des flèches ; la flèche d'objet s'arrête vers (0,15 ; 0,14) et (7,87 ; 0,09)."
+      - "Le point bleu du tip diffère entre les deux encarts (centre à gauche, au-dessus du centre à droite) ; l'inset unique exprime celui de gauche (tip_point: center), celui de droite est consigné ici et en annotations."
+      - "Ligne de départ lue à x ≈ 1,77 (FORMAT : 2,0 [Prop])."

@@ -1,0 +1,96 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 13, rank: S}
+diagrams:
+  - id: entrainement-p13-e1
+    kind: exercise
+    sheet: "Le rejet naturel"
+    exercise: 1
+    caption: "A l’aide d’un rejet naturel, replacer cinq fois la bille blanche afin de jouer la bille la bille noire."
+    sessions: "2"
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [4.35, 0.39]}
+      - {id: r1, color: red, at: [3.0, 1.99]}
+      - {id: r2, color: red, at: [3.52, 1.99]}
+      - {id: r3, color: red, at: [1.83, 3.0]}
+      - {id: r4, color: red, at: [1.83, 3.47]}
+      - {id: b, color: black, at: [3.61, 3.63]}
+      - {id: w, color: white, at: [6.99, 0.99], role: cue}
+    ghosts:
+      - {id: g1, at: [6.99, 0.99], role: cue_start, for: w}
+      - {id: g2, at: [4.5, 0.55], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[6.99, 0.99], [4.5, 0.55]], bounces: []}
+      - {id: a2, ball: y1, kind: object, path: [[4.35, 0.39], [4.1, 0.15]], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[4.5, 0.55], [2.48, 1.91]], bounces: []}
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: y1, contact: half, pocket: tm, repeat: 5}
+    inset:
+      contact: half
+      tip_point: upper_center
+      bridge_height: unknown
+    annotations: ["x 5"]
+    description: >-
+      Table vue de dessus, départ à gauche. La blanche est posée sur un cercle creux marqué de deux petits points
+      rouges, à droite et en haut (environ x 7, y 1). Elle va toucher la bille jaune, située près de la poche haut
+      milieu (environ x 4,35, y 0,4), au niveau d'un cercle creux pointillé collé à la jaune. La jaune part vers la
+      poche haut milieu (petite flèche). La blanche rejetée repart vers le bas-gauche en ligne droite jusqu'à une
+      flèche d'arrivée vers x 2,5, y 1,9 (position où elle est replacée par rejet naturel), à côté de « x 5 ».
+      Deux billes rouges sont côte à côte au centre (x 3 et 3,5, y 2) et deux autres sont l'une sous l'autre
+      contre la ligne de départ (x 1,8, y 3 et 3,5). La bille noire (8) est en bas au centre (x 3,6, y 3,6). Le
+      petit schéma en bas à droite montre la blanche recouvrant à peu près la moitié de la rouge, point bleu
+      légèrement au-dessus du centre de la blanche, trait bleu-vert sous les billes.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1.83 sur le schéma (et non 2.0)."
+      - "La blanche n'est pas dessinée : sa position de départ est déduite du cercle creux à points rouges (déclarée comme bille w au même endroit que le ghost g1) et du cercle pointillé d'impact."
+      - "Les deux billes rouges contre la ligne de départ (x 1.83) et un petit point sur la ligne à y ≈ 2.0 ne sont pas expliqués par le texte."
+      - "Le rôle des billes rouges et de la noire (obstacles ou cibles suivantes) n'est pas précisé au-delà de « jouer la bille noire »."
+      - "Quantité de bille de l'inset lue approximativement comme demi-bille (recouvrement ≈ 40-50 %) ; le texte n'indique pas la quantité."
+      - "Hauteur du chevalet (trait bleu-vert) non légendée ; bridge inconnu. Pastille Billard de bronze absente de cette page."
+      - "Poche visée par la jaune déduite de la direction de la flèche (haut milieu)."
+  - id: entrainement-p13-e2
+    kind: exercise
+    sheet: "Le rejet naturel"
+    exercise: 2
+    caption: "A l’aide d’un rejet naturel, replacer cinq fois la bille blanche afin de jouer la bille la bille noire."
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [4.43, 0.6]}
+      - {id: r1, color: red, at: [1.82, 2.1]}
+      - {id: b, color: black, at: [0.43, 3.0]}
+      - {id: w, color: white, at: [5.98, 1.49], role: cue}
+    ghosts:
+      - {id: g1, at: [5.98, 1.49], role: cue_start, for: w}
+      - {id: g2, at: [4.55, 0.79], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[5.98, 1.49], [4.55, 0.79]], bounces: []}
+      - {id: a2, ball: y1, kind: object, path: [[4.43, 0.6], [4.1, 0.2]], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[4.55, 0.79], [1.46, 1.84]], bounces: []}
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: y1, contact: half, pocket: tm, repeat: 5}
+    inset:
+      contact: half
+      tip_point: upper_center
+      bridge_height: unknown
+    annotations: ["x 5"]
+    description: >-
+      Même principe que l'exercice 1, avec moins de billes. La blanche est posée sur un cercle creux à points
+      rouges (environ x 6, y 1,5). Elle touche la jaune, près de la poche haut milieu (x 4,4, y 0,6), au niveau
+      d'un cercle pointillé collé à la jaune ; la jaune part vers la poche haut milieu. La blanche rejetée repart
+      vers le bas-gauche jusqu'à une flèche d'arrivée vers x 1,5, y 1,85, à côté de « x 5 ». Une seule bille
+      rouge est posée contre la ligne de départ (x 1,8, y 2,1) et la bille noire (8) est près de la bande
+      gauche (x 0,4, y 3). Le petit schéma en bas à droite est identique à celui de l'exercice 1 (blanche
+      recouvrant à peu près la moitié de la rouge, point bleu au-dessus du centre).
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1.83 sur le schéma (et non 2.0)."
+      - "La blanche n'est pas dessinée : sa position de départ est déduite du cercle creux à points rouges (déclarée comme bille w au même endroit que le ghost g1) et du cercle pointillé d'impact."
+      - "Le rôle de la bille rouge (sur la ligne de départ) et de la noire n'est pas précisé au-delà de « jouer la bille noire »."
+      - "Quantité de bille de l'inset lue approximativement comme demi-bille ; le texte n'indique pas la quantité."
+      - "Hauteur du chevalet (trait bleu-vert) non légendée ; bridge inconnu. Pastille Billard de bronze et nombre de séances absents pour l'exercice 2."
+      - "Poche visée par la jaune déduite de la direction de la flèche (haut milieu)."

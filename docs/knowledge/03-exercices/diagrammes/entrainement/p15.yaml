@@ -1,0 +1,105 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 15, rank: S}
+diagrams:
+  - id: entrainement-p15-e1
+    kind: exercise
+    sheet: "Le rebond d'une bille sur une bande"
+    exercise: 1
+    caption: "Jouer une bande avant."
+    sessions: "2"
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: w, color: white, at: [0.7, 3.69], role: cue}
+      - {id: b8, color: black, at: [1.45, 3.72], label: "8"}
+      - {id: r1, color: red, at: [2.47, 3.72], label: "1"}
+      - {id: r2, color: red, at: [3.45, 3.72], label: "2"}
+      - {id: r3, color: red, at: [4.49, 3.72], label: "3"}
+      - {id: r4, color: red, at: [5.49, 3.72], label: "4"}
+      - {id: r5, color: red, at: [6.47, 3.72], label: "5"}
+    ghosts:
+      - {id: g1, at: [1.43, 0.18], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[0.7, 3.69], [1.43, 0.18], [2.31, 3.51]], bounces: [top]}
+      - {id: a2, ball: w, kind: cue, path: [[0.7, 3.69], [1.97, 0.18], [3.33, 3.49]], bounces: [top]}
+    sequence:
+      - {step: 1, cue: w, hit: r1, via: top}
+      - {step: 2, cue: w, hit: r2, via: top}
+    inset:
+      contact: none
+      tip_point: above_center
+      bridge_height: surface
+    annotations:
+      - "Cinq billes rouges numérotées 1 à 5 alignées près de la bande du bas ; la bille noire (8) est entre la blanche et la rouge 1."
+      - "Deux flèches seulement (vers les rouges 1 et 2) ; aucune flèche n'est dessinée vers les rouges 3 à 5 et le texte ne précise pas comment elles se jouent."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, ligne de départ verticale (trait plein) un peu à gauche de la
+      colonne x = 2. Une bille blanche (cercle creux avec deux petits points rouges) est posée près de la poche
+      d'angle bas gauche, à (0,7 ; 3,7). Sur la même ligne, près de la bande du bas, la bille noire (8) à environ
+      (1,45 ; 3,7), puis cinq billes rouges numérotées 1 à 5, espacées d'environ une case (x ≈ 2,5 ; 3,5 ; 4,5 ; 5,5 ;
+      6,5). Deux flèches partent de la blanche et montent presque verticalement vers la bande du haut (rebond vers
+      x ≈ 1,4 puis x ≈ 2,0, le premier rebond étant matérialisé par un cercle creux pointillé contre la bande),
+      puis redescendent en diagonale vers la rouge 1 et vers la rouge 2. Le trajet croise donc la ligne de départ.
+      Petit schéma en haut à droite de la table : bille blanche vue de face, point bleu un peu au-dessus du centre
+      de la bille, repères en croix et trait turquoise sous la bille (chevalet sur la surface de jeu).
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,82 sur le schéma (la convention du FORMAT donne 2,0)."
+      - "Le cercle creux pointillé contre la bande du haut est le point de rebond de la blanche (centre à ≈ 0,18 de la bande) ; il n'est pas légendé. Le second rebond (x ≈ 1,97) n'a pas de cercle."
+      - "Les pointes de flèche s'arrêtent juste avant les rouges 1 et 2 (≈ 0,2 case) ; le chemin est transcrit jusqu'à la pointe."
+      - "Les numéros 1 à 5 près des rouges sont transcrits en label ; le texte n'indique pas s'il s'agit d'un ordre de jeu."
+      - "Le type de chevalet n'est pas donné par l'énoncé ; le trait turquoise du petit schéma est transcrit bridge_height: surface par convention."
+      - "Point bleu du petit schéma : au-dessus du centre (environ la moitié du rayon), non quantifié par le texte ; aucune bille de contact n'y est dessinée."
+      - "La bille blanche est dessinée en cercle creux (symbole de position de départ) avec deux points rouges ; elle est transcrite comme bille blanche role cue."
+  - id: entrainement-p15-e2
+    kind: exercise
+    sheet: "Le rebond d'une bille sur une bande"
+    exercise: 2
+    caption: "Jouer une bande avant."
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: w, color: white, at: [1.0, 0.98], role: cue}
+      - {id: b8, color: black, at: [1.64, 1.13], label: "8"}
+      - {id: r0, color: red, at: [1.31, 1.32]}
+      - {id: y1, color: yellow, at: [2.99, 2.0], label: "1"}
+      - {id: y2, color: yellow, at: [3.98, 2.0], label: "2"}
+      - {id: y3, color: yellow, at: [5.0, 2.0], label: "3"}
+      - {id: y4, color: yellow, at: [6.0, 2.0], label: "4"}
+      - {id: y5, color: yellow, at: [6.98, 2.0], label: "5"}
+    ghosts:
+      - {id: g1, at: [1.63, 0.17], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.0, 0.98], [1.63, 0.17], [2.79, 1.67]], bounces: [top]}
+      - {id: a2, ball: w, kind: cue, path: [[1.0, 0.98], [1.99, 0.17], [3.7, 1.6]], bounces: [top]}
+    sequence:
+      - {step: 1, cue: w, hit: y1, via: top}
+      - {step: 2, cue: w, hit: y2, via: top}
+    inset:
+      contact: none
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "Cinq billes jaunes numérotées 1 à 5 alignées au milieu de la hauteur de la table ; la blanche, la noire (8) et une rouge sont groupées près de la poche d'angle haut gauche."
+      - "Deux flèches seulement (vers les jaunes 1 et 2) ; aucune flèche n'est dessinée vers les jaunes 3 à 5 et le texte ne précise pas comment elles se jouent."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, ligne de départ verticale (trait plein) un peu à gauche de la
+      colonne x = 2. Une bille blanche (cercle creux avec deux petits points rouges) est posée à (1,0 ; 1,0) ; juste
+      à côté la bille noire (8) à environ (1,65 ; 1,15) et une bille rouge à environ (1,3 ; 1,3). Cinq billes jaunes numérotées 1 à 5 sont alignées à y = 2, espacées d'une case
+      (x ≈ 3 ; 4 ; 5 ; 6 ; 7). Deux flèches partent de la blanche, montent vers la bande du haut (rebonds vers x ≈ 1,6
+      puis x ≈ 2,0, le premier matérialisé par un cercle creux pointillé contre la bande), puis descendent en
+      diagonale vers les jaunes 1 et 2. Le trajet croise la ligne de départ. Petit schéma en bas à gauche de la
+      table : bille blanche vue de face, point bleu au centre, repères en croix et trait turquoise sous la bille
+      (chevalet sur la surface de jeu).
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,83 sur le schéma (la convention du FORMAT donne 2,0)."
+      - "Le cercle creux pointillé contre la bande du haut est le point de rebond de la blanche (centre à ≈ 0,17 de la bande) ; il n'est pas légendé. Le second rebond (x ≈ 2,0) n'a pas de cercle."
+      - "Les pointes de flèche s'arrêtent avant les jaunes 1 et 2 (≈ 0,3 case) ; la seconde flèche prolongée passe à ≈ 0,2 case à droite de la jaune 2. Le chemin est transcrit jusqu'à la pointe."
+      - "Les numéros 1 à 5 près des jaunes sont transcrits en label ; le texte n'indique pas s'il s'agit d'un ordre de jeu."
+      - "Le rôle de la bille rouge et de la bille noire (obstacles à éviter, billes à ne pas toucher) n'est pas précisé par le texte."
+      - "Le type de chevalet n'est pas donné par l'énoncé ; le trait turquoise du petit schéma est transcrit bridge_height: surface par convention."
+      - "Aucune bille de contact n'est dessinée dans le petit schéma : contact: none."
+      - "Pas de « Nombre de séances » indiqué pour l'exercice 2 sur cette page."

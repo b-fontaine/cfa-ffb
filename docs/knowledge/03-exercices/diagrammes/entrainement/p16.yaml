@@ -1,0 +1,102 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 16, rank: S}
+diagrams:
+  - id: entrainement-p16-e3
+    kind: exercise
+    sheet: "Le rebond d'une bille sur une bande"
+    exercise: 3
+    caption: "Jouer sur deux bandes avant de toucher une bille."
+    success_rate: [2, 3]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: b8, color: black, at: [3.09, 2.38], label: "8"}
+      - {id: r1, color: red, at: [3.5, 3.09]}
+      - {id: y1, color: yellow, at: [6.99, 3.83], label: "1", order: 1}
+      - {id: y2, color: yellow, at: [5.84, 3.83], label: "2", order: 2}
+      - {id: y3, color: yellow, at: [4.75, 3.83], label: "3", order: 3}
+      - {id: w, color: white, at: [2.99, 2.98], role: cue}
+    ghosts:
+      - {id: g-start, at: [2.99, 2.98], role: cue_start}
+    arrows:
+      - {id: c-y1, ball: w, kind: cue, path: [[2.99, 2.98], [5.5, 0.17], [7.87, 2.79], [7.17, 3.62]], bounces: [top, right]}
+      - {id: c-y2, ball: w, kind: cue, path: [[2.99, 2.98], [6.0, 0.15], [7.87, 1.89], [6.0, 3.62]], bounces: [top, right]}
+    sequence:
+      - {step: 1, cue: w, hit: y1, contact: none}
+      - {step: 2, cue: w, hit: y2, contact: none}
+    inset:
+      contact: none
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "La blanche part d'un emplacement pointillé (cercle creux marqué de deux petits points rouges), à gauche de la médiane, à droite de la ligne de départ."
+      - "Chaque trajet de la blanche touche d'abord la bande du haut puis la bande de droite (deux bandes), avant d'atteindre une bille jaune ; un cercle pointillé marque chaque point de rebond sur la bande."
+      - "Les billes jaunes sont numérotées 1, 2, 3 de droite à gauche ; seules les billes 1 et 2 ont une flèche d'arrivée."
+    description: >-
+      Vue de dessus, extrémité de départ à gauche. La bille noire (8) est vers le centre-gauche (x ≈ 3,1 ; y ≈ 2,4)
+      et une bille rouge juste en dessous à droite (x ≈ 3,5 ; y ≈ 3,1). Trois billes jaunes alignées près de la bande
+      du bas, numérotées 1 (x ≈ 7,0), 2 (x ≈ 5,85) et 3 (x ≈ 4,75), toutes à y ≈ 3,8. La blanche est posée sur le
+      cercle pointillé (x ≈ 3,0 ; y ≈ 3,0), à gauche de la bille rouge (sans la toucher). Deux trajets partent de ce cercle vers le haut à
+      droite : le premier rebondit sur la bande du haut vers x ≈ 5,5, puis sur la bande de droite vers y ≈ 2,8, et
+      redescend vers la jaune 1 ; le second rebondit sur la bande du haut vers x ≈ 6,0, puis sur la bande de droite
+      vers y ≈ 1,9, et redescend vers la jaune 2. Le schéma en haut à gauche de la table montre une bille blanche
+      seule (sans bille cible), point bleu du tip au centre de la blanche, trait vert d'eau sous la bille (niveau
+      de la surface) : jeu à hauteur centrale. Pastille « Billard de bronze » absente.
+    uncertainties:
+      - "Ligne de départ (trait plein vertical) lue à x ≈ 1,8 et non 2,0 comme la convention du FORMAT."
+      - "Les points de rebond sont les sommets des traits tels que dessinés (y ≈ 0,15 sur la bande du haut, x ≈ 7,87 sur la bande de droite), à ≈ 0,1 case près ; la bande exacte est à y = 0 / x = 8."
+      - "La jaune 3 n'a pas de flèche : la source ne dit pas si elle est jouée ; seules deux trajectoires (billes 1 et 2) sont dessinées."
+      - "Les billes noire (8) et rouge sont des obstacles ou repères non commentés par le texte ; leur rôle n'est pas précisé."
+      - "Le schéma de quantité est placé en haut à gauche de la table (et non en bas à droite) ; aucune bille cible n'y figure, donc contact: none."
+      - "Type de chevalet non indiqué par l'énoncé."
+  - id: entrainement-p16-e4
+    kind: exercise
+    sheet: "Le rebond d'une bille sur une bande"
+    exercise: 4
+    caption: "Jouer sur deux bandes avant de toucher une bille."
+    success_rate: [2, 3]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: b8, color: black, at: [1.97, 2.45], label: "8"}
+      - {id: r1, color: red, at: [4.01, 3.0], label: "1", order: 1}
+      - {id: r2, color: red, at: [4.0, 1.99], label: "2", order: 2}
+      - {id: r3, color: red, at: [4.0, 0.98], label: "3", order: 3}
+      - {id: y1, color: yellow, at: [1.98, 1.82]}
+      - {id: y2, color: yellow, at: [2.48, 2.74]}
+      - {id: y3, color: yellow, at: [3.29, 3.0]}
+      - {id: y4, color: yellow, at: [3.69, 3.47]}
+      - {id: w, color: white, at: [1.97, 2.95], role: cue}
+    ghosts:
+      - {id: g-start, at: [1.97, 2.95], role: cue_start}
+    arrows:
+      - {id: c-r1, ball: w, kind: cue, path: [[1.97, 2.95], [0.17, 1.14], [1.11, 0.17], [3.42, 2.47]], bounces: [left, top]}
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: none}
+    inset:
+      contact: none
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "La blanche part d'un emplacement pointillé (cercle creux marqué de deux petits points rouges), juste sous la bille noire 8, à droite de la ligne de départ."
+      - "Le trajet de la blanche touche d'abord la bande de gauche puis la bande du haut (deux bandes), puis descend en diagonale vers la ligne des billes rouges ; un cercle pointillé marque chaque point de rebond sur la bande."
+      - "Les billes rouges sont numérotées 1, 2, 3 de bas en haut sur la médiane (x = 4) ; la flèche finale pointe en direction de la rouge 1."
+    description: >-
+      Vue de dessus, extrémité de départ à gauche. Trois billes rouges alignées sur la médiane (x ≈ 4), numérotées
+      1 (y ≈ 3,0), 2 (y ≈ 2,0) et 3 (y ≈ 1,0). Quatre billes jaunes en diagonale descendante à gauche des rouges
+      (x ≈ 2,0 ; y ≈ 1,8), (x ≈ 2,5 ; y ≈ 2,7), (x ≈ 3,3 ; y ≈ 3,0), (x ≈ 3,7 ; y ≈ 3,5), et la bille noire (8)
+      en x ≈ 2,0 ; y ≈ 2,45. La blanche est posée sur le cercle pointillé juste sous la noire (x ≈ 2,0 ; y ≈ 2,95).
+      Son trajet monte en diagonale vers la bande de gauche (y ≈ 1,1), rebondit, monte vers la bande du haut
+      (x ≈ 1,1), rebondit et redescend en diagonale vers le bas à droite, avec une pointe de flèche vers x ≈ 3,4 ;
+      y ≈ 2,5, dans la direction de la bille rouge 1. Le schéma en bas à droite de la table montre une bille blanche
+      seule, point bleu du tip au centre, trait vert d'eau sous la bille (niveau de la surface). Pastille « Billard
+      de bronze » absente.
+    uncertainties:
+      - "Ligne de départ (trait plein vertical) lue à x ≈ 1,8 et non 2,0 comme la convention du FORMAT."
+      - "Les points de rebond sont les sommets des traits tels que dessinés (x ≈ 0,17 sur la bande de gauche, y ≈ 0,17 sur la bande du haut), à ≈ 0,1 case près ; la bande exacte est à x = 0 / y = 0."
+      - "La flèche s'arrête avant d'atteindre une bille ; la bille visée (rouge 1) est déduite du prolongement de la diagonale (à environ 45°)."
+      - "Le rôle des billes jaunes et de la noire (obstacles ou repères) n'est pas précisé par le texte."
+      - "Le schéma de quantité ne montre aucune bille cible, donc contact: none."
+      - "Type de chevalet non indiqué par l'énoncé."

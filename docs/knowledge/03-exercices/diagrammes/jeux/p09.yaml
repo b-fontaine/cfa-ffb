@@ -1,0 +1,53 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 9, rank: S}
+diagrams:
+  - id: jeux-p09-j1
+    kind: game
+    sheet: "La quantité quart de bille."
+    caption: "Objectif : Empocher 8 billes dans une poche, en quantité quart de bille, et en adaptant la puissance du coup."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [4.0, 0.77]}
+      - {id: y1, color: yellow, at: [4.0, 3.21]}
+      - {id: w, color: white, at: [1.8, 2.0], role: cue}
+    ghosts:
+      - {id: g1, at: [4.0, 1.0], role: impact, for: w, label: "rouge"}
+      - {id: g2, at: [4.0, 3.0], role: impact, for: w, label: "jaune"}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.8, 2.0], [4.0, 1.0], [7.9, 1.27], [0.78, 1.79]], bounces: [right]}
+      - {id: a2, ball: w, kind: cue, path: [[1.8, 2.0], [4.0, 3.0], [7.9, 2.72], [0.78, 2.21]], bounces: [right]}
+    zones:
+      - {id: z1, shape: rect, from: [0, 0], to: [1.8, 4], label: "zone de repositionnement de la bille blanche"}
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: quarter, pocket: tm}
+      - {step: 2, cue: w, hit: y1, contact: quarter, pocket: bm}
+    annotations:
+      - "Règles du jeu : une partie qui oppose deux joueurs ; chaque joueur doit empocher toutes les billes de son groupe, puis la noire, dans une poche au milieu, en quantité quart de bille."
+      - "Les joueurs tirent à tour de rôle ; la bille blanche est repositionnée après chaque tir sur son point d'origine."
+      - "Lorsqu'une bille de couleur est empochée, on replace une autre bille sur le point identique ; toute bille non empochée est également repositionnée sur son point d'origine."
+      - "Le joueur qui gagne la partie est celui qui a empoché toutes les billes de son groupe puis la noire ; en cas d'égalité, les joueurs jouent la bille noire jusqu'à ce que l'un des deux loupe."
+      - "Un coup n'est pas valable si le joueur commet une faute ou ne replace pas la bille blanche dans la zone."
+      - "Conseil : vérifier que les billes sont positionnées à chaque fois en quantité quart de bille."
+    description: >-
+      Table vue de dessus, en paysage, avec la grille pointillée 8 x 4, la ligne de départ (trait plein
+      vertical, vers x = 1,8) et la zone grisée à sa gauche (de x = 0 à la ligne, sur toute la largeur).
+      Une bille rouge est posée près de la poche du milieu haut (tm), à x = 4,0 et y proche de 0,8 ;
+      une bille jaune est posée symétriquement près de la poche du milieu bas (bm), à x = 4,0 et y
+      proche de 3,2. La bille blanche (cercle blanc, avec un petit repère rouge) est posée sur la ligne de
+      départ, au milieu de la largeur (x = 1,8 ; y = 2,0). Sous la rouge et au-dessus de la jaune, à
+      environ une demi-case, un cercle creux pointillé (x = 4,0 ; y = 1,0 et y = 3,0) matérialise la
+      position de la blanche à l'impact pour un contact quart de bille. Deux trajectoires de la blanche
+      partent de sa position : la première va au cercle creux de la rouge, puis repart vers la bande
+      de droite (touchée à x = 7,9, y = 1,3), et revient en pointe de flèche vers la zone grisée
+      (x = 0,8 ; y = 1,8). La seconde va au cercle creux de la jaune, touche la bande de droite
+      (y = 2,7) et revient vers la zone grisée (x = 0,8 ; y = 2,2). Aucune flèche n'est dessinée pour
+      les billes de couleur. Aucun schéma de quantité de bille en encart.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,8 (et non 2,0) ; non reprise comme champ dédié."
+      - "Positions mesurées à ≈ 0,15 case près (rouge y ≈ 0,77 ; jaune y ≈ 3,21 ; cercles creux y ≈ 1,0 et 3,0)."
+      - "Les trajectoires de la bille d'objet vers les poches du milieu ne sont pas dessinées ; les poches tm et bm de la séquence viennent du texte (« une poche au milieu ») et de la position des billes."
+      - "Le chemin retour de la blanche (après la bande de droite) se termine par une pointe de flèche dans la zone grisée ; l'interprétation (arrivée de la blanche, adaptation de la puissance) vient de l'objectif."
+      - "Le texte ne précise pas le type de chevalet (bridge: unknown) ; pas de pastille Billard de bronze, ni taux de réussite, ni nombre de séances sur cette page."
+      - "Le texte parle de 8 billes ; le schéma n'en montre que deux de couleur (une rouge, une jaune) plus la blanche : les autres sont repositionnées sur le même point d'origine."

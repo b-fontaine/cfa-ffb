@@ -1,0 +1,60 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 18, rank: S}
+diagrams:
+  - id: initiation-p18-e1
+    kind: initiation
+    sheet: "Le rétro en quantité de bille trois-quarts."
+    caption: "Empocher deux billes en réalisant un rétro."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [1.01, 0.97], label: "rouge"}
+      - {id: w1, color: white, at: [1.84, 2.01], role: cue, label: "blanche 1"}
+      - {id: y1, color: yellow, at: [1.01, 2.47], label: "jaune"}
+      - {id: w2, color: white, at: [1.23, 3.52], role: cue, label: "blanche 2"}
+    ghosts:
+      - {id: g1, at: [1.16, 1.14], role: impact, for: w1}
+      - {id: g2, at: [1.09, 2.67], role: impact, for: w2}
+    arrows:
+      - {id: a1, ball: w1, kind: cue, path: [[1.84, 2.01], [1.16, 1.14]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[1.01, 0.97], [0.13, 0.18]], to: tl}
+      - {id: a3, ball: w1, kind: cue, path: [[1.16, 1.14], [2.08, 1.53]], bounces: []}
+      - {id: a4, ball: w2, kind: cue, path: [[1.23, 3.52], [1.09, 2.67]], bounces: []}
+      - {id: a5, ball: y1, kind: object, path: [[1.01, 2.47], [0.26, 0.38]], to: tl}
+      - {id: a6, ball: w2, kind: cue, path: [[1.09, 2.67], [2.0, 3.67]], bounces: []}
+    sequence:
+      - {step: 1, cue: w1, hit: r1, contact: three_quarter, pocket: tl, effect: retro, attack: low}
+      - {step: 2, cue: w2, hit: y1, contact: three_quarter, pocket: tl, effect: retro, attack: low}
+    inset:
+      contact: three_quarter
+      tip_point: below_center
+      bridge_height: surface
+    annotations:
+      - "Objectif (PDF) : « Empocher deux billes, en réalisant un rétro, pour faire reculer la bille blanche au-delà du trait. Utiliser un chevalet sur la surface de jeu et un chevalet sur cadre »."
+      - "Consignes à l'élève (PDF) : « Viser en quantité de bille trois-quarts. » ; « Utiliser une attaque basse. » ; « Exécuter le coup à une certaine vitesse afin que la bille blanche conserve sa rotation arrière jusqu'à l'impact. » ; « Lever légèrement le talon de la queue, lors de l'utilisation du chevalet sur cadre, afin de l'incliner et pouvoir exécuter une attaque basse. »"
+      - "Conseils à l'animateur (PDF) : « Positionner les billes de telle sorte que la distance, entre elles, ne soit pas trop importante, afin de conserver plus facilement le roulement arrière de la bille blanche jusqu'à l'impact. » ; « Si la bille blanche ne recule pas, c'est que l'attaque ne se situe pas en dessous du centre, ou que la vitesse d'exécution du coup n'est pas suffisamment rapide. » ; « Selon la vitesse d'exécution du coup, la trajectoire de la bille blanche peut varier après impact. »"
+      - "Le trait plein vertical du schéma (ligne de départ, x ≈ 1,82) est lu comme le « trait » que la blanche doit dépasser en reculant (lecture du schéma : la page ne le nomme pas explicitement)."
+    description: >-
+      Table vue de dessus, départ à gauche. Deux situations de rétro, l'une au-dessus de l'autre,
+      près de la bande gauche. Situation du haut : bille rouge (x ≈ 1,0 ; y ≈ 1,0) ; la blanche
+      (marquée de points rouges) est posée sur le trait plein (x ≈ 1,8 ; y ≈ 2,0) et vise la rouge
+      en trois-quarts ; un cercle creux pointillé collé à la rouge (x ≈ 1,2 ; y ≈ 1,1) donne la
+      position de la blanche à l'impact. La rouge part vers la poche d'angle haut-gauche (tl). Après
+      l'impact, la blanche recule en rétro : une flèche repart de l'impact vers la droite et vers
+      le bas (jusqu'à x ≈ 2,1 ; y ≈ 1,5), donc au-delà du trait. Situation du bas : bille jaune
+      (x ≈ 1,0 ; y ≈ 2,5) ; la blanche (x ≈ 1,2 ; y ≈ 3,5) vise la jaune en trois-quarts, cercle
+      creux d'impact collé à la jaune (x ≈ 1,1 ; y ≈ 2,7) ; la jaune part aussi vers la poche tl, en
+      longeant la bande gauche. La blanche recule ensuite vers le bas-droite (jusqu'à x ≈ 2,0 ;
+      y ≈ 3,7), au-delà du trait. Au centre-droit, un schéma de quantité de bille : la blanche
+      recouvre la rouge en trois-quarts (croissant rouge visible à gauche), point bleu du tip sous
+      le centre de la blanche (attaque basse), ligne turquoise horizontale sous la bille (hauteur de chevalet non précisée par le texte). La pastille
+      Billard de bronze n'est pas présente ; l'onglet bleu indique « FICHE INITIATION Le rétro en
+      trois-quarts de bille ».
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,82 (et non 2,0) sur le schéma."
+      - "Le texte dit « un chevalet sur la surface de jeu et un chevalet sur cadre » sans préciser lequel correspond à quelle situation : bridge: unknown."
+      - "Les flèches de la blanche après impact sont rectilignes et s'arrêtent à ≈ 2,0-2,1 ; leur longueur réelle de recul n'est pas précisée (elle dépend de la vitesse selon le texte)."
+      - "La flèche de la jaune est lue comme allant vers la poche tl (elle longe la bande gauche) ; son extrémité (x ≈ 0,26 ; y ≈ 0,38) est une mesure approchée."
+      - "Dans l'encart, le point bleu est lu environ à la moitié du rayon sous le centre de la blanche (below_center), conforme à « attaque basse » ; hauteur du chevalet (trait turquoise) transcrite surface par convention."
+      - "Pas de taux de réussite, ni nombre de séances, sur cette page."

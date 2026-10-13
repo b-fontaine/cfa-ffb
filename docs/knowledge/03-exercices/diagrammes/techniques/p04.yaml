@@ -1,0 +1,52 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 4, rank: S}
+diagrams:
+  - id: techniques-p04-resultats
+    kind: technique-photo
+    sheet: "Les fiches résultats"
+    caption: "Exemple de fiche résultats : six essais, score sur 10, courbe de performance."
+    subject: >-
+      Exemple de fiche résultats renseignée : un tableau à six colonnes (ESSAI 1 à ESSAI 6) avec le score
+      sur 10 de chaque essai, et en dessous une grille (échelle verticale de 1 à 10, six colonnes) sur
+      laquelle un point vert par essai joué est placé à la ligne du score, les points étant reliés par un
+      trait vert.
+    elements:
+      - "En-têtes de colonnes : ESSAI 1, ESSAI 2, ESSAI 3, ESSAI 4, ESSAI 5, ESSAI 6"
+      - "Scores (chiffre vert, suivi de « /10 ») : ESSAI 1 = 5 /10 ; ESSAI 2 = 7 /10 ; ESSAI 3 = 6 /10 ; ESSAI 4 = 8 /10 ; ESSAI 5 = « /10 » (vide) ; ESSAI 6 = « /10 » (vide)"
+      - "Grille de courbe : axe vertical gradué de 10 (haut) à 1 (bas), une colonne par essai"
+      - "Points verts : essai 1 à la ligne 5, essai 2 à la ligne 7, essai 3 à la ligne 6, essai 4 à la ligne 8 ; aucun point pour les essais 5 et 6"
+      - "Trait vert reliant les quatre points : monte de 5 à 7, descend à 6, remonte à 8"
+    series:
+      - {trial: 1, score: 5, out_of: 10}
+      - {trial: 2, score: 7, out_of: 10}
+      - {trial: 3, score: 6, out_of: 10}
+      - {trial: 4, score: 8, out_of: 10}
+      - {trial: 5, score: null, out_of: 10}
+      - {trial: 6, score: null, out_of: 10}
+    teaching_point: >-
+      Reporter le score de chaque essai à la ligne correspondante de la colonne de l'essai, puis relier les
+      points pour tracer la courbe de performance du joueur.
+    adjacent_text_summary: >-
+      Les fiches résultats retranscrivent les performances des élèves sur les exercices d'entraînement.
+      L'animateur y inscrit les informations du joueur et la notion technique abordée, ainsi que ses
+      résultats. Sur les six colonnes, un score de 5 est pointé à la ligne 5 de l'essai 1 ; un 7 au second
+      essai est pointé à la septième ligne, etc. En reliant les points, on trace une courbe de performance.
+    description: >-
+      Illustration d'exemple, pas un schéma de table. Quatre essais sont renseignés (5, 7, 6, 8 sur 10), les
+      essais 5 et 6 restent vides. La courbe verte passe par (essai 1, 5), (essai 2, 7), (essai 3, 6),
+      (essai 4, 8).
+    uncertainties: []
+  - id: techniques-p04-onglets
+    kind: technique-photo
+    sheet: "Les fiches résultats"
+    caption: "Onglets de couleur « FICHE JEU » et « FICHE RÉSULTATS »."
+    subject: "Deux onglets verticaux sur le bord droit de la page, repères de type de fiche."
+    elements:
+      - "Onglet orange avec le texte vertical « FICHE JEU », en face du paragraphe sur les fiches jeux"
+      - "Onglet violet avec le texte vertical « FICHE RÉSULTATS », en face du paragraphe sur les fiches résultats"
+    teaching_point: "Code couleur : orange = fiche jeu, violet = fiche résultats (repère visuel des types de fiches)."
+    adjacent_text_summary: >-
+      Paragraphes décrivant les fiches jeux (fin de séance, autour du thème de la séance, puis parties à
+      difficulté réduite) et les fiches résultats.
+    description: "Repères graphiques décoratifs de navigation ; aucun contenu technique de billard."
+    uncertainties: []

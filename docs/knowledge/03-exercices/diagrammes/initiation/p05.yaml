@@ -1,0 +1,59 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 5, rank: S}
+diagrams:
+  - id: initiation-p05-e1
+    kind: initiation
+    sheet: "La puissance"
+    caption: "Empocher 4 billes, à la mesure. La bille blanche ne doit pas sortir de la zone grise après impact."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.10, 0.12]}
+      - {id: y1, color: yellow, at: [3.96, 0.15]}
+      - {id: w, color: white, at: [5.95, 1.95], role: cue}
+    ghosts:
+      - {id: gc2, at: [0.9, 3.58], role: cue_start, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[5.95, 1.95], [0.31, 0.30]], bounces: [], note: "de la position droite vers la bille rouge"}
+      - {id: a2, ball: w, kind: cue, path: [[5.95, 1.95], [4.05, 0.38]], bounces: [], note: "de la position droite vers la bille jaune"}
+      - {id: a3, ball: w, kind: cue, path: [[0.9, 3.58], [0.19, 0.42]], bounces: [], note: "de la position gauche vers la bille rouge"}
+      - {id: a4, ball: w, kind: cue, path: [[0.9, 3.58], [3.82, 0.43]], bounces: [], note: "de la position gauche vers la bille jaune"}
+    zones:
+      - {id: z1, shape: rect, from: [0.0, 0.05], to: [0.92, 0.92], label: "zone grise (bille rouge)"}
+      - {id: z2, shape: rect, from: [2.9, 0.05], to: [4.9, 0.92], label: "zone grise (bille jaune)"}
+    sequence:
+      - {step: 1, cue: w, from: w, hit: r1, pocket: tl}
+      - {step: 2, cue: w, from: w, hit: y1, pocket: tm}
+      - {step: 3, cue: w, from: gc2, hit: r1, pocket: tl}
+      - {step: 4, cue: w, from: gc2, hit: y1, pocket: tm}
+    inset:
+      contact: three_quarter
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "Deux schémas de quantité de bille : l'un près de la position droite (point du tip au centre de la blanche), l'autre près de la position gauche (point du tip un peu au-dessus du centre)."
+      - "Consigne : « Utiliser un chevalet sur le cadre pour empocher les 2 billes puis un chevalet sur la surface de jeu pour empocher deux autres billes. » Conseil à l'animateur : « Replacer la bille blanche après chaque tir. »"
+    description: >-
+      Table vue de dessus, départ à gauche. Deux billes seulement, collées chacune à une poche du
+      haut : une rouge près de la poche d'angle haut-gauche (tl) (x ≈ 0,2 ; y ≈ 0,2) et une jaune
+      juste sous la poche du milieu du haut (tm) (x ≈ 4,0 ; y ≈ 0,2). Deux zones grisées sont
+      dessinées le long de la bande du haut : l'une autour de la rouge (x de 0 à 1, y de 0 à 1) et
+      l'autre autour de la jaune (x de 3 à 5, y de 0 à 1) ; la blanche doit y rester après l'impact.
+      Deux cercles creux avec des points rouges indiquent où poser la blanche : un à droite
+      (x ≈ 6 ; y ≈ 2) et un en bas à gauche (x ≈ 0,9 ; y ≈ 3,6). De chacune de ces positions partent
+      deux flèches pleines, une vers la bille rouge et une vers la bille jaune, soit 4 tirs
+      (« empocher 4 billes »), de longueurs très différentes d'où la notion de puissance (à la
+      mesure). Ces petits cercles creux (points rouges) représentent la bille blanche à poser ; elle est modélisée par la blanche w (position droite) et un fantôme pour la position gauche. Deux schémas de quantité de bille (blanche
+      recouvrant une grande partie d'une rouge, ligne turquoise de chevalet sous la bille ; point
+      bleu du tip visible sur le schéma du bas) sont placés en haut à droite et en bas au centre de la table. La pastille
+      Billard de bronze n'est pas présente ; l'onglet bleu indique « FICHE INITIATION La puissance ».
+      Objectif du texte : adapter l'amplitude du geste et la vitesse du coup en fonction de la
+      distance, avec un chevalet sur la surface de jeu et un chevalet sur cadre.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,82 (et non 2,0) sur le schéma."
+      - "Les petits cercles creux à points rouges sont lus comme la blanche à poser (position droite = bille w, position gauche = fantôme)."
+      - "Les flèches s'arrêtent juste au contact des billes ; le point exact d'impact et le côté de contact (quantité) ne sont pas lisibles, le contact des schémas de quantité est estimé à environ trois-quarts de bille."
+      - "Le texte n'indique pas quelles positions de tir utilisent le chevalet sur cadre et lesquelles la surface de jeu ; les schémas de chevalet montrent tous deux une ligne sous la bille."
+      - "Pas de taux de réussite ni de nombre de séances sur cette page."
+      - "Poche visée par chaque bille supposée (tl pour la rouge, tm pour la jaune) d'après la proximité ; aucune flèche de bille cible n'est dessinée."

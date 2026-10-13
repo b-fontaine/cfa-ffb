@@ -1,0 +1,86 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 22, rank: S}
+diagrams:
+  - id: techniques-p22-roulement-glissement
+    kind: technique-photo
+    sheet: "Le carreau"
+    caption: "Roulement / Glissement — Un tir joué avec une attaque au centre, fait avancer la bille blanche en glissant, puis en roulant vers l'avant."
+    subject: >-
+      Deux rendus 3D de la bille blanche vue de côté, posée sur un trait noir horizontal (le plan de la table),
+      avec une queue à droite : à gauche la phase de roulement, au centre la phase de glissement.
+    elements:
+      - "Bille blanche de gauche, légendée « Roulement » : deux flèches courbes creuses à contour noir, en boucle (une en haut tournant vers la gauche, une en bas tournant vers la droite) matérialisant la rotation de la bille sur elle-même"
+      - "Bille blanche du centre, légendée « Glissement » : une seule flèche horizontale creuse (contour noir) pointant vers la gauche (avancée sans rotation), trois points rouges de repère sur la bille (haut-gauche, haut-droite, bas)"
+      - "Trait noir horizontal épais sous les deux billes (la table), qui s'arrête à droite de la bille « Glissement »"
+      - "Queue de billard à l'extrême droite, bien au-dessus du trait et à hauteur du centre de la bille « Glissement », embout noir (procédé) puis virole blanche à gauche, dirigés vers la bille « Glissement »"
+      - "Points rouges de repère sur la bille de gauche : haut-gauche, haut-droite, bas (le point du bas touche la table)"
+    teaching_point: >-
+      Avec une attaque au centre, la bille blanche avance d'abord en glissant (sans rotation), puis roule ;
+      cette phase de glissement peut être exploitée pour réaliser un carreau.
+    adjacent_text_summary: >-
+      « Un tir joué avec une attaque au centre, fait avancer la bille blanche en glissant, puis en roulant vers
+      l'avant. » Sous le schéma : « Cette phase de glissement peut être exploitée pour réaliser un carreau. »
+    description: >-
+      Illustration en haut de la page. À gauche, la bille « Roulement » porte deux flèches courbes en boucle
+      (rotation). Au centre, la bille « Glissement » porte une flèche droite vers la gauche (translation sans
+      rotation). La queue, à droite, est alignée à hauteur du centre de la bille, ce qui correspond à
+      l'attaque au centre.
+    uncertainties:
+      - "La hauteur exacte de la queue par rapport à la bille n'est pas mesurable sur le rendu ; elle paraît alignée sur le centre de la bille, conformément au texte (attaque au centre)."
+      - "Le sens de déplacement de la flèche (vers la gauche) est lu sur le dessin ; la queue étant à droite, la bille avance vers la gauche."
+  - id: techniques-p22-carreau-schema
+    kind: technique-photo
+    sheet: "Le carreau"
+    caption: "On désigne le carreau comme étant le coup technique qui stoppe la bille blanche lors de l'impact avec une bille de couleur. Cet arrêt est opéré lorsque le coup est joué en quantité de bille pleine et qu'il y a absence de rotation au moment de l'impact."
+    subject: >-
+      Rendu 3D de côté : une bille de couleur orange à gauche, au contact d'une bille blanche portant une flèche
+      vers la gauche, avec une queue à droite, et un petit repère non légendé en croix (bille blanche à point bleu central) à gauche.
+    elements:
+      - "Bille de couleur orange à gauche, posée sur un trait noir horizontal épais (la table), au contact de la bille blanche"
+      - "Bille blanche à droite de l'orange, au contact direct (vue de côté), avec une flèche horizontale noire pointant vers la gauche (vers la bille orange) et trois points rouges de repère"
+      - "Queue de billard à droite, embout noir (procédé) puis virole blanche à gauche, alignée à hauteur du centre de la bille blanche"
+      - "Trait noir horizontal épais sous les deux billes, plus court que la largeur de la page"
+      - "Petit repère à l'extrême gauche : bille blanche vue de face avec croix noire fine (traits vertical et horizontal passant par le centre) et point bleu au centre de la bille (attaque au centre, procédé au centre), posée sur un trait bleu-vert horizontal"
+    teaching_point: >-
+      Le carreau se joue en quantité de bille pleine avec une attaque au centre (point bleu au centre de la
+      blanche) : sans rotation au moment de l'impact, la bille blanche s'arrête sur la bille de couleur.
+    adjacent_text_summary: >-
+      « On désigne le carreau comme étant le coup technique qui stoppe la bille blanche lors de l'impact avec
+      une bille de couleur. Cet arrêt est opéré lorsque le coup est joué en quantité de bille pleine et qu'il y
+      a absence de rotation au moment de l'impact. » Puis : « Il existe plusieurs façons de réaliser un carreau
+      selon la distance qui sépare les deux billes. Chez le pratiquant débutant, on enseignera le carreau sur de
+      courtes distances entre les deux billes (50 cm max), avec une attaque au centre. L'objectif est de lui
+      faire adapter la puissance du coup pour que la bille blanche garde ce phénomène de glissement tout au long
+      de son parcours avant impact. » et « Au Blackball, si le coup est joué avec un trop de puissance, la bille
+      blanche ne stoppera pas et marquera un recul au moment de l'impact, dû à sa différence de poids avec la
+      bille de couleur. »
+    description: >-
+      Illustration au milieu de la page. De gauche à droite : le petit repère de la bille blanche en croix avec
+      point d'impact bleu au centre ; la bille orange ; la bille blanche en contact avec elle, flèche vers la
+      gauche ; la queue. Le schéma montre le moment de l'impact de la blanche sur la bille de couleur, vues de côté.
+    uncertainties:
+      - "Le repère en croix à gauche n'est pas légendé : lu comme l'indication du point d'impact du tip au centre de la blanche (attaque au centre), d'après le texte voisin."
+      - "La bille orange est la bille de couleur ; la couleur du rendu (orange) n'est pas une couleur de Blackball légendée."
+      - "Le contact des deux billes semble être un contact direct (impact), la distance de 50 cm du texte n'est pas représentée."
+  - id: techniques-p22-video-qr
+    kind: technique-photo
+    sheet: "Le carreau"
+    caption: "Scannez le QR code pour consulter la vidéo « L'utilité du carreau »"
+    subject: >-
+      Capture d'écran de la vidéo « L'utilité du carreau » (à gauche) et QR code d'accès à cette vidéo (à droite).
+    elements:
+      - "Capture de vidéo : table bleue vue en perspective avec plusieurs billes (une noire, une rouge et blanche en partie masquée, une bleue et blanche, une jaune et blanche, une orange, et la blanche), la main d'un joueur et la queue en haut à droite"
+      - "Bandeau de titre en haut à gauche de la capture, « 2 PLACER LE PROCÉDÉ AU CENTRE », avec un sous-titre minuscule illisible"
+      - "Petit repère bille blanche avec croix en bas à gauche de la capture (même repère que dans le schéma du carreau)"
+      - "Logo « DECATHLON » en bas à droite de la capture"
+      - "QR code noir et blanc à droite de la capture, avec les trois carrés de repérage"
+    teaching_point: >-
+      Renvoi vers une vidéo pour illustrer l'utilité du carreau ; aucun contenu technique supplémentaire n'est lisible sur la capture.
+    adjacent_text_summary: >-
+      « Scannez le QR code pour consulter la vidéo « L'utilité du carreau » ».
+    description: >-
+      Bas de page : capture de la vidéo avec une table bleue en perspective et quelques billes (dont une noire
+      et une blanche), à gauche, et QR code à droite. Ni l'adresse du lien ni le contenu du QR code ne sont lisibles.
+    uncertainties:
+      - "L'adresse encodée dans le QR code n'est pas lue (non transcrite)."
+      - "Le sous-titre du bandeau est illisible à cette résolution ; la disposition des billes sur la capture n'est pas transcrite."

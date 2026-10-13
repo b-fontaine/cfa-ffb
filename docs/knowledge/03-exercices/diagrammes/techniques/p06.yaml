@@ -1,0 +1,113 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 6, rank: S}
+diagrams:
+  - id: techniques-p06-photo1
+    kind: technique-photo
+    sheet: "Visée et posture"
+    caption: "Etape 2 : la posture."
+    subject: >-
+      Photo d'un joueur adulte (droitier) en posture de tir, vu de profil (tourné vers la droite de la photo, on voit son côté droit), penché sur
+      une table de billard, devant un panneau « FF BILLARD ». Des traits blancs superposés à la photo
+      matérialisent des alignements du corps.
+    elements:
+      - "Pieds : posés sur la moquette bleue, l'un derrière l'autre à écartement modéré (le texte demande qu'ils ne soient ni trop serrés, ni trop espacés)."
+      - "Traits blancs verticaux : deux traits descendent jusqu'au sol, l'un depuis un cercle placé à la hanche (à gauche, côté pied arrière), l'autre depuis un cercle placé vers le genou/la cuisse, à l'aplomb des pieds avant."
+      - "Jambes : droites, légèrement inclinées vers l'avant ; le buste est très incliné vers la table, quasi horizontal et parallèle à la queue."
+      - "Un cercle blanc est placé en haut de la photo, au niveau du coude, au-dessus du dos : un trait vertical en descend le long de l'avant-bras jusqu'à la main sur la queue, et un trait oblique le relie à la tête ; un trait horizontal part du cercle de la hanche vers la tête, le long de la queue."
+      - "Un trait oblique relie le cercle de la hanche au cercle du genou/de la cuisse."
+      - "Queue : quasi horizontale, prolongée vers la bille et le chevalet à droite de la photo ; la main avant forme le chevalet sur la table."
+      - "Tête : abaissée, le regard dans l'axe de la queue (menton proche de la queue)."
+      - "Une bille jaune est visible au loin sur la table, à droite de la photo."
+    teaching_point: >-
+      La stabilité du corps dépend du placement des pieds (ni trop serrés, ni trop espacés), le pied droit
+      étant au-dessous de la main droite qui maintient la queue ; l'avant-bras droit est vertical.
+    adjacent_text_summary: >-
+      Le texte à gauche dit : « La stabilité du corps est conditionnée par un placement adéquat des pieds
+      qui ne seront ni trop serrés, ni trop espacés. Le pied droit (pour un joueur droitier) se situant
+      au-dessous de la main droite qui maintient la queue. »
+    description: >-
+      Photo de posture de profil d'un joueur droitier penché sur la table, queue horizontale, traits
+      blancs superposés (cercles à la hanche, au genou et au coude ; verticales hanche-sol et genou-sol, vertical coude-main,
+      oblique coude-tête, oblique hanche-genou, horizontale hanche-tête) matérialisant des alignements du corps, non légendés.
+    uncertainties:
+      - "Le sens exact de chaque trait blanc (verticales hanche-sol et genou-sol, vertical coude-main, oblique coude-tête, horizontale hanche-tête, oblique hanche-genou) n'est pas légendé dans le PDF ; interprétation visuelle. Légèreté de la flexion des jambes difficile à apprécier."
+  - id: techniques-p06-photo2
+    kind: technique-photo
+    sheet: "Visée et posture"
+    caption: "Jambe droite tendue et jambe gauche fléchie"
+    subject: >-
+      Photo d'un jeune joueur en chemise sombre penché sur une table de billard bleue, vu de profil en
+      trois-quarts (tourné vers la droite de la photo, côté droit visible), en train de viser une bille blanche, avec une bille rouge visible au
+      premier plan, plus près du bord de la table.
+    elements:
+      - "Jambe droite : tendue (jambe arrière)."
+      - "Jambe gauche : fléchie, placée plus en avant."
+      - "Buste incliné vers la table, bassin légèrement pivoté à gauche."
+      - "Queue : quasi horizontale, tenue par la main arrière, passant au-dessus de la main avant."
+      - "Main avant : posée à plat sur la table (chevalet main, sur la surface), à proximité d'une bille blanche."
+      - "Tête : baissée, au-dessus de la queue, regard dans l'axe de la queue vers la bille blanche."
+      - "Bille blanche au bout de la queue, bille rouge plus proche du bord de la table, au premier plan à droite."
+    teaching_point: >-
+      Pour permettre l'aisance du balancier de l'avant-bras, pivoter légèrement le bassin à gauche en tendant
+      la jambe droite et en fléchissant la jambe gauche (première des deux options).
+    adjacent_text_summary: >-
+      « L'avant-bras droit se place naturellement vertical pour opérer un mouvement de balancier. L'aisance de
+      ce balancier sera permise en pivotant légèrement le bassin à gauche : soit en tendant la jambe droite et
+      en fléchissant la jambe gauche (photo à droite ci-dessous), soit en plaçant plus en avant la jambe
+      gauche. » Légende de la photo : « Jambe droite tendue et jambe gauche fléchie ».
+    description: >-
+      Photo à gauche, en bas de page : joueur penché, jambe droite tendue, jambe gauche fléchie et avancée,
+      queue horizontale, main avant sur la table, visée vers une bille blanche.
+    uncertainties:
+      - "Le texte du PDF dit « photo à droite ci-dessous » pour la jambe droite tendue / jambe gauche fléchie, alors que la photo portant cette légende est placée à gauche de la page ; la légende imprimée a été retenue."
+      - "Position exacte de la main avant (à plat ou en pont) difficile à lire sur la photo."
+  - id: techniques-p06-photo3
+    kind: technique-photo
+    sheet: "Visée et posture"
+    caption: "Deux jambes fléchies"
+    subject: >-
+      Photo d'un joueur adulte en chemise sombre, vu de profil depuis le côté de la table (tourné vers la gauche de la photo, la queue pointant vers la gauche), penché sur une
+      table de billard bleue, avec d'autres joueurs et tables en arrière-plan.
+    elements:
+      - "Jambes : les deux jambes légèrement fléchies, la jambe gauche placée plus en avant."
+      - "Buste incliné vers la table, bassin légèrement pivoté."
+      - "Main avant : posée à plat sur le bord de la table / sur la surface (appui, chevalet main)."
+      - "Queue : quasi horizontale, tenue par la main arrière."
+      - "Regard dirigé vers la bille, tête baissée dans l'axe de la queue."
+    teaching_point: >-
+      Seconde manière d'obtenir l'aisance du balancier : placer plus en avant la jambe gauche, les deux
+      jambes étant fléchies.
+    adjacent_text_summary: >-
+      Même paragraphe que la photo précédente : le bassin pivote légèrement à gauche, soit jambe droite
+      tendue et jambe gauche fléchie, soit en plaçant plus en avant la jambe gauche. Légende : « Deux jambes
+      fléchies ».
+    description: >-
+      Photo à droite, en bas de page : joueur de profil, les deux jambes fléchies, jambe gauche en avant,
+      main avant sur la table, queue horizontale.
+    uncertainties:
+      - "Détails de la main arrière et du pied droit peu lisibles sur la photo."
+  - id: techniques-p06-photo4
+    kind: technique-photo
+    sheet: "Visée et posture"
+    caption: "Scannez le QR code pour consulter la vidéo « Comment avoir la bonne posture »"
+    subject: >-
+      Capture d'écran d'une vidéo (logo « DECATHLON », bandeau « VERTICALITÉ DU BRAS qui tient la queue de
+      billard ») montrant un gros plan de l'avant-bras et de la main qui tient la queue, avec un trait blanc
+      vertical le long de l'avant-bras et deux cercles blancs (coude en haut, poignet/main en bas).
+    elements:
+      - "Avant-bras droit : vertical, matérialisé par un trait blanc."
+      - "Deux cercles blancs reliés par le trait vertical : l'un en haut (niveau du coude), l'autre en bas au niveau du poignet / de la main autour de la queue."
+      - "Queue de billard tenue dans la main (poignée)."
+      - "À droite de l'image : un QR code renvoyant à la vidéo « Comment avoir la bonne posture »."
+    teaching_point: >-
+      L'avant-bras qui tient la queue doit rester vertical (verticalité du bras) ; la vidéo développe la
+      bonne posture.
+    adjacent_text_summary: >-
+      Phrase en bleu au-dessus : « Scannez le QR code pour consulter la vidéo « Comment avoir la bonne
+      posture » ». Le QR code (non décodé) est placé à droite de la capture d'écran.
+    description: >-
+      Vignette vidéo : gros plan sur l'avant-bras vertical tenant la queue, trait et cercles blancs
+      superposés, avec le titre « VERTICALITÉ DU BRAS qui tient la queue de billard » ; QR code à droite.
+    uncertainties:
+      - "Le texte du bandeau de la vignette est très petit : lecture « VERTICALITÉ DU BRAS qui tient la queue de billard » probable mais non certaine."
+      - "Le QR code n'a pas été décodé : l'adresse de la vidéo est inconnue."

@@ -22,6 +22,7 @@ Instructions pour tout agent de code (Claude Code, Codex, Cursor, Gemini CLI, Co
 |--------|---------|
 | `docs/sources/` | PDF fournis. **Rang 1. Ne jamais modifier.** |
 | `docs/knowledge/` | Connaissances billard indexées (`README.md` = entrée) |
+| `docs/knowledge/03-exercices/diagrammes/` | Positions des billes des PDF transcrites en YAML (`FORMAT.md`, `README.md` = index) ; outil : `app/tool/diagrammes.dart` |
 | `docs/engineering/` | Architecture, tests, garde-fous (`README.md` = entrée) |
 | `seances/` | Séances générées (modèle : `docs/knowledge/05-seances/modele-seance.md`) |
 | `app/` | Application Flutter |
@@ -59,7 +60,7 @@ Interdits : inventer un exercice « officiel », présenter une adaptation non s
 | `seance-adapter` | Adapter un exercice / une séance à un public |
 | `seance-cycle` | Planifier une progression sur plusieurs séances |
 | `seance-verifier` | Contrôler une séance (checklist + validateur) |
-| `connaissances-enrichir` | Ajouter une source à la base avec provenance |
+| `connaissances-enrichir` | Ajouter une source à la base avec provenance (index des diagrammes à jour) |
 
 ## Volet application Flutter
 
@@ -81,6 +82,7 @@ Interdits : inventer un exercice « officiel », présenter une adaptation non s
 | Vérification complète (tests, couverture, l10n, Widgetbook) | `scripts/check.sh --full` |
 | Valider les séances | `dart run scripts/validate_seances.dart` |
 | Copier / vérifier le catalogue (asset = `docs/knowledge`) | `scripts/sync_catalogue.sh [--check]` |
+| Copier / vérifier les diagrammes à table (asset = `docs/knowledge`) | `scripts/sync_diagrammes.sh [--check]` |
 
 La CI exécute **les mêmes scripts** : voir `docs/engineering/quality-gates.md`.
 

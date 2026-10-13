@@ -1,0 +1,143 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 14, rank: S}
+note: >-
+  Fiche Technique N°4 « La quantité de bille pleine » (onglet rose « FICHE TECHNIQUE » à droite, avec le
+  titre de la fiche en vertical). Page de mémento animateur : aucune grille de table ni exercice chiffré,
+  uniquement quatre illustrations pédagogiques (une vue de face de la bille blanche avec point d'impact,
+  un alignement vertical de trois billes, deux gros plans de contact entre billes). Aucun taux de
+  réussite, aucun chevalet, aucune pastille « Billard de bronze ».
+diagrams:
+  - id: techniques-p14-point-impact-tip
+    kind: technique-photo
+    sheet: "La quantité de bille pleine"
+    caption: "Bille blanche vue de face avec le point d'impact du procédé au centre (aucune légende imprimée)."
+    subject: >-
+      Vue de face (du côté du joueur) de la bille blanche, grosse, dessinée en 3D, avec un point bleu au
+      centre exact de la bille (point non légendé, interprété comme le point d'impact du procédé sur la blanche
+      en quantité de bille pleine).
+    elements:
+      - "bille blanche (ivoire) vue de face, en haut à droite de la page, à côté du premier paragraphe"
+      - "point bleu plein au centre de la bille (non légendé ; interprété comme le point d'impact du procédé)"
+      - "trait fin noir vertical passant par le point bleu, dépassant largement au-dessus et au-dessous de la bille (axe vertical)"
+      - "trait fin noir horizontal passant par le point bleu, dépassant à gauche et à droite de la bille (axe horizontal ou équateur)"
+      - "trait épais bleu-vert foncé horizontal, tangent au bas de la bille, sur toute la largeur du dessin (plan du tapis / surface de jeu sur laquelle repose la bille)"
+    teaching_point: >-
+      Le dessin montre la bille blanche de face avec un point bleu à l'intersection de son axe vertical et de
+      son axe horizontal (interprétation : le point d'impact du procédé au centre de la blanche) ; selon le
+      texte voisin, la queue doit viser l'axe central de la bille de couleur.
+    adjacent_text_summary: >-
+      Premier paragraphe : une quantité de bille désigne la portion de bille couverte par la bille blanche
+      sur la bille de couleur suivant l'axe de visée ; la quantité pleine est la position la plus facile à
+      apprendre pour le débutant, la blanche se situant exactement sur la trajectoire que doit suivre la
+      bille de couleur pour être empochée. Pour viser, le joueur place la queue sur la trajectoire passant
+      par le centre de la blanche et de la bille de couleur ; lors du limage il vérifie que la queue vise
+      l'axe central de la bille de couleur.
+    bridge: none
+    bronze: false
+    description: >-
+      Gros plan de face de la bille blanche : point bleu au centre, croix de deux traits fins noirs (vertical
+      et horizontal) passant par ce point, et trait épais bleu-vert horizontal tangent au bas de la bille
+      (sa signification n'est pas légendée).
+    uncertainties:
+      - "Le sens exact du trait épais bleu-vert (tapis/surface de jeu) n'est pas légendé dans le PDF ; interprétation."
+      - "Aucune légende n'est imprimée sur ce dessin ; le point bleu est interprété comme le point d'impact du procédé à partir du texte voisin."
+  - id: techniques-p14-alignement-plein
+    kind: technique-photo
+    sheet: "La quantité de bille pleine"
+    caption: "Alignement bille blanche de départ, bille blanche à l'impact et bille de couleur bleue sur une même trajectoire."
+    subject: >-
+      Vue en colonne verticale à gauche de la page : trois billes alignées sur un même axe
+      vertical, relié par un long trait noir fin terminé en haut par une pointe de flèche. De bas en haut :
+      la bille blanche de départ (avec points rouges), la bille blanche à l'impact (au contact de la bille
+      de couleur, contour fin, sans points rouges) et la bille de couleur bleue tout en haut.
+    elements:
+      - "bille bleue, en haut de la colonne, au contact de la bille blanche située juste en dessous : bille de couleur à empocher"
+      - "bille blanche (ivoire) au contour noir fin, sans points rouges, au milieu, collée sous la bille bleue : position de la blanche à l'impact (bille fantôme / blanche au contact)"
+      - "bille blanche en bas de la colonne, nettement plus bas, avec petits points rouges sur sa surface (un en haut à gauche, un en haut à droite, un en bas au centre) : bille blanche à son point de départ"
+      - "long trait noir vertical traversant les centres des trois billes, du centre de la blanche de départ (où il commence) jusqu'au-dessus de la bille bleue"
+      - "pointe de flèche noire au sommet du trait, au-dessus de la bille bleue : sens de la trajectoire"
+    teaching_point: >-
+      En quantité de bille pleine, la blanche au départ se situe exactement sur la trajectoire que doit
+      suivre la bille de couleur : les centres des deux billes et le centre de la blanche à l'impact sont
+      alignés, la trajectoire de la bille de couleur est identique à la trajectoire initiale de la blanche
+      (point de visée = point de contact).
+    adjacent_text_summary: >-
+      À l'impact, le point de visée est également le point de contact entre les deux billes, vrai
+      uniquement en quantité de bille pleine. La blanche transmet la quasi-totalité de son énergie à la
+      bille de couleur (transfert d'énergie élevé) : la bille de couleur parcourt un grand trajet, la
+      blanche en parcourt peu. En quantité pleine, la trajectoire de la bille de couleur est identique à la
+      trajectoire initiale de la blanche.
+    bridge: none
+    bronze: false
+    description: >-
+      Trois billes sur une même droite verticale fléchée vers le haut : bille bleue et bille blanche sans
+      points rouges en contact l'une avec l'autre au sommet, bille blanche à points rouges plus bas, à distance. Ce
+      n'est pas un schéma de table (pas de bandes ni de poche) : le dessin illustre uniquement
+      l'alignement.
+    uncertainties:
+      - "La blanche du milieu (au contact de la bleue) est interprétée comme la position de la blanche à l'impact ; le PDF ne la légende pas."
+      - "Les points rouges sur la blanche du bas sont de petits repères de la bille (trois points visibles) ; leur signification n'est pas donnée par le texte."
+  - id: techniques-p14-contact-equateur-13
+    kind: technique-photo
+    sheet: "La quantité de bille pleine"
+    caption: "Centre des deux billes"
+    subject: >-
+      Gros plan de profil de deux billes de même taille en contact : une bille blanche (points rouges) à
+      gauche et la bille orange numérotée « 13 » à droite. Un trait fin noir horizontal part de la légende
+      « Centre des deux billes » à gauche, passe par les centres des deux billes à la même hauteur
+      (équateur) et se prolonge à droite de la bille 13.
+    elements:
+      - "légende « Centre des deux billes » à gauche, soulignée par le début du trait horizontal"
+      - "bille blanche à gauche avec petits points rouges (un en haut à gauche, un en haut à droite, un en bas au centre), de même diamètre que la bille 13"
+      - "bille orange rayée numérotée « 13 » à droite, au contact de la blanche"
+      - "trait fin noir horizontal unique traversant les centres des deux billes : l'équateur commun, point de contact au même niveau"
+    teaching_point: >-
+      Quand les billes ont la même taille et la même masse (snooker, Billard Américain), le point de
+      contact entre les deux billes correspond parfaitement à l'axe horizontal (équateur) de chaque bille :
+      une seule ligne passe par le centre des deux billes.
+    adjacent_text_summary: >-
+      Lorsque les billes ont la même taille et la même masse (snooker et Billard Américain), le point de
+      contact entre les deux billes correspond parfaitement à l'axe horizontal (ou équateur) de chaque
+      bille.
+    bridge: none
+    bronze: false
+    description: >-
+      Blanche et bille 13 (orange) de même diamètre en contact, traversées par une seule droite
+      horizontale confondue avec l'équateur de chacune, légendée « Centre des deux billes ».
+    uncertainties:
+      - "La bille « 13 » est une bille de Billard Américain, citée par le texte voisin (snooker et Billard Américain) ; ce n'est pas une bille du Blackball."
+  - id: techniques-p14-contact-equateur-8
+    kind: technique-photo
+    sheet: "La quantité de bille pleine"
+    caption: "Centre de la bille blanche ; Centre de la bille de but"
+    subject: >-
+      Gros plan de profil, Blackball : bille blanche (points rouges), plus petite, à gauche, au contact de la
+      bille noire numérotée « 8 » (bille de but), plus grosse, à droite. Deux traits fins horizontaux de deux
+      hauteurs légèrement différentes : un trait bleu clair (cyan) à la hauteur du centre de la bille
+      blanche, légendé à gauche « Centre de la bille blanche » (texte cyan), et un trait noir à la hauteur du
+      centre de la bille 8, légendé à droite « Centre de la bille de but ».
+    elements:
+      - "légende « Centre de la bille blanche » en cyan, à gauche, placée sous le trait cyan"
+      - "bille blanche à gauche avec petits points rouges (un en haut à gauche, un en haut à droite, un en bas au centre), plus petite que la bille 8"
+      - "bille numérotée « 8 » à droite (bande noire, calottes blanches), plus grosse, au contact de la blanche"
+      - "trait cyan horizontal à la hauteur du centre de la bille blanche (légèrement plus bas que celui de la bille 8), qui traverse les deux billes"
+      - "trait noir horizontal à la hauteur du centre de la bille 8 (légèrement plus haut), qui commence à gauche de la blanche, traverse les deux billes et se prolonge jusqu'à la légende « Centre de la bille de but » à droite"
+      - "légende « Centre de la bille de but » en noir, en haut à droite, soulignée par le trait noir"
+    teaching_point: >-
+      Au Blackball, la bille blanche étant plus petite que les autres, le point de contact entre les deux
+      billes s'effectue légèrement au-dessus de l'axe horizontal de la bille blanche : les centres des deux
+      billes ne sont pas à la même hauteur (centre de la bille de but légèrement plus haut que le centre de la
+      blanche). Ceci donne à la blanche des rejets sensiblement différents des autres disciplines.
+    adjacent_text_summary: >-
+      Au Blackball, la bille blanche étant plus petite que les autres, le point de contact entre les deux
+      billes s'effectue légèrement au-dessus de l'axe horizontal de la bille blanche. Cette particularité
+      confère à la bille blanche des rejets de bille blanche sensiblement différents de ceux observés dans
+      les autres disciplines.
+    bridge: none
+    bronze: false
+    description: >-
+      Blanche (plus petite) au contact de la bille 8 (plus grosse) : deux lignes horizontales légèrement
+      décalées en hauteur, cyan pour le centre de la blanche et noire pour le centre de la bille de but,
+      montrant que le contact se fait au-dessus de l'équateur de la blanche.
+    uncertainties:
+      - "Le décalage vertical entre les deux traits (cyan et noir) est de l'ordre de quelques pixels à 130 dpi ; il n'est pas chiffré dans le PDF."

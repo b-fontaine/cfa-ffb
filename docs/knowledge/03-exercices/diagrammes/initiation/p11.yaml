@@ -1,0 +1,99 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 11, rank: S}
+diagrams:
+  - id: initiation-p11-sa
+    kind: initiation
+    sheet: "Le rebond d'une bille sur une bande"
+    caption: "Toucher une bille par bande avant. Situation A."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: w,  color: white,  at: [1.0, 2.01], role: cue, label: "blanche (cercle creux à points rouges)"}
+      - {id: y1, color: yellow, at: [1.82, 2.01], role: obstacle, label: "bille obstacle"}
+      - {id: r1, color: red,    at: [2.61, 2.02], role: object, label: "bille objet"}
+    ghosts:
+      - {id: gi1, at: [1.82, 0.16], role: impact, for: w, label: "Point d'impact"}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.0, 2.01], [1.82, 0.06], [2.5, 1.83]], bounces: [top], note: "la blanche rebondit sur la bande du haut au point d'impact puis touche la bille rouge"}
+      - {id: a2, ball: w, kind: indication, path: [[1.0, 2.01], [1.82, 0.06], [2.1, -0.5]], bounces: [], label: "Ligne de visée", note: "ligne de visée rouge : elle passe par le point d'impact et se prolonge au-delà de la bande"}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, via_cushion: top, hit: r1}
+    inset:
+      contact: none
+      tip_point: center
+      bridge_height: unknown
+    annotations:
+      - "Les trois billes (blanche, bille obstacle jaune, bille objet rouge) sont placées parallèlement à la grande bande, la bille obstacle à mi-chemin entre la blanche et la bille objet (conseils à l'animateur)."
+      - "Le trait plein vertical (x ≈ 1,82) est le trait tracé sur la surface de jeu ; le point d'impact est au niveau de ce trait sur la bande (consigne à l'élève)."
+      - "Consigne : viser légèrement à côté de la ligne, de telle sorte que la blanche entre en contact avec la bande ; viser au centre de la bille blanche."
+      - "Objectif : viser un point sur la bande, afin de toucher une bille en bande avant."
+    description: >-
+      Table vue de dessus, départ à gauche. La page porte un seul dessin de table avec deux situations,
+      A (partie gauche, bande du haut) et B (partie droite, bande du bas). Situation A : trois éléments
+      alignés sur une ligne parallèle à la grande bande (y ≈ 2,0) : un cercle creux avec points rouges
+      (emplacement de la blanche, x ≈ 1,0), une bille jaune (obstacle, x ≈ 1,82, posée sur le trait plein
+      vertical de la surface de jeu) et une bille rouge (objet, x ≈ 2,6). Le texte « Situation A » est
+      écrit juste sous la bille rouge. Depuis la blanche, une flèche pleine monte vers la bande du haut au
+      point d'impact (x ≈ 1,82, y ≈ 0,06, au niveau du trait plein), signalé en bleu « Point d'impact »
+      avec un petit cercle creux collé à la bande, puis redescend en flèche pleine vers la bille rouge
+      (pointe vers x ≈ 2,5 ; y ≈ 1,8) : la blanche touche la bille rouge après un rebond sur la bande
+      du haut (bande avant). La ligne rouge « Ligne de visée » prolonge la trajectoire d'arrivée au-delà de
+      la bande (vers x ≈ 2,1 ; hors surface en haut, tracée jusqu’à y ≈ -0,5 (borne de validation ; la ligne dessinée va un peu plus loin, jusqu’à x ≈ 2,15, y ≈ -0,6)). Le schéma de la bille blanche (point bleu au centre,
+      voir annotations de la situation B) n'est lié à aucune des deux situations.
+    uncertainties:
+      - "Ligne de départ / trait plein lu à x ≈ 1,82 (et non 2,0 comme dans FORMAT.md)."
+      - "Aucune bille blanche pleine dessinée : le cercle creux à points rouges est lu comme la blanche posée à cet endroit (transcrite en bille blanche `w`)."
+      - "Le prolongement de la ligne de visée au-delà de la bande est transcrit en coordonnées légèrement négatives (y ≈ -0,5, tronquée à la borne du validateur) ; ce n'est pas une trajectoire de bille."
+      - "Le contact final sur la bille rouge (quantité) n'est pas lisible : la flèche s'arrête au bord de la bille."
+      - "Type de chevalet non précisé sur la page. Le schéma de blanche du haut (point bleu au centre, trait turquoise sous la bille, deux traits de visée en croix) est placé dans la zone de la table et n'est lié à aucune des deux situations."
+
+  - id: initiation-p11-sb
+    kind: initiation
+    sheet: "Le rebond d'une bille sur une bande"
+    caption: "Toucher une bille par bande avant. Situation B."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: w,  color: white,  at: [6.99, 3.02], role: cue, label: "blanche (cercle creux à points rouges)"}
+      - {id: y1, color: yellow, at: [5.0, 3.02], role: obstacle, label: "bille obstacle"}
+      - {id: r1, color: red,    at: [3.0, 3.01], role: object, label: "bille objet"}
+    ghosts:
+      - {id: gi1, at: [5.0, 3.85],  role: impact, for: w, label: "Point d'impact"}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[6.99, 3.02], [5.0, 3.95], [3.24, 3.13]], bounces: [bottom], note: "la blanche rebondit sur la bande du bas au point d'impact puis se dirige vers la bille rouge"}
+      - {id: a2, ball: w, kind: indication, path: [[6.99, 3.02], [5.0, 3.95], [3.33, 4.5]], bounces: [], label: "Ligne de visée", note: "ligne de visée rouge : elle passe par le point d'impact et se prolonge au-delà de la bande"}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, via_cushion: bottom, hit: r1}
+    inset:
+      contact: none
+      tip_point: center
+      bridge_height: unknown
+    annotations:
+      - "Situation B : angle trop ouvert ; conseil à l'animateur : démontrer l'incidence d'un angle trop ouvert sur le point d'impact, par rapport au point visé."
+      - "Les trois billes sont placées parallèlement à la grande bande (y ≈ 3,0), la bille obstacle à mi-chemin entre la blanche et la bille objet."
+      - "Vérifier que le joueur ne vise pas le point commun à la bande et au trait, mais légèrement à droite (conseil à l'animateur)."
+      - "Schéma de blanche (partie haute-droite de la table) : bille blanche de face, point bleu au centre, deux traits de visée en croix, trait turquoise sous la bille ; consigne à l'élève : « Viser au centre de la bille blanche »."
+    description: >-
+      Table vue de dessus, départ à gauche. Situation B (partie droite du dessin, bande du bas ; le texte
+      « Situation B » est écrit au-dessus de la blanche, vers x ≈ 6,5 ; y ≈ 2,7). Trois éléments alignés
+      sur une ligne parallèle à la grande bande (y ≈ 3,0) : un cercle creux avec points rouges
+      (emplacement de la blanche, x ≈ 7,0), une bille jaune (obstacle, x ≈ 5,0) et une bille rouge
+      (objet, x ≈ 3,0). Depuis la blanche, une flèche pleine descend vers la bande du bas au point
+      d'impact (x ≈ 5,0, y ≈ 3,95, juste sous la bille jaune), signalé en bleu « Point d'impact » avec un
+      petit cercle creux collé à la bande, puis repart vers la gauche en flèche pleine vers la bille rouge
+      (pointe vers x ≈ 3,2 ; y ≈ 3,1), en passant sous la bille jaune et au-dessus de la poche du bas au
+      milieu (bm). La ligne rouge « Ligne de visée » passe par le point d'impact et se prolonge sous la
+      bande (jusqu’à x ≈ 3,3 ; y ≈ 4,5, tronquée à la borne du validateur ; la ligne dessinée va jusqu’à x ≈ 3,2, y ≈ 4,6 ; hors surface). Selon le conseil à l'animateur, cette situation sert à
+      démontrer l'incidence d'un angle trop ouvert sur le point d'impact, par rapport au point visé. Au centre de la partie haute-droite de la table,
+      un grand schéma de blanche (centre vers x ≈ 5,5 ; y ≈ 1,1) montre le point bleu du tip au centre.
+    uncertainties:
+      - "Aucune bille blanche pleine dessinée : le cercle creux à points rouges est lu comme la blanche posée à cet endroit (transcrite en bille blanche `w`)."
+      - "Le point d'impact sur la bande est lu à y ≈ 3,95 (bande à y = 4,0) : précision limitée près de la bande."
+      - "Le prolongement de la ligne de visée sous la bande est transcrit avec y > 4 ; ce n'est pas une trajectoire de bille."
+      - "Le contact final sur la bille rouge (quantité) n'est pas lisible : la flèche s'arrête au bord de la bille."
+      - "Le texte ne précise pas explicitement que la situation B est l'exemple d'un angle trop ouvert ; c'est déduit du conseil « démontrer l'incidence d'un angle trop ouvert … (situation B) »."
+      - "Type de chevalet non précisé ; le trait turquoise du schéma de blanche n'est pas interprété (surface ou cadre)."

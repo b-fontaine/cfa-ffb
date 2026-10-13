@@ -1,0 +1,153 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 19, rank: S}
+note: >-
+  Fiche Technique N°9 « Le rebond d'une bille sur une bande » (onglet rose « FICHE TECHNIQUE » à droite).
+  Page de mémento animateur : aucun exercice, aucun taux de réussite, aucun chevalet, aucune pastille
+  « Billard de bronze ». Quatre schémas explicatifs en vue de dessus, sans grille de table : la bande est
+  le trait noir épais horizontal en haut de chaque schéma, la blanche de départ est en bas. Deux schémas
+  illustrent la différence entre point d'impact et point de visée selon l'angle d'arrivée ; deux
+  schémas comparent un coup joué à la mesure et un coup puissant. Les positions ne sont pas
+  transcrites en coordonnées de table (pas de repère 8 x 4) : elles sont décrites en texte.
+diagrams:
+  - id: techniques-p19-angle-faible
+    kind: technique-schema
+    sheet: "Le rebond d'une bille sur une bande"
+    caption: "Point d'impact ; Visée ; Angle d'arrivée ; Angle de rebond"
+    subject: >-
+      Vue de dessus, schéma en haut à gauche : bille jouée sans effet qui arrive sur une bande avec un
+      angle d'arrivée faible (trajectoire presque perpendiculaire à la bande). Le point d'impact (point de
+      contact de la bille sur la bande) et le point de visée sont très proches l'un de l'autre.
+    elements:
+      - "bande : trait noir épais horizontal en haut du schéma"
+      - "bille blanche de départ, en bas à gauche du schéma, avec petits points rouges (un en bas au centre, un à gauche, un à droite)"
+      - "trait bleu clair (cyan) partant du centre de la blanche de départ, montant vers le haut en légère inclinaison vers la droite, traversant la bille placée contre la bande et se prolongeant au-delà de la bande : ligne de visée"
+      - "seconde bille blanche (sans point rouge visible) placée contre la bande, au-dessus du centre du schéma : position de la bille à l'impact sur la bande"
+      - "deux petits points rouges sur la bande, très proches : celui de gauche = point d'impact, celui de droite = point de visée (là où le trait bleu coupe la bande)"
+      - "légende « Point d'impact » en haut à gauche, avec une flèche noire pointant vers le point rouge de gauche"
+      - "légende « Visée » en haut à droite, avec une flèche noire pointant vers le point rouge de droite"
+      - "flèche noire pleine partant du centre de la bille contre la bande, descendant vers le bas à droite avec une inclinaison faible vers la droite : trajectoire de rebond"
+      - "grand arc noir en demi-cercle sous la bille contre la bande, interrompu en bas : à gauche légende « Angle d'arrivée » avec deux petits traits obliques « // » sur l'arc, à droite légende « Angle de rebond » avec deux petits traits obliques « // » sur l'arc (marques d'égalité des deux angles)"
+    teaching_point: >-
+      Avec un angle d'arrivée faible de la bille sur la bande, le point de contact (point d'impact) et le
+      point de visée sont proches. L'angle de rebond est égal à l'angle d'arrivée (marques « // » identiques
+      sur les deux arcs).
+    adjacent_text_summary: >-
+      Première phrase du texte : lorsqu'une bille jouée sans effet (rotation latérale) arrive au contact
+      d'une bande, son angle de rebond est égal à son angle d'arrivée ; cette théorie peut être légèrement
+      modifiée selon la qualité des bandes et du drap du billard. Selon l'angle d'arrivée, le point de
+      visée peut être très différent du point de contact sur la bande ; le joueur doit prendre en compte
+      la sphéricité de la bille, donc son rayon, pour entrer en contact de la bande au point voulu. Avec un
+      angle d'arrivée faible, le point de contact et le point de visée sont proches ; ils sont d'autant plus
+      éloignés que l'angle d'arrivée est important.
+    bridge: none
+    bronze: false
+    description: >-
+      Blanche en bas à gauche, ligne de visée bleue presque verticale (légèrement penchée vers la droite)
+      jusqu'à la bande ; une bille est dessinée collée à la bande ; les deux points rouges (impact à gauche,
+      visée à droite) sont séparés d'un écart très faible (moins d'un rayon de bille) ; la flèche noire de
+      rebond repart vers le bas à droite, symétrique de l'arrivée par rapport à la perpendiculaire à la
+      bande ; deux arcs « Angle d'arrivée » et « Angle de rebond » marqués « // ».
+    uncertainties:
+      - "Pas de grille de table : positions décrites en texte, non converties en coordonnées."
+      - "Les points rouges sur la blanche de départ ne sont pas légendés (repères de la bille) ; leur signification n'est pas donnée par le texte."
+  - id: techniques-p19-angle-important
+    kind: technique-schema
+    sheet: "Le rebond d'une bille sur une bande"
+    caption: "Point d'impact ; Visée ; Angle d'arrivée ; Angle de rebond"
+    subject: >-
+      Vue de dessus, schéma en haut à droite : même situation avec un angle d'arrivée important
+      (trajectoire nettement plus inclinée par rapport à la perpendiculaire à la bande). Le point d'impact et le point
+      de visée sont nettement éloignés l'un de l'autre sur la bande.
+    elements:
+      - "bande : trait noir épais horizontal en haut du schéma"
+      - "bille blanche de départ, à gauche et en dessous de la bande, avec petits points rouges (un en haut à gauche, un en haut à droite, un en bas)"
+      - "trait bleu clair (cyan) partant du centre de la blanche de départ, montant vers la droite avec une faible pente, traversant la bille placée contre la bande et coupant la bande plus à droite : ligne de visée"
+      - "seconde bille blanche placée contre la bande, au centre du schéma : position de la bille à l'impact sur la bande"
+      - "deux points rouges sur la bande, nettement séparés : celui de gauche (juste au-dessus du centre de la bille contre la bande) = point d'impact, celui de droite (là où le trait bleu coupe la bande) = point de visée"
+      - "légende « Point d'impact » en haut, avec une flèche noire pointant vers le point rouge de gauche"
+      - "légende « Visée » en haut à droite, avec une flèche noire pointant vers le point rouge de droite"
+      - "flèche noire pleine partant du centre de la bille contre la bande, descendant vers le bas à droite avec une pente faible par rapport à la bande (angle d'arrivée important, symétrique de la ligne de visée) : trajectoire de rebond"
+      - "arc noir à gauche de la bille contre la bande, légende « Angle d'arrivée » avec deux petits traits obliques « // » sur l'arc ; arc noir à droite, légende « Angle de rebond » avec deux petits traits obliques « // » sur l'arc"
+    teaching_point: >-
+      Plus l'angle d'arrivée est important, plus le point de visée s'éloigne du point d'impact (point de
+      contact sur la bande) : le joueur doit tenir compte de la sphéricité et du rayon de la bille. L'angle
+      de rebond reste égal à l'angle d'arrivée (marques « // »).
+    adjacent_text_summary: >-
+      Même texte que pour le schéma de gauche : selon l'angle d'arrivée de la bille, le point de visée peut
+      être très différent du point de contact sur la bande ; ils sont d'autant plus éloignés que l'angle
+      d'arrivée est important.
+    bridge: none
+    bronze: false
+    description: >-
+      Blanche en bas à gauche, ligne de visée bleue peu inclinée sur l'horizontale, qui coupe la bande
+      bien à droite du point d'impact ; écart net entre les deux points rouges (un peu moins d'un
+      diamètre de bille) ; flèche noire de rebond repartant vers le bas à droite avec une pente
+      symétrique ; arcs « Angle d'arrivée » (à gauche) et « Angle de rebond » (à droite) marqués « // ».
+    uncertainties:
+      - "Pas de grille de table : positions décrites en texte, non converties en coordonnées."
+      - "L'écart entre point d'impact et point de visée est qualitatif (un peu moins d'un diamètre de bille sur le dessin), non mesuré en cases."
+  - id: techniques-p19-coup-a-la-mesure
+    kind: technique-schema
+    sheet: "Le rebond d'une bille sur une bande"
+    caption: "Coup joué à la mesure ; Angle d'arrivée = angle de rebond"
+    subject: >-
+      Vue de dessus, schéma en bas à gauche : coup joué à la mesure (puissance adaptée) sur une bande ;
+      l'angle d'arrivée est égal à l'angle de rebond.
+    elements:
+      - "bande : trait noir épais horizontal en haut du schéma"
+      - "bille blanche de départ en bas à gauche, avec petits points rouges (un en bas, un à gauche, un à droite)"
+      - "trait bleu clair (cyan) du centre de la blanche de départ vers le haut, légèrement incliné vers la droite, traversant la bille contre la bande et la bande : trajectoire d'arrivée"
+      - "bille contre la bande, en haut, au centre du schéma : position à l'impact"
+      - "flèche noire pleine partant du centre de la bille contre la bande et descendant vers le bas à droite : trajectoire de rebond, symétrique de l'arrivée"
+      - "arc noir à gauche avec deux petits traits « // » et arc noir à droite avec deux petits traits « // » : marques d'égalité des angles d'arrivée et de rebond"
+      - "légende en haut « Coup joué à la mesure »"
+      - "légende en bas, à droite de la blanche de départ : « Angle d'arrivée = angle de rebond »"
+    teaching_point: >-
+      Pour un coup joué à la mesure, l'angle d'arrivée est égal à l'angle de rebond.
+    adjacent_text_summary: >-
+      La puissance joue également un rôle sur l'angle de rebond. L'animateur doit expliquer au joueur
+      débutant les conséquences d'un coup joué trop puissant sur une bande : plus le coup sera puissant,
+      plus l'angle de rebond aura tendance à se refermer.
+    bridge: none
+    bronze: false
+    description: >-
+      Une seule flèche de rebond noire, symétrique de la trajectoire bleue d'arrivée par rapport à la
+      perpendiculaire à la bande ; les deux arcs portent chacun deux traits « // » (angles égaux) ;
+      légende « Angle d'arrivée = angle de rebond ».
+    uncertainties:
+      - "Pas de grille de table : positions décrites en texte, non converties en coordonnées."
+  - id: techniques-p19-coup-puissant
+    kind: technique-schema
+    sheet: "Le rebond d'une bille sur une bande"
+    caption: "Coup puissant ; Angle d'arrivée < angle de rebond"
+    subject: >-
+      Vue de dessus, schéma en bas à droite : coup puissant sur une bande ; l'angle de rebond n'est plus
+      égal à l'angle d'arrivée, la trajectoire de rebond se referme (la flèche noire pleine est plus proche de la
+      perpendiculaire à la bande que la flèche grise pointillée, non légendée).
+    elements:
+      - "bande : trait noir épais horizontal en haut du schéma"
+      - "bille blanche de départ en bas à gauche, avec petits points rouges (un en bas, un à gauche, un à droite)"
+      - "trait bleu clair (cyan) du centre de la blanche de départ vers le haut, légèrement incliné vers la droite, traversant la bille contre la bande et la bande : trajectoire d'arrivée, même inclinaison que sur le schéma de gauche"
+      - "bille contre la bande, en haut : position à l'impact"
+      - "flèche noire pleine partant du centre de la bille contre la bande et descendant vers le bas, quasiment verticale et à peine inclinée vers la droite : trajectoire de rebond du coup puissant (angle qui se referme)"
+      - "flèche grise pointillée partant du même point, descendant vers le bas à droite avec une inclinaison plus forte que la flèche noire : flèche non légendée dans le PDF, plus ouverte que la noire"
+      - "arc noir à gauche et arc noir à droite, sans traits « // »"
+      - "légende en haut « Coup puissant »"
+      - "légende en bas, à droite de la blanche de départ : « Angle d'arrivée < angle de rebond »"
+    teaching_point: >-
+      Plus le coup est puissant, plus l'angle de rebond aura tendance à se refermer : la bille repart plus
+      près de la perpendiculaire à la bande que ne le voudrait l'égalité des angles. Le schéma affiche
+      « Angle d'arrivée < angle de rebond », en regard des deux flèches (noire pleine et grise pointillée).
+    adjacent_text_summary: >-
+      Même texte que pour le schéma de gauche : plus le coup est puissant, plus l'angle de rebond a
+      tendance à se refermer ; l'animateur doit expliquer ces conséquences au joueur débutant.
+    bridge: none
+    bronze: false
+    description: >-
+      Même géométrie d'arrivée que le coup à la mesure ; deux flèches de rebond partent du point
+      d'impact : flèche noire pleine (rebond plus fermé, proche de la perpendiculaire) et flèche grise pointillée
+      (non légendée, plus ouverte, à droite de la noire). Pas de marque « // » sur les arcs.
+    uncertainties:
+      - "Pas de grille de table : positions décrites en texte, non converties en coordonnées."
+      - "Le sens de l'inégalité imprimée « Angle d'arrivée < angle de rebond » est transcrit tel quel ; la flèche noire (réelle) paraît plus proche de la perpendiculaire à la bande que la flèche pointillée, ce qui correspond au texte « l'angle de rebond aura tendance à se refermer » ; la notion d'angle mesuré (par rapport à la bande ou à la perpendiculaire) n'est pas précisée dans le PDF."
+      - "La flèche pointillée grise n'est pas légendée dans le PDF ; elle semble représenter le rebond à angle égal (coup à la mesure), mais ce n'est pas écrit."

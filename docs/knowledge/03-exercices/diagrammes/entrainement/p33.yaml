@@ -1,0 +1,105 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 33, rank: S}
+diagrams:
+  - id: entrainement-p33-e3
+    kind: exercise
+    sheet: "Les trajectoires de blanche"
+    exercise: 3
+    caption: "Empocher neuf billes, en variant la hauteur d'attaque, pour diriger la bille blanche trois fois sur chaque bille jaune."
+    success_rate: [6, 9]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red,    at: [4.53, 0.99]}
+      - {id: y1, color: yellow, at: [5.58, 0.18], label: "x3"}
+      - {id: y2, color: yellow, at: [6.53, 0.18], label: "x3"}
+      - {id: y3, color: yellow, at: [6.56, 1.16], label: "x3"}
+      - {id: w,  color: white,  at: [4.66, 1.99], role: cue}
+    ghosts:
+      - {id: g1, at: [4.63, 1.18], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w,  kind: cue,    path: [[4.66, 1.99], [4.63, 1.18]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[4.53, 0.99], [4.0, 0.0]], to: tm}
+      - {id: a3, ball: w,  kind: cue,    path: [[4.63, 1.18], [5.37, 0.42]], bounces: []}
+      - {id: a4, ball: w,  kind: cue,    path: [[4.63, 1.18], [6.35, 0.27]], bounces: []}
+      - {id: a5, ball: w,  kind: cue,    path: [[4.63, 1.18], [6.09, 1.18]], bounces: []}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: r1, pocket: tm, then_cue_to: y1, repeat: 3}
+      - {step: 2, cue: w, hit: r1, pocket: tm, then_cue_to: y2, repeat: 3}
+      - {step: 3, cue: w, hit: r1, pocket: tm, then_cue_to: y3, repeat: 3}
+    annotations:
+      - "x 3 à côté de chacune des trois billes jaunes : la blanche est dirigée trois fois sur chaque jaune (3 x 3 = neuf billes)."
+      - "Un trait vertical plein est tracé sur la surface de jeu, de la bande haute à la bande basse (ligne de départ, x ≈ 1,83)."
+      - "Pas d'encart « quantité de bille » ni de pastille Billard de bronze sur cette fiche."
+    description: >-
+      Table vue de dessus, départ à gauche. Une bille rouge est posée à environ (4,5 ; 1,0), juste sous et à
+      droite de la poche du milieu haut (tm). La blanche (cercle blanc cerclé, deux points rouges) est
+      placée en bas de la rouge, presque à la verticale, vers (4,7 ; 2,0). Un cercle creux pointillé collé sous
+      la rouge (environ 4,6 ; 1,2) marque la position de la blanche à l'impact : la blanche monte presque droit
+      jusqu'à ce cercle et touche la rouge, qui part en haut à gauche vers la poche du milieu haut (flèche
+      pleine). Depuis le point d'impact, trois flèches pleines partent vers la droite, une par bille jaune :
+      une montante vers la jaune proche de la bande haute (environ 5,6 ; 0,2), une montante plus tendue vers la
+      jaune la plus à droite en haut (environ 6,5 ; 0,2), une horizontale vers la jaune de droite plus basse
+      (environ 6,6 ; 1,2). Chaque jaune porte « x 3 ». La hauteur d'attaque de la blanche varie d'une flèche
+      à l'autre (énoncé), sans que le schéma la précise. Total : 3 trajectoires x 3 = neuf billes.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,83 (et non 2,0 comme dans FORMAT.md)."
+      - "Le schéma ne montre qu'une seule bille rouge alors que l'énoncé parle de neuf billes à empocher : on suppose que la même situation (rouge replacée, empochée en tm) est rejouée neuf fois ; non écrit sur la fiche."
+      - "Les flèches de la blanche s'arrêtent juste avant les jaunes ; elles sont interprétées comme visant chacune une jaune (alignement lu à ≈ 0,15 case)."
+      - "Les pastilles « x 3 » sont placées près des extrémités de flèches / des jaunes ; l'association exacte étiquette-flèche est déduite de la proximité."
+      - "La hauteur d'attaque (haut, centre, bas) de chaque trajectoire n'est pas indiquée sur le schéma."
+      - "Type de chevalet non indiqué dans l'énoncé (bridge: unknown) ; pas de pastille Billard de bronze visible sur la page."
+      - "Le champ then_cue_to de sequence est une extension de lecture (jaune visée après le contact) absente du FORMAT ; contact non transcrit (aucun encart)."
+
+  - id: entrainement-p33-e4
+    kind: exercise
+    sheet: "Les trajectoires de blanche"
+    exercise: 4
+    caption: "Empocher dix billes, en alternant la hauteur d'attaque en haut et en bas entre chaque coup, pour replacer la bille blanche sur la bille noire."
+    success_rate: [6, 10]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red,    at: [1.60, 2.00]}
+      - {id: y1, color: yellow, at: [2.60, 1.62]}
+      - {id: y2, color: yellow, at: [2.71, 2.52]}
+      - {id: b1, color: black,  at: [4.0, 3.0]}
+      - {id: w,  color: white,  at: [2.0, 3.51], role: cue}
+    ghosts:
+      - {id: g1, at: [1.72, 2.15], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w,  kind: cue,    path: [[2.0, 3.51], [1.72, 2.15]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[1.60, 2.00], [0, 0]], to: tl}
+      - {id: a3, ball: w,  kind: cue,    path: [[1.72, 2.15], [3.08, 0.18], [3.60, 0.96]], bounces: [top], label: "x5"}
+      - {id: a4, ball: w,  kind: cue,    path: [[1.72, 2.15], [3.33, 1.91]], bounces: [], label: "x5"}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: r1, pocket: tl, then_cue_to: top_cushion_return, repeat: 5}
+      - {step: 2, cue: w, hit: r1, pocket: tl, then_cue_to: toward_right, repeat: 5}
+    annotations:
+      - "x 5 sur chacune des deux trajectoires de blanche : cinq coups pour chaque hauteur d'attaque (2 x 5 = dix billes)."
+      - "Un trait vertical plein est tracé sur la surface de jeu, de la bande haute à la bande basse (ligne de départ, x ≈ 1,82)."
+      - "Pas d'encart « quantité de bille » ni de pastille Billard de bronze sur cette fiche."
+    description: >-
+      Table vue de dessus, départ à gauche. Une bille rouge est posée à environ (1,6 ; 2,0), juste à droite du
+      trait vertical. Deux billes jaunes à sa droite : (2,6 ; 1,6) et (2,7 ; 2,5). La bille noire est au
+      centre de la table vers (4,0 ; 3,0), sous la ligne médiane. La blanche (cercle blanc cerclé, deux points
+      rouges) est en bas vers (2,0 ; 3,5). Un cercle creux pointillé collé en bas à droite de la rouge
+      (environ 1,7 ; 2,15) marque l'impact : la blanche monte vers ce cercle et touche la rouge, qui part vers la
+      poche d'angle haut gauche (tl, flèche pleine). Depuis le point d'impact partent deux flèches de blanche.
+      La première monte vers la droite, touche la bande haute vers (3,1 ; 0,2) puis redescend vers (3,6 ; 1,0)
+      (étiquette « x 5 » près de la pointe). La seconde part presque horizontale vers la droite jusque vers
+      (3,3 ; 1,9) (étiquette « x 5 » à son extrémité), en passant entre les deux jaunes. Les jaunes ne sont
+      désignées par aucune flèche ni étiquette. L'énoncé demande d'alterner la hauteur d'attaque (haut / bas)
+      entre chaque coup pour replacer la blanche sur la noire, sans que le schéma dise quelle flèche correspond à quelle hauteur.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,82 (et non 2,0 comme dans FORMAT.md)."
+      - "Le schéma n'indique pas laquelle des deux flèches correspond à l'attaque haute et laquelle à l'attaque basse."
+      - "Le rôle exact des deux billes jaunes n'est pas précisé (obstacles ou billes à empocher ?) ; l'énoncé parle de dix billes pour une seule rouge dessinée : situation supposée rejouée dix fois, non écrit sur la fiche."
+      - "Les flèches de la blanche s'arrêtent avant la bille noire, alors que l'énoncé vise le replacement sur la noire ; la destination finale n'est pas dessinée."
+      - "Le point de rebond sur la bande haute est tracé à y ≈ 0,18 (convention du dossier) ; la flèche s'arrête à ≈ 0,2 sur le schéma."
+      - "Le champ then_cue_to de sequence et le champ label des flèches sont des extensions de lecture absentes du FORMAT ; contact non transcrit (aucun encart)."
+      - "Type de chevalet non indiqué dans l'énoncé (bridge: unknown) ; pas de pastille Billard de bronze visible sur la page."

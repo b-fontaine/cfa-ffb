@@ -1,0 +1,103 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 17, rank: S}
+diagrams:
+  - id: entrainement-p17-e1
+    kind: exercise
+    sheet: "Le rejet naturel"
+    exercise: 1
+    caption: "A l'aide d'un rejet naturel, replacer cinq fois la bille blanche afin de jouer la bille la bille noire."
+    success_rate: [3, 5]
+    sessions: "1 à 2"
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: w, color: white, at: [1.85, 3.0], role: cue}
+      - {id: y1, color: yellow, at: [1.6, 1.43]}
+      - {id: r1, color: red, at: [3.0, 2.0]}
+      - {id: r2, color: red, at: [5.0, 2.0]}
+      - {id: b1, color: black, at: [4.0, 3.0]}
+    ghosts:
+      - {id: g-start, at: [1.85, 3.0], role: cue_start}
+      - {id: g-impact, at: [1.72, 1.6], role: impact, for: w}
+    arrows:
+      - {id: a-y1, ball: y1, kind: object, path: [[1.6, 1.43], [0.2, 0.2]], to: tl}
+      - {id: c-1, ball: w, kind: cue, path: [[1.85, 3.0], [1.72, 1.6]], bounces: []}
+      - {id: c-2, ball: w, kind: cue, path: [[1.72, 1.6], [3.0, 0.15], [3.85, 1.05]], bounces: [top], label: "x5"}
+    sequence:
+      - {step: 1, cue: w, hit: y1, pocket: tl, repeat: 5}
+    inset:
+      contact: half
+      tip_point: upper_center
+      bridge_height: surface
+    annotations:
+      - "x 5 à côté de la flèche de retour de la blanche : la situation est répétée cinq fois"
+      - "Taux de réussite pour passer à l'exercice suivant : 3/5"
+    description: >-
+      Vue de dessus, extrémité de départ à gauche, ligne de départ (trait plein vertical) vers x ≈ 1,85. Une bille
+      jaune est en haut à gauche (x ≈ 1,6 ; y ≈ 1,43), avec un cercle pointillé collé en bas à droite (position de
+      la blanche à l'impact). Deux billes rouges sont au milieu de la table à y ≈ 2 (x ≈ 3 et x ≈ 5) et la bille
+      noire (8) est à x ≈ 4, y ≈ 3. Un cercle pointillé blanc à points rouges, sur la ligne de départ (x ≈ 1,85 ;
+      y ≈ 3), est l'emplacement de départ de la blanche. De là, la blanche monte presque verticalement vers le
+      cercle d'impact contre la jaune ; la jaune part vers la poche haut gauche (tl). Après l'impact, un trait
+      montre le rejet naturel de la blanche : elle monte vers la bande du haut (rebond vers x ≈ 3), puis redescend
+      vers la droite jusqu'à une flèche vers (3,85 ; 1,05) annotée « x 5 ». Le schéma « quantité de bille » à
+      droite montre une bille blanche devant une bille rouge, recouvrement environ à moitié, point bleu du tip
+      légèrement au-dessus du centre de la blanche, trait vert d'eau sous les billes (niveau de la surface).
+    uncertainties:
+      - "Le texte du PDF ne précise pas le type de chevalet (bridge: unknown) ; pas de pastille Billard de bronze sur cette page."
+      - "Ligne de départ lue à x ≈ 1,85 et non 2,0 comme la convention du FORMAT."
+      - "La quantité de bille du schéma est lue environ à moitié (recouvrement ≈ 43 %) ; aucun texte ne la précise."
+      - "Le contact de la blanche sur la jaune n'est pas qualifié par le texte (champ contact omis de la séquence)."
+      - "La flèche de retour de la blanche s'arrête sans atteindre la noire ; son point d'arrivée exact est approximatif."
+      - "Le cercle de départ de la blanche (x ≈ 1,85 ; y ≈ 3) est dessiné comme un cercle pointillé et non comme une bille pleine."
+  - id: entrainement-p17-e2
+    kind: exercise
+    sheet: "Le rejet naturel"
+    exercise: 2
+    caption: "A l'aide d'un rejet naturel, replacer cinq fois la bille blanche afin de jouer la bille la bille noire."
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: w, color: white, at: [5.0, 3.0], role: cue}
+      - {id: r1, color: red, at: [1.63, 3.18]}
+      - {id: y1, color: yellow, at: [5.97, 1.0]}
+      - {id: y2, color: yellow, at: [6.97, 2.0]}
+      - {id: b1, color: black, at: [7.0, 1.0]}
+    ghosts:
+      - {id: g-start, at: [5.0, 3.0], role: cue_start}
+      - {id: g-impact, at: [1.86, 3.05], role: impact, for: w}
+    arrows:
+      - {id: a-r1, ball: r1, kind: object, path: [[1.63, 3.18], [0.25, 3.8]], to: bl}
+      - {id: c-1, ball: w, kind: cue, path: [[5.0, 3.0], [1.86, 3.05]], bounces: []}
+      - {id: c-2, ball: w, kind: cue, path: [[1.86, 3.05], [0.15, 1.35], [1.34, 0.16], [3.65, 2.52]], bounces: [left, top], label: "x5"}
+    sequence:
+      - {step: 1, cue: w, hit: r1, pocket: bl, repeat: 5}
+    inset:
+      contact: half
+      tip_point: upper_center
+      bridge_height: surface
+    annotations:
+      - "x 5 à côté de la flèche de retour de la blanche : la situation est répétée cinq fois"
+      - "Taux de réussite pour passer à l'exercice suivant : 3/5"
+    description: >-
+      Vue de dessus, extrémité de départ à gauche, ligne de départ (trait plein vertical) vers x ≈ 1,85. Une bille
+      rouge est en bas à gauche (x ≈ 1,63 ; y ≈ 3,18), avec un cercle pointillé collé à sa droite sur la ligne de
+      départ (position de la blanche à l'impact). À droite, deux billes jaunes (x ≈ 5,97 ; y ≈ 1 et x ≈ 6,97 ;
+      y ≈ 2) et la bille noire (8) à x ≈ 7, y ≈ 1. Un cercle pointillé blanc à points rouges (x ≈ 5 ; y ≈ 3) est
+      l'emplacement de départ de la blanche ; un trait quasi horizontal le relie au cercle d'impact contre la
+      rouge. La rouge part vers la poche bas gauche (bl). Après l'impact, le rejet naturel de la blanche forme un
+      trajet : vers la bande de gauche (x ≈ 0,15 ; y ≈ 1,35), puis vers la bande du haut (x ≈ 1,34 ; y ≈ 0,16),
+      puis vers le bas à droite jusqu'à une flèche vers (3,65 ; 2,52) annotée « x 5 ». Le schéma « quantité de
+      bille » au centre haut montre une bille blanche devant une bille rouge, recouvrement environ à moitié, point
+      bleu du tip légèrement au-dessus du centre de la blanche, trait vert d'eau sous les billes (niveau de la
+      surface).
+    uncertainties:
+      - "Le texte du PDF ne précise pas le type de chevalet (bridge: unknown) ; pas de pastille Billard de bronze sur cette page ; pas de « Nombre de séances » indiqué pour l'exercice 2."
+      - "Ligne de départ lue à x ≈ 1,85 et non 2,0 comme la convention du FORMAT."
+      - "La quantité de bille du schéma est lue environ à moitié (recouvrement ≈ 45 %) ; aucun texte ne la précise."
+      - "Le contact de la blanche sur la rouge n'est pas qualifié par le texte (champ contact omis de la séquence)."
+      - "Les points de rebond sur les bandes de gauche et du haut sont lus à ≈ 0,15 case près ; le point d'arrivée de la flèche est approximatif."
+      - "Le cercle de départ de la blanche est dessiné comme un cercle pointillé et non comme une bille pleine."

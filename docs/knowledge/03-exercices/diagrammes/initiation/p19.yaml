@@ -1,0 +1,50 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 19, rank: S}
+diagrams:
+  - id: initiation-p19-e1
+    kind: initiation
+    sheet: "Le rétro en quantité demi-bille."
+    caption: "Empocher une bille en réalisant un rétro."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [1.00, 2.01], label: "rouge"}
+      - {id: w, color: white, at: [1.12, 3.00], role: cue, label: "blanche"}
+    ghosts:
+      - {id: g1, at: [1.12, 2.19], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.12, 3.00], [1.12, 2.19]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[1.00, 2.01], [0.15, 0.24]], to: tl}
+      - {id: a3, ball: w, kind: cue, path: [[1.12, 2.19], [3.65, 2.19]], bounces: []}
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: half, pocket: tl}
+    inset:
+      contact: half
+      tip_point: low_center
+      bridge_height: surface
+    annotations:
+      - "Objectif : empocher une bille, en réalisant un rétro, pour faire suivre à la bille blanche une trajectoire parallèle à la grande bande."
+      - "Consigne : viser en quantité demi-bille, très légèrement à l'intérieur de la bille de couleur, afin de pouvoir obtenir une déviation de la bille blanche de 90°."
+      - "Consigne : utiliser une attaque basse."
+      - "Consigne : exécuter le coup à une certaine vitesse afin que la bille blanche conserve sa rotation arrière jusqu'à l'impact."
+      - "Conseil à l'animateur : positionner les billes de telle sorte que la distance, entre elles, ne soit pas trop importante, afin de conserver plus facilement le roulement arrière de la bille blanche jusqu'à l'impact."
+      - "Conseil à l'animateur : si le coup de queue est trop rapide, la bille blanche peut décrire une légère courbe après impact, liée à la friction sur le tapis. De fait la déviation de la bille blanche sera supérieure à 90°."
+    description: >-
+      Table vue de dessus, départ à gauche. Une bille rouge (x ≈ 1,0 ; y ≈ 2,0) à gauche de la ligne
+      de départ. La blanche n'est pas dessinée en bille pleine : un cercle creux pointillé marque son
+      emplacement de départ (x ≈ 1,1 ; y ≈ 3,0), en dessous de la rouge, et un second cercle creux
+      collé au bas de la rouge (x ≈ 1,1 ; y ≈ 2,2) marque la position de la blanche à l'impact. La
+      flèche de la blanche monte du cercle de départ vers le cercle d'impact, puis repart à angle
+      droit (90°) vers la droite, parallèlement à la grande bande, jusqu'à x ≈ 3,65 : c'est le rétro.
+      La rouge part en diagonale vers la poche d'angle haut-gauche (tl). En bas à droite, schéma de
+      quantité de bille : la blanche recouvre environ la moitié de la rouge (demi-bille), point bleu
+      du tip sous le centre de la blanche (attaque basse), ligne turquoise de chevalet sous la bille.
+      La pastille Billard de bronze n'est pas présente ; l'onglet bleu indique « FICHE INITIATION
+      Le rétro en demi-bille ».
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,82 (et non 2,0) sur le schéma."
+      - "La blanche n'est représentée que par des cercles creux pointillés (départ et impact) : sa position de départ est lue au cercle inférieur (y ≈ 3,0)."
+      - "Le point d'impact du tip sur la blanche est lu environ à mi-rayon sous le centre ; la valeur low_center est une transcription approchée de l'attaque basse du texte."
+      - "Le type de chevalet n'est pas précisé sur cette page."
+      - "Pas de taux de réussite, ni nombre de séances, sur cette page."

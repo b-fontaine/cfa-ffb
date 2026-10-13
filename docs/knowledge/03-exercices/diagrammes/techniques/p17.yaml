@@ -1,0 +1,93 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 17, rank: S}
+diagrams:
+  - id: techniques-p17-schema-quart-de-bille
+    kind: technique-photo
+    sheet: "Fiche Technique N°7 : La quantité quart de bille"
+    caption: "Fiche Technique N°7 La quantité quart de bille"
+    subject: >-
+      Image de synthèse en vue de côté (élévation), en haut à droite de la page, à côté du premier paragraphe.
+      Une bille blanche (ivoire) à gauche et une bille rouge à droite reposent côte à côte sur un trait
+      épais bleu-vert horizontal qui représente la surface de la table. Les deux billes se chevauchent à
+      l'image : la rouge est derrière la blanche, et un arc pointillé noir figure le contour de la bille
+      rouge à l'intérieur de la blanche. Un point bleu plein marque le centre de la bille blanche. Deux traits
+      noirs en croix passent par ce centre : un vertical (qui dépasse largement au-dessus et au-dessous de la
+      blanche) et un horizontal (qui s'étend à gauche de la blanche et à travers la bille rouge jusqu'au-delà
+      d'elle, à droite).
+    elements:
+      - "trait épais bleu-vert horizontal sous les deux billes : la surface de la table"
+      - "bille blanche (bille de choc) à gauche, posée sur la table, vue de côté"
+      - "point bleu plein au centre de la bille blanche (repère du centre, non légendé dans le PDF)"
+      - "bille rouge (bille de couleur) à droite, posée sur la table, partiellement masquée par la blanche"
+      - "arc de cercle pointillé noir : contour de la bille rouge visible à travers / derrière la bille blanche"
+      - "trait noir vertical passant par le centre de la blanche"
+      - "trait noir horizontal passant par le centre de la blanche et traversant la bille rouge à hauteur de son centre"
+    teaching_point: >-
+      Illustre la quantité quart de bille : le point de visée est au-delà de la bille de couleur, à un
+      demi-rayon de bille au-delà de celle-ci. Il n'est plus à l'intérieur de la périphérie de la bille de
+      couleur ; la dimension sphérique des billes doit être prise en compte, la mesure se faisant, au
+      Blackball, en référence à la bille blanche (plus petite).
+    adjacent_text_summary: >-
+      « La quantité "quart de bille" implique une visée au-delà de la bille de couleur. Le point de visée ne se
+      trouve plus à l'intérieur de la périphérie de la bille de couleur, mais dans l'espace "en-dehors" de
+      celle-ci. Le joueur débutant a, en général, l'impression, lors de cette visée, que la bille blanche ne
+      va pas percuter la bille de couleur. L'animateur doit l'aider à prendre en compte la dimension
+      sphérique des billes. » « Techniquement, le quart de bille est réalisé lorsque le joueur vise à un
+      demi-rayon de bille au-delà de la bille de couleur. Au blackball cette mesure est prise en référence à la
+      bille blanche. Celle-ci étant plus petite, la visée et le point de contact sont légèrement plus
+      rapprochés, par rapport aux billes des autres disciplines du Billard. »
+    description: >-
+      Deux billes posées sur la table, vues de côté : blanche à gauche, rouge à droite, se touchant à
+      l'image. La blanche est au premier plan avec son centre marqué d'un point bleu et d'une croix de deux
+      traits noirs ; le trait horizontal se prolonge à travers la bille rouge. L'arc pointillé montre le
+      contour de la partie de la rouge cachée par la blanche : le recouvrement visible est une petite
+      lunule, non la moitié ni la totalité de la bille.
+    uncertainties:
+      - "Vue de côté (élévation), non une vue de dessus ; aucune coordonnée de table n'est applicable."
+      - "Le PDF ne légende pas ce schéma ; son lien avec « point de visée à un demi-rayon au-delà » est déduit du texte voisin."
+      - "Le fait que le trait vertical représente la ligne de visée n'est pas écrit dans le PDF."
+      - "Le chevauchement des deux billes à l'image n'est pas quantifié dans le PDF (aucune mesure « un quart » n'y est lisible)."
+  - id: techniques-p17-schema-visee-point-de-contact
+    kind: technique-photo
+    sheet: "Fiche Technique N°7 : La quantité quart de bille"
+    caption: "Visée / Point de contact"
+    subject: >-
+      Image de synthèse en vue de dessus, au milieu de la page. En haut à gauche, une bille verte
+      à bande blanche (d'aspect billard américain) portant le numéro « 14 », marquée d'une croix de deux fins traits noirs
+      (vertical et horizontal) centrée sur le numéro. En dessous à droite, une bille blanche (ivoire) avec trois
+      petits points rouges (un en haut à droite, un en bas, un à gauche près de la bille verte), légèrement en
+      contact avec la bille « 14 » par son côté haut-gauche. Un trait vertical fin bleu clair traverse la
+      blanche par son centre, à droite de la bille « 14 », sans la couper ; il est légendé « Visée » (flèche
+      noire depuis le mot, en haut à droite, vers le trait). Une longue flèche noire part du centre de la
+      blanche, monte en diagonale vers le haut gauche à travers le centre de la bille « 14 » et se termine par
+      une pointe au-delà. Une flèche noire légendée « Point de contact » (en bas à gauche) pointe vers le
+      point de jonction des deux billes.
+    elements:
+      - "bille « 14 » verte à bande blanche, en haut à gauche : la bille de couleur (bille visée)"
+      - "croix de deux traits noirs fins centrée sur la bille « 14 » : repère de son centre"
+      - "bille blanche ivoire à points rouges, en bas à droite : la bille de choc, en contact avec la bille « 14 »"
+      - "trait vertical bleu clair passant par le centre de la blanche et extérieur à la bille « 14 », légendé « Visée » : ligne de visée, au-delà du bord de la bille de couleur"
+      - "flèche noire diagonale partant du centre de la blanche et passant par le centre de la bille « 14 », vers le haut gauche (non légendée dans le PDF ; ligne des centres)"
+      - "flèche et légende « Point de contact » : l'endroit où les deux billes se touchent à l'impact"
+    teaching_point: >-
+      Au quart de bille, la visée (trait vertical passant par le centre de la blanche) est entièrement en
+      dehors de la bille de couleur, alors que les deux billes se touchent bien (« Point de contact ») ;
+      la quantité de bille étant faible, le transfert d'énergie est peu important et la blanche n'est que
+      peu déviée de sa trajectoire initiale (texte de la fiche).
+    adjacent_text_summary: >-
+      « Le quart de bille étant une quantité de bille "faible", le transfert d'énergie est peu important. La
+      bille blanche conservera une grande part d'énergie, après l'impact, tandis que la bille de couleur en
+      aura peu. Ainsi la bille blanche » (la phrase s'arrête là dans le PDF, avant le schéma). Sous le
+      schéma : « Cette faible quantité de bille a également pour conséquence d'impliquer une faible
+      déviation de la bille blanche après impact, par rapport à sa trajectoire initiale. »
+    description: >-
+      Vue de dessus au quart de bille : le trait de visée vertical passe par le centre de la blanche, à
+      droite de la bille « 14 », sans la couper. La blanche touche la bille « 14 » sur son flanc bas-droit
+      (flèche « Point de contact »). La flèche diagonale part du centre de la blanche et passe par le
+      centre de la bille « 14 », vers le haut gauche.
+    uncertainties:
+      - "Image non quadrillée : positions qualitatives uniquement."
+      - "L'aspect de la bille « 14 » (verte, rayée, numérotée) évoque le billard américain et non le Blackball ; la source ne l'explique pas."
+      - "La signification exacte de la flèche diagonale (trajectoire de la bille de couleur ou ligne des centres) n'est pas légendée dans le PDF."
+      - "L'ordre de lecture avec la phrase interrompue « Ainsi la bille blanche » : la suite de la phrase est absente du PDF."
+      - "Le sens de déplacement de la blanche (de bas en haut le long du trait de visée) est déduit, non écrit."

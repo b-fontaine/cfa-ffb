@@ -1,0 +1,128 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 20, rank: S}
+note: >-
+  Fiche Technique N°10 « Le rejet naturel » (onglet rose « FICHE TECHNIQUE » à droite, avec le titre de la
+  fiche en vertical). Page de mémento animateur : aucune grille de table, aucun exercice chiffré, aucun taux
+  de réussite, aucun chevalet dessiné, aucune pastille « Billard de bronze ». Trois illustrations : une vue de
+  côté blanche/rouge avec point d'impact haut, un schéma de la déviation d'environ 45° après impact sur la
+  bille 11, et une capture de la vidéo « Le rejet naturel en demi bille » accompagnée d'un QR code.
+diagrams:
+  - id: techniques-p20-attaque-haute
+    kind: technique-photo
+    sheet: "Le rejet naturel"
+    caption: "Bille blanche vue de côté avec point d'impact haut devant une bille rouge (aucune légende imprimée)."
+    subject: >-
+      Vue de côté, en haut à droite de la page, à côté du premier paragraphe : une bille blanche (ivoire) au
+      premier plan, en contact avec une bille rouge située derrière elle et décalée vers la droite, les deux
+      posées sur le trait épais bleu-vert de la surface de jeu. Un point bleu marque l'impact du procédé sur la
+      blanche, dans sa moitié haute : c'est l'attaque haute.
+    elements:
+      - "bille blanche (ivoire), à gauche, au premier plan, posée sur le trait bleu-vert"
+      - "bille rouge, à droite et légèrement derrière, au contact de la blanche, de même diamètre, posée sur le même trait"
+      - "point bleu plein dans la moitié haute de la blanche, sur l'axe vertical (au-dessus du centre, à environ un quart du diamètre, soit un demi-rayon, au-dessus de l'équateur) : point d'impact du procédé en attaque haute"
+      - "trait fin noir vertical passant par le point bleu et le centre de la blanche, dépassant largement au-dessus et au-dessous des billes"
+      - "trait fin noir horizontal à la hauteur des centres, de la gauche de la blanche jusqu'à la droite de la bille rouge (équateur commun)"
+      - "arc de cercle noir pointillé à l'intérieur de la blanche : contour de la bille rouge vu par transparence, ou ligne de contact entre les billes"
+      - "trait épais bleu-vert horizontal sous les billes sur toute la largeur du dessin : surface de jeu"
+    teaching_point: >-
+      Le rejet naturel se joue avec une attaque haute : le procédé frappe la blanche au-dessus de son centre
+      (point bleu au-dessus de l'équateur), la bille de couleur étant touchée en quantité proche de la
+      demi-bille.
+    adjacent_text_summary: >-
+      Premier paragraphe : en parallèle de l'apprentissage des techniques fondamentales, la notion technique du
+      replacement occupe une très grande part ; au cours de la première année, le joueur débutant doit
+      apprendre les coups techniques de base qui permettent le replacement de la bille blanche, sans effet. De
+      par sa facilité d'exécution, le premier coup technique à aborder est le rejet naturel. Le rejet naturel
+      est la déviation que la blanche obtient après impact sur une bille de couleur, coup joué avec une attaque
+      haute, en quantité de bille proche du « demi-bille ».
+    bridge: none
+    bronze: false
+    description: >-
+      Gros plan de côté : blanche et bille rouge en contact sur la surface de jeu, croix de deux traits fins
+      noirs centrée sur la blanche, point bleu au-dessus du centre de la blanche (attaque haute), trait épais
+      bleu-vert sous les billes.
+    uncertainties:
+      - "Aucune légende imprimée sur ce dessin ; le point bleu est interprété comme le point d'impact du procédé en attaque haute à partir du texte voisin."
+      - "La bille rouge n'est pas légendée (aucun numéro) ; son rôle de bille de couleur est déduit du texte."
+      - "Le sens de l'arc pointillé dans la blanche (contour de la rouge vue par transparence) est une interprétation."
+      - "La hauteur exacte du point bleu au-dessus de l'équateur est approximative (environ un quart du diamètre)."
+  - id: techniques-p20-deviation-45
+    kind: technique-photo
+    sheet: "Le rejet naturel"
+    caption: "Trajectoire initiale de la bille blanche ; Environ 45° ; Trajectoire de la bille blanche après impact"
+    subject: >-
+      Schéma en vue de dessus, au centre de la page : la bille numérotée « 11 » (bille rayée : blanche avec une large bande rouge et une pastille blanche portant le chiffre) en haut à
+      gauche, la bille blanche (points rouges) juste en dessous, légèrement décalée vers la droite. Un trait fin
+      vertical bleu-gris passant par le centre de la blanche est tangent au bord droit de la bille 11 : la
+      blanche touche donc la bille 11 en demi-bille. De la blanche partent deux trajectoires : une flèche noire
+      pleine vers le haut-gauche à travers le centre de la 11, et une flèche bleue pointillée vers le haut-droite
+      qui fait environ 45° avec le trait vertical.
+    elements:
+      - "légende « Trajectoire initiale de la bille blanche » en haut, centrée sur le trait vertical"
+      - "trait fin vertical bleu-gris : trajectoire initiale de la blanche, passant par son centre et tangent au bord droit de la bille 11"
+      - "bille 11 (bille rayée : blanche avec une large bande rouge, pastille blanche portant le chiffre 11), en haut à gauche, traversée en son centre par la flèche noire ; aucune croix dessinée sur elle"
+      - "bille blanche en bas, au contact de la bille 11, avec trois petits points rouges (haut gauche, haut droite, bas centre) ; son centre est sur le trait vertical"
+      - "flèche noire pleine partant du centre de la blanche, traversant le centre de la 11 et pointant vers le haut-gauche : direction de la bille de couleur (ligne des centres)"
+      - "flèche bleue pointillée partant du centre de la blanche vers le haut-droite : trajectoire de la bille blanche après impact"
+      - "arc de cercle noir entre le trait vertical et la flèche bleue pointillée, légendé « Environ 45° »"
+      - "légende « Trajectoire de la bille blanche après impact » à droite de la flèche pointillée"
+    teaching_point: >-
+      En quantité de bille proche de la demi-bille et en attaque haute, la blanche dévie d'environ 45° par
+      rapport à sa trajectoire initiale après l'impact ; le joueur connaît ainsi la direction de la blanche,
+      vérifie qu'elle ne va pas vers une poche et peut prévoir un replacement en adaptant la puissance.
+    adjacent_text_summary: >-
+      Lorsque toutes ces conditions sont remplies (attaque haute, quantité proche du demi-bille), la blanche
+      obtient une déviation d'environ 45° après impact par rapport à sa trajectoire initiale. En acquérant ce
+      coup technique, le joueur débutant connaît la direction que suit la blanche après impact, en quantité de
+      bille « demi-bille » et en attaque haute. Il peut ainsi vérifier si la blanche ne se dirige pas vers une
+      poche et peut également prévoir un replacement en adaptant la puissance du coup.
+    bridge: none
+    bronze: false
+    description: >-
+      Deux billes en contact, la 11 en haut à gauche et la blanche en dessous. Trajectoire initiale verticale
+      (trait fin) tangente au bord droit de la 11 (demi-bille), flèche noire de la bille de couleur vers le
+      haut-gauche, flèche bleue pointillée de la blanche vers le haut-droite à environ 45° du trait vertical.
+      Ce n'est pas un schéma de table (pas de bandes, pas de poche, pas de grille).
+    uncertainties:
+      - "La flèche noire (direction de la bille 11) n'est pas légendée ; interprétée comme la trajectoire de la bille de couleur d'après la ligne des centres."
+      - "Le contact exact (demi-bille) est lu visuellement : le trait vertical est tangent au bord droit de la bille 11 ; non chiffré dans le PDF."
+      - "L'angle « environ 45° » est le texte du PDF ; l'angle réellement dessiné est approximatif."
+      - "Les points rouges de la blanche (trois visibles) ne sont pas expliqués par le texte."
+  - id: techniques-p20-video-rejet-naturel
+    kind: technique-photo
+    sheet: "Le rejet naturel"
+    caption: "Scannez le QR code pour consulter la vidéo « Le rejet naturel »"
+    subject: >-
+      Capture d'écran d'une vidéo (cadre arrondi, avec reflet), en bas à gauche de la page, titrée en haut à
+      gauche « LE REJET NATUREL en demi bille » et portant le logo « DECATHLON » en bas à droite. Elle montre
+      une table de billard à tapis bleu vue en perspective avec plusieurs billes de couleur, la blanche en haut
+      à droite près de la queue et de la main du joueur, et une ligne blanche fine qui matérialise les
+      trajectoires. À droite de la capture se trouve un QR code.
+    elements:
+      - "titre incrusté « LE REJET NATUREL » avec sous-titre « en demi bille »"
+      - "logo « DECATHLON » en bas à droite de la capture"
+      - "table de billard à tapis bleu, vue en perspective, bande avec repères ; poche d'angle (mâchoires visibles) en bas, légèrement à gauche du centre, loin de la ligne blanche"
+      - "bille blanche en haut à droite, près de la queue tenue par la main du joueur (queue en haut à droite)"
+      - "bille jaune (rayée) à gauche, près de la bande gauche, loin de la poche"
+      - "bille orange rayée (orange et blanc, numérotée) au centre, touchée par la blanche ; ligne blanche fine de la blanche jusqu'à la bille orange, puis ligne blanche prolongée vers la gauche (vers la gauche, au-dessus de la bille jaune ; elle s'arrête avant la bande et ne mène pas à la poche)"
+      - "autres billes : une bille bordeaux pleine à gauche du centre, une bille verte pleine à droite près de la main, une bille orange pleine en haut et une bille sombre (bleu-vert) contre la bande du haut"
+      - "QR code noir et blanc à droite de la capture (lien vers la vidéo, contenu non transcrit)"
+    teaching_point: >-
+      Renvoi à la vidéo pédagogique « Le rejet naturel » (en demi-bille) pour voir le coup joué et la déviation
+      de la blanche, par scan du QR code.
+    adjacent_text_summary: >-
+      Pour aider le joueur à positionner la queue en attaque haute, l'animateur doit placer la bille blanche
+      près d'une bande. En utilisant un chevalet sur cadre, le joueur positionnera obligatoirement son procédé
+      en haut de la bille blanche. Légende de la capture : « Scannez le QR code pour consulter la vidéo « Le
+      rejet naturel » ».
+    bridge: frame
+    bronze: false
+    description: >-
+      Image vidéo fixe d'une table à tapis bleu, titrée « LE REJET NATUREL en demi bille » : la blanche (en haut
+      à droite) et une bille orange rayée (au centre) sont reliées par une ligne blanche fine, qui se prolonge
+      ensuite vers la gauche au-delà de la bille orange ; main et queue en haut à droite. À côté, QR code.
+    uncertainties:
+      - "Le texte voisin parle d'un chevalet sur cadre, mais aucun chevalet n'est visible sur la capture ; bridge: frame vient du texte et non de l'image."
+      - "Le sens exact des deux segments de la ligne blanche (trajectoire de la blanche et de la bille orange) est interprété ; la capture est petite."
+      - "Les couleurs et numéros des billes sont approximatifs (image réduite)."
+      - "Le contenu du QR code n'est pas décodé."

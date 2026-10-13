@@ -1,0 +1,56 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 10, rank: S}
+diagrams:
+  - id: initiation-p10-e1
+    kind: initiation
+    sheet: "La casse"
+    caption: "Casser le losange."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: w, color: white, at: [1.65, 1.55], role: cue}
+      - {id: r1, color: red, at: [6.0, 1.77]}
+      - {id: y1, color: yellow, at: [5.8, 1.89]}
+      - {id: r2, color: red, at: [6.2, 1.89]}
+      - {id: y2, color: yellow, at: [5.6, 2.0]}
+      - {id: b8, color: black, at: [6.0, 2.0], label: "8"}
+      - {id: y3, color: yellow, at: [6.4, 2.0]}
+      - {id: r3, color: red, at: [5.8, 2.11]}
+      - {id: y4, color: yellow, at: [6.2, 2.12]}
+      - {id: r4, color: red, at: [6.0, 2.23]}
+    ghosts:
+      - {id: g1, at: [1.65, 1.55], role: cue_start, for: w}
+      - {id: g2, at: [5.37, 1.99], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.65, 1.55], [4.78, 1.9]], bounces: [], note: "vers la première bille du losange (bille jaune de pointe gauche) ; la flèche s'arrête avant le cercle d'impact"}
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: y2, contact: full}
+    inset:
+      contact: full
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "Trait plein vertical à x ≈ 1,82 : trait tracé près duquel placer la bille blanche (adulte) ; un enfant se place un peu plus près de la petite bande."
+      - "Schéma de quantité de bille au centre gauche de la table : blanche recouvrant presque entièrement une bille rouge (bille pleine), point bleu au centre de la blanche (attaque au centre), ligne turquoise sous la bille."
+      - "Consigne : puissance très importante (grande amplitude, grande vitesse)."
+    description: >-
+      Table vue de dessus, départ à gauche. Neuf billes forment un losange (diamant) centré sur la bille noire
+      numérotée 8, à x ≈ 6,0 ; y ≈ 2,0 (sur l'axe médian) : 4 rouges (une au-dessus,
+      une en dessous de la noire, deux de part et d'autre en diagonale), 4 jaunes (une à gauche et une à droite de
+      la noire sur l'axe médian, deux en diagonale), et la noire au centre. Les billes se touchent. Un cercle
+      creux (la blanche, à poser) est dessiné à x ≈ 1,65 ; y ≈ 1,55, juste à gauche du trait vertical plein
+      (x ≈ 1,82). Une flèche pleine part de ce cercle vers le losange et s'arrête à x ≈ 4,8 ; y ≈ 1,9 : sa
+      prolongation arrive sur un cercle creux pointillé à x ≈ 5,37 ; y ≈ 2,0, collé à la bille jaune de pointe
+      gauche du losange (position de la blanche à l'impact, première bille du losange). Aucune bille blanche
+      n'est dessinée. Au centre gauche, un grand schéma de quantité de bille (blanche et bille rouge presque
+      superposées, point bleu au centre, croix de visée, trait turquoise sous la bille). Objectif du texte : viser
+      la première bille du losange pour éparpiller les billes, en quantité de bille pleine et en attaquant au
+      centre, avec une puissance très importante. Le chevalet peut être sur la surface de jeu ou sur le cadre.
+    uncertainties:
+      - "Aucune bille blanche pleine dessinée : le petit cercle creux à x ≈ 1,65 est lu comme la blanche posée (bille w ajoutée aux billes par convention de transcription)."
+      - "Type de chevalet non imposé : le texte propose « sur la surface de jeu ou sur le cadre » ; le trait turquoise du schéma n'est pas commenté."
+      - "La flèche s'arrête avant le cercle d'impact ; sa prolongation (pente) vise le cercle pointillé collé à la bille jaune de pointe gauche."
+      - "Ligne de départ lue à x ≈ 1,82 (et non 2,0) ; le texte parle de « trait tracé »."
+      - "Positions lues à ≈ 0,1 case près ; billes du losange supposées jointives."
+      - "Pas de taux de réussite ni de nombre de séances, pas de pastille Billard de bronze sur cette page."

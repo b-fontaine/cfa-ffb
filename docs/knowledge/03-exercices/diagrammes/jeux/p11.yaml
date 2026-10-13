@@ -1,0 +1,50 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 11, rank: S}
+diagrams:
+  - id: jeux-p11-j1
+    kind: game
+    sheet: "Les quantités de bille."
+    caption: "Objectif : Empocher 14 billes à partir d'une seule position de la bille blanche."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: w,   color: white,  at: [4.0, 2.0], role: cue}
+      - {id: y1,  color: yellow, at: [1.95, 0.5]}
+      - {id: y2,  color: yellow, at: [1.95, 1.0]}
+      - {id: y3,  color: yellow, at: [1.95, 1.5]}
+      - {id: y4,  color: yellow, at: [1.95, 2.0]}
+      - {id: y5,  color: yellow, at: [1.95, 2.5]}
+      - {id: y6,  color: yellow, at: [1.95, 3.0]}
+      - {id: y7,  color: yellow, at: [1.95, 3.5]}
+      - {id: r1,  color: red,    at: [6.0, 0.5]}
+      - {id: r2,  color: red,    at: [6.0, 1.0]}
+      - {id: r3,  color: red,    at: [6.0, 1.5]}
+      - {id: r4,  color: red,    at: [6.0, 2.0]}
+      - {id: r5,  color: red,    at: [6.0, 2.5]}
+      - {id: r6,  color: red,    at: [6.0, 3.0]}
+      - {id: r7,  color: red,    at: [6.0, 3.5]}
+    ghosts: []
+    arrows: []
+    zones: []
+    annotations:
+      - "Règles du jeu : le jeu se déroule en un défi à réaliser seul."
+      - "Le joueur doit empocher toutes les billes dans les poches de son choix."
+      - "La bille blanche est repositionnée après chaque tir sur son point d'origine. On ne replace pas les billes empochées. Toute bille non empochée est repositionnée sur son point d'origine."
+      - "Le défi est réalisé complètement lorsque le joueur a utilisé un tir pour chaque bille."
+      - "Un coup n'est pas valable si le joueur commet une faute."
+    description: >-
+      Table vue de dessus, en paysage, avec la grille pointillée 8 x 4 et la ligne de départ (trait plein
+      vertical) à gauche. La bille blanche est au centre de la table (environ x = 4, y = 2), dessinée
+      comme un cercle clair avec deux petits points rouges. Quatorze billes de couleur sont alignées en
+      deux colonnes verticales de sept : sept billes jaunes à gauche (x environ 1,95, juste à droite de la
+      ligne de départ) et sept billes rouges à droite (x environ 6), espacées d'environ une demi-case
+      (y de 0,5 à 3,5, par pas de 0,5). La bille jaune centrale et la bille rouge
+      centrale sont à la hauteur de la blanche (y = 2). Aucune flèche, aucun cercle creux, aucune zone
+      grisée, aucun schéma de quantité de bille.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,77 (trait plein vertical) et non 2,0 ; le format n'a pas de champ dédié."
+      - "Positions lues à ≈ 0,15 case près ; l'espacement vertical des billes est régulier (0,5 case)."
+      - "La bille blanche est dessinée en cercle clair avec deux points rouges ; interprétée comme la bille blanche (point d'origine du tir)."
+      - "Le texte ne précise pas le type de chevalet (bridge: unknown) ; pas de pastille Billard de bronze, de taux de réussite ni de nombre de séances sur cette page."
+      - "Les billes jaunes et rouges sont toutes empochées : la fiche n'impose pas d'ordre ni de poche."

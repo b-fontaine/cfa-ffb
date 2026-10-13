@@ -1,0 +1,234 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 21, rank: S}
+note: >-
+  Fiche Technique N°11 « Le coulé » (onglet rose « FICHE TECHNIQUE » à droite, avec le titre « Le coulé »
+  en vertical). Page de mémento animateur : aucune grille de table ni exercice chiffré. Illustrations :
+  deux vues de face de la bille blanche (bille pleine et trois-quarts, aucune vue de face au-dessus de la
+  colonne « Bille proche du plein »), trois schémas en vue de dessus alignant blanche de départ, blanche à
+  l'impact et bille jaune (« Bille pleine », « Bille proche du plein », « Trois-quarts »), une capture
+  d'écran de vidéo et un QR code. Aucun taux de réussite, aucun chevalet, aucune pastille « Billard de
+  bronze ».
+diagrams:
+  - id: techniques-p21-face-plein
+    kind: technique-photo
+    sheet: "Le coulé"
+    caption: "Vue de face de la bille blanche, point d'impact bleu en haut de la bille (au-dessus de la colonne « Bille pleine »)."
+    subject: >-
+      Vue de face de la bille blanche (ivoire, 3D), en haut à gauche de la page, au-dessus de la colonne
+      « Bille pleine ». Un point bleu plein se trouve sur l'axe vertical de la bille, dans sa moitié haute,
+      nettement au-dessus de l'axe horizontal : attaque en haut de la blanche, sans décalage latéral.
+    elements:
+      - "bille blanche vue de face, sans bille de couleur derrière elle"
+      - "point bleu plein sur l'axe vertical, au-dessus du centre (environ à mi-chemin entre le centre et le sommet de la bille) : point d'impact du procédé"
+      - "trait fin noir vertical passant par le point bleu, dépassant largement au-dessus et au-dessous de la bille (axe vertical)"
+      - "trait fin noir horizontal à hauteur du centre de la bille, dépassant à gauche et à droite (axe horizontal ou équateur)"
+      - "trait épais bleu-vert foncé horizontal, tangent au bas de la bille (surface de jeu)"
+    teaching_point: >-
+      Le coulé s'exécute avec une attaque en haut de la blanche (point d'impact au-dessus de l'équateur, sur
+      l'axe vertical) ; ici la blanche est jouée en bille pleine, sans décalage latéral.
+    adjacent_text_summary: >-
+      Un coulé est un coup technique qui s'exprime entre le plein de bille et le trois-quarts, avec une
+      attaque en haut. Joué en quantité de bille pleine, il engendre une trajectoire de blanche identique à
+      sa trajectoire initiale et à celle de la bille de couleur.
+    bridge: none
+    bronze: false
+    description: >-
+      Gros plan de face de la bille blanche : point bleu sur l'axe vertical au-dessus du centre, croix de
+      deux traits fins noirs, trait épais bleu-vert sous la bille.
+    uncertainties:
+      - "Le sens du point bleu (point d'impact du procédé) et du trait bleu-vert (surface de jeu) n'est pas légendé dans le PDF ; interprétation à partir du texte voisin et de la fiche précédente."
+      - "La hauteur exacte du point bleu (environ la moitié du rayon au-dessus du centre) est une lecture approximative."
+  - id: techniques-p21-face-trois-quarts
+    kind: technique-photo
+    sheet: "Le coulé"
+    caption: "Vue de face de la blanche devant une bille rouge décalée vers la gauche (au-dessus de la colonne « Trois-quarts »)."
+    subject: >-
+      Vue de face, en haut à droite de la page, au-dessus de la colonne « Trois-quarts » : la bille blanche
+      est au premier plan, une bille rouge sombre est derrière elle et dépasse sur sa gauche (décalage
+      d'environ un quart de diamètre), la blanche recouvrant environ les trois quarts de la bille rouge.
+      Un arc en pointillés fins noirs, visible sur la partie droite de la blanche, marque le bord droit de
+      la bille rouge cachée derrière. Un point bleu plein est sur l'axe vertical de la blanche, dans sa
+      moitié haute.
+    elements:
+      - "bille rouge à gauche, partiellement masquée par la blanche, visible sur son bord gauche en croissant"
+      - "bille blanche au premier plan, décalée d'environ un quart de diamètre à droite de la rouge"
+      - "arc pointillé noir sur la partie droite de la blanche : bord droit de la bille rouge cachée (indique le recouvrement)"
+      - "point bleu plein sur l'axe vertical de la blanche, au-dessus de l'axe horizontal : point d'impact du procédé"
+      - "trait fin noir vertical passant par le point bleu, dépassant au-dessus et au-dessous"
+      - "trait fin noir horizontal à hauteur du centre des billes, dépassant à gauche et à droite"
+      - "trait épais bleu-vert foncé horizontal, tangent au bas des billes (surface de jeu)"
+    teaching_point: >-
+      Le coulé joué en trois-quarts : la blanche recouvre environ les trois quarts de la bille de couleur
+      (qui dépasse à gauche), toujours avec une attaque en haut de la blanche.
+    adjacent_text_summary: >-
+      Un coulé s'exprime entre le plein de bille et le trois-quarts, avec une attaque en haut ; lorsque le
+      coup est joué avec des quantités de bille proches du plein, la trajectoire de la blanche dévie de
+      plusieurs degrés selon la proportion de quantité de bille.
+    bridge: none
+    bronze: false
+    description: >-
+      Gros plan de face : blanche devant une bille rouge décalée vers la gauche (bord gauche de la rouge
+      visible), arc pointillé du bord droit de la rouge sur la blanche, point bleu sur l'axe vertical de la blanche
+      au-dessus du centre, croix de traits noirs et trait bleu-vert sous les billes.
+    uncertainties:
+      - "Aucune légende imprimée : « trois-quarts » vient de l'intitulé de la colonne du dessous ; le recouvrement exact (environ 3/4) est une lecture visuelle."
+      - "La bille cachée est rouge sombre sur ce gros plan alors que le schéma du dessous montre une bille jaune ; le PDF ne l'explique pas."
+  - id: techniques-p21-bille-pleine
+    kind: technique-photo
+    sheet: "Le coulé"
+    caption: "Bille pleine"
+    subject: >-
+      Vue de dessus, colonne de gauche, de bas en haut : la blanche de départ (points rouges), la blanche à
+      l'impact collée sous la bille jaune, et la bille jaune en haut, parfaitement alignées sur un même axe
+      vertical. Un long trait noir plein part du centre de la blanche de départ, traverse la blanche à
+      l'impact et la bille jaune, et se termine par une pointe de flèche noire au-dessus de la jaune.
+    elements:
+      - "bille jaune, en haut de la colonne, au contact de la blanche située juste dessous"
+      - "bille blanche à l'impact (sans points rouges), au contact de la jaune, sur le même axe vertical"
+      - "bille blanche de départ en bas, avec petits points rouges (un en bas au centre, un en haut à gauche, un en haut à droite)"
+      - "un seul trait noir plein vertical, du centre de la blanche de départ jusqu'au-dessus de la bille jaune, terminé par une pointe de flèche vers le haut"
+      - "légende « Bille pleine » sous la blanche de départ"
+    teaching_point: >-
+      En bille pleine, un coulé donne à la blanche une trajectoire identique à sa trajectoire initiale et à
+      celle de la bille de couleur : une seule droite, pas de déviation.
+    adjacent_text_summary: >-
+      Un coulé joué en quantité de bille pleine engendre une trajectoire de bille blanche identique à sa
+      trajectoire initiale et à la bille de couleur. Le transfert d'énergie est important en quantité de bille
+      pleine : le joueur adapte la puissance du coup pour que la blanche ait assez d'énergie pour le
+      replacement, adaptation plus prononcée au Blackball (blanche plus légère et plus petite).
+    bridge: none
+    bronze: false
+    description: >-
+      Trois billes alignées verticalement (blanche de départ, blanche à l'impact, jaune) traversées par un
+      unique trait noir fléché vers le haut ; aucune déviation de trajectoire.
+    uncertainties:
+      - "La blanche du milieu est interprétée comme la position de la blanche à l'impact ; le PDF ne la légende pas."
+      - "Signification des petits points rouges sur la blanche de départ non donnée par le texte."
+  - id: techniques-p21-bille-proche-du-plein
+    kind: technique-photo
+    sheet: "Le coulé"
+    caption: "Bille proche du plein"
+    subject: >-
+      Vue de dessus, colonne du milieu : blanche de départ en bas (points rouges), blanche à l'impact et bille
+      jaune au-dessus. La jaune est légèrement décalée vers la gauche de l'axe de la blanche (la blanche
+      l'atteint un peu à sa droite). Le trait plein vertical monte du centre de la blanche de départ jusqu'au
+      centre de la blanche à l'impact, puis une flèche noire pleine repart vers le haut légèrement inclinée
+      vers la gauche (déviation de quelques degrés), la pointe de flèche étant au-dessus de la jaune, un peu à gauche de son centre. Un trait
+      noir en pointillés vertical prolonge l'axe de départ vers le haut, et un trait bleu en pointillés
+      s'écarte vers la droite en haut, à partir du centre de la blanche à l'impact.
+    elements:
+      - "bille jaune au sommet, au contact de la blanche, légèrement décalée vers la gauche par rapport à l'axe de départ"
+      - "bille blanche à l'impact, sur l'axe de départ, au contact de la jaune"
+      - "bille blanche de départ en bas avec petits points rouges"
+      - "trait noir plein vertical de la blanche de départ au centre de la blanche à l'impact (trajectoire initiale)"
+      - "flèche noire pleine partant du centre de la blanche à l'impact vers le haut, inclinée vers la gauche, pointe de flèche au-dessus de la jaune (trajectoire de la blanche déviée ; elle chevauche la jaune)"
+      - "trait noir en pointillés vertical, dans le prolongement de l'axe de départ, vers le haut (direction initiale)"
+      - "trait bleu en pointillés partant du centre de la blanche à l'impact vers le haut à droite (direction de la bille de couleur, à droite de l'axe)"
+      - "légende « Bille proche du plein » sous la blanche de départ"
+    teaching_point: >-
+      Lorsque le coup est joué en quantité proche du plein, la trajectoire de la blanche dévie de plusieurs
+      degrés par rapport à sa trajectoire initiale (pointillé noir), la déviation dépendant de la proportion
+      de quantité de bille.
+    adjacent_text_summary: >-
+      Toutefois, lorsque le coup est joué avec des quantités de billes proches du plein, la trajectoire de la
+      bille blanche déviera de plusieurs degrés selon la proportion de quantité de bille.
+    bridge: none
+    bronze: false
+    description: >-
+      Même trois billes qu'en bille pleine, la jaune étant un peu décalée à gauche ; la blanche, après
+      impact, part légèrement à gauche de l'axe initial (flèche noire pleine), un pointillé noir vertical
+      marquant l'axe initial et un pointillé bleu partant à droite.
+    uncertainties:
+      - "Le sens exact du pointillé bleu n'est pas légendé dans le PDF ; il part du point d'impact vers la droite, à l'opposé de la déviation de la blanche, et est interprété comme la direction de la bille de couleur."
+      - "Aucun angle chiffré n'est indiqué : la déviation est montrée d'environ 5 à 10 degrés sur le dessin, lecture approximative."
+      - "La blanche du milieu est interprétée comme la blanche à l'impact."
+  - id: techniques-p21-trois-quarts
+    kind: technique-photo
+    sheet: "Le coulé"
+    caption: "Trois-quarts"
+    subject: >-
+      Vue de dessus, colonne de droite : même disposition que la colonne du milieu, avec un décalage plus
+      marqué : la jaune est nettement décalée vers la gauche de l'axe, la blanche à l'impact la touchant sur
+      son flanc droit. Le trait plein vertical monte de la blanche de départ au centre de la blanche à
+      l'impact, puis une flèche noire pleine repart vers le haut franchement inclinée vers la gauche
+      (déviation plus grande), pointe de flèche au-dessus du bord gauche de la jaune. Un pointillé noir vertical
+      prolonge l'axe de départ et un pointillé bleu s'écarte nettement vers la droite, avec un angle plus
+      ouvert qu'en « Bille proche du plein ».
+    elements:
+      - "bille jaune au sommet, nettement décalée vers la gauche de l'axe de départ, au contact de la blanche"
+      - "bille blanche à l'impact, sur l'axe de départ, au contact du flanc droit de la jaune"
+      - "bille blanche de départ en bas avec petits points rouges"
+      - "trait noir plein vertical de la blanche de départ au centre de la blanche à l'impact"
+      - "flèche noire pleine partant du centre de la blanche à l'impact, très inclinée vers la gauche, pointe de flèche au-dessus du bord gauche de la jaune (blanche déviée, déviation plus forte qu'en proche du plein)"
+      - "trait noir en pointillés vertical dans le prolongement de l'axe de départ vers le haut"
+      - "trait bleu en pointillés partant du centre de la blanche à l'impact vers le haut à droite, angle nettement plus ouvert qu'au milieu"
+      - "légende « Trois-quarts » sous la blanche de départ"
+    teaching_point: >-
+      Le coulé s'exprime entre le plein de bille et le trois-quarts ; la déviation de la blanche par rapport
+      à sa trajectoire initiale dépend de la quantité de bille (elle est dessinée plus ouverte qu'en
+      « Bille proche du plein »).
+    adjacent_text_summary: >-
+      Le coulé s'exprime entre le plein de bille et le trois-quarts, avec une attaque en haut ; la
+      trajectoire de la blanche dévie de plusieurs degrés selon la proportion de quantité de bille.
+    bridge: none
+    bronze: false
+    description: >-
+      Trois billes comme ci-dessus, jaune nettement décalée à gauche ; la blanche part franchement à gauche de
+      l'axe initial (flèche noire pleine), pointillé noir vertical pour l'axe initial, pointillé bleu plus
+      ouvert vers la droite que dans la colonne du milieu.
+    uncertainties:
+      - "Le sens exact du pointillé bleu n'est pas légendé dans le PDF (interprété comme la direction de la bille de couleur)."
+      - "Aucun angle chiffré ; l'ordre de grandeur de la déviation (environ 15 à 20 degrés) est une lecture approximative."
+      - "La blanche du milieu est interprétée comme la blanche à l'impact."
+  - id: techniques-p21-capture-video
+    kind: technique-photo
+    sheet: "Le coulé"
+    caption: "Scannez le QR code pour consulter la vidéo « L'utilité du coulé »"
+    subject: >-
+      Capture d'écran d'une vidéo, en bas à gauche de la page, dans un cadre d'écran : table de billard à tapis
+      bleu vue en perspective, avec un bandeau en haut à gauche « BIEN PLACER LE PROCÉDÉ ». Une queue
+      horizontale, à gauche à mi-hauteur, vise la bille blanche située au centre de l'image. Autour : une
+      bille rouge numérotée en haut à gauche, une bille rayée jaune-orangé et une verte foncée pleine
+      au-dessus de la blanche, une bille orange pleine à droite, une bille foncée coupée en haut. En bas à gauche, en surimpression, une vue de face
+      d'une blanche avec point bleu et croix de traits noirs (comme les gros plans du haut de la page), et
+      une bille orange coupée par le bord.
+    elements:
+      - "bandeau « BIEN PLACER LE PROCÉDÉ » (avec une pastille numérotée « 2 ») en haut à gauche de la capture"
+      - "queue claire horizontale, à gauche à mi-hauteur de l'image, pointant vers la bille blanche du centre"
+      - "bille blanche au centre de l'image, vers laquelle vise la queue"
+      - "billes de couleur autour : rouge en haut à gauche, rayée jaune-orangé et verte foncée au-dessus de la blanche, orange pleine à droite, bille foncée coupée en haut"
+      - "en bas à gauche, en surimpression : vue de face d'une blanche avec point bleu au-dessus du centre et croix de deux traits noirs fins, et bille orange coupée par le bord"
+    teaching_point: >-
+      Illustration du renvoi vidéo « L'utilité du coulé » (placement du procédé) ; la capture n'est pas un
+      schéma d'exercice.
+    adjacent_text_summary: >-
+      « Scannez le QR code pour consulter la vidéo « L'utilité du coulé » » (légende en bleu au-dessus de la
+      capture et du QR code).
+    bridge: none
+    bronze: false
+    description: >-
+      Image d'aperçu de la vidéo « L'utilité du coulé » : table à tapis bleu en perspective, queue à gauche
+      visant la blanche du centre, billes de couleur autour, vue de face de la blanche avec point bleu en
+      surimpression en bas à gauche ; sert de support au QR code placé à sa droite.
+    uncertainties:
+      - "Image de faible taille : les numéros des billes ne sont pas lisibles ; le logo bleu en bas à droite est illisible ; le point bleu de la surimpression est interprété comme l'attaque en haut de la blanche, sans légende."
+      - "Le bandeau « BIEN PLACER LE PROCÉDÉ » est lu à petite taille ; sa graphie exacte est à confirmer."
+  - id: techniques-p21-qr-code
+    kind: technique-photo
+    sheet: "Le coulé"
+    caption: "Scannez le QR code pour consulter la vidéo « L'utilité du coulé »"
+    subject: >-
+      QR code noir et blanc, en bas à droite de la page, à côté de la capture d'écran de la vidéo. Son contenu
+      (adresse) n'est pas transcrit.
+    elements:
+      - "QR code carré avec trois repères d'angle (haut gauche, haut droit, bas gauche)"
+    teaching_point: >-
+      Donne accès à la vidéo « L'utilité du coulé » ; aucun contenu technique en soi.
+    adjacent_text_summary: >-
+      « Scannez le QR code pour consulter la vidéo « L'utilité du coulé » ».
+    bridge: none
+    bronze: false
+    description: >-
+      QR code renvoyant vers la vidéo « L'utilité du coulé » ; l'URL n'est pas lue.
+    uncertainties:
+      - "L'URL encodée n'a pas été décodée."

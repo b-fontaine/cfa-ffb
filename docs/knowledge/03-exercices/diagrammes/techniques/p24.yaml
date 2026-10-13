@@ -1,0 +1,92 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 24, rank: S}
+diagrams:
+  - id: techniques-p24-phases-retro
+    kind: technique-photo
+    sheet: "Fiche Technique N°14 : Le rétro"
+    caption: "Roulement avant / Glissement / Roulement arrière"
+    subject: >-
+      Trois rendus 3D de la bille blanche vue de côté, alignés horizontalement et traversés par un trait noir épais,
+      avec une queue à l'extrême droite : de gauche à droite « Roulement avant », « Glissement »,
+      « Roulement arrière ».
+    elements:
+      - "Bille de gauche, légendée « Roulement avant » : deux flèches courbes blanches à contour noir en boucle (une en haut, une en bas, le trait noir passant devant la flèche du bas)"
+      - "Bille du centre, légendée « Glissement » : une seule flèche horizontale blanche à contour noir pointant vers la gauche, sans flèche de rotation ; points rouges de repère haut-gauche, haut-droite et bas"
+      - "Bille de droite, légendée « Roulement arrière » : deux flèches courbes blanches à contour noir en boucle, sens inverse de la bille de gauche (la flèche du haut a sa pointe vers le bas à droite, celle du bas vers le haut à gauche ; le trait noir passe devant la flèche du bas) ; la bille est la plus proche de la queue"
+      - "Trait noir horizontal épais, légèrement sous le centre des billes (compatible avec une attaque basse), qui commence dans la bille de gauche, traverse celles du centre et de droite et s'arrête à la pointe de la queue"
+      - "Queue de billard à droite, pointe (tip) noire puis virole blanche puis fût en bois clair, alignée sur le trait noir, dirigée vers les billes (donc coup joué de la droite vers la gauche)"
+      - "Points rouges de repère sur chaque bille (haut-gauche, haut-droite, bas) permettant de suivre la rotation"
+    teaching_point: >-
+      Un coup joué avec une attaque basse fait avancer la blanche avec une rotation arrière ; le frottement avec
+      le drap la fait entrer dans une phase de glissement, puis de roulement avant.
+    adjacent_text_summary: >-
+      « Un coup joué avec une attaque basse, fait avancer la bille blanche avec une rotation arrière. Lors de son
+      parcours, le frottement avec le drap du billard va faire entrer la bille blanche dans une phase de
+      glissement, puis de roulement avant. » Les légendes lues sous les billes, de gauche à droite : « Roulement
+      avant », « Glissement », « Roulement arrière » (la rotation arrière est celle du départ, près de la queue).
+    description: >-
+      Illustration en haut de la page. La queue est à droite et la bille avance vers la gauche. Chronologie du
+      parcours : à droite (près de la queue) « Roulement arrière », au centre « Glissement », à gauche
+      « Roulement avant ».
+    uncertainties:
+      - "La hauteur exacte du point d'attaque de la queue n'est pas lisible : le trait noir traverse les billes un peu sous leur centre, mais le texte parle d'attaque basse."
+      - "Le sens exact des flèches courbes est lu sur de petits dessins ; l'opposition entre les deux billes extrêmes est certaine, pas le sens horaire/antihoraire."
+  - id: techniques-p24-retro-pleine-bille
+    kind: technique-photo
+    sheet: "Fiche Technique N°14 : Le rétro"
+    caption: "Pleine bille — 180°"
+    subject: >-
+      Colonne gauche du bas de page : à gauche une vue de côté de la blanche avec le point d'impact du tip,
+      légendée « Pleine bille » ; à droite une vue de dessus : bille jaune, bille blanche en contact, et plus bas
+      une seconde bille blanche sur le même axe, avec la mesure « 180° ».
+    elements:
+      - "Vue de côté « Pleine bille » : bille blanche posée sur un trait vert-bleu horizontal (la table), croix noire fine passant par son centre, point bleu (point d'impact du tip) en bas de la bille, sous le centre sur l'axe vertical : attaque basse"
+      - "Vue de dessus : bille de couleur jaune en haut, avec une flèche noire verticale vers le haut (trajectoire de la bille jaune après l'impact)"
+      - "Bille blanche juste sous la jaune, en contact et alignée verticalement avec elle (impact en bille pleine)"
+      - "Trait noir vertical fin passant par le centre de la blanche et descendant"
+      - "Seconde bille blanche (avec points rouges de repère) plus bas, sur le même axe vertical (le dessin ne précise pas s'il s'agit de la position de départ ou d'arrivée de la blanche)"
+      - "Flèche pointillée bleu-gris verticale descendant sous la bille blanche du bas, avec la mesure « 180° » : déviation de la blanche"
+    teaching_point: >-
+      Joué en quantité de bille pleine avec une rotation arrière, le recul de la blanche après l'impact
+      engendre une déviation de 180° : le sens de la trajectoire de la blanche est inversé.
+    adjacent_text_summary: >-
+      « Lors de l'impact, si cette rotation arrière est imprimée, la bille blanche peut effectuer un recul en
+      fonction de la quantité de bille. Ce recul engendrera une déviation de 180° lorsque le coup est joué en
+      quantité de bille pleine […] »
+    description: >-
+      La blanche arrive de bas en haut et heurte la jaune en bille pleine, centre sur centre. La jaune part vers
+      le haut ; la blanche recule vers le bas sur la même ligne, soit une déviation de 180° (légende « 180° »).
+      La vue de côté précise que le tip frappe la blanche sous son centre (point bleu).
+    uncertainties:
+      - "Le point bleu est légèrement sous le centre de la bille dans la vue de côté ; la hauteur exacte n'est pas chiffrée."
+      - "Aucune grille ni bande de table n'est dessinée ; le schéma n'est pas transposable en coordonnées de table."
+  - id: techniques-p24-retro-demi-bille
+    kind: technique-photo
+    sheet: "Fiche Technique N°14 : Le rétro"
+    caption: "Demi-bille — 90°"
+    subject: >-
+      Colonne droite du bas de page : à gauche une vue de côté de la blanche recouvrant à moitié une bille rouge,
+      légendée « Demi-bille » ; à droite une vue de dessus : bille rouge, blanche en contact décalée vers la
+      droite, et plus bas une seconde blanche sur le même axe, avec la mesure « 90° ».
+    elements:
+      - "Vue de côté « Demi-bille » : bille rouge sombre à gauche, partiellement recouverte par la bille blanche à droite (recouvrement de moitié), trait vert-bleu horizontal (la table), croix noire fine passant par le centre de la blanche, point bleu (tip) en bas de la bille, sous le centre"
+      - "Vue de dessus : bille rouge en haut, avec une flèche noire inclinée vers le haut à gauche (trajectoire de la bille rouge après l'impact)"
+      - "Bille blanche en contact sous la rouge, décalée vers la droite (impact en demi-bille)"
+      - "Trait noir vertical fin passant par le centre de la blanche et descendant jusqu'à une seconde bille blanche (points rouges de repère) plus bas, sur le même axe"
+      - "Flèche pointillée bleu-gris horizontale vers la droite partant du centre de la blanche du haut (direction perpendiculaire à la ligne de tir)"
+      - "Arc de cercle noir sans pointe de flèche, partant du haut de la blanche du bas et remontant vers l'extrémité de la flèche pointillée sans la toucher, légendé « 90° » : déviation de la blanche après l'impact"
+    teaching_point: >-
+      Joué en demi-bille avec une rotation arrière, le recul engendre une déviation de 90° ; c'est la limite du
+      rétro : en dessous de la demi-bille, la blanche ne peut plus reculer après l'impact et le coup n'est plus
+      un rétro.
+    adjacent_text_summary: >-
+      « […] et une déviation de 90° lorsqu'il est joué en demi-bille. C'est la limite du rétro. En dessous de
+      demi-bille, la blanche ne pouvant plus reculer après l'impact, le coup n'est plus un rétro. »
+    description: >-
+      La blanche arrive de bas en haut et heurte la bille rouge en demi-bille (recouvrement de moitié). La rouge
+      part en diagonale vers le haut à gauche. Un arc légendé « 90° » relie la ligne de tir (trait noir vertical,
+      qui descend vers la blanche du bas) à la flèche pointillée horizontale vers la droite : la déviation de 90°
+      est lue entre ces deux directions.
+    uncertainties:
+      - "L'arc « 90° » est lu entre la ligne de tir et la flèche pointillée de droite ; le dessin n'indique pas explicitement vers quel côté la blanche part après l'impact."
+      - "Aucune grille ni bande de table n'est dessinée ; le schéma n'est pas transposable en coordonnées de table."

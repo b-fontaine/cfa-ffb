@@ -1,0 +1,81 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 13, rank: S}
+diagrams:
+  - id: techniques-p13-visualiser-trajectoire
+    kind: technique-photo
+    sheet: "Fiche Technique N°3 : Viser pour empocher"
+    caption: "VISUALISEZ LA TRAJECTOIRE de la bille blanche"
+    subject: >-
+      Capture d'écran de vidéo, en vue de dessus légèrement inclinée, d'une table à tapis bleu. Incrustation en
+      haut à gauche « 2 VISUALISEZ LA TRAJECTOIRE de la bille blanche » et logo de marque en bas à droite.
+      Une bille blanche (la bille de choc) est à gauche, en haut de l'image. Une queue de billard en bois
+      clair arrive du bord gauche, légèrement inclinée vers le bas, et sa pointe touche une seconde bille
+      blanche translucide (la « bille fantôme ») collée au côté haut-gauche d'une bille de couleur sombre
+      (violet foncé / bordeaux), située juste en dessous et à droite de la fantôme. Un trait fin blanc
+      traverse la bille fantôme et la bille de couleur et descend en diagonale vers le bas droit jusqu'au
+      centre d'une poche d'angle sombre (bande noire à droite), où il se termine par un point blanc. Le trait
+      se prolonge aussi un peu au-dessus de la bille fantôme (vers le haut gauche).
+    elements:
+      - "bille blanche pleine, à gauche en haut de l'image : la bille de choc, point de départ"
+      - "queue de billard (bois clair) venant du bord gauche, passant juste au-dessus de la bille blanche (non appuyée sur elle) et orientée vers la bille fantôme ; pointe (procédé blanc) en contact avec la fantôme"
+      - "bille blanche translucide (bille fantôme) au contact de la bille de couleur, côté haut-gauche : position de la blanche à l'impact"
+      - "bille de couleur sombre (violet foncé) : bille à empocher"
+      - "trait fin blanc passant par le centre de la fantôme et le centre de la bille de couleur : trajectoire vers la poche"
+      - "poche d'angle sombre en bas à droite, avec un point blanc en son centre : extrémité de la trajectoire"
+      - "incrustation texte « 2 VISUALISEZ LA TRAJECTOIRE de la bille blanche »"
+      - "logo de marque en bas à droite de la vignette"
+    teaching_point: >-
+      Pour viser pour empocher, la trajectoire de la bille de couleur est déterminée par le centre de la poche
+      et le centre de la bille de couleur ; le centre de la blanche doit y être aligné à l'impact. L'animateur
+      pose une « bille fantôme » au contact de la bille à empocher pour que le joueur visualise où la blanche
+      doit se trouver à l'impact et la trajectoire qu'elle doit suivre depuis son point de départ.
+    adjacent_text_summary: >-
+      « Le joueur doit pouvoir viser précisément un point sur la bille de couleur, s'il souhaite lui faire
+      suivre une trajectoire afin de l'empocher. Cette trajectoire, déterminée par le centre de la poche et le
+      centre de la bille de couleur, pourra être obtenue, si le centre de la bille blanche y est également
+      aligné lors de l'impact. » « Pour cela, le joueur doit appréhender où la bille blanche doit se situer à
+      l'impact, et visualiser la trajectoire qu'elle doit suivre depuis son point de départ. Afin d'aider le
+      joueur [...] l'animateur peut placer une bille blanche au contact de la bille à empocher (nommée « bille
+      fantôme » ou « imaginaire » non pointée sur le schéma). Le joueur pourra alors aligner visuellement le
+      centre de la bille blanche sur son point d'origine et le centre de la bille blanche à l'impact de la bille
+      de couleur. » Sous la photo : « Le placement du joueur doit s'effectuer de telle sorte que la queue soit
+      alignée sur la trajectoire qui passe par le centre de la bille blanche et de la « bille fantôme ». Lors
+      du limage, le joueur vise le centre de la « bille fantôme », en plaçant son procédé au centre de la bille
+      blanche. » L'animateur retire ensuite la bille fantôme avant le tir et fait observer le point cible visé
+      sur la bille de couleur ; on découvre d'abord les quantités de billes entre le plein et le demi-bille, les
+      autres (visée « en dehors » de la bille de couleur) étant expliquées dans un second temps.
+    description: >-
+      Photo de table bleue en vue de dessus. La blanche de choc est à gauche ; la queue part du bord gauche et
+      vise la bille fantôme translucide, collée à la bille de couleur sombre. Le trait blanc relie le centre de
+      la fantôme, le centre de la bille de couleur et le centre de la poche d'angle en bas à droite : il
+      matérialise la trajectoire que doit prendre la bille de couleur et donc l'alignement à respecter à
+      l'impact. La fantôme, la bille de couleur et la poche sont alignées sur le trait, la fantôme étant collée à la
+      bille de couleur côté haut-gauche.
+    uncertainties:
+      - "Photo en perspective, non quadrillée : aucune coordonnée de table n'est donnée, la position relative est qualitative."
+      - "La couleur exacte de la bille de couleur (violet foncé / bordeaux) est lue approximativement ; la photo ne permet pas d'identifier le jeu de billes."
+      - "La bille blanche de gauche n'est pas sur l'axe du trait : la queue passe au-dessus d'elle ; son rôle de bille de choc au point de départ est déduit du texte, la photo ne le montre pas explicitement."
+      - "La poche est dite « d'angle » d'après son aspect (bande noire à droite) ; non confirmé par le PDF."
+  - id: techniques-p13-video-viser-empocher
+    kind: technique-photo
+    sheet: "Fiche Technique N°3 : Viser pour empocher"
+    caption: "Scannez le QR code pour consulter la vidéo « Comment viser pour empocher »"
+    subject: >-
+      En bas de page, à gauche, vignette de vidéo sur fond sombre avec le titre en lettres blanches inclinées
+      « COMMENT BIEN VISER AU BILLARD POUR EMPOCHER » (« COMMENT BIEN VISER » en grand, au-dessus d'un
+      trait bleu fin ; « AU BILLARD POUR EMPOCHER » en plus petit et plus pâle, sous le trait) ; à droite, un QR code en noir et blanc.
+    elements:
+      - "vignette vidéo sombre avec le titre « COMMENT BIEN VISER AU BILLARD POUR EMPOCHER »"
+      - "QR code à droite de la vignette donnant accès à la vidéo"
+    teaching_point: >-
+      Renvoi vers la vidéo « Comment viser pour empocher » qui complète la fiche ; aucun contenu technique
+      supplémentaire n'est visible sur la vignette.
+    adjacent_text_summary: >-
+      « Scannez le QR code pour consulter la vidéo « Comment viser pour empocher » ». Le QR code renvoie à la
+      vidéo ; son contenu n'est pas transcrit ici.
+    description: >-
+      Vignette de titre de vidéo et QR code, sans illustration de table, de bille ou de geste. Aucune donnée de
+      position exploitable.
+    uncertainties:
+      - "L'URL encodée dans le QR code n'est pas décodée."
+      - "Le titre sur la vignette (« Comment bien viser au billard pour empocher ») diffère légèrement de la légende du texte (« Comment viser pour empocher »)."

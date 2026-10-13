@@ -1,0 +1,8 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 2, rank: S}
+no_illustration: true
+note: >-
+  Page 2 du mémento « Fiches techniques CFA BàP » : page entièrement blanche (verso de la couverture),
+  sans texte, sans image ni schéma. Vérifié par rendu à 130 dpi, par pdftotext (aucun texte) et par
+  pdfimages (aucune image). Aucune illustration à transcrire.
+diagrams: []

@@ -1,0 +1,257 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 10, rank: S}
+diagrams:
+  - id: techniques-p10-amplitude-1
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Étape 4 : le coup de queue. Photo 1 de la première rangée, bandeau « L'AMPLITUDE DU GESTE »."
+    subject: >-
+      Plan rapproché d'une joueuse debout de profil, vêtue de noir, vue du buste aux cuisses : la main
+      arrière tient la queue le long de la hanche, l'avant-bras est pendant, la queue est quasi horizontale.
+      Position de départ du geste, avant le balancier.
+    elements:
+      - "Main arrière (droite) fermée sur la queue, à gauche de la photo, au niveau de la hanche"
+      - "Avant-bras pendant à la verticale sous le coude, le bras proche du corps"
+      - "Queue noire, quasi horizontale, traversant la photo de gauche à droite, passant devant la hanche (au premier plan) ; talon à gauche"
+      - "Bandeau bleu « L'AMPLITUDE DU GESTE » précédé d'un numéro dans une pastille en haut à gauche"
+      - "Arrière-plan flou de salle de billard, joueur en bleu au fond"
+    teaching_point: >-
+      Illustre l'amplitude du geste : seul l'avant-bras droit est en mouvement (balancier autour du coude).
+      Cette photo montre le bras en position de départ, avant le mouvement vers l'arrière ou l'avant.
+    adjacent_text_summary: >-
+      « C'est le geste technique du billard : l'avant-bras droit du joueur est la seule partie du corps en
+      mouvement lors du tir. Ce mouvement de balancier est réalisé grâce à l'articulation du coude uniquement
+      et à la souplesse du poignet. » Aucune flèche sur cette photo.
+    description: >-
+      Première photo de la première rangée (3 photos). La main arrière tient la queue au niveau de la
+      hanche, avant-bras vertical sous le coude, queue horizontale. Pas de flèche de direction.
+    uncertainties:
+      - "Le numéro de la pastille du bandeau est trop petit pour être lu avec certitude (apparaît comme « 1 »)."
+      - "Le mot « droit » de l'avant-bras vient du texte ; la photo montre un bras de profil dont la latéralité n'est pas vérifiable."
+  - id: techniques-p10-amplitude-2
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Étape 4 : le coup de queue. Photo 2 de la première rangée, bandeau « L'AMPLITUDE DU GESTE »."
+    subject: >-
+      Même plan que la photo 1 : l'avant-bras est ramené vers l'arrière, la main arrière tirée vers
+      l'arrière avec la queue ; une flèche blanche pleine pointe vers la gauche (vers l'arrière).
+    elements:
+      - "Flèche blanche pleine horizontale pointant vers la gauche, sous la queue, à gauche du centre de la photo"
+      - "Main arrière sur la queue, plus haute et plus en arrière (à gauche) que sur la photo 1, poignet un peu fléchi"
+      - "Queue noire quasi horizontale traversant la photo, avec manche et joint visibles au centre-droit"
+      - "Bandeau bleu « L'AMPLITUDE DU GESTE » en haut à gauche"
+    teaching_point: >-
+      Phase arrière du balancier : l'avant-bras part vers l'arrière, le coude restant la seule articulation
+      qui travaille (avec la souplesse du poignet).
+    adjacent_text_summary: >-
+      Même texte : l'avant-bras droit est la seule partie du corps en mouvement, balancier autour du coude
+      uniquement et souplesse du poignet.
+    description: >-
+      Deuxième photo de la première rangée. Flèche vers la gauche : mouvement de l'avant-bras vers l'arrière
+      (amplitude arrière du geste). Corps immobile.
+    uncertainties:
+      - "Le sens « vers l'arrière » est déduit de la flèche (gauche de la photo) et de la position de la main arrière ; le PDF ne le dit pas en toutes lettres."
+  - id: techniques-p10-amplitude-3
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Étape 4 : le coup de queue. Photo 3 de la première rangée, bandeau « L'AMPLITUDE DU GESTE »."
+    subject: >-
+      Même joueuse, vue plus large du bras : l'avant-bras est projeté vers l'avant, la main arrière fermée
+      sur la queue à droite de la photo ; une flèche blanche pleine pointe vers la droite (vers l'avant).
+    elements:
+      - "Flèche blanche pleine horizontale pointant vers la droite, au milieu de la photo"
+      - "Bras entier visible : coude fléchi en haut à gauche de l'avant-bras, avant-bras descendant vers la main"
+      - "Main arrière fermée sur la queue, à droite de la photo, plus avancée que sur les photos 1 et 2"
+      - "Queue noire, extrémité du talon sortant à droite"
+      - "Bandeau bleu « L'AMPLITUDE DU GESTE » en haut à gauche"
+    teaching_point: >-
+      Phase avant du balancier : l'avant-bras accompagne la queue vers l'avant ; le coude est le pivot, le
+      reste du corps ne bouge pas.
+    adjacent_text_summary: >-
+      Même texte : seul l'avant-bras droit bouge, articulation du coude uniquement et souplesse du poignet.
+    description: >-
+      Troisième photo de la première rangée. Flèche vers la droite : mouvement de l'avant-bras vers l'avant
+      (direction du tir). Le coude est visible, coudé, au-dessus de la main.
+    uncertainties:
+      - "Le sens « vers l'avant » est déduit de la flèche et de la position de la main ; la queue n'étant visible que partiellement, la direction de la bille n'est pas visible."
+  - id: techniques-p10-maintenir-1
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Étape 4 : le coup de queue. Photo 1 de la deuxième rangée, bandeau « MAINTENEZ LA QUEUE de billard correctement »."
+    subject: >-
+      Gros plan, vu de derrière, sur la main arrière qui tient la queue près du talon, queue pointée vers le
+      bas (quasi verticale), talon gris arrondi en bas ; une table de billard sombre est derrière.
+    elements:
+      - "Main arrière, doigts refermés sur le talon de la queue, vue de dos de la main"
+      - "Queue noire, presque verticale, tenue en haut par la main ; son extrémité grise arrondie (talon) est visible en bas de la photo"
+      - "Bord de table (tapis, pied et pièce métallique de la table en haut à droite) à droite et au fond, flou"
+      - "Bille blanche floue en bas à droite"
+      - "Bandeau bleu « MAINTENEZ LA QUEUE de billard correctement » en haut à gauche ; logo de marque en bas à droite"
+    teaching_point: >-
+      La queue est tenue entre le pouce et l'index ; les autres doigts servent à porter la queue ; la paume
+      n'entre en contact avec la queue qu'à la fin du geste.
+    adjacent_text_summary: >-
+      « Les doigts qui maintiennent la queue de billard sont le pouce et l'index. Les autres doigts servent
+      à porter la queue. La paume de la main entre en contact avec la queue qu'à la fin du geste. »
+    description: >-
+      Première photo de la deuxième rangée. La main enveloppe le talon de la queue par l'arrière, queue
+      verticale vers le sol, les doigts de la main fermés dessus.
+    uncertainties:
+      - "Le rôle de chaque doigt (pouce, index, autres) n'est pas distinguable avec certitude sur ce plan flou et sombre."
+      - "Le numéro de la pastille du bandeau est trop petit pour être lu (il apparaît comme « 1 », identique à celui de la première rangée)."
+      - "Le sous-titre « de billard correctement » est en très petits caractères."
+  - id: techniques-p10-maintenir-2
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Étape 4 : le coup de queue. Photo 2 de la deuxième rangée, bandeau « MAINTENEZ LA QUEUE de billard correctement »."
+    subject: >-
+      Gros plan sur la main arrière qui entoure la poignée noire à grip de la queue, doigts repliés autour ;
+      la queue pointe vers le bas à droite.
+    elements:
+      - "Main claire, avant-bras en haut de la photo, doigts repliés autour du manche noir à grip texturé"
+      - "Doigts repliés autour du grip, leurs extrémités visibles en bas à gauche de la main"
+      - "Queue noire inclinée du haut-gauche vers le bas-droite de la photo, manche à grip"
+      - "Bille blanche floue en bas, au centre-droit, au fond"
+      - "Bandeau bleu « MAINTENEZ LA QUEUE de billard correctement » en haut à gauche ; logo de marque en bas à droite"
+    teaching_point: >-
+      Le pouce et l'index maintiennent la queue, les autres doigts servent à la porter ; la paume n'entre en
+      contact avec la queue qu'à la fin du geste.
+    adjacent_text_summary: >-
+      Même texte : pouce et index maintiennent la queue, les autres doigts la portent, la paume n'entre en
+      contact qu'à la fin du geste.
+    description: >-
+      Deuxième photo de la deuxième rangée. Vue la plus nette de la prise : la main entoure le grip de la queue.
+    uncertainties:
+      - "Le contact ou l'absence de contact de la paume avec la queue n'est pas vérifiable sur la photo ; la règle vient du texte de la page."
+      - "Le pouce n'est pas identifiable avec certitude parmi les doigts visibles."
+      - "Le rôle individuel du pouce et de l'index n'est pas distinguable avec certitude sur cette photo ; il vient du texte de la page."
+  - id: techniques-p10-maintenir-3
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Étape 4 : le coup de queue. Photo 3 de la deuxième rangée, bandeau « MAINTENEZ LA QUEUE de billard correctement »."
+    subject: >-
+      Gros plan sombre sur la main arrière qui tient le talon de la queue, vue de côté : la queue noire est
+      inclinée vers le bas à droite, doigts repliés dessus.
+    elements:
+      - "Main et poignet en haut de la photo, partiellement dans l'ombre, doigts refermés autour du talon"
+      - "Queue noire inclinée du haut-gauche vers le bas-droite, extrémité de la queue en bas à droite"
+      - "Bord de table et pied de table flous à droite"
+      - "Bille blanche floue en bas"
+      - "Bandeau bleu « MAINTENEZ LA QUEUE de billard correctement » en haut à gauche ; logo de marque en bas à droite"
+    teaching_point: >-
+      Même point que les photos 1 et 2 : le pouce et l'index maintiennent la queue, les autres doigts la
+      portent, la paume n'entre en contact avec elle qu'à la fin du geste.
+    adjacent_text_summary: >-
+      Même texte : pouce et index maintiennent la queue, les autres doigts la portent, la paume n'entre en
+      contact avec la queue qu'à la fin du geste.
+    description: >-
+      Troisième photo de la deuxième rangée. Vue latérale, dans la pénombre, de la prise sur le talon de la
+      queue ; trop sombre pour distinguer le détail de chaque doigt.
+    uncertainties:
+      - "L'image est très sombre ; la position précise du pouce et de l'index n'est pas lisible."
+  - id: techniques-p10-limage-1
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Ces conditions permettent à la queue de « traverser » la bille blanche tout en restant sur sa trajectoire. Photo 1 de la troisième rangée, bandeau « RÉALISEZ UN BON LIMAGE »."
+    subject: >-
+      Vue de dessus d'un billard à tapis bleu : la queue, tenue par une main en haut à gauche, est pointée
+      vers la bille blanche ; une ligne pointillée blanche relie la blanche à une bille rouge numérotée
+      près d'une poche en bas à droite.
+    elements:
+      - "Queue en bois clair, du coin supérieur gauche vers la bille blanche, bout de la queue proche de la blanche, un petit écart restant visible"
+      - "Main d'appui en haut à gauche, doigts écartés posés sur le tapis, sous la queue"
+      - "Bille blanche à gauche du centre"
+      - "Ligne pointillée blanche de la blanche vers le bas-droite, jusqu'à la bille rouge"
+      - "Bille rouge numérotée (chiffre illisible) tout près de la poche en bas à droite"
+      - "Poche noire en haut à gauche et en bas à droite ; points de losange sur la bande à gauche"
+      - "Bandeau bleu « RÉALISEZ UN BON LIMAGE », pastille « 3 » en haut à gauche"
+    teaching_point: >-
+      Position de départ du limage : la queue est dans l'alignement de la trajectoire de la blanche vers la
+      bille rouge ; la queue doit rester sur sa trajectoire pour « traverser » la blanche.
+    adjacent_text_summary: >-
+      « Ces conditions permettent à la queue de "traverser" la bille blanche tout en restant sur sa
+      trajectoire. »
+    description: >-
+      Première photo de la troisième rangée. Position de départ : queue proche de la blanche, la
+      pointillée matérialise la trajectoire blanche vers la bille rouge près de la poche en bas à droite.
+      Aucune flèche sur cette photo.
+    uncertainties:
+      - "Le numéro de la bille rouge n'est pas lisible."
+      - "Le mot « limage » n'est pas défini dans le texte de la page ; il apparaît seulement dans le bandeau de la photo."
+      - "La poche en haut à gauche est visible mais le point de départ exact de la queue n'est pas mesurable."
+  - id: techniques-p10-limage-2
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Ces conditions permettent à la queue de « traverser » la bille blanche tout en restant sur sa trajectoire. Photo 2 de la troisième rangée, bandeau « RÉALISEZ UN BON LIMAGE »."
+    subject: >-
+      Même vue de dessus que la photo 1 : la queue est ramenée vers l'arrière (vers le haut à gauche) ; une
+      flèche blanche pleine pointe vers l'arrière, parallèle à la pointillée.
+    elements:
+      - "Flèche blanche pleine pointant vers le haut-gauche, sous la queue et à gauche de la blanche, parallèle à la ligne pointillée"
+      - "Queue en bois clair en haut à gauche, dans l'alignement de la trajectoire"
+      - "Bille blanche au centre-gauche, ligne pointillée blanche vers la bille rouge en bas à droite près de la poche"
+      - "Main en haut à gauche, partiellement visible"
+      - "Bandeau bleu « RÉALISEZ UN BON LIMAGE », pastille « 3 »"
+    teaching_point: >-
+      Mouvement de la queue vers l'arrière, restant sur l'axe de la trajectoire blanche-bille visée.
+    adjacent_text_summary: >-
+      Même texte : la queue « traverse » la blanche en restant sur sa trajectoire.
+    description: >-
+      Deuxième photo de la troisième rangée. Flèche vers l'arrière (haut-gauche) : la queue recule le long
+      de la ligne de visée. La blanche n'a pas bougé.
+    uncertainties:
+      - "La queue est peu visible sur cette photo (flèche superposée) ; sa position exacte n'est pas mesurable."
+  - id: techniques-p10-limage-3
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Ces conditions permettent à la queue de « traverser » la bille blanche tout en restant sur sa trajectoire. Photo 3 de la troisième rangée, bandeau « RÉALISEZ UN BON LIMAGE »."
+    subject: >-
+      Même vue de dessus : la queue avance vers la blanche ; une flèche blanche pleine pointe vers l'avant
+      (vers le bas à droite), le long de la pointillée ; la blanche est plus loin que sur les
+      photos précédentes.
+    elements:
+      - "Flèche blanche pleine pointant vers le bas-droite, le long de la queue, pointe de la flèche vers la blanche"
+      - "Queue en bois clair en haut à gauche, dirigée vers la blanche"
+      - "Bille blanche à droite du centre, plus proche de la bille rouge que sur la photo 1"
+      - "Ligne pointillée blanche vers la bille rouge numérotée en bas à droite près de la poche"
+      - "Bandeau bleu « RÉALISEZ UN BON LIMAGE », pastille « 3 »"
+    teaching_point: >-
+      Mouvement de la queue vers l'avant le long de la ligne de visée ; la queue traverse la blanche en
+      restant sur sa trajectoire.
+    adjacent_text_summary: >-
+      « Ces conditions permettent à la queue de "traverser" la bille blanche tout en restant sur sa
+      trajectoire. »
+    description: >-
+      Troisième photo de la troisième rangée. Flèche vers l'avant, dans l'axe de la pointillée ; la blanche
+      est vue plus loin sur la trajectoire que sur la photo 1.
+    uncertainties:
+      - "Le déplacement de la blanche entre les photos 1 et 3 est déduit visuellement ; les trois cadrages ne sont pas strictement identiques."
+  - id: techniques-p10-video-queue
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Scannez le QR code pour consulter la vidéo « Comment bien tenir sa queue de billard »"
+    subject: >-
+      Vignette de la vidéo (joueuse penchée sur un billard à tapis bleu, bandeau « ÉTAPE 3 RÉALISEZ UN BON
+      LIMAGE », bille blanche et bille rouge au premier plan) accompagnée d'un QR code.
+    elements:
+      - "Vignette encadrée : joueuse penchée en train de tirer, queue dirigée vers la bille blanche placée au bout de la queue, bille rouge au premier plan"
+      - "Texte blanc « ÉTAPE 3 / RÉALISEZ UN BON LIMAGE » sur la vignette"
+      - "QR code noir et blanc à droite de la vignette"
+    teaching_point: "Renvoi, par QR code, vers la vidéo « Comment bien tenir sa queue de billard »."
+    adjacent_text_summary: "« Scannez le QR code pour consulter la vidéo « Comment bien tenir sa queue de billard » » (texte bleu, centré)."
+    description: >-
+      Élément multimédia sans contenu de table : capture d'écran de vidéo et QR code. L'adresse encodée
+      dans le QR code n'est pas décodée ici.
+    uncertainties:
+      - "L'adresse du QR code n'est pas transcrite."
+  - id: techniques-p10-onglet
+    kind: technique-photo
+    sheet: "Le coup de queue"
+    caption: "Onglet « FICHE TECHNIQUE — Le coup de queue »."
+    subject: "Onglet rose vertical sur le bord droit de la page, repère du type de fiche et de son titre."
+    elements:
+      - "Onglet magenta avec le texte vertical « FICHE TECHNIQUE » et, dessous, « Le coup de queue »"
+    teaching_point: "Repère de navigation : fiche technique, thème « Le coup de queue »."
+    adjacent_text_summary: "Page « Étape 4 : le coup de queue » : amplitude du geste, maintien de la queue, limage."
+    description: "Repère graphique de navigation ; aucun contenu technique de billard."
+    uncertainties: []

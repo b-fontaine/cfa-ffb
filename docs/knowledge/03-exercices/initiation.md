@@ -29,3 +29,29 @@ Source `[S]` : *Fiches Initiation CFA blackball.pdf*, niveau 1. Exercices de fai
 - Les fiches 1 à 4 partagent les mêmes consignes ; seul le nombre de billes et le chevalet changent.
 - L'animateur est invité à **laisser l'élève découvrir** (placer la blanche, tester) avant de corriger.
 - Pas de durée par exercice dans la source : toute durée est `[Prop]` (voir `../05-seances/`).
+
+## Schémas des fiches (transcriptions YAML)
+
+Chaque fiche du PDF est transcrite dans `diagrammes/initiation/pNN.yaml` (`NN` = numéro de page = numéro de fiche) `[S]`. Format : `diagrammes/FORMAT.md` ; index : `diagrammes/README.md`. Coordonnées approchées en cases de la grille (`x` 0 à 8 vers la droite, `y` 0 à 4 vers le bas, départ à gauche). Les flèches de cette série sont des consignes (`indication`) plus que des trajectoires mesurées.
+
+- **Fiche 1** — Schéma : `diagrammes/initiation/p01.yaml` (`initiation-p01-e1`). Placement : rouge (0,2 ; 0,1), jaune (4,0 ; 0,1), rouge (7,8 ; 0,2) ; blanche (1,0 ; 3,6) ; poches visées : haut gauche (tl), milieu haut (tm), haut droite (tr).
+- **Fiche 2** — Schéma : `diagrammes/initiation/p02.yaml` (`initiation-p02-e1`). Placement : rouge (0,2 ; 0,2), jaune (3,9 ; 0,2), jaune (0,2 ; 3,8), rouge (4,0 ; 3,8) ; blanche (1,8 ; 2,0) ; poches visées : haut gauche (tl), milieu haut (tm), bas gauche (bl), milieu bas (bm).
+- **Fiche 3** — Schéma : `diagrammes/initiation/p03.yaml` (`initiation-p03-e1`). Placement : noire (7,8 ; 0,2), rouge (7,8 ; 3,8) ; blanche (1,8 ; 0,4) ; poches visées : haut droite (tr), bas droite (br).
+- **Fiche 4** — Schéma : `diagrammes/initiation/p04.yaml` (`initiation-p04-e1`). Placement : rouge (0,2 ; 3,8), rouge (7,8 ; 3,8) ; blanche à poser sur 3 emplacements de départ (non dessinée) ; poches visées : bas gauche (bl), bas droite (br).
+- **Fiche 5** — Schéma : `diagrammes/initiation/p05.yaml` (`initiation-p05-e1`). Placement : rouge (0,1 ; 0,1), jaune (4,0 ; 0,2) ; blanche (6,0 ; 2,0) ; poches visées : haut gauche (tl), milieu haut (tm) ; 2 zones grisées.
+- **Fiche 6** (schéma 1) — Schéma : `diagrammes/initiation/p06.yaml` (`initiation-p06-e1`). Placement : rouge (1,4 ; 2,6) ; blanche (1,8 ; 3,5) ; poches visées : haut gauche (tl).
+- **Fiche 6** (schéma 2) — Schéma : `diagrammes/initiation/p06.yaml` (`initiation-p06-e2`). Placement : jaune (4,0 ; 1,4) ; blanche (4,0 ; 2,5) ; poches visées : milieu haut (tm).
+- **Fiche 7** — Schéma : `diagrammes/initiation/p07.yaml` (`initiation-p07-e1`). Placement : rouge (4,0 ; 1,5) ; blanche (2,9 ; 3,6) ; poches visées : milieu haut (tm).
+- **Fiche 8** — Schéma : `diagrammes/initiation/p08.yaml` (`initiation-p08-e1`). Placement : rouge (2,0 ; 1,0), jaune (6,6 ; 2,0) ; blanche (3,4 ; 2,0) ; poches visées : haut gauche (tl), haut droite (tr).
+- **Fiche 9** — Schéma : `diagrammes/initiation/p09.yaml` (`initiation-p09-e1`). Placement : jaune (1,0 ; 1,0), jaune (7,0 ; 1,0) ; 2 blanches en (1,3 ; 2,0) et (7,0 ; 2,0) ; poches visées : haut gauche (tl), haut droite (tr).
+- **Fiche 10** — Schéma : `diagrammes/initiation/p10.yaml` (`initiation-p10-e1`). Placement : 4 rouges, 4 jaunes, la noire ; blanche (1,6 ; 1,6).
+- **Fiche 11** (situation A) — Schéma : `diagrammes/initiation/p11.yaml` (`initiation-p11-sa`). Placement : jaune (1,8 ; 2,0), rouge (2,6 ; 2,0) ; blanche (1,0 ; 2,0) ; blanche par la bande du haut.
+- **Fiche 11** (situation B) — Schéma : `diagrammes/initiation/p11.yaml` (`initiation-p11-sb`). Placement : jaune (5,0 ; 3,0), rouge (3,0 ; 3,0) ; blanche (7,0 ; 3,0) ; blanche par la bande du bas.
+- **Fiche 12** — Schéma : `diagrammes/initiation/p12.yaml` (`initiation-p12-e1`). Placement : jaune (4,0 ; 2,0) ; blanche (4,4 ; 3,0) ; poches visées : milieu haut (tm).
+- **Fiche 13** — Schéma : `diagrammes/initiation/p13.yaml` (`initiation-p13-e1`). Placement : jaune (1,8 ; 2,2) ; blanche à poser sur 2 emplacements de départ (non dessinée) ; poches visées : bas gauche (bl), haut gauche (tl).
+- **Fiche 14** — Schéma : `diagrammes/initiation/p14.yaml` (`initiation-p14-e1`). Placement : rouge (4,0 ; 1,4) ; blanche (4,2 ; 3,0) ; poches visées : milieu haut (tm).
+- **Fiche 15** — Schéma : `diagrammes/initiation/p15.yaml` (`initiation-p15-e1`). Placement : rouge (0,6 ; 1,0), jaune (3,3 ; 2,4) ; 2 blanches en (1,3 ; 2,0) et (3,0 ; 3,5) ; poches visées : haut gauche (tl), milieu haut (tm).
+- **Fiche 16** — Schéma : `diagrammes/initiation/p16.yaml` (`initiation-p16-e1`). Placement : rouge (4,0 ; 1,8) ; blanche (3,5 ; 2,2) ; poches visées : milieu haut (tm).
+- **Fiche 17** — Schéma : `diagrammes/initiation/p17.yaml` (`initiation-p17-e1`). Placement : jaune (1,0 ; 1,1), rouge (1,4 ; 2,5) ; blanche (1,8 ; 2,0) ; poches visées : haut gauche (tl).
+- **Fiche 18** — Schéma : `diagrammes/initiation/p18.yaml` (`initiation-p18-e1`). Placement : rouge (1,0 ; 1,0), jaune (1,0 ; 2,5) ; 2 blanches en (1,8 ; 2,0) et (1,2 ; 3,5) ; poches visées : haut gauche (tl).
+- **Fiche 19** — Schéma : `diagrammes/initiation/p19.yaml` (`initiation-p19-e1`). Placement : rouge (1,0 ; 2,0) ; blanche (1,1 ; 3,0) ; poches visées : haut gauche (tl).

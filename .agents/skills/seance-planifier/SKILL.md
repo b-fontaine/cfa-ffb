@@ -15,13 +15,14 @@ description: Produire une séance de billard (Blackball, niveau 1) pour un publi
 
 1. Lire `docs/knowledge/00-provenance-et-fiabilite.md` puis `docs/knowledge/05-seances/README.md` et `structure-type-seance.md`.
 2. Lire la fiche technique de la notion dans `docs/knowledge/02-techniques/` et les fiches `initiation.md`, `entrainement.md` (ou `catalogue-entrainement.yaml`), `jeux.md`.
-3. Choisir : 1 notion + initiation, **au moins 2 exercices d'entraînement différents** (chacun ≤ 2 passages), 1 jeu lié à la notion (ou partie à difficulté réduite si les quantités sont acquises).
-4. Appliquer `adaptation-public.md` pour le public ciblé.
-5. Minuter selon `structure-type-seance.md` : la **somme doit valoir exactement 90 ou 120**.
-6. Rédiger dans `seances/AAAA-MM-JJ-<public>-<notion>.md` avec le gabarit `modele-seance.md` (front matter obligatoire).
-7. Étiqueter chaque ligne du déroulé `[S]`, `[FFB]`, `[Web]` ou `[Prop]` ; reprendre les taux de réussite tels quels.
-8. Lancer `dart run scripts/validate_seances.dart` ; corriger jusqu'au vert.
-9. Déléguer la relecture à l'agent `relecteur-pedagogique` (contexte séparé) avant de conclure.
+3. Pour décrire un exercice (placement des billes, chevalet, trajectoires), consulter son diagramme : index dans `docs/knowledge/03-exercices/diagrammes/README.md`, puis `pNN.yaml` ; lecture approchée, voir `uncertainties` avant de s'y fier.
+4. Choisir : 1 notion + initiation, **au moins 2 exercices d'entraînement différents** (chacun ≤ 2 passages), 1 jeu lié à la notion (ou partie à difficulté réduite si les quantités sont acquises).
+5. Appliquer `adaptation-public.md` pour le public ciblé.
+6. Minuter selon `structure-type-seance.md` : la **somme doit valoir exactement 90 ou 120**.
+7. Rédiger dans `seances/AAAA-MM-JJ-<public>-<notion>.md` avec le gabarit `modele-seance.md` (front matter obligatoire).
+8. Étiqueter chaque ligne du déroulé `[S]`, `[FFB]`, `[Web]` ou `[Prop]` ; reprendre les taux de réussite tels quels.
+9. Lancer `dart run scripts/validate_seances.dart` ; corriger jusqu'au vert.
+10. Déléguer la relecture à l'agent `relecteur-pedagogique` (contexte séparé) avant de conclure.
 
 ## Interdits
 

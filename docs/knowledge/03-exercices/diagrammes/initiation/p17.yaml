@@ -1,0 +1,54 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 17, rank: S}
+diagrams:
+  - id: initiation-p17-e1
+    kind: initiation
+    sheet: "Le rétro en quantité de bille pleine."
+    caption: "Empocher deux billes en réalisant un rétro."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [1.0, 1.11]}
+      - {id: r1, color: red, at: [1.41, 2.47]}
+      - {id: w, color: white, at: [1.82, 2.0], role: cue}
+    ghosts:
+      - {id: g1, at: [1.14, 1.26], role: impact, for: w}
+      - {id: g2, at: [1.51, 2.66], role: impact, for: w}
+      - {id: g3, at: [2.0, 3.54], role: cue_start, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.82, 2.0], [1.14, 1.26]], bounces: [], note: "de la blanche vers sa position d'impact, collée contre la bille jaune"}
+      - {id: a2, ball: y1, kind: object, path: [[1.0, 1.11], [0.13, 0.18]], to: tl}
+      - {id: a3, ball: w, kind: cue, path: [[2.0, 3.54], [1.51, 2.66]], bounces: [], note: "de la blanche vers sa position d'impact, collée contre la bille rouge"}
+      - {id: a4, ball: r1, kind: object, path: [[1.41, 2.47], [0.32, 0.47]], to: tl}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: y1, contact: full, pocket: tl}
+      - {step: 2, cue: w, hit: r1, contact: full, pocket: tl}
+    inset:
+      contact: full
+      tip_point: lower
+      bridge_height: surface
+    annotations:
+      - "Objectif : Empocher deux billes, en réalisant un rétro, pour faire reculer la bille blanche au-delà du trait. Utiliser un chevalet sur la surface de jeu et un chevalet sur cadre"
+      - "Consignes à l'élève : Viser en quantité de bille pleine. Utiliser une attaque basse. Exécuter le coup à une certaine vitesse afin que la bille blanche conserve sa rotation arrière jusqu'à l'impact. Lever légèrement le talon de la queue, lors de l'utilisation du chevalet sur cadre, afin de l'incliner et pouvoir exécuter une attaque basse."
+      - "Conseils à l'animateur : Positionner les billes de telle sorte que la distance, entre elles, ne soit pas trop importante, afin de conserver plus facilement le roulement arrière de la bille blanche jusqu'à l'impact. Si la bille blanche ne recule pas, c'est que l'attaque ne se situe pas en dessous du centre, ou que la vitesse d'exécution du coup n'est pas suffisamment rapide. Si la queue se relève trop en fin d'exécution du coup, c'est que le joueur serre trop fort le talon. Conseiller au joueur de moins serrer la queue pour conserver un mouvement rectiligne."
+    description: >-
+      Table vue de dessus, départ à gauche, ligne de départ (trait plein vertical) à x vers 1,82. Deux billes de
+      couleur sont posées à gauche de la ligne : une jaune (x = 1,0 ; y = 1,1) et une rouge (x = 1,4 ; y = 2,5).
+      Chacune a un cercle pointillé collé au bas-droite (position d'impact de la blanche). Deux petits cercles
+      blancs à points rouges (emplacements de la blanche) sont placés l'un sur la ligne de départ (x = 1,82 ; y = 2,0)
+      et l'autre juste à droite (x = 2,0 ; y = 3,5). De chacun part un trait fin jusqu'au cercle pointillé de la bille
+      voisine (jaune pour le premier, rouge pour le second), puis une flèche pleine prolonge la ligne à travers la
+      bille vers la poche du coin haut gauche (tl) : les deux billes sont visées en bille pleine vers tl. Le recul de
+      la blanche (rétro) n'est pas dessiné. Dans la moitié droite de la table, un encart montre une grosse bille
+      blanche vue de face avec viseur en croix, arc rouge au sommet, point bleu du tip sous le centre (attaque basse)
+      et trait turquoise tangent au bas de la bille (surface).
+    uncertainties:
+      - "Les deux emplacements de la blanche sont des cercles creux à points rouges, pas des billes pleines : w est posée par convention sur le premier (x = 1,82 ; y = 2,0, sur la ligne de départ) et le second est un ghost cue_start ; l'ordre de tir n'est pas indiqué."
+      - "Les poches visées (tl) sont déduites de la direction des flèches ; chaque flèche se termine par une pointe avant la poche."
+      - "La position du premier cercle blanc (sur la ligne de départ) est lue à x ≈ 1,82 (FORMAT : ligne de départ 2,0 [Prop])."
+      - "L'énoncé cite un chevalet sur la surface de jeu et un chevalet sur cadre, sans dire lequel pour quel tir : bridge: unknown."
+      - "Le point bleu du tip est sous le centre (environ aux 0,55 du rayon) ; valeur approchée, cohérente avec « attaque basse »."
+      - "L'encart ne montre pas de bille cible ; contact: full est repris du texte « quantité de bille pleine »."
+      - "Le schéma ne montre ni taux de réussite, ni « Nombre de séances », ni pastille Billard de bronze."

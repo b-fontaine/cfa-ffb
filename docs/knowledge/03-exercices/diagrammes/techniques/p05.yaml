@@ -1,0 +1,85 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 5, rank: S}
+diagrams:
+  - id: techniques-p05-visee
+    kind: technique-photo
+    sheet: "Fiche Technique N°1 : Posture, visée et coup de queue."
+    caption: "Point de contact ; Point de visée"
+    subject: >-
+      Schéma pédagogique de la visée (étape 1 : viser), dessiné en vue de dessus, hors grille de table.
+      Une bille blanche (en haut à gauche, trois petits points rouges sur son pourtour : haut-gauche, haut-droite et bas ;
+      le texte ne dit pas lequel marque le procédé) est reliée par un trait noir fin, qui part de son centre, à une bille orange numérotée « 5 »
+      située en bas à droite. Le trait descend vers la droite, passe par le bas de la bille 5 et se prolonge
+      au-delà jusqu'en bas à droite. Un cercle en pointillés (bille fantôme) est collé au côté gauche de la
+      bille 5 : c'est la position de la blanche au moment du contact. Juste à droite de la bille 5, et
+      touchant celle-ci, se trouve un disque noir plein de même diamètre qu'une bille (bille noire ou
+      poche, voir uncertainties), pris entre des traits verticaux noirs qui s'écartent autour de lui
+      (mâchoires de la poche) ; un grand trait vertical noir ferme le schéma à droite (bord de table, non légendé).
+    elements:
+      - "bille blanche, en haut à gauche, avec 3 petits points rouges sur son pourtour (haut-gauche, haut-droite, bas)"
+      - "trait noir fin passant par le centre de la blanche : axe de visée, la queue doit être placée sur cette trajectoire"
+      - "bille orange numérotée 5 : bille cible, en bas à droite"
+      - "cercle en pointillés collé à gauche de la bille 5 : position de la blanche à l'impact (bille fantôme)"
+      - "point rouge sur le bord gauche de la bille 5, légende « Point de contact » (cadre blanc en haut, flèche verticale vers le bas)"
+      - "point rouge sur le bord inférieur de la bille 5, légende « Point de visée » (cadre blanc en bas, flèche coudée vers le haut)"
+      - "disque noir plein à droite, collé à la bille 5, de même diamètre qu'elle : bille noire ou poche (non légendé), entre des traits verticaux noirs qui s'évasent (mâchoires de la poche)"
+      - "trait vertical noir à l'extrême droite : bord / bande de la table (interprétation, non légendé)"
+    teaching_point: >-
+      Viser, c'est contrôler visuellement l'alignement de la queue, de la bille blanche et du point cible.
+      L'axe de visée est choisi avant de se mettre en position de jeu : la queue est placée sur la
+      trajectoire que le joueur souhaite faire suivre à la blanche, trajectoire qui passe par son centre.
+    adjacent_text_summary: >-
+      « Etape 1 : viser. Viser c'est contrôler visuellement l'alignement de la queue de billard, de la bille
+      blanche et du point cible où le joueur veut envoyer sa bille. » « L'axe de visée est choisi avant de se
+      mettre en position de jeu. La queue doit être placée sur la trajectoire que le joueur souhaite faire
+      suivre à la bille blanche, et qui passe par son centre. » Le joueur vérifie où se situe le procédé sur
+      la blanche, alterne son regard entre le procédé et le point visé, puis fixe l'endroit précis où il
+      souhaite projeter la blanche. L'animateur indique ensuite comment se positionner et tenir la queue,
+      puis comment exécuter le geste.
+    description: >-
+      Vue de dessus. Bille blanche en haut à gauche ; le trait de visée part de son centre et descend vers
+      la droite en direction du bas de la bille cible « 5 ». Le cercle pointillé à gauche de la bille 5
+      montre où se trouve la blanche à l'impact ; deux points rouges sont légendés par le PDF : « Point de
+      contact » (côté gauche de la bille 5) et « Point de visée » (bas de la bille 5). Le PDF ne les définit
+      pas au-delà de ces libellés et du texte « point cible » / « point visé ». Un disque noir (bille noire
+      ou poche, non légendé) est juste à droite de la bille 5 ; le trait de visée passe par le bas de la
+      bille 5 et se prolonge jusqu'en bas à droite.
+    uncertainties:
+      - "Schéma non quadrillé : aucune coordonnée de table n'est donnée, la position relative est qualitative."
+      - "La bille cible est numérotée « 5 » et orange, non rouge/jaune comme au Blackball ; le PDF ne l'explique pas et l'utilise comme simple illustration."
+      - "Le disque noir a le même diamètre que la bille 5 et est encadré par les traits de la poche : il peut représenter la bille noire du Blackball placée à l'entrée de la poche, ou la poche elle-même ; le PDF ne le légende pas."
+      - "Les 3 points rouges de la blanche ne sont pas légendés : le PDF ne précise pas lequel représente le procédé."
+      - "La légende « Point de visée » désigne le point rouge sur le bord inférieur de la bille 5 ; la ligne le traverse approximativement."
+  - id: techniques-p05-video-visee
+    kind: technique-photo
+    sheet: "Fiche Technique N°1 : Posture, visée et coup de queue."
+    caption: "Scannez le QR code pour consulter la vidéo « Comment bien viser »"
+    subject: >-
+      Capture d'écran (vignette) de la vidéo « Comment bien viser », en bas de page, à côté d'un QR code.
+      Table de billard à tapis bleu vue en perspective depuis un coin, bandes sombres ; une bille blanche
+      à gauche et une bille colorée (orange, apparemment numérotée) en bas à droite près de la bande ; une
+      queue de billard, tenue depuis le haut à gauche (silhouette du joueur à peine visible, hors cadre),
+      passe par la bille blanche en diagonale et pointe vers la bille colorée : queue, blanche et bille
+      cible sont alignées. Bandeau d'incrustation en haut à gauche « VISEZ LA TRAJECTOIRE de la bille
+      blanche » et logo de marque en bas à droite de la vignette.
+    elements:
+      - "table à tapis bleu en vue en perspective"
+      - "bille blanche à gauche de la table, sur l'axe de la queue"
+      - "bille colorée orange en bas à droite près de la bande, cible"
+      - "queue de billard en diagonale (du haut gauche vers le bas droit), passant par la blanche et pointant vers la bille colorée"
+      - "silhouette du joueur partiellement visible en haut à gauche (main/jambes), sans pose lisible"
+      - "incrustation texte « VISEZ LA TRAJECTOIRE de la bille blanche »"
+      - "QR code à droite de la vignette donnant accès à la vidéo"
+    teaching_point: >-
+      Illustration vidéo de l'étape « viser » : visualiser la trajectoire de la blanche et aligner la queue
+      sur celle-ci avant de se positionner.
+    adjacent_text_summary: >-
+      « Scannez le QR code pour consulter la vidéo « Comment bien viser » ». Le QR code lui-même renvoie à
+      la vidéo ; son contenu n'est pas transcrit ici.
+    description: >-
+      Vignette de vidéo : table bleue, bille blanche, bille colorée cible, queue en diagonale passant par la
+      blanche et alignée sur la bille colorée. Aucune donnée de position exploitable (photo en perspective, non quadrillée).
+    uncertainties:
+      - "Vignette de petite taille : la couleur exacte de la bille cible (orange plutôt que rouge) et son numéro éventuel et le texte de l'incrustation sont lus approximativement."
+      - "Aucune main ni chevalet net n'est visible sur la vignette : la posture du joueur n'est pas exploitable."
+      - "L'URL encodée dans le QR code n'est pas décodée."

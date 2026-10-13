@@ -1,0 +1,109 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 23, rank: S}
+diagrams:
+  - id: techniques-p23-angle-90
+    kind: technique-schema
+    sheet: "Fiche Technique N°13 : Le coup en angle droit"
+    caption: "90°"
+    bridge: none
+    bronze: false
+    table: {view: top, head_end: left}
+    subject: >-
+      Schéma en couleur, vu de dessus, en haut de la page, sans grille de table ni bande : une bille numérotée 15
+      (orange, chiffre 15 sur un disque blanc) au contact, à sa droite, d'une bille blanche (position de la
+      blanche à l'impact). Une seconde bille blanche, marquée de petits points rouges, est en bas à droite : c'est
+      la bille de choc avant le tir. Le schéma n'est pas transposable en coordonnées de table.
+    elements:
+      - "bille 15 (orange) à gauche, au contact de la bille blanche située à sa droite : la bille de couleur"
+      - "bille blanche collée à droite de la 15 : position de la bille de choc à l'impact"
+      - "bille blanche à points rouges en bas à droite, éloignée : position de départ de la bille de choc"
+      - "trait noir plein descendant en diagonale de la blanche collée (centre) vers la blanche du bas à droite : trajectoire d'arrivée de la bille de choc sur la bille de couleur"
+      - "flèche bleue pointillée verticale, partant du centre de la blanche collée et pointant vers le haut : trajectoire de la blanche après l'impact"
+      - "flèche bleue pleine horizontale partant de la bille 15 et pointant vers la gauche : trajectoire de la bille de couleur après l'impact"
+      - "arc de cercle noir entre la flèche verticale (haut) et la flèche horizontale (gauche), avec la mesure « 90° »"
+    teaching_point: >-
+      Sans rotation de la bille blanche au moment de l'impact, et sur toute quantité de bille autre que le plein,
+      les trajectoires des deux billes après l'impact forment un angle de 90°.
+    adjacent_text_summary: >-
+      « Lors d’un tir, en l’absence de rotation de la bille blanche au moment de l’impact avec une bille de
+      couleur, et sur toute autre quantité de bille que le plein, les trajectoires des deux billes forment un angle
+      de 90°. »
+    description: >-
+      Schéma vu de dessus : la bille de choc arrive depuis le bas à droite en ligne droite oblique jusqu'au contact
+      de la bille 15, qu'elle touche par sa droite. Après l'impact, la bille 15 part horizontalement vers la gauche
+      (flèche bleue pleine) et la blanche part verticalement vers le haut (flèche bleue pointillée) : les deux
+      trajectoires sont perpendiculaires, ce que matérialise l'arc coté « 90° ».
+    uncertainties:
+      - "Aucune grille ni bande : positions non transposables en coordonnées de table (pas de balls/arrows chiffrés)."
+      - "La bille 15 est lue comme orange (numéro 15 sur disque blanc) ; la couleur n'est pas nommée dans le PDF."
+      - "Le rôle des deux billes blanches (position à l'impact / position de départ) est déduit du trait noir et du texte voisin ; le PDF ne les légende pas."
+      - "Le trait noir se lit comme arrivant au centre de la blanche collée ; le point exact de contact n'est pas précisé."
+  - id: techniques-p23-angle-sup-90
+    kind: technique-schema
+    sheet: "Fiche Technique N°13 : Le coup en angle droit"
+    caption: "> 90°"
+    bridge: none
+    bronze: false
+    table: {view: top, head_end: left}
+    subject: >-
+      Schéma en couleur, vu de dessus, au milieu-bas de la page, sans grille ni bande : une bille noire numérotée 8
+      au contact, à sa droite, d'une bille blanche (position de la blanche à l'impact). Une seconde bille blanche
+      à points rouges est en bas à droite : la bille de choc avant le tir. Même construction que le schéma 90°,
+      mais la trajectoire de la blanche après l'impact est légèrement inclinée vers la droite.
+    elements:
+      - "bille 8 (noire, chiffre 8 sur disque blanc) à gauche, au contact de la blanche à sa droite : la bille de couleur"
+      - "bille blanche collée à droite de la 8 : position de la bille de choc à l'impact"
+      - "bille blanche à points rouges en bas à droite, éloignée : position de départ de la bille de choc"
+      - "trait noir plein descendant en diagonale de la blanche collée vers la blanche du bas à droite : trajectoire d'arrivée de la bille de choc"
+      - "flèche bleue pointillée partant de la blanche collée vers le haut, légèrement inclinée vers la droite (haut-droite) : trajectoire de la blanche après l'impact"
+      - "flèche bleue pleine horizontale partant de la bille 8 vers la gauche : trajectoire de la bille de couleur après l'impact"
+      - "arc de cercle noir plus large, entre la flèche pointillée (haut) et la flèche horizontale (gauche), avec la mesure « > 90° »"
+    teaching_point: >-
+      Au Blackball, si le coup est trop puissant, les trajectoires des deux billes forment un angle supérieur à
+      90° ; la déviation est d'autant plus prononcée que la quantité de bille se rapproche du plein.
+    adjacent_text_summary: >-
+      « Au Blackball, si le coup joué est trop puissant, les trajectoires des deux billes formeront un angle
+      supérieur à 90°. Cette déviation sera plus prononcée selon que la quantité de bille se rapproche du plein. »
+      Avant : « Comme pour le carreau, il existe plusieurs façons de réaliser un coup en angle droit, selon la
+      distance qui sépare les deux billes. On préconise ainsi de faire réaliser ce coup, avec une attaque au
+      centre, sur de courtes distances entre les deux billes, de telle sorte que la bille blanche glisse tout au
+      long de son parcours. »
+    description: >-
+      Schéma vu de dessus : même disposition que le schéma 90°, avec la bille 8 à la place de la 15. La bille 8
+      part horizontalement vers la gauche ; la blanche part vers le haut en s'inclinant vers la droite, donc l'angle
+      entre les deux trajectoires dépasse 90° (arc coté « > 90° »).
+    uncertainties:
+      - "Aucune grille ni bande : positions non transposables en coordonnées de table."
+      - "L'inclinaison de la flèche pointillée (environ 7° à droite de la verticale) est lue sur l'image, non chiffrée dans le PDF."
+      - "Le rôle des deux billes blanches est déduit du trait noir et du texte voisin ; le PDF ne les légende pas."
+  - id: techniques-p23-video-qr
+    kind: technique-photo
+    sheet: "Fiche Technique N°13 : Le coup en angle droit"
+    caption: "Scannez le QR code pour consulter la vidéo « L’utilité du coup en angle droit »"
+    subject: >-
+      Bas de page : à gauche, une capture de la vidéo « L'utilité du coup en angle droit » (cadre arrondi, reflet
+      en dessous) montrant deux personnes autour d'un billard bleu : un joueur penché sur la table à gauche, queue en main
+      pointée vers la droite le long du tapis (vue de trois quarts), et un second homme debout derrière lui, qui
+      observe. Un bandeau de texte en haut à droite de l'image (pastille « 2 »,
+      « PLACER LE PROCÉDÉ AU CENTRE », sous-titre « de la bille blanche », en très petit) et, en bas à gauche, un petit schéma de deux billes (une blanche
+      et une rouge) sont incrustés. À droite, un QR code.
+    elements:
+      - "capture vidéo dans un cadre arrondi : table bleue avec quelques billes, joueur penché à gauche, queue en main pointée vers la droite, et un second homme debout derrière lui, à droite du joueur"
+      - "bandeau incrusté en haut à droite de la capture : « PLACER LE PROCÉDÉ AU CENTRE de la bille blanche » (illisible en détail)"
+      - "petit schéma incrusté en bas à gauche : une bille blanche (à gauche) et une bille rouge (à droite) au contact"
+      - "QR code à droite, renvoyant vers la vidéo"
+    teaching_point: >-
+      La vidéo illustre le coup en angle droit réalisé avec une attaque au centre de la bille blanche (le procédé
+      placé au centre).
+    adjacent_text_summary: >-
+      « Scannez le QR code pour consulter la vidéo « L’utilité du coup en angle droit » ». Le texte de la fiche
+      préconise une attaque au centre, sur de courtes distances entre les deux billes, pour que la blanche glisse
+      tout au long de son parcours.
+    description: >-
+      Capture d'une vidéo pédagogique et QR code d'accès. La capture montre un joueur en position de tir à la
+      table, avec un second homme debout derrière lui, et un bandeau rappelant de placer le procédé au centre de la
+      bille blanche.
+    uncertainties:
+      - "Le bandeau incrusté est très petit : seule la partie « PLACER LE PROCÉDÉ AU CENTRE » est lisible avec une certitude raisonnable, le sous-titre est probablement « de la bille blanche »."
+      - "Position des mains, du pouce et de la queue non lisibles à cette résolution."
+      - "Le contenu du QR code n'a pas été décodé."

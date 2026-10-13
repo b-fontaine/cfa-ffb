@@ -13,8 +13,9 @@ description: Ajouter ou corriger une connaissance dans docs/knowledge/ à partir
 4. En cas de contradiction : la source de rang supérieur gagne ; consigner l'écart dans `docs/knowledge/00-provenance-et-fiabilite.md` (section « Écarts connus »).
 5. Écrire en français, avec étiquette de provenance par affirmation et URL ou nom de fichier source.
 6. Mettre à jour les index : `docs/knowledge/README.md`, le README du sous-dossier et, si pertinent, `03-exercices/catalogue-entrainement.yaml`.
-7. Retirer de `08-lacunes-et-questions-ouvertes.md` ce qui est désormais comblé.
-8. Les affirmations web importantes sont vérifiées contre un second document ; sinon étiquette de confiance « moyenne ».
+7. Si la source contient des schémas : les transcrire dans `docs/knowledge/03-exercices/diagrammes/` (format `FORMAT.md`, doutes dans `uncertainties`), valider avec `cd app && dart run tool/diagrammes.dart <fichier>` et mettre à jour l'index du README de ce dossier.
+8. Retirer de `08-lacunes-et-questions-ouvertes.md` ce qui est désormais comblé.
+9. Les affirmations web importantes sont vérifiées contre un second document ; sinon étiquette de confiance « moyenne ».
 
 ## Interdits
 

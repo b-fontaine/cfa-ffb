@@ -1,0 +1,87 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 15, rank: S}
+diagrams:
+  - id: techniques-p15-demi-bille-vue-visee
+    kind: technique-photo
+    sheet: "La quantité de bille demi-bille"
+    caption: "Fiche Technique N°5 — La quantité de bille demi-bille : vue de la bille blanche et de la bille de couleur en demi-bille (rendu 3D en haut à droite)."
+    subject: >-
+      Rendu 3D de deux billes vues de dessus : une bille blanche à gauche qui recouvre à moitié une bille
+      rouge à droite, avec un repère en croix (traits fins noirs) centré sur la bille blanche.
+    elements:
+      - "Bille blanche (ivoire) à gauche, au premier plan, recouvrant la moitié gauche de la bille rouge"
+      - "Bille rouge à droite, derrière la blanche, dont seule la moitié droite est visible ; son bord gauche (cercle en pointillé fin visible à travers la blanche) coïncide avec la verticale passant par le centre de la blanche"
+      - "Point bleu au centre de la bille blanche (centre de la blanche)"
+      - "Trait vertical noir fin passant par le centre de la bille blanche et par le bord (tangente) de la bille rouge, dépassant au-dessus et au-dessous des billes"
+      - "Trait horizontal noir fin passant par le centre de la bille blanche et par le centre de la bille rouge, dépassant de chaque côté"
+      - "Trait horizontal bleu-vert épais sous les billes, tangent au bas des deux billes"
+    teaching_point: >-
+      Quantité demi-bille : la trajectoire qui passe par le centre de la bille blanche passe aussi par la
+      tangente de la bille de couleur ; la bille de couleur est couverte à moitié par la blanche.
+    adjacent_text_summary: >-
+      « La quantité de bille dite "demi-bille" est la deuxième quantité de bille à étudier par le joueur
+      débutant. Cette position des billes se caractérise par la portion de bille de couleur couverte à moitié
+      par la bille blanche. Lorsque le joueur s'aperçoit, lors de la visée, que la trajectoire qui passe par
+      le centre de la bille blanche passe également par la tangente de la bille de couleur, il peut alors être
+      convaincu qu'il effectue une visée en demi-bille. »
+    description: >-
+      Illustration en haut à droite de la page, à côté du premier paragraphe. La bille blanche est à gauche et
+      la bille rouge à droite, la blanche couvrant la moitié de la rouge. Le point bleu marque le centre de la
+      blanche ; la ligne verticale qui passe par ce point effleure la rouge à son bord gauche.
+    uncertainties:
+      - "Le trait bleu-vert horizontal sous les billes n'est pas légendé : il pourrait représenter une bande ou le plan de la table ; non précisé."
+      - "La nature exacte du cercle pointillé fin dans la bille blanche (contour de la rouge vue en transparence) est une lecture, non légendée."
+  - id: techniques-p15-tangente-rappel
+    kind: technique-photo
+    sheet: "La quantité de bille demi-bille"
+    caption: "Rappel à l’animateur : la tangente est une droite ayant un point de contact avec une courbe et qui fait un angle nul avec elle en ce point."
+    subject: >-
+      Petit schéma géométrique à gauche de l'encadré « Rappel à l’animateur » : un cercle avec une droite
+      tangente en haut à gauche et le rayon vers le point de contact.
+    elements:
+      - "Cercle noir, centre marqué par une petite croix"
+      - "Droite bleue tangente au cercle, en haut à gauche, inclinée vers le haut à droite"
+      - "Rayon vert allant du centre au point de contact, avec un petit carré vert marquant l'angle droit entre rayon et tangente"
+    teaching_point: >-
+      Définition de la tangente donnée par la source : droite ayant un point de contact avec une courbe et
+      faisant un angle nul avec elle en ce point ; le schéma montre un rayon vert et un petit carré vert au point de contact.
+    adjacent_text_summary: >-
+      « Rappel à l’animateur : la tangente est une droite ayant un point de contact avec une courbe et qui
+      fait un angle nul avec elle en ce point. »
+    description: >-
+      Cercle avec sa tangente (droite bleue) en haut à gauche et le rayon (trait vert) du centre au point de
+      contact, un petit carré indiquant l'angle droit.
+    uncertainties:
+      - "Le rayon vert semble légèrement coudé près du centre sur le rendu ; lu comme un simple rayon."
+  - id: techniques-p15-demi-bille-deviation-30
+    kind: technique-photo
+    sheet: "La quantité de bille demi-bille"
+    caption: "Point de visée / Point de contact — déviation de 30° par rapport à l’axe de visée."
+    subject: >-
+      Rendu 3D vu de dessus d'une bille de couleur (rose/rouge clair) en haut et d'une bille blanche en bas
+      légèrement à droite, en demi-bille, avec l'axe de visée vertical, le point de contact et la déviation de 30°.
+    elements:
+      - "Bille de couleur (rose) en haut à gauche, avec repère en croix noir fin centré sur elle"
+      - "Bille blanche (ivoire, avec quelques points rouges) en bas, décalée vers la droite par rapport à la bille de couleur"
+      - "Ligne verticale fine bleu-gris (axe de visée) passant par le centre de la bille blanche et tangente au bord droit de la bille de couleur ; elle dépasse en haut et en bas"
+      - "Trait noir oblique partant du bas droite (sur la bille blanche) en traversant le centre de la bille de couleur et se terminant en haut à gauche par une pointe de flèche : direction prise par la bille de couleur"
+      - "Arc de cercle (sans pointe de flèche) au-dessus portant « 30° », entre la verticale (axe de visée) et le trait oblique"
+      - "Légende « Point de visée » en haut à droite, avec une flèche pointant vers l'axe vertical à hauteur du bord droit de la bille de couleur"
+      - "Légende « Point de contact » en bas à gauche, avec un trait pointant vers le point de contact entre la bille de couleur et la bille blanche (côté haut-gauche de la blanche)"
+    teaching_point: >-
+      Le point de visée est différent du point d'impact entre les deux billes ; après l'impact, la bille de
+      couleur décrit une déviation de 30° par rapport à l’axe de visée.
+    adjacent_text_summary: >-
+      « Le point de visée est différent du point d'impact entre les deux billes. Après l'impact, la bille de
+      couleur décrit une déviation de 30° par rapport à l’axe de visée. » Puis, sous le schéma : « Lors de
+      l'impact, le transfert d'énergie confère, à peu près, un partage égal entre les deux billes. Ainsi, si
+      aucune des deux billes n'est empochée ou rencontre un obstacle, elles parcourront sensiblement la même
+      distance et s'arrêteront quasiment en même temps. »
+    description: >-
+      Illustration centrale de la page. L'axe de visée est la verticale bleu-gris qui passe par le centre de
+      la bille blanche et effleure la bille de couleur ; le point de visée est indiqué sur cet axe, au niveau
+      du bord de la bille de couleur. Le point de contact est à la jonction des deux billes. La bille de
+      couleur part vers le haut à gauche, à 30° de l'axe de visée.
+    uncertainties:
+      - "Le sens de déviation est lu sur le schéma (vers le haut à gauche, du côté de la bille de couleur) : l'angle de 30° est celui du texte, non mesuré."
+      - "Les points rouges sur la bille blanche sont des marques de la bille, sans signification pédagogique légendée."

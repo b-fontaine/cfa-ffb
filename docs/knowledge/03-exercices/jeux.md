@@ -24,3 +24,22 @@ Source `[S]` : *Fiches Jeux CFA blackball.pdf*. Les jeux closent la séance et p
 - Lien notion ↔ jeu : utiliser le jeu de la **même notion** que l'entraînement du jour.
 - Aucun jeu spécifique n'existe dans la source pour coulé, carreau, angle droit, rétro, rejet naturel : après la fin des quantités de billes, jouer des **parties à difficulté réduite** (n° 14), conformément au mémento.
 - Adaptations de difficulté (taille de zone, distances) : `[S]` conseille de modifier la zone ; les autres variantes sont `[Prop]`.
+
+## Schémas des jeux (transcriptions YAML)
+
+Chaque fiche jeu est transcrite dans `diagrammes/jeux/pNN.yaml` (`NN` = numéro de page = numéro de jeu) `[S]`. Format : `diagrammes/FORMAT.md` ; index : `diagrammes/README.md`. Coordonnées approchées en cases de la grille (`x` 0 à 8 vers la droite, `y` 0 à 4 vers le bas, départ à gauche). Les règles du jeu sont dans les annotations du YAML ; le tableau ci-dessus les résume.
+
+- **Jeu 1** — Schéma : `diagrammes/jeux/p01.yaml` (`jeux-p01-j1`). Placement : 6 rouges en bord de poches ; blanche non dessinée.
+- **Jeu 2** — Schéma : `diagrammes/jeux/p02.yaml` (`jeux-p02-j1`). Placement : 6 rouges en bord de poches ; blanche non dessinée.
+- **Jeu 3** — Schéma : `diagrammes/jeux/p03.yaml` (`jeux-p03-g1`). Placement : 4 rouges, 4 jaunes ; blanche à poser en (1,1 ; 2,1) (non dessinée) ; 2 zones grisées.
+- **Jeu 4** — Schéma : `diagrammes/jeux/p04.yaml` (`jeux-p04-j1`). Placement : 4 rouges, 4 jaunes ; blanche (1,8 ; 2,1).
+- **Jeu 5** — Schéma : `diagrammes/jeux/p05.yaml` (`jeux-p05-j1`). Placement : 4 rouges, 4 jaunes, la noire ; blanche (1,0 ; 2,0).
+- **Jeu 6** — Schéma : `diagrammes/jeux/p06.yaml` (`jeux-p06-j1`). Placement : 4 rouges, 4 jaunes, la noire ; blanche (1,1 ; 2,1) ; 2 zones grisées ; répétition ×5.
+- **Jeu 7** — Schéma : `diagrammes/jeux/p07.yaml` (`jeux-p07-g1`). Placement : rouge (1,8 ; 1,1), jaune (1,8 ; 3,1) ; blanche à poser en (2,7 ; 2,1) (non dessinée) ; poches visées : haut gauche (tl), bas gauche (bl).
+- **Jeu 8** — Schéma : `diagrammes/jeux/p08.yaml` (`jeux-p08-g1`). Placement : 7 rouges, 7 jaunes, la noire alignées vers y ≈ 2,1 ; blanche à poser sur 2 emplacements de départ (non dessinée) ; poches visées : bas gauche (bl), haut gauche (tl).
+- **Jeu 9** — Schéma : `diagrammes/jeux/p09.yaml` (`jeux-p09-j1`). Placement : rouge (4,0 ; 0,8), jaune (4,0 ; 3,2) ; blanche (1,8 ; 2,0) ; poches visées : milieu haut (tm), milieu bas (bm) ; blanche par la bande de droite ; 1 zone grisée.
+- **Jeu 10** — Schéma : `diagrammes/jeux/p10.yaml` (`jeux-p10-j1`). Placement : 7 rouges, 7 jaunes ; blanche à poser en (4,0 ; 2,0) (non dessinée).
+- **Jeu 11** — Schéma : `diagrammes/jeux/p11.yaml` (`jeux-p11-j1`). Placement : 7 rouges, 7 jaunes ; blanche (4,0 ; 2,0).
+- **Jeu 12** — Schéma : `diagrammes/jeux/p12.yaml` (`jeux-p12-j1`). Placement : 7 rouges, la noire ; blanche (1,8 ; 2,0).
+- **Jeu 13** — Schéma : `diagrammes/jeux/p13.yaml` (`jeux-p13-j1`). Placement : 4 rouges, 4 jaunes, la noire ; blanche à poser en (1,2 ; 1,4) (non dessinée).
+- **Jeu 14** — Schéma : `diagrammes/jeux/p14.yaml` (`jeux-p14-j1`). Placement : 4 rouges, 4 jaunes, la noire ; blanche (1,8 ; 2,0).

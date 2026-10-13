@@ -1,0 +1,157 @@
+version: 1
+source: {file: "Fiches techniques CFA BàP.pdf", page: 12, rank: S}
+diagrams:
+  - id: techniques-p12-amplitude-recul
+    kind: technique-photo
+    sheet: "La puissance"
+    caption: "AMPLITUDE : Recul (photo de gauche)."
+    subject: >-
+      Joueur en position de tir, vue de profil, à la fin du mouvement de recul : bras de queue armé vers
+      l'arrière, avant-bras relevé, queue tirée vers l'arrière.
+    elements:
+      - "Joueur de profil, tourné vers la droite de la photo, buste penché très bas, tête au ras de la queue, visage à droite"
+      - "Bras droit (bras de queue) plié, coude haut ; la main tient la queue très en arrière, à gauche de la photo, avant-bras relevé et incliné vers le bas"
+      - "Queue posée en diagonale, talon à gauche (main arrière), pointe vers la droite sous le menton"
+      - "Flèche blanche pleine pointant vers la gauche, sur la queue : sens du recul"
+      - "Flèche rouge au-dessus, légendée « Recul », pointant vers la gauche à partir de la ligne verticale centrale"
+      - "Au fond : billard avec une bille blanche visible, gradins et rideaux bleus"
+    teaching_point: >-
+      Le recul est la phase où la main de queue se déplace vers l'arrière ("armer son tir", l'élan) ; il
+      constitue la première partie de l'amplitude.
+    adjacent_text_summary: >-
+      « Au Billard, la puissance d'un coup est caractérisée par deux critères : la vitesse du coup de queue et son
+      amplitude. [...] Elle correspond au recul de la main lorsque le joueur "arme son tir" (l'élan), jusqu'à
+      la fin de la pénétration dans la bille blanche. »
+    description: >-
+      Photo de gauche du trio « AMPLITUDE ». La main arrière est au plus loin vers l'arrière ; la flèche
+      blanche sur la queue indique le déplacement vers l'arrière (recul), prolongé par la flèche rouge «
+      Recul » au-dessus des photos.
+    uncertainties:
+      - "Position exacte de la main d'appui (chevalet) non lisible : le plan est serré sur le joueur."
+      - "Orientation du poignet de la main arrière non mesurable."
+  - id: techniques-p12-amplitude-situation-initiale
+    kind: technique-photo
+    sheet: "La puissance"
+    caption: "AMPLITUDE : Situation initiale (photo du centre)."
+    subject: >-
+      Même joueur, de profil, en position de départ : bras de queue plié à angle proche de la verticale,
+      main de queue sous l'épaule, queue horizontale ; une ligne verticale noire marque la situation initiale.
+    elements:
+      - "Joueur de profil, tourné vers la droite, buste penché, tête au ras de la queue"
+      - "Avant-bras de queue quasi vertical, main tenant le talon de la queue sous le niveau de l'épaule/du coude"
+      - "Queue quasi horizontale, légèrement descendante vers la droite (talon un peu plus haut, à gauche), sous le menton"
+      - "Trait vertical noir traversant la photo à hauteur de la main de queue, prolongé jusqu'à « Situation initiale » : repère de départ de la main"
+      - "Fond : gradins, billard avec une bille blanche visible, rideaux bleus"
+    teaching_point: >-
+      La situation initiale sert de repère : le recul part vers la gauche (arrière) et la pénétration vers
+      la droite (avant) à partir de ce trait.
+    adjacent_text_summary: >-
+      Même texte que pour la photo de gauche : l'amplitude est le recul de la main puis la pénétration
+      dans la bille blanche.
+    description: >-
+      Photo du centre du trio. Un trait vertical noir descend du libellé « Situation initiale », séparant la
+      flèche rouge « Recul » (vers la gauche) de la flèche verte « Pénétration » (vers la droite).
+    uncertainties:
+      - "Le trait vertical passe-t-il exactement par la main ou par le coude : lecture approximative, à hauteur de la main de queue."
+  - id: techniques-p12-amplitude-penetration
+    kind: technique-photo
+    sheet: "La puissance"
+    caption: "AMPLITUDE : Pénétration (photo de droite)."
+    subject: >-
+      Même joueur, de profil, à la fin du mouvement vers l'avant : bras de queue avancé, avant-bras incliné
+      vers le bas, main de queue près du buste, queue enfoncée vers la bille.
+    elements:
+      - "Joueur de profil, tourné vers la droite, buste penché bas, tête au ras de la queue"
+      - "Bras droit avancé (non tendu), avant-bras incliné vers le bas et l'avant, main de queue proche du buste sous la poitrine, coude plus bas que sur les photos de gauche et du centre"
+      - "Queue horizontale basse, pointe à droite, sous le menton"
+      - "Flèche blanche pleine pointant vers la droite sur la queue : sens de la pénétration"
+      - "Flèche verte au-dessus, légendée « Pénétration », pointant vers la droite"
+      - "Fond : gradins, rideaux bleus, billard avec une bille blanche visible"
+    teaching_point: >-
+      La pénétration est la phase du coup vers l'avant, jusqu'à la fin de la pénétration dans la bille
+      blanche ; elle clôt l'amplitude.
+    adjacent_text_summary: >-
+      « Elle correspond au recul de la main [...], jusqu'à la fin de la pénétration dans la bille blanche. »
+      « Ainsi, peu d'amplitude et peu de vitesse provoquent un coup joué "doucement" tandis qu'une grande
+      amplitude et une grande vitesse donnent un coup plus "puissant". »
+    description: >-
+      Photo de droite du trio « AMPLITUDE » : le bras de queue est avancé, la flèche blanche sur la queue
+      pointe vers la droite (pénétration), alignée avec la flèche verte « Pénétration ».
+    uncertainties:
+      - "Le mouvement est une pose figée : le contact avec la bille blanche n'est pas visible."
+  - id: techniques-p12-queue-faible-amplitude
+    kind: technique-schema
+    sheet: "La puissance"
+    caption: "Coup à faible amplitude"
+    subject: >-
+      Image à plat d'une queue de billard (horizontale, talon à gauche, procédé à droite) surmontée d'un
+      bracket noir à deux flèches vers le bas, légendé « Coup à faible amplitude ».
+    elements:
+      - "Queue horizontale : talon sombre/noir à gauche (environ 0 à 32 % de la longueur), partie claire à droite"
+      - "Bracket noir au-dessus, légendé « Coup à faible amplitude », deux flèches pointant vers le bas : la première sur la zone sombre du talon (à environ 22 % de la longueur depuis l'extrémité gauche), la seconde près de l'extrémité droite (environ 91 %)"
+    teaching_point: >-
+      Main droite près du centre de gravité de la queue : le chevalet est près de la bille blanche, la
+      flèche est courte (« peu de flèche »), donc peu de recul possible.
+    adjacent_text_summary: >-
+      « En positionnant la main droite (joueur droitier) près du centre de gravité de la queue, le joueur
+      positionnera son chevalet près de la bille blanche. La longueur de la flèche entre le procédé et le
+      chevalet étant peu importante, on dit qu'il prend "peu de flèche". Il ne peut donc avoir un grand
+      recul. »
+    description: >-
+      Le bracket couvre environ 69 % de la longueur de la queue, de 22 % à 91 % depuis l'extrémité gauche
+      (talon) : il est plus court que sur le schéma « grande amplitude » et décalé vers la droite, la
+      première flèche étant éloignée de l'extrémité du talon.
+    uncertainties:
+      - "Les positions des deux flèches sur la queue sont lues approximativement en fraction de longueur de queue ; le PDF n'indique aucune cote."
+      - "Le PDF n'indique pas ce que marque chaque flèche du bracket (main, chevalet, procédé) ; seule la légende « Coup à faible amplitude » est écrite."
+  - id: techniques-p12-queue-grande-amplitude
+    kind: technique-schema
+    sheet: "La puissance"
+    caption: "Coup à grande amplitude"
+    subject: >-
+      Image à plat d'une queue de billard (horizontale, talon à gauche, procédé à droite) surmontée d'un
+      bracket noir à deux flèches vers le bas, légendé « Coup à grande amplitude ».
+    elements:
+      - "Queue horizontale, même aspect que sur le schéma précédent : talon sombre à gauche, partie claire à droite"
+      - "Bracket noir au-dessus, légendé « Coup à grande amplitude », deux flèches pointant vers le bas : la première tout près de l'extrémité du talon (à gauche, environ 4 % de la longueur), la seconde à environ 82 % de la longueur de la queue"
+    teaching_point: >-
+      Main droite vers l'extrémité du talon : le chevalet est plus loin de la bille blanche, la flèche est
+      longue (« beaucoup de flèche »), donc grand recul possible.
+    adjacent_text_summary: >-
+      « En positionnant la main droite (joueur droitier) vers l'extrémité du talon de la queue, le joueur
+      positionnera son chevalet plus loin de la bille blanche. La longueur de la flèche entre le procédé et le
+      chevalet étant importante, on dit qu'il prend "beaucoup de flèche". » « Entre ces deux positions, le
+      joueur doit évaluer la longueur de flèche à adapter selon la puissance désirée. »
+    description: >-
+      Le bracket couvre environ 78 % de la longueur de la queue, de 4 % à 82 % depuis l'extrémité gauche
+      (talon) : il est plus large que sur le schéma « faible amplitude » et commence quasiment à l'extrémité
+      du talon.
+    uncertainties:
+      - "Les positions des flèches sont des fractions approximatives de la longueur de la queue."
+      - "Le PDF n'indique pas ce que marque chaque flèche du bracket (main, chevalet, procédé)."
+  - id: techniques-p12-video-qr
+    kind: technique-photo
+    sheet: "La puissance"
+    caption: "Scannez le QR code pour consulter la vidéo « L'importance de la puissance »"
+    subject: >-
+      Capture d'écran de la vidéo à côté d'un QR code : vue en plongée d'un billard à tapis bleu avec une
+      poche, une bille blanche et une bille jaune numérotée près de la poche.
+    elements:
+      - "Capture vidéo encadrée, bandeau en haut à gauche « EXERCICE PRATIQUE » (chiffre dans une pastille)"
+      - "Tapis bleu, poche en bas à gauche de la capture, bande sombre à gauche"
+      - "Petit point blanc près du bord gauche en haut de la capture (marque sans signification lisible)"
+      - "Bille blanche en haut à droite de la poche, bille jaune (numérotée) tout près de la poche, plus bas à gauche"
+      - "Grande tache claire en forme de disque pâle à droite de la bille jaune (effet de surbrillance, sans signification de jeu lisible)"
+      - "QR code noir et blanc à droite de la capture"
+    teaching_point: >-
+      Renvoi vers la vidéo « L'importance de la puissance » ; la capture n'est pas un schéma d'exercice
+      exploitable.
+    adjacent_text_summary: >-
+      « Scannez le QR code pour consulter la vidéo « L'importance de la puissance » »
+    description: >-
+      Capture d'écran de la vidéo et QR code. Le contenu du QR code n'est pas transcrit ; l'image de la
+      vidéo sert uniquement d'illustration du lien.
+    uncertainties:
+      - "Contenu du QR code non décodé : lien vers la vidéo inconnu."
+      - "Chiffre sur la bille jaune et chiffre de la pastille « EXERCICE PRATIQUE » illisibles à cette résolution."
+      - "La trajectoire ou la signification de la tache claire n'est pas identifiable."

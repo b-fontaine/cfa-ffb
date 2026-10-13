@@ -1,0 +1,95 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 19, rank: S}
+diagrams:
+  - id: entrainement-p19-e1
+    kind: exercise
+    sheet: "Le coulé"
+    exercise: 1
+    caption: "Faire avancer cinq fois la bille blanche au-delà du trait tracé sur la surface de jeu, afin de la replacer pour jouer la bille noire."
+    success_rate: [3, 5]
+    sessions: "2 à 3"
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [1.76, 2.0]}
+      - {id: y1, color: yellow, at: [3.0, 2.0], label: "x5"}
+      - {id: b1, color: black, at: [0.36, 3.04]}
+      - {id: w, color: white, at: [4.01, 2.67], role: cue}
+    ghosts:
+      - {id: g1, at: [4.01, 2.67], role: cue_start}
+      - {id: g2, at: [3.17, 2.13], role: impact, for: w}
+    arrows:
+      - {id: c1, ball: w, kind: cue, path: [[4.01, 2.67], [3.17, 2.13]], bounces: []}
+      - {id: a1, ball: y1, kind: object, path: [[3.0, 2.0], [0.0, 0.0]], to: tl}
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: y1, contact: full, pocket: tl, repeat: 5}
+    inset:
+      contact: full
+      tip_point: upper_center
+      bridge_height: surface
+    annotations:
+      - "x 5 : l'exercice est répété cinq fois"
+      - "Le trait tracé sur la surface de jeu (trait vertical du schéma) est la ligne que la blanche doit dépasser"
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Un trait plein vertical à environ 1,8 case du bord
+      gauche. Une bille rouge posée sur ce trait (environ 1,8 ; 2), une bille jaune à environ (3 ; 2), une bille noire (8) en bas à gauche (environ 0,35 ; 3). Un « x5 » est inscrit le long de la
+      flèche de la jaune. Un cercle creux pointillé en bas à droite de
+      la jaune (environ 4 ; 2,7) indique où poser la blanche ; un trait relie ce cercle à un cercle d'impact
+      collé en bas à droite de la jaune (environ 3,2 ; 2,1). La jaune est envoyée en diagonale vers la poche haut
+      gauche (tl), en traversant le trait ; d'après l'énoncé, la blanche doit avancer au-delà du trait afin d'être
+      replacée pour jouer la noire. Schéma « quantité de bille » en bas à droite : la blanche masque entièrement
+      la bille visée, aucun liseré de couleur n'est visible (bille pleine), point bleu au-dessus du centre de la blanche, trait vert d'eau sous la bille.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,8 et non 2,0 comme la convention du FORMAT ; la bille rouge est posée sur ce trait."
+      - "La blanche est lue comme le cercle creux pointillé à points rouges (emplacement de départ) ; elle n'est pas dessinée en bille pleine."
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé (bridge: unknown) ; pas de pastille Billard de bronze visible."
+      - "La rouge n'est pas touchée par une flèche : son rôle (repère le long du trait) n'est pas précisé par le texte."
+      - "Quantité de bille de l'inset estimée pleine d'après le recouvrement (non légendé) ; hauteur du point bleu approximative."
+      - "Le « trait tracé sur la surface de jeu » est supposé être le trait vertical du schéma."
+      - "La flèche de la jaune se termine un peu avant la poche tl ; la destination est lue comme la poche haut gauche."
+  - id: entrainement-p19-e2
+    kind: exercise
+    sheet: "Le coulé"
+    exercise: 2
+    caption: "Replacer cinq fois la bille blanche afin de jouer la bille noire."
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: b1, color: black, at: [2.3, 0.98]}
+      - {id: y1, color: yellow, at: [2.53, 1.8]}
+      - {id: r1, color: red, at: [2.66, 2.48], label: "x5"}
+      - {id: w, color: white, at: [2.0, 3.63], role: cue}
+    ghosts:
+      - {id: g1, at: [2.0, 3.63], role: cue_start}
+      - {id: g2, at: [2.55, 2.68], role: impact, for: w}
+    arrows:
+      - {id: c1, ball: w, kind: cue, path: [[2.0, 3.63], [2.55, 2.68]], bounces: []}
+      - {id: a1, ball: r1, kind: object, path: [[2.66, 2.48], [4.0, 0.0]], to: tm}
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: r1, contact: full, pocket: tm, repeat: 5}
+    inset:
+      contact: full
+      tip_point: upper_center
+      bridge_height: surface
+    annotations:
+      - "x 5 : l'exercice est répété cinq fois"
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Un trait plein vertical à environ 1,8 case du bord
+      gauche. Une bille noire (8) vers (2,3 ; 1), une bille jaune vers (2,5 ; 1,8) et une bille rouge vers
+      (2,7 ; 2,5), alignées en diagonale. Un cercle creux pointillé en bas, près du trait (environ 2 ; 3,6),
+      indique où poser la blanche ; un trait le relie à un cercle d'impact collé en bas à gauche de la rouge
+      (environ 2,55 ; 2,7). La rouge est envoyée vers la poche du milieu haut (tm), en passant
+      à droite de la jaune et de la noire ; un « x5 » est inscrit le long de cette flèche. Schéma « quantité de
+      bille » en bas à droite : un fin liseré rouge dépasse en haut à gauche de la blanche (bille visée presque
+      entièrement masquée, estimée pleine), point
+      bleu au-dessus du centre de la blanche, trait vert d'eau sous la bille.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,8 et non 2,0."
+      - "La blanche est lue comme le cercle creux pointillé à points rouges (emplacement de départ) ; elle n'est pas dessinée en bille pleine."
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé (bridge: unknown) ; pas de pastille Billard de bronze visible ni de « Nombre de séances » pour cet exercice."
+      - "Quantité de bille de l'inset estimée pleine d'après le recouvrement (non légendé) ; hauteur du point bleu approximative."
+      - "La flèche de la rouge se termine un peu avant la poche tm ; la destination est lue comme la poche milieu haut."
+      - "La noire n'est pas ciblée par une flèche : l'énoncé dit seulement de replacer la blanche pour la jouer."
