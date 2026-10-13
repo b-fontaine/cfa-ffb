@@ -1,0 +1,52 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 14, rank: S}
+diagrams:
+  - id: initiation-p14-e1
+    kind: initiation
+    sheet: "Le coulé en quantité de bille trois-quarts."
+    caption: "Empocher une bille en réalisant un coulé."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [4.0, 1.44]}
+      - {id: w, color: white, at: [4.2, 3.01], role: cue}
+    ghosts:
+      - {id: g1, at: [3.99, 1.66], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[4.2, 2.9], [3.99, 1.66]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[4.0, 1.33], [4.0, 0.15]], bounces: [], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[3.99, 1.66], [3.11, 0.24]], bounces: []}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: three_quarter, pocket: tm}
+    inset:
+      contact: three_quarter
+      tip_point: upper_center
+      bridge_height: surface
+    annotations:
+      - "Objectif : « Empocher une bille au milieu, en dirigeant la bille blanche vers la grande bande, grâce à un coulé. »"
+      - "Consignes à l'élève : « Viser en trois-quarts de bille. » ; « Utiliser une attaque en haut. » ; « Privilégier l'amplitude du geste à la vitesse, afin de conserver une rotation avant de la bille blanche lors de l'impact. »"
+      - "Conseils à l'animateur : « Laisser le joueur placer la bille blanche afin de s'assurer que la notion de bille trois-quarts est bien intégrée. » ; « Faire un rappel de la trajectoire de la bille blanche en quantité de bille pleine et faire la comparaison avec le résultat obtenu en trois-quarts de bille. » ; « Rappeler que la puissance du coup joue un rôle important dans la trajectoire de la bille blanche après l'impact, inhérent à sa taille et son poids. »"
+      - "Bandeau latéral : « BLACKBALL Niveau 1 », « FICHE INITIATION », « Le coulé en trois-quarts de bille »."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, ligne de départ (trait plein vertical) vers x = 1,8.
+      Une seule bille rouge est posée au centre de la table, presque dans l'axe de la poche du milieu du haut (tm), à
+      environ (4,0 ; 1,4). La bille blanche est en bas, un peu à droite de l'axe de la rouge, vers (4,2 ; 3,0) ; elle est
+      dessinée comme un petit cercle creux à points rouges. Un cercle creux pointillé, juste sous la bille rouge
+      (environ 4,0 ; 1,7), marque la position de la blanche à l'impact : la blanche touche la rouge sur son bord
+      (trois-quarts de bille, d'après le titre et l'encart). Une première flèche part de la
+      blanche vers ce cercle d'impact. Depuis la rouge, une flèche verticale monte droit vers la poche tm. Depuis le cercle
+      d'impact, une seconde flèche (trajectoire de la blanche après le coulé) part en diagonale vers le haut et la
+      gauche, vers la bande du haut (environ 3,1 ; 0,25), en direction de la grande bande, sans rebond dessiné.
+      L'encart, dans la moitié droite (centré vers x = 6,7 ; y = 3,0), montre une bille blanche au premier plan
+      qui recouvre aux trois quarts une bille rouge située derrière à droite ; point bleu du tip au-dessus du centre de
+      la blanche (attaque en haut), viseur en croix et trait turquoise sous les billes (surface).
+    uncertainties:
+      - "Aucun taux de réussite, « Nombre de séances » ni pastille Billard de bronze sur cette page."
+      - "Le type de chevalet n'est ni écrit ni dessiné : bridge: unknown."
+      - "La bille blanche est un cercle creux à points rouges (emplacement) et non une bille pleine ; elle est transcrite comme bille w posée en (4,2 ; 3,0)."
+      - "La flèche de la blanche après impact s'arrête avant la bande du haut ; aucun rebond n'est dessiné (bounces vide) bien que l'objectif parle de la grande bande."
+      - "Le contact trois-quarts est lu sur l'encart ; l'ordre des deux flèches issues du point d'impact (rouge vers tm, blanche vers la bande) n'est pas indiqué."
+      - "Point bleu du tip estimé à mi-rayon au-dessus du centre (attaque en haut, valeur approchée)."
+      - "Ligne de départ lue à x ≈ 1,82 (FORMAT : 2,0 [Prop])."

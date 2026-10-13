@@ -66,7 +66,7 @@ app/
 │   │   └── presentation/{bloc,ui}/    # SessionPlannerBloc, PlanSessionForm
 │   ├── features/manage_students/          # EnrollStudent, GetClubOverview ; StudentsBloc, ClubList
 │   ├── features/record_results/           # OpenSession, RecordAttempt (R1, R2, R4) ; RecordResultsBloc
-│   ├── features/suggest_session/          # planSession (R6), selectRecall (R5) ; SessionPlanView
+│   ├── features/suggest_session/          # planSession (R6), selectRecall (R5) ; SessionPlanView, ExerciseDiagramView
 │   ├── features/assess_maturity/          # RecordAssessment (aide, jamais un déclencheur)
 │   ├── features/change_audience/          # ChangeAudience (R7, manuel, confirmation)
 │   ├── features/track_progress/           # ExerciseCurve, BlockProgress (R3), StudentSheet ; courbes
@@ -76,6 +76,10 @@ app/
 │   ├── entities/exercise_catalog/     # ExerciseCatalogue, TrainingBlock, ExerciseSpec
 │   │   ├── domain/                    # + port CatalogueRepository
 │   │   └── data/                      # parseur YAML (package yaml) + asset
+│   ├── entities/exercise_diagram/     # ExerciseDiagram, DiagramLibrary, DiagramKey
+│   │   ├── domain/                    # modèle freezed (Dart pur) + port DiagramRepository
+│   │   ├── data/                      # parseur YAML strict + repository asset
+│   │   └── presentation/              # table_diagram_mapper : domaine -> TableDiagramSpec
 │   ├── entities/exercise_result/      # ExerciseAttempt, ExerciseResult dérivé, StudentProgress
 │   ├── entities/student/              # Student, AudienceChange (historique)
 │   ├── entities/season/  entities/group/  entities/session_record/
@@ -99,6 +103,7 @@ app/
 │   └── tool/                          # tests du vérificateur d'architecture
 ├── assets/fonts/                      # Exo 2 + licence OFL
 ├── assets/catalogue/                  # copie du catalogue (scripts/sync_catalogue.sh)
+├── assets/diagrammes/                 # copie des pages à table (scripts/sync_diagrammes.sh)
 ├── tool/                              # check_architecture.dart (+ architecture/)
 ├── l10n.yaml  build.yaml  analysis_options.yaml
 └── android/ ios/ web/ linux/ macos/ windows/
@@ -160,7 +165,59 @@ Un invariant est vérifié dans le constructeur privé `X._()` d'une classe `fre
 (non `const`) : toute instance, y compris issue de `copyWith`, est valide. Les
 cas d'usage retournent `Result<T>` (`runGuarded` convertit les `Failure` levées).
 
+## Schémas d'exercices (`entities/exercise_diagram`)
+
+Les transcriptions YAML de `docs/knowledge/03-exercices/diagrammes/`
+(`FORMAT.md`) sont la source unique ; `scripts/sync_diagrammes.sh` en copie les
+pages à table (`kind` `exercise`, `game`, `initiation`) vers
+`app/assets/diagrammes/<dossier>/pNN.yaml`, `--check` (lecture seule, dans
+`check.sh --fast`) refusant toute différence ou tout fichier en trop.
+
+- **Domaine** (Dart pur) : `ExerciseDiagram` (freezed ; métadonnées de la fiche
+  et `DiagramTable`), `DiagramKey` (famille, titre de fiche, numéro d'exercice),
+  `DiagramLibrary` (`find(key)` renvoie une liste : la source répète la fiche
+  « Le rejet naturel », donc deux schémas par exercice ; vide quand la source
+  n'en a pas), port `DiagramRepository`. Les types de table (`TableBall`,
+  `TablePocket`...) sont propres au domaine : `domain` n'importe pas `shared/ui`.
+- **Data** : `parseDiagramPage` (refuse tout champ non représenté,
+  `InvalidDiagramPage`) et `AssetDiagramRepository` (toute erreur de lecture :
+  page mal formée, E/S, manifeste -> `invalidDiagram`).
+- **Présentation** : `tableDiagramSpecOf` convertit un `ExerciseDiagram` en
+  `TableDiagramSpec` du design system (`contactFractionOf` pour la quantité de
+  bille) ; `shared/ui` ne voit jamais le domaine.
+- **Branché sur la fiche d'un exercice** : `GetExerciseSheet`
+  (`features/suggest_session/domain`) charge la `DiagramLibrary` et range dans
+  `ExerciseSheet.diagrams` les schémas de la clé `DiagramKey.training(...)`.
+  Des schémas illisibles (`invalidDiagram`, ce code seulement ; toute autre
+  violation remonte à `runGuarded`) ne font pas échouer la fiche :
+  `diagramsUnreadable` remplace le lecteur par un message. `ExerciseDiagramView`
+  (`features/suggest_session/presentation/ui`) affiche, par schéma, le
+  `TableDiagramPlayer` (largeur max. 720 dp, la page défile), la légende du PDF,
+  la quantité de bille en texte localisé (`ExerciseDiagram.contacts`, calculé
+  par le domaine : celle des tirs, sans doublon ; le chevalet n'est écrit que par
+  la carte de la fiche, d'après le catalogue) ; « Schéma i sur n » quand la source répète la fiche ; un message
+  quand l'exercice n'a pas de schéma. `ExerciseSheetPage` l'affiche via
+  `ExerciseSheetView` ; la séance suggérée ne montre pas de schéma (elle renvoie
+  à la fiche). Route et DI inchangées (`/exercises/:blockId/:number`,
+  `ExerciseSheetBloc`).
+- **Correspondance avec le catalogue** : par les données, `TrainingBlock.title`
+  = `sheet` et `ExerciseSpec.ref.number` = `exercise`
+  (`DiagramKey.training(...)`) ; aucune table écrite à la main. Vérifiée par
+  `test/contract/catalogue_diagrammes_test.dart` (64 exercices, tous illustrés).
+- **Non représenté** : l'encart `inset` (quantité de bille, point du procédé)
+  n'est pas encore lu ; ses valeurs `tip_point` dépassent `TipPoint`.
+
 ## Design system et Widgetbook
+
+**État d'animation éphémère dans `shared/ui`.** L'interdiction du
+`StatefulWidget` vaut pour `pages` (état de page : Bloc). Un composant de
+`shared/ui` peut garder dans son `State` ce qui dépend de Flutter et ne survit
+pas au widget : un `AnimationController` et son ticker, la lecture/pause en
+cours, le choix de vitesse local. Dès qu'un état doit survivre au composant ou
+être piloté de l'extérieur (vitesse mémorisée, lecture lancée par une page), il
+sort dans un Cubit à état freezed fourni par l'appelant. `TableDiagramPlayer`
+est le seul cas à ce jour : sa vitesse et sa lecture sont locales et
+volontairement non persistées.
 
 `shared/ui` contient le design system : thème (`theme/`) et composants
 indépendants du métier. La règle « vers le bas uniquement » les protège : un

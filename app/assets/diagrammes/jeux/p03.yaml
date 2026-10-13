@@ -1,0 +1,50 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 3, rank: S}
+diagrams:
+  - id: jeux-p03-g1
+    kind: game
+    sheet: "La puissance."
+    caption: "Objectif : Viser et placer la bille blanche dans une zone."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.17, 1.51]}
+      - {id: r2, color: red, at: [0.99, 1.51]}
+      - {id: r3, color: red, at: [0.17, 2.64]}
+      - {id: r4, color: red, at: [0.99, 2.64]}
+      - {id: y1, color: yellow, at: [7.06, 1.51]}
+      - {id: y2, color: yellow, at: [7.85, 1.51]}
+      - {id: y3, color: yellow, at: [7.06, 2.64]}
+      - {id: y4, color: yellow, at: [7.85, 2.64]}
+    ghosts:
+      - {id: g1, at: [1.09, 2.07], role: cue_start}
+    arrows:
+      - {id: a1, kind: indication, path: [[1.09, 2.07], [6.8, 2.07]], bounces: []}
+    zones:
+      - {id: z1, shape: rect, from: [0.09, 1.51], to: [0.99, 2.64], label: "camp rouge (zone grise)"}
+      - {id: z2, shape: rect, from: [7.05, 1.51], to: [7.94, 2.64], label: "camp jaune (zone grise)"}
+    annotations:
+      - "Règles : partie à deux joueurs, 5 tirs à tour de rôle ; placer la bille blanche en un tir dans le camp adverse matérialisé par 4 billes ; la blanche peut rebondir sur la petite bande."
+      - "Le coup n'est pas valable si : le joueur commet une faute ; la bille blanche touche une bille."
+      - "Le premier joueur à placer 5 fois la bille blanche dans le camp adverse a gagné la partie."
+      - "Conseil : la zone de placement peut être modifiée afin d'adapter la difficulté du coup."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, avec la ligne de départ (trait plein vertical) à x vers 1,8.
+      Deux camps de 4 billes dessinés aux deux extrémités de la table, chacun formant un rectangle de 2 x 2 billes
+      autour d'une zone grisée rectangulaire : à gauche quatre billes rouges (x vers 0,2 et 1,0 ; y vers 1,5 et 2,6)
+      encadrent une zone grise (x de 0,1 à 1,0) ; à droite quatre billes jaunes (x vers 7,1 et 7,85 ; y vers 1,5 et
+      2,6) encadrent une zone grise (x de 7,05 à 7,95). Au bord droit de la zone rouge, au milieu (y vers 2,1), un
+      cercle creux avec un point rouge indique l'emplacement de la bille blanche. De là part une longue flèche
+      horizontale pleine, qui traverse la ligne de départ et la table dans sa longueur, jusqu'à x vers 6,8, juste
+      avant le camp jaune : c'est le tir de puissance, tracé sans rebond, qui doit amener la blanche dans la zone grise
+      adverse. Aucune bille blanche pleine n'est dessinée, ni taux de réussite, ni pastille Billard de bronze, ni
+      encart de quantité de bille.
+    uncertainties:
+      - "Aucune bille blanche pleine n'est dessinée : seul un cercle creux à point rouge marque son emplacement (ghost cue_start, sans bille w)."
+      - "Pas de séquence : la bille blanche n'est pas posée dans balls et le tir ne vise aucune bille ni poche."
+      - "Le sens du tir (du camp rouge vers le camp jaune) est déduit de la pointe de la flèche ; le texte ne précise pas quel joueur occupe quel camp."
+      - "Le type de chevalet n'est pas indiqué sur cette page (bridge: unknown)."
+      - "Aucun taux de réussite ni « Nombre de séances » ni pastille Billard de bronze sur cette page."
+      - "La flèche est tracée à y ≈ 2,07, légèrement au-dessus du centre des camps (y ≈ 2,08) : lecture à ± 0,1 case."
+      - "Ligne de départ mesurée à x ≈ 1,8 (FORMAT : 2,0 [Prop])."

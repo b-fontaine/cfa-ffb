@@ -42,6 +42,7 @@ String failureMessage(AppLocalizations l10n, Failure failure) =>
         InvariantCode.membershipPeriodInvalid ||
         InvariantCode.recallEqualsMainBlock ||
         InvariantCode.invalidCatalogue ||
+        InvariantCode.invalidDiagram ||
         InvariantCode.invalidRules => l10n.failGeneric,
       },
     };

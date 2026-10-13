@@ -1,0 +1,107 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 9, rank: S}
+diagrams:
+  - id: entrainement-p09-e1
+    kind: exercise
+    sheet: "Quart de bille et finesses"
+    exercise: 1
+    caption: "Empocher huit billes en quantité quart de bille avec un chevalet sur la surface de jeu."
+    sessions: "1 à 2"
+    success_rate: [6, 8]
+    bridge: surface
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [1.0, 1.0], label: "x4"}
+      - {id: r2, color: red, at: [7.0, 1.0], label: "x4"}
+      - {id: w, color: white, at: [1.15, 3.0], role: cue}
+    ghosts:
+      - {id: g1, at: [1.15, 1.13], role: impact, for: w}
+      - {id: g2, at: [1.15, 3.0], role: cue_start}
+      - {id: g3, at: [6.8, 1.12], role: impact, for: w}
+      - {id: g4, at: [6.8, 3.0], role: cue_start}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.15, 3.0], [1.15, 1.13]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[1.0, 1.0], [0, 0]], to: tl}
+      - {id: a3, ball: w, kind: cue, path: [[6.8, 3.0], [6.8, 1.12]], bounces: []}
+      - {id: a4, ball: r2, kind: object, path: [[7.0, 1.0], [8, 0]], to: tr}
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: quarter, pocket: tl, repeat: 4}
+      - {step: 2, cue: w, hit: r2, contact: quarter, pocket: tr, repeat: 4}
+    inset:
+      contact: quarter
+      tip_point: center
+      bridge_height: surface
+    annotations: ["x4 à côté de chaque bille rouge : la situation est répétée 4 fois par bille, soit 8 billes"]
+    description: >-
+      Deux billes rouges, l'une à gauche (environ 1 case du bord gauche, 1 case du bord haut), l'autre à droite
+      (environ 1 case du bord droit, 1 case du bord haut), chacune marquée « x4 ». Pour chacune, la blanche est
+      posée sur un cercle creux pointillé à environ 3 cases du bord haut, légèrement à droite de l'axe de la
+      bille rouge gauche (décalée d'environ 0,15 case), légèrement à gauche de l'axe de la rouge droite. Elle monte
+      en ligne droite vers un cercle creux collé à la bille rouge (contact en quart de bille). La rouge gauche part
+      vers la poche haut gauche, la rouge droite vers la poche haut droite. Le petit schéma central montre la
+      blanche et la rouge qui se recouvrent partiellement, point bleu au centre de la blanche, chevalet sur la
+      surface (trait bleu-vert sous les billes).
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1.83 sur le schéma (et non 2.0)."
+      - "La blanche n'est pas dessinée : son rôle est déduit des cercles creux pointillés ; l'inset n'a pas de légende texte."
+      - "La blanche w est posée par convention au premier cercle de départ (g2) ; la seconde pose (g4, côté droit) est lue sur le schéma, l'ordre n'est pas indiqué."
+      - "Le champ sessions (« 1 à 2 », texte « Nombre de séances ») n'existe pas dans FORMAT.md."
+      - "Le sens du décalage de la blanche (côté de la bille où a lieu le contact) est lu à ≈ 0,15 case près."
+  - id: entrainement-p09-e2
+    kind: exercise
+    sheet: "Quart de bille et finesses"
+    exercise: 2
+    caption: "Empocher huit billes en quantité quart de bille."
+    success_rate: [8, 12]
+    bridge: unknown
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [1.0, 0.37], label: "x3"}
+      - {id: y2, color: yellow, at: [0.34, 0.97], label: "x3"}
+      - {id: r1, color: red, at: [6.98, 0.38], label: "x3"}
+      - {id: r2, color: red, at: [7.73, 0.95], label: "x3"}
+      - {id: w, color: white, at: [3.0, 3.46], role: cue}
+    ghosts:
+      - {id: g1, at: [1.22, 0.41], role: impact, for: w}
+      - {id: g2, at: [0.37, 1.2], role: impact, for: w}
+      - {id: g3, at: [6.76, 0.44], role: impact, for: w}
+      - {id: g4, at: [7.72, 1.18], role: impact, for: w}
+      - {id: g5, at: [3.0, 3.46], role: cue_start}
+      - {id: g6, at: [5.0, 3.46], role: cue_start}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[3.0, 3.46], [1.22, 0.41]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[3.0, 3.46], [0.37, 1.2]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[5.0, 3.46], [6.76, 0.44]], bounces: []}
+      - {id: a4, ball: w, kind: cue, path: [[5.0, 3.46], [7.72, 1.18]], bounces: []}
+      - {id: a5, ball: y1, kind: object, path: [[1.0, 0.37], [0, 0]], to: tl}
+      - {id: a6, ball: y2, kind: object, path: [[0.34, 0.97], [0, 0]], to: tl}
+      - {id: a7, ball: r1, kind: object, path: [[6.98, 0.38], [8, 0]], to: tr}
+      - {id: a8, ball: r2, kind: object, path: [[7.73, 0.95], [8, 0]], to: tr}
+    sequence:
+      - {step: 1, cue: w, hit: y1, contact: quarter, pocket: tl, repeat: 3}
+      - {step: 2, cue: w, hit: y2, contact: quarter, pocket: tl, repeat: 3}
+      - {step: 3, cue: w, hit: r1, contact: quarter, pocket: tr, repeat: 3}
+      - {step: 4, cue: w, hit: r2, contact: quarter, pocket: tr, repeat: 3}
+    inset:
+      contact: quarter
+      tip_point: center
+      bridge_height: unknown
+    annotations: ["x3 à côté de chacune des quatre billes : 4 billes x 3 = 12 tirs (taux 8/12)"]
+    description: >-
+      Deux billes jaunes près de la poche haut gauche (l'une vers 1 case du bord gauche et 0,4 du bord haut, l'autre
+      vers 0,3 du bord gauche et 1 du bord haut) et deux billes rouges près de la poche haut droite (symétriques :
+      vers 7 cases / 0,4 et vers 7,7 / 0,95), chacune marquée « x3 ». Deux cercles creux pointillés en bas de
+      la table (environ 3 et 5 cases du bord gauche, 3,5 du bord haut) indiquent où poser la blanche : de celui de
+      gauche, la blanche vise les deux billes jaunes, de celui de droite les deux billes rouges, chaque bille
+      ayant un cercle creux d'impact collé à elle. Les jaunes partent vers la poche haut gauche, les rouges vers
+      la poche haut droite. Petit schéma central : blanche et rouge qui se recouvrent, point bleu au centre.
+    uncertainties:
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé de l'exercice 2 (trait bleu-vert sous les billes dans l'inset, non commenté)."
+      - "L'énoncé dit « huit billes » mais le schéma porte 4 x 3 = 12 tirs et le taux est 8/12."
+      - "Ligne de départ lue à x ≈ 1.82 sur le schéma (et non 2.0)."
+      - "La blanche w est posée par convention au premier cercle de départ (g5) ; la seconde pose (g6) est lue sur le schéma."
+      - "Ordre de pose de la blanche entre les deux cercles de départ non indiqué."
+      - "Les cercles creux d'impact (collés aux billes) sont lus à ≈ 0,15 case près."
+      - "Le sens exact du décalage d'impact pour le quart de bille n'a pas été mesuré en recadrage 200 dpi."

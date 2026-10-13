@@ -1,0 +1,105 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 29, rank: S}
+diagrams:
+  - id: entrainement-p29-e5
+    kind: exercise
+    sheet: "Le rétro"
+    exercise: 5
+    caption: "Empocher cinq billes en effectuant un rétro, pour replacer la bille blanche au-delà du trait tracé, afin de jouer la bille noire."
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [1.02, 0.99], label: "x5"}
+      - {id: y1, color: yellow, at: [2.02, 0.65]}
+      - {id: y2, color: yellow, at: [2.03, 1.72]}
+      - {id: b1, color: black, at: [4.0, 3.01]}
+      - {id: w, color: white, at: [1.83, 1.99], role: cue}
+    ghosts:
+      - {id: g1, at: [1.17, 1.11], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: r1, kind: object, path: [[1.02, 0.99], [0.2, 0.2]], to: tl}
+      - {id: a2, ball: w, kind: cue, path: [[1.83, 1.99], [1.17, 1.11]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[1.17, 1.11], [2.39, 1.33]], bounces: [], note: "retour de la blanche (rétro) au-delà du trait"}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: three_quarter, pocket: tl, effect: retro, repeat: 5}
+    inset:
+      contact: three_quarter
+      tip_point: lower_center
+      bridge_height: surface
+    annotations:
+      - "x5 : l'exercice est répété cinq fois (taux 3/5)"
+      - "Trait vertical plein tracé sur la surface de jeu (x ≈ 1,83), de bande à bande : la blanche doit le dépasser (aller vers la droite) après l'empochage de la rouge, pour pouvoir jouer la noire. Deux billes jaunes sont posées à environ 0,2 case à droite du trait."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Un trait plein vertical à environ 1,8 case du bord gauche,
+      sur toute la largeur. Une bille rouge (environ 1 ; 1), marquée « x5 », à gauche du trait. Deux billes jaunes
+      juste à droite du trait (environ 2 ; 0,65 et 2 ; 1,7). La noire (8) au centre vers le bas (environ 4 ; 3).
+      Une bille blanche dessinée sur le trait (environ 1,8 ; 2) avec deux petits points rouges, et un petit cercle
+      pointillé collé en bas à droite de la rouge (environ 1,15 ; 1,1) = position d'impact. La rouge part en
+      diagonale vers la poche haut gauche (tl). La blanche monte en diagonale vers la rouge puis, après le contact,
+      repart vers la droite (flèche jusque vers 2,4 ; 1,3), au-delà du trait, entre les deux jaunes : rétro.
+      Schéma « quantité de bille » en bas à droite : la blanche recouvre la rouge, dont seul un croissant reste
+      visible à gauche (environ trois quarts de bille) ; point bleu sous le centre de la blanche (rétro), trait
+      bleu-vert sous les billes (surface).
+    uncertainties:
+      - "La blanche est dessinée sur le trait (avec deux petits points rouges) ; elle est lue comme position de départ de la blanche."
+      - "Quantité de bille de l'inset estimée à environ trois quarts de bille d'après le recouvrement (non légendé) ; point bleu lu sous le centre."
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé de l'exercice 5 (bridge: unknown) ; pas de pastille Billard de bronze visible."
+      - "Les billes jaunes et la noire ne sont pas visées par une flèche (obstacles / bille à jouer ensuite)."
+      - "La flèche de la rouge se termine un peu avant la poche tl ; destination lue comme la poche haut gauche."
+  - id: entrainement-p29-e6
+    kind: exercise
+    sheet: "Le rétro"
+    exercise: 6
+    caption: "Empocher cinq billes en effectuant un rétro, avec un chevalet sur cadre, pour replacer la bille blanche au-delà du trait tracé, pour jouer la bille noire."
+    success_rate: [3, 5]
+    bridge: frame
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [1.01, 1.99], label: "x5"}
+      - {id: y1, color: yellow, at: [1.82, 1.66]}
+      - {id: y2, color: yellow, at: [2.01, 2.23]}
+      - {id: y3, color: yellow, at: [1.82, 3.56]}
+      - {id: y4, color: yellow, at: [7.8, 0.23]}
+      - {id: b1, color: black, at: [4.0, 1.99]}
+      - {id: w, color: white, at: [1.27, 3.0], role: cue}
+    ghosts:
+      - {id: g1, at: [1.27, 3.0], role: cue_start, for: w}
+      - {id: g2, at: [1.14, 2.11], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: r1, kind: object, path: [[1.01, 1.99], [0.13, 0.2]], to: tl}
+      - {id: a2, ball: w, kind: cue, path: [[1.27, 3.0], [1.14, 2.11]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[1.14, 2.11], [2.98, 3.84], [3.44, 3.46]], bounces: [bottom], note: "retour de la blanche (rétro) : rebond sur la bande basse puis remontée vers la droite, au-delà du trait"}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: r1, contact: three_quarter, pocket: tl, effect: retro, repeat: 5}
+    inset:
+      contact: three_quarter
+      tip_point: lower_center
+      bridge_height: surface
+    annotations:
+      - "x5 : l'exercice est répété cinq fois (taux 3/5)"
+      - "Trait vertical plein tracé sur la surface de jeu (x ≈ 1,83), de bande à bande : la blanche doit le dépasser (aller vers la droite) après l'empochage de la rouge, pour pouvoir jouer la noire. Deux billes jaunes sont posées sur le trait."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Un trait plein vertical à environ 1,8 case du bord gauche,
+      sur toute la largeur. Une bille rouge (environ 1 ; 2), marquée « x5 », à gauche du trait. Trois billes jaunes
+      près du trait : deux sur le trait (environ 1,8 ; 1,65 et 1,8 ; 3,55), une juste à droite (environ 2 ; 2,25).
+      Une autre jaune isolée dans le coin haut droit (environ 7,8 ; 0,2). La noire (8) au centre (environ 4 ; 2).
+      Un petit cercle pointillé avec deux points rouges, en bas à droite de la rouge (environ 1,25 ; 3), indique où
+      poser la blanche ; un second petit cercle pointillé collé à la rouge (environ 1,15 ; 2,1) est la position
+      d'impact. La rouge part en diagonale vers la poche haut gauche (tl). La blanche monte vers la rouge puis,
+      après le contact, repart en diagonale vers le bas à droite, rebondit sur la bande basse (vers 3 ; 3,85) et
+      remonte vers la droite (flèche jusque vers 3,45 ; 3,45), au-delà du trait : rétro. Schéma « quantité de
+      bille » en bas à droite : la blanche recouvre la rouge, dont seul un croissant reste visible à gauche
+      (environ trois quarts de bille) ; point bleu sous le centre de la blanche (rétro), trait bleu-vert sous les
+      billes (surface).
+    uncertainties:
+      - "La blanche est dessinée comme un petit cercle blanc pointillé : sa position de départ est déduite du cercle pointillé (avec deux points rouges) en bas à gauche, son impact du second cercle collé à la rouge."
+      - "Le point de rebond sur la bande basse est lu vers (2,98 ; 3,84), à ≈ 0,15 case près ; la flèche s'arrête à une pointe vers (3,44 ; 3,46)."
+      - "Quantité de bille de l'inset estimée à environ trois quarts de bille d'après le recouvrement (non légendé) ; point bleu lu sous le centre."
+      - "La bille jaune isolée dans le coin haut droit et la noire ne sont pas visées par une flèche (obstacles / bille à jouer ensuite)."
+      - "La flèche de la rouge se termine un peu avant la poche tl ; destination lue comme la poche haut gauche."
+      - "Pas de pastille Billard de bronze visible sur la page."

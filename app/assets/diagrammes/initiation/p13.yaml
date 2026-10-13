@@ -1,0 +1,53 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 13, rank: S}
+diagrams:
+  - id: initiation-p13-e1
+    kind: initiation
+    sheet: "Le coulé en quantité de bille pleine."
+    caption: "Empocher deux billes en réalisant un coulé."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [1.81, 2.15]}
+    ghosts:
+      - {id: g1, at: [2.55, 1.39], role: cue_start}
+      - {id: g2, at: [2.98, 3.53], role: cue_start}
+      - {id: g3, at: [1.99, 1.98], role: impact}
+      - {id: g4, at: [1.97, 2.34], role: impact}
+    arrows:
+      - {id: a1, kind: indication, path: [[2.55, 1.39], [1.99, 1.98]], bounces: []}
+      - {id: a2, ball: y1, kind: object, path: [[1.81, 2.15], [0.15, 3.85]], bounces: [], to: bl}
+      - {id: a3, kind: indication, path: [[2.98, 3.53], [1.97, 2.34]], bounces: []}
+      - {id: a4, ball: y1, kind: object, path: [[1.81, 2.15], [0.13, 0.17]], bounces: [], to: tl}
+    zones: []
+    inset:
+      contact: full
+      tip_point: upper_center
+      bridge_height: surface
+    annotations:
+      - "Objectif : « Empocher deux billes, en dirigeant la bille blanche dans la zone de replacement, grâce à un coulé. Utiliser un chevalet sur la surface de jeu et un chevalet sur cadre. »"
+      - "Consignes à l'élève : « Viser le centre de la bille de couleur. » ; « Utiliser une attaque en haut. » ; « Privilégier l'amplitude du geste à la vitesse, afin de conserver une rotation avant de la bille blanche lors de l'impact. »"
+      - "Conseils à l'animateur : « Laisser le joueur placer la bille blanche afin de s'assurer que la notion de bille pleine est bien intégrée, en commençant par la situation avec un chevalet sur cadre. » ; « Faire un rappel sur le positionnement du chevalet sur la surface de jeu pour une attaque en haut. » ; « Mettre en garde le joueur sur la puissance du coup afin d'éviter d'empocher la bille blanche. »"
+      - "Déroulé : tir 1 (flèches fines = trajectoire de la blanche, non posée sur le schéma) depuis le cercle du haut (g1) puis impact en g3, la jaune part vers bl ; tir 2 depuis le cercle du bas (g2) puis impact en g4, la jaune part vers tl (contact plein dans les deux cas)."
+      - "Encart de quantité de bille (bas droite) : grosse bille blanche avec un bord rouge visible en haut (bille de couleur masquée derrière, contact plein), point bleu du tip au-dessus du centre de la blanche, croix par le centre, trait turquoise sous la bille (surface)."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, ligne de départ (trait plein vertical) à x vers 1,8. Une seule
+      bille posée : une bille jaune sur cette ligne de départ, légèrement sous l'axe médian de la largeur (x 1,8 ; y 2,15).
+      Deux flèches pleines partent de la jaune : l'une vers le haut-gauche en direction de la poche du coin haut gauche
+      (tl), l'autre vers le bas-gauche en direction de la poche du coin bas gauche (bl) ; elles forment un V ouvert vers
+      la gauche. Deux cercles creux pointillés à points rouges marquent où poser la bille blanche : un en haut à droite
+      de la jaune (x vers 2,55 ; y vers 1,4) et un en bas à droite (x vers 3,0 ; y vers 3,5). De chacun part une ligne
+      fine droite vers la jaune, qui aboutit à un petit cercle creux pointillé collé à la jaune (position de la blanche à
+      l'impact, vers (2,0 ; 2,0) pour le tir du haut et (2,0 ; 2,3) pour le tir du bas). Chaque tir vise donc le centre
+      de la jaune (bille pleine) et l'envoie dans la poche du côté opposé à la blanche : tir du haut vers bl, tir du bas
+      vers tl. Un encart de quantité de bille pleine est dessiné en bas à droite de la table (centre vers x 6,9 ; y 2,7).
+    uncertainties:
+      - "Aucun numéro d'exercice, aucun taux de réussite, aucun « Nombre de séances » ni pastille Billard de bronze sur cette page."
+      - "L'énoncé dit « deux billes » alors qu'une seule bille de couleur (jaune) est dessinée : le schéma montre deux tirs successifs sur la même position de jaune, une lecture non précisée par le texte du PDF."
+      - "Le texte cite deux chevalets (surface de jeu et sur cadre) sans dire lequel va avec quel tir ; bridge: unknown. Le conseil à l'animateur indique de commencer par la situation avec un chevalet sur cadre, sans la relier à un tir précis."
+      - "L'ordre des deux tirs n'est pas indiqué  ; le tir 1 (haut) et le tir 2 (bas) du déroulé sont une lecture de position, sans label sur le schéma. Pas de bille blanche posée : la blanche n'est représentée que par les cercles et lignes fines (ids de bille w absent)."
+      - "Le lien entre chaque tir et la poche visée est déduit de l'alignement blanche-jaune ; les flèches de la jaune s'arrêtent près des poches tl et bl sans les atteindre exactement."
+      - "Les petits cercles d'impact (blanche collée à la jaune) sont de faible taille et partiellement superposés à la jaune ; positions estimées à ±0,15 case."
+      - "La bille jaune est à x ≈ 1,81 sur la ligne de départ mesurée à x ≈ 1,8 (FORMAT : 2,0 [Prop])."
+      - "L'encart est une superposition grande (rayon ≈ 0,4 case) hors échelle de la table, pas une bille de la table."

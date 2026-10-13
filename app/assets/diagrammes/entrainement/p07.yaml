@@ -1,0 +1,125 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 7, rank: S}
+diagrams:
+  - id: entrainement-p07-e1
+    kind: exercise
+    sheet: "La quantité trois-quarts"
+    exercise: 1
+    caption: "Empocher deux fois chaque bille jaune, puis chaque bille rouge en quantité trois-quarts avec un chevalet sur cadre."
+    success_rate: [6, 8]
+    sessions: "1 à 2"
+    bridge: frame
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [4.4, 1.0], label: "x2"}
+      - {id: y2, color: yellow, at: [4.8, 1.0], label: "x2"}
+      - {id: r1, color: red, at: [6.55, 2.0], label: "x2"}
+      - {id: r2, color: red, at: [6.95, 2.0], label: "x2"}
+      - {id: w, color: white, at: [6.0, 3.45], role: cue}
+    ghosts:
+      - {id: g-start, at: [6.0, 3.45], role: cue_start}
+      - {id: g-y1, at: [4.5, 1.2], role: impact, for: w}
+      - {id: g-y2, at: [4.95, 1.1], role: impact, for: w}
+      - {id: g-r1, at: [6.4, 2.2], role: impact, for: w}
+      - {id: g-r2, at: [6.85, 2.2], role: impact, for: w}
+    arrows:
+      - {id: a-y1, ball: y1, kind: object, path: [[4.4, 1.0], [4.0, 0.0]], to: tm}
+      - {id: a-y2, ball: y2, kind: object, path: [[4.8, 1.0], [4.0, 0.0]], to: tm}
+      - {id: a-r1, ball: r1, kind: object, path: [[6.55, 2.0], [8.0, 0.0]], to: tr}
+      - {id: a-r2, ball: r2, kind: object, path: [[6.95, 2.0], [8.0, 0.0]], to: tr}
+      - {id: c-y1, ball: w, kind: cue, path: [[6.0, 3.45], [4.5, 1.2]], bounces: []}
+      - {id: c-y2, ball: w, kind: cue, path: [[6.0, 3.45], [4.95, 1.1]], bounces: []}
+      - {id: c-r1, ball: w, kind: cue, path: [[6.0, 3.45], [6.4, 2.2]], bounces: []}
+      - {id: c-r2, ball: w, kind: cue, path: [[6.0, 3.45], [6.85, 2.2]], bounces: []}
+    sequence:
+      - {step: 1, cue: w, hit: y1, contact: three_quarter, pocket: tm, repeat: 2}
+      - {step: 2, cue: w, hit: y2, contact: three_quarter, pocket: tm, repeat: 2}
+      - {step: 3, cue: w, hit: r1, contact: three_quarter, pocket: tr, repeat: 2}
+      - {step: 4, cue: w, hit: r2, contact: three_quarter, pocket: tr, repeat: 2}
+    inset:
+      contact: three_quarter
+      tip_point: upper_center
+      bridge_height: surface
+    annotations:
+      - "x 2 à côté de chacune des quatre billes : chaque bille est empochée deux fois"
+      - "La blanche part toujours du même emplacement (cercle pointillé en bas, à droite de la médiane)"
+    description: >-
+      Vue de dessus, extrémité de départ à gauche. Deux billes jaunes côte à côte dans la partie haute, près de la
+      poche du milieu haut (x ≈ 4,4 et 4,8 ; y ≈ 1), et deux billes rouges plus bas à droite (x ≈ 6,55 et 6,95 ;
+      y ≈ 2), chacune annotée « x 2 ». Chaque bille a, collé en dessous, un cercle pointillé : position de la
+      blanche à l'impact. Les jaunes sont envoyées vers la poche du milieu haut (tm), les rouges vers la poche
+      haut droite (tr). Un unique cercle pointillé en bas (x ≈ 6, y ≈ 3,45) est l'emplacement de départ de la
+      blanche ; quatre traits en partent, un vers chaque cercle d'impact. Le schéma « quantité de bille » en bas à
+      gauche montre une bille blanche en avant d'une bille rouge, contact trois-quarts,
+      point bleu du tip au-dessus du centre de la blanche, trait vert d'eau sous la bille
+      (niveau de la surface).
+    uncertainties:
+      - "Ligne de départ (trait plein vertical) lue à x ≈ 1,8 et non 2,0 comme la convention du FORMAT."
+      - "Les quatre positions de billes sont lues à ≈ 0,1 case près."
+      - "Pas de numéro d'ordre de tir sur le schéma : l'ordre jaunes puis rouges vient du texte ; l'ordre entre les deux billes d'une même couleur est supposé gauche puis droite."
+      - "Le point de tip du schéma de quantité est lu au-dessus du centre (environ la moitié du rayon) ; la hauteur exacte n'est pas donnée par le texte."
+      - "Aucune bille blanche pleine n'est dessinée : w est déclarée à l'emplacement du cercle de départ (6 ; 3,45) pour référencer les flèches."
+      - "Les flèches des rouges et jaunes visent les poches tr et tm (têtes de flèche proches des poches) ; le point exact d'arrivée est approximatif."
+  - id: entrainement-p07-e2
+    kind: exercise
+    sheet: "La quantité trois-quarts"
+    exercise: 2
+    caption: "Empocher huit billes en quantité trois-quarts selon des distances différentes."
+    success_rate: [6, 8]
+    bridge: unknown
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: yl, color: yellow, at: [1.4, 1.0]}
+      - {id: yr, color: yellow, at: [6.55, 1.0]}
+      - {id: w, color: white, at: [4.0, 3.5], role: cue}
+    ghosts:
+      - {id: g-il, at: [1.6, 1.1], role: impact, for: w}
+      - {id: g-ir, at: [6.4, 1.1], role: impact, for: w}
+      - {id: g1, at: [2.5, 2.0], role: cue_start, label: "1"}
+      - {id: g2, at: [5.5, 2.0], role: cue_start, label: "2"}
+      - {id: g3, at: [3.0, 2.5], role: cue_start, label: "3"}
+      - {id: g4, at: [5.0, 2.5], role: cue_start, label: "4"}
+      - {id: g5, at: [3.5, 3.0], role: cue_start, label: "5"}
+      - {id: g6, at: [4.5, 3.0], role: cue_start, label: "6"}
+      - {id: g7, at: [4.0, 3.5], role: cue_start, label: "7"}
+      - {id: g8, at: [4.0, 3.5], role: cue_start, label: "8"}
+    arrows:
+      - {id: a-yl, ball: yl, kind: object, path: [[1.4, 1.0], [0.0, 0.0]], to: tl}
+      - {id: a-yr, ball: yr, kind: object, path: [[6.55, 1.0], [8.0, 0.0]], to: tr}
+      - {id: c-left, ball: w, kind: cue, path: [[4.0, 3.5], [1.6, 1.1]], bounces: []}
+      - {id: c-right, ball: w, kind: cue, path: [[4.0, 3.5], [6.4, 1.1]], bounces: []}
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: yl, contact: three_quarter, pocket: tl}
+      - {step: 2, cue: w, from: g2, hit: yr, contact: three_quarter, pocket: tr}
+      - {step: 3, cue: w, from: g3, hit: yl, contact: three_quarter, pocket: tl}
+      - {step: 4, cue: w, from: g4, hit: yr, contact: three_quarter, pocket: tr}
+      - {step: 5, cue: w, from: g5, hit: yl, contact: three_quarter, pocket: tl}
+      - {step: 6, cue: w, from: g6, hit: yr, contact: three_quarter, pocket: tr}
+      - {step: 7, cue: w, from: g7, hit: yl, contact: three_quarter, pocket: tl}
+      - {step: 8, cue: w, from: g8, hit: yr, contact: three_quarter, pocket: tr}
+    inset:
+      contact: three_quarter
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "Huit emplacements numérotés de 1 à 8 pour poser la blanche, du plus proche (1 et 2) au plus éloigné (7 et 8) des billes jaunes"
+    description: >-
+      Vue de dessus, extrémité de départ à gauche. Deux billes jaunes en haut, l'une à gauche (x ≈ 1,4 ; y ≈ 1)
+      et l'autre à droite (x ≈ 6,55 ; y ≈ 1), chacune avec un cercle pointillé d'impact collé en bas à droite
+      (gauche) ou en bas à gauche (droite). La jaune de gauche part vers la poche haut gauche (tl), celle de
+      droite vers la poche haut droite (tr). Huit cercles pointillés numérotés, posés en V sur deux lignes qui
+      convergent vers (4 ; 3,5), donnent les emplacements de la blanche : 1, 3, 5, 7 sur la branche gauche (1 le
+      plus proche de la jaune, 7 le plus éloigné, en bas au centre), 2, 4, 6, 8 sur la
+      branche droite ; 7 et 8 sont au même endroit, en bas au centre. Chaque emplacement est donc visé sur la
+      jaune de son côté, à une distance différente. Le schéma « quantité de bille » en bas à droite montre une
+      bille blanche en avant d'une bille rouge, contact trois-quarts, point bleu du tip au centre de la blanche,
+      trait vert d'eau sous la bille (niveau de la surface).
+    uncertainties:
+      - "Le texte du PDF ne précise pas le type de chevalet pour cet exercice (bridge: unknown)."
+      - "Ligne de départ lue à x ≈ 1,8 et non 2,0."
+      - "L'alternance gauche (impairs) / droite (pairs) est lue sur la position des numéros ; le PDF ne donne pas d'ordre de tir explicite en dehors de la numérotation."
+      - "Les emplacements 7 et 8 sont confondus à (4 ; 3,5) à la précision de lecture."
+      - "Pas de bille blanche dessinée : seuls les cercles pointillés numérotés indiquent où la poser."
+      - "La bille blanche w déclarée dans balls (en (4 ; 3,5)) n'est pas dessinée : elle est ajoutée pour référencer les flèches de la blanche ; l'emplacement réel est l'un des cercles numérotés."

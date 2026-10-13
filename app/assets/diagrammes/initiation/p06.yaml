@@ -1,0 +1,77 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 6, rank: S}
+diagrams:
+  - id: initiation-p06-e1
+    kind: initiation
+    sheet: "Quantité de bille pleine."
+    caption: "Empocher 2 billes en quantité de bille pleine."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red,   at: [1.37, 2.61]}
+      - {id: w1, color: white, at: [1.82, 3.53], role: cue}
+    ghosts:
+      - {id: g1, at: [1.46, 2.84], role: impact, for: w1}
+    arrows:
+      - {id: a1, ball: w1, kind: cue,    path: [[1.82, 3.53], [1.46, 2.84]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[1.37, 2.61], [0.31, 0.44]], bounces: [], to: tl}
+    zones: []
+    sequence:
+      - {step: 1, cue: w1, hit: r1, contact: full, pocket: tl}
+    inset:
+      contact: full
+      tip_point: above_center
+      bridge_height: unknown
+    annotations:
+      - "Page sans « x N » ni numéro de bille : une seule bille de couleur par schéma, un seul tir."
+    description: >-
+      Table vue de dessus, départ à gauche. Schéma de gauche : une bille rouge (environ 1,4 ; 2,6) dans la moitié
+      basse de la zone de départ, à gauche de la ligne de départ (trait plein vertical), et la bille blanche
+      (environ 1,8 ; 3,5) en bas, posée sur cette ligne. Un cercle creux pointillé (position de la blanche au
+      contact) est collé en bas à droite de la rouge ; la blanche vise ce cercle : contact en bille pleine. La rouge
+      part en ligne droite vers la poche d'angle haut gauche (tl), la flèche pleine prolonge la ligne de
+      visée de la blanche. Petit schéma en bas à gauche : bille blanche vue de face, point bleu légèrement
+      au-dessus du centre, arc rouge au sommet (bille cible), repère en croix et trait turquoise sous la bille
+      (chevalet).
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,82 (et non 2,0 comme dans FORMAT.md)."
+      - "L'énoncé de la fiche demande « un chevalet sur la surface de jeu et un chevalet sur cadre » sans dire quel schéma correspond à quel chevalet : bridge: unknown."
+      - "Point bleu du petit schéma lu environ 0,4 rayon au-dessus du centre de la blanche (tip_point: above_center), à confirmer ; dans le petit schéma de droite il est au centre."
+      - "Aucune pastille « Billard de bronze », aucun taux de réussite ni « Nombre de séances » sur cette page."
+      - "Le schéma de gauche et celui de droite ne sont pas numérotés : l'ordre e1/e2 (gauche/droite) est une convention de transcription."
+
+  - id: initiation-p06-e2
+    kind: initiation
+    sheet: "Quantité de bille pleine."
+    caption: "Empocher 2 billes en quantité de bille pleine."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [3.99, 1.40]}
+      - {id: w2, color: white,  at: [3.99, 2.52], role: cue}
+    ghosts:
+      - {id: g2, at: [3.99, 1.63], role: impact, for: w2}
+    arrows:
+      - {id: a3, ball: w2, kind: cue,    path: [[3.99, 2.52], [3.99, 1.63]], bounces: []}
+      - {id: a4, ball: y1, kind: object, path: [[3.99, 1.40], [4.0, 0.24]], bounces: [], to: tm}
+    zones: []
+    sequence:
+      - {step: 1, cue: w2, hit: y1, contact: full, pocket: tm}
+    inset:
+      contact: full
+      tip_point: center
+      bridge_height: unknown
+    annotations: []
+    description: >-
+      Table vue de dessus, départ à gauche. Schéma de droite : une bille jaune (environ 4,0 ; 1,4) et la bille
+      blanche (environ 4,0 ; 2,5) exactement alignées verticalement avec la poche du milieu haut (tm). Un cercle
+      creux pointillé (position de la blanche au contact) est collé sous la jaune, sur la même verticale :
+      contact en bille pleine, jaune empochée droit devant dans tm. Petit schéma à droite : bille blanche de
+      face, point bleu au centre, arc rouge au sommet (bille cible), repère en croix et trait turquoise sous la
+      bille (chevalet).
+    uncertainties:
+      - "L'énoncé ne précise pas quel schéma est joué avec le chevalet sur cadre ou sur la surface : bridge: unknown."
+      - "Les deux billes sont alignées avec la poche tm à l'échelle de la mesure (x ≈ 3,99 ≈ 4,0)."
+      - "Hauteur du chevalet dans le petit schéma non légendée : bridge_height: unknown."

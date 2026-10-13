@@ -1,0 +1,99 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 32, rank: S}
+diagrams:
+  - id: entrainement-p32-e1
+    kind: exercise
+    sheet: "Les trajectoires de blanche"
+    exercise: 1
+    caption: "Empocher neuf billes, en variant la hauteur d'attaque, pour diriger la bille blanche trois fois sur chaque bille jaune."
+    success_rate: [6, 9]
+    sessions: "3 à 4"
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [6.01, 1.99]}
+      - {id: y1, color: yellow, at: [5.97, 0.96], label: "x3"}
+      - {id: y2, color: yellow, at: [5.04, 1.37], label: "x3"}
+      - {id: y3, color: yellow, at: [5.03, 2.26], label: "x3"}
+      - {id: w, color: white, at: [5.21, 3.0], role: cue}
+    ghosts:
+      - {id: g1, at: [5.21, 3.0], role: cue_start, for: w}
+      - {id: g2, at: [5.86, 2.16], role: impact, for: w}
+    arrows:
+      - {id: c1, ball: w, kind: cue, path: [[5.21, 3.0], [5.86, 2.16]], bounces: []}
+      - {id: a1, ball: r1, kind: object, path: [[6.01, 1.99], [7.84, 0.15]], to: tr}
+      - {id: c2, ball: w, kind: cue, path: [[5.86, 2.16], [5.91, 1.24]], bounces: [], note: "après l'impact, la blanche est dirigée vers la jaune y1"}
+      - {id: c3, ball: w, kind: cue, path: [[5.86, 2.16], [5.28, 1.6]], bounces: [], note: "après l'impact, la blanche est dirigée vers la jaune y2"}
+      - {id: c4, ball: w, kind: cue, path: [[5.86, 2.16], [5.01, 2.21]], bounces: [], note: "après l'impact, la blanche est dirigée vers la jaune y3"}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: r1, contact: full, pocket: tr, repeat: 3, cue_then: y1}
+      - {step: 2, cue: w, from: g1, hit: r1, contact: full, pocket: tr, repeat: 3, cue_then: y2}
+      - {step: 3, cue: w, from: g1, hit: r1, contact: full, pocket: tr, repeat: 3, cue_then: y3}
+    annotations:
+      - "x3 à côté de chacune des trois billes jaunes : la blanche est dirigée trois fois sur chaque jaune (3 x 3 = 9 billes empochées)"
+      - "Trait vertical plein tracé sur la surface de jeu (x ≈ 1,8), à gauche, sans lien explicite avec l'exercice"
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Un trait plein vertical à environ 1,8 case du bord
+      gauche. Dans la moitié droite : une bille rouge (environ 6 ; 2) et trois billes jaunes, en haut (environ
+      6 ; 1), au milieu (environ 5 ; 1,4) et en bas (environ 5 ; 2,3), chacune accompagnée de « x3 ». La blanche
+      (cercle clair avec points rouges) est posée en bas (environ 5,2 ; 3). Elle va toucher la rouge en bille
+      pleine (cercle pointillé d'impact environ 5,85 ; 2,15) ; la rouge part en diagonale vers la poche haut droite
+      (tr). Après l'impact, trois flèches partent du cercle d'impact vers chacune des trois billes jaunes : c'est
+      la trajectoire de blanche à obtenir, en variant la hauteur d'attaque. Pas de schéma de quantité de bille.
+    uncertainties:
+      - "La blanche est dessinée comme cercle clair à points rouges (cue_start) ; elle est modélisée comme bille w à cette position."
+      - "Le schéma ne dit pas quelle hauteur d'attaque mène à quelle jaune ; l'association y1/y2/y3 aux flèches est géométrique, pas légendée."
+      - "Le type de chevalet n'est pas indiqué ; pas de pastille Billard de bronze ni de schéma de quantité de bille visibles."
+      - "Les flèches de la blanche après l'impact s'arrêtent juste avant les jaunes ; destination lue comme la bille jaune visée."
+      - "Le trait vertical est lu à x ≈ 1,8 (et non 2,0 de la convention)."
+      - "La flèche de la rouge se termine un peu avant la poche tr ; destination lue comme la poche haut droite."
+  - id: entrainement-p32-e2
+    kind: exercise
+    sheet: "Les trajectoires de blanche"
+    exercise: 2
+    caption: "Empocher dix billes, en alternant la hauteur d'attaque en haut et en bas entre chaque coup, pour replacer la bille blanche sur la bille noire."
+    success_rate: [6, 10]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [1.14, 2.0]}
+      - {id: b1, color: black, at: [3.99, 1.99]}
+      - {id: y1, color: yellow, at: [7.76, 0.29]}
+      - {id: y2, color: yellow, at: [7.76, 3.72]}
+      - {id: w, color: white, at: [2.0, 3.0], role: cue}
+    ghosts:
+      - {id: g1, at: [2.0, 3.0], role: cue_start, for: w}
+      - {id: g2, at: [1.23, 2.18], role: impact, for: w}
+    arrows:
+      - {id: c1, ball: w, kind: cue, path: [[2.0, 3.0], [1.23, 2.18]], bounces: []}
+      - {id: a1, ball: r1, kind: object, path: [[1.14, 2.0], [0.21, 0.29]], to: tl}
+      - {id: c2, ball: w, kind: cue, path: [[1.23, 2.18], [0.15, 1.55], [2.61, 0.17], [3.79, 0.81]], bounces: [left, top], label: "x5", note: "attaque haute : la blanche rebondit sur la bande gauche puis la bande haute, vers la noire"}
+      - {id: c3, ball: w, kind: cue, path: [[1.23, 2.18], [0.15, 2.8], [1.98, 3.84], [3.79, 2.84]], bounces: [left, bottom], label: "x5", note: "attaque basse : la blanche rebondit sur la bande gauche puis la bande basse, vers la noire"}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: r1, contact: full, pocket: tl, repeat: 5, attack: high, cue_path: c2}
+      - {step: 2, cue: w, from: g1, hit: r1, contact: full, pocket: tl, repeat: 5, attack: low, cue_path: c3}
+    annotations:
+      - "x5 sur chaque trajet de blanche : cinq coups en attaque haute et cinq en attaque basse, en alternant entre chaque coup (10 billes)"
+      - "Trait vertical plein tracé sur la surface de jeu (x ≈ 1,8)"
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Un trait plein vertical à environ 1,8 case du bord
+      gauche. Une bille rouge à gauche, sur la ligne médiane (environ 1,15 ; 2), la noire (8) au centre de la
+      table (environ 4 ; 2) et deux billes jaunes dans les coins droits, près des poches haut droite et bas droite
+      (environ 7,75 ; 0,3 et 7,75 ; 3,7). La blanche (cercle clair à points rouges) est posée en bas à gauche
+      (environ 2 ; 3). Elle touche la rouge en bille pleine (cercle pointillé d'impact environ 1,25 ; 2,2) ; la
+      rouge part vers la poche haut gauche (tl). Après l'impact, deux trajets de blanche, chacun marqué « x5 » :
+      l'un vers le haut, rebond sur la bande gauche puis la bande haute, et arrivée au centre de la table, vers
+      la noire ; l'autre vers le bas, rebond sur la bande gauche puis la bande basse, et arrivée vers la noire.
+      Pas de schéma de quantité de bille.
+    uncertainties:
+      - "La blanche est dessinée comme cercle clair à points rouges (cue_start) ; elle est modélisée comme bille w à cette position."
+      - "Les points de rebond sur les bandes sont lus approximativement (≈ 0,15 case) ; les flèches finissent un peu avant la noire (x ≈ 3,8) sans la toucher dans le dessin."
+      - "Le schéma ne légende pas haut/bas : « attaque haute » et « attaque basse » sont déduits de l'énoncé (alternance haut/bas) et du fait qu'il y a deux trajets x5."
+      - "Les billes jaunes ne sont visées par aucune flèche : lues comme billes de décor / obstacles ; leur rôle n'est pas précisé."
+      - "Le type de chevalet n'est pas indiqué ; pas de pastille Billard de bronze ni de « Nombre de séances » pour cet exercice."
+      - "Le trait vertical est lu à x ≈ 1,8 (et non 2,0 de la convention)."
+      - "La flèche de la rouge se termine un peu avant la poche tl ; destination lue comme la poche haut gauche."

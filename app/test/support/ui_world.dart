@@ -1,5 +1,6 @@
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
+import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
@@ -43,9 +44,12 @@ class UiWorld {
       _ready = false;
       await getIt.reset();
     });
-    // Le chargement d'asset est de l'E/S réelle : une fois le catalogue en
-    // cache, les écrans le lisent sans attendre.
-    await tester.runAsync(() => getIt<CatalogueRepository>().load());
+    // Le chargement d'asset est de l'E/S réelle : une fois le catalogue et les
+    // schémas en cache, les écrans les lisent sans attendre.
+    await tester.runAsync(() async {
+      await getIt<CatalogueRepository>().load();
+      await getIt<DiagramRepository>().load();
+    });
   }
 
   static T _value<T>(Result<T> result) => switch (result) {

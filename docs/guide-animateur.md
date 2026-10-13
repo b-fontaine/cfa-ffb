@@ -31,6 +31,23 @@ exercice). Le prénom peut être corrigé depuis la fiche de l'élève.
 3. Chaque exercice renvoie vers sa **fiche source** (fiche fédérale) pour
    l'expliquer aux élèves.
 
+### Voir le schéma animé d'un exercice
+
+Ouvrez la **fiche source** d'un exercice : sous les informations de la fiche
+fédérale, la section **Schéma de table** montre les billes et leurs
+trajectoires.
+
+- **Lire** lance le coup (la blanche touche la bille, qui part vers la poche) ;
+  **Pause** le fige ; **Rejouer** le reprend depuis le début.
+- Réglez la vitesse (×0,5, ×1 ou ×2) pour le montrer lentement aux élèves.
+- Sous le schéma, la **quantité de bille** et le **chevalet** (sur le cadre ou
+  sur la surface) sont écrits.
+- Certains exercices (le rejet naturel) ont deux schémas, numérotés.
+- Si un exercice n'a pas de schéma, l'application l'indique ; la fiche reste
+  complète.
+- Si l'appareil est réglé pour **réduire les animations**, le schéma s'affiche
+  à son état final : appuyez sur **Rejouer** pour voir le mouvement.
+
 L'ordre d'enseignement suit le catalogue : par exemple le rebond sur bande est
 enseigné avant le rejet naturel.
 

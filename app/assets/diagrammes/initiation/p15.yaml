@@ -1,0 +1,52 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 15, rank: S}
+diagrams:
+  - id: initiation-p15-e1
+    kind: initiation
+    sheet: "Le carreau"
+    caption: "Empocher deux billes en réalisant un carreau."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.63, 0.99], label: "rouge"}
+      - {id: w1, color: white, at: [1.28, 1.99], role: cue, label: "blanche 1"}
+      - {id: y1, color: yellow, at: [3.30, 2.43], label: "jaune"}
+      - {id: w2, color: white, at: [2.99, 3.48], role: cue, label: "blanche 2"}
+    ghosts:
+      - {id: g1, at: [0.76, 1.18], role: impact, for: w1}
+      - {id: g2, at: [3.23, 2.65], role: impact, for: w2}
+    arrows:
+      - {id: a1, ball: w1, kind: cue, path: [[1.28, 1.99], [0.76, 1.18]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[0.63, 0.99], [0.15, 0.23]], to: tl}
+      - {id: a3, ball: w2, kind: cue, path: [[2.99, 3.48], [3.23, 2.65]], bounces: []}
+      - {id: a4, ball: y1, kind: object, path: [[3.30, 2.43], [3.98, 0.12]], to: tm}
+    sequence:
+      - {step: 1, cue: w1, hit: r1, contact: full, pocket: tl}
+      - {step: 2, cue: w2, hit: y1, contact: full, pocket: tm}
+    inset:
+      contact: full
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "Consigne : viser en quantité de bille pleine, attaque au centre ; la bille blanche doit glisser jusqu'à l'impact (carreau)."
+      - "Objectif du texte : un chevalet sur la surface de jeu et un chevalet sur cadre ; le schéma ne précise pas lequel correspond à quelle bille."
+    description: >-
+      Table vue de dessus, départ à gauche. Deux situations de carreau, chacune avec une bille
+      colorée et une blanche (bille de choc, marquée de points rouges). Situation de gauche : bille
+      rouge (x ≈ 0,6 ; y ≈ 1,0) avec la blanche en bas à droite d'elle (x ≈ 1,3 ; y ≈ 2,0) ; la
+      blanche vise la rouge, un cercle creux pointillé collé à la rouge (x ≈ 0,8 ; y ≈ 1,2) donne la
+      position de la blanche à l'impact, et la rouge part ensuite vers la poche d'angle haut-gauche
+      (tl). Situation du centre : bille jaune (x ≈ 3,3 ; y ≈ 2,4), blanche plus bas à gauche
+      (x ≈ 3,0 ; y ≈ 3,5), cercle creux d'impact collé à la jaune (x ≈ 3,2 ; y ≈ 2,65), et la jaune
+      part vers la poche du milieu du haut (tm). Les billes sont proches l'une de l'autre pour que la
+      blanche glisse jusqu'à l'impact. En bas à droite, un schéma de quantité de bille : la blanche
+      recouvre presque toute la rouge (quantité pleine), point bleu du tip au centre de la blanche,
+      ligne turquoise de chevalet sous la bille. La pastille Billard de bronze n'est pas présente ;
+      l'onglet bleu indique « FICHE INITIATION Le carreau ».
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,82 (et non 2,0) sur le schéma."
+      - "Les cercles creux collés aux billes colorées sont lus comme la position de la blanche à l'impact ; les flèches des blanches s'arrêtent à ces cercles."
+      - "Le texte ne dit pas quelle bille se joue avec le chevalet sur cadre et laquelle avec le chevalet sur la surface de jeu."
+      - "Pas de taux de réussite, ni nombre de séances, sur cette page."
+      - "Le schéma de quantité montre un croissant rouge fin en haut de la bille : lu comme quantité pleine, conforme à la consigne."

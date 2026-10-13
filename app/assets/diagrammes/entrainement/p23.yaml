@@ -1,0 +1,97 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 23, rank: S}
+diagrams:
+  - id: entrainement-p23-e1
+    kind: exercise
+    sheet: "Le carreau"
+    exercise: 1
+    caption: "Empocher cinq billes en effectuant un carreau, afin de replacer la bille blanche sur la bille noire."
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [5.01, 1.99], label: "x5"}
+      - {id: y1, color: yellow, at: [5.62, 1.53]}
+      - {id: y2, color: yellow, at: [6.07, 2.06]}
+      - {id: b1, color: black, at: [6.98, 1.0]}
+      - {id: w, color: white, at: [5.52, 3.01], role: cue}
+    ghosts:
+      - {id: g1, at: [5.52, 3.01], role: cue_start}
+      - {id: g2, at: [5.08, 2.19], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[5.52, 3.01], [5.08, 2.19]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[5.01, 1.99], [4.09, 0.24]], to: tm}
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: full, pocket: tm, repeat: 5}
+    inset:
+      contact: full
+      tip_point: center
+      bridge_height: unknown
+    annotations:
+      - "Nombre de séances : 1 à 2"
+      - "x5"
+    description: >-
+      Table vue de dessus, tête à gauche. Ligne de départ verticale à environ 1,8 case du bord gauche, sans bille
+      dessus. Une bille noire vers (7 ; 1). Deux billes jaunes vers (5,6 ; 1,5) et (6,1 ; 2,1). Une bille rouge
+      vers (5 ; 2), marquée « x5 ». Un cercle creux pointillé vers (5,5 ; 3) indique où poser la blanche ; elle monte
+      vers un cercle creux d'impact collé sous la rouge (environ 5,1 ; 2,2), quasiment dans l'axe de la rouge
+      (contact plein, carreau). La rouge part vers le haut gauche, en direction de la poche milieu haut (flèche
+      pleine jusqu'à environ 4,1 ; 0,2). Grand schéma en bas à gauche (quantité de bille) : la blanche vue de face
+      avec un point bleu au centre, une fine bordure rouge (bille objet) dépassant sur le haut, un réticule et un
+      trait bleu-vert sous la bille.
+    uncertainties:
+      - "La blanche est le petit cercle clair à points rouges (cercle de départ) ; sa position initiale est confondue avec le cercle creux de départ, et le cercle d'impact est le cercle creux pointillé collé à la rouge."
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé ; le trait bleu-vert sous la bille de l'inset n'est pas légendé."
+      - "Quantité de bille de l'inset estimée pleine (bordure rouge fine en haut de la blanche) ; non légendée."
+      - "La destination de la flèche de la rouge est lue vers la poche milieu haut (à ≈ 0,15 case près)."
+      - "La position finale de la blanche sur la noire n'est pas dessinée."
+      - "Ligne de départ lue à x ≈ 1.82 sur le schéma (et non 2.0)."
+      - "Pas de pastille Billard de bronze visible sur la page."
+  - id: entrainement-p23-e2
+    kind: exercise
+    sheet: "Le carreau"
+    exercise: 2
+    caption: "Empocher cinq billes en effectuant un carreau, afin de replacer la bille blanche sur la bille noire."
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.73, 2.5], label: "x5"}
+      - {id: y1, color: yellow, at: [1.15, 2.15]}
+      - {id: y2, color: yellow, at: [1.47, 2.67]}
+      - {id: b1, color: black, at: [1.81, 2.03]}
+      - {id: w, color: white, at: [0.98, 3.42], role: cue}
+    ghosts:
+      - {id: g1, at: [0.98, 3.42], role: cue_start}
+      - {id: g2, at: [0.79, 2.72], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[0.98, 3.42], [0.79, 2.72]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[0.73, 2.5], [0.13, 0.22]], to: tl}
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: full, pocket: tl, repeat: 5}
+    inset:
+      contact: full
+      tip_point: center
+      bridge_height: unknown
+    annotations:
+      - "x5"
+    description: >-
+      Table vue de dessus, tête à gauche. Ligne de départ verticale à environ 1,8 case du bord gauche, avec la bille
+      noire posée dessus vers (1,8 ; 2). Deux billes jaunes vers (1,15 ; 2,15) et (1,5 ; 2,7). Une bille rouge
+      vers (0,7 ; 2,5), proche de la bande gauche, marquée « x5 ». Un cercle creux pointillé vers (1 ; 3,4) indique où
+      poser la blanche ; elle monte vers un cercle creux d'impact collé sous la rouge (environ 0,8 ; 2,7), quasiment
+      dans l'axe de la rouge (contact plein, carreau). La rouge part presque verticalement vers le haut, en direction
+      de la poche haut gauche (flèche pleine jusqu'à environ 0,1 ; 0,2). Grand schéma en bas à droite (quantité de
+      bille) : identique à l'exercice 1, la blanche vue de face avec un point bleu au centre, une fine bordure rouge
+      sur le haut, un réticule et un trait bleu-vert sous la bille.
+    uncertainties:
+      - "La blanche est le petit cercle clair à points rouges (cercle de départ) ; sa position initiale est confondue avec le cercle creux de départ, et le cercle d'impact est le cercle creux pointillé collé à la rouge."
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé ; le trait bleu-vert sous la bille de l'inset n'est pas légendé."
+      - "Quantité de bille de l'inset estimée pleine (bordure rouge fine en haut de la blanche) ; non légendée."
+      - "La destination de la flèche de la rouge est lue vers la poche haut gauche (à ≈ 0,15 case près)."
+      - "La position finale de la blanche sur la noire n'est pas dessinée."
+      - "Ligne de départ lue à x ≈ 1.81 sur le schéma (et non 2.0)."
+      - "« Nombre de séances » n'est pas répété sur l'exercice 2 (indiqué seulement sur l'exercice 1 : 1 à 2)."
+      - "Pas de pastille Billard de bronze visible sur la page."

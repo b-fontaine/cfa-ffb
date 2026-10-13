@@ -1,0 +1,36 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 1, rank: S}
+diagrams:
+  - id: jeux-p01-j1
+    kind: game
+    sheet: "Posture, visée et coup de queue."
+    caption: "Viser et empocher 6 billes placées en bord de poches."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.15, 0.15]}
+      - {id: r2, color: red, at: [3.95, 0.2]}
+      - {id: r3, color: red, at: [7.8, 0.15]}
+      - {id: r4, color: red, at: [0.17, 3.88]}
+      - {id: r5, color: red, at: [3.98, 3.9]}
+      - {id: r6, color: red, at: [7.8, 3.8]}
+    ghosts: []
+    arrows: []
+    zones: []
+    annotations:
+      - "Le jeu se déroule en un défi qui oppose deux joueurs."
+      - "Les billes de couleur sont placées près des poches."
+      - "Le joueur en contrôle place librement la bille blanche sur la surface de jeu et doit réaliser une série de 6 billes. Dès lors qu'il loupe ou commet une faute, on replace toutes les billes et la main passe à l'adversaire qui doit réaliser l'enchaînement à son tour."
+    description: >-
+      Table vue de dessus, en paysage, sans bille blanche sur le schéma (le joueur la place librement).
+      Six billes rouges sont posées en bord de poches, une devant chacune des six poches, légèrement à
+      l'intérieur de la surface de jeu : une dans chaque coin (haut gauche, haut droite, bas gauche,
+      bas droite) et une devant chacune des deux poches du milieu (haut et bas). Aucune flèche, aucun
+      cercle creux, aucune zone grisée, aucun schéma de quantité de bille. Le trait plein vertical du
+      schéma (ligne de départ) est visible à gauche. Les billes de couleur sont toutes rouges.
+    uncertainties:
+      - "Position de la ligne de départ lue vers x = 1,8 (≈ 1,77 mesurée sur le rendu) (trait plein vertical du schéma), et non 2,0 comme le suppose le repère [Prop] ; la ligne n'a pas de champ dédié dans le format."
+      - "Positions des billes lues à environ 0,1 case près ; les billes de coin sont collées contre la poche, leur centre exact par rapport à la bande est approximatif."
+      - "Le texte ne précise pas le type de chevalet (bridge: unknown) ; pas de pastille Billard de bronze sur cette page."
+      - "Aucun taux de réussite ni nombre de séances indiqués sur cette page."

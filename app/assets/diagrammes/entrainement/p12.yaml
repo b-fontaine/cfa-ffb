@@ -1,0 +1,110 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 12, rank: S}
+diagrams:
+  - id: entrainement-p12-e3
+    kind: exercise
+    sheet: "Les quantités de billes"
+    exercise: 3
+    caption: "Empocher neuf fois une bille selon différentes quantités de billes."
+    success_rate: [6, 9]
+    bridge: unknown
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [3.0, 3.0]}
+      - {id: w, color: white, at: [1.0, 1.0], role: cue}
+    ghosts:
+      - {id: g-impact, at: [2.8, 2.8], role: impact, for: w}
+      - {id: g1, at: [1.0, 1.0], role: cue_start, label: "1"}
+      - {id: g2, at: [1.0, 1.45], role: cue_start, label: "2"}
+      - {id: g3, at: [1.5, 1.0], role: cue_start, label: "3"}
+      - {id: g4, at: [1.0, 2.0], role: cue_start, label: "4"}
+      - {id: g5, at: [2.0, 1.0], role: cue_start, label: "5"}
+      - {id: g6, at: [1.0, 2.5], role: cue_start, label: "6"}
+      - {id: g7, at: [2.5, 1.0], role: cue_start, label: "7"}
+      - {id: g8, at: [1.0, 3.0], role: cue_start, label: "8"}
+      - {id: g9, at: [3.0, 1.0], role: cue_start, label: "9"}
+    arrows:
+      - {id: a-y1, ball: y1, kind: object, path: [[3.0, 3.0], [4.0, 4.0]], to: bm}
+      - {id: c-g5, ball: w, kind: cue, path: [[2.0, 1.0], [2.8, 2.8]], bounces: []}
+      - {id: c-g7, ball: w, kind: cue, path: [[2.5, 1.0], [2.8, 2.8]], bounces: []}
+      - {id: c-g9, ball: w, kind: cue, path: [[3.0, 1.0], [2.8, 2.8]], bounces: []}
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: y1, pocket: bm}
+      - {step: 2, cue: w, from: g2, hit: y1, pocket: bm}
+      - {step: 3, cue: w, from: g3, hit: y1, pocket: bm}
+      - {step: 4, cue: w, from: g4, hit: y1, pocket: bm}
+      - {step: 5, cue: w, from: g5, hit: y1, pocket: bm}
+      - {step: 6, cue: w, from: g6, hit: y1, pocket: bm}
+      - {step: 7, cue: w, from: g7, hit: y1, pocket: bm}
+      - {step: 8, cue: w, from: g8, hit: y1, pocket: bm}
+      - {step: 9, cue: w, from: g9, hit: y1, pocket: bm}
+    annotations: []
+    description: >-
+      Vue de dessus, extrémité de départ à gauche. Une seule bille jaune juste au-dessus et à gauche de la poche du
+      milieu bas (x ≈ 3 ; y ≈ 3), avec un cercle pointillé d'impact collé au-dessus à gauche (x ≈ 2,8 ; y ≈ 2,8) :
+      position de la blanche au contact. Une flèche part de la jaune vers la poche du milieu bas (bm). Neuf
+      cercles pointillés numérotés donnent les emplacements où poser la blanche : une rangée horizontale à
+      y ≈ 1 portant 1, 3, 5, 7, 9 (x ≈ 1 ; 1,5 ; 2 ; 2,5 ; 3) et une colonne verticale à x ≈ 1 portant 1, 2, 4, 6,
+      8 (y ≈ 1 ; 1,45 ; 2 ; 2,5 ; 3). Les numéros pairs sont dans la colonne, les impairs dans la rangée. Trois
+      traits convergent vers le cercle d'impact, depuis les emplacements 5, 7 et 9 : la quantité de bille varie
+      d'un emplacement à l'autre pour la même jaune. Pas de schéma « quantité de bille » (inset) sur cette page.
+    uncertainties:
+      - "Ligne de départ (trait plein vertical) lue à x ≈ 1,8 et non 2,0 comme la convention du FORMAT ; l'emplacement 5 est juste à droite de cette ligne."
+      - "Le PDF ne dessine aucune blanche : `w` est posée à l'emplacement 1 par convention de l'outil (référence de blanche obligatoire), ce n'est pas une lecture du schéma."
+      - "Seuls les trajets depuis 5, 7 et 9 sont tracés : pour 1, 2, 3, 4, 6 et 8 le trait n'est pas dessiné, et la position d'impact de la blanche est supposée identique."
+      - "L'ordre de tir est supposé suivre la numérotation 1 à 9 ; le PDF ne le dit pas explicitement."
+      - "Le type de chevalet n'est pas précisé (bridge: unknown) et le contact par emplacement n'est pas indiqué (pas d'inset)."
+      - "Les positions sont lues à ≈ 0,1 case près ; le cercle d'impact est en pointillés très fins."
+  - id: entrainement-p12-e4
+    kind: exercise
+    sheet: "Les quantités de billes"
+    exercise: 4
+    caption: "Empocher quatre fois deux billes selon différentes quantités de billes."
+    success_rate: [5, 8]
+    bridge: unknown
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [5.0, 2.0]}
+      - {id: r2, color: red, at: [7.4, 2.0]}
+      - {id: w, color: white, at: [5.5, 3.65], role: cue}
+    ghosts:
+      - {id: g-r1, at: [5.1, 2.2], role: impact, for: w}
+      - {id: g-r2, at: [7.35, 2.25], role: impact, for: w}
+      - {id: g1, at: [5.5, 3.65], role: cue_start, label: "1"}
+      - {id: g2, at: [6.0, 3.65], role: cue_start, label: "2"}
+      - {id: g3, at: [6.5, 3.65], role: cue_start, label: "3"}
+      - {id: g4, at: [7.0, 3.65], role: cue_start, label: "4"}
+    arrows:
+      - {id: a-r1, ball: r1, kind: object, path: [[5.0, 2.0], [4.1, 0.35]], to: tm}
+      - {id: a-r2, ball: r2, kind: object, path: [[7.4, 2.0], [7.8, 0.3]], to: tr}
+      - {id: c-g1-r1, ball: w, kind: cue, path: [[5.5, 3.65], [5.1, 2.2]], bounces: []}
+      - {id: c-g1-r2, ball: w, kind: cue, path: [[5.5, 3.65], [7.35, 2.25]], bounces: []}
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: r1, pocket: tm}
+      - {step: 2, cue: w, from: g1, hit: r2, pocket: tr}
+      - {step: 3, cue: w, from: g2, hit: r1, pocket: tm}
+      - {step: 4, cue: w, from: g2, hit: r2, pocket: tr}
+      - {step: 5, cue: w, from: g3, hit: r1, pocket: tm}
+      - {step: 6, cue: w, from: g3, hit: r2, pocket: tr}
+      - {step: 7, cue: w, from: g4, hit: r1, pocket: tm}
+      - {step: 8, cue: w, from: g4, hit: r2, pocket: tr}
+    annotations: []
+    description: >-
+      Vue de dessus, extrémité de départ à gauche. Deux billes rouges dans la moitié droite, à mi-hauteur (y ≈ 2) :
+      l'une à x ≈ 5, l'autre à x ≈ 7,4. Chacune a un cercle pointillé d'impact collé juste en dessous (légèrement à droite pour
+      la rouge de gauche, légèrement à gauche pour l'autre). La rouge de
+      gauche part vers la poche du milieu haut (tm), celle de droite vers la poche haut droite (tr). Quatre
+      cercles pointillés numérotés 1 à 4, alignés horizontalement près de la bande basse (y ≈ 3,65 ; x ≈ 5,5 ;
+      6 ; 6,5 ; 7), donnent les emplacements de la blanche. Depuis l'emplacement 1, deux traits partent : l'un
+      vers le cercle d'impact de la rouge de gauche, l'autre vers celui de la rouge de droite. Pas de schéma
+      « quantité de bille » (inset) sur cette page.
+    uncertainties:
+      - "Ligne de départ (trait plein vertical) lue à x ≈ 1,8 et non 2,0."
+      - "Le PDF ne dessine aucune blanche : `w` est posée à l'emplacement 1 par convention de l'outil (référence de blanche obligatoire), ce n'est pas une lecture du schéma."
+      - "Seuls les deux traits depuis l'emplacement 1 sont tracés ; pour 2, 3 et 4 les trajets sont supposés vers les mêmes cercles d'impact."
+      - "L'ordre de tir (emplacement par emplacement, rouge de gauche puis de droite) est supposé ; le PDF ne le précise pas."
+      - "Le type de chevalet n'est pas précisé (bridge: unknown) et le contact par emplacement n'est pas indiqué."
+      - "Les têtes de flèche des billes rouges s'arrêtent près des poches tm et tr sans les atteindre ; le point d'arrivée est approximatif."
+      - "Les positions sont lues à ≈ 0,1 case près ; la rouge de droite à x ≈ 7,4 (lecture ±0,1)."

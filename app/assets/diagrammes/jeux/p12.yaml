@@ -1,0 +1,40 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 12, rank: S}
+diagrams:
+  - id: jeux-p12-j1
+    kind: game
+    sheet: "Fiche Jeu"
+    caption: "Objectif : empocher la bille noire après toutes les billes d'un groupe de couleur."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: k, color: black, at: [6.0, 2.0], label: "8"}
+      - {id: r1, color: red, at: [6.0, 1.77]}
+      - {id: r2, color: red, at: [5.8, 1.89]}
+      - {id: r3, color: red, at: [5.61, 2.0]}
+      - {id: r4, color: red, at: [5.81, 2.12]}
+      - {id: r5, color: red, at: [6.02, 2.23]}
+      - {id: r6, color: red, at: [6.21, 2.11]}
+      - {id: r7, color: red, at: [6.21, 1.89]}
+      - {id: w, color: white, at: [1.82, 2.0], role: cue}
+    ghosts: []
+    arrows: []
+    zones: []
+    annotations:
+      - "Règles du jeu : le jeu se déroule en une partie qui oppose deux joueurs."
+      - "Les règles sont identiques à une partie classique, excepté que l'on utilise uniquement les billes d'un même groupe de couleur et la bille noire."
+      - "Le joueur qui casse est déterminé par le tirage à la bande. S'il empoche une bille, il continue jusqu'à ce qu'il loupe ou commette une faute. Dès lors, son adversaire joue les billes du même groupe de couleur. Les joueurs continuent ainsi jusqu'à empocher la bille noire."
+    description: >-
+      Table vue de dessus, en paysage. Au centre de la moitié droite, un groupe compact de sept billes
+      rouges entoure la bille noire (marquée du chiffre 8), centrée sur le croisement de la 6e ligne
+      verticale en pointillés et de la ligne horizontale médiane de la grille (x = 6, y = 2) : une rouge au-dessus, deux à gauche (haut-gauche et
+      bas-gauche) et une plus à gauche encore, une en dessous, deux à droite (haut-droite et bas-droite).
+      Les billes sont quasiment jointives. La bille blanche (disque blanc cerclé de noir, avec trois petits points rouges) est posée sur
+      la ligne de départ (trait plein vertical), au milieu de la largeur (y = 2). Aucune flèche, aucune
+      zone grisée, pas de pastille Billard de bronze.
+    uncertainties:
+      - "Position de la ligne de départ lue vers x = 1,82 (trait plein vertical du schéma), et non 2,0 comme le suppose le repère [Prop] ; la ligne n'a pas de champ dédié dans le format."
+      - "Positions des billes lues à environ 0,05 à 0,15 case près ; les billes rouges se touchent, leurs centres exacts sont approximatifs."
+      - "Le texte ne précise pas le type de chevalet (bridge: unknown) ; aucun taux de réussite ni nombre de séances sur cette page."
+      - "La bille blanche est dessinée pleine (blanche à trois points rouges), posée sur la ligne de départ ; la source n'indique pas si elle doit être placée à cet endroit à chaque partie."

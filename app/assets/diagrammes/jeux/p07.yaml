@@ -1,0 +1,51 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 7, rank: S}
+diagrams:
+  - id: jeux-p07-g1
+    kind: game
+    sheet: "La quantité demi-bille."
+    caption: "Objectif : Empocher 8 billes dans une poche, en quantité demi-bille."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [1.82, 1.06]}
+      - {id: y1, color: yellow, at: [1.81, 3.06]}
+    ghosts:
+      - {id: g0, at: [2.67, 2.09], role: cue_start}
+      - {id: g1, at: [2.01, 1.15], role: impact}
+      - {id: g2, at: [2.01, 2.99], role: impact}
+    arrows:
+      - {id: a1, kind: indication, path: [[2.67, 2.09], [2.01, 1.15]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[1.82, 1.06], [0.22, 0.32]], to: tl}
+      - {id: a3, kind: indication, path: [[2.67, 2.09], [2.01, 2.99]], bounces: []}
+      - {id: a4, ball: y1, kind: object, path: [[1.81, 3.06], [0.18, 3.91]], to: bl}
+    annotations:
+      - "Le jeu se déroule en une partie qui oppose deux joueurs."
+      - "Chaque joueur doit empocher toutes les billes de son groupe, puis la noire, dans une poche."
+      - "Les joueurs tirent à tour de rôle."
+      - "La bille blanche est repositionnée après chaque tir sur son point d'origine. Lorsqu'une bille de couleur est empochée, on replace une autre bille sur le point identique. Toute bille non empochée est également repositionnée sur son point d'origine."
+      - "Le joueur qui gagne la partie est celui qui a empoché toutes les billes de son groupe puis la noire. En cas d'égalité, les joueurs jouent la bille noire jusqu'à ce que l'un des deux loupe."
+      - "Un coup n'est pas valable si le joueur commet une faute."
+      - "Conseil : vérifier que les billes sont positionnées à chaque fois en quantité demi-bille."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, avec la ligne de départ (trait plein vertical) à x vers 1,8.
+      Deux billes pleines sont posées sur cette ligne : une bille rouge en haut (x vers 1,8 ; y vers 1,05) et une bille
+      jaune en bas (x vers 1,8 ; y vers 3,05). Au centre-gauche de la table (x vers 2,7 ; y vers 2,1), un cercle creux
+      avec de petits points rouges marque l'emplacement de la bille blanche (point d'origine, pas de bille blanche
+      pleine). De cet emplacement partent deux traits vers deux cercles creux pointillés collés aux billes, du côté
+      droit de chacune (x vers 2,0 ; y vers 1,15 pour la rouge, y vers 3,0 pour la jaune) : ce sont les positions de la
+      blanche à l'impact, décalées d'une demi-bille. Depuis la bille rouge, une flèche pleine part vers le coin haut
+      gauche (poche tl) ; depuis la bille jaune, une flèche pleine part vers le coin bas gauche (poche bl). Les deux
+      tirs sont donc symétriques, chaque bille étant touchée en demi-bille et envoyée dans la poche d'angle de son côté
+      de la table. Aucun taux de réussite, ni pastille Billard de bronze, ni encart de quantité de bille, ni type de
+      chevalet n'est indiqué.
+    uncertainties:
+      - "Le PDF écrit « Lorsqu'une une bille » (doublon typographique) ; « une » n'est repris qu'une fois."
+      - "Aucune bille blanche pleine n'est dessinée : seul un cercle creux à petits points rouges marque son emplacement (ghost cue_start, sans bille w ; les deux traits blanche vers impact sont donc codés kind: indication faute de bille blanche posée)."
+      - "Seules deux billes (1 rouge, 1 jaune) sont dessinées alors que l'objectif parle de 8 billes ; le schéma ne montre pas les 8 billes."
+      - "Les deux traits blanche vers impact sont tracés sans pointe de flèche ; l'ordre des deux tirs n'est pas indiqué (ils sont probablement alternatifs, la blanche revenant à son point d'origine)."
+      - "Le type de chevalet n'est pas indiqué sur cette page (bridge: unknown)."
+      - "Aucun taux de réussite ni « Nombre de séances » ni pastille Billard de bronze sur cette page."
+      - "Les flèches des billes colorées se terminent près des coins (x ≈ 0,2 ; y ≈ 0,3 et 3,9) : la poche visée est déduite (tl et bl)."
+      - "Ligne de départ mesurée à x ≈ 1,83 (FORMAT : 2,0 [Prop]). Lecture à ± 0,1 case."

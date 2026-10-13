@@ -49,6 +49,13 @@ flutter:
     # produite par scripts/sync_catalogue.sh, vérifiée par check.sh.
     - assets/catalogue/
 
+    # Copie des diagrammes à table (source : docs/knowledge/03-exercices/
+    # diagrammes) ; produite par scripts/sync_diagrammes.sh, vérifiée par
+    # check.sh. Un dossier par transcription (la déclaration n'est pas récursive).
+    - assets/diagrammes/entrainement/
+    - assets/diagrammes/initiation/
+    - assets/diagrammes/jeux/
+
   # Exo 2 (charte FFB) : police libre SIL OFL 1.1, source
   # https://github.com/google/fonts/tree/main/ofl/exo2 ; licence dans
   # assets/fonts/OFL.txt (à conserver avec les fichiers de police).

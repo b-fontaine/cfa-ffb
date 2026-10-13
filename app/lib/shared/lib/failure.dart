@@ -31,6 +31,7 @@ enum InvariantCode {
   dateInFuture,
   recallEqualsMainBlock,
   invalidCatalogue,
+  invalidDiagram,
   invalidRules,
   noStudents,
   nothingToTeach,

@@ -1,0 +1,113 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 22, rank: S}
+diagrams:
+  - id: entrainement-p22-e7
+    kind: exercise
+    sheet: "Le coulé"
+    exercise: 7
+    caption: "Empocher six billes, en effectuant un coulé pour replacer la bille blanche trois fois dans chaque zone, afin de jouer la bille noire."
+    success_rate: [4, 6]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: w, color: white, at: [2.98, 2.44], role: cue}
+      - {id: r1, color: red, at: [4.0, 2.0]}
+      - {id: y1, color: yellow, at: [4.99, 2.0]}
+      - {id: y2, color: yellow, at: [6.02, 1.53]}
+      - {id: y3, color: yellow, at: [7.27, 1.37]}
+      - {id: b1, color: black, at: [7.03, 2.83]}
+    ghosts:
+      - {id: g1, at: [2.98, 2.44], role: cue_start}
+      - {id: g2, at: [3.77, 2.07], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[2.98, 2.44], [3.77, 2.07]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[4.0, 2.0], [7.73, 0.26]], to: tr}
+      - {id: a3, ball: w, kind: cue, path: [[3.77, 2.07], [4.77, 1.14]], bounces: [], label: "Zone 1 x3"}
+      - {id: a4, ball: w, kind: cue, path: [[3.77, 2.07], [5.63, 0.17], [6.15, 0.73]], bounces: [top], label: "Zone 2 x3"}
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: three_quarter, pocket: tr, repeat: 3, zone: 1}
+      - {step: 2, cue: w, hit: r1, contact: three_quarter, pocket: tr, repeat: 3, zone: 2}
+    inset:
+      contact: three_quarter
+      tip_point: upper_center
+      bridge_height: unknown
+    annotations:
+      - "Zone 1 x3 : la blanche est replacée trois fois dans la zone 1"
+      - "Zone 2 x3 : la blanche est replacée trois fois dans la zone 2"
+      - "Six billes empochées au total (3 par zone), taux 4/6"
+    description: >-
+      Table vue de dessus, tête à gauche. Une ligne de départ verticale pleine à environ 1,8 case du bord gauche.
+      Une bille rouge au centre-gauche (environ 4 ; 2), sur la ligne médiane haute-basse. Trois billes jaunes : une
+      juste à droite de la rouge (environ 5 ; 2), une plus haute (environ 6 ; 1,5), une dernière encore plus haute et à
+      droite (environ 7,3 ; 1,4). Une bille noire vers (7 ; 2,8). Un cercle creux pointillé à gauche (environ
+      3 ; 2,4) indique où poser la blanche ; elle part vers un cercle creux d'impact collé à la rouge, côté gauche
+      (environ 3,8 ; 2,1). De la rouge partent deux flèches : une longue vers le haut droit, vers la poche haut droite
+      (la rouge est empochée), et une autre qui monte vers le haut droit jusqu'à environ (4,8 ; 1,1) (flèche
+      « Zone 1 x3 »), prolongée par un trait qui touche la bande du haut vers (5,6 ; 0,2) puis redescend vers
+      le bas droit jusqu'à environ (6,2 ; 0,7) (flèche « Zone 2 x3 »). Les étiquettes « Zone 1 x3 » et « Zone 2 x3 »
+      sont posées au-dessus de la rouge et des jaunes. Petit schéma en haut à gauche : blanche en avant, rouge
+      derrière et décalée vers la droite (recouvrement important, la rouge dépasse d'un quart de diamètre
+      environ), point bleu au-dessus du centre de la blanche, trait bleu-vert sous les billes.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1.8 sur le schéma (et non 2.0)."
+      - "La blanche est le petit cercle clair à points rouges (cercle de départ) ; sa position initiale est confondue avec le cercle creux numéroté de départ, et le cercle d'impact est déduit du cercle creux pointillé."
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé ; trait bleu-vert sous les billes de l'inset non commenté."
+      - "Quantité de bille de l'inset estimée à trois quarts de bille d'après le recouvrement (non légendé) ; point bleu au-dessus du centre (upper_center)."
+      - "Les flèches Zone 1 et Zone 2 partent visuellement du centre de la rouge ; elles sont interprétées comme les trajectoires de la blanche après le contact (coulé), départ placé au cercle d'impact."
+      - "Les zones 1 et 2 ne sont pas délimitées par une surface grisée : seules les étiquettes et les extrémités de flèches les situent."
+      - "Le rôle des billes jaunes (cibles suivantes ou obstacles) n'est pas précisé ; l'énoncé parle de « six billes » empochées mais le schéma montre, en plus de la blanche et de la noire, seulement quatre billes colorées (une rouge, trois jaunes)."
+      - "Pas de pastille Billard de bronze visible sur la page."
+  - id: entrainement-p22-e8
+    kind: exercise
+    sheet: "Le coulé"
+    exercise: 8
+    caption: "Faire avancer cinq fois la bille blanche au-delà du trait tracé sur la surface de jeu, afin de la replacer pour jouer la bille noire."
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: w, color: white, at: [2.01, 3.59], role: cue}
+      - {id: b1, color: black, at: [1.0, 0.42]}
+      - {id: r1, color: red, at: [1.85, 1.57]}
+      - {id: r2, color: red, at: [0.28, 2.53]}
+      - {id: y1, color: yellow, at: [1.01, 2.02], label: "X5"}
+    ghosts:
+      - {id: g1, at: [2.01, 3.59], role: cue_start}
+      - {id: g2, at: [1.12, 2.23], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[2.01, 3.59], [1.12, 2.23]], bounces: []}
+      - {id: a2, ball: y1, kind: object, path: [[1.01, 2.02], [0.2, 0.26]], to: tl}
+      - {id: a3, ball: w, kind: cue, path: [[1.12, 2.23], [0.2, 1.61], [1.91, 0.47]], bounces: [left]}
+    sequence:
+      - {step: 1, cue: w, hit: y1, contact: three_quarter, pocket: tl, repeat: 5}
+    inset:
+      contact: three_quarter
+      tip_point: upper_center
+      bridge_height: unknown
+    annotations:
+      - "X5 : la blanche doit dépasser le trait cinq fois (taux 3/5)"
+      - "Le trait à franchir est la ligne verticale pleine tracée sur la surface de jeu (environ x = 1,83)"
+    description: >-
+      Table vue de dessus, tête à gauche. Une ligne verticale pleine (le « trait tracé sur la surface de jeu »)
+      à environ 1,83 case du bord gauche. Une bille noire vers (1 ; 0,4), proche de la poche haut gauche. Une
+      bille rouge sur le trait (environ 1,85 ; 1,6), une autre bille rouge près de la bande gauche (environ 0,3 ;
+      2,5). Une bille jaune vers (1 ; 2) à laquelle est associé l'indice « X5 » (écrit près de la fin de la flèche
+      de la blanche, à droite du trait). Un cercle creux pointillé en bas (environ 2 ; 3,6), juste à droite du trait,
+      indique où poser la blanche ; elle monte vers la gauche jusqu'à un cercle creux d'impact collé sous la jaune,
+      côté droit (environ 1,1 ; 2,2). La jaune part vers le haut gauche, vers la poche haut gauche. La blanche,
+      après le contact, continue vers la gauche, touche la bande gauche vers (0,2 ; 1,6), puis remonte vers le haut
+      droit et s'arrête juste après le trait vers (1,9 ; 0,5), flèche pleine : elle a avancé au-delà du trait. Petit
+      schéma en bas à droite : blanche en avant, rouge derrière et décalée vers la droite (recouvrement important),
+      point bleu au-dessus du centre de la blanche, trait bleu-vert sous les billes.
+    uncertainties:
+      - "Le trait tracé est lu à x ≈ 1.83 (et non 2.0)."
+      - "La blanche est le petit cercle clair à points rouges (cercle de départ) ; sa position initiale est confondue avec le cercle creux numéroté de départ, et le cercle d'impact est déduit du cercle creux pointillé."
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé ; trait bleu-vert sous les billes de l'inset non commenté."
+      - "Quantité de bille de l'inset estimée à trois quarts de bille d'après le recouvrement (non légendé) ; point bleu au-dessus du centre (upper_center)."
+      - "L'indice « X5 » est écrit à droite du trait, près de la pointe de la flèche, et non collé à une bille : rattaché à la jaune par convention."
+      - "Le point de rebond sur la bande gauche est lu à x ≈ 0.2 (la bande est à x = 0, à ≈ 0,15 case près)."
+      - "La destination de la flèche de la jaune est lue vers la poche haut gauche (à ≈ 0,15 case près) ; la fin de la flèche de la blanche (1,9 ; 0,5) est celle de la pointe, non d'un point d'arrêt mesuré."
+      - "Le schéma ne montre pas la trajectoire vers la noire (objectif du coup suivant)."
+      - "Pas de pastille Billard de bronze visible sur la page."

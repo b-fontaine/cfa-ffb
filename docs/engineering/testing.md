@@ -62,6 +62,18 @@ l'horloge au 12/10/2026. Les scénarios d'interface couvrent aussi :
 - le navigateur sans persistance durable (`StorageStatus` volatile) ;
 - l'import refusé (version inconnue, passage invalide) sans écriture partielle.
 
+Le schéma animé de la fiche d'un exercice (`exercise_sheet_diagram.feature`)
+est piloté par l'application complète : le schéma, la quantité de bille et le
+chevalet (une seule fois, par la carte de la fiche) en fr et en, lecture / pause, vitesses, deux schémas pour le rejet
+naturel, exercice sans schéma, schémas illisibles (le dépôt de schémas est
+remplacé à la frontière par `the diagram library is empty` / `cannot be read`).
+Le comportement interne du lecteur (positions à des instants donnés, mouvement
+réduit, échelle de texte) reste figé par `exercise_diagram.feature`, les tests de
+widget et de peinture (le thème sombre et le texte à 200 % relèvent de ces
+tests unitaires, pas de scénarios BDD ; les bornes exactes de durée de la
+timeline aussi, `exercise_diagram.feature` n'en bornant qu'une à ×1) ; les tailles (portrait, paysage, texte à 200 %) par
+`exercise_diagram_view_test.dart`.
+
 Les Bloc de la présentation ont chacun un `blocTest` dans
 `test/unit/features/<feature>/presentation/`. Les composants de `shared/ui` ont un
 test de widget (`test/unit/shared/ui/`) vérifiant cibles >= 48 dp et sémantique.
@@ -79,6 +91,13 @@ page publique a aussi un use case Widgetbook
 fournissant un `RepositoryHarness` ; aucune règle de repository ne se teste en
 double. Les spécificités drift (horodatages, suppression logique physique,
 rollback, migrations, ouverture fichier) sont dans `test/unit/shared/persistence/`.
+
+Les diagrammes ont leurs propres contrats sur les **vrais** fichiers
+(`test/contract/`) : `diagrammes_format_test.dart` (chaque transcription passe
+le validateur, le parseur et le mapper de production sans perte, et la timeline
+se construit) et `catalogue_diagrammes_test.dart` (chaque exercice du catalogue
+d'entraînement reçoit son schéma par `sheet` + `exercise` ; la liste de ceux qui
+n'en ont pas est explicite).
 
 ## Conventions
 

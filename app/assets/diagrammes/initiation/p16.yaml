@@ -1,0 +1,57 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 16, rank: S}
+diagrams:
+  - id: initiation-p16-e1
+    kind: initiation
+    sheet: "Le coup en angle droit"
+    caption: "Empocher une bille en réalisant un coup en angle droit."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [4.0, 1.8]}
+      - {id: w, color: white, at: [3.48, 2.21], role: cue}
+    ghosts:
+      - {id: gi, at: [4.0, 2.0], role: impact, for: w}
+      - {id: gc2, at: [3.64, 2.42], role: cue_start, for: w}
+      - {id: gc3, at: [3.85, 2.59], role: cue_start, for: w}
+    arrows:
+      - {id: a1, ball: r1, kind: object, path: [[4.0, 1.8], [4.0, 0.15]], to: tm, note: "la bille rouge part vers la poche du milieu du haut (tm)"}
+      - {id: a2, ball: w, kind: cue, path: [[4.0, 2.0], [6.0, 2.0]], bounces: [], note: "trajectoire de la blanche après l'impact, à angle droit de celle de la rouge"}
+      - {id: a3, ball: w, kind: cue, path: [[3.48, 2.21], [4.0, 2.0]], bounces: [], note: "approche de la blanche depuis la position 1"}
+      - {id: a4, ball: w, kind: cue, path: [[3.64, 2.42], [4.0, 2.0]], bounces: [], note: "approche de la blanche depuis la position 2"}
+      - {id: a5, ball: w, kind: cue, path: [[3.85, 2.59], [4.0, 2.0]], bounces: [], note: "approche de la blanche depuis la position 3"}
+    sequence:
+      - {step: 1, cue: w, from: w, hit: r1, pocket: tm}
+      - {step: 2, cue: w, from: gc2, hit: r1, pocket: tm}
+      - {step: 3, cue: w, from: gc3, hit: r1, pocket: tm}
+    inset:
+      contact: none
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "Objectif : empocher une bille au milieu, en obtenant un angle droit entre les trajectoires des deux billes après l'impact."
+      - "Consignes à l'élève : exécuter le coup selon une quantité de bille choisie, excepté pleine bille ; utiliser une attaque au centre ; exécuter le coup à l'identique du carreau (l'amplitude et la vitesse doivent être particulièrement adaptées pour que la bille blanche glisse jusqu'à l'impact) ; exécuter le coup avec des quantités de billes différentes."
+      - "Conseils à l'animateur : positionner les billes de telle sorte que la distance, entre elles, ne soit pas trop importante, afin de conserver plus facilement le glissement de la bille blanche jusqu'à l'impact ; un coup peu puissant risque de faire rouler la bille blanche après impact et réduire son angle de déviation ; un coup trop puissant risque d'ouvrir davantage l'angle ; cette trajectoire résulte des différences de poids et de taille entre les deux billes."
+    description: >-
+      Table vue de dessus, départ à gauche. Une seule bille posée : une rouge au centre de la table, un
+      peu à gauche de la poche du milieu du haut (tm) (x ≈ 4,0 ; y ≈ 1,8). Aucune bille blanche
+      n'est dessinée : elle est modélisée par w à la première position de départ. Une flèche pleine part de la rouge verticalement vers la poche tm
+      (la bille cible). Une seconde flèche pleine horizontale part du point de contact, juste sous la
+      rouge (x ≈ 4,0 ; y ≈ 2,0), vers la droite jusqu'à x ≈ 6 : c'est la trajectoire de la blanche
+      après l'impact, à angle droit de celle de la rouge. Trois cercles creux pointillés avec points
+      rouges, en bas à gauche de la rouge, indiquent trois positions de départ de la blanche
+      (x ≈ 3,4 ; 3,6 ; 3,8 et y ≈ 2,2 ; 2,4 ; 2,6), reliées par trois traits au point de contact : ce
+      sont trois quantités de bille différentes. À droite (x ≈ 6,7 ; y ≈ 2,9), un schéma d'attaque : une
+      grosse bille blanche avec un point bleu au centre, une croix de repérage et un trait turquoise
+      sous la bille (attaque au centre, chevalet sur la surface de jeu). Une ligne de départ verticale à
+      x ≈ 1,75. La pastille Billard de bronze n'est pas présente ; l'onglet bleu indique « FICHE
+      INITIATION Le coup en angle droit ».
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,75 (et non 2,0) sur le schéma."
+      - "Bille blanche w placée par convention sur le premier cercle creux (comme p05) ; les deux autres cercles sont des fantômes cue_start."
+      - "Aucune bille blanche dessinée : les trois cercles creux sont lus comme positions de départ de la blanche pour trois quantités différentes ; le point d'impact (4,0 ; 2,0) est déduit de la convergence des traits et de l'angle droit."
+      - "Positions des trois cercles creux mesurées à environ 0,15 case."
+      - "Le schéma d'attaque à droite ne montre pas de quantité de bille (une seule bille) : contact: none par défaut ; l'attaque au centre vient du point bleu et du texte."
+      - "Type de chevalet non indiqué dans le texte ; seule la ligne turquoise sous la bille évoque la surface de jeu."
+      - "Pas de taux de réussite ni de nombre de séances sur cette page."

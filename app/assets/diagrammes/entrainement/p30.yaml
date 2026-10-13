@@ -1,0 +1,105 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 30, rank: S}
+diagrams:
+  - id: entrainement-p30-e7
+    kind: exercise
+    sheet: "Le rétro"
+    exercise: 7
+    caption: "Empocher six billes, en effectuant un rétro pour replacer la bille blanche trois fois dans chaque zone, afin de jouer la bille noire."
+    success_rate: [4, 6]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: b1, color: black, at: [1.0, 1.0]}
+      - {id: r1, color: red, at: [4.01, 1.0]}
+      - {id: y1, color: yellow, at: [3.36, 1.0]}
+      - {id: y2, color: yellow, at: [3.01, 1.34]}
+      - {id: y3, color: yellow, at: [2.01, 2.48]}
+      - {id: w, color: white, at: [4.35, 3.32], role: cue}
+    ghosts:
+      - {id: g1, at: [4.35, 3.32], role: cue_start}
+      - {id: g2, at: [4.02, 1.22], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[4.35, 3.32], [4.02, 1.22]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[4.01, 1.0], [4.0, 0.0]], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[4.02, 1.22], [2.11, 3.42]], bounces: []}
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: three_quarter, pocket: tm, repeat: 6}
+    inset:
+      contact: three_quarter
+      tip_point: below_center
+      bridge_height: unknown
+    annotations:
+      - "Zone 1 x3 : la blanche doit être replacée trois fois dans la zone 1 (étiquette lue vers 3,0 ; 2,2)."
+      - "Zone 2 x3 : la blanche doit être replacée trois fois dans la zone 2 (étiquette lue vers 1,6 ; 3,4, à gauche du trait vertical)."
+      - "Un trait vertical plein est tracé sur la surface de jeu, de la bande haute à la bande basse."
+    description: >-
+      Table vue de dessus, tête à gauche. Un trait vertical plein est tracé à environ 1,8 case du bord gauche, sur
+      toute la largeur. La bille noire (8) est vers (1 ; 1). Trois billes jaunes : vers (3,4 ; 1), (3 ; 1,3) et
+      (2 ; 2,5). Une bille rouge vers (4 ; 1), juste en dessous de la poche milieu haut ; une flèche pleine la
+      envoie droit vers le haut dans cette poche. Un cercle creux pointillé vers (4,35 ; 3,3) indique où poser la
+      blanche ; elle monte presque droit vers un cercle creux d'impact collé sous la rouge (environ 4 ; 1,2). Après
+      le contact, la blanche revient en rétro vers le bas-gauche (flèche pleine jusque vers 2,1 ; 3,4), sans
+      atteindre le trait vertical : la pointe de la flèche reste à droite du trait. Deux étiquettes : « Zone 1 x3 » vers (3 ; 2,2) et « Zone 2 x3 » vers
+      (1,6 ; 3,4). Petit schéma en bas à droite : la blanche recouvre en grande partie la rouge, dont seul un
+      croissant reste visible à droite (environ trois quarts de bille) ; point bleu en bas de la blanche (sous le
+      centre, effet rétro), trait bleu-vert sous les billes.
+    uncertainties:
+      - "Trait vertical lu à x ≈ 1.83 sur le schéma (et non 2.0)."
+      - "La blanche n'est pas dessinée : sa position initiale est déduite du cercle creux pointillé de départ."
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé ; trait bleu-vert sous les billes de l'inset non commenté."
+      - "Les limites exactes de la zone 1 et de la zone 2 ne sont pas tracées (seulement deux étiquettes) ; zone 2 supposée à gauche du trait vertical, zone 1 supposée à droite."
+      - "Quantité de bille de l'inset estimée à environ trois quarts de bille d'après le recouvrement (non légendé)."
+      - "La fin de la flèche de la blanche (vers 2,1 ; 3,4) est approximative (≈ 0,15 case)."
+      - "La destination de la flèche de la rouge est lue vers la poche milieu haut."
+      - "Pas de pastille Billard de bronze visible sur la page."
+  - id: entrainement-p30-e8
+    kind: exercise
+    sheet: "Le rétro"
+    exercise: 8
+    caption: "Empocher cinq billes en effectuant un rétro, pour replacer la bille blanche au-delà du trait tracé, afin de jouer la bille noire."
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: b1, color: black, at: [0.36, 1.45]}
+      - {id: r1, color: red, at: [3.99, 1.39]}
+      - {id: y1, color: yellow, at: [2.01, 2.0]}
+      - {id: y2, color: yellow, at: [3.0, 2.97]}
+      - {id: w, color: white, at: [4.41, 2.44], role: cue}
+    ghosts:
+      - {id: g1, at: [4.41, 2.44], role: cue_start}
+      - {id: g2, at: [4.0, 1.62], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[4.41, 2.44], [4.0, 1.62]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[3.99, 1.39], [4.0, 0.0]], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[4.0, 1.62], [1.5, 2.87]], bounces: []}
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: half, pocket: tm, repeat: 5}
+    inset:
+      contact: half
+      tip_point: below_center
+      bridge_height: unknown
+    annotations:
+      - "x5 : la situation est répétée cinq fois (taux 3/5), étiquette lue vers (1,2 ; 2,9) au bout de la flèche de la blanche."
+      - "Le trait vertical tracé sur la surface de jeu est la ligne que la blanche doit dépasser après le rétro."
+    description: >-
+      Table vue de dessus, tête à gauche. Un trait vertical plein est tracé à environ 1,8 case du bord gauche, sur
+      toute la largeur. La bille noire (8) est vers (0,4 ; 1,45). Deux billes jaunes : vers (2 ; 2), posée contre le
+      trait, et vers (3 ; 3). Une bille rouge vers (4 ; 1,4), juste sous la poche milieu haut ; une flèche pleine
+      l'envoie droit vers le haut dans cette poche. Un cercle creux pointillé vers (4,4 ; 2,45) indique où poser la
+      blanche ; elle monte vers la gauche vers un cercle creux d'impact collé sous la rouge (environ 4 ; 1,6). Après
+      le contact, la blanche revient en rétro vers le bas-gauche (flèche pleine jusque vers 1,5 ; 2,9), au-delà du
+      trait vertical. L'étiquette « x5 » est près de la pointe de cette flèche. Petit schéma en bas à droite : la
+      blanche recouvre environ la moitié de la rouge, dont un croissant plus large reste visible à droite ; point
+      bleu en bas de la blanche (sous le centre, effet rétro), trait bleu-vert sous les billes.
+    uncertainties:
+      - "Trait vertical lu à x ≈ 1.82 sur le schéma (et non 2.0)."
+      - "La blanche n'est pas dessinée : sa position initiale est déduite du cercle creux pointillé de départ."
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé ; trait bleu-vert sous les billes de l'inset non commenté."
+      - "Quantité de bille de l'inset estimée à environ une demi-bille d'après le recouvrement (non légendé)."
+      - "La fin de la flèche de la blanche (vers 1,5 ; 2,9) est approximative (≈ 0,15 case)."
+      - "La destination de la flèche de la rouge est lue vers la poche milieu haut."
+      - "Pas de pastille Billard de bronze visible sur la page."

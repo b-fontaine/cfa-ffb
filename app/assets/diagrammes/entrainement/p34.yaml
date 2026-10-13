@@ -1,0 +1,105 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 34, rank: S}
+diagrams:
+  - id: entrainement-p34-e5
+    kind: exercise
+    sheet: "Les trajectoires de blanche"
+    exercise: 5
+    caption: "Enchaîner trois replacements différents sur la bille noire, en respectant l'ordre croissant des zones. Répéter trois fois l'exercice."
+    success_rate: [6, 9]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: b1, color: black, at: [1.01, 0.98]}
+      - {id: r1, color: red, at: [2.99, 0.52]}
+      - {id: r2, color: red, at: [2.49, 1.49]}
+      - {id: r3, color: red, at: [2.15, 2.11]}
+      - {id: r4, color: red, at: [1.61, 3.12]}
+      - {id: y1, color: yellow, at: [3.01, 1.98]}
+      - {id: w, color: white, at: [2.27, 3.37], role: cue}
+    ghosts:
+      - {id: g1, at: [2.27, 3.37], role: cue_start}
+      - {id: g2, at: [2.9, 2.18], role: impact, for: w}
+    arrows:
+      - {id: c1, ball: w, kind: cue, path: [[2.27, 3.37], [2.9, 2.18]], bounces: []}
+      - {id: a1, ball: y1, kind: object, path: [[3.01, 1.98], [3.92, 0.17]], to: tm}
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: y1, pocket: tm, repeat: 3}
+    annotations:
+      - "Zone 2 : étiquette lue vers (3,06 ; 1,08), au-dessus de la bille jaune."
+      - "Zone 1 : étiquette lue vers (2,59 ; 1,93), à gauche de la bille jaune."
+      - "Zone 3 : étiquette lue vers (2,17 ; 2,73), sous la rouge la plus proche du trait vertical."
+      - "Trois replacements différents de la blanche sur la bille noire, dans l'ordre des zones 1, 2, 3, puis l'exercice est répété trois fois."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Un trait vertical plein est tracé à environ 1,8 case du
+      bord gauche, sur toute la largeur. La bille noire (8) est vers (1 ; 1). Quatre billes rouges forment une
+      diagonale descendante vers la gauche : (3 ; 0,5), (2,5 ; 1,5), (2,15 ; 2,1) et (1,6 ; 3,1). Une bille jaune
+      est vers (3 ; 2), au centre du schéma. Un cercle creux pointillé avec deux petits points rouges, vers
+      (2,3 ; 3,4), indique où poser la blanche ; un trait plein la relie à la jaune, avec un cercle d'impact
+      pointillé collé en bas à gauche de la jaune (environ 2,9 ; 2,2). Une flèche pleine part de la jaune vers la
+      poche milieu haut (tm). Trois étiquettes de zone, sans contour tracé : « Zone 2 » vers (3,1 ; 1,1),
+      « Zone 1 » vers (2,6 ; 1,9) et « Zone 3 » vers (2,2 ; 2,7). Aucun schéma « quantité de bille » sur cette page.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,83 et non 2,0 comme la convention du FORMAT."
+      - "Les zones 1, 2 et 3 n'ont pas de contour tracé : seules les étiquettes (positions approchées) figurent, donc aucune zone rectangulaire n'est transcrite."
+      - "La blanche n'est pas dessinée en bille pleine : sa position de départ est celle du cercle creux pointillé."
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé (bridge: unknown) ; pas de pastille Billard de bronze ni de « Nombre de séances » visible."
+      - "Le rôle des quatre billes rouges (obstacles ou repères) n'est pas précisé par le texte ; la jaune est lue comme la bille jouée vers tm."
+      - "Le contact (quantité de bille) n'est pas légendé."
+      - "La flèche de la jaune se termine un peu avant la poche milieu haut (arrivée lue vers 3,9 ; 0,2) ; destination lue comme tm."
+      - "Les trois replacements successifs sur la bille noire ne sont pas dessinés : une seule trajectoire est tracée."
+  - id: entrainement-p34-e6
+    kind: exercise
+    sheet: "Les trajectoires de blanche"
+    exercise: 6
+    caption: "Enchaîner cinq replacements différents sur les billes noires, en respectant l'ordre croissant des zones. Répéter trois fois l'exercice."
+    success_rate: [10, 15]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: b1, color: black, at: [7.5, 1.0]}
+      - {id: b2, color: black, at: [1.01, 3.0]}
+      - {id: b3, color: black, at: [4.0, 3.62]}
+      - {id: y1, color: yellow, at: [2.0, 2.01]}
+      - {id: y2, color: yellow, at: [3.61, 2.29]}
+      - {id: y3, color: yellow, at: [4.51, 2.65]}
+      - {id: y4, color: yellow, at: [5.01, 2.0]}
+      - {id: y5, color: yellow, at: [6.46, 2.61]}
+      - {id: r1, color: red, at: [4.0, 1.99]}
+      - {id: w, color: white, at: [5.01, 2.47], role: cue}
+    ghosts:
+      - {id: g1, at: [5.01, 2.47], role: cue_start}
+      - {id: g2, at: [4.22, 2.09], role: impact, for: w}
+    arrows:
+      - {id: c1, ball: w, kind: cue, path: [[5.01, 2.47], [4.22, 2.09]], bounces: []}
+      - {id: a1, ball: r1, kind: object, path: [[4.0, 1.99], [0.15, 0.14]], to: tl}
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: r1, pocket: tl, repeat: 3}
+    annotations:
+      - "Zone 1 : étiquette lue vers (4,15 ; 2,5), sous la rouge."
+      - "Zone 2 : étiquette lue vers (2,86 ; 1,74), sur la trajectoire de la rouge."
+      - "Zone 3 : étiquette lue vers (5,66 ; 2,4), à droite des billes jaunes centrales."
+      - "Zone 4 : étiquette lue vers (1,52 ; 1,12), à gauche du trait vertical, sur la trajectoire de la rouge."
+      - "Zone 5 : étiquette lue vers (7,14 ; 3,0), en bas à droite."
+      - "Cinq replacements différents de la blanche sur les billes noires, dans l'ordre des zones 1 à 5, puis l'exercice est répété trois fois."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Un trait vertical plein est tracé à environ 1,8 case du
+      bord gauche, sur toute la largeur. Trois billes noires (8) : vers (7,5 ; 1), vers (1 ; 3) et vers (4 ; 3,6).
+      Cinq billes jaunes : (2 ; 2), (3,6 ; 2,3), (4,5 ; 2,65), (5 ; 2) et (6,5 ; 2,6). Une bille rouge vers (4 ; 2),
+      sur la ligne médiane de la table. Un cercle creux pointillé avec deux petits points rouges, vers (5 ; 2,5),
+      indique où poser la blanche ; un trait plein la relie à la rouge, avec un cercle d'impact pointillé collé
+      en bas à droite de la rouge (environ 4,2 ; 2,1). Une flèche pleine part de la rouge en diagonale vers la poche
+      haut gauche (tl), en traversant le trait vertical. Cinq étiquettes de zone, sans contour tracé : « Zone 4 »
+      vers (1,5 ; 1,1), « Zone 2 » vers (2,9 ; 1,7), « Zone 1 » vers (4,15 ; 2,5), « Zone 3 » vers (5,7 ; 2,4) et
+      « Zone 5 » vers (7,1 ; 3). Aucun schéma « quantité de bille » sur cette page.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,82 et non 2,0 comme la convention du FORMAT."
+      - "Les zones 1 à 5 n'ont pas de contour tracé : seules les étiquettes (positions approchées) figurent, donc aucune zone rectangulaire n'est transcrite."
+      - "La blanche n'est pas dessinée en bille pleine : sa position de départ est celle du cercle creux pointillé."
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé (bridge: unknown) ; pas de pastille Billard de bronze ni de « Nombre de séances » visible."
+      - "Le rôle des billes jaunes (obstacles ou repères) n'est pas précisé par le texte ; la rouge est lue comme la bille jouée vers tl."
+      - "Le contact (quantité de bille) n'est pas légendé."
+      - "La flèche de la rouge se termine un peu avant la poche haut gauche (arrivée lue vers 0,15 ; 0,15) ; destination lue comme tl."
+      - "Le texte parle de « billes noires » (pluriel) : trois billes noires sont dessinées, mais le lien entre chaque zone et une bille noire précise n'est pas tracé."

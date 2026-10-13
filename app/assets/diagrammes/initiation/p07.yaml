@@ -1,0 +1,55 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 7, rank: S}
+diagrams:
+  - id: initiation-p07-e1
+    kind: initiation
+    sheet: "La quantité demi-bille."
+    caption: "Empocher 2 billes en quantité demi-bille."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [3.97, 1.51]}
+      - {id: w, color: white, at: [2.94, 3.62], role: cue, label: "1"}
+    ghosts:
+      - {id: g1, at: [2.94, 3.62], role: cue_start, label: "1", for: w}
+      - {id: g2, at: [4.46, 2.67], role: cue_start, label: "2", for: w}
+      - {id: g3, at: [3.97, 1.76], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[2.94, 3.55], [3.97, 1.8]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[4.42, 2.6], [3.97, 1.8]], bounces: []}
+      - {id: a3, ball: r1, kind: object, path: [[3.97, 1.51], [3.97, 0.68]], bounces: [], to: tm}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: r1, contact: half, pocket: tm}
+      - {step: 2, cue: w, from: g2, hit: r1, contact: half, pocket: tm}
+    inset:
+      contact: half
+      tip_point: upper_center
+      bridge_height: surface
+    annotations:
+      - "Objectif : « Viser pour empocher en quantité demi-bille. Utiliser un chevalet sur la surface de jeu et un chevalet sur cadre. »"
+      - "Consignes à l'élève : « Viser la tangente de la bille de couleur. » ; « Lors de l'impact entre les billes, le transfert d'énergie est réparti équitablement entre les deux billes. »"
+      - "Deux encarts de quantité de bille : à gauche, la blanche (point bleu du tip au-dessus du centre, ligne turquoise de surface sous la bille) recouvre à moitié une bille rouge placée à sa gauche ; à droite, la blanche (point bleu au centre) recouvre à moitié une bille rouge placée à sa droite."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche, ligne de départ (trait plein vertical) à x vers 1,8. Une seule
+      bille posée : une bille rouge au centre de la largeur de la table, sur l'axe de la poche du milieu du haut (tm), à
+      environ 1,5 case du bord haut. Une flèche pleine part de la bille rouge vers le haut en direction de la poche tm.
+      Deux cercles creux à points rouges marquent les emplacements où poser la bille blanche : un en bas à gauche de la
+      bille rouge (x vers 2,9, y vers 3,6) et un à droite (x vers 4,5, y vers 2,7). De chacun part une ligne fine vers
+      un troisième cercle creux collé sous la bille rouge (position de la blanche à l'impact) : les deux lignes forment un
+      V dont le sommet est sous la bille rouge ; la blanche vise donc le bas de la rouge avec un impact en demi-bille,
+      d'un côté puis de l'autre. Deux encarts de quantité de bille sont dessinés sur la table : à gauche (centre vers
+      x 2,2 ; y 2,9) et à droite (centre vers x 5,85 ; y 2,6). Chacun montre une grosse bille blanche et une grosse bille
+      rouge qui se recouvrent environ à moitié, avec un point bleu (point d'impact du tip), une croix par le centre de la
+      blanche et un trait turquoise sous la bille (surface de la table).
+    uncertainties:
+      - "Aucun numéro d'exercice, aucun taux de réussite, aucun « Nombre de séances » ni pastille Billard de bronze sur cette page."
+      - "Le texte cite deux chevalets (surface de jeu et sur cadre) sans dire lequel va avec quel tir ; bridge: unknown. Hypothèse non vérifiée : l'encart de gauche (point bleu au-dessus du centre) correspond au chevalet sur cadre et celui de droite (point au centre) au chevalet sur la surface."
+      - "Les deux encarts diffèrent (rouge à gauche / à droite, point bleu au-dessus du centre / au centre) mais le champ inset ne décrit qu'un seul encart : la valeur retenue est celle de l'encart de gauche ; celui de droite a tip_point: center."
+      - "La bille blanche n'est pas dessinée sur la table : elle est posée dans `balls` au premier emplacement (g1, convention du dossier), le schéma ne montre que les cercles creux."
+      - "Le lien entre chaque encart et chaque tir (1 = gauche, 2 = droite) est une lecture de position ; l'ordre d'exécution n'est pas indiqué, les labels 1 et 2 sont ajoutés pour l'animation."
+      - "La poche visée (tm) est déduite de l'alignement de la flèche rouge ; la flèche s'arrête à y ≈ 0,7, avant la poche."
+      - "La position du cercle d'impact (3,97 ; 1,76) est estimée : le cercle est partiellement caché sous la bille rouge ; la blanche n'est pas posée sur la table."
+      - "Les encarts sont des superpositions grandes (rayon ≈ 0,4 case) hors échelle de la table ; ils ne sont pas des billes de la table."
+      - "Ligne de départ mesurée à x ≈ 1,8 (FORMAT : 2,0 [Prop])."

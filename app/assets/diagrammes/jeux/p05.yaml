@@ -1,0 +1,45 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 5, rank: S}
+diagrams:
+  - id: jeux-p05-j1
+    kind: game
+    sheet: "La puissance"
+    caption: "Objectif : Développer l'apprentissage de la puissance."
+    bridge: none
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.79, 0.41]}
+      - {id: r2, color: red, at: [1.08, 0.41]}
+      - {id: r3, color: red, at: [0.58, 0.52]}
+      - {id: r4, color: red, at: [0.88, 0.67]}
+      - {id: w, color: white, at: [0.99, 2.0], role: cue}
+      - {id: b, color: black, at: [1.82, 2.0], label: "8"}
+      - {id: y1, color: yellow, at: [0.87, 3.60]}
+      - {id: y2, color: yellow, at: [1.15, 3.60]}
+      - {id: y3, color: yellow, at: [0.79, 3.88]}
+      - {id: y4, color: yellow, at: [1.07, 3.88]}
+    arrows:
+      - {id: a1, ball: b, kind: object, path: [[1.82, 2.0], [5.86, 2.0]], bounces: []}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: b}
+    annotations:
+      - "Ligne de tir : trait plein vertical ; chaque tir est effectué depuis la ligne tracée sur la surface de jeu."
+      - "Quatre billes rouges et quatre billes jaunes (4 billes par joueur ou équipe), regroupées près de la bande de gauche."
+      - "Règles (texte du PDF) : jeu similaire à la pétanque, deux joueurs ou équipes de deux ; le premier joueur propulse la bille noire, grâce à la bille blanche, au-delà du trait, puis place une de ses billes au plus près de la bille noire ; toute bille empochée ou revenue derrière le trait est retirée ; le premier à 8 points gagne."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Un trait plein vertical (ligne de tir) coupe la table
+      dans la zone de gauche, à environ 1,8 case de la bande de gauche. Quatre billes rouges sont groupées en
+      haut à gauche (x entre 0,6 et 1,1, y entre 0,4 et 0,7) et quatre billes jaunes en bas à gauche
+      (x entre 0,8 et 1,15, y entre 3,6 et 3,9), toutes en arrière de la ligne. Sur l'axe horizontal médian
+      (y = 2), la bille blanche est à x = 1 environ, en arrière de la ligne, et la bille noire (marquée 8) est
+      posée sur la ligne, à x = 1,8. Une flèche pleine part de la bille noire vers la droite, le long de l'axe
+      médian, jusqu'à x = 5,9 environ : elle figure la trajectoire de la bille noire, que le texte dit propulsée
+      au-delà du trait grâce à la bille blanche. Aucune pastille Billard de bronze, aucun taux de réussite,
+      aucun type de chevalet.
+    uncertainties:
+      - "La ligne de tir est lue à x ≈ 1,82 (et non 2,0 comme la valeur par défaut [Prop] du FORMAT)."
+      - "La bille blanche est dessinée comme un cercle blanc cerclé avec de petits points rouges (symbole de bille de choc / position), pas comme une bille pleine ; traitée comme bille blanche posée."
+      - "Les billes rouges et jaunes se touchent presque : positions à ± 0,1 case."
+      - "La flèche est lue comme trajectoire de la bille noire ; sa pointe à x ≈ 5,86 est indicative, la distance exacte n'est pas une consigne du texte."

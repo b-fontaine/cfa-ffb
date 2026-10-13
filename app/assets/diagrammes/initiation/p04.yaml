@@ -1,0 +1,46 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 4, rank: S}
+diagrams:
+  - id: initiation-p04-e1
+    kind: initiation
+    sheet: "Posture, visée et coup de queue."
+    caption: "Empocher 6 billes avec un chevalet sur la surface de jeu."
+    bridge: surface
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.17, 3.85]}
+      - {id: r2, color: red, at: [7.85, 3.79]}
+    ghosts:
+      - {id: g1, at: [2.0, 0.44], role: cue_start}
+      - {id: g2, at: [3.02, 0.45], role: cue_start}
+      - {id: g3, at: [4.0, 0.45], role: cue_start}
+    arrows:
+      - {id: a1, kind: indication, path: [[2.0, 0.44], [0.33, 3.59]], to: bl}
+      - {id: a2, kind: indication, path: [[2.0, 0.44], [7.6, 3.59]], to: br}
+    zones: []
+    inset:
+      contact: full
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "Objectifs : adopter une posture permettant la pratique du Billard ; exécuter un coup de queue pour empocher une bille."
+      - "Consignes à l'élève : adapter le chevalet afin de le positionner sur la surface de jeu ; penser à bien immobiliser le corps lors du tir, ne pas se relever trop tôt."
+      - "Conseils à l'animateur : vérifier que le joueur aligne visuellement la queue, la trajectoire, la bille blanche et la bille de but ; écartement des pieds pour une bonne stabilité ; main droite au-dessus du pied droit ; tête au-dessus de la queue de billard ; positionnement du chevalet ; alignement queue-trajectoire ; maintien du talon de la queue ; souplesse du poignet ; immobilisation du corps ; replacer la bille blanche près chaque tir."
+    description: >-
+      Table vue de dessus, départ à gauche, ligne de départ (trait plein vertical) à x environ 1,8. Trois petits
+      cercles creux pointillés alignés en haut de la table, à y environ 0,45 et x environ 2,0 ; 3,0 ; 4,0
+      (emplacements de départ de la bille, sans numéro). Deux billes rouges sont posées à l'entrée des poches
+      d'angle du bas : l'une près de la poche bas gauche (bl, environ 0,2 ; 3,85), l'autre près de la poche bas
+      droite (br, environ 7,85 ; 3,8). Deux flèches fines partent du premier cercle (x environ 2,0) : l'une vers
+      la poche bas gauche, l'autre en diagonale vers la poche bas droite. L'énoncé demande d'empocher 6 billes ;
+      le schéma ne précise pas comment ce total se rapporte aux cercles et aux billes dessinés. Petit schéma en bas à droite (sur la table) : bille
+      blanche de face, point bleu au centre, arc rouge au sommet, viseur en croix, trait turquoise sous la bille
+      (chevalet sur la surface de jeu).
+    uncertainties:
+      - "Aucune bille blanche n'est dessinée sur la table : les trois cercles creux sont lus comme emplacements où poser la blanche ; le schéma ne dit pas explicitement qui est la bille empochée."
+      - "Seules deux flèches sont dessinées, depuis le premier cercle ; le lien entre les trois cercles, les deux billes rouges et le total de 6 billes est une hypothèse de lecture."
+      - "Les petits points rouges autour de chaque cercle creux ne sont pas interprétés."
+      - "Ligne de départ lue à x ≈ 1,8 (et non 2,0 comme dans FORMAT.md)."
+      - "Pas de taux de réussite, de nombre de séances ni de pastille Billard de bronze visibles sur cette page."
+      - "Hauteur du chevalet et point d'impact du tip dans l'inset : lus sur un petit dessin, interprétation approximative."

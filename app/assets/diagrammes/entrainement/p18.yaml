@@ -1,0 +1,99 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 18, rank: S}
+diagrams:
+  - id: entrainement-p18-e3
+    kind: exercise
+    sheet: "Le rejet naturel"
+    exercise: 3
+    caption: "A l’aide d’un rejet naturel, replacer cinq fois la bille blanche afin de jouer la bille la bille noire."
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [4.53, 1.0]}
+      - {id: r1, color: red, at: [5.01, 2.49]}
+      - {id: b1, color: black, at: [5.99, 3.67]}
+      - {id: w, color: white, at: [5.99, 2.0], role: cue}
+    ghosts:
+      - {id: g1, at: [5.99, 2.0], role: cue_start, for: w}
+      - {id: g2, at: [4.63, 1.2], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[5.99, 2.0], [4.63, 1.2]], bounces: []}
+      - {id: a2, ball: y1, kind: object, path: [[4.53, 1.0], [4.1, 0.21]], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[4.63, 1.2], [0.18, 2.34], [4.61, 3.53]], bounces: [left]}
+    sequence:
+      - {step: 1, cue: w, hit: y1, contact: half, pocket: tm, repeat: 5}
+    inset:
+      contact: half
+      tip_point: upper_center
+      bridge_height: unknown
+    annotations: ["x5 près de la pointe de la flèche finale de la blanche : la situation est répétée 5 fois"]
+    description: >-
+      Table en vue de dessus, départ à gauche. Une bille jaune vers le milieu haut de la table (environ 4,5 cases
+      du bord gauche, 1 case du bord haut), une bille rouge vers le centre (environ 5 cases, 2,5 cases) et la bille
+      noire en bas (environ 6 cases, 3,7 cases). Un cercle creux pointillé marque l'emplacement où poser la
+      blanche (environ 6 cases, 2 cases). De là, la blanche monte vers la bille jaune (cercle creux d'impact collé
+      sous la jaune, légèrement à droite). La jaune part en ligne droite vers la poche milieu haut. La blanche,
+      après le contact, repart vers la bande gauche (rejet naturel), la touche à environ 2,3 cases du bord haut
+      puis revient vers le bas-droite et s'arrête (pointe de flèche) à environ 4,6 cases du bord gauche et 3,5
+      cases du bord haut, avec la mention « x5 ». Le petit schéma en haut à droite
+      montre la blanche et la bille rouge qui se recouvrent environ à moitié, point bleu un peu au-dessus du
+      centre de la blanche, trait bleu-vert sous les billes.
+    uncertainties:
+      - "L'énoncé du PDF contient la répétition « la bille la bille noire » (conservée mot pour mot) ; la bille visée en fin de trajectoire n'est pas nommée plus précisément."
+      - "La blanche n'est pas dessinée sur la table : par convention elle est posée (w) sur le cercle creux pointillé à deux points rouges, qui marque son emplacement de départ ; la jaune est la bille de contact, la noire n'est pas touchée par la trajectoire."
+      - "Type de chevalet non indiqué dans l'énoncé (trait bleu-vert sous les billes de l'inset, non commenté)."
+      - "Quantité de bille de l'inset lue comme demi-bille (recouvrement ≈ 50 %), non légendée ; angle de coupe mesuré ≈ 30°, cohérent."
+      - "Point de contact du tip : point bleu environ une demi-rayon au-dessus du centre de la blanche (upper_center), non légendé."
+      - "Ligne de départ lue à x ≈ 1.83 sur le schéma (et non 2.0)."
+      - "Le point de rebond sur la bande gauche est lu à x ≈ 0.18 (extrémité du trait au bord du schéma), précision ≈ 0,15 case."
+      - "Position de la pointe de flèche finale de la blanche et des cercles creux lue à ≈ 0,15 case près."
+  - id: entrainement-p18-e4
+    kind: exercise
+    sheet: "Le rejet naturel"
+    exercise: 4
+    caption: "A l’aide d’un rejet naturel, replacer cinq fois la bille blanche afin de jouer la bille la bille noire."
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: b1, color: black, at: [6.0, 0.54]}
+      - {id: y1, color: yellow, at: [5.01, 1.24]}
+      - {id: r1, color: red, at: [4.0, 1.5]}
+      - {id: w, color: white, at: [5.01, 3.01], role: cue}
+    ghosts:
+      - {id: g1, at: [5.01, 3.01], role: cue_start, for: w}
+      - {id: g2, at: [4.0, 1.73], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[5.01, 3.01], [4.0, 1.73]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[4.0, 1.5], [4.0, 0.22]], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[4.0, 1.73], [0.16, 1.23], [3.55, 0.83]], bounces: [left]}
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: half, pocket: tm, repeat: 5}
+    inset:
+      contact: half
+      tip_point: upper_center
+      bridge_height: unknown
+    annotations: ["x5 près de la pointe de la flèche finale de la blanche : la situation est répétée 5 fois"]
+    description: >-
+      Table en vue de dessus, départ à gauche. La bille noire est en haut (environ 6 cases du bord gauche,
+      0,5 case du bord haut), une bille jaune (environ 5 cases, 1,2 case) et une bille rouge (environ 4 cases,
+      1,5 case) juste sous l'axe de la poche milieu haut. Un cercle creux pointillé marque l'emplacement où poser
+      la blanche (environ 5 cases, 3 cases). De là, la blanche monte vers la rouge (cercle creux d'impact collé
+      sous la rouge). La rouge part en ligne droite verticale vers la poche milieu haut. La blanche, après le
+      contact, repart vers la bande gauche (rejet naturel), la touche à environ 1,2 case du bord haut puis revient
+      vers la droite et s'arrête (pointe de flèche) à environ 3,5 cases du bord gauche et 0,8 case du bord haut,
+      avec la mention « x5 ». Le petit schéma en bas à droite montre la blanche et la bille rouge qui se
+      recouvrent environ à moitié, point bleu un peu au-dessus du centre de la blanche, trait bleu-vert sous les
+      billes.
+    uncertainties:
+      - "L'énoncé du PDF contient la répétition « la bille la bille noire » (conservée mot pour mot) ; la trajectoire de la blanche ne touche pas la noire dans le schéma."
+      - "La blanche n'est pas dessinée sur la table : par convention elle est posée (w) sur le cercle creux pointillé à deux points rouges, qui marque son emplacement de départ."
+      - "Type de chevalet non indiqué dans l'énoncé (trait bleu-vert sous les billes de l'inset, non commenté)."
+      - "Quantité de bille de l'inset lue comme demi-bille (recouvrement ≈ 50 %), non légendée ; l'angle de coupe de la trajectoire (≈ 37°) est un peu plus fin."
+      - "Point de contact du tip : point bleu environ une demi-rayon au-dessus du centre de la blanche (upper_center), non légendé."
+      - "Ligne de départ lue à x ≈ 1.83 sur le schéma (et non 2.0)."
+      - "Le point de rebond sur la bande gauche est lu à x ≈ 0.16 (extrémité du trait au bord du schéma), précision ≈ 0,15 case."
+      - "Position de la pointe de flèche finale de la blanche et des cercles creux lue à ≈ 0,15 case près."

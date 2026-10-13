@@ -1,0 +1,107 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 1, rank: S}
+diagrams:
+  - id: entrainement-p01-e1
+    kind: exercise
+    sheet: "La puissance"
+    exercise: 1
+    caption: "Empocher trois fois trois billes avec un chevalet sur cadre. La bille blanche ne doit pas sortir de la zone grise après impact."
+    success_rate: [7, 9]
+    bridge: frame
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.16, 0.19], label: "x3"}
+      - {id: r2, color: red, at: [3.98, 0.19], label: "x3"}
+      - {id: r3, color: red, at: [7.85, 0.19], label: "x3"}
+      - {id: y1, color: yellow, at: [1.32, 2.04]}
+      - {id: y2, color: yellow, at: [2.06, 2.04]}
+      - {id: y3, color: yellow, at: [3.13, 2.04]}
+      - {id: y4, color: yellow, at: [3.76, 2.04]}
+      - {id: y5, color: yellow, at: [4.81, 2.04]}
+      - {id: y6, color: yellow, at: [5.71, 2.04]}
+      - {id: w, color: white, at: [2.99, 3.65], role: cue}
+    ghosts: []
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[2.99, 3.65], [0.37, 0.44]], bounces: [], to: tl}
+      - {id: a2, ball: w, kind: cue, path: [[2.99, 3.65], [3.93, 0.49]], bounces: [], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[2.99, 3.65], [7.63, 0.39]], bounces: [], to: tr}
+    zones:
+      - {id: z1, shape: rect, from: [0.07, 0.08], to: [0.98, 1.0], label: "zone grise"}
+      - {id: z2, shape: rect, from: [3.47, 0.08], to: [4.49, 1.0], label: "zone grise"}
+      - {id: z3, shape: rect, from: [6.96, 0.08], to: [7.92, 1.0], label: "zone grise"}
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: none, pocket: tl, repeat: 3}
+      - {step: 2, cue: w, hit: r2, contact: none, pocket: tm, repeat: 3}
+      - {step: 3, cue: w, hit: r3, contact: none, pocket: tr, repeat: 3}
+    inset:
+      contact: none
+      tip_point: upper_center
+      bridge_height: surface
+    annotations:
+      - "x3 à côté de chacune des trois billes rouges."
+      - "Nombre de séances : 1 à 2. Niveau 1."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Trois billes rouges sont posées au ras du haut de la table,
+      chacune dans une zone grisée (coin haut gauche, milieu du haut, coin haut droit) et chacune marquée « x3 ».
+      Six billes jaunes forment trois paires alignées horizontalement à mi-largeur (y vers 2,0), à x vers 1,3 et 2,1,
+      3,1 et 3,8, 4,8 et 5,7. La bille blanche (cercle creux à points rouges) est en bas, à x vers 3,0.
+      Trois flèches partent de la blanche : l'une vers la bille rouge de gauche, en passant entre les deux jaunes
+      de la première paire, l'une vers la bille rouge du milieu entre les deux jaunes de la deuxième paire, l'une vers la bille rouge de droite entre les
+      deux jaunes de la troisième paire. La ligne de départ (trait plein vertical) est visible. En bas à droite, l'encart
+      montre une grosse bille blanche avec le point bleu du tip au-dessus du centre (environ à mi-rayon), une ligne
+      horizontale par le centre et une ligne turquoise sous la bille (surface de la table).
+    uncertainties:
+      - "Ligne de départ mesurée à x ≈ 1,8 (FORMAT : 2,0 [Prop])."
+      - "Le rôle des billes jaunes (obstacles à passer entre ou billes à toucher) n'est pas précisé par le texte ; le schéma montre seulement la blanche passant entre chaque paire."
+      - "Les poches visées (tl, tm, tr) sont déduites de la position des billes rouges au ras des poches ; le texte ne les nomme pas."
+      - "L'ordre d'exécution des trois tirs n'est pas indiqué."
+      - "La bille blanche est dessinée en cercle creux ; la position y ≈ 3,65 est approximative, le point bleu à mi-rayon au-dessus du centre est une estimation."
+  - id: entrainement-p01-e2
+    kind: exercise
+    sheet: "La puissance"
+    exercise: 2
+    caption: "Empocher deux fois cinq billes avec un chevalet sur cadre. La bille blanche ne doit pas sortir de la zone grise après impact."
+    success_rate: [5, 10]
+    bridge: frame
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [0.14, 0.18], label: "x5"}
+      - {id: y2, color: yellow, at: [0.14, 3.81], label: "x5"}
+      - {id: r1, color: red, at: [1.96, 0.37]}
+      - {id: r2, color: red, at: [1.96, 0.98]}
+      - {id: r3, color: red, at: [3.97, 2.51]}
+      - {id: r4, color: red, at: [3.97, 3.19]}
+      - {id: w, color: white, at: [7.37, 2.0], role: cue}
+    ghosts: []
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[7.37, 2.0], [0.38, 0.29]], bounces: [], to: tl}
+      - {id: a2, ball: w, kind: cue, path: [[7.37, 2.0], [0.38, 3.67]], bounces: [], to: bl}
+    zones:
+      - {id: z1, shape: rect, from: [0.08, 0.09], to: [0.97, 0.99], label: "zone grise"}
+      - {id: z2, shape: rect, from: [0.08, 3.0], to: [0.97, 3.92], label: "zone grise"}
+    sequence:
+      - {step: 1, cue: w, hit: y1, contact: none, pocket: tl, repeat: 5}
+      - {step: 2, cue: w, hit: y2, contact: none, pocket: bl, repeat: 5}
+    inset:
+      contact: none
+      tip_point: upper_center
+      bridge_height: surface
+    annotations:
+      - "x5 à côté de chacune des deux billes jaunes."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Deux billes jaunes sont posées dans les coins gauches,
+      chacune dans une zone grisée (haut gauche et bas gauche) et marquée « x5 ». Quatre billes rouges forment
+      deux paires verticales : deux à x vers 2,0 en haut (y vers 0,4 et 1,0, sur la ligne de départ) et deux
+      à x vers 4,0 en bas (y vers 2,5 et 3,2). La bille blanche (cercle creux à points rouges) est à droite,
+      à mi-largeur (x vers 7,4, y vers 2,0). Deux flèches partent de la blanche : l'une vers la bille jaune du haut
+      en passant entre les deux rouges de la paire de gauche, l'autre vers la bille jaune du bas en passant entre
+      les deux rouges de la paire du milieu. L'encart en bas à droite est identique à l'exercice 1 (bille blanche, point bleu au-dessus du centre,
+      ligne turquoise sous la bille).
+    uncertainties:
+      - "Ligne de départ mesurée à x ≈ 1,8 (FORMAT : 2,0 [Prop]) ; les deux billes rouges du haut sont posées sur cette ligne."
+      - "Le rôle des billes rouges (obstacles à passer entre ou billes à toucher) n'est pas précisé par le texte."
+      - "Les poches visées (tl, bl) sont déduites de la position des billes jaunes au ras des poches ; le texte ne les nomme pas."
+      - "L'ordre d'exécution des deux séries de cinq tirs n'est pas indiqué."
+      - "Pas de « Nombre de séances » affiché pour l'exercice 2."

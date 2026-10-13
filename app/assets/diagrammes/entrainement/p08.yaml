@@ -1,0 +1,99 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 8, rank: S}
+diagrams:
+  - id: entrainement-p08-e3
+    kind: exercise
+    sheet: "La quantité trois-quarts"
+    exercise: 3
+    caption: "Empocher huit billes en quantité trois-quarts avec un chevalet sur la surface de jeu."
+    success_rate: [6, 8]
+    bridge: surface
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [2.0, 0.9], label: "x4"}
+      - {id: r1, color: red, at: [2.0, 3.1], label: "x4"}
+      - {id: w, color: white, at: [4.0, 2.0], role: cue}
+    ghosts:
+      - {id: gi1, at: [2.2, 1.0], role: impact, for: w}
+      - {id: gi2, at: [2.2, 3.05], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[4.0, 2.0], [2.2, 1.0]], bounces: []}
+      - {id: a2, ball: y1, kind: object, path: [[2.0, 0.9], [0.0, 0.0]], to: tl}
+      - {id: a3, ball: w, kind: cue, path: [[4.0, 2.0], [2.2, 3.05]], bounces: []}
+      - {id: a4, ball: r1, kind: object, path: [[2.0, 3.1], [0.0, 4.0]], to: bl}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: y1, contact: three_quarter, pocket: tl, repeat: 4}
+      - {step: 2, cue: w, hit: r1, contact: three_quarter, pocket: bl, repeat: 4}
+    inset:
+      contact: three_quarter
+      tip_point: center
+      bridge_height: surface
+    annotations: ["x 4 près de la bille jaune et x 4 près de la bille rouge : chaque situation est répétée 4 fois (8 billes au total)"]
+    description: >-
+      Schéma de table en vue de dessus, départ à gauche, avec la ligne de départ en trait plein vertical.
+      Une bille jaune près de la ligne de départ, en haut à gauche (environ x 2, y 0,9), annotée « x 4 », et une
+      bille rouge en bas à gauche (environ x 2, y 3,1), annotée « x 4 ». La bille blanche, dessinée en cercle creux
+      à trait fin avec des points rouges, est au centre de la table (x 4, y 2), même point de départ pour les deux
+      séries. Pour la jaune, la blanche vise un cercle creux pointillé collé à la jaune, côté droit et légèrement
+      en dessous, et la jaune part vers la poche haut gauche (tl). Pour la rouge, la blanche vise un cercle creux
+      collé à la rouge, côté droit, et la rouge part vers la poche bas gauche (bl). Les deux billes sont frappées
+      en quantité trois-quarts (énoncé), la blanche arrivant du centre. En bas à droite de la table, le
+      petit schéma de quantité de bille montre une bille blanche recouvrant environ les trois quarts d'une bille
+      rouge, point d'impact bleu au centre de la blanche, ligne turquoise indiquant le chevalet sur la surface
+      de jeu. Pastille « Billard de bronze » présente.
+    uncertainties:
+      - "La ligne de départ est mesurée à x ≈ 1,8 (et non 2,0) ; la bille jaune et la bille rouge sont à x ≈ 2,0, légèrement à droite de cette ligne."
+      - "Positions mesurées à ≈ 0,1 case près sur un rendu à 130 dpi, sans recadrage fin."
+      - "La blanche est dessinée creuse (cercle à trait fin avec points rouges) : lecture retenue = position de départ de la blanche."
+      - "Pas de numéro d'ordre de tir sur le schéma : l'ordre des deux séries (jaune puis rouge) est arbitraire."
+      - "Aucune bille blanche pleine n'est dessinée : seul un cercle creux à points rouges marque son emplacement ; la bille w est posée par convention sur ce cercle (4 ; 2)."
+  - id: entrainement-p08-e4
+    kind: exercise
+    sheet: "La quantité trois-quarts"
+    exercise: 4
+    caption: "Empocher huit billes en quantité trois-quarts avec un chevalet sur cadre."
+    success_rate: [6, 8]
+    bridge: frame
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [6.0, 2.0], label: "x4"}
+      - {id: w, color: white, at: [7.7, 1.0], role: cue}
+    ghosts:
+      - {id: gi1, at: [6.2, 1.85], role: impact, for: w}
+      - {id: gw2, at: [7.7, 3.0], role: cue_start, for: w, label: "blanche, série du bas"}
+      - {id: gi2, at: [6.2, 2.15], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[7.7, 1.0], [6.2, 1.85]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[6.0, 2.0], [4.0, 0.0]], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[7.7, 3.0], [6.2, 2.15]], bounces: []}
+      - {id: a4, ball: r1, kind: object, path: [[6.0, 2.0], [4.0, 4.0]], to: bm}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: three_quarter, pocket: tm, repeat: 4}
+      - {step: 2, cue: w, hit: r1, contact: three_quarter, pocket: bm, repeat: 4}
+    inset:
+      contact: three_quarter
+      tip_point: center
+      bridge_height: frame
+    annotations: ["x 4 au-dessus et x 4 au-dessous de la bille rouge : deux séries de 4, soit 8 billes"]
+    description: >-
+      Schéma de table en vue de dessus, départ à gauche, avec la ligne de départ en trait plein vertical. Une seule
+      bille rouge à droite du centre (environ x 6, y 2), avec deux annotations « x 4 » : une vers le haut, une
+      vers le bas. Deux positions de la blanche, dessinées en cercle creux à trait fin avec points rouges, sur la
+      droite : une en haut (environ x 7,7, y 1) et une en bas (environ x 7,7, y 3). De chaque position, la
+      blanche vise un cercle creux collé à la rouge, côté droit (légèrement au-dessus pour la série du haut,
+      légèrement au-dessous pour celle du bas). La rouge est alors envoyée vers la poche milieu haut (tm) pour la
+      série du haut et vers la poche milieu bas (bm) pour la série du bas. En bas à gauche de la table, petit
+      schéma de quantité de bille : bille blanche recouvrant environ les trois quarts d'une bille rouge, point
+      d'impact bleu au centre de la blanche, ligne turquoise (chevalet sur cadre selon l'énoncé). Pastille
+      « Billard de bronze » présente.
+    uncertainties:
+      - "La ligne de départ est mesurée à x ≈ 1,8 (et non 2,0)."
+      - "Les poches visées (tm et bm) sont déduites de la direction des flèches ; l'extrémité des flèches est lue à ≈ (4,1 ; 0,2) et ≈ (4,3 ; 3,6)."
+      - "Positions mesurées à ≈ 0,1 case près sur un rendu à 130 dpi, sans recadrage fin."
+      - "Pas de numéro d'ordre de tir : l'ordre des deux séries est arbitraire."
+      - "Aucune bille blanche pleine n'est dessinée : deux cercles creux à points rouges marquent les départs ; la bille w est posée par convention sur celui du haut et l'autre est un ghost cue_start."
+      - "Le schéma de quantité de bille ne se distingue de celui du bridge « surface » que par sa position ; la hauteur de chevalet est déduite du texte de l'énoncé."

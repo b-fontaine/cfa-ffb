@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Point d'entrée UNIQUE des garde-fous déterministes (hooks, agent, CI).
 #
-#   scripts/check.sh --fast   catalogue + fichiers web drift + format + analyse + architecture + séances
+#   scripts/check.sh --fast   catalogue + diagrammes + fichiers web drift + format + analyse + architecture + séances
 #   scripts/check.sh --full   --fast + l10n + tests + couverture + Widgetbook
 #                             (génération, format, analyse, use cases)
 #
@@ -33,6 +33,9 @@ fi
 
 step "Catalogue (asset identique à docs/knowledge)"
 "$ROOT/scripts/sync_catalogue.sh" --check
+
+step "Diagrammes (assets identiques à docs/knowledge)"
+"$ROOT/scripts/sync_diagrammes.sh" --check
 
 step "Fichiers web drift (sqlite3.wasm, drift_worker.js)"
 (cd "$ROOT" && dart run scripts/sync_web_assets.dart --check)

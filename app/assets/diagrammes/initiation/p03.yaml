@@ -1,0 +1,52 @@
+version: 1
+source: {file: "Fiches Initiation CFA blackball.pdf", page: 3, rank: S}
+diagrams:
+  - id: initiation-p03-e1
+    kind: initiation
+    sheet: "Posture, visée et coup de queue."
+    exercise: 1
+    caption: "Empocher 8 billes avec un chevalet sur la surface de jeu."
+    bridge: surface
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: w, color: white, at: [1.77, 0.44], role: cue}
+      - {id: b8, color: black, at: [7.81, 0.18], label: "8"}
+      - {id: r1, color: red, at: [7.81, 3.79]}
+    ghosts:
+      - {id: g2, at: [1.77, 1.49], role: cue_start, for: w}
+      - {id: g3, at: [1.77, 2.50], role: cue_start, for: w}
+      - {id: g4, at: [1.77, 3.53], role: cue_start, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.77, 0.44], [7.55, 0.29]], bounces: [], to: tr}
+      - {id: a2, ball: w, kind: cue, path: [[1.77, 0.44], [7.65, 3.62]], bounces: [], to: br}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: b8, contact: full, pocket: tr}
+      - {step: 2, cue: w, hit: r1, contact: full, pocket: br}
+    inset:
+      contact: full
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "Énoncé : « Exercice à réaliser : Empocher 8 billes avec un chevalet sur la surface de jeu. »"
+      - "Quatre emplacements de la blanche alignés sur la ligne de départ, deux billes cibles dans le coin droit : 4 emplacements x 2 cibles = 8 tirs (déduction à partir de « 8 billes », [Prop] ; le schéma ne montre des flèches que depuis le cercle du haut)."
+      - "Consigne : « Replacer la bille blanche près chaque tir. »"
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. La ligne de départ (trait plein vertical) est à x vers 1,8
+      et porte quatre cercles creux à points rouges (emplacements où poser la bille blanche), à x vers 1,8 et
+      y vers 0,4, 1,5, 2,5 et 3,5. Dans la partie droite, deux billes cibles : la bille noire numérotée 8 près du
+      coin haut droit (poche tr), à (7,8 ; 0,2), et une bille rouge près du coin bas droit (poche br), à (7,8 ; 3,8).
+      Depuis le cercle du haut partent deux flèches pleines : l'une presque horizontale vers la bille 8, l'autre en
+      diagonale vers la bille rouge ; elles s'arrêtent juste avant les billes. Les quatre cercles sont dessinés de la même façon (la blanche est placée sur celui du haut dans la transcription), aucune
+      zone grisée. Au centre de la table, un grand encart montre une bille blanche vue de face avec un arc rouge
+      au sommet, le point bleu du tip au centre, une ligne horizontale et une verticale par le centre, et une
+      ligne turquoise sous la bille (chevalet sur la surface de jeu selon l'énoncé).
+    uncertainties:
+      - "Aucun taux de réussite, aucun « Nombre de séances » ni pastille Billard de bronze sur cette page."
+      - "Seul le cercle du haut porte des flèches ; que les trois autres emplacements servent aussi pour les deux cibles (8 tirs = 4 x 2) est une déduction à partir du nombre « 8 billes » de l'énoncé, le schéma ne le dit pas."
+      - "Les poches visées (tr, br) sont déduites de la position des billes au ras des poches ; l'ordre d'exécution n'est pas indiqué."
+      - "La blanche w est placée sur le cercle du haut (point de départ des flèches) ; sur le PDF, ce cercle est dessiné comme les trois autres (creux, points rouges), sans bille blanche pleine."
+      - "Ligne de départ mesurée à x ≈ 1,77 (FORMAT : 2,0 [Prop])."
+      - "L'encart est placé au centre de la table et non en bas à droite ; contact: full déduit de l'arc rouge au sommet (bille cible, comme en Entraînement p03), point bleu au centre : interprétation approximative."
+      - "La bille rouge est rendue sans numéro ; la bille 8 est noire avec le chiffre 8."

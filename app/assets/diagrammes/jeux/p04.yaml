@@ -1,0 +1,38 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 4, rank: S}
+diagrams:
+  - id: jeux-p04-j1
+    kind: game
+    sheet: "La puissance"
+    caption: "Objectif : Développer l’apprentissage de la puissance."
+    bridge: none
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.78, 0.41]}
+      - {id: r2, color: red, at: [0.57, 0.53]}
+      - {id: r3, color: red, at: [1.08, 0.41]}
+      - {id: r4, color: red, at: [0.87, 0.68]}
+      - {id: y1, color: yellow, at: [0.86, 3.58]}
+      - {id: y2, color: yellow, at: [1.15, 3.58]}
+      - {id: y3, color: yellow, at: [0.78, 3.85]}
+      - {id: y4, color: yellow, at: [1.07, 3.85]}
+      - {id: w, color: white, at: [1.8, 2.07], role: cue}
+    zones: []
+    arrows: []
+    annotations:
+      - "Le jeu se déroule avec des règles similaires à la pétanque. Il peut se disputer en opposant deux joueurs ou par équipe de deux. Chaque tir est effectué depuis la ligne tracée sur la surface de jeu."
+      - "Chaque joueur, ou équipe, disposant de 4 billes, il faudra réaliser plusieurs manches pour cumuler 8 points. Le premier joueur à atteindre 8 points a gagné la partie."
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Une ligne pleine verticale est tracée sur la
+      surface de jeu, à environ 1,8 case du bord gauche, entre la bande du haut et la bande du bas. À gauche
+      de la ligne, deux groupes de quatre billes : quatre rouges en haut à gauche (près de la poche haut
+      gauche) et quatre jaunes en bas à gauche (près de la poche bas gauche), chaque groupe en petit
+      amas serré. Une bille blanche, marquée de petits points rouges, est posée sur la ligne, au milieu de
+      la largeur de la table. Pas de flèche, pas de chevalet, pas de pastille ni de taux de réussite. C'est
+      l'illustration du jeu « La puissance » : la blanche est lancée au-delà du trait, puis chaque joueur
+      place une de ses billes de son groupe de couleur au plus près de la blanche.
+    uncertainties:
+      - "Position de la ligne tracée mesurée à x ≈ 1,8 (le FORMAT suppose 2,0 [Prop]) : écart consigné."
+      - "La bille blanche porte des points rouges sur le schéma ; interprétée comme la bille blanche du jeu, posée sur la ligne."
+      - "Positions des billes lues à environ 0,15 case près."

@@ -1,0 +1,50 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 13, rank: S}
+diagrams:
+  - id: jeux-p13-j1
+    kind: game
+    sheet: "Le rebond d'une bille sur une bande."
+    caption: "Visualiser les trajectoires après le rebond d'une bille sur une bande."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.59, 0.53]}
+      - {id: r2, color: red, at: [0.80, 0.41]}
+      - {id: r3, color: red, at: [0.88, 0.68]}
+      - {id: r4, color: red, at: [1.83, 0.99], label: "bille jouée"}
+      - {id: y1, color: yellow, at: [0.88, 3.58]}
+      - {id: y2, color: yellow, at: [1.15, 3.58]}
+      - {id: y3, color: yellow, at: [0.79, 3.85]}
+      - {id: y4, color: yellow, at: [1.07, 3.85]}
+      - {id: b, color: black, at: [6.67, 3.0]}
+    ghosts:
+      - {id: g1, at: [1.22, 1.44], role: cue_start, label: "bille blanche"}
+    arrows:
+      - {id: a1, ball: r4, kind: object, path: [[1.83, 0.99], [2.9, 0.19], [6.19, 2.63]], bounces: [top]}
+    zones: []
+    annotations:
+      - "Règles du jeu : le jeu se déroule avec des règles similaires à la pétanque. Il peut se disputer en opposant deux joueurs ou par équipe de deux."
+      - "Pour chaque tir, la bille blanche est placée librement dans la zone de replacement. Chaque bille de couleur est positionnée librement sur le trait tracé."
+      - "À l'aide de la bille blanche, le joueur propulse la bille noire sur l'aire de jeu. En replaçant la bille blanche avec la main, il joue une des billes de son groupe de couleur pour la placer au plus près de la bille noire. Chaque coup doit être effectué avec une bande avant impact."
+      - "Le coup n'est pas valable si aucune bille ne touche une bande ou si la bille de couleur jouée touche une autre bille avant un rebond sur une bande."
+      - "Le joueur adverse tente à son tour de placer une de ses billes au plus près de la bille noire. S'il y parvient, la main passe et son adversaire doit tenter de placer une de ses billes au plus près. S'il n'y parvient pas, il rejoue jusqu'à ce qu'il y parvienne ou qu'il n'ait plus de billes à jouer."
+      - "On comptabilise le plus grand nombre de billes du même groupe au plus proche de la bille noire pour attribuer les points au joueur. Le premier joueur à atteindre 8 points a gagné la partie."
+    description: >-
+      Table vue de dessus, en paysage, départ à gauche. Un trait plein vertical (ligne de départ, environ
+      x = 1,83) traverse toute la hauteur du tapis, à gauche. A gauche du trait, en haut, un
+      groupe de trois billes rouges serrées (environ 0,6 ; 0,5 / 0,8 ; 0,4 / 0,9 ; 0,7). Une quatrième bille
+      rouge est posée sur le trait (environ 1,83 ; 1,0). Un cercle creux pointillé (bille blanche à placer,
+      zone de replacement) est situé à gauche du trait, un peu sous la rouge (environ 1,2 ; 1,4). En bas à gauche,
+      un groupe de quatre billes jaunes en carré (environ 0,8 à 1,2 ; 3,6 à 3,9). La bille noire (numéro 8) est à
+      droite, dans la partie basse (environ 6,7 ; 3,0). Une flèche part de la rouge sur le trait, monte vers
+      la bande du haut (rebond vers x = 2,9), puis redescend en diagonale vers la droite et se termine par une
+      pointe de flèche environ en (6,2 ; 2,6), juste avant la noire, sans l'atteindre. Les poches ne portent
+      aucun marquage particulier.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,83 (et non 2,0 comme dans FORMAT.md) ; le format n'a pas de champ dédié."
+      - "Le cercle creux pointillé (avec deux petits points rouges) est interprété comme l'emplacement de la bille blanche (zone de replacement) ; le PDF ne l'explique pas explicitement."
+      - "Le schéma montre quatre billes rouges et quatre jaunes ; le texte ne donne pas leur nombre (groupes de couleur) : transcrit tel que dessiné."
+      - "La flèche est attribuée à la bille rouge sur le trait ; le texte ne dit pas quelle bille la suit. Elle n'atteint pas la noire sur le dessin."
+      - "Positions lues à environ 0,15 case près ; ordre de rebond (bande du haut) lu à y ≈ 0,19 pour le centre de la bille."
+      - "Pas de taux de réussite, de nombre de séances ni de pastille Billard de bronze sur cette page ; type de chevalet non précisé."

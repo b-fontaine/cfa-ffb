@@ -106,6 +106,7 @@ const _expected = <InvariantCode, (String, String)>{
   InvariantCode.membershipPeriodInvalid: (_genericEn, _genericFr),
   InvariantCode.recallEqualsMainBlock: (_genericEn, _genericFr),
   InvariantCode.invalidCatalogue: (_genericEn, _genericFr),
+  InvariantCode.invalidDiagram: (_genericEn, _genericFr),
   InvariantCode.invalidRules: (_genericEn, _genericFr),
 };
 
@@ -144,6 +145,6 @@ void main() {
         if (entry.value.$1 == _genericEn) entry.key,
     };
 
-    expect(generic, hasLength(16));
+    expect(generic, hasLength(17));
   });
 }

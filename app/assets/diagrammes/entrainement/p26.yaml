@@ -1,0 +1,109 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 26, rank: S}
+diagrams:
+  - id: entrainement-p26-e3
+    kind: exercise
+    sheet: "Le coup en angle droit"
+    exercise: 3
+    caption: "Empocher cinq billes en effectuant un coup en angle droit, afin de replacer la bille blanche, par bande, sur la bille noire."
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: b1, color: black, at: [0.34, 3.0]}
+      - {id: y1, color: yellow, at: [5.42, 1.78]}
+      - {id: y2, color: yellow, at: [4.92, 2.46]}
+      - {id: r1, color: red, at: [6.01, 2.48], label: "x5"}
+      - {id: w, color: white, at: [5.66, 3.5], role: cue}
+    ghosts:
+      - {id: g1, at: [5.66, 3.5], role: cue_start}
+      - {id: g2, at: [5.86, 2.69], role: impact, for: w}
+    arrows:
+      - {id: c1, ball: w, kind: cue, path: [[5.66, 3.5], [5.86, 2.69], [2.73, 0.15], [1.07, 1.47]], bounces: [top]}
+      - {id: a1, ball: r1, kind: object, path: [[6.01, 2.48], [7.86, 0.19]], to: tr}
+    zones:
+      - {id: z1, shape: rect, from: [0.05, 0.4], to: [1.8, 2.24], label: "x5"}
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: r1, contact: half, pocket: tr, repeat: 5}
+    inset:
+      contact: half
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "x5 : l'exercice est répété cinq fois"
+      - "Zone grisée à gauche, bordée par le trait vertical : zone où la blanche doit être replacée, par une bande, sur la bille noire"
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Un trait plein vertical à environ 1,8 case du bord
+      gauche. Une zone grisée rectangulaire entre le bord gauche et ce trait (environ x 0,05 à 1,8 ; y 0,4 à 2,2),
+      marquée « x5 ». La bille noire (8) est sous la zone, à environ (0,35 ; 3). Trois billes sont au centre droit :
+      une jaune vers (5,4 ; 1,8), une jaune vers (4,9 ; 2,5) et une rouge vers (6 ; 2,5). Un cercle creux
+      pointillé en bas (environ 5,7 ; 3,5) indique où poser la blanche ; un trait le relie à un cercle d'impact
+      collé en bas à gauche de la rouge (environ 5,85 ; 2,7). La rouge est envoyée en diagonale vers la poche haut
+      droite (tr). La blanche repart vers la bande du haut (rebond vers x 2,7), puis redescend vers la gauche
+      jusque dans la zone grisée, en traversant le trait. Schéma « quantité de bille » en bas à droite : la
+      blanche devant, la rouge derrière et décalée vers la droite (recouvrement d'environ la moitié), point bleu
+      au centre de la blanche, trait vert d'eau sous la bille.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,8 et non 2,0 comme la convention du FORMAT."
+      - "La blanche n'est pas dessinée en bille pleine : sa position de départ (bille w) est celle du cercle creux pointillé de départ."
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé (bridge: unknown) ; pas de pastille Billard de bronze visible ni de « Nombre de séances »."
+      - "Quantité de bille de l'inset estimée à la moitié d'après le recouvrement (environ 0,4 diamètre, non légendé) ; entre un quart et la moitié."
+      - "Les deux jaunes ne sont pas touchées par une flèche ; leur rôle (obstacles ou repères) n'est pas précisé par le texte."
+      - "Point de rebond sur la bande du haut lu à y ≈ 0,15 (position du centre de la bille au contact de la bande), x ≈ 2,7."
+      - "Le point final de la flèche de la blanche (environ 1,1 ; 1,5) est dans la zone grisée ; la zone est lue comme la zone d'arrivée de la blanche, l'énoncé disant « sur la bille noire »."
+      - "La flèche de la rouge se termine un peu avant la poche tr ; la destination est lue comme la poche haut droite."
+  - id: entrainement-p26-e4
+    kind: exercise
+    sheet: "Le coup en angle droit"
+    exercise: 4
+    caption: "Empocher cinq billes en effectuant un coup en angle droit, afin de replacer la bille blanche, par bandes, sur la bille noire."
+    success_rate: [3, 5]
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [1.82, 1.0]}
+      - {id: b1, color: black, at: [4.02, 2.0]}
+      - {id: r1, color: red, at: [7.0, 1.98], label: "x5"}
+      - {id: y2, color: yellow, at: [7.85, 2.08]}
+      - {id: y3, color: yellow, at: [7.61, 3.18]}
+      - {id: w, color: white, at: [6.0, 2.98], role: cue}
+    ghosts:
+      - {id: g1, at: [6.0, 2.98], role: cue_start}
+      - {id: g2, at: [6.91, 2.18], role: impact, for: w}
+    arrows:
+      - {id: c1, ball: w, kind: cue, path: [[6.0, 2.98], [6.91, 2.18], [7.87, 2.64], [5.45, 3.8], [4.66, 3.45]], bounces: [right, bottom]}
+      - {id: a1, ball: r1, kind: object, path: [[7.0, 1.98], [7.87, 0.22]], to: tr}
+    zones:
+      - {id: z1, shape: rect, from: [3.32, 2.65], to: [4.81, 3.95], label: "x5"}
+    sequence:
+      - {step: 1, cue: w, from: g1, hit: r1, contact: three_quarter, pocket: tr, repeat: 5}
+    inset:
+      contact: three_quarter
+      tip_point: center
+      bridge_height: surface
+    annotations:
+      - "x5 : l'exercice est répété cinq fois"
+      - "Zone grisée en bas au centre : zone où la blanche doit être replacée, par bandes, sur la bille noire"
+    description: >-
+      Table vue de dessus, extrémité de départ à gauche. Un trait plein vertical à environ 1,8 case du bord
+      gauche, avec une bille jaune posée dessus vers (1,8 ; 1). La bille noire (8) est au centre, vers (4 ; 2).
+      Une bille rouge vers (7 ; 2) à droite, avec deux billes jaunes près de la bande droite (environ 7,85 ; 2,1
+      et 7,6 ; 3,2). Un cercle creux pointillé en bas à droite (environ 6 ; 3) indique où poser la blanche ; un
+      trait le relie à un cercle d'impact collé en bas de la rouge (environ 6,9 ; 2,2). La rouge est envoyée
+      vers la poche haut droite (tr). La blanche part vers la bande droite (rebond vers y 2,6), repart vers le
+      bas gauche, touche la bande du bas (rebond vers x 5,5) puis remonte à gauche jusque dans la zone grisée
+      « x5 » (environ x 3,3 à 4,8 ; y 2,7 à 3,95), sous la noire. Schéma « quantité de bille » en bas à
+      gauche : la rouge derrière, décalée vers la gauche, la blanche devant (recouvrement des trois quarts
+      environ), point bleu au centre de la blanche, trait vert d'eau sous la bille.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1,8 et non 2,0 comme la convention du FORMAT."
+      - "La blanche n'est pas dessinée en bille pleine : sa position de départ (bille w) est celle du cercle creux pointillé de départ."
+      - "Le type de chevalet n'est pas indiqué dans l'énoncé (bridge: unknown) ; pas de pastille Billard de bronze visible ni de « Nombre de séances »."
+      - "Quantité de bille de l'inset estimée aux trois quarts d'après le recouvrement (environ 0,7 diamètre, non légendé) ; entre la moitié et les trois quarts."
+      - "Le schéma « quantité de bille » est placé à gauche (et non à droite) sur cette page."
+      - "Les jaunes ne sont pas touchées par une flèche ; leur rôle (obstacles ou repères) n'est pas précisé par le texte."
+      - "Points de rebond lus à environ 0,13 case de la bande (centre de la bille au contact) : droite x ≈ 7,87, bas y ≈ 3,8."
+      - "La flèche de la rouge se termine un peu avant la poche tr ; la destination est lue comme la poche haut droite."
+      - "Le point final de la flèche de la blanche (environ 4,7 ; 3,45) est dans la zone grisée, lue comme zone d'arrivée de la blanche."

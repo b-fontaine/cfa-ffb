@@ -1,0 +1,37 @@
+version: 1
+source: {file: "Fiches Jeux CFA blackball.pdf", page: 2, rank: S}
+diagrams:
+  - id: jeux-p02-j1
+    kind: game
+    sheet: "Posture, visée et coup de queue."
+    caption: "Objectif : Viser et empocher 6 billes placées en bord de poches."
+    bridge: unknown
+    bronze: false
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.3, 0.35]}
+      - {id: r2, color: red, at: [4.0, 0.4]}
+      - {id: r3, color: red, at: [7.7, 0.4]}
+      - {id: r4, color: red, at: [0.35, 3.7]}
+      - {id: r5, color: red, at: [4.0, 3.7]}
+      - {id: r6, color: red, at: [7.7, 3.7]}
+    ghosts: []
+    arrows: []
+    zones: []
+    annotations:
+      - "Règles du jeu : le jeu se déroule en un défi qui oppose deux joueurs."
+      - "Les billes de couleur sont placées près des poches, en laissant l'espace d'une bille."
+      - "Le joueur en contrôle place librement la bille blanche sur la surface de jeu et doit réaliser une série de 6 billes."
+      - "Dès lors qu'il loupe ou commet une faute, on replace toutes les billes et la main passe à l'adversaire qui doit réaliser l'enchaînement à son tour."
+    description: >-
+      Schéma de table vue de dessus en paysage avec la grille pointillée 8 x 4 et la ligne de départ
+      (trait plein vertical, à gauche). Six billes rouges, aucune bille blanche : une bille près de
+      chacune des six poches, côté intérieur de la table. Les deux billes de coin gauches (r1 haut,
+      r4 bas) sont près des poches tl et bl, les deux billes de coin droites (r3, r6) près de tr et br,
+      et les deux billes du milieu (r2 haut, r5 bas) près des poches tm et bm. La bille blanche n'est
+      pas dessinée : le joueur la place librement sur la surface de jeu. Aucune flèche, aucun
+      chevalet ni pastille Billard de bronze n'est indiqué sur cette page.
+    uncertainties:
+      - "Ligne de départ lue à x ≈ 1.8 (et non 2.0) sur le schéma ; la valeur [Prop] 2.0 n'est pas reprise ici."
+      - "Les billes rouges sont placées en bord de poche à environ une bille d'écart ; positions mesurées à ≈ 0,15 case près."
+      - "Pas de chevalet précisé par la fiche (bridge: unknown)."

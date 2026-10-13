@@ -1,0 +1,93 @@
+version: 1
+source: {file: "Fiches Entrainement CFA blackball.pdf", page: 6, rank: S}
+diagrams:
+  - id: entrainement-p06-e3
+    kind: exercise
+    sheet: "La quantité demi-bille"
+    exercise: 3
+    caption: "Empocher huit billes en quantité demi-bille avec un chevalet sur cadre."
+    success_rate: [6, 8]
+    bridge: frame
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: y1, color: yellow, at: [1.0, 1.05], label: "x4"}
+      - {id: y2, color: yellow, at: [3.0, 1.05], label: "x4"}
+      - {id: w, color: white, at: [2.0, 3.65], role: cue}
+    ghosts:
+      - {id: g1, at: [1.15, 1.2], role: impact, for: w}
+      - {id: g2, at: [2.8, 1.2], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[2.0, 3.65], [1.15, 1.2]], bounces: []}
+      - {id: a2, ball: y1, kind: object, path: [[1.0, 1.05], [0, 0]], to: tl}
+      - {id: a3, ball: w, kind: cue, path: [[2.0, 3.65], [2.8, 1.2]], bounces: []}
+      - {id: a4, ball: y2, kind: object, path: [[3.0, 1.05], [4, 0]], to: tm}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: y1, contact: half, pocket: tl, repeat: 4}
+      - {step: 2, cue: w, hit: y2, contact: half, pocket: tm, repeat: 4}
+    inset:
+      contact: half
+      tip_point: center
+      bridge_height: unknown
+    annotations: ["x4 à côté de chaque bille jaune : la même situation est répétée 4 fois (2 x 4 = huit billes)"]
+    description: >-
+      Table vue de dessus, départ à gauche. Deux billes jaunes : l'une en (1.0 ; 1.05) à gauche de la ligne de départ,
+      visée vers la poche d'angle haut gauche ; l'autre en (3.0 ; 1.05) à droite de la ligne de départ, visée vers la
+      poche du milieu haut. Chacune porte « x 4 ». La bille blanche est placée en (2.0 ; 3.65), au bas du schéma, sur
+      un cercle pointillé marqué de deux petits points rouges. Pour chaque jaune, un cercle creux pointillé collé à
+      la bille, côté opposé à la poche, indique la position de la blanche à l'impact (demi-bille). La blanche
+      part de son emplacement vers chaque cercle d'impact (deux traits), la jaune part ensuite vers sa poche (flèche pleine).
+      En bas à droite, schéma de quantité demi-bille : la blanche recouvre à moitié la rouge, point bleu au centre
+      de la blanche (centre-bille), un trait horizontal vert-bleu sous les billes.
+    uncertainties:
+      - "Ordre de tir des deux séries de 4 billes non indiqué : l'ordre des étapes de sequence est arbitraire."
+      - "Les deux points rouges sur le cercle de la blanche en (2.0 ; 3.65) ne sont pas expliqués dans le texte."
+      - "Ligne de départ mesurée vers x = 1.83 sur la grille (valeur par défaut du format : 2.0)."
+      - "Hauteur du chevalet de l'inset (trait vert-bleu) non légendée ; bridge_height inconnu."
+  - id: entrainement-p06-e4
+    kind: exercise
+    sheet: "La quantité demi-bille"
+    exercise: 4
+    caption: "Empocher huit billes en quantité demi-bille selon des distances différentes."
+    success_rate: [4, 8]
+    bridge: unknown
+    bronze: true
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.55, 2.0], label: "x4"}
+      - {id: r2, color: red, at: [7.55, 2.0], label: "x4"}
+      - {id: w1, color: white, at: [1.35, 3.0], role: cue}
+      - {id: w2, color: white, at: [6.65, 3.0], role: cue}
+    ghosts:
+      - {id: g1, at: [0.6, 2.2], role: impact, for: w1}
+      - {id: g2, at: [7.5, 2.2], role: impact, for: w2}
+    arrows:
+      - {id: a1, ball: w1, kind: cue, path: [[1.35, 3.0], [0.6, 2.2]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[0.55, 2.0], [0.1, 0.1]], to: tl}
+      - {id: a3, ball: w2, kind: cue, path: [[6.65, 3.0], [7.5, 2.2]], bounces: []}
+      - {id: a4, ball: r2, kind: object, path: [[7.55, 2.0], [7.9, 0.1]], to: tr}
+    zones: []
+    sequence:
+      - {step: 1, cue: w1, hit: r1, contact: half, pocket: tl, repeat: 4}
+      - {step: 2, cue: w2, hit: r2, contact: half, pocket: tr, repeat: 4}
+    inset:
+      contact: half
+      tip_point: center
+      bridge_height: unknown
+    annotations: ["x4 à côté de chaque bille rouge : la même situation est répétée 4 fois (2 x 4 = huit billes)"]
+    description: >-
+      Table vue de dessus, départ à gauche. Deux billes rouges à mi-largeur (y = 2.0) : l'une en (0.55 ; 2.0) près de
+      la bande gauche, visée vers la poche d'angle haut gauche ; l'autre en (7.55 ; 2.0) près de la bande droite,
+      visée vers la poche d'angle haut droite. Chacune porte « x 4 ». Deux emplacements de blanche pointillés (avec deux
+      petits points rouges) en (1.35 ; 3.0) et (6.65 ; 3.0), à des distances différentes de la bille visée. Un cercle
+      creux collé à chaque rouge, juste en dessous, indique la position de la blanche à l'impact. Le trait de
+      blanche va de l'emplacement au cercle d'impact, puis la rouge part vers sa poche (flèche pleine presque verticale).
+      Au centre, schéma de quantité demi-bille : la blanche recouvre à moitié la rouge, point bleu au centre de la
+      blanche, un trait vert-bleu horizontal sous les billes.
+    uncertainties:
+      - "Le type de chevalet n'est pas précisé dans l'énoncé de l'exercice 4 (bridge: unknown)."
+      - "Les distances blanche-rouge sont presque égales sur le schéma des deux côtés malgré « distances différentes » : l'énoncé ne fixe pas de distances."
+      - "Ordre de tir des deux séries de 4 billes non indiqué."
+      - "Ligne de départ mesurée vers x = 1.83 sur la grille (valeur par défaut du format : 2.0)."
+      - "Pointes de flèche des rouges lues vers les poches d'angle, positions finales approximatives."

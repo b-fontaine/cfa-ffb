@@ -18,6 +18,7 @@ import 'package:billard_cfa/features/record_results/presentation/ui/record_sessi
 import 'package:billard_cfa/features/suggest_session/domain/get_exercise_sheet.dart';
 import 'package:billard_cfa/features/suggest_session/domain/suggest_recall.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/suggested_session_bloc.dart';
+import 'package:billard_cfa/features/suggest_session/presentation/ui/exercise_diagram_view.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/ui/exercise_sheet_view.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/ui/session_plan_view.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/ui/student_recall_card.dart';
@@ -26,6 +27,7 @@ import 'package:billard_cfa/features/track_progress/presentation/ui/block_progre
 import 'package:billard_cfa/features/track_progress/presentation/ui/exercise_curve_card.dart';
 import 'package:billard_cfa/features/track_progress/presentation/ui/student_sheet_view.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -151,6 +153,55 @@ Widget buildExerciseSheetViewUseCase(BuildContext context) => LoadedScope(
   load: (world) => getIt<GetExerciseSheet>()(PreviewWorld.validated),
   builder: (context, world, sheet) => _scroll(ExerciseSheetView(sheet: sheet)),
 );
+
+@widgetbook.UseCase(name: 'Un schéma', type: ExerciseDiagramView, path: _path)
+Widget buildExerciseDiagramViewUseCase(BuildContext context) => LoadedScope(
+  load: (world) => getIt<GetExerciseSheet>()(PreviewWorld.validated),
+  builder: (context, world, sheet) =>
+      _scroll(ExerciseDiagramView(sheet: sheet)),
+);
+
+@widgetbook.UseCase(
+  name: 'Deux schémas (rejet naturel)',
+  type: ExerciseDiagramView,
+  path: _path,
+)
+Widget buildExerciseDiagramViewTwiceUseCase(BuildContext context) =>
+    LoadedScope(
+      load: (world) => getIt<GetExerciseSheet>()(
+        ExerciseRef(blockId: 'rejet-naturel', number: 1),
+      ),
+      builder: (context, world, sheet) =>
+          _scroll(ExerciseDiagramView(sheet: sheet)),
+    );
+
+@widgetbook.UseCase(
+  name: 'Aucun schéma',
+  type: ExerciseDiagramView,
+  path: _path,
+)
+Widget buildExerciseDiagramViewMissingUseCase(BuildContext context) =>
+    LoadedScope(
+      load: (world) => getIt<GetExerciseSheet>()(PreviewWorld.validated),
+      builder: (context, world, sheet) => _scroll(
+        ExerciseDiagramView(sheet: sheet.copyWith(diagrams: const [])),
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Schémas illisibles',
+  type: ExerciseDiagramView,
+  path: _path,
+)
+Widget buildExerciseDiagramViewUnreadableUseCase(BuildContext context) =>
+    LoadedScope(
+      load: (world) => getIt<GetExerciseSheet>()(PreviewWorld.validated),
+      builder: (context, world, sheet) => _scroll(
+        ExerciseDiagramView(
+          sheet: sheet.copyWith(diagrams: const [], diagramsUnreadable: true),
+        ),
+      ),
+    );
 
 @widgetbook.UseCase(
   name: 'Notion à rappeler',

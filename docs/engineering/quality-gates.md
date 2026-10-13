@@ -10,6 +10,7 @@ scripts/check.sh --full   # fast + l10n + tests + couverture + Widgetbook (~40 s
 COVERAGE_MIN=95 scripts/check.sh --full   # relever le seuil de couverture
 
 scripts/sync_catalogue.sh [--check]       # copie / vérifie le catalogue (docs/knowledge -> app/assets)
+scripts/sync_diagrammes.sh [--check]      # copie / vérifie les diagrammes à table (docs/knowledge -> app/assets)
 ```
 
 ## Tableau des garde-fous
@@ -18,6 +19,7 @@ scripts/sync_catalogue.sh [--check]       # copie / vérifie le catalogue (docs/
 |---|---|:-:|:-:|---|---|
 | Génération de code (build_runner, gen-l10n) | `scripts/generate.sh` | si manquant | oui | via check | quality / test / build-web |
 | Catalogue : asset identique à la source | `scripts/sync_catalogue.sh --check` | oui | oui | pre-commit | quality |
+| Diagrammes : assets identiques à la source (pages à table uniquement, aucun fichier en trop, chaque dossier déclaré dans `app/pubspec.yaml`) | `scripts/sync_diagrammes.sh --check` | oui | oui | pre-commit | quality |
 | Fichiers web drift : `drift_worker.js` = paquet résolu, `sqlite3.wasm` = version verrouillée | `dart run scripts/sync_web_assets.dart --check` | oui | oui | pre-commit | quality |
 | Formatage | `dart format --output=none --set-exit-if-changed` (lib, test, tool, scripts) | oui | oui | pre-commit | quality |
 | Analyse statique stricte | `flutter analyze --no-pub --fatal-infos` (`very_good_analysis` + strict-casts/inference/raw-types) | oui | oui | pre-commit | quality |
