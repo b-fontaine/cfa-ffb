@@ -1,0 +1,188 @@
+# Séance du catalogue : « Viser pour empocher (bille fantôme) », partie 2/2.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: bille-fantome-2
+order: 6
+technique: bille-fantome
+part: 2
+title: Viser pour empocher (bille fantôme)
+technical_sheets: [3]
+previous: bille-fantome-1
+catalogue_block: bille-fantome
+notion: Viser pour empocher en alignant la blanche à l'impact (bille fantôme) sur le centre de la bille de couleur et celui de la poche.
+theme:
+  name: Le chasseur de fantômes
+  pitch: >-
+    Épisode 2 : les fantômes ne sont plus posés sur la table. Ils se glissent
+    sur le côté, entre le plein et le demi-bille, et se cachent de plus en plus
+    loin. Le chasseur doit les repérer dans sa tête avant de tirer.
+recall:
+  points:
+    - La bille de couleur va vers la poche si le centre de la blanche est, à l'impact, sur la ligne qui joint le centre de la poche et celui de la bille de couleur.
+    - L'animateur pose une blanche, la bille fantôme, au contact de la bille à empocher.
+    - La bille fantôme est retirée avant le tir ; on regarde le point visé sur la bille de couleur.
+  question:
+    ask: Où doit se trouver le centre de la blanche à l'impact pour que la bille de couleur parte vers la poche ?
+    answer: Sur la ligne qui passe par le centre de la poche et le centre de la bille de couleur, là où serait la bille fantôme.
+  # Illustration `visee-fantome` de la séance précédente (bille-fantome-1).
+  reuse: {sheet: bille-fantome-1, illustration: visee-fantome}
+  src: S
+theory:
+  sections:
+    - id: trajectoire
+      title: Rappel express, poche-bille-fantôme
+      weight: {children: 1, adults: 1}
+      body:
+        - La bille de couleur part sur la ligne poche-bille ; la bille fantôme est la blanche à l'impact, sur cette ligne.
+        - On aligne la queue sur la ligne qui va du centre de la blanche au centre de la bille fantôme, procédé au centre de la blanche.
+      adult_extra:
+        - Le joueur doit pouvoir viser précisément un point de la bille de couleur s'il veut lui faire suivre une trajectoire pour l'empocher.
+      key_point: La fantôme est la blanche à l'impact, sur la ligne poche-bille.
+      demo: "Poser une blanche au contact de la bille de couleur, sur la ligne de la poche ; aligner la queue ; retirer la blanche avant le tir ; faire montrer le point visé."
+      illustrations: [visee-plein, procede-centre]
+      src: S
+    - id: plein-demi
+      title: Du plein au demi-bille
+      weight: {children: 3, adults: 3}
+      body:
+        - On découvre d'abord les quantités entre le plein et le demi-bille.
+        - En plein, la blanche est sur la ligne poche-bille ; la bille de couleur suit la trajectoire de la blanche.
+        - En demi-bille, la blanche couvre la moitié de la bille de couleur, qui part avec une déviation d'environ 30° par rapport à l'axe de visée.
+      adult_extra:
+        - Au Blackball, la blanche est plus petite que les billes de couleur ; le contact se fait légèrement au-dessus de son équateur.
+      key_point: "Plein : la couleur suit la blanche ; demi-bille : elle part à environ 30°."
+      demo: null
+      illustrations: [quantites]
+      src: S
+    - id: fantome-decalee
+      title: La fantôme se décale
+      weight: {children: 2, adults: 2}
+      body:
+        - En plein, la bille fantôme est dans l'axe de la blanche ; en demi-bille, elle est décalée sur le côté de la bille de couleur.
+        - Dans les deux cas, on cherche la place de la fantôme avant de tirer, puis on aligne la queue dessus.
+      key_point: "Plein : fantôme dans l'axe ; demi : fantôme décalée de côté."
+      demo: null
+      illustrations: [visee-demi]
+      src: Prop
+    - id: surface-distance
+      title: Blanche près, blanche loin
+      weight: {adults: 1}
+      body:
+        - "La bille fantôme ne dépend pas de la distance de la blanche : que la blanche parte de A (près) ou de B (loin), la fantôme est à la même place."
+        - Seule la distance change ; la visée reste la même.
+      adult_extra:
+        - Comparer, avec le même alignement, un tir proche et un tir lointain, et noter si la couleur s'écarte de la poche.
+      key_point: Près ou loin, la fantôme reste à la même place.
+      demo: "Poser la blanche près de la bille puis loin d'elle, sur le même alignement : montrer que la bille fantôme garde la même place."
+      illustrations: [distances]
+      src: Prop
+illustrations:
+  - {id: visee-plein, type: ghost_aim, cue: [2.42, 2.79], object: [6.0, 1.0], pocket: tr, fraction: full,
+     caption: "Bille pleine : la blanche, la bille fantôme, la bille de couleur et la poche sont alignées.",
+     alt: "Blanche en bas à gauche, bille de couleur en haut à droite, poche en haut à droite ; la bille fantôme est collée à la bille de couleur, sur la ligne qui va à la poche."}
+  - {id: visee-demi, type: ghost_aim, cue: [1.84, 1.69], object: [5.0, 2.0], pocket: br, fraction: half,
+     caption: "Demi-bille : la bille fantôme est décalée de côté et couvre la moitié de la bille de couleur.",
+     alt: "Blanche à gauche, bille de couleur au centre, poche en bas à droite ; la bille fantôme est décalée sur le côté de la bille de couleur, qui est couverte à moitié."}
+  - {id: quantites, type: contact_strip, fractions: [full, half], highlight: full,
+     caption: "Du plein au demi-bille : les deux quantités à connaître pour la bille fantôme.",
+     alt: "Deux schémas de contact côte à côte : la bille pleine, mise en évidence, puis la demi-bille."}
+  - {id: procede-centre, type: cue_side, tip_point: center, cue_height: level,
+     caption: "Le procédé se place au centre de la blanche.",
+     alt: "Vue de côté : le procédé de la queue touche la blanche en son centre."}
+  - id: distances
+    type: table
+    balls:
+      - {id: o1, color: red, at: [6.0, 1.0]}
+      - {id: w, color: white, at: [4.21, 1.89], role: cue, label: "A"}
+    ghosts:
+      - {id: g1, at: [5.82, 1.09], role: impact, for: w}
+      - {id: gb, at: [1.08, 3.46], role: cue_start, for: w, label: "B"}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[4.21, 1.89], [5.82, 1.09]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[1.08, 3.46], [5.82, 1.09]], bounces: []}
+      - {id: b1, ball: o1, kind: object, path: [[6.0, 1.0], [8.0, 0.0]], to: tr}
+    zones: []
+    caption: "La bille fantôme reste à la même place, que la blanche parte de A (près) ou de B (loin)."
+    alt: "Table vue de dessus : une bille de couleur près de la poche en haut à droite, sa bille fantôme collée contre elle, et deux départs de blanche sur la même ligne, A proche et B éloigné."
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p10-j1,
+     caption: "Jeu 10 : quatorze billes, la blanche au centre ; ici adapté en duel rouges contre jaunes.",
+     alt: "Table vue de dessus : deux rangées de sept billes, jaunes et rouges, et un cercle creux au centre pour la position de départ de la blanche."}
+training:
+  exercises:
+    - id: e3
+      ref: {block: bille-fantome, n: 3}
+      diagram: proposition-p02-e3
+      title: Plein puis demi, fantôme imaginée
+      weight: {children: 2, adults: 1}
+      setup: La blanche sur le repère A pour la première série, puis sur le repère B pour la seconde ; les billes du schéma, chacune devant sa poche. La bille fantôme n'est pas posée.
+      instruction: "Série A : empocher en plein les billes alignées avec leur poche. Série B : empocher en demi-bille les billes décalées. Avant chaque tir, montrer du doigt où serait la bille fantôme."
+      expected: Le contact est plein en série A et en demi en série B ; la place montrée du doigt est celle où la blanche touche la bille de couleur.
+      mistakes:
+        - {symptom: "L'élève vise le centre de la bille de couleur en série B", fix: "Poser une blanche à la place de la fantôme, aligner la queue, la retirer, puis tirer."}
+        - {symptom: "La bille de couleur passe à côté de la poche en demi-bille", fix: "Faire montrer la fantôme du doigt avant de tirer et vérifier avec une blanche posée."}
+      playful:
+        hook: "Le chasseur annonce sa cible, « fantôme ici ! », en désignant la place du doigt."
+        challenge: "Gagner un point pour la fantôme bien placée et un point pour la bille empochée."
+      passes: 2
+      src: Prop
+    - id: e4
+      ref: {block: bille-fantome, n: 4}
+      diagram: proposition-p02-e4
+      title: Une seule place pour la blanche
+      weight: {children: 1, adults: 1}
+      setup: "La blanche posée sur son repère du schéma, toujours le même ; les billes du schéma réparties à droite, chacune avec sa poche. Les cercles creux du schéma marquent la bille fantôme : c'est le corrigé de l'animateur, l'élève ne le regarde pas avant d'avoir montré sa place."
+      instruction: Pour chaque bille, montrer du doigt la place de la bille fantôme, puis tirer une seule fois ; replacer la blanche et les billes non empochées avant le tir suivant.
+      expected: La blanche part toujours du même repère ; la fantôme est plus ou moins décalée selon la bille ; la bille de couleur part vers sa poche.
+      mistakes:
+        - {symptom: "Toutes les billes sont visées de la même façon", fix: "Demander où est la fantôme pour chaque bille ; elle change de côté et de décalage."}
+        - {symptom: "La bille de couleur frôle la poche sans y entrer", fix: "Poser une blanche pour montrer la fantôme, puis la retirer et rejouer le tir."}
+      playful:
+        hook: Un chasseur tire, son binôme pose une blanche où il pense que la fantôme se cache, puis la retire.
+        challenge: Faire tomber les premières billes d'affilée sans que le binôme ait à corriger la place de la fantôme.
+      passes: 1
+      src: Prop
+game:
+  title: Duel de la bille fantôme
+  source_game: 10
+  adapted: true
+  players: Duel à 2, un joueur les rouges et l'autre les jaunes
+  materials: "Les billes du schéma du jeu 10 (rouges et jaunes), la blanche, une seconde blanche ou un repère pour la fantôme (règle de lien) ; des jetons pour la variante."
+  setup_illustration: schema-jeu
+  rules:
+    - "D'après le jeu 10 [S] : une seule bille par tir, la blanche part toujours du même point d'origine, une bille non empochée est replacée."
+    - "Écart proposé [Prop] : le jeu 10 est un défi seul ; ici, un duel, un joueur les rouges, l'autre les jaunes, et chacun joue une bille de sa couleur à son tour. Un tirage au sort désigne qui commence."
+    - "Chaque bille de sa couleur n'est jouée qu'une seule fois : une bille non empochée est replacée sur la table mais ne se rejoue pas. Seule la bille annoncée compte ; toute autre bille empochée sur le même tir est replacée."
+    - Avant de tirer, le joueur annonce la poche et montre du doigt où serait la bille fantôme.
+    - "Faute : blanche empochée, aucune bille touchée, ou bille adverse touchée en premier. Le tir ne compte pas, la bille jouée est replacée et le tour passe."
+    - La blanche revient à son point d'origine après chaque tir ; une bille de l'adversaire empochée est replacée, ne compte pour personne, et le tour passe comme après tout tir.
+  scoring: Un point par bille de sa couleur annoncée puis empochée.
+  end: "Fin quand chacun a joué une fois chacune de ses 7 billes, soit 7 tirs chacun ; le plus de points gagne. Égalité : partie nulle (sauf si la variante est jouée : voir ci-dessous)."
+  playful_variant: "Le pari du tireur : l'animateur donne trois jetons à chaque joueur ; avant son tir, le tireur mise un jeton sur son propre tir ; si la bille est empochée, il le garde et en gagne un second, sinon il le perd ; sans jeton, il tire sans miser. Exception aux règles du duel : si les points sont égaux à la fin, le joueur qui a le plus de jetons gagne ; à jetons égaux, la partie est nulle."
+  link_previous:
+    notion_of: bille-fantome-1
+    rule: "Exception facultative aux règles du duel : après avoir montré du doigt la place de la bille fantôme, le joueur la fait vérifier ; l'adversaire pose la seconde blanche (ou le repère) à la place montrée, puis la retire avant le tir ; si la place est fausse, le joueur la corrige avant de tirer. Nouveauté de cette séance [Prop] : à la séance précédente, c'était l'animateur ou un 3e joueur qui posait la fantôme."
+    note: "Rejoue la bille fantôme posée puis retirée de la séance précédente, pour contrôler la fantôme imaginée ; règle facultative, le duel se joue tel quel sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Rapprocher la blanche des billes et ne garder que 4 billes par joueur, les plus proches de leur poche, soit 4 tours chacun ; l'animateur pose la fantôme en cas de doute."
+    adults: "Nommer aussi la quantité (plein, demi ou entre les deux) avant chaque tir, puis comparer les annonces aux résultats : sur quelles billes la fantôme est-elle la moins bien placée ?"
+  src: Prop
+review:
+  prompts:
+    - Où se cachait la bille fantôme sur la bille que tu as le mieux réussie ?
+    - Pour une bille alignée avec la poche et pour une bille décalée, la bille fantôme était-elle à la même place ?
+    - Comment expliquerais-tu à un copain où placer la bille fantôme ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 13, note: "Fiche technique n° 3 (viser pour empocher, bille fantôme, entre le plein et le demi-bille)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 14, note: "Fiche technique n° 4 (bille pleine : la couleur suit la trajectoire de la blanche ; équateur au Blackball)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 15, note: "Fiche technique n° 5 (demi-bille, déviation d'environ 30°)"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 10, note: "Jeu 10 (14 billes depuis une seule position de la blanche), dont le duel est adapté"}
+uncertainties:
+  - "Exercices 3 et 4, taux, mise en place, défis, thème, variante de jeu, règle de lien, adaptation et minutes : [Prop], à valider par un animateur dans l'application."
+  - "Le duel est une adaptation [Prop] du jeu 10 [S] (défi seul) ; sont [Prop] : rouges contre jaunes, tirage au sort, définition de la faute, comptage, fin à 7 tirs, bille jouée une seule fois, seule la bille annoncée comptée, nombre réduit de billes pour les enfants, annonce de la poche et de la fantôme, replacement de la bille adverse, pari aux jetons et départage par les jetons. Seuls la bille unique par tir, la position d'origine de la blanche et le replacement viennent de la fiche."
+  - "La section « La fantôme se décale » est une déduction [Prop] : les fiches 3, 4 et 5 parlent de trajectoire et de 30° par rapport à l'axe de visée, pas d'une fantôme décalée."
+  - "La section « Blanche près, blanche loin » (adultes seulement) est une proposition pédagogique : la fiche technique n° 3 ne traite pas de la distance de la blanche."
+  - "Le schéma de l'exercice 4 présente des coupes de 7 à 18° environ, proches du plein : il illustre peu le demi-bille ; aucun nouveau diagramme n'est ajouté."
+  - "Les schémas de bille fantôme sont générés avec un rayon de bille identique pour toutes les billes ; au Blackball la blanche est plus petite, donc ils sont illustratifs et non à l'échelle."
+  - "Le rappel s'appuie sur ce que bille-fantome-1 enseigne (ligne poche-bille, fantôme posée puis retirée, plein) et réutilise son illustration `visee-fantome` ; la règle de lien reprend la pose puis le retrait de la fantôme du duel de la partie 1, mais la pose par l'adversaire est une nouveauté de cette séance (en partie 1, l'animateur ou un 3e joueur la pose) : proposition, à valider."

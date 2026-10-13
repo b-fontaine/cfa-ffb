@@ -5,7 +5,7 @@ trajectoires, quantité de bille (bille pleine, demi-bille…), type de chevalet
 exploitables par un agent texte. Chaque schéma est donc **transcrit en YAML** selon ce format ; le même
 fichier sert ensuite à **générer des visuels animés** (composants du design system : table, billes, queue).
 
-Règle d'or : **ne rien inventer**. Une valeur lue approximativement sur le schéma est une transcription
+Exception : le dossier `proposition/` ne transcrit aucun PDF ; il porte la mise en place `[Prop]` des blocs d'entraînement proposés (voir § 3). Règle d'or : **ne rien inventer**. Une valeur lue approximativement sur le schéma est une transcription
 (`[S]`, précision ≈ 0,15 case) ; une valeur incertaine est signalée dans `uncertainties`. Aucune adaptation
 non sourcée n'est écrite ici.
 
@@ -26,7 +26,7 @@ non sourcée n'est écrite ici.
 ## 2. Un fichier = une page de PDF
 
 Chemin : `docs/knowledge/03-exercices/diagrammes/<fichier>/pNN.yaml` avec `<fichier>` ∈ `entrainement`,
-`initiation`, `jeux`, `techniques` et `NN` = numéro de page du PDF (2 chiffres). Une page peut porter
+`initiation`, `jeux`, `techniques` (transcriptions de PDF `[S]`) ou `proposition` (hors PDF, `[Prop]`) et `NN` = numéro de page du PDF (2 chiffres). Une page peut porter
 plusieurs schémas (ex. 2 exercices) → liste `diagrams`.
 
 ```yaml
@@ -93,8 +93,10 @@ photo illustre selon le texte voisin), `adjacent_text_summary`.
 
 ## 3. Rangs et provenance
 
-Tout fichier de ce dossier est une **transcription de source `[S]`** : le PDF fait foi. Les valeurs numériques
-de position sont des mesures approchées (jamais publiées par la FFB sous cette forme). Les rayons de bille,
+Tout fichier des dossiers `entrainement/`, `initiation/`, `jeux/` et `techniques/` est une **transcription de source `[S]`** : le PDF fait foi (`rank: S`).
+
+Le dossier `proposition/` fait exception : ses pages portent `source: {file: "Proposition (hors PDF)", page: <rang de la page proposition>, rank: Prop}`. Un diagramme y est la **mise en place `[Prop]`** d'un exercice d'un bloc proposé du catalogue (`source: Prop`) : `kind: exercise`, `sheet` = titre du bloc, `exercise` = numéro, `success_rate` = taux `[Prop]` du bloc, jamais de `bronze`. Les positions sont reprises, ou calculées (bille fantôme : `G = O - 2r·u`), à partir de schémas `[S]` ; elles sont illustratives, non mesurées, et les annotations de provenance commencent par `[Prop]`. Ne jamais présenter ces schémas comme fédéraux. Le validateur n'accepte que `rank: S` ou `rank: Prop` (champ facultatif). Les valeurs numériques
+de position des transcriptions sont des mesures approchées (jamais publiées par la FFB sous cette forme). Les rayons de bille,
 la position de la ligne de départ et les couleurs sont des `[Prop]` documentés.
 
 ## 4. Outils

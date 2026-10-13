@@ -1,9 +1,13 @@
 # Catalogue structuré des fiches entraînement (niveau 1, Blackball).
 # Source : docs/sources/Fiches Entrainement CFA blackball.pdf [S]
-# Les positions des billes sont dans les schémas du PDF (non transcrites).
+# Les positions des billes sont dans les schémas des PDF, transcrits dans diagrammes/.
 # `rate` = [réussites requises, tentatives] pour passer à l'exercice suivant.
 # `bronze: true` = l'exercice porte la mention « Billard de bronze » dans la source.
-version: 1
+# `source: Prop` (bloc ET chaque exercice) = bloc PROPOSÉ, non fédéral : absent des PDF, adapté de
+# fiches d'initiation / jeux / techniques [S], taux de réussite [Prop], diagrammes dans
+# diagrammes/proposition/. Sans `source` (ou avec `source: S`), bloc et exercices sont [S] (Fiches Entrainement). Blocs [Prop] :
+# posture, bille-fantome. Les 13 autres blocs sont inchangés ; seul `teaching_order` a été renuméroté.
+version: 2
 source: "Fiches Entrainement CFA blackball.pdf"
 level: 1
 sessions_unit_defined: false  # la source ne définit pas la durée d'une « séance »
@@ -15,8 +19,20 @@ validation:
   configurable: true
   source: "[U]"
 blocks:
+  # --- Bloc PROPOSÉ [Prop] : non fédéral, ajouté hors des PDF (voir 00-provenance, « Écarts connus »).
+  - id: posture
+    source: Prop
+    teaching_order: 1  # avant la puissance : « viser, posture, chevalets, coup de queue » ouvre la fiche technique n° 1
+    title: Posture, visée et coup de queue
+    sessions: {min: 1, max: 2}
+    technical_sheet: 1
+    exercises:  # adaptés des fiches d'initiation 1 à 4 et du jeu 1 [S] ; taux [Prop]
+      - {n: 1, source: Prop, rate: [3, 4], bridge: cadre, note: "4 tirs (3 billes, la jaune deux fois), 4 emplacements de la blanche (initiation 1)"}
+      - {n: 2, source: Prop, rate: [3, 4], bridge: surface, note: "4 billes depuis la même position, blanche replacée (initiation 2)"}
+      - {n: 3, source: Prop, rate: [6, 8], bridge: surface, note: "8 billes, 2 cibles depuis 4 emplacements (initiation 3)"}
+      - {n: 4, source: Prop, rate: [4, 6], note: "6 billes en bord de poche, blanche et chevalet au choix, jeu 1 réduit de 6 sur 6 d'affilée à 4 sur 6 [Prop] (jeu 1, initiation 4)"}
   - id: puissance
-    teaching_order: 1
+    teaching_order: 2
     title: La puissance
     sessions: {min: 1, max: 2}
     technical_sheet: 2
@@ -25,8 +41,20 @@ blocks:
       - {n: 2, rate: [5, 10], bridge: cadre, note: "2 x 5 billes"}
       - {n: 3, rate: [5, 10], bridge: surface, note: "2 x 5 billes"}
       - {n: 4, rate: [5, 8], bridge: surface, note: "4 x 2 billes"}
+  # --- Bloc PROPOSÉ [Prop] : non fédéral, ajouté hors des PDF (voir 00-provenance, « Écarts connus »).
+  - id: bille-fantome
+    source: Prop
+    teaching_order: 3  # [Prop] après la puissance, avant la bille pleine. La fiche technique n° 3 [S] dit qu'on découvre d'abord les quantités de billes entre le plein et le demi-bille (visée « en dehors » ensuite) ; placer ce bloc d'introduction à la visée avant le bloc bille pleine est un choix [Prop], non une règle de la source
+    title: Viser pour empocher (bille fantôme)
+    sessions: {min: 1, max: 2}
+    technical_sheet: 3
+    exercises:  # adaptés de la fiche technique n° 3, de l'initiation 6 et du jeu 10 [S] ; taux [Prop]
+      - {n: 1, source: Prop, rate: [3, 4], bridge: cadre, note: "4 billes en plein, bille fantôme posée puis retirée par l'animateur"}
+      - {n: 2, source: Prop, rate: [3, 4], bridge: cadre, note: "4 billes en plein, bille fantôme imaginée par l'élève"}
+      - {n: 3, source: Prop, rate: [4, 6], bridge: surface, note: "6 billes en deux séries : 3 en plein depuis A puis 3 en demi-bille depuis B, bille fantôme imaginée"}
+      - {n: 4, source: Prop, rate: [4, 6], bridge: surface, note: "6 billes depuis une seule position de la blanche, coupes entre le plein et le demi (jeu 10 réduit)"}
   - id: bille-pleine
-    teaching_order: 2
+    teaching_order: 4
     title: La quantité de bille pleine
     sessions: {min: 2, max: 3}
     technical_sheet: 4
@@ -36,7 +64,7 @@ blocks:
       - {n: 3, rate: [6, 8], bridge: surface, bronze: true, note: "8 billes"}
       - {n: 4, rate: [6, 8], bridge: cadre, bronze: true, note: "8 billes en poches du milieu"}
   - id: demi-bille
-    teaching_order: 3
+    teaching_order: 5
     title: La quantité demi-bille
     sessions: {min: 2, max: 3}
     technical_sheet: 5
@@ -46,7 +74,7 @@ blocks:
       - {n: 3, rate: [6, 8], bridge: cadre, bronze: true, note: "8 billes"}
       - {n: 4, rate: [4, 8], bronze: true, note: "8 billes, distances différentes"}
   - id: trois-quarts
-    teaching_order: 4
+    teaching_order: 6
     title: La quantité trois-quarts
     sessions: {min: 1, max: 2}
     technical_sheet: 6
@@ -56,7 +84,7 @@ blocks:
       - {n: 3, rate: [6, 8], bridge: surface, bronze: true, note: "8 billes"}
       - {n: 4, rate: [6, 8], bridge: cadre, bronze: true, note: "8 billes"}
   - id: quart-finesses
-    teaching_order: 5
+    teaching_order: 7
     title: Quart de bille et finesses
     sessions: {min: 1, max: 2}
     technical_sheet: [7, 8]
@@ -66,7 +94,7 @@ blocks:
       - {n: 3, rate: [4, 8], bronze: true, note: "8 billes en finesse"}
       - {n: 4, rate: [4, 8], bronze: true, note: "8 billes en finesse"}
   - id: quantites-de-billes
-    teaching_order: 6
+    teaching_order: 8
     title: Les quantités de billes
     sessions: {min: 1, max: 2}
     technical_sheet: [4, 5, 6, 7, 8]
@@ -76,7 +104,7 @@ blocks:
       - {n: 3, rate: [6, 9], bronze: true, note: "9 billes"}
       - {n: 4, rate: [5, 8], bronze: true, note: "4 x 2 billes"}
   - id: rejet-naturel
-    teaching_order: 8  # [U] après le rebond sur bande
+    teaching_order: 10  # [U] après le rebond sur bande
     title: Le rejet naturel
     sessions: {min: 2, max: 2}
     technical_sheet: 10
@@ -87,7 +115,7 @@ blocks:
       - {n: 3, rate: [3, 5]}
       - {n: 4, rate: [3, 5]}
   - id: rebond-bande
-    teaching_order: 7  # [U] rebond sur bande avant rejet naturel
+    teaching_order: 9  # [U] rebond sur bande avant rejet naturel
     title: Le rebond d'une bille sur une bande
     sessions: {min: 2, max: 2}
     technical_sheet: 9
@@ -97,7 +125,7 @@ blocks:
       - {n: 3, rate: [2, 3], note: "deux bandes avant de toucher une bille"}
       - {n: 4, rate: [2, 3], note: "deux bandes avant de toucher une bille"}
   - id: coule
-    teaching_order: 9
+    teaching_order: 11
     title: Le coulé
     sessions: {min: 2, max: 3}
     technical_sheet: 11
@@ -111,7 +139,7 @@ blocks:
       - {n: 7, rate: [4, 6], note: "6 billes, 3 par zone"}
       - {n: 8, rate: [3, 5]}
   - id: carreau
-    teaching_order: 10
+    teaching_order: 12
     title: Le carreau
     sessions: {min: 1, max: 2}
     technical_sheet: 12
@@ -121,7 +149,7 @@ blocks:
       - {n: 3, rate: [3, 5]}
       - {n: 4, rate: [3, 5]}
   - id: angle-droit
-    teaching_order: 11
+    teaching_order: 13
     title: Le coup en angle droit
     sessions: {min: 2, max: 3}
     technical_sheet: 13
@@ -131,7 +159,7 @@ blocks:
       - {n: 3, rate: [3, 5], note: "replacement par bande"}
       - {n: 4, rate: [3, 5], note: "replacement par bandes"}
   - id: retro
-    teaching_order: 12
+    teaching_order: 14
     title: Le rétro
     sessions: {min: 3, max: 4}
     technical_sheet: 14
@@ -147,7 +175,7 @@ blocks:
       - {n: 9, rate: [3, 5]}
       - {n: 10, rate: [4, 6], note: "6 billes, 3 par zone"}
   - id: trajectoires-blanche
-    teaching_order: 13
+    teaching_order: 15
     title: Les trajectoires de blanche
     sessions: {min: 3, max: 4}
     technical_sheet: [10, 11, 14]

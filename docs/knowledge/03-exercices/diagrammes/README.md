@@ -16,6 +16,7 @@ génère des visuels animés (table, billes, queue du design system).
 | `initiation/` | Fiches d'initiation |
 | `jeux/` | Fiches de jeux |
 | `techniques/` | Fiches techniques |
+| `proposition/` | **Aucun PDF** : mise en place `[Prop]` des blocs d'entraînement proposés (`posture`, `bille-fantome`), `rank: Prop` ; voir `FORMAT.md` § 3 |
 
 ## Valider et rendre
 
@@ -43,8 +44,9 @@ dart run tool/diagrammes.dart --summary <fichier.yaml…>   # une ligne par diag
 | `initiation/` | Fiches Initiation CFA blackball.pdf | 19 | 21 | 1 à 19 |
 | `jeux/` | Fiches Jeux CFA blackball.pdf | 14 | 14 | 1 à 14 |
 | `techniques/` | Fiches techniques CFA BàP.pdf | 25 | 88 | 1 à 25 |
+| `proposition/` | aucun (`[Prop]`, « Proposition (hors PDF) ») | 2 | 8 | 1 à 2 (rang de la page proposition) |
 
-Total : 92 fichiers. Les pages techniques 1 et 2 (couverture, page blanche) ne portent aucun diagramme.
+Total : 94 fichiers (92 pages de PDF `[S]` + 2 pages `[Prop]`). Les pages techniques 1 et 2 (couverture, page blanche) ne portent aucun diagramme.
 
 ### Par fiche
 
@@ -122,6 +124,21 @@ Légende : chevalet = `cadre` (sur cadre), `surface` (sur la surface de jeu), `n
 | 14. Les trajectoires de blanche | E4 | 33 | `entrainement-p33-e4` | 6/10 | non précisé | non |
 | 14. Les trajectoires de blanche | E5 | 34 | `entrainement-p34-e5` | 6/9 | non précisé | non |
 | 14. Les trajectoires de blanche | E6 | 34 | `entrainement-p34-e6` | 10/15 | non précisé | non |
+
+#### Blocs proposés `[Prop]` (`proposition/`, hors PDF)
+
+Pas de pastille « Billard de bronze » : mention fédérale, absente des propositions. Taux = taux `[Prop]` du bloc du catalogue.
+
+| Bloc | Exercice | Page | Id de diagramme | Taux | Chevalet |
+|------|----------|------|-----------------|------|----------|
+| Posture, visée et coup de queue | E1 | 1 | `proposition-p01-e1` | 3/4 | cadre |
+| Posture, visée et coup de queue | E2 | 1 | `proposition-p01-e2` | 3/4 | surface |
+| Posture, visée et coup de queue | E3 | 1 | `proposition-p01-e3` | 6/8 | surface |
+| Posture, visée et coup de queue | E4 | 1 | `proposition-p01-e4` | 4/6 | non précisé (au choix) |
+| Viser pour empocher (bille fantôme) | E1 | 2 | `proposition-p02-e1` | 3/4 | cadre |
+| Viser pour empocher (bille fantôme) | E2 | 2 | `proposition-p02-e2` | 3/4 | cadre |
+| Viser pour empocher (bille fantôme) | E3 | 2 | `proposition-p02-e3` | 4/6 | surface |
+| Viser pour empocher (bille fantôme) | E4 | 2 | `proposition-p02-e4` | 4/6 | surface |
 
 #### Initiation (`initiation/`)
 
@@ -202,7 +219,7 @@ Pas de table de billes : photos, schémas de principe et vignettes de vidéos (`
 
 ### Correspondance avec `catalogue-entrainement.yaml`
 
-Le catalogue (copie d'asset synchronisée par `scripts/sync_catalogue.sh`) ne contient **pas** les positions : son en-tête le dit (« positions non transcrites »). Elles se trouvent ici. Le catalogue n'a volontairement pas été modifié ; la jointure se fait par `blocks[].id` + `exercises[].n` ↔ diagramme `exercise`.
+Le catalogue (copie d'asset synchronisée par `scripts/sync_catalogue.sh`) ne contient **pas** les positions : elles se trouvent ici. La jointure se fait par `blocks[].id` + `exercises[].n` ↔ diagramme `exercise`.
 
 | `blocks[].id` du catalogue | Pages YAML (`entrainement/`) | Exercices |
 |-----------------------------|-------------------------------|-----------|
@@ -220,8 +237,10 @@ Le catalogue (copie d'asset synchronisée par `scripts/sync_catalogue.sh`) ne co
 | `angle-droit` | p25 à p26 | E1 à E4 |
 | `retro` | p27 à p31 | E1 à E10 |
 | `trajectoires-blanche` | p32 à p34 | E1 à E6 |
+| `posture` `[Prop]` | `proposition/` p01 | E1 à E4 |
+| `bille-fantome` `[Prop]` | `proposition/` p02 | E1 à E4 |
 
-Le bloc `rejet-naturel` apparaît deux fois dans le PDF (pages 13-14 et 17-18, schémas différents) ; le catalogue ne le garde qu'une fois (`duplicate_in_source: true`).
+Les deux dernières lignes viennent de `proposition/` (hors PDF, `[Prop]`), les autres de `entrainement/` `[S]`. Le bloc `rejet-naturel` apparaît deux fois dans le PDF (pages 13-14 et 17-18, schémas différents) ; le catalogue ne le garde qu'une fois (`duplicate_in_source: true`).
 
 ### Limites connues
 

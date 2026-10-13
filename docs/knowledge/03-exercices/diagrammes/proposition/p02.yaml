@@ -1,0 +1,230 @@
+# [Prop] Mise en place des exercices du bloc proposé « Viser pour empocher (bille fantôme) ».
+# Ce n'est PAS une transcription d'un PDF : la bille fantôme est CALCULÉE (G = O - 2r·u, u = vecteur
+# unitaire bille -> poche, r = 0,1) ; les positions sont des propositions illustratives, non mesurées.
+# Aucun de ces exercices n'est fédéral ; ils appliquent la fiche technique n° 3 [S] et la fiche
+# d'initiation 6 [S] (bille pleine) puis la demi-bille (≈ 30°, fiche technique n° 5 [S]).
+version: 1
+source: {file: "Proposition (hors PDF)", page: 2, rank: Prop}
+diagrams:
+  - id: proposition-p02-e1
+    kind: exercise
+    sheet: "Viser pour empocher (bille fantôme)"
+    exercise: 1
+    caption: "Proposition : 4 billes en bille pleine, bille fantôme posée puis retirée par l'animateur, chevalet sur cadre."
+    success_rate: [3, 4]
+    bridge: frame
+    table: {view: top, head_end: left}
+    balls:
+      - {id: o1, color: red, at: [1.0, 1.0]}
+      - {id: o2, color: yellow, at: [4.0, 1.2]}
+      - {id: o3, color: red, at: [7.0, 1.0]}
+      - {id: o4, color: yellow, at: [5.0, 1.1]}
+      - {id: w, color: white, at: [3.6, 3.6], role: cue, label: "1"}
+    ghosts:
+      - {id: g1, at: [1.14, 1.14], role: impact, for: w, label: "1"}
+      - {id: g2, at: [4.0, 1.4], role: impact, for: w, label: "2"}
+      - {id: g3, at: [6.86, 1.14], role: impact, for: w, label: "3"}
+      - {id: g4, at: [5.13, 1.25], role: impact, for: w, label: "4"}
+      - {id: c2, at: [4.0, 3.6], role: cue_start, for: w, label: "2"}
+      - {id: c3, at: [4.4, 3.6], role: cue_start, for: w, label: "3"}
+      - {id: c4, at: [7.27, 3.6], role: cue_start, for: w, label: "4"}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[3.6, 3.6], [1.14, 1.14]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[4.0, 3.6], [4.0, 1.4]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[4.4, 3.6], [6.86, 1.14]], bounces: []}
+      - {id: a4, ball: w, kind: cue, path: [[7.27, 3.6], [5.13, 1.25]], bounces: []}
+      - {id: b1, ball: o1, kind: object, path: [[1.0, 1.0], [0.0, 0.0]], to: tl}
+      - {id: b2, ball: o2, kind: object, path: [[4.0, 1.2], [4.0, 0.0]], to: tm}
+      - {id: b3, ball: o3, kind: object, path: [[7.0, 1.0], [8.0, 0.0]], to: tr}
+      - {id: b4, ball: o4, kind: object, path: [[5.0, 1.1], [4.0, 0.0]], to: tm}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: o1, contact: full, pocket: tl}
+      - {step: 2, cue: w, hit: o2, contact: full, pocket: tm}
+      - {step: 3, cue: w, hit: o3, contact: full, pocket: tr}
+      - {step: 4, cue: w, hit: o4, contact: full, pocket: tm}
+    inset: {contact: full, tip_point: center, bridge_height: frame}
+    annotations:
+      - "[Prop] Exercice proposé d'après la fiche technique n° 3 [S] (« bille fantôme ») ; ce n'est pas un exercice fédéral."
+      - "[Prop] Taux 3 sur 4 : proposition, non issue d'une fiche fédérale."
+      - "Pour chaque tir, l'animateur pose une blanche au contact de la bille (la bille fantôme), l'élève aligne la queue sur le centre de la fantôme, puis l'animateur la retire avant le tir (fiche technique n° 3 [S])."
+      - "Billes alignées avec leur poche : bille pleine, la bille de couleur suit la trajectoire de la blanche."
+    description: >-
+      Table vue de dessus, départ à gauche. Quatre billes de couleur sont posées dans la moitié haute de la table :
+      rouge (1,0 ; 1,0) vers la poche haut gauche, jaune (4,0 ; 1,2) vers la poche du milieu haut, rouge (7,0 ; 1,0)
+      vers la poche haut droite, jaune (5,0 ; 1,1) vers la poche du milieu haut. Quatre emplacements de la blanche
+      sont près de la bande du bas (y = 3,6) ; chacun est aligné avec une bille et sa poche. Un cercle creux
+      numéroté, collé à chaque bille côté blanche, marque la bille fantôme ; une flèche relie l'emplacement de
+      la blanche au centre de la fantôme. Chevalet sur cadre.
+    uncertainties:
+      - "[Prop] Positions illustratives, non mesurées ; la bille fantôme est calculée selon FORMAT (r = 0,1)."
+
+  - id: proposition-p02-e2
+    kind: exercise
+    sheet: "Viser pour empocher (bille fantôme)"
+    exercise: 2
+    caption: "Proposition : 4 billes en bille pleine, bille fantôme imaginée par l'élève, chevalet sur cadre."
+    success_rate: [3, 4]
+    bridge: frame
+    table: {view: top, head_end: left}
+    balls:
+      - {id: o1, color: red, at: [1.0, 3.0]}
+      - {id: o2, color: yellow, at: [4.0, 2.8]}
+      - {id: o3, color: red, at: [7.0, 3.0]}
+      - {id: o4, color: yellow, at: [5.0, 2.9]}
+      - {id: w, color: white, at: [3.6, 0.4], role: cue, label: "1"}
+    ghosts:
+      - {id: g1, at: [1.14, 2.86], role: impact, for: w, label: "1"}
+      - {id: g2, at: [4.0, 2.6], role: impact, for: w, label: "2"}
+      - {id: g3, at: [6.86, 2.86], role: impact, for: w, label: "3"}
+      - {id: g4, at: [5.13, 2.75], role: impact, for: w, label: "4"}
+      - {id: c2, at: [4.0, 0.4], role: cue_start, for: w, label: "2"}
+      - {id: c3, at: [4.4, 0.4], role: cue_start, for: w, label: "3"}
+      - {id: c4, at: [7.27, 0.4], role: cue_start, for: w, label: "4"}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[3.6, 0.4], [1.14, 2.86]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[4.0, 0.4], [4.0, 2.6]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[4.4, 0.4], [6.86, 2.86]], bounces: []}
+      - {id: a4, ball: w, kind: cue, path: [[7.27, 0.4], [5.13, 2.75]], bounces: []}
+      - {id: b1, ball: o1, kind: object, path: [[1.0, 3.0], [0.0, 4.0]], to: bl}
+      - {id: b2, ball: o2, kind: object, path: [[4.0, 2.8], [4.0, 4.0]], to: bm}
+      - {id: b3, ball: o3, kind: object, path: [[7.0, 3.0], [8.0, 4.0]], to: br}
+      - {id: b4, ball: o4, kind: object, path: [[5.0, 2.9], [4.0, 4.0]], to: bm}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: o1, contact: full, pocket: bl}
+      - {step: 2, cue: w, hit: o2, contact: full, pocket: bm}
+      - {step: 3, cue: w, hit: o3, contact: full, pocket: br}
+      - {step: 4, cue: w, hit: o4, contact: full, pocket: bm}
+    inset: {contact: full, tip_point: center, bridge_height: frame}
+    annotations:
+      - "[Prop] Exercice proposé d'après la fiche technique n° 3 [S] (« bille fantôme ») ; ce n'est pas un exercice fédéral."
+      - "[Prop] Taux 3 sur 4 : proposition, non issue d'une fiche fédérale."
+      - "Le même geste, sans bille fantôme posée : l'élève nomme où elle serait (cercles creux), l'animateur vérifie en posant une blanche si besoin."
+    description: >-
+      Table vue de dessus, départ à gauche : la mise en place précédente retournée de haut en bas. Quatre billes de
+      couleur dans la moitié basse, visant les poches du bas (bl, bm, br, bm) ; la blanche part de quatre emplacements
+      près de la bande du haut (y = 0,4). Les cercles creux numérotés montrent la bille fantôme, qui n'est pas
+      posée sur la table : l'élève l'imagine. Chevalet sur cadre.
+    uncertainties:
+      - "[Prop] Positions illustratives, non mesurées ; la bille fantôme est calculée selon FORMAT (r = 0,1)."
+
+  - id: proposition-p02-e3
+    kind: exercise
+    sheet: "Viser pour empocher (bille fantôme)"
+    exercise: 3
+    caption: "Proposition : 6 billes en deux séries, trois en bille pleine depuis A puis trois en demi-bille depuis B, bille fantôme imaginée, chevalet sur la surface de jeu."
+    success_rate: [4, 6]
+    bridge: surface
+    table: {view: top, head_end: left}
+    balls:
+      - {id: o1, color: red, at: [3.2, 0.8]}
+      - {id: o2, color: yellow, at: [0.8, 3.2]}
+      - {id: o3, color: red, at: [1.5, 1.5]}
+      - {id: o4, color: yellow, at: [7.15, 1.3]}
+      - {id: o5, color: red, at: [6.9, 2.5]}
+      - {id: o6, color: yellow, at: [5.5, 1.1]}
+      - {id: w, color: white, at: [2.0, 2.0], role: cue, label: "A"}
+    ghosts:
+      - {id: g1, at: [3.06, 0.94], role: impact, for: w, label: "1"}
+      - {id: g2, at: [0.94, 3.06], role: impact, for: w, label: "2"}
+      - {id: g3, at: [1.64, 1.64], role: impact, for: w, label: "3"}
+      - {id: g4, at: [7.04, 1.47], role: impact, for: w, label: "4"}
+      - {id: g5, at: [6.78, 2.34], role: impact, for: w, label: "5"}
+      - {id: g6, at: [5.66, 1.22], role: impact, for: w, label: "6"}
+      - {id: cb, at: [6.0, 2.0], role: cue_start, for: w, label: "B"}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[2.0, 2.0], [3.06, 0.94]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[2.0, 2.0], [0.94, 3.06]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[2.0, 2.0], [1.64, 1.64]], bounces: []}
+      - {id: a4, ball: w, kind: cue, path: [[6.0, 2.0], [7.04, 1.47]], bounces: []}
+      - {id: a5, ball: w, kind: cue, path: [[6.0, 2.0], [6.78, 2.34]], bounces: []}
+      - {id: a6, ball: w, kind: cue, path: [[6.0, 2.0], [5.66, 1.22]], bounces: []}
+      - {id: b1, ball: o1, kind: object, path: [[3.2, 0.8], [4.0, 0.0]], to: tm}
+      - {id: b2, ball: o2, kind: object, path: [[0.8, 3.2], [0.0, 4.0]], to: bl}
+      - {id: b3, ball: o3, kind: object, path: [[1.5, 1.5], [0.0, 0.0]], to: tl}
+      - {id: b4, ball: o4, kind: object, path: [[7.15, 1.3], [8.0, 0.0]], to: tr}
+      - {id: b5, ball: o5, kind: object, path: [[6.9, 2.5], [8.0, 4.0]], to: br}
+      - {id: b6, ball: o6, kind: object, path: [[5.5, 1.1], [4.0, 0.0]], to: tm}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: o1, contact: full, pocket: tm}
+      - {step: 2, cue: w, hit: o2, contact: full, pocket: bl}
+      - {step: 3, cue: w, hit: o3, contact: full, pocket: tl}
+      - {step: 4, cue: w, hit: o4, contact: half, pocket: tr}
+      - {step: 5, cue: w, hit: o5, contact: half, pocket: br}
+      - {step: 6, cue: w, hit: o6, contact: half, pocket: tm}
+    inset: {contact: half, tip_point: center, bridge_height: surface}
+    annotations:
+      - "[Prop] Exercice proposé d'après les fiches techniques n° 3 et n° 5 [S] ; ce n'est pas un exercice fédéral."
+      - "[Prop] Taux 4 sur 6 : proposition, non issue d'une fiche fédérale."
+      - "Deux séries, dans cet ordre : trois billes en bille pleine depuis A (1, 2, 3), puis trois en demi-bille depuis B (4, 5, 6), la bille de couleur déviée d'environ 30° (fiche technique n° 5 [S]). La blanche est replacée après chaque tir."
+      - "[Prop] Exercice d'introduction à la visée : il préfigure les blocs bille pleine et demi-bille (enseignés ensuite) sans les remplacer ; la bille fantôme est imaginée, jamais posée."
+    description: >-
+      Table vue de dessus, départ à gauche. Deux emplacements pour la blanche : A (2,0 ; 2,0), où se joue la
+      première série, et B (6,0 ; 2,0), où se joue la seconde. Six billes de couleur : trois alignées avec leur
+      poche (bille pleine, tirs 1 à 3 depuis A) et trois décalées (demi-bille, environ 30°, tirs 4 à 6 depuis B).
+      Un cercle creux numéroté marque, pour chaque bille, la position de la bille fantôme à viser, calculée
+      selon la règle du FORMAT. Chevalet sur la surface de jeu.
+    uncertainties:
+      - "[Prop] Positions illustratives, non mesurées ; la bille fantôme est calculée selon FORMAT (r = 0,1)."
+      - "[Prop] Seul l'emplacement A porte la bille blanche ; B est un cercle creux (emplacement de départ du second groupe de tirs)."
+
+  - id: proposition-p02-e4
+    kind: exercise
+    sheet: "Viser pour empocher (bille fantôme)"
+    exercise: 4
+    caption: "Proposition : 6 billes depuis une même position de la blanche, entre le plein et le demi-bille, chevalet sur la surface de jeu."
+    success_rate: [4, 6]
+    bridge: surface
+    table: {view: top, head_end: left}
+    balls:
+      - {id: o1, color: red, at: [5.0, 1.2]}
+      - {id: o2, color: yellow, at: [5.0, 2.8]}
+      - {id: o3, color: red, at: [3.4, 1.3]}
+      - {id: o4, color: yellow, at: [3.4, 2.7]}
+      - {id: o5, color: red, at: [5.0, 1.5]}
+      - {id: o6, color: yellow, at: [5.0, 2.5]}
+      - {id: w, color: white, at: [2.0, 2.0], role: cue}
+    ghosts:
+      - {id: g1, at: [4.81, 1.27], role: impact, for: w, label: "1"}
+      - {id: g2, at: [4.81, 2.73], role: impact, for: w, label: "2"}
+      - {id: g3, at: [3.21, 1.35], role: impact, for: w, label: "3"}
+      - {id: g4, at: [3.21, 2.65], role: impact, for: w, label: "4"}
+      - {id: g5, at: [4.82, 1.59], role: impact, for: w, label: "5"}
+      - {id: g6, at: [4.82, 2.41], role: impact, for: w, label: "6"}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[2.0, 2.0], [4.81, 1.27]], bounces: []}
+      - {id: a2, ball: w, kind: cue, path: [[2.0, 2.0], [4.81, 2.73]], bounces: []}
+      - {id: a3, ball: w, kind: cue, path: [[2.0, 2.0], [3.21, 1.35]], bounces: []}
+      - {id: a4, ball: w, kind: cue, path: [[2.0, 2.0], [3.21, 2.65]], bounces: []}
+      - {id: a5, ball: w, kind: cue, path: [[2.0, 2.0], [4.82, 1.59]], bounces: []}
+      - {id: a6, ball: w, kind: cue, path: [[2.0, 2.0], [4.82, 2.41]], bounces: []}
+      - {id: b1, ball: o1, kind: object, path: [[5.0, 1.2], [8.0, 0.0]], to: tr}
+      - {id: b2, ball: o2, kind: object, path: [[5.0, 2.8], [8.0, 4.0]], to: br}
+      - {id: b3, ball: o3, kind: object, path: [[3.4, 1.3], [8.0, 0.0]], to: tr}
+      - {id: b4, ball: o4, kind: object, path: [[3.4, 2.7], [8.0, 4.0]], to: br}
+      - {id: b5, ball: o5, kind: object, path: [[5.0, 1.5], [8.0, 0.0]], to: tr}
+      - {id: b6, ball: o6, kind: object, path: [[5.0, 2.5], [8.0, 4.0]], to: br}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: o1, pocket: tr}
+      - {step: 2, cue: w, hit: o2, pocket: br}
+      - {step: 3, cue: w, hit: o3, pocket: tr}
+      - {step: 4, cue: w, hit: o4, pocket: br}
+      - {step: 5, cue: w, hit: o5, pocket: tr}
+      - {step: 6, cue: w, hit: o6, pocket: br}
+    inset: {contact: none, tip_point: center, bridge_height: surface}
+    annotations:
+      - "[Prop] Exercice proposé d'après la fiche technique n° 3 [S] et le jeu 10 (14 billes depuis une seule position de blanche) [S], réduit à 6 billes ; ce n'est pas un exercice fédéral."
+      - "[Prop] Taux 4 sur 6 : proposition, non issue d'une fiche fédérale."
+      - "Une seule position de la blanche ; une bille par tir ; la blanche est replacée au départ et les billes non empochées sont replacées. Les cercles creux marquent la bille fantôme : coupes d'environ 7° à 18°, donc entre le plein et le demi-bille (≈ 30°, fiche technique n° 3 [S]), à des distances de 1,4 à 2,9 cases. Les coupes plus ouvertes (trois-quarts, quart) relèvent des blocs suivants."
+    description: >-
+      Table vue de dessus, départ à gauche. La blanche est posée en (2,0 ; 2,0). Six billes de couleur sont
+      réparties à droite, toutes visant une poche de droite : deux à (3,4 ; 1,3) et (3,4 ; 2,7) près de la
+      blanche (coupe d'environ 12°), deux à (5,0 ; 1,2) et (5,0 ; 2,8) plus loin (environ 7°), deux à
+      (5,0 ; 1,5) et (5,0 ; 2,5) plus loin avec une coupe un peu plus marquée (environ 18°). Un cercle creux
+      numéroté montre pour chaque bille la bille fantôme à viser. Chevalet sur la surface de jeu.
+    uncertainties:
+      - "[Prop] Positions illustratives, non mesurées ; la bille fantôme est calculée selon FORMAT (r = 0,1)."
+      - "[Prop] Les poches visées sont une proposition ; l'élève peut choisir une autre poche si la trajectoire est libre."

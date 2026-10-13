@@ -1,0 +1,181 @@
+# Séance du catalogue : « La puissance », partie 2/2.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: puissance-2
+order: 4
+technique: puissance
+part: 2
+title: La puissance
+technical_sheets: [2]
+previous: puissance-1
+catalogue_block: puissance
+notion: Doser la puissance du coup en réglant la vitesse du coup de queue et l'amplitude du geste.
+theme:
+  name: Le curseur de puissance
+  pitch: >-
+    Épisode 2 : le curseur de puissance, gradué de 1 (doux) à 5 (fort), sert
+    à garer la blanche. Chaque zone grise est un garage : elle doit s'y
+    arrêter en douceur, sans filer trop vite. Les garages sont de tailles et
+    de distances variées : le coin est loin, le milieu est proche. Le
+    chevalet se pose sur le tapis.
+recall:
+  points:
+    - La puissance d'un coup dépend de la vitesse de la queue et de son amplitude.
+    - L'amplitude est le recul de la main quand on arme le tir, jusqu'à la fin de la pénétration dans la blanche.
+    - On règle le recul de la main sur la distance à parcourir.
+    - "La zone grise est l'objectif de placement de la blanche : après l'impact, elle doit s'y arrêter."
+  question:
+    ask: Qu'est-ce que l'amplitude d'un coup de queue ?
+    answer: Le recul de la main quand on arme le tir, jusqu'à la fin de la pénétration dans la blanche.
+  # Illustration `court-long` de la séance précédente (puissance-1) : même cible, deux distances.
+  reuse: {sheet: puissance-1, illustration: court-long}
+  src: S
+theory:
+  sections:
+    - id: fleche-chevalet
+      title: Le chevalet et la flèche
+      weight: {children: 1, adults: 1}
+      body:
+        - La flèche est la partie de la queue entre le bout et le chevalet.
+        - "Quand la main est près du centre de gravité, on pose le chevalet près de la blanche : peu de flèche, peu de recul."
+        - "Main vers le talon, chevalet plus loin : beaucoup de flèche, grand recul possible."
+      adult_extra:
+        - Entre les deux, le joueur évalue la longueur de flèche selon la puissance désirée.
+      key_point: Plus la main est près du talon, plus le recul peut être grand.
+      demo: "Montrer deux positions de la main sur la queue, chevalet près puis loin de la blanche. Insister sur le recul : le débutant pense d'abord à la vitesse."
+      illustrations: [flecheaxe, photos-amplitude]
+      src: S
+    - id: distances
+      title: Plus loin, plus de recul
+      weight: {children: 2, adults: 3}
+      body:
+        - Plus la zone à atteindre est loin, plus on arme le coup et plus on le rend rapide.
+        - Plus elle est proche, plus on raccourcit le recul de la main et plus on ralentit.
+        - "L'amplitude et la vitesse vont ensemble : on règle les deux."
+        - Sur la surface de jeu, le chevalet est posé sur le tapis ; on règle son recul avant de tirer, comme avant.
+      adult_extra:
+        - Avant chaque tir, se demander où la blanche doit s'arrêter, puis choisir la flèche et le recul.
+        - Comparer un tir proche et un tir lointain vers la même zone grise ; noter ce qui change dans la main arrière.
+      key_point: Je choisis mon amplitude et ma vitesse avant de tirer, selon la distance.
+      demo: "Tirer vers la même zone grise depuis un repère proche, puis depuis un repère lointain, en montrant le recul de la main."
+      illustrations: [echelle-puissance, zones-distances]
+      src: Prop
+initiation:
+  - id: ini-5
+    initiation_sheet: 5
+    title: À la mesure, deux fois
+    weight: {children: 5, adults: 3}
+    setup: La rouge et la jaune du schéma sous les poches du haut ; deux repères pour la blanche, un à droite et un en bas à gauche, comme sur le schéma ; après chaque tir, replacer la blanche et la bille empochée.
+    goal: "Empocher 4 billes à la mesure, la blanche ne devant pas sortir de la zone grise après impact : 2 billes avec un chevalet sur cadre, puis 2 billes avec un chevalet sur la surface de jeu."
+    expected: La blanche s'arrête dans la zone grise à chaque tir ; le geste reste droit, avec une amplitude adaptée à la distance.
+    scoring: {mode: counter, of: 4}
+    illustration: schema-initiation
+    src: S
+illustrations:
+  - {id: flecheaxe, type: stance_top, view: top,
+     annotations: ["Main arrière près du centre de gravité : chevalet près de la blanche, peu de flèche", "Main arrière vers le talon : chevalet plus loin, beaucoup de flèche"],
+     caption: "Deux positions de la main arrière : peu de flèche, ou beaucoup de flèche.",
+     alt: "Vue de dessus schématique : à gauche, la main arrière près du centre de la queue et le chevalet près de la blanche ; à droite, la main vers le talon et le chevalet plus éloigné."}
+  - {id: photos-amplitude, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 12,
+     caption: "Fiche technique n° 2 : recul, situation initiale, pénétration.",
+     alt: "Renvoi à la page 12 du PDF des fiches techniques, qui montre le recul, la situation initiale et la pénétration."}
+  - {id: echelle-puissance, type: power_scale, levels: 5, distance_label: "Distance à parcourir par la blanche",
+     caption: "Plus la blanche doit aller loin, plus le geste est ample.",
+     alt: "Échelle de cinq niveaux de puissance, du plus doux au plus puissant, reliée à la distance à parcourir."}
+  - {id: zones-distances, type: table,
+     balls: [{id: r1, color: red, at: [0.35, 0.35]}, {id: w, color: white, at: [6.0, 2.0], role: cue}],
+     ghosts: [{id: g1, at: [2.4, 1.6], role: cue_start, for: w, label: "tir proche"}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[6.0, 2.0], [0.54, 0.41]], bounces: [], label: "tir lointain"},
+              {id: a2, ball: w, kind: cue, path: [[2.4, 1.6], [0.52, 0.45]], bounces: [], label: "tir proche"}],
+     zones: [{id: z1, shape: rect, from: [0, 0], to: [1, 1], label: "zone grise"}],
+     caption: "Même zone grise, deux distances : tir proche et tir lointain.",
+     alt: "Table vue de dessus : une bille rouge dans la zone grise du coin haut gauche ; deux flèches y mènent, une courte depuis un repère proche au centre gauche (tir proche) et une longue depuis la blanche à droite (tir lointain)."}
+  - {id: schema-initiation, type: diagram_ref, diagram: initiation-p05-e1,
+     caption: "Initiation 5 : la rouge et la jaune sont jouées depuis deux repères, la blanche s'arrête dans la zone grise.",
+     alt: "Table vue de dessus : une rouge près de la poche d'angle haut gauche, une jaune sous la poche du milieu du haut, deux repères de blanche, des zones grises autour des billes."}
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p04-j1,
+     caption: "Jeu 4 : tirer depuis la ligne et placer sa bille au plus près de la blanche.",
+     alt: "Table vue de dessus : un groupe de rouges en haut à gauche, un groupe de jaunes en bas à gauche, la blanche posée sur la ligne au milieu de la largeur."}
+training:
+  exercises:
+    - id: e3
+      ref: {block: puissance, n: 3}
+      diagram: entrainement-p02-e3
+      title: Tir long, les deux garages du coin
+      weight: {children: 1, adults: 1}
+      setup: Une jaune dans chaque coin de gauche, devant la poche, dans la zone grise ; les rouges en deux paires, comme sur le schéma ; la blanche sur le repère à droite.
+      instruction: "Empocher la jaune, la blanche passant entre les deux rouges de sa paire (d'après la flèche du schéma) : cinq tirs vers le coin du haut, puis cinq vers celui du bas, ou en alternant, au choix. Replacer la jaune et la blanche après chaque tir."
+      expected: La blanche s'arrête dans la zone grise après chaque tir ; c'est le tir long, observer le recul de la main puis la vitesse.
+      mistakes:
+        - {symptom: "La blanche suit la jaune dans la poche ou rebondit hors de la zone grise", fix: "Reculer moins la main au moment d'armer et ralentir le coup ; amplitude et vitesse comptent toutes les deux."}
+        - {symptom: "La blanche n'arrive pas à la jaune ou la touche trop mollement", fix: "Reculer davantage la main vers l'arrière au moment d'armer et accompagner le coup."}
+        - {symptom: "L'élève confond les deux sens de « main »", fix: "Distinguer le réglage de la flèche (tenir la queue plus près du centre de gravité et poser le chevalet plus près) du recul de la main au moment d'armer."}
+      playful:
+        hook: Chaque blanche garée dans le garage fait avancer une voiture dessinée au tableau.
+        challenge: Garer cinq blanches de suite sans sortir de la zone, chacun son tour.
+      passes: 2
+      src: S
+    - id: e4
+      ref: {block: puissance, n: 4}
+      diagram: entrainement-p02-e4
+      title: Tir court et précis, les garages du milieu
+      weight: {children: 1, adults: 1}
+      setup: Une jaune contre chaque poche du milieu, dans la zone grise ; les rouges en deux paires en diagonale, comme sur le schéma ; la blanche sur le repère à droite.
+      instruction: "Empocher la jaune du haut, puis celle du bas, la blanche passant entre les deux rouges de chaque paire (d'après la flèche du schéma) ; quatre séries de deux tirs. Replacer la jaune et la blanche après chaque tir."
+      expected: La blanche s'arrête dans la zone grise après chaque tir ; c'est le tir court, plus précis, avec le même recul de la main et la même vitesse pour le même tir.
+      mistakes:
+        - {symptom: "La blanche part trop vite et ressort de la zone", fix: "Reculer moins la main au moment d'armer, ralentir le coup, et choisir le recul avant de tirer."}
+        - {symptom: "Le recul change d'un tir à l'autre", fix: "Tenir la queue au même endroit et poser le chevalet au même endroit pour garder la même flèche, puis reculer la main de la même longueur."}
+      playful:
+        hook: Annoncer « petit », « moyen » ou « grand » recul avant chaque tir.
+        challenge: Réussir une série de deux tirs sans que la blanche ne quitte sa zone.
+      passes: 1
+      src: S
+game:
+  title: La pétanque avec la blanche
+  source_game: 4
+  adapted: false
+  players: Partie à 2, ou par équipes de 2
+  materials: "Un groupe de quatre billes (rouges ou jaunes) par joueur ou équipe, plus la blanche. Au départ, les deux groupes sont en deux amas à gauche de la ligne, rouges en haut et jaunes en bas, comme sur le schéma ; le groupe de chaque camp est tiré au sort [Prop]. Pour le défi ludique (proposition) : des jetons."
+  setup_illustration: schema-jeu
+  rules:
+    - Le jeu se déroule avec des règles similaires à la pétanque ; chaque tir est joué depuis la ligne.
+    - Le premier joueur tire la blanche pour la placer au-delà du trait, puis joue une bille de son groupe pour la placer au plus près de la blanche.
+    - L'adversaire tente à son tour de placer une bille au plus près ; s'il y parvient, la main passe, sinon il rejoue jusqu'à y parvenir ou à ne plus avoir de billes.
+    - Toute bille empochée ou revenue derrière le trait est retirée du jeu ; si c'est la blanche, les points restants vont à l'adversaire, plus 2 points.
+    - "Chaque joueur ou équipe dispose de 4 billes : plusieurs manches sont nécessaires."
+  scoring: En fin de manche, on compte le plus grand nombre de billes d'un même groupe au plus près de la blanche pour attribuer les points.
+  end: Le premier joueur ou la première équipe à atteindre 8 points gagne la partie.
+  playful_variant: "Le garage : on compte les jetons de la règle ci-dessous (annonce faite et bille à moins d'une largeur de main de la blanche), sans changer les points de la partie ; à la fin, le joueur qui a le plus de jetons est « maître garagiste »."
+  link_previous:
+    notion_of: puissance-1
+    rule: "Exception aux règles de la fiche : avant chaque tir, le joueur annonce « petit », « moyen » ou « grand » recul (l'amplitude de l'armé, pas la position de la main sur la queue), selon la distance entre la ligne et la zone visée (la blanche, ou la bille à rejoindre). L'adversaire observe le recul réel et dit s'il correspond à l'annonce, à vue, sans mesure ; le joueur gagne un jeton si ce recul correspond et si sa bille s'arrête à moins d'une largeur de main (main posée à plat, doigts serrés) de la blanche."
+    note: "Rejoue le dosage de l'amplitude de la séance précédente (recul réglé sur la distance, zone grise) ; une seule monnaie, le jeton ; règle facultative, le jeu 4 se joue tel quel sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Les équipes de deux sont déjà prévues par la fiche [S] : alterner les tireurs. Expliquer la pétanque (on lance une boule le plus près possible du but ; ici, le but est la blanche). Au-delà de quatre enfants, jouer sur plusieurs billards et faire tourner les équipes d'un billard à l'autre à chaque manche. Décompte proposé, la fiche ne le définissant pas : une bille plus proche de la blanche que toutes celles de l'adversaire vaut 1 point ; le perdant de la manche commence la suivante ; « points restants » = points manquants pour atteindre 8, à valider. Si le temps manque, fixer la partie à 5 points plutôt que 8, ou limiter à 15 minutes et donner la victoire à celui qui a le plus de points."
+    adults: "Décompte proposé, la fiche ne le définissant pas : une bille plus proche de la blanche que toutes celles de l'adversaire vaut 1 point ; le perdant de la manche commence la suivante ; « points restants » = points manquants pour atteindre 8, à valider. Variante avec la noire (jeu 5) : propulser la noire grâce à la blanche, puis placer ses billes au plus près de la noire. Après la partie, chacun dit quel recul de main lui a donné ses meilleures billes."
+  src: S   # titre, règles, score et fin du jeu 4 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
+review:
+  prompts:
+    - Comment as-tu réglé ton recul pour arrêter la blanche dans la zone ?
+    - Quelle distance était la plus difficile à doser, et pourquoi ?
+    - Que dirais-tu à un copain pour choisir sa flèche avant de tirer ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 12, note: "Fiche technique n° 2 (vitesse, amplitude, flèche, position de la main et du chevalet)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 5, note: Initiation 5}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 2, note: "Entraînement « La puissance », exercices 3 et 4"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 4, note: "Jeu 4 (pétanque avec la blanche) ; jeu 5 pour la variante adultes"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 5, note: "Jeu 5 (pétanque avec la noire), variante adultes"}
+uncertainties:
+  - "Liaison avec puissance-1 (écrite) : notion et nom du thème alignés (V23) ; le pitch porte l'épisode 2. Partie 1 : jeu 3 et défi du cran de curseur ; partie 2 : jeu 4 et défi du garage. La liaison de jeu (annonce du recul) prolonge l'annonce des crans de la partie 1 ; le choix petit / moyen / grand est une proposition."
+  - "Jeu 4 : la fiche [S] ne définit pas « points restants », à qui « la main passe », la règle de la pétanque (plus grand nombre de billes d'un même groupe au plus près), qui commence la manche suivante, ni le rôle de la noire ; le texte [S] est gardé intact, les précisions de décompte sont des propositions [Prop] dans l'adaptation. Matériel : un seul groupe de quatre billes par camp (schéma jeux-p04-j1) ; le tirage au sort du groupe est [Prop]."
+  - "Illustration flecheaxe de type stance_top : le type est défini pour une vue de dessus du corps ; il sert ici à comparer deux positions de la main sur la queue (annotations), comme dans puissance-1. Usage à valider côté rendu StanceDiagram."
+  - "Le rôle des rouges (obstacles à passer entre) est lu d'après la flèche du schéma ; la consigne l'indique (« d'après la flèche du schéma »)."
+  - "Chevalet : le catalogue place les exercices 1-2 (partie 1) sur cadre et 3-4 (partie 2) sur la surface ; l'initiation 5 est jouée avec les deux chevalets dans les deux séances (fiche d'initiation)."
+  - "La section « Plus loin, plus de recul » (distances, chevalet sur surface) est une proposition [Prop] : la fiche technique n° 2 ne détaille ni la distance ni le type de chevalet. Les schémas de flèche et de distance sont générés."
+  - "Le rôle des rouges dans les exercices 3 et 4 n'est pas précisé par le schéma [S] (obstacles à passer entre, ou billes à toucher) ; la consigne suit la flèche du schéma. Rôle des jaunes : billes à empocher, déduit du libellé « empocher »."
+  - "L'initiation 5 est reprise de la partie 1 comme échauffement ; le choix de la rejouer est une proposition, la fiche l'attribue à la technique entière."
+  - "La règle de rappel (annonce du recul), le jeton, le garage, l'adaptation enfants (5 points, 15 minutes) et la variante adultes sont des propositions [Prop] ; la variante noire s'appuie sur le jeu 5 [S]."
+  - "Les minutes sont calculées à partir des poids et sont des propositions."

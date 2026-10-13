@@ -1,0 +1,261 @@
+# Séance du catalogue : « Posture, visée et coup de queue », partie 1/2.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: posture-1
+order: 1
+technique: posture
+part: 1
+title: Posture, visée et coup de queue
+technical_sheets: [1]
+previous: null
+catalogue_block: posture
+notion: Aligner la queue, la blanche et la cible avant de tirer, puis se placer de façon stable autour de cette ligne.
+theme:
+  name: Le tireur d'élite
+  pitch: >-
+    Un tireur d'élite ne bouge pas avant d'avoir bien visé. Ici, la queue est
+    l'outil de précision : chaque bille empochée sans bouger avant la fin du
+    geste rapporte une étoile.
+recall:
+  # Première séance : pas de rappel, mais l'accueil (règles de conduite, matériel).
+  points:
+    - "Aujourd'hui, on découvre comment viser et se placer."
+    - "Pas de posture parfaite : on essaie d'abord, puis on corrige une seule chose à la fois."
+    - "Autour de la table, rester à l'écart du joueur qui tire et ne pas toucher aux billes des autres."
+    - "Matériel : des queues à partager entre les tables, de la craie de billard, du ruban de marquage au sol, les billes du jeu et un tableau."
+  question:
+    ask: Qu'as-tu déjà vu faire à un joueur de billard avant de tirer ?
+    answer: "Réponses libres : il regarde la table, se penche, pose sa main, vise, puis tire. On retient « il vise avant de tirer »."
+  src: Prop
+theory:
+  sections:
+    - id: viser
+      title: "Viser : tout s'aligne"
+      weight: {children: 3, adults: 3}
+      body:
+        - Viser, c'est contrôler que la queue, la blanche et le point cible sont alignés.
+        - "Le point cible est l'endroit où l'on veut envoyer la blanche."
+        - On choisit l'axe de visée avant de se mettre en position de jeu.
+        - "La queue est placée sur la trajectoire que la blanche doit suivre, en passant par son centre."
+      adult_extra:
+        - "Séquence du regard : repérer où se trouve le procédé (l'embout de la queue) sur la blanche, alterner entre le procédé et le point visé, puis fixer l'endroit précis où projeter la blanche."
+      key_point: "Queue, blanche, point cible : trois éléments sur une même ligne."
+      demo: "Poser la queue sur la ligne blanche-point cible avant de se mettre en position, puis s'installer autour d'elle."
+      illustrations: []
+      src: S
+    - id: cible
+      title: "Où envoyer la blanche ?"
+      weight: {children: 1, adults: 1}
+      body:
+        - La bille à empocher a un côté qui regarde la poche et un côté opposé.
+        - "On envoie la blanche toucher la bille du côté opposé à la poche : c'est le point de contact."
+        - "Aujourd'hui, un simple essai : on regarde où part la bille."
+      key_point: On vise le côté de la bille opposé à la poche.
+      demo: "Depuis un emplacement, poser la queue sur la ligne et montrer du doigt, sur la bille, le côté opposé à la poche."
+      illustrations: [alignement]
+      src: Prop
+    - id: posture
+      title: "Se placer : stable et à l'aise"
+      weight: {children: 3, adults: 3}
+      body:
+        - Les pieds ne sont ni trop serrés ni trop espacés.
+        - "Le pied droit est sous la main droite qui tient la queue (pour un droitier)."
+        - "L'avant-bras droit reste vertical : il se balance comme un balancier."
+      adult_extra:
+        - "Pour l'aisance du balancier, pivoter légèrement le bassin à gauche, jambe droite tendue et gauche fléchie, ou avancer la jambe gauche, les deux jambes fléchies."
+      key_point: Pieds stables, pied droit sous la main droite, avant-bras vertical.
+      demo: "Se placer devant la table et montrer de profil l'avant-bras vertical ; ne pas imposer une attitude très précise, elle s'acquiert avec le temps."
+      illustrations: [posture-dessus, posture-profil]
+      src: S
+    - id: gauchers
+      title: "Et pour un gaucher ?"
+      weight: {children: 1, adults: 1}
+      body:
+        - "Tout se lit à l'envers : le pied gauche est sous la main gauche, et c'est l'avant-bras gauche qui reste vertical."
+      key_point: Un gaucher inverse la droite et la gauche.
+      demo: null
+      illustrations: []
+      src: Prop
+    - id: oeil
+      title: "Où poser la tête : l'œil directeur"
+      weight: {adults: 2}
+      body:
+        - "Trois cas se rencontrent : l'œil droit au-dessus de la queue, la queue entre les deux yeux, ou l'œil gauche au-dessus de la queue."
+        - "Test : deux yeux ouverts, pointer un objet à 5 m avec le doigt, puis fermer l'œil gauche ; si le doigt pointe toujours l'objet, l'œil droit est directeur, sinon c'est le gauche."
+      key_point: Connaître l'œil directeur évite de corriger la tête inutilement.
+      demo: "Faire le test de l'œil directeur avec un élève."
+      illustrations: [tete-oeil]
+      src: S
+    - id: cadre
+      title: "Premier chevalet : sur le cadre"
+      weight: {children: 2, adults: 3}
+      body:
+        - "Pour les premiers tirs, la main s'appuie sur le cadre : il sert de support naturel."
+        - "Pouce et majeur le long de la flèche (la partie de la queue qui glisse dans la main), index par-dessus."
+        - Peu de flèche, tête un peu relevée.
+      adult_extra:
+        - "Quand la blanche est loin de la bande, chevalet main à plat : toute la main sur la surface de jeu, doigts écartés, pouce relevé et collé à l'index, intérieur de la main légèrement relevé, tête au plus près de la queue."
+      key_point: "Premiers tirs : la main s'appuie sur le cadre."
+      demo: "Former le chevalet sur le cadre et laisser chacun le reproduire ; avec des adultes, montrer ensuite la main à plat."
+      illustrations: [chevalet-cadre-ref, chevalet-plat-ref]
+      src: S
+    - id: attaque
+      title: "La queue vue de côté"
+      weight: {adults: 1}
+      body:
+        - "Vue de côté, on pense d'abord au centre de la blanche pour guider la queue à l'horizontale."
+        - "Le schéma d'initiation 1 [S] place le procédé légèrement au-dessus du centre avec un chevalet sur cadre : ne pas chercher ce détail aujourd'hui."
+      key_point: "Pour viser, la queue reste à l'horizontale et pense au centre de la blanche."
+      demo: null
+      illustrations: [pointe-centre]
+      src: Prop
+initiation:
+  - id: ini-1
+    initiation_sheet: 1
+    title: Les quatre tirs, pour essayer
+    weight: {children: 4, adults: 3}
+    setup: "Une rouge dans le coin haut gauche, une jaune devant la poche du milieu du haut, une rouge dans le coin haut droit ; quatre emplacements pour la blanche en bas de la table, du plus à gauche au plus à droite."
+    goal: "Empocher 4 billes avec un chevalet sur cadre : un tir depuis chacun des quatre emplacements du schéma (la jaune du milieu est jouée deux fois)."
+    expected: "Les quatre tirs sont joués ; l'animateur laisse d'abord essayer et ne corrige pas si la blanche est empochée."
+    scoring: {mode: counter, of: 4}
+    illustration: schema-initiation
+    src: S
+illustrations:
+  - id: alignement
+    type: table
+    balls:
+      - {id: w, color: white, at: [2.0, 3.0], role: cue}
+      - {id: r1, color: red, at: [5.0, 2.0]}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[2.05, 2.98], [4.78, 2.14]], bounces: []}
+      - {id: a2, ball: r1, kind: object, path: [[5.083, 1.945], [7.9, 0.07]], bounces: [], to: tr}
+    caption: "La queue et la blanche visent le point de contact : le côté de la bille opposé à la poche."
+    alt: "Table vue de dessus : la blanche en bas à gauche, une bille rouge au centre et la poche en haut à droite. Une flèche va de la blanche vers le bas gauche de la bille rouge, côté opposé à la poche, puis une seconde flèche part de la rouge vers la poche."
+  - {id: pointe-centre, type: cue_side, tip_point: center, cue_height: level,
+     caption: "Pour viser : la queue à l'horizontale, vers le centre de la blanche.",
+     alt: "Bille blanche vue de côté, avec la queue à l'horizontale dont la pointe touche le centre de la bille."}
+  - id: posture-dessus
+    type: stance_top
+    view: top
+    annotations:
+      - "Pieds ni trop serrés ni trop espacés"
+      - "Pied droit sous la main droite qui tient la queue : à lire page 6 de la fiche"
+    caption: "Vue de dessus schématique : pieds, bassin, tête, main de chevalet, queue et blanche. Le pied droit sous la main droite et l'avant-bras vertical se lisent page 6 de la fiche."
+    alt: "Schéma de la posture vue de dessus : deux pieds, le bassin, la tête, la main de chevalet, la queue et la blanche. Le schéma ne montre pas la main droite ; le pied droit sous la main droite et l'avant-bras vertical sont à lire sur la page 6 de la fiche."
+  - {id: posture-profil, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 6,
+     caption: "Voir page 6 de la fiche technique : la posture vue de profil, avant-bras vertical.",
+     alt: "Renvoi vers la page 6 de la fiche technique n° 1, qui montre la posture de profil avec l'avant-bras vertical."}
+  - id: tete-oeil
+    type: stance_top
+    view: top
+    annotations:
+      - "Cas 1 : l'œil droit au-dessus de la queue"
+      - "Cas 2 : la queue entre les deux yeux"
+      - "Cas 3 : l'œil gauche au-dessus de la queue"
+    caption: "Trois places possibles de la tête, selon l'œil directeur : le schéma dessine le cas 1, les cas 2 et 3 sont donnés en texte."
+    alt: "Schéma de la posture vue de dessus, avec l'œil droit mis en évidence au-dessus de la queue (cas 1). Les deux autres cas, la queue entre les deux yeux et l'œil gauche au-dessus de la queue, sont donnés seulement par les annotations écrites sous le schéma."
+  - {id: chevalet-cadre-ref, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 8,
+     caption: "Voir page 8 de la fiche technique : le chevalet sur cadre.",
+     alt: "Renvoi vers la page 8 de la fiche technique n° 1, qui montre le chevalet sur cadre."}
+  - {id: chevalet-plat-ref, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 9,
+     caption: "Voir page 9 de la fiche technique : le chevalet main à plat (adultes).",
+     alt: "Renvoi vers la page 9 de la fiche technique n° 1, qui montre le chevalet main à plat."}
+  - {id: schema-initiation, type: diagram_ref, diagram: initiation-p01-e1,
+     caption: "Initiation 1 : quatre tirs depuis quatre emplacements de la blanche.",
+     alt: "Table vue de dessus : une rouge dans le coin haut gauche, une jaune devant la poche du milieu du haut, une rouge dans le coin haut droit ; quatre emplacements de la blanche en bas de la table, avec une flèche vers chaque bille."}
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p01-j1,
+     caption: "Jeu 1 : une bille près de chacune des six poches.",
+     alt: "Table vue de dessus : une bille rouge devant chacune des six poches, quatre dans les coins et deux devant les poches du milieu ; pas de blanche, le joueur la place librement."}
+training:
+  exercises:
+    - id: e1
+      ref: {block: posture, n: 1}
+      diagram: proposition-p01-e1
+      title: Les quatre emplacements
+      weight: {children: 1, adults: 1}
+      setup: "La rouge de gauche, la jaune du milieu et la rouge de droite au ras de la bande du haut, chacune devant sa poche ; la blanche sur le premier des quatre emplacements du schéma, à gauche."
+      instruction: "Jouer un tir depuis chaque emplacement, de gauche à droite : la rouge de gauche, la jaune du milieu (deux tirs), puis la rouge de droite. Avant chaque tir, aligner la queue, la blanche et le point de contact (côté de la bille opposé à la poche), puis rester immobile jusqu'à la fin du geste. Replacer la jaune sur sa mise en place avant le tir du troisième emplacement et poser la blanche sur l'emplacement suivant. Si la bille n'est pas empochée ou si la blanche est empochée, replacer et passer au tir suivant, sans commentaire."
+      expected: "Queue, blanche et point de contact alignés ; le corps ne bouge pas avant que la blanche ait touché la bille ; la bille part vers sa poche."
+      mistakes:
+        - {symptom: L'élève se relève avant la fin du tir, fix: "Lui demander de garder la tête sur la queue jusqu'à ce que la bille soit touchée."}
+        - {symptom: "La bille touche la bande ou le bord de la poche sans entrer : la queue n'est pas restée sur la ligne choisie", fix: "Lui faire poser la queue sur la ligne blanche-point de contact, puis vérifier depuis derrière qu'elle y reste jusqu'à la fin du geste."}
+        - {symptom: Les pieds sont trop serrés ou la main droite n'est pas au-dessus du pied droit, fix: "Reprendre les points de contrôle : écartement des pieds, puis main droite à l'aplomb du pied droit ; une seule correction à la fois."}
+      playful:
+        hook: "Avant de tirer, annoncer à voix haute « queue, blanche, point de contact » ; chaque tir où la bille est empochée et où le corps reste immobile rapporte une étoile au tableau."
+        challenge: "Gagner le plus d'étoiles possible ; l'animateur valide chaque étoile, le binôme observe et encourage sans corriger."
+      passes: 2
+      src: Prop
+    - id: e2
+      ref: {block: posture, n: 2}
+      diagram: proposition-p01-e2
+      title: La croix du tireur
+      weight: {children: 1, adults: 1}
+      setup: "La blanche au centre de la ligne de départ, sur le repère du schéma ; une cible près de chacune de ces poches : le coin haut gauche, le milieu du haut, le coin bas gauche et le milieu du bas."
+      instruction: "Empocher chaque cible à tour de rôle depuis la même position, en replaçant la blanche au centre après chaque tir ; garder le même placement des pieds et de la main d'un tir à l'autre. La blanche est loin de la bande : la main se pose à plat sur la surface de jeu."
+      expected: "La position de départ est la même pour les quatre tirs ; l'alignement est refait à chaque tir ; le corps reste immobile jusqu'à la fin du geste."
+      mistakes:
+        - {symptom: L'élève change de placement d'un tir à l'autre, fix: "Lui faire marquer ses pieds au sol avec un ruban de marquage, puis comparer au tir suivant."}
+        - {symptom: La queue n'est pas alignée avec la trajectoire de la blanche, fix: "Contrôler la ligne queue-blanche-point de contact en se plaçant derrière l'élève, sans le toucher."}
+      playful:
+        hook: "Une étoile par tir : la bille empochée et le corps immobile jusqu'à la fin du geste ; l'animateur passe de table en table pour valider."
+        challenge: "Réussir les quatre cibles de la croix en gardant exactement la même position ; échanger les rôles après chaque cible, le binôme observe sans corriger."
+      passes: 1
+      src: Prop
+game:
+  title: Série de 6 billes en bord de poche
+  source_game: 1
+  adapted: false
+  players: Défi à 2
+  materials: "Billes de couleur du jeu. Pour le défi ludique (proposition) : un tableau ou des jetons pour les étoiles."
+  setup_illustration: schema-jeu
+  rules:
+    - Les billes de couleur sont placées près des poches, une devant chacune des six poches.
+    - Le joueur en contrôle place librement la blanche sur la surface de jeu.
+    - Il doit réaliser une série de 6 billes d'affilée.
+    - "S'il manque une bille ou commet une faute, on replace toutes les billes et la main passe à l'adversaire, qui tente la série à son tour."
+  scoring: "On compte les billes empochées d'affilée à chaque tentative ; la série est réussie à 6 billes. La fiche ne précise pas de décompte entre les deux joueurs : convenir avant de jouer."
+  end: "Fin quand la série de 6 billes est réalisée ; la fiche ne fixe pas de nombre de manches."
+  playful_variant: >-
+    Proposition : chaque joueur a trois tentatives et sa plus longue série est
+    retenue ; la partie s'arrête après les trois tentatives de chacun, ou à la
+    fin du temps de jeu, même si personne n'a réalisé les six billes. Avant
+    chaque tir, le tireur annonce « aligné ! » ; l'animateur, qui passe de table
+    en table, donne une étoile quand la bille est empochée et que le corps est
+    resté immobile jusqu'à la fin du tir. Il y a égalité quand les deux plus
+    longues séries comptent le même nombre de billes : gagne alors le joueur qui
+    a le plus d'étoiles ; si les étoiles sont aussi à égalité, chacun rejoue une
+    tentative.
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Proposition : viser une série de trois billes au lieu de six, puis l'allonger d'une bille dès que tous la réussissent ; la fiche ne dit pas si la blanche est posée une seule fois pour la série ou avant chaque tir : annoncer avant de jouer que, pour ce jeu, elle est posée librement avant chaque tir. Rappeler les fautes courantes : blanche empochée, blanche qui ne touche aucune bille de couleur, bille sortie de la table. Jouer en relais, un joueur à la table et les autres qui regardent ; changer de table ou de binôme toutes les cinq minutes pour que chacun tire souvent."
+    adults: "Proposition : mêmes réglages que pour les enfants (série de trois billes, blanche posée avant chaque tir, fautes rappelées), car le public adulte est aussi débutant ; ne durcir qu'après un résultat observé, par exemple une série de trois réussie facilement, avec le jeu 2 de la fiche [S] (billes à un espace de bille des poches). Après la série, chaque joueur nomme le point de posture qui lui a fait manquer."
+  src: S   # titre, règles, score et fin du jeu 1 ; playful_variant et adaptation restent [Prop] (FORMAT § 5)
+review:
+  prompts:
+    - Quels trois éléments aligne-t-on avant de tirer ?
+    - De quel côté de la bille vise-t-on pour l'envoyer vers sa poche ?
+    - Quel tir as-tu le mieux réussi, et pourquoi ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 5, note: "Fiche technique n° 1, étape 1 : viser (alignement queue, blanche, point cible ; schéma « point de contact » et « point de visée »)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 6, note: "Fiche technique n° 1, étape 2 : posture (pieds, avant-bras vertical)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 7, note: "Fiche technique n° 1 : tête et œil directeur"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 8, note: "Fiche technique n° 1, étape 3 : chevalet sur cadre"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 9, note: "Fiche technique n° 1, étape 3 : chevalet main à plat"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 1, note: "Initiation 1 (4 billes, chevalet sur cadre) ; source dont est adapté l'exercice 1"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 2, note: "Initiation 2 (4 billes, chevalet sur la surface) ; source dont est adapté l'exercice 2"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 1, note: "Jeu 1 : série de 6 billes en bord de poche"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 2, note: "Jeu 2 : variante à un espace de bille des poches (durcissement conditionnel)"}
+uncertainties:
+  - "Les exercices 1 et 2 appartiennent au bloc `posture` [Prop] : taux, consignes et mise en place sont des propositions adaptées des initiations 1 et 2 [S], à valider par un animateur dans l'application."
+  - "L'initiation 1 et l'exercice 1 reprennent la même mise en place : l'initiation sert à laisser essayer sans corriger (conseil de la fiche), l'exercice est noté et porte les points de contrôle. Le bloc [Prop] ne remplace pas l'initiation."
+  - "Le jeu 1 [S] ne fixe pas le décompte entre les deux joueurs, le nombre de manches ni si la blanche est posée une fois ou avant chaque tir : tentatives, départage, pose de la blanche, liste de fautes, étoiles, binômes, relais et rotations sont des propositions (playful_variant, adaptation). La fiche ne définit pas non plus la « faute »."
+  - "Accueil (règles de conduite, matériel), section « Où envoyer la blanche ? » (côté de la bille opposé à la poche : lecture [Prop] du schéma « point de contact / point de visée » de la fiche, sans parler de bille fantôme, qui est l'objet d'une séance ultérieure), section gauchers et section « La queue vue de côté » (adultes) : propositions, la fiche ne les traite pas."
+  - "L'illustration `alignement` est un schéma de coupe [Prop] construit pour être cohérent avec les tirs de l'initiation 1 et de l'exercice 1 (coupes d'environ 16° à 36°) ; la fiche [S] ne montre qu'un schéma de dessus avec bille fantôme, non repris."
+  - "La fiche technique n° 1 conseille une première séance courte sur la posture (risque de rejet) : la durée de 90 ou 120 min est une contrainte de projet ; le poids de l'initiation et du jeu est relevé pour limiter l'explication. Pour les enfants, le chevalet main à plat (page 9) est réservé aux adultes en théorie et annoncé au moment de l'exercice 2."
+  - "L'avant-bras vertical se lit de profil (photos des pages 3 et 6 de la fiche) : la vue de dessus générée ne le porte pas, un renvoi à la page 6 le remplace. Le type `stance_top` ne produit qu'un schéma ; `tete-oeil` porte trois annotations sur ce schéma."
+  - "Initiation 1 : le PDF dit « 4 billes » alors que trois billes sont dessinées (la jaune du milieu est jouée deux fois) ; lecture du schéma reprise dans le diagramme transcrit, la consigne de replacer la jaune avant le troisième tir, comme celles de poser la blanche sur l'emplacement suivant et de replacer une bille non empochée, n'est pas dans la fiche : elle figure seulement dans l'exercice 1 [Prop] (le diagramme de proposition l'indique), pas dans le texte [S] de l'initiation."
+  - "L'exercice 1 ne discrimine pas la visée au centre de la bille et la visée du côté opposé à la poche : avec les billes au ras de la bande devant leur poche, une bille jouée plein centre entre aussi dans la poche (coupes théoriques de 16° à 37°, bille pleine suffisante). Le point de contrôle « côté opposé à la poche » est donc enseigné par la théorie [Prop] et le schéma `alignement`, mais non mis à l'épreuve par cet exercice ; à valider par l'animateur."
+  - "Le schéma d'initiation 1 [S] place le procédé légèrement au-dessus du centre (`upper_center`) ; la vue de côté de la séance (centre, queue à l'horizontale) est une simplification [Prop] pour la visée, signalée comme telle dans la section `attaque`."
+  - "Le type de chevalet de l'exercice 2 (sur la surface) vient du catalogue [Prop] ; la fiche d'initiation 2 dit seulement « adapter le chevalet »."
+  - "Le nom du thème « Le tireur d'élite » est conservé (identique dans posture-2, règle V23) ; l'image est adoucie dans le pitch. Le glossaire (07-glossaire.md) définit flèche et procédé ; la séance les glose en une parenthèse pour les enfants."

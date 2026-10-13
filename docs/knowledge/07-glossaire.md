@@ -8,6 +8,7 @@ Définitions tirées des sources `[S]` sauf mention contraire.
 | **Angle droit (coup en)** | Trajectoires des deux billes à 90° après impact, sans rotation, hors plein. |
 | **Attaque (haute / centre / basse)** | Point de contact du procédé sur la blanche : haut (coulé, rejet), centre (carreau, angle droit), bas (rétro). |
 | **Bille fantôme** | Blanche posée au contact de la bille à empocher pour visualiser le point d'impact ; retirée avant le tir. |
+| **Bloc proposé** | Bloc d'entraînement `[Prop]` (posture, bille fantôme) : absent des PDF, ajouté au catalogue, adapté de fiches `[S]` ; à valider par l'animateur, jamais présenté comme fédéral. |
 | **Blackball** | Billard à poches avec une blanche plus petite et plus légère que les billes de couleur. |
 | **Carreau** | Coup où la blanche s'arrête à l'impact (plein, attaque au centre, rotation nulle). |
 | **Casse** | Premier coup de la partie éclatant le losange de billes. |

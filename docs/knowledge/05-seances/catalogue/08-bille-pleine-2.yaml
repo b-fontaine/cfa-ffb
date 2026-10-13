@@ -1,0 +1,191 @@
+# Séance du catalogue : « Quantité de bille pleine », partie 2/2.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: bille-pleine-2
+order: 8
+technique: bille-pleine
+part: 2
+title: Quantité de bille pleine
+technical_sheets: [4]
+previous: bille-pleine-1
+catalogue_block: bille-pleine
+notion: Viser le centre de la bille de couleur, en ligne avec la poche, pour l'empocher en bille pleine.
+theme:
+  name: Tir plein cœur
+  pitch: >-
+    Le tir en plein cœur a trouvé sa cible, et chaque bille empochée droit
+    devant est un but. Aujourd'hui, même alignement, mais les tirs sont plus
+    longs, avec deux cibles à viser à la suite.
+recall:
+  points:
+    - En bille pleine, on vise le centre de la bille de couleur ; elle part droit.
+    - "Poche, bille, blanche : trois centres sur une même ligne."
+    - La bille de couleur file loin, la blanche parcourt peu.
+  question:
+    ask: Quelle ligne vérifie-t-on avant un tir en bille pleine, et quel point vise-t-on ?
+    answer: Poche, bille de couleur et blanche sont alignées ; on vise le centre de la bille de couleur.
+  # Illustration `visee-plein` de la séance précédente (bille-pleine-1) ; la théorie de cette séance
+  # n'utilise pas le même identifiant (son schéma local s'appelle `visee-plein-milieu`).
+  reuse: {sheet: bille-pleine-1, illustration: visee-plein}
+  src: S
+theory:
+  sections:
+    - id: alignement
+      title: Trois centres alignés
+      weight: {children: 2, adults: 2}
+      body:
+        - La bille de couleur part sur la ligne qui joint son centre au centre de la poche.
+        - Pour cela, le centre de la blanche doit être sur cette ligne au moment du choc.
+        - En bille pleine, on vise le centre de la bille de couleur ; le point visé est le point de contact.
+        - La bille de couleur suit alors la trajectoire de la blanche.
+      adult_extra:
+        - "La bille fantôme sert de contrôle : l'animateur pose une blanche au contact de la bille, sur la ligne de la poche, puis la retire avant le tir."
+        - "Au Blackball, la blanche est plus petite que les billes de couleur : le contact se fait légèrement au-dessus de l'équateur de la blanche, d'où des rejets différents des autres disciplines (fiche technique n° 4)."
+      key_point: Blanche, bille de couleur, poche, les trois centres sont alignés.
+      demo: "Poser une blanche en bille fantôme au contact de la bille, la retirer, puis tirer en visant sa place."
+      illustrations: [alignement-trois, visee-plein-milieu, contact-plein]
+      src: S
+    - id: chevalets
+      title: Deux chevalets, le même alignement
+      weight: {children: 1, adults: 1}
+      body:
+        - Le chevalet sur cadre s'appuie sur le cadre du billard ; le chevalet sur surface se pose sur le tapis.
+        - On change de chevalet, on garde le même alignement poche, bille, blanche.
+      key_point: On change de chevalet, on ne change pas d'alignement.
+      demo: "Tirer une même bille depuis un même repère une fois avec chaque chevalet (démonstration libre), puis faire les exercices 3 (surface) et 4 (cadre)."
+      illustrations: [chevalet-surface, chevalet-cadre]
+      src: Prop
+    - id: distance
+      title: Aligner et doser la puissance
+      weight: {children: 2, adults: 2}
+      body:
+        - Les billes doivent être parfaitement alignées avec la poche.
+        - On adapte la puissance à la distance.
+      key_point: Billes parfaitement alignées avec la poche, puissance adaptée à la distance.
+      demo: null
+      illustrations: [chevalet-cadre, fiche-plein]
+      src: S
+initiation:
+  - id: ini-6
+    initiation_sheet: 6
+    title: Deux billes en plein
+    weight: {children: 2, adults: 2}
+    setup: "Même fiche d'initiation qu'à la séance précédente ; on rejoue ses deux schémas, comme en partie 1 : la rouge vers la poche d'angle du haut à gauche, puis la jaune alignée avec la poche du milieu du haut (schéma illustré). Un tir par schéma ; on change seulement de chevalet d'un tir à l'autre."
+    goal: "Empocher 2 billes en bille pleine, une par schéma, un tir avec un chevalet sur la surface de jeu et un tir avec un chevalet sur cadre ; billes parfaitement alignées avec la poche, puissance adaptée."
+    expected: La bille de couleur part droit vers la poche ; la blanche parcourt peu.
+    scoring: {mode: counter, of: 2}
+    illustration: schema-initiation
+    src: S
+illustrations:
+  - {id: contact-plein, type: contact, fraction: full, tip_point: center,
+     caption: "Bille pleine : la blanche vise le centre de la bille de couleur.",
+     alt: "La blanche est alignée sur le centre de la bille de couleur, vue de dessus : le contact est plein."}
+  - {id: visee-plein-milieu, type: ghost_aim, cue: [4.0, 2.5], object: [4.0, 1.4], pocket: tm, fraction: full,
+     caption: "La bille fantôme est dans l'axe : blanche, bille et poche sont alignées.",
+     alt: "Blanche en bas, bille de couleur au-dessus, poche du milieu en haut, tout sur une même ligne ; la bille fantôme touche la bille de couleur dans cet axe."}
+  - {id: alignement-trois, type: table,
+     balls: [{id: w, color: white, at: [2.93, 3.04], role: cue},
+             {id: r, color: red, at: [5.5, 1.5], role: object}],
+     ghosts: [{id: g, at: [5.33, 1.6], role: impact, for: w}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[2.93, 3.04], [5.33, 1.6]], bounces: []},
+              {id: a2, ball: r, kind: object, path: [[5.5, 1.5], [8, 0]], bounces: [], to: tr}],
+     zones: [],
+     sequence: [{step: 1, cue: w, hit: r, contact: full, pocket: tr}],
+     caption: "Le centre de la blanche à l'impact, le centre de la rouge et la poche sont alignés.",
+     alt: "Table vue de dessus : la blanche en bas à gauche, une rouge au centre, la poche du haut à droite. Une ligne droite relie la blanche, la rouge et la poche ; la bille fantôme touche la rouge sur cette ligne."}
+  - {id: chevalet-surface, type: diagram_ref, diagram: entrainement-p04-e3,
+     caption: "Exercice 3, chevalet sur la surface : une cible à gauche, une cible à droite, un seul repère.",
+     alt: "Table vue de dessus : une rouge en haut à gauche et une jaune en haut à droite, la blanche au milieu de la moitié basse ; la blanche va vers chaque bille, qui part droit dans la poche d'angle."}
+  - {id: chevalet-cadre, type: diagram_ref, diagram: entrainement-p04-e4,
+     caption: "Exercice 4, chevalet sur cadre : deux jaunes près des poches du milieu, les trajets de la blanche se croisent.",
+     alt: "Table vue de dessus : deux jaunes l'une au-dessus de l'autre, près des poches du milieu ; deux repères pour la blanche à gauche, d'où les deux trajets se croisent."}
+  - {id: fiche-plein, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 14,
+     caption: "Fiche technique n° 4 : la quantité de bille pleine.",
+     alt: "Renvoi à la page 14 du PDF des fiches techniques, fiche n° 4 sur la bille pleine."}
+  - {id: schema-initiation, type: diagram_ref, diagram: initiation-p06-e2,
+     caption: "Initiation 6 : la jaune est jouée en bille pleine vers la poche du milieu du haut.",
+     alt: "Table vue de dessus : une jaune et la blanche alignées avec la poche du milieu du haut ; la jaune est empochée droit devant."}
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p06-j1,
+     caption: "Jeu 6 : la noire est placée dans le camp adverse, entouré de billes.",
+     alt: "Table vue de dessus : la noire et la blanche près de la ligne de départ, un camp entouré de quatre billes de chaque côté, et une flèche de la noire vers le camp adverse."}
+training:
+  exercises:
+    - id: e3
+      ref: {block: bille-pleine, n: 3}
+      diagram: entrainement-p04-e3
+      title: Deux cibles, un seul repère
+      weight: {children: 1, adults: 1}
+      setup: La rouge du schéma en haut à gauche, la jaune du schéma en haut à droite ; la blanche posée au même repère, au milieu de la table dans la moitié basse, pour les deux cibles.
+      instruction: Empocher la rouge vers la poche du haut à gauche, puis la jaune vers la poche du haut à droite, en bille pleine ; quatre tirs par cible, la blanche toujours replacée au même repère.
+      expected: Même repère pour tous les tirs ; chaque bille de couleur part droit vers sa poche.
+      mistakes:
+        - symptom: "La bille de couleur part de côté"
+          fix: "Poser la blanche en bille fantôme au contact puis la retirer, et revérifier blanche, bille, poche."
+        - symptom: "L'élève se relève avant la fin du tir"
+          fix: "Lui demander de garder la queue immobile jusqu'à l'arrêt de la bille de couleur."
+      playful:
+        hook: "Deux cibles, deux couleurs : l'équipe rouge et l'équipe jaune comptent chacune ses billes."
+        challenge: Annoncer la poche à voix haute avant chaque tir.
+      passes: 2
+      src: S
+    - id: e4
+      ref: {block: bille-pleine, n: 4}
+      diagram: entrainement-p04-e4
+      title: Le X vers les poches du milieu
+      weight: {children: 1, adults: 1}
+      setup: "Les deux jaunes du schéma, l'une au-dessus de l'autre, près des poches du milieu. Deux repères pour la blanche dans la partie gauche de la table, l'un en bas, l'autre en haut ; depuis le repère du bas on joue la jaune du haut, depuis le repère du haut la jaune du bas."
+      instruction: Empocher la jaune du haut dans la poche du milieu du haut, puis la jaune du bas dans la poche du milieu du bas, en bille pleine ; quatre tirs par jaune.
+      expected: Chaque jaune part droit dans sa poche du milieu ; la puissance s'adapte, l'alignement ne change pas.
+      mistakes:
+        - symptom: "La jaune passe à côté de la poche du milieu"
+          fix: "Faire montrer le centre de la jaune avant de tirer, puis vérifier la ligne jaune, poche."
+        - symptom: "Le coup est trop lent ou trop fort"
+          fix: "Adapter l'amplitude du geste à la distance sans changer l'alignement."
+      playful:
+        hook: Les deux trajets de la blanche se croisent en X à gauche de la table, avant les jaunes.
+        challenge: Réussir les quatre tirs d'une même jaune d'affilée.
+      passes: 2
+      src: S
+game:
+  title: Placer la noire dans une zone
+  source_game: 6
+  adapted: false
+  players: Partie à 2
+  materials: "Noire, blanche, quatre rouges et quatre jaunes pour matérialiser les camps. Pour la variante (proposition) : un tableau pour les étoiles."
+  setup_illustration: schema-jeu
+  rules:
+    - Chaque joueur tire 5 fois, à tour de rôle.
+    - Placer la noire en un tir dans le camp adverse, en la visant en bille pleine avec un chevalet sur cadre ; elle peut rebondir sur la petite bande.
+    - Le coup n'est pas valable en cas de faute ou si la noire touche une bille.
+    - Faire aussi jouer avec un chevalet sur la surface de jeu, en éloignant davantage la blanche et la noire de la bande.
+  scoring: Le premier joueur qui place 5 fois la noire dans le camp adverse gagne.
+  end: Fin dès qu'un joueur a placé 5 fois la noire dans le camp adverse.
+  playful_variant: "Deux équipes de deux, un tir chacun à tour de rôle ; le partenaire qui ne tire pas regarde où s'arrête la noire et le dit à voix haute. Une étoile au tableau pour chaque placement réussi ; à la fin de la manche, les équipes changent de côté."
+  link_previous:
+    notion_of: bille-pleine-1
+    rule: "Exception aux règles du jeu 6, avant chaque tir : le tireur annonce « plein cœur » ; les adultes montrent en plus du doigt, sur la noire, le centre qu'ils vont viser, comme le geste de la séance précédente, ici sur le centre. L'adversaire vérifie que ce centre, la blanche et le camp visé sont alignés."
+    note: "Rejoue l'annonce « plein cœur » de bille-pleine-1 ; le geste du doigt reste réservé aux adultes, comme à la séance précédente ; règle facultative, le jeu 6 se joue tel quel sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Agrandir la zone ou rapprocher le camp adverse de la noire (la fiche conseille de modifier la zone). Mise en place proposée, la fiche ne la précisant pas : chaque joueur tire depuis son côté, vers le camp de l'autre ; noire et blanche sont replacées sur leurs repères avant chaque tir, et la blanche est tirée sur la noire. Pour finir : après cinq tirs chacun, gagne qui a placé le plus de fois la noire ; en cas d'égalité, un tir de barrage chacun, à répéter. Tirage au sort pour commencer."
+    adults: "Réduire la zone pour augmenter la difficulté (la fiche conseille de modifier la zone). Mise en place proposée, comme pour les enfants : chaque joueur tire depuis son côté vers le camp de l'autre ; noire et blanche replacées sur leurs repères avant chaque tir, la blanche tirée sur la noire ; départage en cas d'égalité après cinq tirs chacun par un tir de barrage. Après la partie, noter où la noire s'arrête par rapport au camp (trop courte, trop longue, de côté) pour relier le résultat à la puissance et à l'alignement."
+  src: S   # titre, règles, score et fin du jeu 6 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
+review:
+  prompts:
+    - Avec quel chevalet la bille pleine t'a-t-elle semblé la plus facile ?
+    - Qu'est-ce qui change quand la bille est plus loin de la blanche ?
+    - Que dirais-tu à un copain pour aligner la blanche, la bille et la poche ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 14, note: "Fiche technique n° 4 (bille pleine, point de visée = point de contact, contact au-dessus de l'équateur au Blackball)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 13, note: "Fiche technique n° 3 (centre de la poche, centre de la bille, bille fantôme)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 6, note: "Initiation 6 (2 billes en plein, conseils : adapter la puissance, billes alignées avec la poche)"}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 4, note: "Entraînement « La quantité de bille pleine », exercices 3 et 4"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 6, note: Jeu 6}
+uncertainties:
+  - "Section « Deux chevalets, le même alignement » [Prop], défis ludiques, variante de jeu, règle de lien et adaptation du jeu : à valider par un animateur dans l'application. La différenciation enfants / adultes est aussi une proposition."
+  - "Le rappel reprend ce que bille-pleine-1 enseigne (centre visé, alignement poche-bille-blanche, énergie transmise) et réutilise son illustration `visee-plein` ; la mention des deux chevalets n'y est pas reprise, la fiche n° 4 ne les distinguant pas."
+  - "Initiation 6 : la fiche cite deux chevalets sans dire lequel va avec quel tir ; les deux schémas de la fiche (p06-e1 puis p06-e2) sont rejoués comme en partie 1, un tir chacun, en changeant de chevalet ; l'ordre des chevalets n'est pas imposé. L'illustration montre p06-e2 ; p06-e1 est montré à la séance précédente."
+  - "Exercice 3 : l'ordre des tirs n'est pas indiqué sur le schéma. Exercice 4 : le point d'impact du petit schéma (légèrement au-dessus du centre, lecture approximative), pour le chevalet sur cadre comme pour celui de l'initiation, diffère de l'attaque au centre enseignée à la séance précédente (section « Où frapper la blanche ? » [Prop]) ; à vérifier avec un animateur."
+  - "Le pitch (« le tir est plus long ») est une lecture [Prop] des schémas des exercices 3 et 4 ; la section de théorie « Aligner et doser la puissance » ne reprend que les deux conseils de la fiche d'initiation 6 (adapter la puissance, billes parfaitement alignées avec la poche)."
+  - "Jeu 6 : la fiche dit à la fois « 5 tirs à tour de rôle » et « le premier à placer 5 fois la noire gagne » ; le rôle de la blanche, le replacement, le camp visé par chaque joueur et le départage ne sont pas dans la source : ils sont tranchés en [Prop] dans `adaptation`, jamais dans `rules`, `scoring` ni `end`."

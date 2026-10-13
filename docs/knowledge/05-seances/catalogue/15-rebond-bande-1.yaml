@@ -1,0 +1,237 @@
+# Séance du catalogue : « Le rebond d'une bille sur une bande », partie 1/2.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: rebond-bande-1
+order: 15
+technique: rebond-bande
+part: 1
+title: Le rebond d'une bille sur une bande
+technical_sheets: [9]
+previous: finesse-1
+catalogue_block: rebond-bande
+notion: Viser un point de la bande pour que la blanche, jouée sans effet, touche une bille après un rebond.
+theme:
+  name: Le ricochet
+  pitch: >-
+    Comme un galet qui ricoche sur l'eau, la blanche rebondit sur la bande
+    pour atteindre sa cible. Chaque bille touchée par ricochet ajoute un
+    galet sur la mare dessinée au tableau.
+recall:
+  points:
+    - En finesse, la visée passe à côté de la bille de couleur ; seul son bord est touché.
+    - "Le transfert d'énergie est très faible : la blanche garde presque toute son énergie."
+    - La blanche dévie à peine de sa trajectoire de départ.
+    - La blanche parcourt un trajet bien plus long que la bille de couleur.
+  question:
+    ask: En finesse, que devient la blanche après le contact ?
+    answer: Elle garde presque toute son énergie et dévie à peine de sa trajectoire.
+  reuse: {sheet: finesse-1, illustration: trajectoires-finesse}
+  src: S
+theory:
+  sections:
+    - id: rebond
+      title: Le rebond sur la bande
+      weight: {children: 3, adults: 3}
+      body:
+        - Une bille jouée sans effet qui arrive sur une bande repart avec un angle de rebond égal à son angle d'arrivée.
+        - La qualité des bandes et du drap peut modifier légèrement cet angle.
+        - Pour toucher une bille par la bande, on vise donc un point de la bande, et non la bille.
+        - "La blanche a un rayon : elle ne touche pas la bande exactement au point que l'on vise."
+      key_point: Sans effet, l'angle de rebond est égal à l'angle d'arrivée.
+      demo: "Jouer la blanche sans effet vers la bande, à angle faible puis plus ouvert, et montrer chaque fois où elle repart."
+      illustrations: [rebond-egal, angles-compares]
+      src: S
+    - id: mots-bande
+      title: Les mots de la bande
+      weight: {children: 1}
+      body:
+        - "Sans effet : on frappe la blanche en son centre, sans la faire tourner sur le côté."
+        - "Bande avant : la bille jouée touche d'abord une bande, puis sa cible. Dans les exercices, c'est la blanche ; dans le jeu 13, c'est la bille de couleur jouée."
+        - "Bille objet : la bille à toucher. Bille obstacle : celle qui barre le chemin direct vers elle."
+        - "Comme un galet qui ricoche sur l'eau, la blanche repart de la bande avec le même angle."
+      key_point: Bande avant, c'est la bille jouée qui touche une bande avant de toucher sa cible.
+      demo: null
+      illustrations: [rebond-egal]
+      src: Prop
+    - id: point-vise
+      title: Viser un point de la bande
+      weight: {adults: 3}
+      body:
+        - "Le point où la blanche touche la bande (point d'impact) n'est pas le point que l'on vise."
+        - Avec un angle d'arrivée faible, le point d'impact et le point de visée sont proches.
+        - Plus l'angle d'arrivée est important, plus le point de visée s'éloigne du point d'impact.
+      adult_extra:
+        - "Le joueur tient compte de la sphéricité de la bille, donc de son rayon, pour entrer en contact avec la bande au point voulu."
+      key_point: Plus l'angle est important, plus on vise loin du point où la blanche touche la bande.
+      demo: "Jouer la situation B du schéma, avec un angle trop ouvert, et montrer où la blanche touche la bande par rapport au point visé."
+      illustrations: [schema-initiation-a, schema-initiation-b]
+      src: S
+    - id: consignes
+      title: Les bons réglages
+      weight: {children: 2, adults: 2}
+      body:
+        - On vise légèrement à côté du point commun à la bande et au trait.
+        - On vise le centre de la blanche, avec une puissance modérée.
+        - "Plus le coup est puissant, plus l'angle de rebond a tendance à se refermer : on garde donc une puissance modérée."
+      adult_extra:
+        - "Écart dans la fiche : le texte dit que l'angle se referme avec la puissance, la légende du schéma note « angle d'arrivée < angle de rebond » ; le texte est retenu."
+      key_point: "Centre de la blanche, puissance modérée : un coup trop puissant referme l'angle."
+      demo: null
+      illustrations: [attaque-centre, rebond-puissant]
+      src: S
+    - id: tete-relevee
+      title: Quand relever la tête ?
+      weight: {children: 1, adults: 1}
+      body:
+        - "Avant de se mettre en position, on relève la tête pour imaginer le chemin de la blanche."
+        - "Une fois en position, la tête reste sur la queue jusqu'au contact."
+      key_point: Tête relevée avant de se placer ; une fois placé, tête sur la queue jusqu'au contact.
+      demo: null
+      illustrations: []
+      src: Prop
+initiation:
+  - id: ini-11
+    initiation_sheet: 11
+    title: Toucher une bille par la bande
+    weight: {children: 3, adults: 3}
+    setup: "Situation A : la blanche, la bille obstacle (la jaune du schéma) et la bille objet (la rouge) alignées parallèlement à la grande bande, au niveau du trait dessiné sur le tapis ; la jaune à mi-chemin entre la blanche et la rouge. Situation B : même disposition de l'autre côté de la table, angle plus ouvert, vers la bande du bas."
+    goal: "Toucher la bille objet (la rouge) avec la blanche, qui doit d'abord rebondir sur une bande (la bande avant), en visant un point de la bande."
+    expected: "Le point visé est légèrement décalé, du côté de la bille objet, par rapport au point commun à la bande et au trait du tapis ; la blanche est visée au centre, avec une puissance modérée. Observer deux tirs d'essai en situation A, puis deux en situation B, avant de cocher la grille."
+    scoring:
+      mode: checklist
+      criteria:
+        - Vise légèrement à côté du point commun à la bande et au trait
+        - Vise le centre de la blanche
+        - Joue avec une puissance modérée
+        - La blanche touche la bille objet après la bande
+    illustration: schema-initiation-a
+    src: S
+illustrations:
+  - id: rebond-egal
+    type: angle
+    kind: bounce
+    vertex: [4.0, 0.0]
+    rays: [[2.4, 2.8], [5.6, 2.8]]
+    caption: "Sans effet, la blanche repart de la bande avec le même angle que celui d'arrivée (angles mesurés par rapport à la perpendiculaire à la bande)."
+    alt: "Table vue de dessus : la blanche arrive en biais sur un point de la bande du haut et repart de l'autre côté de la perpendiculaire, avec le même angle."
+  - id: angles-compares
+    type: table
+    balls:
+      - {id: wi, color: white, at: [0.8, 3.3]}
+      - {id: wf, color: white, at: [6.6, 3.5]}
+    ghosts:
+      - {id: g-important, at: [3.0, 0.1], role: impact, for: wi, label: "impact"}
+      - {id: g-faible, at: [6.9, 0.1], role: impact, for: wf, label: "impact"}
+    arrows:
+      - {id: a-important, ball: wi, kind: cue, path: [[0.8, 3.3], [3.0, 0.1], [5.2, 3.3]], bounces: [top], label: "angle important"}
+      - {id: a-faible, ball: wf, kind: cue, path: [[6.6, 3.5], [6.9, 0.1], [7.2, 3.5]], bounces: [top], label: "angle faible"}
+    zones: []
+    caption: "Angle d'arrivée important à gauche, faible à droite (angle mesuré par rapport à la perpendiculaire à la bande) : la blanche repart chaque fois avec le même angle. Le point visé n'est pas dessiné ici : voir la situation B de l'initiation 11 (schéma non à l'échelle)."
+    alt: "Table vue de dessus : deux blanches jouent vers la bande du haut ; celle de gauche arrive très en biais et repart symétriquement, celle de droite arrive presque perpendiculaire et repart presque droit vers le bas."
+  - id: rebond-puissant
+    type: table
+    balls:
+      - {id: w, color: white, at: [1.0, 3.5]}
+    ghosts:
+      - {id: g-impact, at: [3.0, 0.1], role: impact, for: w, label: "impact"}
+    arrows:
+      - {id: a-mesure, ball: w, kind: cue, path: [[1.0, 3.5], [3.0, 0.1], [5.0, 3.5]], bounces: [top], label: "coup à la mesure"}
+      - {id: a-puissant, ball: w, kind: cue, path: [[1.0, 3.5], [3.0, 0.1], [4.2, 3.5]], bounces: [top], label: "coup puissant"}
+    zones: []
+    caption: "Un coup puissant a tendance à refermer l'angle de rebond (schéma non à l'échelle)."
+    alt: "Table vue de dessus : la blanche monte vers un point de la bande du haut ; un premier trajet repart symétriquement, un second repart avec un angle plus resserré, plus près de la perpendiculaire à la bande."
+  - {id: attaque-centre, type: cue_side, tip_point: center, cue_height: level,
+     caption: "On vise le centre de la blanche : le procédé la frappe au centre.",
+     alt: "Vue de côté : la queue à plat frappe la blanche au milieu de sa hauteur."}
+  - {id: schema-initiation-a, type: diagram_ref, diagram: initiation-p11-sa,
+     caption: "Initiation 11, situation A : la blanche touche la bande au point d'impact, puis la rouge.",
+     alt: "Table vue de dessus : la blanche, une jaune obstacle à mi-chemin et une rouge alignées ; la blanche monte vers la bande du haut au point d'impact puis redescend toucher la rouge ; la ligne de visée se prolonge au-delà de la bande."}
+  - {id: schema-initiation-b, type: diagram_ref, diagram: initiation-p11-sb,
+     caption: "Initiation 11, situation B : angle plus ouvert, vers la bande du bas.",
+     alt: "Table vue de dessus : la blanche à droite, une jaune obstacle au milieu et une rouge à gauche, alignées ; la blanche descend vers la bande du bas au point d'impact puis repart vers la rouge."}
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p13-j1,
+     caption: "Jeu 13 : billes sur le trait, zone de replacement de la blanche, noire à droite ; une bille jouée avec bande avant impact.",
+     alt: "Table vue de dessus : trois rouges et une quatrième sur le trait, quatre jaunes en bas à gauche, la noire à droite ; une rouge monte vers la bande du haut puis redescend en diagonale vers la noire."}
+training:
+  exercises:
+    - id: e1
+      ref: {block: rebond-bande, n: 1}
+      diagram: entrainement-p15-e1
+      title: La mare aux galets
+      weight: {children: 1, adults: 1}
+      setup: La blanche sur son repère près de la poche d'angle du bas à gauche ; la noire du schéma entre la blanche et la première rouge, elle reste en place et ne doit pas être touchée ; les rouges numérotées du schéma alignées près de la bande du bas.
+      instruction: Jouer cinq tirs de suite, dans l'ordre des numéros, de la rouge 1 à la dernière ; chaque fois, toucher la rouge visée avec la blanche après un rebond sur la bande du haut, et replacer la blanche sur son repère avant le tir suivant.
+      expected: "La blanche touche la bande du haut puis la rouge visée sans toucher la noire ; le point visé sur la bande change d'une rouge à l'autre. Attaque au centre de la blanche (le petit schéma de la fiche la dessine un peu au-dessus du centre : écart signalé dans les incertitudes)."
+      mistakes:
+        - {symptom: L'élève vise la rouge au lieu d'un point de la bande, fix: "Lui faire montrer du doigt le point de la bande qu'il vise avant de tirer."}
+        - {symptom: La blanche touche la bande trop près ou trop loin de la rouge, fix: "Faire relever la tête avant de se placer pour projeter le parcours de la blanche (puis tête sur la queue jusqu'au contact) et rappeler de viser légèrement à côté du point commun."}
+        - {symptom: Le coup est trop puissant et la blanche repart sur un angle plus fermé, fix: "Revenir à une puissance modérée."}
+      playful:
+        hook: Chaque rouge touchée après la bande ajoute un galet sur la mare dessinée au tableau.
+        challenge: Toucher toutes les rouges du schéma à la suite, sans changer le repère de départ de la blanche.
+      passes: 2
+      src: S
+    - id: e2
+      ref: {block: rebond-bande, n: 2}
+      diagram: entrainement-p15-e2
+      title: Le ricochet à distance variable
+      weight: {children: 1, adults: 1}
+      setup: La blanche sur son repère près de la poche d'angle du haut à gauche, la noire et la rouge du schéma laissées en place à côté d'elle, comme obstacles à ne pas toucher ; les jaunes numérotées du schéma alignées à mi-hauteur de la table.
+      instruction: Jouer cinq tirs de suite, dans l'ordre des numéros, de la jaune 1 à la dernière ; chaque fois, toucher la jaune visée avec la blanche après un rebond sur la bande du haut, et replacer la blanche sur son repère avant le tir suivant.
+      expected: La blanche rebondit sur la bande du haut puis touche la jaune visée ; le point visé sur la bande se décale d'une jaune à l'autre.
+      mistakes:
+        - {symptom: L'angle est trop ouvert et la blanche passe loin de la jaune, fix: "Montrer l'effet d'un angle trop ouvert sur le point d'impact (situation B de l'initiation) et reprendre le point visé."}
+        - {symptom: La blanche touche la bande à droite ou à gauche du point annoncé, fix: "Refaire annoncer le point visé et vérifier l'alignement de la queue sur le centre de la blanche."}
+      playful:
+        hook: Le tireur annonce le point de la bande qu'il vise ; l'observateur dit où la blanche l'a vraiment touchée.
+        challenge: En binôme, réussir deux jaunes de suite en ayant annoncé le bon point, puis échanger les rôles.
+      passes: 1
+      src: S
+game:
+  title: "Pétanque avec bande avant impact"
+  source_game: 13
+  adapted: false
+  players: Deux joueurs ou deux équipes de deux
+  materials: "Billes du jeu complet : la noire et un groupe de billes de couleur par camp, posées sur le trait. Pour la variante ludique (proposition) : un tableau et des jetons."
+  setup_illustration: schema-jeu
+  rules:
+    - Pour chaque tir, la blanche est placée librement dans la zone de replacement ; chaque bille de couleur est posée librement sur le trait.
+    - À l'aide de la blanche, le joueur propulse la noire ; en replaçant la blanche à la main, il joue une des billes de son groupe pour la placer au plus près de la noire.
+    - Chaque coup doit être effectué avec une bande avant impact.
+    - Le coup n'est pas valable si aucune bille ne touche une bande, ou si la bille de couleur jouée touche une autre bille avant un rebond sur une bande.
+    - L'adversaire tente à son tour de placer une de ses billes plus près de la noire ; s'il y parvient, la main passe, sinon il rejoue jusqu'à y parvenir ou jusqu'à ne plus avoir de billes.
+  scoring: On compte le plus grand nombre de billes du même groupe au plus près de la noire ; le premier joueur à atteindre 8 points gagne.
+  end: Fin de la partie quand un joueur atteint 8 points.
+  playful_variant: "Avant chaque tir, annoncer et montrer du doigt le point de la bande visé ; si la bille jouée y touche la bande, le joueur gagne un jeton, et un jeton permet de rejouer une fois un tir invalidé."
+  link_previous:
+    notion_of: finesse-1
+    rule: "Exception facultative aux règles du jeu 13, une fois par manche et par camp : quand une bille de couleur de son groupe est posée sur le trait près d'une bande, le joueur annonce « finesse » et le point de la bande où cette bille doit passer. La blanche, replacée à la main, frôle la bille de couleur par son bord ; la bille de couleur, à peine poussée, doit toucher la bande annoncée avant toute autre bille. L'adversaire contrôle seulement deux choses : la blanche n'a touché que le bord de la bille de couleur, et celle-ci a touché la bande avant toute autre bille."
+    note: "Fait rejouer la finesse de la séance précédente (très faible transfert d'énergie, la bille de couleur parcourt peu) avec une bande avant impact portée par la bille de couleur, comme dans le schéma du jeu 13, d'où la bille posée près d'une bande ; règle facultative, le jeu 13 se joue tel quel sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "But du jeu 13 d'après la fiche : visualiser les trajectoires après le rebond d'une bille sur une bande. Déroulé proposé (la fiche ne le précise pas) : un camp les rouges, l'autre les jaunes, quatre billes chacun comme sur le schéma ; tirage au sort pour ouvrir. Une manche : l'ouvreur propulse la noire avec la blanche, puis, la blanche replacée à la main avant chaque tir, les camps jouent selon les règles ci-dessus jusqu'à ce que toutes les billes soient jouées. Décompte comme à la pétanque : le camp dont une bille est la plus proche de la noire marque un point par bille de son groupe plus proche de la noire que la meilleure bille de l'autre camp ; il ouvre la manche suivante. Pour des tirs plus courts : l'animateur pose lui-même la noire plus près du trait, ou on choisit un trait plus proche de la zone de replacement de la blanche. Objectif réduit à 4 points ; partie limitée à 15 minutes, au-delà gagne qui a le plus de points."
+    adults: "But du jeu 13 d'après la fiche : visualiser les trajectoires après le rebond d'une bille sur une bande. Déroulé proposé (la fiche ne le précise pas) : tirage au sort pour ouvrir ; une manche = la noire propulsée par l'ouvreur, puis toutes les billes des deux camps jouées selon les règles ci-dessus, la blanche replacée à la main avant chaque tir ; décompte comme à la pétanque (un point par bille d'un camp plus proche de la noire que la meilleure bille de l'autre camp) ; le camp qui marque ouvre la manche suivante ; premier à 8 points. Après la partie, noter où la bande avant impact échoue (angle trop ouvert, puissance trop forte) et le comparer au taux des exercices. Variante plus difficile : imposer à chaque tir la bande du haut ou celle du bas, tirée au sort."
+  src: S   # titre, règles, score et fin du jeu 13 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
+review:
+  prompts:
+    - Où vise-t-on pour toucher une bille par la bande ?
+    - Que sais-tu de l'angle avec lequel la blanche arrive et de celui avec lequel elle repart ?
+    - Que dirais-tu à un copain pour trouver le bon point sur la bande ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 19, note: "Fiche technique n° 9 (rebond sur bande : angle de rebond égal à l'angle d'arrivée, point de visée et point d'impact, puissance)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 18, note: "Fiche technique n° 8 (finesses, pour le rappel)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 11, note: "Initiation 11 (toucher une bille par bande avant, situations A et B)"}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 15, note: "Entraînement « Le rebond d'une bille sur une bande », exercices 1 et 2 (jouer une bande avant)"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 13, note: "Jeu 13 (« pétanque » avec bande avant impact)"}
+uncertainties:
+  - "Mises en place en texte, défis ludiques, variante de jeu (jetons compris), règle de lien et adaptation du jeu : [Prop], à valider par un animateur dans l'application. La différenciation enfants / adultes (poids, compléments, adaptation du jeu) est aussi une proposition."
+  - "Les sections « Les mots de la bande » (enfants : glose de « sans effet », « bande avant », « bille objet », « bille obstacle », métaphore du galet) et « Quand relever la tête ? » sont des propositions [Prop] ; les schémas « angles-compares » et « rebond-puissant » sont générés, non à l'échelle (l'écart entre point visé et point d'impact n'y est pas dessiné : voir les schémas de l'initiation 11). Ces termes ne figurent pas dans 07-glossaire.md (à compléter hors de cette séance)."
+  - "Tête : le conseil de la fiche d'initiation 11 (« relever légèrement la tête pour projeter le parcours de la blanche ») s'adresse à l'animateur ; la séance le précise comme une proposition (tête relevée avant de se placer, puis sur la queue jusqu'au contact, en accord avec posture-1)."
+  - "Écart interne à la fiche n° 9 : le texte dit que l'angle de rebond se referme avec la puissance, la légende du schéma note « angle d'arrivée < angle de rebond » ; le texte est retenu et l'écart est signalé aux adultes (voir 00-provenance-et-fiabilite.md). La lecture « repart plus près de la perpendiculaire à la bande » vient de la transcription YAML du schéma (techniques-p19), pas du texte de la fiche ; le sens dépend de l'angle mesuré par rapport à la bande ou à la perpendiculaire, et seul le schéma « rebond-puissant » (non à l'échelle) la montre."
+  - "Attaque : la séance affirme une attaque au centre (initiation 11, exercice 2) mais le petit schéma de l'exercice 1 [S] dessine le point bleu un peu au-dessus du centre de la blanche (non quantifié) ; l'écart est signalé dans l'attendu de l'exercice 1."
+  - "Exercices 1 et 2 : le PDF ne dessine que deux flèches (vers les cibles 1 et 2) et ne dit pas comment jouer les cibles 3 à 5 ; la séance les joue toutes, cinq tirs de suite dans l'ordre des numéros, depuis le même repère (lecture de la ligne de cinq tirs du taux). Le type de chevalet n'est pas donné."
+  - "Exercice 1 : la noire est lue comme obstacle entre la blanche et la première rouge (alignement du schéma), ce que le texte ne dit pas. Exercice 2 : le rôle de la noire et de la rouge groupées près de la blanche n'est pas précisé ; la séance les laisse en place comme obstacles à ne pas toucher."
+  - "Initiation 11 : la fiche ne chiffre aucun objectif ; la notation est une grille des consignes de la fiche (visée à côté du trait, centre de la blanche, puissance modérée) et du résultat, non enregistrée dans le suivi ; le nombre de tirs d'essai observés (deux par situation) est une proposition. Le sens du décalage est lu « du côté de la bille objet » (ligne de visée du schéma [S]) ; la fiche dit « légèrement à droite », y compris en situation B où la bille objet est à gauche."
+  - "Jeu 13 : le schéma [S] montre une rouge (« bille jouée ») qui part de la zone du trait vers la bande puis vers la noire, avec la blanche en position de départ ; la fiche ne dit pas explicitement quelle bille doit toucher la bande. La clause « si la bille de couleur jouée touche une autre bille avant un rebond sur une bande » et le schéma font lire la bande avant impact comme celle de la bille de couleur jouée ; la séance retient cette lecture dans la variante ludique et la règle de lien, et la section « Les mots de la bande » précise que le jeu 13 emploie « bande avant » pour la bille jouée (dans les exercices, c'est la blanche). Les règles [S] reprennent le replacement de la blanche à chaque tir et le tir de la noire par la blanche avant de jouer une bille de couleur. Le déroulé (qui ouvre, manche, décompte), le nombre de billes par camp, l'objectif réduit à 4 points et la limite de temps sont des propositions (adaptation)."
+  - "Le rappel s'appuie sur finesse-1 (illustration trajectoires-finesse reprise, contrôlée par V7)."

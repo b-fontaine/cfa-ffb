@@ -1,0 +1,159 @@
+# [Prop] Mise en place des exercices du bloc proposé « Posture, visée et coup de queue ».
+# Ce n'est PAS une transcription d'un PDF : les positions sont reprises (à la précision de la
+# transcription) des schémas `[S]` des fiches d'initiation 1 à 4 et du jeu 1, puis assemblées en
+# exercices progressifs par la présente base. Aucun de ces exercices n'est fédéral.
+version: 1
+source: {file: "Proposition (hors PDF)", page: 1, rank: Prop}
+diagrams:
+  - id: proposition-p01-e1
+    kind: exercise
+    sheet: "Posture, visée et coup de queue"
+    exercise: 1
+    caption: "Proposition : empocher 4 tirs (3 billes, la jaune deux fois) depuis 4 emplacements de la blanche, chevalet sur cadre."
+    success_rate: [3, 4]
+    bridge: frame
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.16, 0.13]}
+      - {id: y1, color: yellow, at: [4.0, 0.13]}
+      - {id: r2, color: red, at: [7.84, 0.18]}
+      - {id: w, color: white, at: [1.01, 3.57], role: cue, label: "1"}
+    ghosts:
+      - {id: g2, at: [3.0, 3.57], role: cue_start, for: w, label: "2"}
+      - {id: g3, at: [5.02, 3.57], role: cue_start, for: w, label: "3"}
+      - {id: g4, at: [6.97, 3.57], role: cue_start, for: w, label: "4"}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.01, 3.45], [0.36, 0.68]], bounces: [], to: tl}
+      - {id: a2, ball: w, kind: cue, path: [[3.0, 3.45], [3.96, 0.56]], bounces: [], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[5.02, 3.45], [4.06, 0.56]], bounces: [], to: tm}
+      - {id: a4, ball: w, kind: cue, path: [[6.97, 3.45], [7.66, 0.56]], bounces: [], to: tr}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: r1, pocket: tl}
+      - {step: 2, cue: w, hit: y1, pocket: tm}
+      - {step: 3, cue: w, hit: y1, pocket: tm}
+      - {step: 4, cue: w, hit: r2, pocket: tr}
+    inset: {contact: none, tip_point: upper_center, bridge_height: frame}
+    annotations:
+      - "[Prop] Exercice proposé, adapté de la fiche d'initiation 1 [S] ; ce n'est pas un exercice fédéral."
+      - "[Prop] Taux 3 sur 4 : proposition, non issue d'une fiche fédérale ; il porte sur 4 tirs, pas sur 4 billes distinctes."
+      - "Quatre tirs, un depuis chacun des quatre emplacements de la blanche. La jaune du milieu est visée deux fois (tirs 2 et 3) : la replacer sur sa mise en place avant le tir 3."
+      - "Ne pas corriger si la blanche est empochée (conseil [S] de la fiche d'initiation 1)."
+      - "[Prop] Viser d'abord, se placer ensuite : ordre de travail proposé, qui ne figure pas dans la fiche d'initiation 1."
+    description: >-
+      Table vue de dessus, départ à gauche. Trois billes sont posées au ras de la bande du haut, chacune devant une
+      poche : rouge dans le coin haut gauche (tl), jaune devant la poche du milieu haut (tm), rouge dans le coin haut
+      droit (tr). Quatre emplacements pour la blanche sont alignés près de la bande du bas, à y vers 3,6 et x vers
+      1,0 ; 3,0 ; 5,0 et 7,0 (le premier porte la blanche, numérotés de 1 à 4). De chaque emplacement part une
+      flèche vers la bille à empocher ; chevalet sur cadre ([Prop] : la blanche est proche de la bande, le cadre sert de support ; cette précision ne figure pas dans la fiche d'initiation 1).
+    uncertainties:
+      - "[Prop] Mise en place reprise de initiation-p01-e1 [S] (positions à ≈ 0,15 case près) ; l'ordre des tirs est une proposition."
+      - "[Prop] Rayon des billes et ligne de départ : valeurs du FORMAT, non mesurées."
+      - "[Prop] Écart avec le schéma source initiation-p01-e1 [S] : le chevalet sur le cadre est imposé ici (bridge_height: frame, progression cadre vers surface de la proposition) ; le schéma source indique bridge_height: surface. Le point d'impact du tip (upper_center) est repris de la source."
+
+  - id: proposition-p01-e2
+    kind: exercise
+    sheet: "Posture, visée et coup de queue"
+    exercise: 2
+    caption: "Proposition : empocher 4 billes depuis un même emplacement, chevalet sur la surface de jeu."
+    success_rate: [3, 4]
+    bridge: surface
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.15, 0.16]}
+      - {id: y1, color: yellow, at: [3.89, 0.16]}
+      - {id: y2, color: yellow, at: [0.21, 3.82]}
+      - {id: r2, color: red, at: [3.96, 3.84]}
+      - {id: w, color: white, at: [1.82, 2.01], role: cue}
+    ghosts: []
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.82, 2.01], [0.33, 0.33]], bounces: [], to: tl}
+      - {id: a2, ball: w, kind: cue, path: [[1.82, 2.01], [3.75, 0.38]], bounces: [], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[1.82, 2.01], [0.35, 3.67]], bounces: [], to: bl}
+      - {id: a4, ball: w, kind: cue, path: [[1.82, 2.01], [3.86, 3.67]], bounces: [], to: bm}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: r1, contact: none, pocket: tl}
+      - {step: 2, cue: w, hit: y1, contact: none, pocket: tm}
+      - {step: 3, cue: w, hit: y2, contact: none, pocket: bl}
+      - {step: 4, cue: w, hit: r2, contact: none, pocket: bm}
+    inset: {contact: full, tip_point: center, bridge_height: surface}
+    annotations:
+      - "[Prop] Exercice proposé, adapté de la fiche d'initiation 2 [S] ; ce n'est pas un exercice fédéral."
+      - "[Prop] Taux 3 sur 4 : proposition, non issue d'une fiche fédérale."
+      - "Replacer la blanche au centre après chaque tir (conseil [S] de la fiche d'initiation 2)."
+    description: >-
+      Table vue de dessus, départ à gauche. Quatre billes sont posées chacune tout près d'une poche : rouge dans
+      l'angle haut gauche (tl), jaune près de la poche du milieu haut (tm), jaune dans l'angle bas gauche (bl),
+      rouge près de la poche du milieu bas (bm). La blanche est au centre de la ligne de départ (x vers 1,8 ;
+      y vers 2,0) ; quatre flèches en croix partent d'elle vers chacune des billes. Chevalet sur la surface de jeu.
+    uncertainties:
+      - "[Prop] Mise en place reprise de initiation-p02-e1 [S] (positions à ≈ 0,15 case près) ; l'ordre des tirs est une proposition."
+
+  - id: proposition-p01-e3
+    kind: exercise
+    sheet: "Posture, visée et coup de queue"
+    exercise: 3
+    caption: "Proposition : empocher 8 billes (2 cibles depuis chacun des 4 emplacements), chevalet sur la surface de jeu."
+    success_rate: [6, 8]
+    bridge: surface
+    table: {view: top, head_end: left}
+    balls:
+      - {id: w, color: white, at: [1.77, 0.44], role: cue, label: "1"}
+      - {id: b8, color: black, at: [7.81, 0.18]}
+      - {id: r1, color: red, at: [7.81, 3.79]}
+    ghosts:
+      - {id: g2, at: [1.77, 1.49], role: cue_start, for: w, label: "2"}
+      - {id: g3, at: [1.77, 2.50], role: cue_start, for: w, label: "3"}
+      - {id: g4, at: [1.77, 3.53], role: cue_start, for: w, label: "4"}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[1.77, 0.44], [7.55, 0.29]], bounces: [], to: tr}
+      - {id: a2, ball: w, kind: cue, path: [[1.77, 0.44], [7.65, 3.62]], bounces: [], to: br}
+    zones: []
+    sequence:
+      - {step: 1, cue: w, hit: b8, contact: full, pocket: tr}
+      - {step: 2, cue: w, hit: r1, contact: full, pocket: br}
+    inset: {contact: full, tip_point: center, bridge_height: surface}
+    annotations:
+      - "[Prop] Exercice proposé, adapté de la fiche d'initiation 3 [S] ; ce n'est pas un exercice fédéral."
+      - "[Prop] Taux 6 sur 8 : proposition, non issue d'une fiche fédérale."
+      - "Huit tirs : les deux cibles sont jouées depuis chacun des quatre emplacements (déduction [Prop] d'après « 8 billes »)."
+      - "Replacer la blanche et les billes entre deux tirs."
+    description: >-
+      Table vue de dessus, départ à gauche. Quatre emplacements pour la blanche sont alignés sur la ligne de départ
+      (x vers 1,8 ; y vers 0,4 ; 1,5 ; 2,5 et 3,5). Deux cibles à l'autre bout de la table : la noire près du coin haut
+      droit (tr) et une rouge près du coin bas droit (br). Depuis chaque emplacement, on joue les deux cibles ;
+      chevalet sur la surface de jeu.
+    uncertainties:
+      - "[Prop] Mise en place reprise de initiation-p03-e1 [S] ; le schéma source ne dessine les flèches que depuis le cercle du haut."
+
+  - id: proposition-p01-e4
+    kind: exercise
+    sheet: "Posture, visée et coup de queue"
+    exercise: 4
+    caption: "Proposition : empocher 6 billes en bord de poche à la suite, blanche placée librement."
+    success_rate: [4, 6]
+    bridge: unknown
+    table: {view: top, head_end: left}
+    balls:
+      - {id: r1, color: red, at: [0.15, 0.15]}
+      - {id: r2, color: red, at: [3.95, 0.2]}
+      - {id: r3, color: red, at: [7.8, 0.15]}
+      - {id: r4, color: red, at: [0.17, 3.88]}
+      - {id: r5, color: red, at: [3.98, 3.9]}
+      - {id: r6, color: red, at: [7.8, 3.8]}
+    ghosts: []
+    arrows: []
+    zones: []
+    inset: {contact: none, tip_point: center, bridge_height: surface}
+    annotations:
+      - "[Prop] Exercice proposé, adapté du jeu 1 (« Série de 6 billes en bord de poche ») [S] et de la fiche d'initiation 4 [S] ; ce n'est pas un exercice fédéral."
+      - "[Prop] Taux 4 sur 6 : proposition, non issue d'une fiche fédérale. Le jeu 1 [S] demande 6 billes d'affilée ; l'exercice le réduit à 4 réussites sur 6 tirs [Prop]."
+      - "L'élève place la blanche librement avant chaque tir et choisit son chevalet (cadre ou surface, au choix) ; rester immobile jusqu'à la fin du tir (fiche d'initiation 4 [S])."
+    description: >-
+      Table vue de dessus, sans bille blanche : l'élève la place librement. Six billes rouges sont posées en bord de
+      poche, une devant chacune des six poches (quatre coins et deux poches du milieu). Aucune flèche, aucun
+      cercle, aucune zone. Le chevalet n'est pas imposé.
+    uncertainties:
+      - "[Prop] Mise en place reprise de jeux-p01-j1 [S] (positions à ≈ 0,1 case près)."
+      - "[Prop] Le type de chevalet est laissé au choix de l'élève (bridge: unknown)."

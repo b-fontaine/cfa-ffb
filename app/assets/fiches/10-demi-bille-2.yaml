@@ -1,0 +1,197 @@
+# Séance du catalogue : « Quantité demi-bille », partie 2/2.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: demi-bille-2
+order: 10
+technique: demi-bille
+part: 2
+title: Quantité demi-bille
+technical_sheets: [5]
+previous: demi-bille-1
+catalogue_block: demi-bille
+notion: Viser la tangente de la bille de couleur pour empocher en demi-bille.
+theme:
+  name: Le partage du gâteau
+  pitch: >-
+    Le gâteau est maintenant posé plus loin sur la table, à gauche comme à droite.
+    Pour le partager en deux parts égales, il faut garder la même visée et
+    soigner le geste.
+recall:
+  points:
+    - En demi-bille, la blanche couvre la moitié de la bille de couleur.
+    - On vise la tangente de la bille de couleur avec le centre de la blanche.
+    - La bille de couleur part à environ 30° de l'axe de visée.
+  question:
+    ask: Où vise-t-on en demi-bille, et de combien la bille de couleur est-elle déviée ?
+    answer: La tangente de la bille de couleur ; environ 30° par rapport à l'axe de visée.
+  reuse: {sheet: demi-bille-1, illustration: contact-demi}
+  src: S
+theory:
+  sections:
+    - id: retenir
+      title: Viser la tangente en demi-bille
+      weight: {children: 1, adults: 1}
+      body:
+        - La blanche couvre la moitié de la bille de couleur.
+        - On vise la tangente de la bille de couleur avec le centre de la blanche.
+        - L'animateur pose une blanche au contact de la bille à empocher ; le joueur vise le centre de cette bille fantôme avec le centre de la blanche, puis l'animateur la retire avant le tir.
+      adult_extra:
+        - Le point de visée est différent du point d'impact ; la bille de couleur est déviée d'environ 30° par rapport à l'axe de visée.
+      key_point: Le centre de la blanche passe sur la tangente de la bille de couleur.
+      demo: "Poser une blanche au contact de la bille à empocher, la retirer avant le tir, puis faire observer le point visé sur la bille de couleur."
+      illustrations: []
+      src: S
+    - id: fantome-cote
+      title: Où poser la bille fantôme
+      weight: {children: 1, adults: 1}
+      body:
+        - La bille fantôme se pose collée à la bille de couleur, côté opposé à la poche, sur la ligne qui joint le centre de la bille au centre de la poche.
+        - Viser le centre de la bille fantôme revient à viser la tangente de la bille de couleur.
+      key_point: La bille fantôme est collée à la bille de couleur, côté opposé à la poche.
+      demo: null
+      illustrations: [visee-autre-cote]
+      src: Prop
+    - id: loin
+      title: Plus loin, la même demi-bille
+      weight: {children: 2, adults: 2}
+      body:
+        - Quand la blanche est loin, une petite erreur de visée devient grande à l'arrivée.
+        - On garde la même visée ; seul le geste s'allonge, et on l'accompagne jusqu'au bout.
+      adult_extra:
+        - "Chercher l'origine de l'erreur : le point visé, ou la queue qui dévie pendant le geste (lire la position finale de la queue, fiche technique n° 1)."
+      key_point: Plus la blanche est loin, plus on soigne l'alignement.
+      demo: "Jouer la même demi-bille depuis un repère proche puis depuis un repère éloigné et comparer où part la bille de couleur."
+      illustrations: [pres-loin]
+      src: Prop
+    - id: cadre
+      title: Le chevalet sur cadre
+      weight: {children: 1, adults: 1}
+      body:
+        - Le chevalet sur cadre prend appui sur le cadre de la table, un support naturel.
+        - "Le chevalet change, la visée reste la même : la tangente."
+      key_point: Le chevalet change, la visée ne change pas.
+      demo: null
+      illustrations: []
+      src: Prop
+    - id: lire-erreur
+      title: Lire ses erreurs à l'exercice 4
+      weight: {adults: 1}
+      body:
+        - Après chaque tir de l'exercice 4, noter si la bille de couleur passe à gauche ou à droite de la poche.
+        - Une erreur toujours du même côté se corrige par le point de visée ; une erreur qui change de côté se cherche dans le geste.
+      key_point: Une erreur qui a un sens se corrige ; une erreur sans sens se cherche dans le geste.
+      demo: null
+      illustrations: []
+      src: Prop
+initiation:
+  - id: ini-7
+    initiation_sheet: 7
+    title: Près puis loin
+    weight: {children: 2, adults: 2}
+    setup: Une bille rouge sous la poche du milieu du haut ; les deux repères proches en V du schéma, puis un repère plus loin sur la même ligne de visée.
+    goal: "Empocher la rouge en demi-bille depuis un repère proche, puis depuis un repère plus loin, avec un chevalet sur la surface de jeu puis un chevalet sur cadre."
+    expected: Le contact reste en demi à chaque distance et la rouge part vers la poche ; la visée ne change pas.
+    scoring: {mode: counter, of: 2}
+    illustration: schema-initiation
+    src: Prop
+illustrations:
+  - {id: visee-autre-cote, type: ghost_aim, cue: [1.24, 3.28], object: [3.0, 2.0], pocket: tm, fraction: half,
+     caption: "Même visée en demi, depuis un autre endroit : la bille fantôme est collée à la bille de couleur, sur la ligne de la poche, côté opposé à la poche.",
+     alt: "Table vue de dessus : la blanche en bas à gauche, la bille de couleur au centre, la poche du milieu du haut ; la bille fantôme est collée à la bille de couleur, côté opposé à la poche, et la ligne de visée y arrive."}
+  - {id: pres-loin, type: table,
+     balls: [{id: r, color: red, at: [4.0, 1.2]}, {id: w, color: white, at: [2.7, 3.65], role: cue}],
+     ghosts: [{id: g-pres, at: [3.4, 2.44], role: cue_start, label: "1"},
+              {id: g-loin, at: [2.7, 3.65], role: cue_start, label: "2"},
+              {id: g-impact, at: [4.0, 1.4], role: impact, for: w}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[2.7, 3.65], [4.0, 1.4]], bounces: []},
+              {id: a2, ball: r, kind: object, path: [[4.0, 1.2], [4.0, 0.0]], bounces: [], to: tm}],
+     zones: [],
+     caption: "Même demi-bille depuis deux distances : repère 1 près, repère 2 loin ; la visée est la même, la ligne est plus longue.",
+     alt: "Table vue de dessus : une bille rouge sous la poche du milieu du haut ; deux repères de blanche alignés sur la même ligne oblique, l'un près et l'autre loin ; la blanche touche la rouge en demi et la rouge part droit vers la poche."}
+  - {id: schema-initiation, type: diagram_ref, diagram: initiation-p07-e1,
+     caption: "Initiation 7 : la rouge est jouée en demi depuis les repères en V ; ajouter un repère plus loin (proposition).",
+     alt: "Table vue de dessus : une bille rouge sous la poche du milieu du haut, deux repères de blanche à courte distance, la blanche touche la rouge en demi."}
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p07-g1,
+     caption: "Jeu 7 : une bille rouge et une bille jaune près des poches de gauche (le schéma ne montre que deux billes).",
+     alt: "Table vue de dessus : la blanche au centre gauche ; une rouge près de la poche du haut à gauche et une jaune près de la poche du bas à gauche, chacune jouée en demi-bille."}
+training:
+  exercises:
+    - id: e3
+      ref: {block: demi-bille, n: 3}
+      diagram: entrainement-p06-e3
+      title: Deux gâteaux, deux poches
+      weight: {children: 1, adults: 1}
+      setup: Les jaunes du schéma alignées près de la bande du haut ; la blanche sur son repère, plus bas sur la table, devant elles ; gauche et droite se lisent comme sur le schéma, la ligne de départ étant à gauche.
+      instruction: Empocher la jaune de gauche dans la poche d'angle, puis la jaune de droite dans la poche du milieu, toujours en demi-bille, avec l'appui indiqué pour cet exercice ; quatre tirs par jaune.
+      expected: Chaque jaune part vers sa poche ; la blanche la touche en demi, du côté opposé à la poche, depuis le même repère.
+      mistakes:
+        - {symptom: La jaune de droite (poche du milieu) manque la poche, fix: Refaire la visée pour cette jaune sans reprendre celle de l'autre ; demander à l'élève de montrer sur la bille le point visé.}
+        - {symptom: Le chevalet bouge au moment du tir, fix: Rester immobile jusqu'à la fin du geste ; le cadre sert de support naturel.}
+      playful:
+        hook: Le tireur annonce « demi » avant le tir ; son partenaire regarde la queue et son alignement vers l'emplacement de la bille fantôme, pas le contact.
+        challenge: Le partenaire dessine au tableau une part de gâteau par tir réussi en demi ; à deux, compléter un gâteau de six parts.
+      passes: 1
+      src: S
+    - id: e4
+      ref: {block: demi-bille, n: 4}
+      diagram: entrainement-p06-e4
+      title: Loin, près, des deux côtés
+      weight: {children: 1, adults: 1}
+      setup: Les rouges du schéma à mi-largeur, l'une près de la bande gauche et l'autre près de la bande droite ; un repère de blanche sous chaque rouge, à des distances différentes.
+      instruction: Empocher la rouge de gauche dans la poche d'angle du haut à gauche, puis celle de droite dans la poche d'angle du haut à droite, en demi-bille ; quatre tirs par rouge, en changeant la distance de la blanche d'un tir à l'autre.
+      expected: Le contact reste en demi à toutes les distances ; chaque rouge part vers la poche d'angle.
+      mistakes:
+        - {symptom: La rouge manque la poche quand la blanche est loin, fix: Garder le même point de visée ; accompagner le geste sans forcer.}
+        - {symptom: Les réussites viennent d'une seule rouge, fix: "Au passage suivant, refaire la série de quatre sur la rouge ratée en comparant la position de la queue à l'arrivée."}
+      playful:
+        hook: Le partenaire choisit la distance de chaque tir (près, moyen ou loin) et déplace le repère.
+        challenge: Réussir deux tirs de suite à la plus grande distance choisie par le partenaire.
+      passes: 2
+      src: S
+game:
+  title: 8 billes dans une poche
+  source_game: 7
+  adapted: false
+  players: Partie à 2 ; la variante ludique se joue à 4 (deux équipes de deux)
+  materials: "Billes du jeu complet. Pour la variante ludique (proposition) : un tableau pour dessiner les parts de gâteau."
+  setup_illustration: schema-jeu
+  rules:
+    - Les joueurs tirent à tour de rôle.
+    - Vider son groupe de billes puis la noire dans une poche.
+    - "La blanche est replacée sur son point d'origine après chaque tir ; lorsqu'une bille de couleur est empochée, on replace une autre bille sur le même point ; toute bille non empochée est replacée sur son point d'origine."
+    - Un coup n'est pas valable si le joueur commet une faute.
+    - "Égalité : jouer la noire jusqu'à ce que l'un manque."
+    - "Conseil : vérifier que les billes sont positionnées à chaque fois en quantité demi-bille."
+  scoring: Le premier qui vide son groupe puis la noire gagne.
+  end: Fin quand un joueur a vidé son groupe puis empoché la noire.
+  playful_variant: "Parties à 4, en tournante : deux équipes de deux, les partenaires se relaient tir après tir. L'équipe adverse contrôle le contact en demi et dessine une part de gâteau pour chaque demi validé, six parts à compléter. La manche des parts est un défi en plus : elle ne compte pas pour la victoire, qui reste celle du jeu (groupe puis noire)."
+  link_previous:
+    notion_of: demi-bille-1
+    rule: "Exception à la règle du replacement de la blanche, sans limite de nombre de tirs : les tirs impairs du joueur (1er, 3e, 5e…) partent du point d'origine du schéma, à environ une case de la bille visée ; ses tirs pairs (2e, 4e, 6e…) partent d'un repère posé à environ deux cases de la bille visée, du même côté que le point d'origine. La noire se joue depuis un repère à environ deux cases de la noire, au choix du joueur. La bille reste jouée en demi."
+    note: "Fait rejouer dans la même partie un tir proche (le point d'origine du jeu, comme les repères proches de l'initiation 7) et un tir plus éloigné (comme le repère plus loin de l'initiation 7 et l'exercice 4) ; distances proposées, lues en cases du schéma ; règle facultative, le jeu 7 se joue tel quel sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Si la règle de lien est jouée : garder les deux distances mais raccourcir la plus longue (repère éloigné un peu plus près), sans supprimer la différence ; sinon, rapprocher un peu le point d'origine des billes. Mise en place proposée (la fiche ne la précise pas) : deux points marqués comme sur le schéma, un point pour la rouge (poche du haut à gauche) et un point pour la jaune (poche du bas à gauche), le point d'origine de la blanche entre les deux ; les billes de chaque groupe attendent sur le côté et sont posées une à une sur leur point. Deux adversaires de niveau proche, un joueur les rouges et l'autre les jaunes, la noire jouée depuis le point de son choix ; partie limitée à 15 minutes, au-delà gagne qui a le moins de billes restantes."
+    adults: "Après la partie, noter ses tirs manqués par côté (gauche, droite) et par distance (près, loin) et les comparer au taux de l'exercice. Variante plus difficile : annoncer la poche et « demi » avant chaque tir."
+  src: S   # titre, règles, score et fin du jeu 7 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
+review:
+  prompts:
+    - Depuis quelle distance la demi-bille était-elle la plus difficile ?
+    - De quel côté de la table as-tu le mieux réussi, et pourquoi ?
+    - Que ferais-tu pour viser aussi bien de loin que de près ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 15, note: "Fiche technique n° 5 (demi-bille, tangente, déviation de 30°)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 13, note: "Fiche technique n° 3 (bille fantôme, pour la visée)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 8, note: "Fiche technique n° 1 (chevalet sur cadre, support naturel ; lecture de la position finale de la queue)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 7, note: "Initiation 7 (reprise avec un repère plus loin, proposition)"}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 6, note: "Entraînement « La quantité demi-bille », exercices 3 et 4"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 7, note: Jeu 7}
+uncertainties:
+  - "Sections « Où poser la bille fantôme » (côté opposé à la poche, ligne centre de la bille-centre de la poche, équivalence avec la tangente : déduction du schéma d'entraînement p. 6 et de la géométrie, non formulée telle quelle par les fiches n° 3 et 5), « Plus loin, la même demi-bille », « Le chevalet sur cadre » et « Lire ses erreurs à l'exercice 4 », initiation (repère plus loin ajouté à la fiche 7), schéma des repères près et loin, thème, défis, variante de jeu (équipes, tournante, six parts de gâteau), règle de lien et adaptations : [Prop], à valider par un animateur dans l'application."
+  - "Chevalets : l'exercice 2 (séance 1/2) est sur surface, l'exercice 3 sur cadre ; le PDF ne précise pas l'appui de l'exercice 4. L'ordre de la source est donc surface puis cadre, pas une progression « cadre vers surface » ; la séance n'impose rien pour l'exercice 4."
+  - "Exercice 4 : le schéma [S] montre des distances blanche-rouge presque égales des deux côtés malgré l'intitulé « distances différentes » ; la séance demande de faire varier la distance (proposition)."
+  - "Point d'impact sur la blanche : les schémas des exercices 3 et 4 le montrent au centre, l'initiation 7 au-dessus du centre ; la séance ne tranche pas, n'impose rien et ne propose aucune illustration de hauteur de queue."
+  - "La bille fantôme du schéma « visée » est calculée pour une demi-bille nominale (environ 30°) ; elle ne reprend pas la position du schéma du PDF."
+  - "Le schéma du jeu 7 [S] montre deux billes, un point rouge et un point jaune ; les billes d'un groupe sont replacées sur ces points. La composition des groupes, la place de la noire et la limite de temps sont des propositions (adaptation.children)."
+  - "Règle de lien : distances chiffrées en cases du schéma (point d'origine du jeu 7 à environ 1,1 case de la bille visée ; repères de l'initiation 7 à environ 1,0 et 2,1 cases) ; le repère éloigné à environ deux cases et le repère de la noire sont des propositions."

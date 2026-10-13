@@ -1,0 +1,244 @@
+# Séance du catalogue : « Le coup à angle droit », partie 2/2.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: angle-droit-2
+order: 25
+technique: angle-droit
+part: 2
+title: Le coup à angle droit
+technical_sheets: [13]
+previous: angle-droit-1
+catalogue_block: angle-droit
+notion: "Jouer un coup à angle droit : attaque au centre, sans rotation, distance courte, sur toute quantité sauf le plein."
+theme:
+  name: Le jeu de l'équerre
+  pitch: >-
+    L'équerre, c'est le coin d'une feuille : 90°. On s'en sert pour placer
+    la blanche : elle part à angle droit de la bille de couleur, rebondit
+    sur les bandes et vient se ranger près de la noire.
+recall:
+  points:
+    - Attaque au centre, sans rotation de la blanche, sur toute quantité de bille sauf le plein.
+    - Après l'impact, les trajectoires des deux billes forment un angle de 90°.
+    - On joue à courte distance ; trop puissant, l'angle s'ouvre au-delà de 90°.
+  question:
+    ask: Avec quelle attaque joue-t-on le coup à angle droit, et quelle quantité de bille est exclue ?
+    answer: Attaque au centre ; toute quantité de bille convient, sauf le plein.
+  reuse: {sheet: angle-droit-1, illustration: angle-90}
+  src: S
+theory:
+  sections:
+    - id: retenir
+      title: Rappel, 90° entre les deux billes
+      weight: {children: 1, adults: 2}
+      body:
+        - "Attaque au centre, sans rotation, toutes quantités sauf le plein : les deux billes partent à 90°."
+      adult_extra:
+        - La blanche avance d'abord en glissant, puis elle roule ; l'amplitude et la vitesse doivent être dosées pour qu'elle glisse jusqu'à l'impact.
+      key_point: Attaque au centre, pas de plein, et les deux billes partent à 90°.
+      demo: "Jouer une bille en quantité demi, attaque au centre, depuis une distance courte, et montrer les deux trajectoires avec les bras en équerre."
+      illustrations: [angle-90-bande, pointe-centre]
+      src: S
+    - id: puissance
+      title: Trop fort, l'angle s'ouvre
+      weight: {children: 1, adults: 1}
+      body:
+        - Trop fort, l'angle s'ouvre au-delà de 90° ; trop doux, la blanche roule et l'angle se referme.
+      adult_extra:
+        - "Un coup trop puissant ouvre l'angle ; cette trajectoire résulte des différences de poids et de taille entre les deux billes (fiche d'initiation 16)."
+        - Trop puissant, l'angle s'ouvre d'autant plus que la quantité de bille se rapproche du plein (fiche technique 13).
+        - Garder une distance courte entre les deux billes facilite le glissement de la blanche jusqu'à l'impact.
+      key_point: Un coup à la mesure donne l'angle droit ; trop fort, il s'ouvre.
+      demo: "Jouer la même quantité à deux vitesses et comparer l'angle entre les deux billes."
+      illustrations: [angle-ouvert, angle-90-bande]
+      src: S
+    - id: bande
+      title: Le rebond sur la bande
+      weight: {children: 1, adults: 1}
+      body:
+        - Pour un coup à la mesure et sans effet, la blanche rebondit sur la bande avec un angle de rebond égal à l'angle d'arrivée.
+        - Plus le coup est puissant, plus l'angle de rebond se referme.
+      key_point: Sans effet, à la mesure, l'angle de rebond égale l'angle d'arrivée ; plus puissant, il se referme.
+      demo: null
+      illustrations: [bande-90]
+      src: S
+    - id: replacer
+      title: Replacer la blanche par une bande
+      weight: {children: 2, adults: 1}
+      body:
+        - Comme la blanche part à 90° de la bille de couleur, on connaît sa ligne.
+        - La puissance décide où la blanche s'arrête.
+        - On peut ainsi la replacer près de la noire, par une bande ou par deux bandes, comme aux exercices 3 et 4.
+      key_point: On connaît la ligne de la blanche ; la puissance décide où elle s'arrête.
+      demo: "Jouer le coup avec une bande, puis montrer au doigt la ligne que la blanche a suivie et l'endroit où elle s'est arrêtée."
+      illustrations: [bande-90]
+      src: Prop
+    - id: quantites
+      title: Demi ou trois-quarts
+      weight: {children: 1, adults: 1}
+      body:
+        - Les deux exercices du jour se jouent avec des quantités différentes.
+        - Le premier est proche du demi, le second entre le demi et le trois-quarts.
+        - "Pour une même rouge et une même poche, la ligne de la blanche ne change pas quand on change de quantité : c'est la place de départ qui change."
+      key_point: "Même rouge, même poche : la ligne de la blanche reste la même, seule la place de départ change."
+      demo: null
+      illustrations: [quantites]
+      src: Prop
+    - id: surface
+      title: La queue à plat, le chevalet sur la surface
+      weight: {adults: 1}
+      body:
+        - Sur la surface de jeu, la queue reste à plat.
+        - Le procédé frappe la blanche en son centre, pas au-dessus ni en dessous.
+      key_point: Procédé au centre, queue à plat.
+      demo: null
+      illustrations: [pointe-centre]
+      src: Prop
+    - id: lire
+      title: Lire la ligne avant de tirer
+      weight: {adults: 2}
+      body:
+        - Avant le tir, imaginer la ligne de la bille de couleur vers la poche, puis la ligne à 90° de celle-ci.
+        - Prolonger cette seconde ligne jusqu'à la bande pour choisir où la blanche va rebondir.
+        - Après le tir, comparer la ligne réelle de la blanche et la ligne imaginée, et corriger la puissance si besoin.
+        - Pour une même rouge et une même poche, la ligne de la blanche ne change pas quand on change de quantité ; c'est la place de départ de la blanche qui change.
+      key_point: Une ligne imaginée à 90° se compare à la ligne réelle.
+      demo: null
+      illustrations: [bande-90]
+      src: Prop
+initiation:
+  - id: ini-16
+    initiation_sheet: 16
+    title: "Échauffement : reprise de la fiche 16"
+    weight: {children: 2, adults: 2}
+    setup: Une bille rouge sous la poche du milieu du haut ; trois repères de blanche à courte distance, en bas à gauche de la rouge, comme sur le schéma.
+    goal: "Reprendre la fiche 16 : empocher la rouge en angle droit, en attaque au centre et en quantité autre que le plein, en changeant de repère et de quantité à chaque tir."
+    expected: La rouge part vers la poche, la blanche part à angle droit de la rouge ; un coup trop puissant ouvre l'angle.
+    scoring: {mode: counter, of: 1}
+    illustration: schema-initiation
+    src: S
+illustrations:
+  - {id: angle-90-bande, type: angle, kind: right_angle, vertex: [6.0, 2.5], rays: [[7.26, 0.94], [4.44, 1.24]],
+     caption: "Angle droit : après l'impact, les trajectoires des deux billes forment 90° (schéma indicatif).",
+     alt: "Marque d'angle droit en vue de dessus : à partir du point de contact, la bille de couleur part vers le haut à droite et la blanche vers le haut à gauche, à 90° l'une de l'autre."}
+  - id: angle-ouvert
+    type: table
+    balls:
+      - {id: r, color: red, at: [5.0, 2.0]}
+      - {id: w, color: white, at: [4.4, 3.1], role: cue}
+    ghosts:
+      - {id: g-impact, at: [4.83, 2.11], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[4.4, 3.1], [4.83, 2.11], [3.21, 0.62]], bounces: []}
+      - {id: a2, ball: r, kind: object, path: [[5.0, 2.0], [7.86, 0.19]], bounces: [], to: tr}
+    caption: "Coup trop puissant : la blanche part plus ouverte que l'angle droit, au-delà de 90° (schéma indicatif)."
+    alt: "Table vue de dessus : la rouge au centre, la blanche en bas à gauche de la rouge ; après le contact, la rouge part vers la poche du haut à droite et la blanche part vers le haut à gauche, plus à l'horizontale que l'angle droit, soit plus de 90° entre les deux billes."
+  - {id: pointe-centre, type: cue_side, tip_point: center, cue_height: level,
+     caption: "Attaque au centre : le procédé frappe la blanche en son centre, la queue à plat (schéma indicatif).",
+     alt: "Bille blanche vue de côté avec la queue à plat ; le procédé touche la blanche en son centre."}
+  - {id: quantites, type: contact_strip, fractions: [half, three_quarter], highlight: three_quarter,
+     caption: "Les quantités des deux exercices : autour du demi, puis entre le demi et le trois-quarts.",
+     alt: "Deux schémas de contact côte à côte, repères des deux exercices : la demi-bille, puis le trois-quarts de bille mis en évidence."}
+  - id: bande-90
+    type: table
+    balls:
+      - {id: r, color: red, at: [5.0, 2.0]}
+      - {id: w, color: white, at: [5.98, 1.94], role: cue}
+      - {id: n, color: black, at: [3.4, 3.2]}
+    ghosts:
+      - {id: g-impact, at: [5.19, 2.07], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[5.98, 1.94], [5.19, 2.07], [4.5, 3.9], [3.94, 2.4]], bounces: [bottom]}
+      - {id: a2, ball: r, kind: object, path: [[5.0, 2.0], [0.14, 0.19]], bounces: [], to: tl}
+    zones:
+      - {id: z1, shape: rect, from: [3.2, 1.9], to: [4.5, 2.8], label: "zone"}
+    caption: "La rouge part vers la poche, la blanche part à 90° puis rebondit sur la bande du bas vers la zone, près de la noire (schéma indicatif)."
+    alt: "Table vue de dessus : la rouge au centre droit, la blanche à sa droite presque au même niveau ; après le contact, la rouge part vers la poche du haut à gauche, la blanche part à angle droit vers le bas, rebondit sur la bande du bas et remonte dans une zone au centre, au-dessus de la noire."
+  - {id: schema-initiation, type: diagram_ref, diagram: initiation-p16-e1,
+     caption: "Initiation 16 : la rouge est empochée en angle droit depuis trois repères.",
+     alt: "Table vue de dessus : une bille rouge sous la poche du milieu du haut, trois repères de blanche en bas à gauche de la rouge ; la blanche part à angle droit de la rouge après l'impact."}
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p14-j1,
+     caption: "Jeu 14 : partie à difficulté réduite, quatre billes par groupe et la noire.",
+     alt: "Table vue de dessus : la blanche sur la ligne de départ à gauche ; les billes rouges, jaunes et la noire groupées vers la droite du centre."}
+training:
+  exercises:
+    - id: e3
+      ref: {block: angle-droit, n: 3}
+      diagram: entrainement-p26-e3
+      title: L'équerre par la bande du haut
+      weight: {children: 1, adults: 1}
+      setup: La rouge du schéma à droite de la table, la blanche en bas à gauche de la rouge, sur le repère du schéma ; les jaunes du schéma à côté de la rouge et la noire près de la bande gauche, sous la zone grisée.
+      instruction: Empocher la rouge dans la poche d'angle du haut à droite en angle droit, de façon que la blanche rebondisse sur la bande du haut et se replace dans la zone grisée, près de la noire ; recommencer cinq fois.
+      expected: Contact proche du demi, attaque au centre ; la rouge part vers la poche, la blanche part à angle droit puis rebondit sur la bande du haut et arrive dans la zone grisée.
+      mistakes:
+        - {symptom: La blanche passe au-delà de la zone (trop loin), fix: "Moins de puissance : un geste plus court, sans changer de point de visée."}
+        - {symptom: La blanche part trop vers la bande de gauche (angle supérieur à 90°), fix: "Un coup trop puissant ouvre l'angle : adoucir le coup et garder la distance courte."}
+        - {symptom: "La blanche roule après l'impact, l'angle se referme", fix: "Garder l'attaque au centre et adapter l'amplitude et la vitesse pour que la blanche glisse jusqu'à l'impact, à courte distance."}
+      playful:
+        hook: Avant le tir, le binôme annonce « équerre » et montre du doigt la zone d'arrivée de la blanche.
+        challenge: Replacer la blanche dans la zone grisée trois fois de suite ; pour les adultes, recommencer en changeant de quantité, vers le trois-quarts.
+      passes: 1
+      src: S
+    - id: e4
+      ref: {block: angle-droit, n: 4}
+      diagram: entrainement-p26-e4
+      title: L'équerre par deux bandes
+      weight: {children: 2, adults: 2}
+      setup: La rouge du schéma près de la bande droite ; les jaunes du schéma restent en place (celles de droite contre la bande, celle de gauche sur la ligne de départ) ; la blanche plus bas, à gauche de la rouge ; la noire au centre de la table et la zone grisée juste en dessous.
+      instruction: Empocher la rouge dans la poche d'angle du haut à droite en angle droit, de façon que la blanche rebondisse sur la bande de droite puis sur la bande du bas et se replace dans la zone grisée, sous la noire ; recommencer cinq fois.
+      expected: Contact entre le demi et le trois-quarts, attaque au centre ; la rouge part vers la poche et la blanche suit son chemin par les deux bandes jusqu'à la zone grisée.
+      mistakes:
+        - {symptom: La blanche s'arrête trop tôt après la deuxième bande, fix: "Doser la puissance : un peu plus de vitesse, sans trop en mettre pour ne pas ouvrir l'angle ; garder l'attaque au centre."}
+        - {symptom: La rouge reste sur la bande, fix: Reprendre la quantité de bille et la ligne vers la poche avant de tirer.}
+      playful:
+        hook: Le binôme trace dans l'air le chemin de la blanche (bande de droite, puis bande du bas) avant chaque tir.
+        challenge: Réussir deux replacements de suite dans la zone grisée.
+      passes: 2
+      src: S
+game:
+  title: Partie à difficulté réduite, le défi de l'équerre
+  source_game: 14
+  adapted: true
+  players: Partie à 2
+  materials: "Billes du jeu complet (4 par groupe et la noire) ; des jetons. Tirage à la bande (proposition d'explication, la fiche ne le détaille pas) : chaque joueur joue une bille depuis la ligne de départ vers la bande du fond ; celui dont la bille revient le plus près de la bande de départ casse."
+  setup_illustration: schema-jeu
+  rules:
+    - Partie à 2, avec les règles de la partie classique.
+    - Seulement 4 billes de chaque groupe, et la noire.
+    - Le joueur qui casse est désigné par le tirage à la bande.
+  scoring: Comme dans une partie classique ; le premier qui empoche son groupe puis la noire gagne.
+  end: Fin quand un joueur a empoché son groupe puis la noire.
+  playful_variant: "Le défi de l'équerre : à la fin de la partie, celui qui a le plus de jetons gagne le défi, en plus de la partie. En salle chargée, deux équipes de deux se partagent une table : un tireur par équipe à tour de rôle, le partenaire conseille, seul l'adversaire juge."
+  link_previous:
+    notion_of: angle-droit-1
+    rule: "Exception facultative aux règles classiques : sur une bille jouée à courte distance, en attaque au centre et sans plein, le tireur peut annoncer « équerre » et la bande que la blanche doit toucher. Si la bille est empochée ET si la blanche touche la bande annoncée après l'impact, avant toute autre bille, il gagne un jeton ; l'adversaire juge."
+    note: "Rejoue l'angle droit de la séance précédente (attaque au centre, courte distance, sans plein) et la bande de cette séance ; règle facultative, la partie se joue telle quelle sans elle. Le jeton n'est gagné que si la bille est empochée, pour que le tir reste celui de la partie. C'est la seule règle de jeton de la séance."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Rapprocher les billes des poches ; partie limitée à 15 minutes, au-delà gagne qui a le moins de billes restantes ; l'animateur tranche en cas de doute sur la bande touchée."
+    adults: "Contrôle de l'angle en plus pour le jeton : les deux billes doivent aussi partir à peu près à angle droit, à un coin de feuille près, jugé à l'oeil par l'adversaire. Après la partie, noter les coups à angle droit tentés et réussis, et l'effet de la puissance sur l'angle."
+  src: Prop
+review:
+  prompts:
+    - Quand la blanche est-elle partie plus ouverte que 90° ?
+    - Par quelle bande la blanche est-elle revenue, et pourquoi ?
+    - Comment expliquerais-tu l'angle droit à un copain ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 23, note: "Fiche technique n° 13 (angle droit : attaque au centre, toute quantité sauf plein, 90°, trop puissant : angle > 90°)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 22, note: "Fiche technique n° 12 (carreau : glissement puis roulement avec attaque au centre)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 19, note: "Fiche technique n° 9 (rebond : angle de rebond égal à l'angle d'arrivée sans effet)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 16, note: "Initiation 16 (angle droit : distances courtes, coup peu puissant ou trop puissant)"}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 26, note: "Entraînement « Le coup en angle droit », exercices 3 et 4"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite), dont la partie est adaptée"}
+uncertainties:
+  - "Sections « Replacer la blanche par une bande » (la déduction de la ligne de la blanche et du rôle de la puissance, le replacement près de la noire n'étant appuyé que par les exercices 3 et 4 [S]), « Demi ou trois-quarts », « La queue à plat, le chevalet sur la surface » (adultes) et « Lire la ligne avant de tirer », thème, défis, variante de jeu (jetons, équipes), règle de lien, adaptations, minutes et poids : [Prop], à valider par un animateur dans l'application."
+  - "Le jeu est une adaptation [Prop] du jeu 14 [S] ; seuls la partie à 2, les 4 billes par groupe, la noire et le tirage à la bande viennent de la fiche. L'annonce « équerre », la bande annoncée, les jetons, les équipes et l'explication du tirage à la bande n'y figurent pas."
+  - "Section « La queue à plat, le chevalet sur la surface » : l'indication « surface » vient de l'inset des schémas [S] des exercices 3 et 4 (bridge_height: surface), alors que le type de chevalet n'est pas écrit dans l'énoncé du PDF ; la séance ne l'impose pas dans les consignes."
+  - "Exercices 3 et 4 : la zone grisée est lue « sur la bille noire » dans les PDF ; elle est représentée par la zone proche de la noire. Quantité de bille de l'exercice 3 estimée proche du demi, de l'exercice 4 entre le demi et le trois-quarts d'après le recouvrement de l'inset ; elles ne sont pas légendées."
+  - "Fiche technique n° 9 : le texte (plus le coup est puissant, plus l'angle de rebond se referme) et la légende du schéma divergent (voir 00-provenance-et-fiabilite.md) ; la section « Le rebond sur la bande » suit le texte et réserve l'égalité des angles au coup joué à la mesure. L'animateur en est averti ici."
+  - "Erreurs fréquentes des exercices 3 et 4 : lecture animateur, déduites des fiches 13 et 16 [S] ; le PDF d'entraînement n'en contient pas, elles ne sont pas des consignes fédérales."
+  - "Illustrations `bande-90` et `angle-ouvert` : dispositions propres à la séance, calculées à partir du principe des fiches 13 et 9 (90° exact, égalité des angles au rebond) ; `bande-90` change de poche (haut gauche), de bande (bas) et de zone par rapport à l'exercice 3, pour ne pas en montrer la solution en théorie. `angle-90-bande` est distincte de `angle-90` de angle-droit-1 (autre sommet)."
+  - "Liaison avec angle-droit-1 : `theme.name` et `notion` alignés sur la partie 1 (V23) ; `recall.reuse` vise l'illustration `angle-90` de la partie 1 ; la variante de jeu (défi de l'équerre par jetons, avec bande annoncée) diffère de celle de la partie 1."
+  - "Initiation 16 : la fiche demande d'empocher une bille ; le compteur de la séance est donc de 1, et la reprise en changeant de repère et de quantité vient de la consigne « quantités de billes différentes »."
+  - "Redondance assumée avec angle-droit-1 : le rappel, « Rappel, 90° entre les deux billes » et « Trop fort, l'angle s'ouvre » sont réduits à une phrase chacun ; l'initiation 16 est une reprise d'échauffement, les nouveautés de la séance sont la bande et la lecture de ligne."

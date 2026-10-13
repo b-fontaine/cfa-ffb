@@ -1,0 +1,201 @@
+# Séance du catalogue : « Quantité trois-quarts de bille », partie 2/2.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: trois-quarts-2
+order: 12
+technique: trois-quarts
+part: 2
+title: Quantité trois-quarts
+technical_sheets: [6]
+previous: trois-quarts-1
+catalogue_block: trois-quarts
+notion: Viser à mi-chemin entre le centre et la tangente de la bille de couleur pour empocher en trois-quarts.
+theme:
+  name: Le chemin du milieu
+  pitch: >-
+    Entre le centre de la bille et son bord, il y a un chemin que l'on prend
+    à mi-parcours. Aujourd'hui, la blanche passe d'un côté à l'autre : selon la
+    poche visée, le chemin change de côté et la même rouge part vers deux poches.
+recall:
+  points:
+    - Au trois-quarts, on vise à égale distance du centre de la bille de couleur et de sa tangente.
+    - Le point de visée et le point de contact sont très proches.
+    - La bille de couleur part à environ 15° et parcourt plus que la blanche.
+    - La bille fantôme se place au contact de la bille de couleur, sur la ligne de la poche, du côté opposé à la poche.
+  question:
+    ask: Où vise-t-on au trois-quarts, et quelle bille parcourt le plus après le choc ?
+    answer: À mi-chemin entre le centre et la tangente de la bille de couleur ; c'est la bille de couleur qui parcourt le plus.
+  reuse: {sheet: trois-quarts-1, illustration: contact-trois-quarts}
+  src: S
+theory:
+  sections:
+    - id: point-visee
+      title: Entre le centre et la tangente
+      weight: {children: 3, adults: 3}
+      body:
+        - Au trois-quarts, la blanche recouvre les trois quarts de la bille de couleur.
+        - On vise à égale distance du centre de la bille de couleur et de sa tangente.
+        - Le point de visée et le point de contact sont très proches, donc c'est plus facile que les quantités plus faibles.
+      adult_extra:
+        - Après le choc, la bille de couleur est déviée d'environ 15° (billes identiques) ; à la demi-bille, c'était environ 30°.
+      key_point: Trois-quarts, on vise à mi-chemin entre le centre et la tangente.
+      demo: "Tirer sans empocher, à courte distance : la bille de couleur parcourt plus que la blanche."
+      illustrations: [visee-poche-bas, demi-et-trois-quarts, fiche-trois-quarts]
+      src: S
+    - id: chevalets
+      title: Deux chevalets pour le trois-quarts
+      weight: {children: 1, adults: 1}
+      body:
+        - Le chevalet est l'appui de la main.
+        - Elle s'appuie sur le cadre du billard, ou sur la surface de jeu.
+      key_point: Deux chevalets, le même trois-quarts.
+      demo: null
+      illustrations: [attaque-centre]
+      src: S
+    - id: meme-visee
+      title: Le chevalet change, pas la visée
+      weight: {children: 1, adults: 1}
+      body:
+        - Aujourd'hui, tu joues le trois-quarts avec les deux appuis.
+        - Avec l'autre chevalet, on garde le même point de visée et la même attaque au centre de la blanche.
+      key_point: On change de chevalet, on ne change pas de visée.
+      demo: "Tirer la même bille depuis le même repère avec les deux chevalets."
+      illustrations: [attaque-centre]
+      src: Prop
+    - id: cote-poche
+      title: Selon la poche, le point de visée change de côté
+      weight: {children: 2, adults: 2}
+      body:
+        - La bille fantôme se pose toujours du côté opposé à la poche.
+        - "La bille fantôme est collée à la rouge, sur la ligne rouge-poche prolongée, du côté de la blanche : poche en bas, elle est en haut à droite de la rouge ; poche en haut, en bas à droite."
+        - Le point de visée passe de l'autre côté de la rouge, mais la quantité reste la même, le trois-quarts.
+      adult_extra:
+        - "Question de lecture : la poche est en haut, la blanche est posée en bas ; de quel côté de la rouge est la bille fantôme ? En bas à droite de la rouge, sur le prolongement de la ligne poche-rouge, côté opposé à la poche."
+        - Poser la blanche du côté opposé à la poche garde une coupe modérée ; du même côté que la poche, la coupe devient trop forte pour le trois-quarts.
+      key_point: Poche en bas, on vise en haut à droite de la rouge ; poche en haut, en bas à droite.
+      demo: "Poser la blanche en haut à droite : montrer la bille fantôme en haut à droite de la rouge, sur le prolongement de la ligne poche-rouge, puis la rouge qui part vers la poche du milieu du bas ; recommencer depuis le bas."
+      illustrations: [visee-poche-bas, visee-poche-haut]
+      src: Prop
+    - id: fantome
+      title: "Rappel : la bille fantôme"
+      weight: {adults: 1}
+      body:
+        - L'animateur pose une blanche au contact de la bille à empocher, sur la ligne de la poche, puis la retire avant le tir.
+      key_point: On vise le centre de la bille fantôme en plaçant le procédé au centre de la blanche.
+      demo: null
+      illustrations: [visee-poche-haut]
+      src: S
+initiation:
+  - id: ini-8
+    initiation_sheet: 8
+    title: Deux billes en trois-quarts
+    weight: {children: 3, adults: 3}
+    setup: Une rouge à gauche, vers la poche du haut à gauche, et une jaune à droite du milieu, vers la poche du haut à droite ; la blanche entre les deux à courte distance, comme sur le schéma.
+    goal: "Empocher 2 billes en trois-quarts, en utilisant un chevalet sur la surface de jeu et un chevalet sur cadre."
+
+    expected: Le contact se fait en trois-quarts ; la bille de couleur parcourt plus que la blanche.
+    scoring: {mode: counter, of: 2}
+    illustration: schema-initiation
+    src: S
+illustrations:
+  - {id: visee-poche-bas, type: ghost_aim, cue: [7.7, 1.0], object: [6.0, 2.0], pocket: bm, fraction: three_quarter,
+     caption: "Poche du milieu du bas : la blanche est en haut, la bille fantôme est en haut à droite de la rouge.",
+     alt: "Table vue de dessus : la rouge à droite du centre, la blanche en haut à droite, la poche du milieu du bas ; la bille fantôme est collée à la rouge, en haut à droite, sur le prolongement de la ligne poche-rouge, du côté opposé à la poche."}
+  - {id: visee-poche-haut, type: ghost_aim, cue: [7.7, 3.0], object: [6.0, 2.0], pocket: tm, fraction: three_quarter,
+     caption: "Poche du milieu du haut : la blanche est en bas, la bille fantôme est en bas à droite de la rouge.",
+     alt: "Table vue de dessus : la rouge à droite du centre, la blanche en bas à droite, la poche du milieu du haut ; la bille fantôme est collée à la rouge, en bas à droite, sur le prolongement de la ligne poche-rouge, du côté opposé à la poche."}
+  - {id: demi-et-trois-quarts, type: contact_strip, fractions: [half, three_quarter], highlight: three_quarter,
+     caption: "Demi-bille et trois-quarts, côte à côte.",
+     alt: "Deux schémas de contact : la demi-bille, puis le trois-quarts mis en évidence."}
+  - {id: attaque-centre, type: cue_side, tip_point: center, cue_height: level,
+     caption: "Attaque au centre de la blanche, avec n'importe quel chevalet.",
+     alt: "Vue de côté : la queue touche la blanche en son centre, queue à l'horizontale."}
+  - {id: fiche-trois-quarts, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 16,
+     caption: "Fiche technique n° 6 : la quantité trois-quarts de bille.",
+     alt: "Renvoi à la page 16 du PDF des fiches techniques, fiche n° 6 sur le trois-quarts."}
+  - {id: schema-initiation, type: diagram_ref, diagram: initiation-p08-e1,
+     caption: "Initiation 8 : la rouge et la jaune sont jouées en trois-quarts vers les poches du haut.",
+     alt: "Table vue de dessus : une rouge à gauche, vers la poche du haut à gauche, une jaune à droite du milieu, vers la poche du haut à droite, la blanche entre les deux ; chaque bille de couleur est empochée vers le haut."}
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p08-g1,
+     caption: "Jeu 8 : les billes sont alignées, la blanche est replacée avant chaque tir.",
+     alt: "Table vue de dessus : une ligne de billes alternées rouges et jaunes, la noire à l'extrémité droite ; deux départs de blanche, l'un au-dessus et l'autre au-dessous de la ligne, visent les premières billes vers les poches de gauche."}
+training:
+  exercises:
+    - id: e3
+      ref: {block: trois-quarts, n: 3}
+      diagram: entrainement-p08-e3
+      title: Deux cibles, un seul trois-quarts
+      weight: {children: 2, adults: 2}
+      setup: La jaune du schéma en haut à gauche et la rouge du schéma en bas à gauche, près de la ligne de départ ; la blanche posée au centre de la table, au même repère pour les deux cibles.
+      instruction: Empocher la jaune vers la poche du haut à gauche, puis la rouge vers la poche du bas à gauche, en trois-quarts ; quatre tirs par couleur, la blanche toujours replacée au repère.
+      expected: Même repère pour tous les tirs ; chaque bille de couleur part vers sa poche et parcourt plus que la blanche.
+      mistakes:
+        - {symptom: La bille de couleur manque la poche, fix: "Faire montrer sur la bille le point à égale distance du centre et de la tangente avant de tirer ; le comparer au point de contact, tout proche."}
+        - {symptom: L'élève se relève avant la fin du coup, fix: "Lui demander de rester immobile jusqu'à l'arrêt de la bille de couleur."}
+      playful:
+        hook: Chaque bille empochée fait avancer un jeton d'une case sur le chemin dessiné au tableau.
+        challenge: Amener un jeton jaune et un jeton rouge au bout d'un chemin de quatre cases chacun, sans changer le repère de la blanche.
+      passes: 2
+      src: S
+    - id: e4
+      ref: {block: trois-quarts, n: 4}
+      diagram: entrainement-p08-e4
+      title: Une rouge, deux poches du milieu
+      weight: {children: 1, adults: 1}
+      setup: La rouge du schéma à droite du centre de la table ; deux repères pour la blanche à droite de la rouge, l'un en haut et l'autre en bas, comme sur le schéma ; le schéma ne relie pas chaque repère à une poche, suivre la consigne ci-dessous.
+      instruction: Choisir une poche du milieu, puis poser la blanche sur le repère du côté opposé à la poche et empocher la rouge en trois-quarts ; blanche en haut pour la poche du milieu du bas, blanche en bas pour la poche du milieu du haut ; quatre tirs par poche.
+      expected: La rouge part vers la poche du milieu choisie ; la bille fantôme est du côté opposé à la poche, le point de visée change de côté d'une poche à l'autre et la quantité reste la même.
+      mistakes:
+        - {symptom: La rouge part vers la mauvaise poche ou la coupe est trop forte, fix: "Vérifier que la blanche est du côté opposé à la poche ; faire montrer la bille fantôme sur la rouge, du côté opposé à la poche, avant de tirer."}
+        - {symptom: La blanche est mal alignée avec le repère choisi, fix: "Poser la queue sur la ligne du repère au point de contact avant d'abaisser la tête."}
+      playful:
+        hook: La même rouge prend deux chemins, vers la poche du bas puis vers celle du haut.
+        challenge: Gagner un jeton par rouge empochée et remplir les deux poches dessinées au tableau, en annonçant avant chaque tir de quel côté de la rouge se trouve la bille fantôme.
+      passes: 1
+      src: S
+game:
+  title: 8 billes en ligne
+  source_game: 8
+  adapted: false
+  players: Partie à 2
+  materials: "Billes du jeu complet, alignées le long de la grande bande, à distance d'une mouche (conseil de la fiche, non défini par les sources : distance laissée à l'animateur). Le titre dit 8 billes, le schéma en montre quinze (sept rouges, sept jaunes, la noire). Pour le défi ludique (proposition) : un tableau et des jetons."
+  setup_illustration: schema-jeu
+  rules:
+    - Vider son groupe de billes puis la noire, d'un seul côté du billard.
+    - Les joueurs tirent à tour de rôle ; la blanche est repositionnée après chaque tir pour viser en trois-quarts.
+    - Quand une bille de couleur est empochée, le joueur passe à la bille suivante ; toute bille non empochée est repositionnée sur son point d'origine.
+    - Un coup n'est pas valable en cas de faute.
+  scoring: Le premier joueur qui a empoché toutes les billes de son groupe puis la noire gagne.
+  end: Fin quand un joueur a vidé son groupe puis empoché la noire ; en cas d'égalité, rejouer une série entière.
+  playful_variant: "Deux équipes de 2 (un tireur et un guide par équipe, rôles échangés à chaque tir). Avant son tir, le guide montre du doigt, à un doigt de la bille et sans la toucher, le point à égale distance du centre et de la tangente ; le tireur annonce « trois-quarts » puis tire. L'équipe adverse juge le point montré et donne un jeton s'il est juste ; l'équipe qui a le plus de jetons gagne le titre de « meilleurs guides », sans effet sur le résultat de la partie."
+  link_previous:
+    notion_of: trois-quarts-1
+    rule: "Exception facultative aux règles du jeu 8 : la première bille de chaque joueur est jouée avec le chevalet sur cadre, la suivante avec le chevalet sur surface, et ainsi de suite en alternant."
+    note: "Alterner les deux chevalets pour réinvestir le chevalet sur surface (exercice 3) et le chevalet sur cadre (exercice 4) dans une situation de jeu ; règle facultative, le jeu 8 se joue tel quel sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Rapprocher la blanche des billes (distances courtes). Mise en place proposée (la fiche ne la précise pas), valable pour les deux publics : un joueur les rouges, l'autre les jaunes, la noire en bout de ligne ; tirage au sort pour commencer et pour choisir le côté ; poches d'un seul côté : les deux poches d'angle de la petite bande gauche, bas gauche et haut gauche, comme sur le schéma ; un seul tir par joueur à tour de rôle, que la bille soit empochée ou non, puis le tour passe à l'adversaire ; faute (à valider par l'animateur) : blanche empochée ou aucune bille touchée, le coup n'est alors pas valable et la bille est replacée sur son point d'origine. Partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes."
+    adults: "Mise en place proposée (la fiche ne la précise pas), valable pour les deux publics : un joueur les rouges, l'autre les jaunes, la noire en bout de ligne ; tirage au sort pour commencer et pour choisir le côté ; poches d'un seul côté : les deux poches d'angle de la petite bande gauche, bas gauche et haut gauche, comme sur le schéma ; un seul tir par joueur à tour de rôle, que la bille soit empochée ou non, puis le tour passe à l'adversaire ; faute (à valider par l'animateur) : blanche empochée ou aucune bille touchée, le coup n'est alors pas valable et la bille est replacée sur son point d'origine. Après la partie, noter à quelle distance et avec quel chevalet les billes ont été manquées, pour relier le résultat au taux de l'exercice. Variante plus difficile : annoncer la poche et le côté du point de visée avant chaque tir."
+  src: S   # titre, règles, score et fin du jeu 8 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
+review:
+  prompts:
+    - Avec quel chevalet le trois-quarts t'a-t-il semblé le plus facile ?
+    - De quel côté de la rouge poses-tu la bille fantôme quand la poche est en haut ?
+    - Que dirais-tu à un copain pour viser le trois-quarts ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 16, note: "Fiche technique n° 6 (trois-quarts : point de visée à égale distance du centre et de la tangente, déviation d'environ 15°)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 15, note: "Fiche technique n° 5 (demi-bille, déviation d'environ 30°, pour la comparaison)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 13, note: "Fiche technique n° 3 (bille fantôme)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 8, note: Initiation 8}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 8, note: "Entraînement « La quantité trois-quarts », exercices 3 et 4"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 8, note: Jeu 8}
+uncertainties:
+  - "Sections « Le chevalet change, pas la visée » et « Selon la poche, le point de visée change de côté », défis ludiques, variante de jeu (jetons compris), règle de lien (alternance des chevalets) et adaptation du jeu (mise en place, faute) : [Prop], à valider par un animateur dans l'application. La différenciation enfants / adultes est aussi une proposition."
+  - "Titre, notion et thème (« Le chemin du milieu ») alignés sur trois-quarts-1 (V23) ; la variante de jeu diffère de la sienne (équipes de 2 avec un guide, contre annonce et jeton de case)."
+  - "Le rappel est écrit d'après la fiche technique n° 6, la fiche technique n° 3 (bille fantôme) et les exercices 1 et 2 du bloc ; il reprend l'illustration `contact-trois-quarts` de trois-quarts-1 (recall.reuse), non redéfinie ici."
+  - "Écart de sources : la fiche technique n° 6 dit que la blanche confère « les trois quarts » de son énergie, la fiche d'initiation « deux fois plus qu'elle n'en conserve » ; la séance ne cite aucun chiffre d'énergie et dit seulement que la bille de couleur parcourt plus que la blanche."
+  - "Le jeu 8 annonce 8 billes alors que le schéma en montre quinze (7 rouges, 7 jaunes, la noire) ; la composition des groupes, le côté des poches, l'ordre des tirs après un empochage et la définition de la faute ne sont pas précisés par la fiche : ce sont des propositions (adaptation). Le terme « mouche » (conseil de la fiche) n'est défini dans aucune source du dépôt."
+  - "Initiation 8 : la fiche ne précise pas le type de chevalet ; la séance ne l'impose pas. Elle rejoue volontairement la même mise en place que trois-quarts-1 (même fiche, même schéma, même jeu 8) : la progression vient de l'exercice 3 (chevalet sur surface), de l'exercice 4 et de la lecture du côté de la poche. Exercice 3 : l'ordre des deux séries n'est pas indiqué sur le schéma."
+  - "Exercice 4 : le PDF ne relie pas explicitement chaque position de la blanche à une poche. Les billes fantômes du schéma (en haut à droite et en bas à droite de la rouge, sur le prolongement de la ligne poche-rouge ; calcul : coupe d'environ 16° vers la poche du milieu opposée, d'environ 81° vers l'autre) imposent la blanche du côté opposé à la poche : blanche en haut, rouge vers la poche du milieu du bas ; blanche en bas, rouge vers la poche du milieu du haut. Le diagramme transcrit `entrainement-p08-e4` associe la série du haut à la poche tm (appariement croisé à corriger dans le diagramme, hors du périmètre de cette séance : le schéma affiché contredit donc la consigne tant qu'il n'est pas corrigé, d'où la mention dans la mise en place) ; la séance suit la géométrie."
+  - "Illustrations `visee-poche-bas` et `visee-poche-haut` : fraction dérivée ≈ 0,72 (coupe d'environ 16°) par construction ; non à l'échelle, [Prop]."

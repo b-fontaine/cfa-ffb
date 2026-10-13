@@ -1,0 +1,180 @@
+# Séance du catalogue : « Le carreau », partie 2/2.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: carreau-2
+order: 23
+technique: carreau
+part: 2
+title: Le carreau
+technical_sheets: [12]
+previous: carreau-1
+catalogue_block: carreau
+notion: Faire s'arrêter la blanche sur la bille de couleur en la jouant en plein, avec une attaque au centre.
+theme:
+  name: La blanche se gare
+  pitch: >-
+    La blanche sait se garer : frappée au centre, elle s'arrête net sur la
+    bille de couleur. Aujourd'hui, elle doit se garer pile entre des billes
+    voisines, d'abord au centre de la table, puis dans sa moitié droite.
+recall:
+  points:
+    - Le carreau se joue en bille pleine, avec une attaque au centre de la blanche.
+    - Sans rotation à l'impact, la blanche s'arrête sur la bille de couleur.
+    - "La blanche glisse d'abord, puis roule : on joue à courte distance."
+    - Trop fort, la blanche recule ; trop doux, elle roule après l'impact.
+  question:
+    ask: Où frappe-t-on la blanche pour un carreau, et que fait-elle à l'impact ?
+    answer: Au centre, en bille pleine ; sans rotation, la blanche s'arrête sur la bille de couleur.
+  reuse: {sheet: carreau-1, illustration: schema-carreau}
+  src: S
+theory:
+  sections:
+    - id: glissement
+      title: "Rappel : glisser avant de rouler"
+      weight: {children: 1, adults: 1}
+      body:
+        - "Bille pleine, attaque au centre : la blanche glisse d'abord, puis elle roule."
+        - Au carreau, elle touche la bille de couleur pendant qu'elle glisse, et elle s'arrête.
+      adult_extra:
+        - La pénétration et la vitesse sont à adapter pour garder le glissement jusqu'à l'impact.
+        - "Rappel des fiches n° 12 et initiation 15 : trop puissant, la blanche recule (écart de poids avec la bille de couleur) ; trop doux, elle roule après l'impact."
+      key_point: Attaque au centre, bille pleine, blanche qui glisse jusqu'à l'impact.
+      demo: "Jouer un carreau à courte distance, en bille pleine avec une attaque au centre, et montrer que la blanche glisse jusqu'à l'impact puis s'arrête."
+      illustrations: [cue-centre, carreau-distance]
+      src: S
+    - id: surface-cadre
+      title: Sur la surface ou sur le cadre
+      weight: {children: 1, adults: 1}
+      body:
+        - Le carreau se travaille avec un chevalet sur la surface de jeu et avec un chevalet sur cadre.
+      key_point: Deux appuis à travailler, sur la surface et sur le cadre.
+      demo: null
+      illustrations: [cue-centre]
+      src: S
+    - id: meme-attaque
+      title: Le chevalet change, l'attaque non
+      weight: {children: 1, adults: 1}
+      body:
+        - Avec un chevalet sur cadre, on garde la bille pleine et l'attaque au centre.
+        - "Sur cadre, on risque de frapper au-dessus du centre : on vérifie que la queue est à plat, talon légèrement levé si besoin, pour garder l'attaque au centre."
+      key_point: Le chevalet change, la visée reste bille pleine et attaque au centre.
+      demo: null
+      illustrations: [cue-centre]
+      src: Prop
+    - id: doser
+      title: Chercher le bon dosage
+      weight: {children: 2, adults: 2}
+      body:
+        - "On reprend la mise en place de l'exercice 3 : la blanche sur son repère, à courte distance de la rouge."
+        - "On joue trois coups d'essai depuis ce repère : un cran plus doux, un cran plus fort, puis celui du milieu."
+        - Ces trois coups ne comptent pas dans les passages de l'exercice.
+        - On garde la force qui arrête la blanche pile à l'impact.
+      key_point: On essaie, on observe, on garde le coup où la blanche s'arrête pile.
+      demo: "Jouer les trois coups d'essai depuis le repère de l'exercice 3 et montrer à chaque fois où la blanche s'arrête."
+      illustrations: [echelle-dosage]
+      src: Prop
+    - id: lire-arret
+      title: Lire où la blanche s'arrête
+      weight: {adults: 2}
+      body:
+        - Après chaque carreau, noter si la blanche est restée sur place, a reculé ou a roulé vers l'avant.
+        - "Recul : coup trop puissant ; roulement : coup trop doux ou pénétration insuffisante."
+        - "La blanche recule ou suit malgré un bon dosage : vérifier le point d'attaque (centre, queue à plat) ; frappée sous le centre elle recule, au-dessus elle suit, comme au coulé."
+        - Après la série, rejouer en priorité les tirs ratés en nommant d'abord ce que la blanche a fait.
+      key_point: Le sens de l'erreur donne la correction.
+      demo: null
+      illustrations: [carreau-distance]
+      src: Prop
+illustrations:
+  - {id: cue-centre, type: cue_side, tip_point: center, cue_height: level,
+     caption: "Attaque au centre : le procédé frappe la blanche en son centre, la queue à plat (schéma indicatif).",
+     alt: "Bille blanche vue de côté avec la queue à plat ; le procédé touche la blanche en son centre."}
+  - {id: carreau-distance, type: table,
+     balls: [{id: r, color: red, at: [4.0, 1.2]}, {id: w, color: white, at: [4.0, 2.6], role: cue}],
+     ghosts: [{id: g-impact, at: [4.0, 1.4], role: impact, for: w}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[4.0, 2.6], [4.0, 1.4]], bounces: []},
+              {id: a2, ball: r, kind: object, path: [[4.0, 1.2], [4.0, 0.0]], bounces: [], to: tm}],
+     zones: [{id: z1, shape: rect, from: [3.8, 1.4], to: [4.2, 2.6], label: "distance courte"}],
+     caption: "Carreau à courte distance : la blanche touche la rouge en plein et s'arrête à l'impact ; la rouge part vers la poche (schéma non à l'échelle).",
+     alt: "Table vue de dessus : une bille rouge sous la poche du milieu du haut, la blanche juste en dessous sur la même ligne, à courte distance ; la blanche s'arrête au contact et la rouge part droit vers la poche."}
+  - {id: echelle-dosage, type: power_scale, levels: 5, highlight: 2, distance_label: "Courte distance : la blanche s'arrête à l'impact",
+     caption: "Proposition : un repère pour doser, ni trop fort (la blanche recule), ni trop doux (elle roule) ; les niveaux ne sont pas une graduation de la source.",
+     alt: "Échelle de puissance de 1 à 5 avec le niveau 2 mis en évidence, comme repère indicatif de dosage pour un carreau à courte distance."}
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p14-j1,
+     caption: "Jeu 14 : partie à difficulté réduite, quatre billes par groupe et la noire.",
+     alt: "Table vue de dessus : la blanche sur la ligne de départ à gauche ; les billes rouges, jaunes et la noire groupées vers la droite du centre."}
+training:
+  exercises:
+    - id: e3
+      ref: {block: carreau, n: 3}
+      diagram: entrainement-p24-e3
+      title: Le créneau au milieu de la table
+      weight: {children: 1, adults: 1}
+      setup: La rouge du schéma au centre de la table ; les jaunes et la noire autour d'elle, comme sur le schéma ; la blanche posée sur son repère, à droite de la rouge, à courte distance.
+      instruction: Empocher la rouge dans la poche d'angle du haut à gauche par un carreau, en bille pleine et attaque au centre ; jouer cinq tirs au total.
+      expected: La rouge part droit vers la poche ; la blanche s'arrête à l'impact, d'où elle peut être replacée sur la noire (position non dessinée sur le schéma).
+      mistakes:
+        - {symptom: La blanche recule après l'impact, fix: "Jouer plus doux en gardant l'attaque au centre ; si elle recule malgré un bon dosage, vérifier que la queue est à plat et que l'attaque n'est pas sous le centre (proposition)."}
+        - {symptom: La blanche roule vers l'avant après l'impact, fix: "Accompagner le geste et donner un peu plus de vitesse, sans forcer ; si elle suit malgré un bon dosage, vérifier que l'attaque n'est pas au-dessus du centre (proposition)."}
+        - {symptom: La rouge dévie de la poche, fix: "Aligner blanche, rouge et poche ; viser le centre de la rouge."}
+      playful:
+        hook: Le créneau doit tenir pile à l'impact ; le binôme regarde la blanche et annonce « pile », « recule » ou « roule ».
+        challenge: Arrêter la blanche au contact de la rouge deux fois de suite ; le binôme dit « recule » ou « roule » sinon.
+      passes: 2
+      src: S
+    - id: e4
+      ref: {block: carreau, n: 4}
+      diagram: entrainement-p24-e4
+      title: Le créneau côté droit
+      weight: {children: 1, adults: 1}
+      setup: La rouge du schéma dans la moitié droite de la table, deux jaunes tout près d'elle et la noire plus haut, vers la bande de droite ; la blanche sur son repère, en bas à droite de la rouge.
+      instruction: Empocher la rouge dans la poche du milieu du haut par un carreau, en bille pleine et attaque au centre ; jouer cinq tirs au total.
+      expected: La rouge part vers la poche du milieu ; la blanche s'arrête à l'impact, sans toucher les jaunes, d'où elle peut être replacée sur la noire (position non dessinée sur le schéma).
+      mistakes:
+        - {symptom: La blanche touche une jaune ou la repousse, fix: Revenir à la bille pleine et vérifier l'alignement de la queue avant le tir.}
+        - {symptom: La blanche roule ou recule, fix: Ajuster la vitesse en gardant l'attaque au centre ; rejouer depuis le même repère.}
+      playful:
+        hook: "Les jaunes sont les voisines du créneau : on ne les dérange pas."
+        challenge: Jouer une série avec un chevalet sur cadre et une série avec un chevalet sur la surface de jeu.
+      passes: 1
+      src: S
+game:
+  title: Partie à difficulté réduite, le défi du créneau
+  source_game: 14
+  adapted: true
+  players: Partie à 2
+  materials: "Billes du jeu complet (4 par groupe et la noire) ; des jetons pour la variante, posés à côté de la table."
+  setup_illustration: schema-jeu
+  rules:
+    - Partie à 2 ; les règles sont celles d'une partie classique, avec seulement 4 billes de chaque groupe et la noire.
+    - Le joueur qui casse est désigné par le tirage à la bande.
+  scoring: Comme dans une partie classique ; le premier qui empoche son groupe puis la noire gagne.
+  end: Fin quand un joueur a empoché son groupe puis la noire.
+  playful_variant: "Défi du créneau, facultatif : une fois par joueur et par partie, au lieu de jouer la blanche là où elle est, l'adversaire la replace à courte distance (50 cm au plus) d'une bille du groupe du joueur, en ligne avec une poche (une fois les groupes attribués ; avant, d'une bille au choix du joueur) ; l'adversaire ne peut pas placer la blanche d'un côté qui empêche le tir en plein. Le joueur annonce « carreau ». Un jeton se gagne quand le carreau est annoncé, la bille empochée et la blanche arrêtée à l'impact (l'adversaire juge ; en cas de doute, l'animateur tranche). Les jetons se posent à côté de la table, jamais sur le tapis. Trois jetons permettent de rejouer un tir manqué, une fois : billes et blanche sont alors replacées comme avant le tir manqué."
+  link_previous:
+    notion_of: carreau-1
+    rule: "Exception facultative : le carreau du défi se joue comme à la séance précédente, en bille pleine avec une attaque au centre ; avant le jugement de l'adversaire, le joueur dit ce que la blanche a fait (« pile », « recule » ou « roule »)."
+    note: "Rejoue le carreau de la séance précédente (bille pleine, attaque au centre, blanche arrêtée) en forçant une occasion de le jouer ; règle facultative, la partie se joue telle quelle sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Mise en place proposée : un joueur les rouges, l'autre les jaunes, la noire sur son point de départ, billes rapprochées des poches. Rappel de la partie classique (proposition, à confronter au règlement en vigueur) : on continue de jouer tant qu'on empoche une bille de son groupe, sinon la main passe ; une faute donne la main à l'adversaire ; la noire se joue en dernier. Tirage à la bande : chaque joueur envoie sa blanche vers la bande du fond ; la blanche qui revient le plus près de la bande de départ désigne qui casse. Partie limitée à 15 minutes, au-delà gagne qui a le moins de billes restantes ; l'animateur contrôle l'arrêt de la blanche en cas de doute."
+    adults: "Rappel de la partie classique (proposition, à confronter au règlement en vigueur) : le groupe est fixé par la première bille empochée régulièrement ; on rejoue tant qu'on empoche une bille de son groupe ; une faute donne la main à l'adversaire ; la noire empochée avant la fin de son groupe fait en général perdre la partie. Tirage à la bande : chaque joueur envoie sa blanche vers la bande du fond ; la plus proche de la bande de départ au retour désigne qui casse. Après la partie, compter les carreaux annoncés et réussis, et noter si les erreurs viennent du recul, du roulement ou de la visée. Variante plus difficile : annoncer la poche et la bille pour tout le tour."
+  src: Prop
+review:
+  prompts:
+    - Dans quel cas la blanche a-t-elle reculé ou roulé, et pourquoi ?
+    - Qu'as-tu changé (vitesse, accompagnement du geste) pour que la blanche s'arrête pile ?
+    - Comment expliquerais-tu le carreau à un copain ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 22, note: "Fiche technique n° 12 (carreau : bille pleine, attaque au centre, glissement, distance courte de 50 cm au plus, trop puissant = recul dû à la différence de poids avec la bille de couleur)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 15, note: "Initiation 15 (carreau : un chevalet sur la surface de jeu, un chevalet sur cadre ; conseils à l'animateur : coup peu puissant = la blanche roule après impact, coup trop puissant = recul, dû aux différences de poids et de taille entre les deux billes)"}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 24, note: "Entraînement « Le carreau », exercices 3 et 4"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite), dont la partie est adaptée"}
+uncertainties:
+  - "Sections « Le chevalet change, l'attaque non », « Chercher le bon dosage » et « Lire où la blanche s'arrête », échelle de dosage (niveau indicatif), thème, défis, variante de jeu (défi du créneau, jetons, garde-fous de replacement et de rejeu), règle de lien, adaptations et minutes : [Prop], à valider par un animateur dans l'application."
+  - "Le jeu est une adaptation [Prop] du jeu 14 [S] : seuls les 4 billes par groupe, la noire et le tirage à la bande viennent de la fiche. Le rappel de la partie classique (groupes, rejouer, faute, noire, tirage à la bande) n'est pas dans les sources du dépôt : c'est un rappel [Prop] à confronter au règlement en vigueur. L'annonce « carreau », le replacement de la blanche et les jetons n'y figurent pas ; aucun jeu de la source n'est dédié au carreau, et le défi du créneau est facultatif : il fabrique des occasions de carreau, rares dans une partie normale."
+  - "Exercices 3 et 4 : le schéma [S] ne dessine pas la position finale de la blanche ; l'énoncé dit seulement qu'elle doit se replacer sur la noire. Le type de chevalet n'est pas indiqué : la séance ne l'impose pas, l'alternance sur cadre / sur surface est une proposition (playful, exercice 4)."
+  - "Passes : l'exercice 3 (deux passes) sert de repère de dosage, au centre de la table ; l'exercice 4 (une passe) ajoute la contrainte des jaunes voisines. Cette répartition est une proposition ; la distance blanche-impact est voisine dans les deux exercices."
+  - "Le recul reprend la fiche n° 12 (p. 22) ; le roulement après impact reprend les conseils à l'animateur de l'initiation 15 (p. 15), et non la fiche n° 12 (la note de docs/knowledge/02-techniques/05-replacement-sans-effet.md le range sous n° 12 : à corriger dans ce fichier). La lecture par le point d'attaque (sous le centre, au-dessus) est une proposition tirée de la comparaison avec le coulé de la fiche n° 11, non écrite dans la fiche n° 12 ; le risque d'attaque haute sur cadre vient de la comparaison avec les fiches n° 10 et 14 (chevalet sur cadre : attaque haute, talon levé), non de la fiche n° 12."
+  - "Le rappel reprend ce que carreau-1 a enseigné (bille pleine, attaque au centre, glissement, 50 cm au plus, recul si trop fort, roulement si trop doux, fiche n° 12) ; `recall.reuse` vise le schéma `schema-carreau` de carreau-1, qui est indicatif (non à l'échelle) et [Prop] pour sa mise en place."

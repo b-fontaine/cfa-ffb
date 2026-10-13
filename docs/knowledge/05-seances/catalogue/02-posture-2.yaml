@@ -1,0 +1,194 @@
+# Séance du catalogue : « Posture, visée et coup de queue », partie 2/2 (exercices 3-4 du bloc `posture` [Prop]).
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: posture-2
+order: 2
+technique: posture
+part: 2
+title: Posture, visée et coup de queue
+technical_sheets: [1]
+previous: posture-1
+catalogue_block: posture
+notion: Aligner la queue, la blanche et la cible avant de tirer, puis se placer de façon stable autour de cette ligne.
+theme:
+  name: Le tireur d'élite
+  pitch: >-
+    Deuxième épisode : le tireur d'élite relève un défi de tir. Il doit
+    toucher ses cibles depuis plusieurs emplacements, de près comme de loin,
+    sans trembler et sans bouger avant la fin du tir.
+recall:
+  points:
+    - On aligne d'abord la queue, la blanche et la cible, puis on se place autour de cette ligne.
+    - Le pied droit est sous la main droite (pour un droitier) ; l'avant-bras droit est vertical.
+    - Les premiers tirs se font avec la main d'appui sur le cadre.
+    - Quand la blanche est loin de la bande, la main se pose à plat sur la surface de jeu.
+  question:
+    ask: Dans quel ordre prépare-t-on un tir ?
+    answer: On vise, on se place les pieds stables, puis on installe la main d'appui, sur le cadre ou à plat sur la surface de jeu.
+  # Illustration `posture-dessus` de la séance précédente (posture-1), non recopiée ici.
+  reuse: {sheet: posture-1, illustration: posture-dessus}
+  src: S
+theory:
+  sections:
+    - id: chevalet-surface
+      title: La main d'appui sur la surface de jeu
+      weight: {children: 3, adults: 3}
+      body:
+        - Quand la blanche est loin de la bande, la main d'appui se pose sur la surface de jeu.
+        - "Chevalet à plat : toute la main d'appui sur le tapis, doigts écartés, pouce relevé et collé à l'index."
+        - Le pouce et l'index de la main d'appui guident la queue ; la tête reste au plus près de la queue.
+      adult_extra:
+        - "Le chevalet bouclé (la flèche repose sur le majeur, entourée du pouce et de l'index) donne plus de stabilité à la queue ; la fiche précise qu'il est plus fréquent au billard américain."
+        - "Le chevalet en angle prend plus de flèche et permet d'abaisser la tête près de la queue ; la fiche le décrit appuyé sur le cadre."
+      key_point: Main à plat sur le tapis, doigts écartés, tête près de la queue.
+      demo: "Former devant les élèves le chevalet à plat (doigts écartés, pouce relevé contre l'index, puis baisser la tête au plus près de la queue), puis les laisser le reproduire sur la table."
+      illustrations: [posture-surface, chevalet-pdf]
+      src: S
+    - id: queue-droite
+      title: Un coup de queue qui reste droit
+      weight: {children: 2, adults: 2}
+      body:
+        - Seul l'avant-bras droit bouge ; le coude est le pivot, avec un poignet souple.
+        - "La main qui tient la queue : le pouce et l'index la tiennent, les autres doigts la portent."
+        - La paume ne touche la queue qu'à la fin du geste.
+        - La queue traverse la blanche en restant sur sa trajectoire.
+      key_point: Seul l'avant-bras bouge, le coude est le pivot.
+      demo: "Faire le balancier devant les élèves : seul l'avant-bras bouge, le coude est le pivot, la main arrière tient la queue et la paume ne la touche qu'à la fin ; chacun fait ensuite trois balanciers à vide."
+      illustrations: [queue-pdf]
+      src: S
+    - id: lire-defauts
+      title: Lire la fin du geste
+      weight: {adults: 2}
+      body:
+        - La position finale de la queue renseigne sur l'origine du défaut.
+        - "Queue désaxée à gauche, coude éloigné du corps : l'épaule a travaillé sur le plan horizontal."
+        - "Queue désaxée à droite : un peu l'épaule, surtout le poignet."
+        - "Queue qui se relève avec le coude plus bas qu'au départ : l'épaule a travaillé sur le plan vertical."
+        - "Queue qui se relève avec le coude au même niveau : main trop serrée, poignet rigide."
+      key_point: On corrige le geste en regardant où finit la queue.
+      demo: null
+      illustrations: [defauts-pdf]
+      src: S
+    - id: distance
+      title: Près ou loin, le même geste
+      weight: {children: 1, adults: 1}
+      body:
+        - Plus la blanche est loin de la bille, plus un petit écart d'axe se voit au bout.
+        - On garde la même posture et on reste immobile jusqu'à la fin du tir.
+      key_point: Près ou loin, la posture et le geste restent les mêmes.
+      demo: "Tirer la même bille depuis un poste proche puis un poste éloigné, avec le même geste."
+      illustrations: [distances]
+      src: Prop
+illustrations:
+  - {id: posture-surface, type: stance_top, view: top,
+     annotations: ["Pied droit sous la main droite", "Avant-bras droit vertical", "Main d'appui à plat sur la surface de jeu", "Tête au plus près de la queue"],
+     caption: "Posture avec la main d'appui sur la surface de jeu.",
+     alt: "Schéma de dessus : les pieds écartés, le pied droit sous la main qui tient la queue, la main d'appui à plat sur la surface et la queue alignée sur la blanche."}
+  - {id: chevalet-pdf, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 9,
+     caption: "Voir la page 9 de la fiche technique n° 1 : le chevalet main à plat.",
+     alt: "Renvoi vers la page 9 de la fiche technique n° 1, qui montre le chevalet main à plat."}
+  - {id: queue-pdf, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 10,
+     caption: "Voir la page 10 de la fiche technique n° 1 : le coup de queue (amplitude, tenue de la queue).",
+     alt: "Renvoi vers la page 10 de la fiche technique n° 1, qui décrit le coup de queue : seul l'avant-bras bouge et la queue est tenue par le pouce et l'index."}
+  - {id: defauts-pdf, type: pdf_ref, file: "Fiches techniques CFA BàP.pdf", page: 11,
+     caption: "Voir la page 11 de la fiche technique n° 1 : les défauts d'après la position finale de la queue.",
+     alt: "Renvoi vers la page 11 de la fiche technique n° 1, qui montre la queue en fin de geste dans quatre cas."}
+  - id: distances
+    type: table
+    balls:
+      - {id: cible, color: red, at: [4.0, 0.15], role: object}
+      - {id: w, color: white, at: [4.0, 3.2], role: cue, label: "loin"}
+    ghosts:
+      - {id: g-milieu, at: [4.0, 2.2], role: cue_start, for: w, label: "milieu"}
+      - {id: g-pres, at: [4.0, 1.2], role: cue_start, for: w, label: "près"}
+    arrows:
+      - {id: a-loin, kind: cue, ball: w, path: [[4.0, 3.2], [4.0, 0.35]], to: tm}
+      - {id: a-milieu, kind: cue, ball: w, path: [[4.0, 2.2], [4.0, 0.35]], to: tm}
+      - {id: a-pres, kind: cue, ball: w, path: [[4.0, 1.2], [4.0, 0.35]], to: tm}
+    caption: "La même bille, jouée en ligne droite depuis trois emplacements : près, au milieu, loin."
+    alt: "Table vue de dessus : une bille rouge devant la poche du milieu du haut et trois emplacements pour la blanche alignés sur une même droite avec la rouge et la poche, de plus en plus éloignés, chacun avec une flèche vers la rouge."
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p02-j1,
+     caption: "Jeu 2 : six billes à un espace de bille des poches ; la blanche se place librement.",
+     alt: "Table vue de dessus : six billes rouges, une près de chacune des six poches, à environ une bille d'écart ; pas de blanche dessinée."}
+training:
+  exercises:
+    - id: e1
+      ref: {block: posture, n: 3}
+      diagram: proposition-p01-e3
+      title: Les quatre emplacements
+      weight: {children: 2, adults: 1}
+      setup: La noire près du coin haut droit et la rouge près du coin bas droit, comme sur le schéma ; la blanche posée sur le premier des quatre emplacements alignés à gauche.
+      instruction: Depuis chacun des quatre emplacements, jouer la noire puis la rouge, main d'appui à plat sur la surface de jeu, même près de la bande, car on s'entraîne à cet appui ; replacer la blanche et les billes entre deux tirs.
+      expected: La queue part droit sur la ligne de visée et le corps reste immobile jusqu'à la fin du tir ; la bille visée va vers sa poche.
+      mistakes:
+        - {symptom: L'élève se relève avant la fin du tir, fix: Lui demander de rester immobile jusqu'à l'arrêt de la blanche.}
+        - {symptom: La queue se relève en fin de geste, fix: Desserrer la main et garder un poignet souple.}
+        - {symptom: Le tir part sur le côté, fix: "Reprendre la visée avant de se placer, queue posée sur la trajectoire."}
+      playful:
+        hook: Chaque emplacement est une épreuve ; les deux cibles réussies depuis un même emplacement donnent une étoile au tireur.
+        challenge: Réussir les deux cibles depuis le premier et depuis le quatrième emplacement, les plus près des bandes.
+      passes: 2
+      src: Prop
+    - id: e2
+      ref: {block: posture, n: 4}
+      diagram: proposition-p01-e4
+      title: Les six cibles du tireur
+      weight: {children: 1, adults: 1}
+      setup: Les billes du schéma posées chacune devant une poche, comme sur le schéma ; pas de blanche sur le schéma, c'est le binôme qui la place avant chaque tir, tantôt près d'une bande, tantôt loin.
+      instruction: Empocher les billes du schéma, une par tir, chacune dans la poche devant laquelle elle est posée ; le binôme place la blanche à chaque tir, l'élève choisit alors l'appui sur le cadre ou sur la surface selon sa place, et l'annonce avant de se placer.
+      expected: Un appui adapté à chaque tir, une posture stable, et la bille empochée sans bouger avant la fin du tir.
+      mistakes:
+        - {symptom: La blanche est empochée au début des essais, fix: Ne pas corriger tout de suite ; laisser l'élève chercher.}
+        - {symptom: L'élève se place avant d'avoir visé, fix: Lui faire poser la queue sur la ligne de visée d'abord.}
+      playful:
+        hook: Le binôme pose la blanche sans prévenir ; le tireur nomme son chevalet à voix haute avant de se placer et le justifie.
+        challenge: Enchaîner trois cibles sans manquer, chacune avec l'appui le plus adapté.
+      passes: 1
+      src: Prop
+game:
+  title: Billes à un espace de bille des poches
+  source_game: 2
+  adapted: false
+  players: Défi à 2
+  materials: "Six billes de couleur et la blanche. Pour la variante (proposition) : des jetons et une tirelire."
+  setup_illustration: schema-jeu
+  rules:
+    - Les billes de couleur sont placées près des poches, en laissant l'espace d'une bille.
+    - Le joueur en contrôle place librement la blanche sur la surface de jeu et doit réaliser une série de 6 billes.
+    - S'il manque ou commet une faute, on replace toutes les billes et la main passe à l'adversaire, qui doit réaliser l'enchaînement à son tour.
+  scoring: Réaliser une série de 6 billes d'affilée.
+  end: Le défi est relevé quand un joueur réalise la série de 6 billes ; la fiche ne précise pas de décompte entre les deux joueurs.
+  playful_variant: "Tirelire du groupe (exception coopérative aux règles du jeu, durée 15 minutes) : la tirelire se remplit de 5 jetons ; chaque série de 6 réussie ajoute un jeton, puis la partie continue sans s'arrêter : on replace toutes les billes et la main passe à l'autre joueur. Le groupe gagne si la tirelire est pleine avant la fin des 15 minutes. Tournante : à chaque main perdue, le joueur qui a manqué laisse sa place à un joueur du groupe en attente. Convenir avant de jouer que chaque bille doit entrer dans la poche devant laquelle elle est posée (la fiche ne le précise pas)."
+  link_previous:
+    notion_of: posture-1
+    rule: "Exception aux règles du jeu : avant chaque tir, le joueur annonce sa ligne de visée en posant la queue sur l'alignement queue-blanche-cible, puis se place ; l'adversaire contrôle que l'ordre viser puis se placer est respecté. Si l'ordre n'est pas respecté, le tir est traité comme une faute : on replace toutes les billes et la main passe, comme pour une faute du jeu."
+    note: "Rejoue l'alignement puis la posture de la séance précédente, tout en gardant l'appui adapté à la place de la blanche ; règle facultative, le jeu 2 se joue tel quel sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Série ramenée à 4 billes, billes un peu plus près des poches ; le premier à réussir sa série gagne la manche (la fiche ne fixe pas de décompte) ; partie limitée à 15 minutes."
+    adults: "Série de 6 en alternant l'appui cadre ou surface selon la blanche ; l'adversaire note où la queue finit à chaque série manquée (lecture des défauts)."
+  src: S
+review:
+  prompts:
+    - Depuis quel emplacement as-tu eu le plus de mal à rester immobile ?
+    - Quel appui as-tu préféré sur la surface de jeu, et pourquoi ?
+    - Que dirais-tu à un copain pour garder le même geste de près comme de loin ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 5, note: "Fiche technique n° 1, étape 1 : viser (alignement queue, blanche, cible), repris dans le rappel"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 6, note: "Fiche technique n° 1 : posture (pied sous la main, avant-bras vertical)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 9, note: "Fiche technique n° 1 : chevalets main à plat et bouclé"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 8, note: "Fiche technique n° 1 : chevalets sur cadre et en angle"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 10, note: "Fiche technique n° 1 : le coup de queue (amplitude, tenue de la queue)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 11, note: "Fiche technique n° 1 : défauts lus d'après la position finale de la queue"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 3, note: "Initiation 3 : exercice 3 du bloc posture adapté"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 4, note: "Initiation 4 : exercice 4 du bloc posture adapté"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 2, note: "Jeu 2 : billes à un espace de bille des poches"}
+uncertainties:
+  - "Les exercices 3 et 4 du bloc posture, leurs taux et leurs mises en place sont [Prop], adaptés des fiches d'initiation 3 et 4 et du jeu 1 [S] ; à valider par un animateur dans l'application."
+  - "Thème, défis, tirelire, tournante, règle de lien et adaptations du jeu : [Prop]. Titre, thème « Le tireur d'élite », notion, bloc et fiches techniques sont identiques à ceux de posture-1 (V23) ; la notion reprend la phrase de posture-1. Fil de la séance : rester stable autour de la ligne de visée (chevalet à plat, coup de queue droit, même geste de près et de loin) ; reformuler `notion` pour y nommer le coup de queue suppose de modifier posture-1 dans le même changement."
+  - "La fiche du jeu 2 ne dit pas comment on désigne le gagnant ; le décompte proposé (adaptation.children) est une proposition."
+  - "Le rappel ne porte que sur ce que posture-1 a enseigné (alignement, posture, appui sur le cadre, main à plat) ; il réutilise l'illustration `posture-dessus` de posture-1. Le coup de queue (seul l'avant-bras bouge) est nouveau et n'est pas rappelé."
+  - "Pas de section d'initiation : les fiches d'initiation 3 et 4 sont déjà la base des exercices 3 et 4 ; les ajouter ferait doublon ; les deux sections nouvelles ont une démonstration que les élèves reproduisent aussitôt (chevalet à plat, trois balanciers à vide)."
+  - "La section « Près ou loin, le même geste » est une glose [Prop] : la fiche technique n° 1 ne traite pas de la distance de la blanche ; son schéma aligne les trois emplacements avec la bille et la poche pour que seule la distance change."
+  - "Dans l'exercice 3, les emplacements 1 et 4 sont à moins d'une demi-case d'une bande et la main reste à plat : choix volontaire repris de la fiche d'initiation 3 [S] pour travailler ce chevalet ; la fiche technique recommande plutôt le cadre près de la bande."

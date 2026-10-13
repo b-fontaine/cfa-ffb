@@ -1,0 +1,213 @@
+# Séance du catalogue : « Le rejet naturel », partie 1/2.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: rejet-naturel-1
+order: 17
+technique: rejet-naturel
+part: 1
+title: Le rejet naturel
+technical_sheets: [10]
+previous: rebond-bande-2
+catalogue_block: rejet-naturel
+notion: Empocher une bille en demi-bille avec une attaque haute, pour que la blanche soit rejetée à environ 45°.
+theme:
+  name: Le virage à 45°
+  pitch: >-
+    La blanche frappe la bille de couleur puis prend un virage d'environ 45°,
+    vers la zone où l'on veut la poser. Chaque virage réussi prépare le tir
+    suivant.
+recall:
+  points:
+    - Sans effet, la blanche repart d'une bande avec un angle de rebond égal à l'angle d'arrivée.
+    - "On vise un point de la bande, et non la bille ; plus l'angle d'arrivée est ouvert, plus ce point est loin du point d'impact."
+    - Plus le coup est puissant, plus l'angle de rebond se referme.
+    - "Aujourd'hui, la blanche ne passe plus par la bande : on prévoit où elle repart après avoir touché une bille."
+  question:
+    ask: Quand la blanche arrive sur une bande sans effet, comment repart-elle ?
+    answer: Avec un angle de rebond égal à l'angle d'arrivée ; un coup puissant referme un peu l'angle.
+  reuse: {sheet: rebond-bande-2, illustration: angle-ouvert}
+  src: Prop
+theory:
+  sections:
+    - id: rejet
+      title: La blanche repart à environ 45°
+      weight: {children: 3, adults: 3}
+      body:
+        - On joue la bille de couleur en quantité proche de la demi-bille, en visant la tangente.
+        - On frappe la blanche un peu au-dessus de son centre.
+        - Après l'impact, la blanche dévie d'environ 45° par rapport à sa trajectoire initiale.
+      adult_extra:
+        - "On connaît ainsi la direction de la blanche : on vérifie qu'elle ne va pas vers une poche et on prévoit le replacement en adaptant la puissance."
+      key_point: "Demi-bille, attaque haute : la blanche part à environ 45°."
+      demo: "Tirer en demi-bille avec une attaque haute, puis repérer où la blanche s'arrête."
+      illustrations: [deviation-45, contact-haut]
+      src: S
+    - id: de-cote
+      title: Qui envoie la blanche de côté ?
+      weight: {children: 1, adults: 1}
+      body:
+        - La demi-bille envoie la blanche de côté.
+        - L'attaque haute la fait continuer vers l'avant et l'empêche de reculer.
+        - "La bille de couleur n'est pas un mur : elle part vers la poche, et la blanche file de côté."
+      key_point: "Demi-bille : la blanche part de côté ; attaque haute : elle ne recule pas."
+      demo: null
+      illustrations: [deviation-45]
+      src: Prop
+    - id: attaque-haute
+      title: Frapper la blanche en haut
+      weight: {children: 2, adults: 2}
+      body:
+        - Le procédé touche la blanche un peu au-dessus de son centre, pas au bord.
+        - Il ne faut pas jouer trop vite, sinon la blanche peut reculer.
+        - "Astuce de la fiche : avec la blanche près d'une bande et le chevalet sur cadre, le joueur place obligatoirement son procédé en haut."
+      key_point: Attaque haute et coup pas trop rapide.
+      demo: null
+      illustrations: [attaque-haute]
+      src: S
+    - id: mot-replacement
+      title: Le mot « replacement »
+      weight: {children: 1}
+      body:
+        - "Replacer la blanche, c'est la faire arriver à l'endroit choisi pour le tir suivant ; cet endroit s'appelle la zone de replacement."
+      key_point: On choisit d'avance où la blanche doit s'arrêter.
+      demo: null
+      illustrations: []
+      src: Prop
+    - id: zone
+      title: Viser la zone de replacement
+      weight: {children: 2, adults: 2}
+      body:
+        - Avant de tirer, on regarde où la blanche va repartir.
+        - On peut poser une bille sur le chemin prévu, dans la zone de replacement, puis tirer pour vérifier.
+      adult_extra:
+        - "Faire placer la blanche par l'élève lui-même : cela permet de vérifier que la notion de demi-bille est intégrée."
+      key_point: On décide où la blanche doit aller avant de tirer.
+      demo: "Poser une bille sur la trajectoire prévue de la blanche, tirer, et constater si la blanche la touche."
+      illustrations: [schema-initiation, chemin-blanche]
+      src: S
+initiation:
+  - id: ini-12
+    initiation_sheet: 12
+    title: Un rejet vers la zone
+    weight: {children: 3, adults: 3}
+    setup: La jaune au centre de la table, alignée avec la poche du milieu du haut ; l'élève pose lui-même la blanche, en bas à droite de la jaune, à courte distance, là où il voit la demi-bille.
+    goal: Empocher la jaune par un rejet naturel, en dirigeant la blanche dans la zone de replacement.
+    expected: La jaune part vers la poche ; la blanche est rejetée vers la zone de replacement sans reculer.
+    scoring:
+      mode: checklist
+      criteria:
+        - La jaune est empochée.
+        - La blanche part vers la zone de replacement, sans reculer.
+    illustration: schema-initiation
+    src: S
+illustrations:
+  - {id: deviation-45, type: angle, kind: natural_rejection, vertex: [4.0, 2.23], rays: [[3.61, 1.46], [1.55, 1.43]],
+     caption: "Après l'impact, la blanche dévie d'environ 45° par rapport à sa trajectoire initiale (marque d'angle seule ; voir le chemin de la blanche pour les billes).",
+     alt: "Table vue de dessus, sans bille : deux traits partent du point d'impact et un arc d'environ 45° marque l'écart entre le prolongement de la trajectoire initiale de la blanche et sa nouvelle direction, vers la gauche. Les billes sont visibles dans l'illustration « chemin de la blanche »."}
+  - {id: contact-haut, type: contact, fraction: half, tip_point: top,
+     caption: "Demi-bille, attaque un peu au-dessus du centre de la blanche, pas au bord (point dessiné en haut pour être lisible).",
+     alt: "La blanche recouvre la moitié de la bille de couleur ; le point d'impact du procédé est dans la partie haute de la blanche, un peu au-dessus du centre et non au bord."}
+  - {id: attaque-haute, type: cue_side, tip_point: top, cue_height: level,
+     caption: "Le procédé frappe la blanche un peu au-dessus de son centre, pas au bord (schéma indicatif, point dessiné en haut pour être lisible).",
+     alt: "Vue de côté : la queue est horizontale et son procédé touche la blanche dans sa partie haute, un peu au-dessus du centre et non à son bord."}
+  - id: chemin-blanche
+    type: table
+    balls:
+      - {id: y1, color: yellow, at: [4.0, 2.0], role: object}
+      - {id: w, color: white, at: [4.39, 3.0], role: cue}
+      - {id: repere, color: red, at: [1.55, 1.35], role: obstacle}
+    ghosts:
+      - {id: g1, at: [4.0, 2.23], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[4.39, 3.0], [4.0, 2.23]], bounces: []}
+      - {id: a2, ball: y1, kind: object, path: [[4.0, 2.0], [4.0, 0.3]], bounces: [], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[4.0, 2.23], [1.55, 1.35]], bounces: []}
+    zones: []
+    caption: "Une bille posée sur le chemin prévu permet de vérifier où la blanche arrive (schéma indicatif)."
+    alt: "Table vue de dessus : la jaune sous la poche du milieu du haut, la blanche en bas à droite ; la blanche touche la jaune puis repart vers la gauche où une bille est posée sur son chemin."
+  - {id: schema-initiation, type: diagram_ref, diagram: initiation-p12-e1,
+     caption: "Initiation 12 : la jaune est empochée et la blanche est rejetée vers la zone de replacement.",
+     alt: "Table vue de dessus : une jaune alignée avec la poche du milieu du haut, la blanche en bas à droite ; la blanche touche la jaune en demi puis part vers la gauche."}
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p14-j1,
+     caption: "Jeu 14 : la partie classique, avec quatre billes par groupe et la noire.",
+     alt: "Table vue de dessus : la blanche sur la ligne de départ, à gauche ; les billes de la partie groupées en losange à droite autour de la noire."}
+training:
+  exercises:
+    - id: e1
+      ref: {block: rejet-naturel, n: 1}
+      diagram: entrainement-p13-e1
+      title: Le rejet vers la zone
+      weight: {children: 2, adults: 1}
+      setup: La jaune du schéma près de la poche du milieu du haut ; la blanche posée sur son repère à droite ; les rouges et la noire comme sur le schéma ; un jeton posé à l'arrivée de la flèche de la blanche du schéma, pour matérialiser la zone de replacement.
+      instruction: Empocher la jaune par un rejet naturel pour replacer la blanche près du jeton, de façon à pouvoir jouer la noire ensuite ; jouer cinq tirs, en replaçant la jaune et la blanche chaque fois.
+      expected: "La jaune est empochée et la blanche s'arrête près du jeton, sans reculer. Lecture [Prop] de « pour jouer la noire » : la noire reste dégagée (aucune bille entre la blanche et la noire), à vérifier avant de compter le tir."
+      mistakes:
+        - {symptom: "La blanche recule ou revient vers l'élève", fix: "Jouer moins vite, « à la mesure »."}
+        - {symptom: "La blanche part trop droit derrière la jaune", fix: "Viser plus sur la tangente, en quantité proche de la demi-bille."}
+        - {symptom: "La blanche est empochée", fix: "Faire vérifier la direction prévue avant le tir et adapter la puissance."}
+      playful:
+        hook: Chaque virage réussi fait avancer un pion sur le chemin dessiné au tableau.
+        challenge: Atteindre la dernière case du chemin en deux passages, ou faire mieux que la séance précédente.
+      passes: 2
+      src: S
+    - id: e2
+      ref: {block: rejet-naturel, n: 2}
+      diagram: entrainement-p13-e2
+      title: Le rejet plus loin
+      weight: {children: 1, adults: 1}
+      setup: La jaune du schéma près de la poche du milieu du haut ; la blanche posée sur son repère à droite ; la rouge du schéma sur la ligne de départ et la noire du schéma près de la bande de gauche ; un jeton posé à l'arrivée de la flèche de la blanche du schéma.
+      instruction: Empocher la jaune par un rejet naturel pour replacer la blanche près du jeton, de façon à pouvoir jouer la noire ensuite ; jouer cinq tirs, en replaçant la jaune et la blanche chaque fois.
+      expected: "La jaune est empochée ; la blanche file plus loin que dans l'exercice précédent, s'arrête près du jeton sans toucher la rouge de la ligne de départ. Lecture [Prop] : la noire reste dégagée pour être jouée ensuite."
+      mistakes:
+        - {symptom: "La blanche touche la rouge de la ligne de départ", fix: "Corriger la puissance du coup et vérifier la trajectoire avant de tirer."}
+        - {symptom: "Le rejet change à chaque tir", fix: "Garder la même visée et la même hauteur d'attaque d'un tir à l'autre."}
+      playful:
+        hook: Avant chaque tir, l'élève annonce à voix haute où la blanche va s'arrêter.
+        challenge: Annoncer juste trois fois de suite, à deux, sans se tromper.
+      passes: 1
+      src: S
+game:
+  title: Partie à difficulté réduite
+  source_game: 14
+  adapted: false
+  players: Partie à 2
+  materials: "Billes du jeu complet. Pour le défi ludique (proposition) : des jetons."
+  setup_illustration: schema-jeu
+  rules:
+    - Partie à 2 ; les règles sont celles d'une partie classique, excepté que l'on utilise uniquement 4 billes de chaque groupe de couleur et la bille noire.
+    - Le joueur qui casse est désigné par le tirage à la bande.
+  scoring: "Comme dans une partie classique : le premier qui empoche son groupe puis la noire gagne."
+  end: Fin quand un joueur a empoché son groupe puis la noire.
+  playful_variant: "Avant un tir en demi-bille, annoncer « rejet » et montrer du doigt où la blanche doit s'arrêter ; si la bille est empochée et que la blanche s'arrête à moins de deux largeurs de main du point montré, le joueur gagne un jeton. Un jeton donne un tir de plus : le joueur rejoue après un tir manqué, depuis l'endroit où la blanche s'est arrêtée, sans remettre les billes en place."
+  link_previous:
+    notion_of: rebond-bande-2
+    rule: "Pour les adultes seulement (les enfants jouent sans). Exception facultative à la partie : une fois par joueur et par partie, quand la bille à jouer est atteignable par la bande, le joueur peut annoncer « bande » et toucher une bande (ou deux) avant la bille ; sans effet, la blanche repart avec l'angle d'arrivée. S'il empoche la bille, il gagne un jeton."
+    note: "Fait rejouer le rebond sur bande sans effet de la séance précédente (angle égal, jusqu'à deux bandes) dans une partie où le rejet est déjà recherché ; règle facultative, réservée aux adultes, la partie se joue telle quelle sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Proposition : rappel de la partie classique, absent de la fiche, à valider (chaque joueur a son groupe de couleur ; on rejoue tant qu'on empoche une bille de son groupe ; la noire s'empoche en dernier ; pour les fautes, règlement fédéral). Conseil de la séance : chaque fois que c'est possible, chercher à replacer la blanche par un rejet naturel pour préparer le tir suivant. Un joueur les rouges, l'autre les jaunes ; limite de 15 minutes, au-delà gagne qui a le moins de billes restantes ; garder une seule mécanique ludique (l'annonce « rejet » et le jeton)."
+    adults: "Proposition : conseil de la séance, chercher à replacer la blanche par un rejet naturel pour préparer le tir suivant (pour les fautes, règlement fédéral). Après la partie, noter les rejets annoncés et réussis, et chercher pourquoi les ratés (vitesse, hauteur d'attaque, quantité)."
+  src: S   # titre, règles, score et fin du jeu 14 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
+review:
+  prompts:
+    - Qu'est-ce qui fait partir la blanche de côté, et qu'est-ce qui l'empêche de reculer ?
+    - Dans quel tir la blanche est-elle allée où tu voulais ?
+    - Que dirais-tu à un copain pour réussir un rejet ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 20, note: "Fiche technique n° 10 (rejet naturel, attaque haute, déviation d'environ 45°)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 19, note: "Fiche technique n° 9 (rebond sur bande, pour le rappel)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 12, note: Initiation 12}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 13, note: "Entraînement « Le rejet naturel », exercices 1 et 2"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite)"}
+uncertainties:
+  - "Thème, défis, sections « Qui envoie la blanche de côté ? » et « Le mot replacement », rappel (transition vers le rejet), variante de jeu (jetons, annonce, tolérance de deux largeurs de main), règle de lien et adaptations : [Prop], à valider par un animateur dans l'application. Le minutage et la différenciation enfants / adultes sont aussi des propositions."
+  - "Le jeu est le jeu 14 [S] repris tel quel (`adapted: false`) : la fiche ne propose aucun jeu dédié au rejet naturel ; le conseil de replacer par rejet et le rappel des règles classiques sont des propositions placées dans `adaptation`. Les règles de la partie classique ne figurent pas dans les sources du dépôt : le rappel est à valider (fautes : règlement fédéral)."
+  - "La fiche n° 10 réunit demi-bille et attaque haute sans dire laquelle fait partir la blanche de côté et laquelle l'empêche de reculer : la répartition des rôles est une explication [Prop] (section `de-cote`), les sections [S] ne la portent pas."
+  - "Illustrations `contact-haut` et `attaque-haute` : le type `TipPoint` n'a pas de valeur « un peu au-dessus du centre » ; `top` dessine le point en haut de la bille, alors que la fiche n° 10 et l'entraînement p. 13 (« légèrement au-dessus du centre ») placent le point d'impact plus bas. Les légendes le précisent ; le schéma est indicatif."
+  - "Le rappel reprend trois points sourcés de rebond-bande-2 (angle égal, point de la bande visé, puissance qui referme l'angle) ; les sections `deux-bandes` et `chemin-long` de cette séance étant [Prop], elles ne sont pas rappelées comme sourcées. Le rappel est [Prop] à cause de la phrase de transition. Écart connu (00-provenance) : sur la puissance, le texte de la fiche n° 9 dit que l'angle se referme, la légende du schéma note « angle d'arrivée < angle de rebond » ; le texte est retenu, à signaler à l'animateur pour les enfants. `recall.reuse` réutilise l'illustration `angle-ouvert` de rebond-bande-2."
+  - "Thème « Le virage à 45° » : nom distinct de celui de rebond-bande (« Le ricochet »), pour ne pas faire porter la même métaphore à deux techniques ; il est identique dans rejet-naturel-1 et 2 (V23). Le pion sur un chemin au tableau (e1) reste l'accroche d'e1."
+  - "Initiation 12 et schémas d'entraînement : le type de chevalet n'est pas indiqué ; la quantité est lue comme proche de la demi-bille, le texte ne précisant pas le taux sur le schéma. Sur le schéma, la flèche d'arrivée de la blanche (exercice 1) est à droite de la ligne de départ, alors que l'initiation 12 place la zone à gauche : la séance matérialise la zone par un jeton posé au bout de la flèche, sans la décrire par rapport à la ligne."
+  - "Exercices : la fiche dit « replacer cinq fois la blanche afin de jouer la noire » ; la séance garde cette consigne (cinq tirs, jaune et blanche replacées à chaque fois). La noire dégagée est une lecture [Prop] de « pour jouer la noire » (géométrie du schéma), à valider ; elle ne change pas le taux 3/5 repris de la source."
+  - "Le bloc « Le rejet naturel » figure deux fois dans le PDF d'entraînement (pp. 13-14 puis 17-18, schémas avec bandes) ; la séance utilise les exercices de la 1re occurrence (p. 13) ; la 2e (pp. 17-18, avec rebond) n'est pas utilisée."
+  - "L'illustration `chemin-blanche` et la marque d'angle sont indicatives (non à l'échelle). `chemin-blanche` reprend le schéma d'initiation 12 [S] auquel s'ajoute une bille de repère rouge, qui est le conseil de vérification de la fiche (bille posée sur la trajectoire estimée) : c'est une bille de repère, pas la rouge d'un exercice."

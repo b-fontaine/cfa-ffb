@@ -1,0 +1,273 @@
+# Séance du catalogue : « Le rétro », partie 1/4.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: retro-1
+order: 26
+technique: retro
+part: 1
+title: Le rétro
+technical_sheets: [14]
+previous: angle-droit-2
+catalogue_block: retro
+notion: Jouer un rétro, attaquer la blanche sous son centre pour la faire reculer après le contact.
+theme:
+  name: Le boomerang
+  pitch: >-
+    La blanche est un boomerang : on la lance sur la bille de couleur et,
+    bien jouée, elle revient vers toi. Première étape : la faire revenir
+    droit vers toi, puis choisir où elle s'arrête.
+recall:
+  points:
+    - Le coup à angle droit se joue avec une attaque au centre de la blanche.
+    - La quantité de bille est au choix, sauf la bille pleine.
+    - Sans rotation à l'impact, les deux billes partent à 90° l'une de l'autre ; trop puissant, l'angle dépasse 90°.
+    - "Aujourd'hui, on change d'attaque : en bas de la blanche, avec une rotation arrière, pour qu'elle recule au lieu de continuer."
+  question:
+    ask: Au coup à angle droit, où frappe-t-on la blanche et quel angle forment les deux billes ?
+    answer: Au centre de la blanche ; les deux billes partent à 90° l'une de l'autre.
+  reuse: {sheet: angle-droit-2, illustration: angle-90-bande}
+  src: S
+theory:
+  sections:
+    - id: attaque-basse
+      title: Attaquer en bas
+      weight: {children: 3, adults: 3}
+      body:
+        - Pour un rétro, le procédé frappe la blanche sous son centre.
+        - "La blanche avance en tournant à l'envers : c'est la rotation arrière."
+      adult_extra:
+        - Avec l'attaque basse, le frottement du drap fait d'abord glisser la blanche, puis rouler vers l'avant ; l'impact doit avoir lieu tant que la rotation arrière est conservée.
+      key_point: "Attaque basse : le procédé frappe sous le centre de la blanche."
+      demo: "Montrer sur la blanche le point d'impact, sous le centre, puis jouer un rétro plein à courte distance."
+      illustrations: [attaque-basse, contact-retro]
+      src: S
+    - id: plein-180
+      title: En plein, la blanche revient
+      weight: {children: 4, adults: 3}
+      body:
+        - En bille pleine, on vise le centre de la bille de couleur.
+        - Après l'impact, la blanche recule et revient droit vers toi, par où elle est venue.
+        - C'est une déviation de 180°.
+        - Le coup doit avoir une certaine vitesse, pour que la blanche garde sa rotation arrière jusqu'à l'impact.
+        - Les billes ne sont pas trop éloignées l'une de l'autre, pour que la rotation dure jusqu'au contact.
+      adult_extra:
+        - Entre le plein et la demi-bille, la blanche peut prendre de nombreuses déviations ; elles dépendent de la quantité de bille et de la puissance du coup.
+      key_point: "Plein et attaque basse : la blanche revient droit vers toi."
+      demo: "Jouer un rétro plein vers la poche et montrer où la blanche s'arrête ; le rejouer doucement, puis plus vite, et regarder si la blanche recule."
+      illustrations: [visee-plein, retro-plein]
+      src: S
+    - id: cadre
+      title: Sur le cadre, talon levé
+      weight: {children: 1, adults: 1}
+      body:
+        - Quand la queue s'appuie sur le cadre, on lève légèrement le talon de la queue pour l'incliner.
+        - Cela permet d'attaquer bas.
+        - Si la queue se relève en fin de coup, la main serre trop fort le talon.
+      key_point: Sur le cadre, talon légèrement levé et main détendue.
+      demo: "Poser la queue sur le cadre, lever légèrement le talon et montrer sur la blanche le point d'impact, sous le centre."
+      illustrations: [talon-leve]
+      src: S
+    - id: limite
+      title: "La limite : la demi-bille"
+      weight: {adults: 2}
+      body:
+        - "Proche du demi-bille, le recul de la blanche donne une déviation de 90° par rapport à sa trajectoire d'arrivée : elle repart parallèlement à la grande bande, c'est la limite du rétro."
+        - Sous la demi-bille, la blanche ne recule plus, ce n'est plus un rétro.
+        - Au Blackball, la blanche étant petite, il faut viser un peu plus à l'intérieur de la bille de couleur pour obtenir 90°.
+      adult_extra:
+        - "Ici, les 90° mesurent le virage de la blanche par rapport à sa trajectoire d'arrivée, et non l'écart entre les deux billes comme au coup à angle droit."
+      key_point: "Plein : 180°. Proche du demi-bille, un peu plus plein : 90°, c'est la limite."
+      demo: null
+      illustrations: [quantites, schema-retro-demi]
+      src: S
+    - id: regler-retour
+      title: Régler le retour
+      weight: {adults: 1}
+      body:
+        - Pour régler où la blanche s'arrête, on peut ajuster la vitesse en gardant l'attaque basse.
+        - La fiche relie la puissance et la déviation de la blanche ; ce lien avec la distance de retour est une lecture de la séance.
+      key_point: On garde l'attaque basse quand on ralentit.
+      demo: "Jouer le même rétro plein à deux vitesses et comparer où la blanche s'arrête."
+      illustrations: [retro-plein]
+      src: Prop
+    - id: mot-boomerang
+      title: Le boomerang
+      weight: {children: 1}
+      body:
+        - Un boomerang revient vers celui qui l'a lancé.
+        - En rétro, c'est la blanche qui revient.
+      key_point: En rétro, la blanche revient comme un boomerang.
+      demo: null
+      illustrations: [retro-plein]
+      src: Prop
+initiation:
+  - id: ini-17
+    initiation_sheet: 17
+    title: Deux billes en rétro plein
+    weight: {children: 3, adults: 3}
+    setup: Une jaune et une rouge près de la bande de gauche, sous la poche d'angle du haut à gauche ; un repère de blanche pour chacune, à courte distance, comme sur le schéma.
+    goal: "Empocher 2 billes en rétro, en bille pleine, en faisant reculer la blanche au-delà du trait, avec un chevalet sur la surface de jeu et un chevalet sur cadre."
+    expected: La bille est empochée en plein et la blanche recule au-delà du trait.
+    scoring: {mode: counter, of: 2}
+    illustration: schema-initiation
+    src: S
+illustrations:
+  - {id: attaque-basse, type: cue_side, tip_point: bottom, cue_height: level,
+     caption: "Rétro : le procédé frappe la blanche sous son centre (schéma indicatif).",
+     alt: "Bille blanche vue de côté, la queue à plat ; le procédé touche la blanche dans sa partie basse, sous le centre."}
+  - {id: talon-leve, type: cue_side, tip_point: bottom, cue_height: high,
+     caption: "Sur le cadre : le talon de la queue est légèrement levé pour attaquer bas (schéma indicatif).",
+     alt: "Bille blanche vue de côté, la queue inclinée, talon levé ; le procédé touche la blanche dans sa partie basse."}
+  - {id: contact-retro, type: contact, fraction: full, tip_point: bottom,
+     caption: "Rétro plein : la blanche couvre la bille de couleur, le procédé est sous le centre de la blanche.",
+     alt: "La blanche recouvre entièrement la bille de couleur, vue de dessus ; le point d'impact du procédé est dans le bas de la blanche."}
+  - {id: visee-plein, type: ghost_aim, cue: [4.0, 3.0], object: [4.0, 1.8], pocket: tm, fraction: full,
+     caption: "En plein, la blanche vise le centre de la bille de couleur, alignée avec la poche.",
+     alt: "Table vue de dessus : la blanche en bas, la bille de couleur au centre, la poche du milieu en haut, tout sur une même ligne verticale ; la bille fantôme est collée sous la bille de couleur."}
+  - id: retro-plein
+    type: table
+    balls:
+      - {id: r, color: red, at: [4.0, 1.8]}
+      - {id: w, color: white, at: [4.0, 3.0], role: cue}
+    ghosts:
+      - {id: g-impact, at: [4.0, 2.0], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[4.0, 3.0], [4.0, 2.0]], bounces: []}
+      - {id: a2, ball: r, kind: object, path: [[4.0, 1.8], [4.0, 0.0]], bounces: [], to: tm}
+      - {id: a3, ball: w, kind: cue, path: [[4.0, 2.0], [4.0, 3.4]], bounces: [], label: "la blanche revient droit vers toi"}
+    zones:
+      - {id: trait, shape: rect, from: [3.0, 2.97], to: [5.0, 3.03], label: "trait"}
+    caption: "Rétro plein : la rouge part vers la poche, la blanche repart en sens inverse, droit vers toi, et dépasse le trait."
+    alt: "Table vue de dessus : la blanche posée sur un trait horizontal en bas, une bille rouge au centre sous la poche du milieu du haut ; la blanche touche la rouge en plein, la rouge monte droit vers la poche et la blanche redescend sur la même ligne, au-delà du trait."
+  - {id: quantites, type: contact_strip, fractions: [full, three_quarter, half], highlight: full,
+     caption: "Plein, trois-quarts et demi-bille : en plein, la blanche revient droit (180°).",
+     alt: "Trois schémas de contact côte à côte : la bille pleine mise en évidence, puis le trois-quarts, puis la demi-bille."}
+  - {id: schema-retro-demi, type: diagram_ref, diagram: initiation-p19-e1,
+     caption: "Initiation 19 : en demi-bille, la blanche dévie de 90° par rapport à sa trajectoire d'arrivée et repart parallèlement à la grande bande.",
+     alt: "Table vue de dessus : une bille rouge près de la bande de gauche, la blanche en dessous ; la blanche touche la rouge en demi-bille, la rouge part vers la poche du haut à gauche et la blanche, arrivée par le bas, tourne de 90° et repart vers la droite, parallèlement à la grande bande."}
+  - {id: schema-initiation, type: diagram_ref, diagram: initiation-p17-e1,
+     caption: "Initiation 17 : deux billes jouées en rétro plein vers la poche du haut à gauche, la blanche recule.",
+     alt: "Table vue de dessus : une jaune et une rouge près de la bande de gauche, deux repères de blanche ; chaque bille part en plein vers la poche d'angle du haut à gauche."}
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p14-j1,
+     caption: "Jeu 14 : une partie à difficulté réduite, quatre billes par groupe et la noire en losange.",
+     alt: "Table vue de dessus : la blanche sur la ligne de départ à gauche ; au centre-droit, neuf billes groupées en losange, la noire au milieu entourée de rouges et de jaunes."}
+training:
+  exercises:
+    - id: e1
+      ref: {block: retro, n: 1}
+      diagram: entrainement-p27-e1
+      title: Le boomerang revient
+      weight: {children: 2, adults: 1}
+      setup: La rouge du schéma près de la bande de gauche, sous la poche d'angle du haut à gauche ; les jaunes et la noire en dessous d'elle ; la blanche posée sur le trait tracé sur la surface de jeu, à droite de la rouge.
+      instruction: Empocher la rouge en bille pleine avec une attaque basse, de façon que la blanche recule au-delà du trait, pour pouvoir jouer ensuite la noire ; recommencer la même situation à chaque tir.
+      expected: La rouge est empochée en plein et la blanche recule sur sa ligne au-delà du trait, bien placée pour la noire.
+      mistakes:
+        - symptom: La blanche ne recule pas
+          fix: Attaquer plus bas, sous le centre de la blanche, et jouer un peu plus vite.
+        - symptom: La queue se relève en fin de coup
+          fix: Moins serrer le talon de la queue pour garder un mouvement rectiligne.
+      playful:
+        hook: >-
+          Chaque retour de la blanche au-delà du trait est un boomerang rattrapé :
+          l'élève ajoute un trait sur une feuille ou au tableau.
+        challenge: >-
+          Rattraper le boomerang trois fois de suite pour devenir lanceur
+          confirmé.
+      passes: 2
+      src: S
+    - id: e2
+      ref: {block: retro, n: 2}
+      diagram: entrainement-p27-e2
+      title: Le boomerang sur le cadre
+      weight: {children: 1, adults: 1}
+      setup: La noire du schéma en haut près de la bande de gauche, la rouge plus bas ; la blanche posée sur son repère près du trait, en haut à droite de la rouge.
+      instruction: Empocher la rouge dans la poche d'angle du bas à gauche en bille pleine, la queue appuyée sur le cadre, avec une attaque basse, de façon que la blanche recule au-delà du trait ; recommencer la même situation à chaque tir.
+      expected: La rouge est empochée et la blanche revient en arrière sur sa ligne, au-delà du trait, pour pouvoir jouer la noire.
+      mistakes:
+        - symptom: La blanche ne recule pas, la queue reste trop à plat
+          fix: Lever légèrement le talon de la queue pour l'incliner et attaquer plus bas.
+        - symptom: La queue se relève brusquement après le contact
+          fix: Détendre la main sur le talon de la queue.
+      playful:
+        hook: >-
+          Le cadre est la rampe de lancement : on annonce « lancer » avant
+          chaque tir, puis « retour » si la blanche passe le trait.
+        challenge: >-
+          Réussir deux lancers de suite depuis la rampe sans que la queue
+          se relève.
+      passes: 1
+      src: S
+    - id: e3
+      ref: {block: retro, n: 3}
+      diagram: entrainement-p28-e3
+      title: Deux zones de retour
+      weight: {children: 1, adults: 2}
+      setup: "La rouge près de la poche d'angle du haut à gauche, les jaunes et la noire comme sur le schéma ; la blanche posée sur le trait. Le schéma ne délimite pas les zones, il n'en donne que les libellés : proposition à marquer au sol ou avec des repères, deux carrés d'une case de côté sur la ligne de retour de la blanche (de la rouge vers le trait et au-delà) ; la zone 1 centrée un peu avant le trait, la zone 2 centrée plus loin, au-delà du trait (repères du schéma : vers 1,3 ; 1,8 et vers 2,7 ; 3,3)."
+      instruction: Empocher la rouge en bille pleine avec une attaque basse, de façon que la blanche recule trois fois dans la zone 1 et trois fois dans la zone 2, pour pouvoir jouer ensuite la noire.
+      expected: La rouge est empochée et la blanche s'arrête dans la zone visée, trois fois dans chaque zone.
+      mistakes:
+        - symptom: La blanche dépasse la zone visée
+          fix: Réduire un peu la vitesse tout en gardant l'attaque basse (lecture de la fiche n° 14, qui relie puissance et déviation ; la fiche ne donne pas de lien chiffré avec la distance).
+        - symptom: La blanche s'arrête avant la zone
+          fix: Jouer un peu plus vite sans changer la quantité de bille ni l'attaque basse.
+        - symptom: La blanche ne revient pas du tout
+          fix: Revenir à l'attaque sous le centre et vérifier que les billes ne sont pas trop éloignées.
+      playful:
+        hook: >-
+          Deux cibles à boomerang : l'élève annonce « zone 1 » ou « zone 2 »
+          avant de tirer, dans l'ordre qu'il veut.
+        challenge: >-
+          Atteindre la zone annoncée trois fois de suite pour décrocher
+          un titre de lanceur précis.
+      passes: 2
+      src: S
+game:
+  title: Partie à difficulté réduite, avec rétro
+  source_game: 14
+  adapted: true
+  players: "Partie à 2 ; variante ludique à 4, en 2 équipes de deux"
+  materials: "Billes du jeu complet, quatre par groupe plus la noire. Pour la variante ludique (proposition) : une feuille ou un tableau pour les jetons."
+  setup_illustration: schema-jeu
+  rules:
+    - Jouer une partie avec les règles classiques.
+    - Jouer avec seulement quatre billes de chaque groupe de couleur et la noire.
+    - Le joueur qui casse est désigné par le tirage à la bande.
+  scoring: Comme dans une partie classique, le premier qui empoche son groupe de billes puis la noire gagne.
+  end: Fin quand un joueur a vidé son groupe puis empoché la noire.
+  playful_variant: "Les jetons boomerang, en 2 équipes de deux : chaque équipe garde la main comme dans la partie classique (on continue tant qu'on empoche), l'autre partenaire jouant à la visite suivante. Un rétro annoncé avant le tir, dont la bille est empochée et dont la blanche s'immobilise plus près du tireur que du point de contact, donne un jeton boomerang ; l'équipe adverse juge. Avec trois jetons, l'équipe choisit une seule fois, pour un tir, la place de la blanche ; ses jetons sont alors remis à zéro. Les jetons ne comptent pas comme des billes : le seul avantage qu'ils donnent est cette place de la blanche, une exception facultative aux règles classiques."
+  link_previous:
+    notion_of: angle-droit-2
+    rule: "Exception facultative aux règles classiques : une fois par joueur et par partie, avant son tir, on annonce « équerre » (bille à courte distance, attaque au centre, bille non pleine, les deux billes doivent partir à 90° l'une de l'autre) ; l'adversaire juge les 90° à l'œil. Si le joueur y parvient, il marque un jeton équerre, compté à part des jetons boomerang et sans effet sur la victoire."
+    note: "Fait rejouer le coup à angle droit de la séance précédente à côté du rétro et oblige à choisir l'attaque (centre ou basse) ; règle facultative, indépendante de la variante : la partie se joue telle quelle sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Mise en place proposée (la fiche ne la précise pas) : un joueur les rouges et l'autre les jaunes, la noire sur son point de départ comme sur le schéma, le tirage à la bande pour commencer comme dans la partie classique, partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes."
+    adults: "Après la partie, compter les rétros annoncés et réussis, et les comparer au taux de l'exercice 1. Variante plus difficile : annoncer aussi la zone d'arrivée de la blanche."
+  src: Prop
+review:
+  prompts:
+    - Dans quel rétro la blanche est-elle revenue exactement où tu voulais ?
+    - Qu'est-ce qui change quand tu attaques plus bas ou plus vite ?
+    - Que dirais-tu à un copain pour que la blanche recule ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 24, note: "Fiche technique n° 14 (rétro : attaque basse, rotation arrière, déviation de 180° en plein, 90° en demi-bille)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 25, note: "Fiche technique n° 14 (rétro à 90° au Blackball, déviations selon la quantité et la puissance)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 23, note: "Fiche technique n° 13 (coup à angle droit, pour le rappel)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 17, note: "Initiation 17 (rétro plein : attaque basse, vitesse suffisante, talon levé sur cadre)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 19, note: "Initiation 19 (rétro en demi-bille, 90°)"}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 27, note: "Entraînement « Le rétro », exercices 1 et 2"}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 28, note: "Entraînement « Le rétro », exercice 3"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite : quatre billes par groupe et la noire)"}
+uncertainties:
+  - "Jeu : la source ne propose aucun jeu spécifique au rétro ; le jeu 14 est repris et adapté (règle du rétro, points boomerang, règle de lien, scoring « comme une partie classique ») : [Prop], à valider par un animateur dans l'application."
+  - "Thème « Le boomerang », défis ludiques, variante de jeu, règle de lien, adaptations, poids et minutes : [Prop]. Le nom du thème devra être repris par retro-2 à retro-4 (V23) et la variante de jeu y être différente."
+  - "Rappel : repris de la fiche technique n° 13 et de angle-droit-2 (attaque au centre, toute quantité sauf le plein, 90°, angle ouvert si trop puissant) ; `recall.reuse` vise l'illustration `angle-90-bande` de angle-droit-2 et `link_previous` rejoue ce coup (V7, V14)."
+  - "Exercice 3 : les zones 1 et 2 ne sont pas délimitées sur le schéma [S], seuls les libellés « Zone 1 x3 » et « Zone 2 x3 » figurent (vers 1,3 ; 1,8 et vers 2,7 ; 3,3) ; leur taille (carré d'une case), leur position sur la ligne de retour et le fait qu'on les règle par la vitesse sont des lectures [Prop] du schéma et de la fiche n° 14 (déviations selon la quantité et la puissance), non formulées telles quelles ; l'ordre « zone 1 puis zone 2 » n'est pas imposé."
+  - "Exercice 3 : le schéma montre une seule rouge, deux jaunes et la noire alors que l'énoncé parle de six tirs ; la rouge est replacée à chaque tir."
+  - "Exercices 1 et 3 : le type de chevalet n'est pas précisé par la source ; il est lu dans le catalogue (cadre à l'exercice 2)."
+  - "Section « Le boomerang » (enfants) : glose [Prop], absente des fiches."
+  - "Illustration `talon-leve` : la fiche n° 14 et l'initiation 17 donnent le conseil (lever légèrement le talon sur cadre), mais pas d'angle ; l'inclinaison du schéma est indicative."
+  - "Section « En plein, la blanche revient » : « certaine vitesse » et « billes pas trop éloignées » viennent de l'initiation 17 ; la source ne donne ni vitesse ni distance chiffrée. La section adultes « Régler le retour » est une lecture [Prop]."
+  - "Jeu : `rules` reprend les trois règles du jeu 14 ; le critère du jeton boomerang (la blanche s'immobilise plus près du tireur que du point de contact, jugé par l'adversaire), le jeton équerre, le placement de la blanche à trois jetons et le jeu en équipes sont [Prop], facultatifs, et la partie se joue sans eux."
+  - "Notion : la formulation « attaquer la blanche sous son centre » est commune aux quatre séances du rétro ; retro-2 doit être alignée (V23)."

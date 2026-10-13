@@ -1,0 +1,206 @@
+# Séance du catalogue : « Le carreau », partie 1/2.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: carreau-1
+order: 22
+technique: carreau
+part: 1
+title: Le carreau
+technical_sheets: [12]
+previous: coule-3
+catalogue_block: carreau
+notion: Faire s'arrêter la blanche sur la bille de couleur en la jouant en plein, avec une attaque au centre.
+theme:
+  name: La blanche se gare
+  pitch: >-
+    La blanche est une voiture qui doit se garer pile à la place de la bille
+    de couleur : ni trop doux, elle roulerait encore ; ni trop fort, elle
+    reculerait. Chaque carreau réussi est un créneau parfait.
+recall:
+  points:
+    - Le coulé se joue avec une attaque haute, de la bille pleine au trois-quarts.
+    - En plein, la blanche suit la même trajectoire que la bille de couleur.
+    - On privilégie l'amplitude à la vitesse, sans empocher la blanche.
+    - On choisit avant le tir la zone où la blanche doit s'arrêter.
+  question:
+    ask: Pour un coulé, où frappe-t-on la blanche, et que fait-elle après le choc en plein ?
+    answer: En haut ; elle suit la bille de couleur sur la même ligne.
+  reuse: {sheet: coule-3, illustration: coule-plein}
+  src: S
+theory:
+  sections:
+    - id: carreau
+      title: La blanche s'arrête
+      weight: {children: 3, adults: 3}
+      body:
+        - Le carreau est le coup qui stoppe la blanche au moment du choc avec une bille de couleur.
+        - On joue en bille pleine, avec une attaque au centre de la blanche.
+        - Sans rotation de la blanche à l'impact, elle s'arrête sur la bille de couleur.
+      key_point: "Plein, attaque au centre, pas de rotation : la blanche s'arrête."
+      demo: "Tirer en plein à courte distance, attaque au centre : la blanche s'arrête au contact de la bille de couleur."
+      illustrations: [contact-plein-centre, schema-carreau]
+      src: S
+    - id: gare
+      title: La blanche se gare
+      weight: {children: 1}
+      body:
+        - La blanche arrive avec de l'élan, donne tout à la bille de couleur et reste sur place, comme une voiture qui se gare.
+        - "On ne freine pas le coup : c'est l'élan qui fait le carreau."
+      key_point: La blanche donne son élan à la bille de couleur et reste sur place.
+      demo: null
+      illustrations: [schema-carreau]
+      src: Prop
+    - id: puissance
+      title: Glisser sans reculer
+      weight: {children: 3, adults: 3}
+      body:
+        - Avec une attaque au centre, la blanche avance d'abord en glissant, puis elle se met à rouler.
+        - Le carreau se joue pendant le glissement. On l'apprend sur une courte distance entre les deux billes, 50 cm au plus pour débuter.
+        - Trop doux, la blanche roule encore après l'impact. Trop fort, elle recule.
+      adult_extra:
+        - Il faut de la pénétration et de la vitesse pour que la blanche arrive à l'impact encore en glissement.
+        - Au Blackball, le recul vient des différences de poids et de taille entre la blanche et la bille de couleur.
+      key_point: Courte distance ; trop doux, la blanche roule ; trop fort, elle recule.
+      demo: "Tirer trois fois en plein, attaque au centre, à courte distance : doux, la blanche roule encore ; juste, elle s'arrête ; fort, elle recule."
+      illustrations: [attaque-centre, schema-carreau]
+      src: S
+    - id: comparer
+      title: Carreau ou coulé ?
+      weight: {children: 2, adults: 2}
+      body:
+        - Coulé, on frappe la blanche en haut et elle suit la bille de couleur.
+        - Carreau, on la frappe au centre et elle s'arrête.
+        - Le carreau se joue toujours en bille pleine ; le coulé peut aussi se jouer un peu moins plein.
+        - Au coulé, on privilégie l'amplitude à la vitesse ; au carreau, il faut de la pénétration et de la vitesse pour garder le glissement.
+      adult_extra:
+        - Le coulé se joue du plein au trois-quarts ; le carreau seulement en bille pleine.
+      key_point: "Attaque haute : la blanche suit ; attaque au centre : elle s'arrête."
+      demo: null
+      illustrations: [attaque-haute, attaque-centre]
+      src: S
+    - id: chevalet
+      title: Quel chevalet ?
+      weight: {children: 1, adults: 1}
+      body:
+        - "Proposition d'animateur pour l'initiation 15 : le chevalet sur cadre pour la blanche proche de la bande, le chevalet sur la surface de jeu pour l'autre."
+      key_point: Cadre près de la bande, surface pour la blanche au milieu de la table.
+      demo: null
+      illustrations: [schema-initiation]
+      src: Prop
+initiation:
+  - id: ini-15
+    initiation_sheet: 15
+    title: Deux carreaux
+    weight: {children: 3, adults: 3}
+    setup: Une rouge près de la poche d'angle du haut à gauche, avec une position de blanche à courte distance en bas à droite ; une jaune vers la poche du milieu du haut, avec une position de blanche à courte distance en bas à gauche (le schéma).
+    goal: "Empocher 2 billes par carreau, une depuis chaque position, en jouant en plein avec une attaque au centre ; un chevalet sur la surface de jeu et un chevalet sur cadre."
+    expected: La blanche glisse jusqu'à l'impact et s'arrête sur la bille de couleur, qui part vers la poche.
+    scoring: {mode: counter, of: 2}
+    illustration: schema-initiation
+    src: S
+illustrations:
+  - {id: contact-plein-centre, type: contact, fraction: full, tip_point: center,
+     caption: "Carreau : bille pleine, attaque au centre de la blanche.",
+     alt: "Vue de dessus : les deux billes sont alignées centre sur centre ; le point d'impact du procédé est au centre de la blanche."}
+  - {id: attaque-centre, type: cue_side, tip_point: center, cue_height: level,
+     caption: "Le procédé frappe la blanche à son centre (schéma indicatif).",
+     alt: "Vue de côté : la queue est horizontale et son procédé touche la blanche en son centre, à hauteur de l'équateur."}
+  - {id: attaque-haute, type: cue_side, tip_point: top, cue_height: level,
+     caption: "Pour le coulé, on frappe la blanche en haut : pas pour le carreau (schéma indicatif).",
+     alt: "Vue de côté : la queue est horizontale et son procédé touche la blanche dans sa partie haute, ce qui donne le coulé."}
+  - id: schema-carreau
+    type: table
+    balls:
+      - {id: j1, color: yellow, at: [4.0, 1.5], role: object}
+      - {id: w, color: white, at: [4.0, 2.8], role: cue}
+    ghosts:
+      - {id: g1, at: [4.0, 1.7], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: w, kind: cue, path: [[4.0, 2.8], [4.0, 1.7]], bounces: []}
+      - {id: a2, ball: j1, kind: object, path: [[4.0, 1.5], [4.0, 0.3]], bounces: [], to: tm}
+    zones: []
+    caption: "Carreau : la blanche s'arrête à l'impact, la jaune part vers la poche (schéma indicatif)."
+    alt: "Table vue de dessus : la blanche en bas, la jaune alignée avec elle et avec la poche du milieu du haut ; la blanche touche la jaune en plein et s'arrête au point d'impact, juste devant la place qu'occupait la jaune ; la jaune part vers la poche."
+  - {id: schema-initiation, type: diagram_ref, diagram: initiation-p15-e1,
+     caption: "Initiation 15 : deux carreaux, un depuis chaque position de blanche.",
+     alt: "Table vue de dessus : une rouge près de la poche d'angle du haut à gauche, avec une blanche à courte distance en bas à droite ; une jaune vers la poche du milieu du haut, avec une blanche à courte distance en bas à gauche ; chaque blanche touche sa bille en plein."}
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p14-j1,
+     caption: "Jeu 14 : la partie classique, avec quatre billes par groupe et la noire.",
+     alt: "Table vue de dessus : la blanche sur la ligne de départ, à gauche ; les billes de la partie groupées en losange à droite autour de la noire."}
+training:
+  exercises:
+    - id: e1
+      ref: {block: carreau, n: 1}
+      diagram: entrainement-p23-e1
+      title: Se garer vers la noire
+      weight: {children: 2, adults: 1}
+      setup: La rouge du schéma à droite de la table, les jaunes et la noire autour d'elle comme sur le schéma ; la blanche posée sur son repère, sous la rouge, légèrement à droite.
+      instruction: Empocher la rouge par un carreau, en plein avec une attaque au centre, afin de replacer la blanche sur la noire ; recommencer cinq fois.
+      expected: La rouge part vers la poche du milieu du haut ; la blanche glisse jusqu'à l'impact et s'arrête à l'impact, sans reculer, ce qui la replace près de la noire.
+      mistakes:
+        - {symptom: "La blanche recule après le choc", fix: "Jouer moins fort et garder une attaque au centre."}
+        - {symptom: "La blanche continue d'avancer après le choc", fix: "Accompagner davantage le geste, avec plus de pénétration et de vitesse."}
+        - {symptom: "La rouge ne part pas droit vers la poche", fix: "Vérifier que la blanche est bien alignée avec la rouge et la poche, en plein."}
+      playful:
+        hook: Chaque carreau réussi gare une voiture sur le parking dessiné au tableau.
+        challenge: Remplir le parking avant l'autre binôme.
+      passes: 2
+      src: S
+    - id: e2
+      ref: {block: carreau, n: 2}
+      diagram: entrainement-p23-e2
+      title: Le créneau près de la bande
+      weight: {children: 1, adults: 1}
+      setup: La rouge du schéma près de la bande de gauche, les jaunes et la noire à côté d'elle comme sur le schéma, la noire sur la ligne de départ ; la blanche posée sur son repère, sous la rouge.
+      instruction: Empocher la rouge par un carreau vers la poche d'angle du haut à gauche, en plein avec une attaque au centre, afin de replacer la blanche sur la noire ; recommencer cinq fois.
+      expected: La rouge part presque droit vers la poche d'angle ; la blanche s'arrête à l'impact, sans toucher les jaunes, ce qui la replace près de la noire.
+      mistakes:
+        - {symptom: "La blanche touche une jaune après le choc", fix: "Corriger la puissance : un coup trop fort fait reculer la blanche."}
+        - {symptom: "La blanche s'arrête avant d'atteindre la rouge", fix: "Jouer avec plus de vitesse, en gardant la même attaque au centre et le même point de visée."}
+      playful:
+        hook: Avant chaque tir, l'élève annonce « je me gare ».
+        challenge: Réussir trois créneaux de suite sans que la blanche bouge après le choc.
+      passes: 1
+      src: S
+game:
+  title: Partie à difficulté réduite
+  source_game: 14
+  adapted: false
+  players: Partie à 2
+  materials: "Billes du jeu complet. Pour le défi ludique (proposition) : des jetons."
+  setup_illustration: schema-jeu
+  rules:
+    - Règles de la partie classique, avec seulement quatre billes par groupe de couleur et la noire.
+    - Le joueur qui casse est désigné par le tirage à la bande.
+  scoring: Le premier qui empoche son groupe puis la noire gagne.
+  end: Fin quand un joueur a empoché son groupe puis la noire.
+  playful_variant: "Conseil de la séance : quand la bille de couleur est proche de la blanche (50 cm au plus), chercher le carreau. Avant un tel tir, annoncer « carreau » : si la bille est empochée et que la blanche s'arrête sur place (elle ne dépasse pas environ une largeur de bille), l'adversaire constate l'arrêt et le joueur gagne un jeton. Un jeton permet de rejouer, une fois, un tir manqué : billes et blanche sont replacées avant ce nouveau tir."
+  link_previous:
+    notion_of: coule-3
+    rule: "Exception à la partie à difficulté réduite, réservée aux adultes : une fois par joueur et par partie, un tir annoncé « coulé » est joué avec une attaque haute, en plein ou un peu moins plein, vers une zone d'arrivée choisie avant le tir (un repère sur le tapis ou sur le cadre) ; si la bille est empochée et que la blanche, sans être empochée, s'arrête dans la zone, l'adversaire le constate et le joueur gagne un jeton. Les enfants ne jouent que le carreau annoncé."
+    note: "Fait rejouer le coulé de la séance précédente (attaque haute, zone d'arrivée choisie d'avance) à côté du carreau, pour sentir la différence d'attaque ; règle facultative, la partie se joue telle quelle sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Proposition : rapprocher les billes des poches ; un joueur les rouges, l'autre les jaunes ; limite de 15 minutes, au-delà gagne qui a le moins de billes restantes."
+    adults: "Proposition : après la partie, noter les carreaux annoncés et réussis, et chercher pourquoi les ratés (vitesse, hauteur d'attaque, alignement)."
+  src: S   # titre, règles, score et fin du jeu 14 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
+review:
+  prompts:
+    - Où as-tu frappé la blanche pour qu'elle s'arrête sur la bille de couleur ?
+    - Qu'est-ce qui se passe quand tu joues trop fort, ou trop doux ?
+    - Que dirais-tu à un copain pour réussir un carreau ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 22, note: "Fiche technique n° 12 (carreau, attaque au centre, glissement, 50 cm max pour le débutant, recul au Blackball)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 21, note: "Fiche technique n° 11 (coulé, attaque haute, pour le rappel)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 15, note: Initiation 15}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 23, note: "Entraînement « Le carreau », exercices 1 et 2"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite)"}
+uncertainties:
+  - "Thème, défis, sections « La blanche se gare » (enfants) et « Quel chevalet ? », variante de jeu (conseil, jetons, annonce), règle de lien (adultes) et adaptations : [Prop], à valider par un animateur dans l'application. Le minutage et la différenciation enfants / adultes sont aussi des propositions."
+  - "Le jeu est le jeu 14 [S] repris tel quel : la fiche ne propose aucun jeu dédié au carreau et ne mentionne pas le carreau ; le conseil de le chercher à courte distance est une proposition (playful_variant)."
+  - "Le rappel porte sur la séance coule-3 (fiche technique n° 11 : attaque haute, du plein au trois-quarts, amplitude, zone d'arrivée) ; `recall.reuse` reprend son illustration `coule-plein`."
+  - "Initiation 15 : la fiche cite un chevalet sur surface et un chevalet sur cadre sans dire lequel va avec quel tir ; la section « Quel chevalet ? » propose cadre pour la blanche proche de la bande (seconde position du schéma), surface pour l'autre : [Prop]."
+  - "Entraînement 1 et 2 : le type de chevalet n'est pas indiqué ; la fiche dit « replacer la blanche sur la bille noire », mais sur le schéma 1 la blanche s'arrête à l'impact (environ 5,1 ; 2,2) alors que la noire est en (7,0 ; 1,0), soit plus de 2 unités du repère avec une jaune entre les deux : la consigne de la séance reprend la formulation de la fiche (« replacer la blanche sur la noire ») ; l'attendu se limite à l'arrêt de la blanche à l'impact, sans prétendre qu'elle atteint la noire. Au schéma 2, le dégagement entre les deux jaunes est serré."
+  - "Le complément adulte de « Carreau ou coulé ? » rapproche les fiches n° 11 (coulé, du plein au trois-quarts) et n° 12 (carreau, plein) : mise en regard pédagogique à valider ; l'opposition amplitude (fiche 11) / pénétration et vitesse (fiche 12) reprend chaque fiche."
+  - "Les illustrations `attaque-centre`, `attaque-haute` et `schema-carreau` sont indicatives (non à l'échelle)."
