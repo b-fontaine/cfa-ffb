@@ -1,0 +1,286 @@
+# https://taskfile.dev — raccourcis de développement.
+#
+# Les garde-fous restent définis dans `scripts/` (source de vérité unique, aussi
+# appelée par les hooks git et la CI) : ce fichier ne fait que les nommer.
+#
+#   task            liste des tâches
+#   task run        lance l'application (DEVICE=linux par défaut)
+#   task run DEVICE=chrome
+#   task check      vérification rapide ; task check:full pour tout
+#   task diagrammes:sync | diagrammes:check | diagrammes:validate
+version: '3'
+
+vars:
+  DEVICE: linux
+  COVERAGE_MIN: '{{.COVERAGE_MIN | default "90"}}'
+  PORT: 8080
+
+tasks:
+  default:
+    desc: Liste les tâches disponibles
+    silent: true
+    cmds:
+      - task --list
+
+  # ── Installation ────────────────────────────────────────────────────────
+  setup:
+    desc: Installe les hooks git, les dépendances et génère le code
+    cmds:
+      - scripts/setup.sh
+
+  generate:
+    desc: Génère le code de l'app (freezed, injectable, bdd, l10n)
+    cmds:
+      - scripts/generate.sh
+
+  generate:widgetbook:
+    desc: Génère le code de Widgetbook
+    deps: [generate]
+    cmds:
+      - scripts/generate_widgetbook.sh
+
+  generate:watch:
+    desc: build_runner en continu (app)
+    dir: app
+    cmds:
+      - dart run build_runner watch --delete-conflicting-outputs
+
+  catalogue:sync:
+    desc: Copie docs/knowledge/…/catalogue-entrainement.yaml vers l'asset de l'app
+    cmds:
+      - scripts/sync_catalogue.sh
+
+  catalogue:check:
+    desc: Vérifie que l'asset du catalogue est identique à docs/knowledge (lecture seule)
+    cmds:
+      - scripts/sync_catalogue.sh --check
+
+  diagrammes:sync:
+    desc: Copie les diagrammes d'exercices (docs/knowledge) vers les assets de l'app
+    cmds:
+      - scripts/sync_diagrammes.sh
+
+  diagrammes:check:
+    desc: Vérifie que les assets de diagrammes sont identiques à la source (lecture seule)
+    cmds:
+      - scripts/sync_diagrammes.sh --check
+
+  diagrammes:validate:
+    desc: Valide les transcriptions YAML des diagrammes (FORMAT.md) ; FILES="a.yaml b.yaml" pour cibler
+    dir: app
+    vars:
+      FILES:
+        sh: ls ../docs/knowledge/03-exercices/diagrammes/*/p*.yaml | tr '\n' ' '
+    cmds:
+      - dart run tool/diagrammes.dart --summary {{.FILES}}
+
+  diagrammes:ascii:
+    desc: Rendu ASCII d'un diagramme — task diagrammes:ascii -- ../docs/knowledge/03-exercices/diagrammes/entrainement/p03.yaml
+    dir: app
+    cmds:
+      - dart run tool/diagrammes.dart --ascii {{.CLI_ARGS}}
+
+  web-assets:sync:
+    desc: Vérifie sqlite3.wasm et drift_worker.js (web)
+    cmds:
+      - dart run scripts/sync_web_assets.dart --check
+
+  # ── Exécution ───────────────────────────────────────────────────────────
+  run:
+    desc: Lance l'application (DEVICE=linux|chrome|<id>)
+    dir: app
+    deps: [generate]
+    cmds:
+      - flutter run -d {{.DEVICE}} {{.CLI_ARGS}}
+
+  run:web:
+    desc: Lance l'application sur Chrome
+    cmds:
+      - task: run
+        vars: {DEVICE: chrome, CLI_ARGS: '{{.CLI_ARGS}}'}
+
+  widgetbook:
+    desc: Lance Widgetbook (DEVICE=chrome par défaut)
+    dir: widgetbook
+    deps: [generate:widgetbook]
+    vars:
+      WB_DEVICE: '{{if eq .DEVICE "linux"}}chrome{{else}}{{.DEVICE}}{{end}}'
+    cmds:
+      - flutter run -d {{.WB_DEVICE}} {{.CLI_ARGS}}
+
+  devices:
+    desc: Liste les appareils Flutter disponibles
+    cmds:
+      - flutter devices
+
+  # ── Données locales ─────────────────────────────────────────────────────
+  data:reset:
+    desc: Supprime la base SQLite locale (Linux natif) — irréversible
+    prompt: Supprimer billard_cfa.sqlite (élèves, résultats, réglages) ?
+    cmds:
+      - |
+        docs="$(xdg-user-dir DOCUMENTS 2>/dev/null || echo "$HOME/Documents")"
+        for f in "$docs"/billard_cfa.sqlite "$docs"/billard_cfa.sqlite-wal "$docs"/billard_cfa.sqlite-shm; do
+          [ -e "$f" ] && rm -v -- "$f"
+        done
+        echo "Base native réinitialisée (web : vider les données du site dans le navigateur)."
+
+  # ── Qualité ─────────────────────────────────────────────────────────────
+  check:
+    desc: Vérification rapide (format, analyse, architecture, séances)
+    cmds:
+      - scripts/check.sh --fast
+
+  check:full:
+    desc: Vérification complète (fast + l10n, tests, couverture, Widgetbook)
+    cmds:
+      - COVERAGE_MIN={{.COVERAGE_MIN}} scripts/check.sh --full
+
+  lint:
+    desc: Analyse statique stricte (flutter analyze --fatal-infos)
+    dir: app
+    deps: [generate]
+    cmds:
+      - flutter analyze --no-pub --fatal-infos
+
+  lint:scripts:
+    desc: Analyse des scripts Dart
+    cmds:
+      - dart analyze --fatal-infos scripts
+
+  lint:widgetbook:
+    desc: Analyse statique de Widgetbook + un use case par widget
+    deps: [generate:widgetbook]
+    cmds:
+      - cd widgetbook && flutter analyze --no-pub --fatal-infos
+      - dart run scripts/check_widgetbook.dart app widgetbook
+
+  lint:architecture:
+    desc: Règles FSD + Clean
+    dir: app
+    cmds:
+      - dart run tool/check_architecture.dart
+
+  lint:l10n:
+    desc: Mêmes clés fr / en
+    cmds:
+      - dart run scripts/check_l10n.dart app/lib/shared/l10n
+
+  lint:all:
+    desc: Tous les linters (analyse, scripts, architecture, l10n, Widgetbook)
+    cmds:
+      - task: lint
+      - task: lint:scripts
+      - task: lint:architecture
+      - task: lint:l10n
+      - task: lint:widgetbook
+
+  format:
+    desc: Formate le code (hors fichiers générés)
+    cmds:
+      - |
+        cd app
+        find lib test tool -name '*.dart' \
+          ! -name '*.g.dart' ! -name '*.freezed.dart' ! -name '*.config.dart' ! -name '*.steps.dart' \
+          ! -path 'lib/shared/l10n/generated/*' ! -path 'test/bdd/*_test.dart' \
+          -print0 | xargs -0 dart format
+      - dart format scripts
+
+  format:check:
+    desc: Vérifie le formatage sans écrire
+    cmds:
+      - dart format --output=none --set-exit-if-changed scripts
+      - |
+        cd app
+        find lib test tool -name '*.dart' \
+          ! -name '*.g.dart' ! -name '*.freezed.dart' ! -name '*.config.dart' ! -name '*.steps.dart' \
+          ! -path 'lib/shared/l10n/generated/*' ! -path 'test/bdd/*_test.dart' \
+          -print0 | xargs -0 dart format --output=none --set-exit-if-changed
+
+  # ── Tests ───────────────────────────────────────────────────────────────
+  test:
+    desc: Tests BDD + unitaires (sans couverture)
+    dir: app
+    deps: [generate]
+    cmds:
+      - flutter test --no-pub {{.CLI_ARGS}}
+
+  test:bdd:
+    desc: Scénarios BDD uniquement
+    dir: app
+    deps: [generate]
+    cmds:
+      - flutter test --no-pub test/bdd {{.CLI_ARGS}}
+
+  test:unit:
+    desc: Tests unitaires uniquement
+    dir: app
+    deps: [generate]
+    cmds:
+      - flutter test --no-pub test/unit {{.CLI_ARGS}}
+
+  test:coverage:
+    desc: Tests avec couverture + contrôle du seuil (COVERAGE_MIN, 90 %)
+    dir: app
+    deps: [generate]
+    cmds:
+      - rm -rf coverage
+      - flutter test --no-pub --coverage --reporter failures-only
+      - dart run ../scripts/check_coverage.dart {{.COVERAGE_MIN}} .
+
+  test:coverage:html:
+    desc: Rapport HTML de couverture (nécessite lcov/genhtml)
+    dir: app
+    deps: [test:coverage]
+    cmds:
+      - genhtml coverage/lcov.info -o coverage/html --quiet
+      - echo "Rapport -> app/coverage/html/index.html"
+
+  # ── Scripts du dépôt ────────────────────────────────────────────────────
+  seances:validate:
+    desc: Valide les séances (front matter, durées, déroulé, sources)
+    cmds:
+      - dart run scripts/validate_seances.dart seances
+
+  # ── Build ───────────────────────────────────────────────────────────────
+  build:web:
+    desc: Build web de l'application (release)
+    dir: app
+    deps: [generate]
+    cmds:
+      - flutter build web --release --no-pub
+
+  build:widgetbook:
+    desc: Build web de Widgetbook (release)
+    dir: widgetbook
+    deps: [generate:widgetbook]
+    cmds:
+      - flutter build web --release --no-pub
+
+  serve:web:
+    desc: Sert le build web de l'app sur http://localhost:{{.PORT}}
+    dir: app/build/web
+    cmds:
+      - python3 -m http.server {{.PORT}}
+
+  # ── Nettoyage ───────────────────────────────────────────────────────────
+  clean:
+    desc: Supprime builds et couverture (app + widgetbook)
+    cmds:
+      - rm -rf app/build app/coverage widgetbook/build
+
+  clean:generated:
+    desc: Supprime le code généré (régénérable avec `task generate`)
+    cmds:
+      - |
+        find app/lib widgetbook/lib -name '*.g.dart' -o -name '*.freezed.dart' -o -name '*.config.dart' | xargs -r rm -v
+        rm -rf app/lib/shared/l10n/generated
+        rm -f app/test/bdd/*_test.dart
+
+  clean:all:
+    desc: clean + code généré + flutter clean
+    cmds:
+      - task: clean
+      - task: clean:generated
+      - cd app && flutter clean
+      - cd widgetbook && flutter clean
