@@ -12,9 +12,13 @@ Widgetbook séparé `widgetbook/`.
 
 - **Thème évoquant la FFB et le Blackball** : bleu FFB, rouge FFB assombri,
   tapis « bleu poudre », billes rouges/jaunes/noire/blanche, police Exo 2.
-- **Aucun logo FFB** : la charte graphique encadre son usage (contact
-  `site@ffbillard.com`). L'application se présente comme un outil
-  d'animateur, jamais comme une application officielle de la fédération.
+- **Logo FFB** : `assets/images/ffb-logo.png`, exposé par le thème
+  (`BrandAssets`, `AppTheme.light(assetPackage: …)`) et affiché par `FfbLogo`
+  (accueil en grand, en-tête de chaque page en petit et décoratif). Son usage
+  est encadré par la charte graphique de la fédération (contact
+  `site@ffbillard.com`) : l'autorisation d'usage reste à obtenir ou à
+  documenter. L'application se présente comme un outil d'animateur, jamais
+  comme une application officielle de la fédération.
 - **Un seul jeu de jetons** pour les publics enfants et adultes ; seules la
   densité (`AppTheme.light(density: …)`) et la taille du texte (réglage
   système, `TextScaleAddon` dans Widgetbook) varient.

@@ -1,6 +1,10 @@
 {
   "@@locale": "en",
   "appTitle": "Billiard sessions",
+  "ffbLogoLabel": "French Billiards Federation logo",
+  "@ffbLogoLabel": {
+    "description": "Accessible label of the FFB logo"
+  },
   "homeTitle": "Prepare a session",
   "homeSubtitle": "Blackball — children (1h30) and adult (2h) sessions",
   "homeOpenPlanner": "Plan a session",

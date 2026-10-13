@@ -2,6 +2,7 @@ import 'package:billard_cfa/shared/ui/theme/app_color_schemes.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:billard_cfa/shared/ui/theme/app_typography.dart';
 import 'package:billard_cfa/shared/ui/theme/ball_colors.dart';
+import 'package:billard_cfa/shared/ui/theme/brand_assets.dart';
 import 'package:billard_cfa/shared/ui/theme/status_colors.dart';
 import 'package:billard_cfa/shared/ui/theme/table_colors.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ abstract final class AppTheme {
   static ThemeData light({
     String fontFamily = AppTypography.fontFamily,
     VisualDensity density = VisualDensity.standard,
+    String? assetPackage,
   }) => _build(
     AppColorSchemes.light,
     BallColors.light,
@@ -21,11 +23,13 @@ abstract final class AppTheme {
     TableColors.light,
     fontFamily,
     density,
+    BrandAssets.fromPackage(assetPackage),
   );
 
   static ThemeData dark({
     String fontFamily = AppTypography.fontFamily,
     VisualDensity density = VisualDensity.standard,
+    String? assetPackage,
   }) => _build(
     AppColorSchemes.dark,
     BallColors.dark,
@@ -33,6 +37,7 @@ abstract final class AppTheme {
     TableColors.dark,
     fontFamily,
     density,
+    BrandAssets.fromPackage(assetPackage),
   );
 
   static ThemeData _build(
@@ -42,6 +47,7 @@ abstract final class AppTheme {
     TableColors table,
     String fontFamily,
     VisualDensity density,
+    BrandAssets brand,
   ) {
     const touchTarget = Size(
       AppSpacing.minTouchTarget,
@@ -55,7 +61,7 @@ abstract final class AppTheme {
       fontFamily: fontFamily,
       textTheme: AppTypography.textTheme(fontFamily),
       visualDensity: density,
-      extensions: [balls, status, table],
+      extensions: [balls, status, table, brand],
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
         foregroundColor: scheme.onSurface,

@@ -49,6 +49,9 @@ flutter:
     # produite par scripts/sync_catalogue.sh, vérifiée par check.sh.
     - assets/catalogue/
 
+    # Logo de la FFB (utilisé via BrandAssets, shared/ui/theme).
+    - assets/images/
+
     # Copie des diagrammes à table (source : docs/knowledge/03-exercices/
     # diagrammes) ; produite par scripts/sync_diagrammes.sh, vérifiée par
     # check.sh. Un dossier par transcription (la déclaration n'est pas récursive).

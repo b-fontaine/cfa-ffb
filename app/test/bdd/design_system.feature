@@ -16,3 +16,12 @@ Feature: Design system
     Given the device theme is {'dark'}
     And the app is running
     Then the {'dark'} theme is used
+
+  Scenario: The home page shows the FFB logo
+    Given the app is running
+    Then I see the FFB logo
+
+  Scenario: Every page header carries the FFB logo
+    Given the app is running
+    When I go to the address {'/students'}
+    Then I see the FFB logo

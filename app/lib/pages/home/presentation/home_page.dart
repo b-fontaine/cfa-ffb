@@ -1,6 +1,7 @@
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/ui/audience_badge.dart';
+import 'package:billard_cfa/shared/ui/ffb_logo.dart';
 import 'package:billard_cfa/shared/ui/page_header.dart';
 import 'package:billard_cfa/shared/ui/responsive_body.dart';
 import 'package:billard_cfa/shared/ui/section_card.dart';
@@ -22,7 +23,13 @@ class HomePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                PageHeader(title: l10n.homeTitle, subtitle: l10n.homeSubtitle),
+                const Center(child: FfbLogo(height: 96)),
+                const SizedBox(height: AppSpacing.lg),
+                PageHeader(
+                  title: l10n.homeTitle,
+                  subtitle: l10n.homeSubtitle,
+                  showLogo: false,
+                ),
                 const SizedBox(height: AppSpacing.lg),
                 SectionCard(
                   title: l10n.homeAudiencesTitle,

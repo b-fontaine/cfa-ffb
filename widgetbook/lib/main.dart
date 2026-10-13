@@ -32,11 +32,17 @@ class WidgetbookApp extends StatelessWidget {
           themes: [
             WidgetbookTheme(
               name: 'Clair',
-              data: AppTheme.light(fontFamily: AppTypography.packageFontFamily),
+              data: AppTheme.light(
+                fontFamily: AppTypography.packageFontFamily,
+                assetPackage: 'billard_cfa',
+              ),
             ),
             WidgetbookTheme(
               name: 'Sombre',
-              data: AppTheme.dark(fontFamily: AppTypography.packageFontFamily),
+              data: AppTheme.dark(
+                fontFamily: AppTypography.packageFontFamily,
+                assetPackage: 'billard_cfa',
+              ),
             ),
           ],
         ),

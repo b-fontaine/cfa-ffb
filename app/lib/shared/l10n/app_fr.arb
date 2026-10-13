@@ -1,6 +1,10 @@
 {
   "@@locale": "fr",
   "appTitle": "Séances de billard",
+  "ffbLogoLabel": "Logo de la Fédération française de billard",
+  "@ffbLogoLabel": {
+    "description": "Libellé accessible du logo de la FFB"
+  },
   "homeTitle": "Préparer une séance",
   "homeSubtitle": "Blackball — séances enfants (1h30) et adultes (2h)",
   "homeOpenPlanner": "Planifier une séance",
