@@ -1,6 +1,9 @@
 import 'package:billard_cfa/app/di/injection.dart';
+import 'package:billard_cfa/entities/exercise_catalog/data/asset_catalogue_repository.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.dart';
+import 'package:billard_cfa/entities/exercise_diagram/data/asset_diagram_repository.dart';
+import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/manage_students/domain/enroll_student.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
@@ -12,6 +15,34 @@ import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/ui/loading_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+/// Préfixe sous lequel Flutter expose, dans une application tierce, les assets
+/// déclarés par le package `billard_cfa`.
+const _packageAssets = 'packages/billard_cfa/';
+
+/// Les assets de `billard_cfa` ne sont pas des assets de Widgetbook : ils sont
+/// servis sous `packages/billard_cfa/`. Les dépôts d'assets sont donc recâblés
+/// avec ce préfixe (le chemin logique reste celui de l'application).
+Future<void> _useBundledPackageAssets() async {
+  Future<String> load(String path) =>
+      rootBundle.loadString('$_packageAssets$path');
+  await getIt.unregister<CatalogueRepository>();
+  getIt.registerLazySingleton<CatalogueRepository>(
+    () => AssetCatalogueRepository(load),
+  );
+  await getIt.unregister<DiagramRepository>();
+  getIt.registerLazySingleton<DiagramRepository>(
+    () => AssetDiagramRepository(load, () async {
+      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+      return [
+        for (final key in manifest.listAssets())
+          if (key.startsWith(_packageAssets))
+            key.substring(_packageAssets.length),
+      ];
+    }),
+  );
+}
 
 /// Horloge figée du catalogue de démonstration.
 class _PreviewClock implements Clock {
@@ -53,6 +84,7 @@ class PreviewWorld {
 
   static Future<PreviewWorld> _build() async {
     await configureDependencies(environment: 'test');
+    await _useBundledPackageAssets();
     await getIt.unregister<Clock>();
     getIt.registerSingleton<Clock>(_PreviewClock());
     final today = getIt<Clock>().today();
