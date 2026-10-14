@@ -28,6 +28,7 @@ void main() {
     world.sessions,
     world.attempts,
     world.assessments,
+    world.acquisitions,
     unitOfWork ?? InMemoryUnitOfWork(),
   );
 
@@ -39,6 +40,8 @@ void main() {
     await world.attempts.add(
       attempt(ref('a', 1), potted: 3, id: 'a2', student: 's2'),
     );
+    await world.acquisitions.add(acquisition('a'));
+    await world.acquisitions.add(acquisition('b', id: 'q2', student: 's2'));
     await world.assessments.add(
       MaturityAssessment(
         id: const AssessmentId('b1'),
@@ -57,6 +60,7 @@ void main() {
     expect(await world.students.byId(const StudentId('s1')), isNull);
     expect(await world.attempts.forStudent(const StudentId('s1')), isEmpty);
     expect(await world.assessments.forStudent(const StudentId('s1')), isEmpty);
+    expect(await world.acquisitions.forStudent(const StudentId('s1')), isEmpty);
     final session = (await world.sessions.byId(const SessionId('x1')))!;
     expect(session.present, {const StudentId('s2')});
     final group = (await world.groups.byId(const GroupId('g1')))!;
@@ -69,6 +73,10 @@ void main() {
     expect(await world.students.byId(const StudentId('s2')), isNotNull);
     expect(
       await world.attempts.forStudent(const StudentId('s2')),
+      hasLength(1),
+    );
+    expect(
+      await world.acquisitions.forStudent(const StudentId('s2')),
       hasLength(1),
     );
   });
@@ -98,6 +106,7 @@ void main() {
       hasLength(1),
     );
     expect(await world.assessments.all(), hasLength(1));
+    expect(await world.acquisitions.all(), hasLength(2));
     final group = (await world.groups.byId(const GroupId('g1')))!;
     expect(group.memberships, hasLength(2));
     final session = (await world.sessions.byId(const SessionId('x1')))!;

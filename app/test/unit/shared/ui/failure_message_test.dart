@@ -97,6 +97,14 @@ const _expected = <InvariantCode, (String, String)>{
     'Ce fichier désigne une séance du catalogue que cette version de '
         'l’application ne connaît pas.',
   ),
+  InvariantCode.blockAlreadyAcquired: (
+    'This block is already marked as acquired for this student.',
+    'Ce bloc est déjà marqué acquis pour cet élève.',
+  ),
+  InvariantCode.backupUnknownBlock: (
+    'The backup refers to a block unknown to the catalogue.',
+    'La sauvegarde cite un bloc inconnu du catalogue.',
+  ),
   InvariantCode.unknownSheet: (
     'This catalogue session is unknown: choose another one.',
     'Cette séance du catalogue est inconnue : choisissez-en une autre.',

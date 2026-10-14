@@ -47,6 +47,7 @@ class GetSessionOverview {
           attempts: await _attempts.forSession(sessionId),
           catalogue: await _catalogue.load(),
           maxPassesPerExercise: _config.maxPassesPerExercisePerSession,
+          passesRequired: _config.passesRequired,
           sheet: session.sheetId == null
               ? null
               : sheetOptionOf(await _sheets.getAll(), session.sheetId),

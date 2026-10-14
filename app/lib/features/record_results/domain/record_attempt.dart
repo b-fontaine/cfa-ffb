@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
@@ -18,6 +19,7 @@ class RecordAttempt {
   RecordAttempt(
     this._sessions,
     this._attempts,
+    this._acquisitions,
     this._catalogue,
     this._ids,
     this._config,
@@ -25,6 +27,7 @@ class RecordAttempt {
 
   final SessionRecordRepository _sessions;
   final AttemptRepository _attempts;
+  final AcquisitionRepository _acquisitions;
   final CatalogueRepository _catalogue;
   final IdGenerator _ids;
   final RulesConfig _config;
@@ -66,20 +69,34 @@ class RecordAttempt {
       total: total,
     );
     final history = await _attempts.forStudent(studentId);
+    final acquisitions = await _acquisitions.forStudent(studentId);
     await _attempts.add(attempt);
-    final progress = StudentProgress.derive(
-      studentId: studentId,
-      attempts: [...history, attempt],
-      rates: catalogue.rates,
-      config: _config,
-    );
+    StudentProgress derive(List<ExerciseAttempt> attempts) =>
+        StudentProgress.derive(
+          studentId: studentId,
+          attempts: attempts,
+          acquisitions: acquisitions,
+          rates: catalogue.rates,
+          config: _config,
+        );
+    final before = derive(history);
+    final progress = derive([...history, attempt]);
+    // Un passage daté du jour du positionnement ou après reprend la main sur
+    // son exercice (ADR 0008) : ce n'est pas une validation à fêter.
+    final wasAcquired = before.acquiredExercises.contains(exercise);
+    final resumed =
+        wasAcquired && !progress.acquiredExercises.contains(exercise);
     final passed = attempt.isPassed(spec.rate);
     final result = progress.results[exercise]!;
     return RecordedAttempt(
       attempt: attempt,
       result: result,
       passed: passed,
-      justValidated: passed && result.passedCount == _config.passesRequired,
+      justValidated:
+          passed &&
+          result.passedCount == _config.passesRequired &&
+          !wasAcquired,
+      resumedFromPlacement: resumed,
       nextExercise: catalogue.nextExercise(validated: progress.validated),
     );
   });

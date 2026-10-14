@@ -60,3 +60,38 @@ Feature: Suivi des résultats d'entraînement
     And j'enregistre pour {'Léa'} sur {'puissance 2'} {7} billes réussies sur {10} tentatives
     When j'enregistre pour {'Léa'} sur {'puissance 2'} {8} billes réussies sur {10} tentatives
     Then l'enregistrement est refusé avec le motif {'passesLimitReached'}
+
+  # Lot 7 (ADR 0008) : un passage daté du jour du positionnement ou après
+  # reprend la main sur son exercice ; il n'est pas annoncé comme validation.
+  Scenario: Un passage après le positionnement reprend la main sur son exercice
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And {'Léa'} a le bloc {'posture'} acquis au positionnement le {'2026-10-01'}
+    And la séance du groupe {'Jeunes'} le {'2026-10-03'} réunit {'Léa'}
+    When j'enregistre pour {'Léa'} sur {'posture 1'} {3} billes réussies sur {4} tentatives
+    Then le passage reprend la main sur l'exercice acquis au positionnement
+    And la validation de l'exercice n'est pas annoncée
+    And l'exercice suivant recommandé est {'posture 1'}
+
+  Scenario: Un passage le jour du positionnement reprend la main sur son exercice
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And {'Léa'} a le bloc {'posture'} acquis au positionnement le {'2026-10-03'}
+    And la séance du groupe {'Jeunes'} le {'2026-10-03'} réunit {'Léa'}
+    When j'enregistre pour {'Léa'} sur {'posture 1'} {3} billes réussies sur {4} tentatives
+    Then le passage reprend la main sur l'exercice acquis au positionnement
+
+  Scenario: Un passage antérieur au positionnement ne reprend pas la main
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And {'Léa'} a le bloc {'posture'} acquis au positionnement le {'2026-10-05'}
+    And la séance du groupe {'Jeunes'} le {'2026-10-03'} réunit {'Léa'}
+    When j'enregistre pour {'Léa'} sur {'posture 1'} {3} billes réussies sur {4} tentatives
+    Then le passage ne reprend pas la main sur l'exercice acquis au positionnement
+    And l'exercice suivant recommandé est {'puissance 1'}
+
+  Scenario: Le cinquième passage après le positionnement ne fête pas la validation
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And {'Léa'} a réussi {4} passages sur {'posture 1'} lors de séances précédentes
+    And {'Léa'} a le bloc {'posture'} acquis au positionnement le {'2026-10-02'}
+    And la séance du groupe {'Jeunes'} le {'2026-10-03'} réunit {'Léa'}
+    When j'enregistre pour {'Léa'} sur {'posture 1'} {3} billes réussies sur {4} tentatives
+    Then le passage reprend la main sur l'exercice acquis au positionnement
+    And la validation de l'exercice n'est pas annoncée

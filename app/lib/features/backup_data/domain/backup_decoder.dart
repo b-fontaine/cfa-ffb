@@ -1,3 +1,5 @@
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
@@ -50,6 +52,11 @@ class BackupDecoder {
     plannedSessions: _read
         .objects(data['plannedSessions'])
         .map(_decodePlanned)
+        .toList(),
+    // Clé obligatoire : `list(null)` lève `backupInvalid`.
+    blockAcquisitions: _read
+        .objects(data['blockAcquisitions'])
+        .map(_decodeAcquisition)
         .toList(),
   );
 
@@ -126,6 +133,19 @@ class BackupDecoder {
         endurance: _read.integer(json['endurance']),
         frustration: _read.integer(json['frustration']),
         comment: _read.optionalString(json['comment']),
+      );
+
+  BlockAcquisition _decodeAcquisition(Map<String, Object?> json) =>
+      BlockAcquisition(
+        id: AcquisitionId(_read.string(json['id'])),
+        studentId: StudentId(_read.string(json['studentId'])),
+        blockId: _read.string(json['blockId']),
+        date: _read.dateTime(json['date']),
+        source:
+            AcquisitionSource.values.asNameMap()[_read.string(
+              json['source'],
+            )] ??
+            (throw const InvariantViolation(InvariantCode.backupInvalid)),
       );
 
   Session _decodePlanned(Map<String, Object?> json) => Session(

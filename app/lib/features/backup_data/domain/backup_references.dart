@@ -30,6 +30,9 @@ class BackupReferences {
     for (final assessment in snapshot.assessments) {
       _require(students.contains(assessment.studentId));
     }
+    for (final acquisition in snapshot.blockAcquisitions) {
+      _require(students.contains(acquisition.studentId));
+    }
     for (final planned in snapshot.plannedSessions) {
       final groupId = planned.groupId;
       _require(groupId == null || groups.contains(groupId));

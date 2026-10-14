@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
@@ -22,6 +23,9 @@ class BackupEncoder {
     'assessments': [for (final a in snapshot.assessments) _encodeAssessment(a)],
     'plannedSessions': [
       for (final s in snapshot.plannedSessions) _encodePlanned(s),
+    ],
+    'blockAcquisitions': [
+      for (final a in snapshot.blockAcquisitions) _encodeAcquisition(a),
     ],
   };
 
@@ -100,6 +104,14 @@ class BackupEncoder {
     'audience': session.audience.name,
     'groupId': session.groupId?.value,
     'sheetId': session.sheetId?.value,
+  };
+
+  Map<String, Object?> _encodeAcquisition(BlockAcquisition acquisition) => {
+    'id': acquisition.id.value,
+    'studentId': acquisition.studentId.value,
+    'blockId': acquisition.blockId,
+    'date': _date(acquisition.date),
+    'source': acquisition.source.name,
   };
 
   String _date(DateTime value) => value.toIso8601String();

@@ -24,6 +24,9 @@ abstract class SessionOverview with _$SessionOverview {
     /// Passages au plus par élève, exercice et séance (règle R1, configurable).
     required int maxPassesPerExercise,
 
+    /// Passages réussis cumulés pour valider un exercice (règle R1).
+    required int passesRequired,
+
     /// Séance du catalogue notée (ADR 0007) ; `null` sans séance ou quand le
     /// catalogue ne la connaît plus.
     SheetOption? sheet,

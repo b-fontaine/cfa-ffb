@@ -1,4 +1,7 @@
+import 'package:billard_cfa/entities/exercise_result/data/drift_acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/group/data/drift_group_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/drift_assessment_repository.dart';
@@ -37,6 +40,7 @@ void main() {
     final sessions = DriftSessionRecordRepository(db, clock);
     final attempts = DriftAttemptRepository(db, clock);
     final assessments = DriftAssessmentRepository(db, clock);
+    final acquisitions = DriftAcquisitionRepository(db, clock);
     const lea = StudentId('s1');
     await students.save(
       Student.enroll(
@@ -82,10 +86,30 @@ void main() {
         comment: 'Timide',
       ),
     );
+    await acquisitions.add(
+      BlockAcquisition(
+        id: const AcquisitionId('q1'),
+        studentId: lea,
+        blockId: 'posture',
+        date: day(4),
+        source: AcquisitionSource.placement,
+      ),
+    );
+    await acquisitions.add(
+      BlockAcquisition(
+        id: const AcquisitionId('q2'),
+        studentId: lea,
+        blockId: 'puissance',
+        date: day(4),
+        source: AcquisitionSource.placement,
+      ),
+    );
+    await acquisitions.delete(const AcquisitionId('q2'));
     await students.delete(lea);
 
     await attempts.eraseStudent(lea);
     await assessments.eraseStudent(lea);
+    await acquisitions.eraseStudent(lea);
     await sessions.eraseStudent(lea);
     await groups.eraseStudent(lea);
     await students.erase(lea);
@@ -96,5 +120,6 @@ void main() {
     expect(await count('session_presences', 'student_id'), 0);
     expect(await count('attempts', 'student_id'), 0);
     expect(await count('assessments', 'student_id'), 0);
+    expect(await count('block_acquisitions', 'student_id'), 0);
   });
 }

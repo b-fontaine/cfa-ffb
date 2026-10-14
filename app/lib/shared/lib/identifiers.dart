@@ -13,3 +13,5 @@ extension type const SessionId(String value);
 extension type const AttemptId(String value);
 
 extension type const AssessmentId(String value);
+
+extension type const AcquisitionId(String value);

@@ -10,6 +10,7 @@ import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_erasure_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_form_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/students_bloc.dart';
+import 'package:billard_cfa/features/place_student/presentation/bloc/placement_bloc.dart';
 import 'package:billard_cfa/features/plan_session/presentation/bloc/session_planner_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/open_session_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
@@ -324,8 +325,10 @@ GoRouter buildRouter() => GoRouter(
                         ..add(StudentRecallEvent.started(studentId: id)),
                 ),
                 BlocProvider(create: (_) => getIt<StudentErasureBloc>()),
+                BlocProvider(create: (_) => getIt<PlacementBloc>()),
               ],
               child: StudentSheetPage(
+                today: getIt<Clock>().today,
                 onBack: () => context.go(AppRoutes.students),
                 onEdit: () => context.go(AppRoutes.editStudent(id)),
                 onOpenAssessment: () => context.go(AppRoutes.assessment(id)),

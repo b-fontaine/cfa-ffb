@@ -2,6 +2,8 @@ import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/session_range.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/training_block.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
@@ -36,6 +38,20 @@ ExerciseAttempt attempt(
   passIndex: passIndex,
   potted: potted,
   total: total,
+);
+
+/// Bloc [blockId] marqué acquis au positionnement le [day] octobre 2026.
+BlockAcquisition acquisition(
+  String blockId, {
+  int day = 1,
+  String student = 's1',
+  String id = 'q1',
+}) => BlockAcquisition(
+  id: AcquisitionId(id),
+  studentId: StudentId(student),
+  blockId: blockId,
+  date: DateTime(2026, 10, day),
+  source: AcquisitionSource.placement,
 );
 
 TrainingBlock block(

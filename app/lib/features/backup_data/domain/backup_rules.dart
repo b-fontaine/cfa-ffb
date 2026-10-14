@@ -36,12 +36,16 @@ class BackupRules {
   static const _unknownSheet = InvariantViolation(
     InvariantCode.backupUnknownSheet,
   );
+  static const _unknownBlock = InvariantViolation(
+    InvariantCode.backupUnknownBlock,
+  );
 
   Future<void> check(BackupSnapshot snapshot) async {
     final catalogue = await _catalogue.load();
     _checkSessions(snapshot, catalogue);
     _checkAttempts(snapshot, catalogue);
     _checkAssessments(snapshot);
+    _checkAcquisitions(snapshot, catalogue);
     _checkPlanned(snapshot);
     await _checkSheets(snapshot);
   }
@@ -112,6 +116,22 @@ class BackupRules {
     if (linked.isEmpty) return;
     final known = {for (final sheet in await _sheets.getAll()) sheet.id};
     if (!known.containsAll(linked)) throw _unknownSheet;
+  }
+
+  /// Un bloc acquis vise un bloc du catalogue (`backupUnknownBlock`, comme
+  /// `backupUnknownSheet`) et ne peut pas être daté dans le futur ; la date
+  /// normalisée au jour et la source sont déjà vérifiées au décodage.
+  void _checkAcquisitions(
+    BackupSnapshot snapshot,
+    ExerciseCatalogue catalogue,
+  ) {
+    final today = _clock.today();
+    for (final acquisition in snapshot.blockAcquisitions) {
+      if (catalogue.blockById(acquisition.blockId) == null) {
+        throw _unknownBlock;
+      }
+      if (acquisition.date.isAfter(today)) throw _invalid;
+    }
   }
 
   void _checkAssessments(BackupSnapshot snapshot) {

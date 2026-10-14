@@ -1,3 +1,5 @@
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
@@ -57,6 +59,7 @@ BackupSnapshot _snapshot({
   List<MaturityAssessment> assessments = const [],
   List<Season>? seasons,
   List<Session> planned = const [],
+  List<BlockAcquisition> acquisitions = const [],
 }) => BackupSnapshot(
   seasons: seasons ?? [_seasonOf()],
   students: [
@@ -79,6 +82,7 @@ BackupSnapshot _snapshot({
   attempts: attempts ?? [attempt(ref('a', 1), potted: 3)],
   assessments: assessments,
   plannedSessions: planned,
+  blockAcquisitions: acquisitions,
 );
 
 Future<InvariantCode?> _codeOf(BackupSnapshot snapshot) async {
@@ -344,6 +348,41 @@ void main() {
       );
 
       expect(await _codeOf(snapshot), isNull);
+    });
+  });
+
+  group('acquired blocks', () {
+    BlockAcquisition acquiredOn(DateTime date, {String block = 'a'}) =>
+        BlockAcquisition(
+          id: const AcquisitionId('q1'),
+          studentId: _student,
+          blockId: block,
+          date: date,
+          source: AcquisitionSource.placement,
+        );
+
+    test('accepts a known block, today included', () async {
+      final snapshot = _snapshot(
+        acquisitions: [acquiredOn(DateTime(2026, 10, 12))],
+      );
+
+      expect(await _codeOf(snapshot), isNull);
+    });
+
+    test('refuses a block the catalogue does not know', () async {
+      final snapshot = _snapshot(
+        acquisitions: [acquiredOn(DateTime(2026, 10), block: 'zzz')],
+      );
+
+      expect(await _codeOf(snapshot), InvariantCode.backupUnknownBlock);
+    });
+
+    test('refuses a date after today', () async {
+      final snapshot = _snapshot(
+        acquisitions: [acquiredOn(DateTime(2026, 10, 13))],
+      );
+
+      expect(await _codeOf(snapshot), InvariantCode.backupInvalid);
     });
   });
 }

@@ -17,6 +17,7 @@ class Fixture {
     : recordAttempt = RecordAttempt(
         world.sessions,
         world.attempts,
+        world.acquisitions,
         world.catalogueRepository,
         world.ids,
         world.config,
@@ -77,6 +78,63 @@ void main() {
     expect(recorded.justValidated, isFalse);
     expect(recorded.nextExercise, ref('a', 1));
     expect(await f.world.attempts.forStudent(_student), hasLength(1));
+  });
+
+  group('exercise acquired at placement', () {
+    test('a pass on the placement day takes over its exercise only', () async {
+      final f = await fixture();
+      await f.world.acquisitions.add(acquisition('a'));
+
+      final recorded = ok(await f.record(3));
+
+      expect(recorded.resumedFromPlacement, isTrue);
+      expect(recorded.justValidated, isFalse);
+      expect(recorded.result.passedCount, 1);
+      expect(recorded.nextExercise, ref('a', 1));
+    });
+
+    test('a pass dated before the placement is not a takeover', () async {
+      final f = await fixture();
+      await f.world.acquisitions.add(acquisition('a', day: 5));
+
+      final recorded = ok(await f.record(3));
+
+      expect(recorded.resumedFromPlacement, isFalse);
+      expect(recorded.nextExercise, ref('b', 1));
+      expect(recorded.result.passedCount, 1, reason: 'enregistré normalement');
+    });
+
+    test('a second pass on a taken over exercise is not a takeover', () async {
+      final f = await fixture();
+      await f.world.acquisitions.add(acquisition('a'));
+      await f.record(3);
+
+      final second = ok(await f.record(3));
+
+      expect(second.resumedFromPlacement, isFalse);
+    });
+
+    test('does not celebrate the validation of an acquired exercise', () async {
+      final f = await fixture(config: RulesConfig(passesRequired: 1));
+      await f.world.acquisitions.add(acquisition('a'));
+
+      final recorded = ok(await f.record(3));
+
+      expect(recorded.resumedFromPlacement, isTrue);
+      expect(recorded.justValidated, isFalse);
+      expect(recorded.result.isValidated, isTrue);
+      expect(recorded.nextExercise, ref('b', 1));
+    });
+
+    test('a pass on a block that is not acquired is no takeover', () async {
+      final f = await fixture();
+      await f.world.acquisitions.add(acquisition('b'));
+
+      final recorded = ok(await f.record(3));
+
+      expect(recorded.resumedFromPlacement, isFalse);
+      expect(recorded.nextExercise, ref('a', 1));
+    });
   });
 
   test('records a missed pass', () async {

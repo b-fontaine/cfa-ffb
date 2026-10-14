@@ -21,6 +21,7 @@ part 'app_database.g.dart';
     Attempts,
     Assessments,
     PlannedSessions,
+    BlockAcquisitions,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -28,7 +29,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Version du schéma SQL. Elle est indépendante de la version du format de
   /// sauvegarde JSON (`BackupCodec.currentVersion`).
-  static const currentSchemaVersion = 4;
+  static const currentSchemaVersion = 5;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -74,6 +75,11 @@ class AppDatabase extends _$AppDatabase {
             schema.sessionRecords,
             schema.sessionRecords.sheetId,
           );
+        },
+        // Version 5 (ADR 0008) : blocs acquis au positionnement.
+        from4To5: (m, schema) async {
+          await m.createTable(schema.blockAcquisitions);
+          await m.createIndex(schema.acquisitionsByStudent);
         },
       )(migrator, from, to);
     },

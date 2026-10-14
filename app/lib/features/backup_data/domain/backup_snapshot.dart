@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
@@ -11,9 +12,13 @@ part 'backup_snapshot.freezed.dart';
 
 /// Contenu complet d'une sauvegarde : toutes les données du club, hors
 /// métadonnées de persistance (horodatages, suppressions logiques).
+///
+/// [blockAcquisitions] est obligatoire (ADR 0008) : un oubli à la
+/// construction ne compile pas.
 @freezed
 abstract class BackupSnapshot with _$BackupSnapshot {
   const factory BackupSnapshot({
+    required List<BlockAcquisition> blockAcquisitions,
     @Default([]) List<Season> seasons,
     @Default([]) List<Student> students,
     @Default([]) List<Group> groups,

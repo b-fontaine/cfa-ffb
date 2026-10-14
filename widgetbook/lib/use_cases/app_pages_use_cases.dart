@@ -7,6 +7,7 @@ import 'package:billard_cfa/features/manage_students/domain/get_club_overview.da
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_erasure_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_form_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/students_bloc.dart';
+import 'package:billard_cfa/features/place_student/presentation/bloc/placement_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/open_session_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/session_date_cubit.dart';
@@ -69,8 +70,10 @@ Widget buildStudentSheetPageUseCase(BuildContext context) => WorldScope(
               ..add(StudentRecallEvent.started(studentId: world.children.id)),
       ),
       BlocProvider(create: (_) => getIt<StudentErasureBloc>()),
+      BlocProvider(create: (_) => getIt<PlacementBloc>()),
     ],
     child: StudentSheetPage(
+      today: () => world.today,
       onBack: () {},
       onEdit: () {},
       onOpenAssessment: () {},

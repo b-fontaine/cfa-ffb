@@ -44,7 +44,8 @@ class _BlockCandidate {
 
 /// R5 : choisit la notion à rappeler pour les élèves de [progress].
 ///
-/// Candidats : blocs déjà commencés, hors [mainBlockId], avec (a) une alerte
+/// Candidats : blocs déjà commencés (hors exercices acquis au positionnement),
+/// hors [mainBlockId], avec (a) une alerte
 /// active, (b) un dernier passage échoué ou (c) aucune pratique depuis
 /// `recallStaleSessions` séances du groupe. Tri : bloc où au moins
 /// `groupFailureSharePercent` % des élèves ont échoué au dernier passage, puis
@@ -63,8 +64,12 @@ RecallSuggestion? selectRecall({
     var failedStudents = 0;
     DateTime? oldest;
     for (final entry in progress.entries) {
+      // Un exercice acquis au positionnement (marqueur sans passage depuis)
+      // n'est pas rappelé : ses anciens passages sont dormants (ADR 0008).
       final results = [
-        for (final spec in block.exercises) ?entry.value.results[spec.ref],
+        for (final spec in block.exercises)
+          if (!entry.value.acquiredExercises.contains(spec.ref))
+            ?entry.value.results[spec.ref],
       ];
       if (results.isEmpty) continue;
       final latest = ([...results]..sort(_chronological)).last;

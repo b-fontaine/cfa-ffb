@@ -181,6 +181,84 @@
   "statusNotStarted": "Not started",
   "statusMastered": "Mastered",
   "statusToReview": "To review",
+  "statusAcquiredAtPlacement": "Acquired at placement",
+  "placementMarkAction": "Mark block as acquired",
+  "placementMarkActionFor": "Mark block as acquired: {block}",
+  "@placementMarkActionFor": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      }
+    }
+  },
+  "placementDialogTitle": "Mark block as acquired",
+  "placementDialogBody": "{count, plural, =1{The 1 exercise in this block will count as validated} other{The {count} exercises in this block will count as validated}}, with no recorded pass. A pass recorded on or after this date takes over for its exercise.",
+  "@placementDialogBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placementDateLabel": "Placement date",
+  "placementConfirm": "Mark as acquired",
+  "placementRevokeAction": "Remove acquired status",
+  "placementRevokeTitle": "Remove acquired status for “{block}”?",
+  "@placementRevokeTitle": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      }
+    }
+  },
+  "placementRevokeBody": "Exercises go back to being validated from recorded passes.",
+  "placementMarked": "Block marked as acquired: {block}",
+  "@placementMarked": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      }
+    }
+  },
+  "placementRevoked": "Acquired status removed.",
+  "placementOn": "Acquired at placement on {date}",
+  "@placementOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "placementResumed": "Acquired at placement on {date}; {count, plural, =1{1 exercise} other{{count} exercises}} taken over by passes recorded since",
+  "@placementResumed": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placementResumedFeedback": "Exercise acquired at placement: recorded passes now take over this exercise ({count} of {required}).",
+  "@placementResumedFeedback": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "backupBlockAcquisitions": "{count, plural, =1{1 acquired block} other{{count} acquired blocks}}",
+  "@backupBlockAcquisitions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "failBlankName": "The first name is required.",
   "failPassesLimit": "At most two passes per exercise and per session.",
   "failStudentNotPresent": "This student is not present at the session.",
@@ -203,6 +281,8 @@
   "failBackupInvalid": "This file contains invalid data.",
   "failBackupInconsistent": "This file is inconsistent: missing references or duplicates.",
   "failBackupUnknownSheet": "This file refers to a catalogue session that this version of the app does not know.",
+  "failBackupUnknownBlock": "The backup refers to a block unknown to the catalogue.",
+  "failBlockAlreadyAcquired": "This block is already marked as acquired for this student.",
   "failUnknownSheet": "This catalogue session is unknown: choose another one.",
   "failGeneric": "Something went wrong. Check the data and try again.",
   "studentsTitle": "Club students",

@@ -67,6 +67,7 @@ app/
 │   ├── features/manage_students/          # EnrollStudent, GetClubOverview ; StudentsBloc, ClubList
 │   ├── features/record_results/           # OpenSession, RecordAttempt (R1, R2, R4) ; RecordResultsBloc
 │   ├── features/suggest_session/          # planSession (R6), selectRecall (R5) ; SessionPlanView, ExerciseDiagramView
+│   ├── features/place_student/            # MarkBlockAcquired, RevokeBlockAcquired ; PlacementBloc, boîte de dialogue
 │   ├── features/assess_maturity/          # RecordAssessment (aide, jamais un déclencheur)
 │   ├── features/change_audience/          # ChangeAudience (R7, manuel, confirmation)
 │   ├── features/track_progress/           # ExerciseCurve, BlockProgress (R3), StudentSheet ; courbes
@@ -80,7 +81,8 @@ app/
 │   │   ├── domain/                    # modèle freezed (Dart pur) + port DiagramRepository
 │   │   ├── data/                      # parseur YAML strict + repository asset
 │   │   └── presentation/              # table_diagram_mapper : domaine -> TableDiagramSpec
-│   ├── entities/exercise_result/      # ExerciseAttempt, ExerciseResult dérivé, StudentProgress
+│   ├── entities/exercise_result/      # ExerciseAttempt, ExerciseResult dérivé, StudentProgress,
+│   │                                  # BlockAcquisition + port AcquisitionRepository (ADR 0008)
 │   ├── entities/student/              # Student, AudienceChange (historique)
 │   ├── entities/season/  entities/group/  entities/session_record/
 │   ├── entities/maturity_assessment/  # chacun : domain/ (+ port) et data/ (en mémoire + drift)
@@ -132,6 +134,19 @@ widgetbook/                            # projet séparé : catalogue du design s
   élève, exercice et séance dans une `UnitOfWork`. Aucune méthode ajoutée aux
   ports. L'assiduité (`attendanceOf`, `features/track_progress/domain`) est une
   fonction pure sur les séances et les appartenances aux groupes.
+- **Positionnement initial** (ADR 0008) : `BlockAcquisition` (marqueur élève ×
+  bloc, date, source `placement`), `AcquisitionSource` et le port
+  `AcquisitionRepository` vivent dans `entities/exercise_result` (même slice que
+  `StudentProgress.derive`, qui les lit : la règle FSD interdit l'import entre
+  slices d'une même couche). `StudentProgress.validated` = exercices validés
+  par passages ∪ `acquiredExercises` ; un passage daté du jour du
+  positionnement ou après reprend la main sur son exercice seulement. Les
+  six appelants de `derive` (`GetStudentSheet`, `GetStudentReport`,
+  `GetClubOverview`, `SuggestSession`, `SuggestRecall`, `RecordAttempt`)
+  lisent `AcquisitionRepository.forStudent`. `features/place_student` porte
+  `MarkBlockAcquired`, `RevokeBlockAcquired` et `PlacementBloc` ; la page
+  `student_sheet` compose le bloc et transmet des callbacks à
+  `BlockProgressList`.
 - **Pages** (couche `pages`) : composent des Bloc fournis par le routeur et des vues
   de `features/*/presentation/ui` ; elles ne contiennent aucune règle métier ni
   `StatefulWidget` : la sélection du groupe et des présents vit dans

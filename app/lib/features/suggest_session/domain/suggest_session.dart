@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
@@ -18,6 +19,7 @@ class SuggestSession {
     this._groups,
     this._sessions,
     this._attempts,
+    this._acquisitions,
     this._catalogue,
     this._config,
   );
@@ -25,6 +27,7 @@ class SuggestSession {
   final GroupRepository _groups;
   final SessionRecordRepository _sessions;
   final AttemptRepository _attempts;
+  final AcquisitionRepository _acquisitions;
   final CatalogueRepository _catalogue;
   final RulesConfig _config;
 
@@ -40,6 +43,7 @@ class SuggestSession {
         student: StudentProgress.derive(
           studentId: student,
           attempts: await _attempts.forStudent(student),
+          acquisitions: await _acquisitions.forStudent(student),
           rates: catalogue.rates,
           config: _config,
         ),

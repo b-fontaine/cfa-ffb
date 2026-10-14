@@ -11,6 +11,10 @@ Future<void> iTapTheBackButton(WidgetTester tester) async {
     matching: find.bySubtype<TextButton>(),
   );
   expect(back, findsWidgets, reason: 'aucun bouton de retour affiché');
+  // Le bouton est en tête d'une page défilante : on y remonte avant le tap
+  // (un tap hors écran ne toucherait rien et passerait en silence).
+  await tester.ensureVisible(back.first);
+  await tester.pumpAndSettle();
   await tester.tap(back.first);
   await tester.pumpAndSettle();
 }

@@ -60,10 +60,10 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
    [plan](seance-planifiee-plan.md). Date et groupe sur la séance planifiée,
    « Noter les résultats » pré-rempli depuis le guide comme depuis la liste,
    la saisie et l'historique nomment la séance du catalogue.
-7. **Positionnement initial / bloc acquis** : marquer un bloc comme acquis sans
+7. ~~Positionnement initial / bloc acquis~~ : marquer un bloc comme acquis sans
    passage (élèves non débutants, rentrée) ; sinon la suggestion repart de
-   « posture » et la fiche affiche « 0 / 72 » toute la saison. **Statut :
-   conception** (2026-10-14) — [ADR 0008](adr/0008-positionnement-initial-bloc-acquis.md),
+   « posture » et la fiche affiche « 0 / 72 » toute la saison. **Livré le
+   2026-10-14** — [ADR 0008](adr/0008-positionnement-initial-bloc-acquis.md),
    [plan](positionnement-initial-plan.md). Décisions : action sur la fiche élève
    par bloc, état distinct stocké (date + source « positionnement », pas de
    passage fictif), bloc entier (15 blocs), compté dans « n / 72 » et saute

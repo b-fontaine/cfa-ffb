@@ -22,6 +22,7 @@ void main() {
         world.groups,
         world.sessions,
         world.attempts,
+        world.acquisitions,
         world.catalogueRepository,
         world.config,
       ),
@@ -75,6 +76,25 @@ void main() {
     expect(plan.mainBlockId, 'a');
     expect(plan.exercises.first, ref('a', 1));
   });
+
+  test(
+    'skips a block acquired at placement by the expected students',
+    () async {
+      final (world, suggest) = await start();
+      await world.acquisitions.add(acquisition('a'));
+      await world.acquisitions.add(acquisition('a', student: 's2', id: 'q2'));
+
+      final plan = ok(
+        await suggest(
+          groupId: const GroupId('g1'),
+          expectedStudents: {const StudentId('s1'), const StudentId('s2')},
+        ),
+      );
+
+      expect(plan.mainBlockId, 'b');
+      expect(plan.exercises.first, ref('b', 1));
+    },
+  );
 
   test('recalls a stale notion using the group sessions', () async {
     final (world, suggest) = await start();

@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repository.dart';
@@ -16,6 +17,7 @@ class RepositoryHarness {
     required this.seasons,
     required this.sessionRecords,
     required this.attempts,
+    required this.acquisitions,
     required this.assessments,
     required this.sessions,
     required this.unitOfWork,
@@ -27,6 +29,7 @@ class RepositoryHarness {
   final SeasonRepository seasons;
   final SessionRecordRepository sessionRecords;
   final AttemptRepository attempts;
+  final AcquisitionRepository acquisitions;
   final AssessmentRepository assessments;
   final SessionRepository sessions;
   final UnitOfWork unitOfWork;

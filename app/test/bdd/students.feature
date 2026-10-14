@@ -58,3 +58,18 @@ Feature: Students
     When I tap {'Élèves'} text
     Then I see {'Les élèves du club'} text
     And I see {'Enfants'} text
+
+  # Lot 7 (ADR 0008) : les blocs marqués acquis d'un élève s'effacent avec lui.
+  Scenario: Erasing a student also erases the blocks marked as acquired
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the club has the student {'Hugo'} in the {'children'} audience
+    And {'Léa'} has the block {'posture'} acquired on {'2026-10-12'}
+    And {'Hugo'} has the block {'puissance'} acquired on {'2026-10-12'}
+    And the app is running
+    When I open the sheet of {'Léa'}
+    And I tap {'Erase Léa'} text
+    And I tap {'Confirm'} text
+    Then I see {'Hugo'} text
+    And I do not see {'Léa'} text
+    And the club keeps no data for {'Léa'}
+    And the club keeps {1} acquired blocks in total

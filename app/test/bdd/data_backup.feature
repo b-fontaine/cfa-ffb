@@ -67,3 +67,21 @@ Feature: Sauvegarde et restauration des données
     Then la séance planifiée {'Cours'} est prévue le {'2026-10-19'} pour le groupe {'Jeunes'}
     And la séance planifiée {'Cours'} est liée à la séance du catalogue {'demi-bille-2'}
     And la séance saisie du groupe {'Jeunes'} le {'2026-10-19'} note la séance du catalogue {'demi-bille-2'}
+
+  # Lot 7 (ADR 0008) : les blocs acquis au positionnement font partie de la
+  # sauvegarde.
+  Scenario: Restaurer les blocs acquis au positionnement
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And {'Léa'} a le bloc {'puissance'} acquis au positionnement le {'2026-09-15'}
+    And j'exporte une sauvegarde du club
+    When j'importe cette sauvegarde dans un club vide
+    Then le club compte {1} blocs acquis
+    And {'Léa'} garde le bloc {'puissance'} acquis au positionnement le {'2026-09-15'}
+
+  Scenario: Refuser une sauvegarde dont un bloc acquis est inconnu du catalogue
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And {'Léa'} a le bloc {'puissance'} acquis au positionnement le {'2026-09-15'}
+    And j'exporte une sauvegarde du club
+    When j'importe cette sauvegarde dans un club vide avec un bloc acquis inconnu
+    Then l'import est refusé avec le motif {'backupUnknownBlock'}
+    And le club compte {0} blocs acquis

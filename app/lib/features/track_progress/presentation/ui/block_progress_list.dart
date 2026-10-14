@@ -10,15 +10,27 @@ import 'package:flutter/material.dart';
 
 /// Progression de l'élève bloc par bloc, dans l'ordre d'enseignement : taux
 /// d'exercices validés, statut (icône + libellé), séances passées.
+///
+/// [onMarkAcquired] et [onRevokeAcquired] reçoivent l'identifiant du bloc
+/// (positionnement, ADR 0008) ; ils sont fournis par la page, qui compose la
+/// fonctionnalité de positionnement. Sans eux, aucune action n'est proposée.
 class BlockProgressList extends StatelessWidget {
-  const BlockProgressList({required this.sheet, super.key});
+  const BlockProgressList({
+    required this.sheet,
+    this.onMarkAcquired,
+    this.onRevokeAcquired,
+    super.key,
+  });
 
   final StudentSheet sheet;
+  final ValueChanged<String>? onMarkAcquired;
+  final ValueChanged<String>? onRevokeAcquired;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final dates = MaterialLocalizations.of(context);
     return SectionCard(
       title: l10n.sheetBlocks,
       child: Column(
@@ -71,6 +83,18 @@ class BlockProgressList extends StatelessWidget {
                     l10n.sheetBlockSessions(progress.sessionsSpent),
                     style: theme.textTheme.bodyMedium,
                   ),
+                  if (progress.acquiredOn != null)
+                    Text(
+                      progress.resumedCount == 0
+                          ? l10n.placementOn(
+                              dates.formatMediumDate(progress.acquiredOn!),
+                            )
+                          : l10n.placementResumed(
+                              dates.formatMediumDate(progress.acquiredOn!),
+                              progress.resumedCount,
+                            ),
+                      style: theme.textTheme.bodyMedium,
+                    ),
                   if (progress.overdue)
                     Padding(
                       padding: const EdgeInsets.only(top: AppSpacing.xs),
@@ -79,6 +103,7 @@ class BlockProgressList extends StatelessWidget {
                         label: l10n.sheetBlockOverdue,
                       ),
                     ),
+                  ..._placementActions(l10n, progress),
                 ],
               ),
             ),
@@ -87,11 +112,55 @@ class BlockProgressList extends StatelessWidget {
     );
   }
 
+  /// « Retirer l'acquis » dès qu'un marqueur existe ; « Marquer le bloc
+  /// acquis » sinon, sauf pour un bloc déjà acquis par passages.
+  List<Widget> _placementActions(
+    AppLocalizations l10n,
+    BlockProgress progress,
+  ) {
+    final onRevoke = onRevokeAcquired;
+    final onMark = onMarkAcquired;
+    if (progress.acquiredOn != null) {
+      if (onRevoke == null) return const [];
+      return [
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton(
+            onPressed: () => onRevoke(progress.blockId),
+            child: Text(l10n.placementRevokeAction),
+          ),
+        ),
+      ];
+    }
+    if (onMark == null || progress.status == BlockStatus.mastered) {
+      return const [];
+    }
+    final title = sheet.catalogue.blockById(progress.blockId)!.title;
+    return [
+      Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: Semantics(
+          button: true,
+          label: l10n.placementMarkActionFor(title),
+          excludeSemantics: true,
+          child: TextButton(
+            onPressed: () => onMark(progress.blockId),
+            child: Text(l10n.placementMarkAction),
+          ),
+        ),
+      ),
+    ];
+  }
+
   Widget _statusBadge(AppLocalizations l10n, BlockStatus status) =>
       switch (status) {
         BlockStatus.mastered => StatusBadge(
           tone: BadgeTone.success,
           label: l10n.statusMastered,
+        ),
+        BlockStatus.acquiredAtPlacement => StatusBadge(
+          tone: BadgeTone.success,
+          label: l10n.statusAcquiredAtPlacement,
         ),
         BlockStatus.toReview => StatusBadge(
           tone: BadgeTone.attention,

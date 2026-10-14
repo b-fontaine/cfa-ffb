@@ -70,3 +70,19 @@ Feature: Recording the results of a session
     And I record the pass of {'Léa'}
     Then I see {'More attempts than the sheet: the target is judged proportionally.'} text
     And I see {'Pass recorded: 3 of 7, target missed'} text
+
+  Scenario: A pass on an exercise acquired at placement says it takes over
+    Given {'Léa'} has the block {'posture'} acquired on {'2026-10-12'}
+    And the app is running
+    When I open the session of the group {'Children group'}
+    And I add {3} balls potted for {'Léa'}
+    And I record the pass of {'Léa'}
+    Then I see {'Exercise acquired at placement: recorded passes now take over this exercise (1 of 5).'} text
+    And I do not see {'Exercise validated!'} text
+
+  Scenario: A pass on an ordinary exercise does not mention the placement
+    Given the app is running
+    When I open the session of the group {'Children group'}
+    And I add {3} balls potted for {'Léa'}
+    And I record the pass of {'Léa'}
+    Then I do not see text containing {'acquired at placement'}

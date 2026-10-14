@@ -17,6 +17,7 @@ import 'package:billard_cfa/features/backup_data/domain/export_backup.dart';
 import 'package:billard_cfa/features/backup_data/domain/import_backup.dart';
 import 'package:billard_cfa/features/backup_data/domain/import_summary.dart';
 import 'package:billard_cfa/features/change_audience/domain/audience_change_outcome.dart';
+import 'package:billard_cfa/features/place_student/domain/mark_block_acquired.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
 import 'package:billard_cfa/features/record_results/domain/record_attempt.dart';
 import 'package:billard_cfa/features/record_results/domain/recorded_attempt.dart';
@@ -238,6 +239,18 @@ class TrackingWorld {
     }
   }
 
+  /// Marque [blockId] acquis au positionnement pour [student] le [on].
+  Future<void> markAcquired(String student, String blockId, DateTime on) async {
+    _valueOf(
+      await getIt<MarkBlockAcquired>()(
+        studentId: studentId(student),
+        blockId: blockId,
+        date: on,
+        today: today,
+      ),
+    );
+  }
+
   Future<void> exportBackup() async {
     backup = _valueOf(await getIt<ExportBackup>()());
   }
@@ -297,6 +310,18 @@ class TrackingWorld {
         (data['plannedSessions']! as List<Object?>).first!
             as Map<String, Object?>;
     first['sheetId'] = 'inconnue-9';
+    return jsonEncode(document);
+  }
+
+  /// La sauvegarde exportée, dont le premier bloc acquis vise un bloc absent
+  /// du catalogue (la forme du fichier reste valide).
+  String backupWithUnknownAcquiredBlock() {
+    final document = jsonDecode(backup) as Map<String, Object?>;
+    final data = document['data']! as Map<String, Object?>;
+    final first =
+        (data['blockAcquisitions']! as List<Object?>).first!
+            as Map<String, Object?>;
+    first['blockId'] = 'bloc-inconnu';
     return jsonEncode(document);
   }
 

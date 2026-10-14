@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/training_block.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
@@ -13,20 +14,26 @@ import '../../../support/fixtures.dart';
 final _config = RulesConfig(passesRequired: 1);
 final TrainingBlock _block = block('a', 1);
 
-StudentProgress progress(List<ExerciseAttempt> attempts) =>
-    StudentProgress.derive(
-      studentId: const StudentId('s1'),
-      attempts: attempts,
-      rates: buildCatalogue().rates,
-      config: _config,
-    );
+StudentProgress progress(
+  List<ExerciseAttempt> attempts, [
+  List<BlockAcquisition> acquisitions = const [],
+]) => StudentProgress.derive(
+  studentId: const StudentId('s1'),
+  attempts: attempts,
+  acquisitions: acquisitions,
+  rates: buildCatalogue().rates,
+  config: _config,
+);
 
-BlockProgress of(List<ExerciseAttempt> attempts, {int sessionsSpent = 0}) =>
-    BlockProgress.of(
-      block: _block,
-      progress: progress(attempts),
-      sessionsSpent: sessionsSpent,
-    );
+BlockProgress of(
+  List<ExerciseAttempt> attempts, {
+  int sessionsSpent = 0,
+  List<BlockAcquisition> acquisitions = const [],
+}) => BlockProgress.of(
+  block: _block,
+  progress: progress(attempts, acquisitions),
+  sessionsSpent: sessionsSpent,
+);
 
 ExerciseAttempt passed(int number, {int dayOfMonth = 1}) => attempt(
   ref('a', number),
@@ -125,6 +132,87 @@ void main() {
 
     test('keeps the number of sessions spent', () {
       expect(of([], sessionsSpent: 4).sessionsSpent, 4);
+    });
+  });
+
+  group('acquired at placement', () {
+    test('is acquiredAtPlacement, complete and never overdue', () {
+      final p = of(
+        [],
+        acquisitions: [acquisition('a', day: 5)],
+        sessionsSpent: 9,
+      );
+
+      expect(p.status, BlockStatus.acquiredAtPlacement);
+      expect(p.validatedCount, 3);
+      expect(p.percentValidated, 100);
+      expect(p.overdue, isFalse);
+      expect(p.acquiredOn, day(5));
+      expect(p.resumedCount, 0);
+    });
+
+    test('hides the alerts of the acquired exercises: never toReview', () {
+      final p = of(
+        [failed(1), failed(1, dayOfMonth: 2), failed(1, dayOfMonth: 3)],
+        acquisitions: [acquisition('a', day: 5)],
+      );
+
+      expect(p.status, BlockStatus.acquiredAtPlacement);
+    });
+
+    test('is derived from the results once an exercise is taken over', () {
+      final p = of(
+        [failed(1, dayOfMonth: 6)],
+        acquisitions: [acquisition('a', day: 5)],
+        sessionsSpent: 1,
+      );
+
+      expect(p.status, BlockStatus.inProgress);
+      expect(p.validatedCount, 2, reason: 'a2 et a3 restent acquis');
+      expect(p.percentValidated, 66);
+      expect(p.acquiredOn, day(5));
+      expect(p.resumedCount, 1);
+    });
+
+    test('is mastered when passes and acquired exercises cover the block', () {
+      final p = of(
+        [passed(1, dayOfMonth: 6)],
+        acquisitions: [acquisition('a', day: 5)],
+      );
+
+      expect(p.status, BlockStatus.mastered);
+      expect(p.validatedCount, 3);
+      expect(p.overdue, isFalse);
+      expect(p.resumedCount, 1);
+    });
+
+    test('is derived from passes alone when the marker is dormant', () {
+      final p = of(
+        [
+          passed(1, dayOfMonth: 6),
+          failed(2, dayOfMonth: 6),
+          failed(3, dayOfMonth: 6),
+        ],
+        acquisitions: [acquisition('a', day: 5)],
+      );
+
+      expect(p.status, BlockStatus.inProgress);
+      expect(p.validatedCount, 1);
+      expect(p.resumedCount, 3);
+      expect(p.acquiredOn, day(5));
+    });
+
+    test('shows the alert of an exercise taken over', () {
+      final p = of(
+        [
+          failed(1, dayOfMonth: 5),
+          failed(1, dayOfMonth: 6),
+          failed(1, dayOfMonth: 7),
+        ],
+        acquisitions: [acquisition('a', day: 5)],
+      );
+
+      expect(p.status, BlockStatus.toReview);
     });
   });
 

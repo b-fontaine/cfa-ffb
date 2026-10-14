@@ -86,6 +86,7 @@ class RecordSessionView extends StatelessWidget {
               spec: spec,
               passesDone: overview.passesOf(student.id, exercise),
               maxPasses: overview.maxPassesPerExercise,
+              passesRequired: overview.passesRequired,
               feedback: state.feedback[student.id],
               nextExerciseLabel:
                   switch (state.feedback[student.id]?.nextExercise) {

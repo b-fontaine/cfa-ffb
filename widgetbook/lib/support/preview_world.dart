@@ -8,6 +8,7 @@ import 'package:billard_cfa/entities/session_sheet/data/asset_session_sheet_repo
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/manage_students/domain/enroll_student.dart';
+import 'package:billard_cfa/features/place_student/domain/mark_block_acquired.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
 import 'package:billard_cfa/features/record_results/domain/record_attempt.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
@@ -151,6 +152,19 @@ class PreviewWorld {
 
     await seed(validated, 5, passed: true);
     final sessionId = await seed(struggling, 3, passed: false);
+    // Positionnement : « Posture » acquis, « La puissance » acquis puis repris
+    // par les passages ci-dessus (statuts et lignes distincts de la fiche).
+    final mark = getIt<MarkBlockAcquired>();
+    for (final block in const ['posture', 'puissance']) {
+      _value(
+        await mark(
+          studentId: lea.student.id,
+          blockId: block,
+          date: DateTime(2026, 9),
+          today: today,
+        ),
+      );
+    }
     return PreviewWorld(
       children: lea.student,
       adults: marc.student,

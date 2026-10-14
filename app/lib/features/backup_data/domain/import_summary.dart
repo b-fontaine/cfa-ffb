@@ -14,6 +14,7 @@ abstract class ImportSummary with _$ImportSummary {
     required int attempts,
     required int assessments,
     required int plannedSessions,
+    required int blockAcquisitions,
   }) = _ImportSummary;
 
   const ImportSummary._();
@@ -26,5 +27,6 @@ abstract class ImportSummary with _$ImportSummary {
     attempts: snapshot.attempts.length,
     assessments: snapshot.assessments.length,
     plannedSessions: snapshot.plannedSessions.length,
+    blockAcquisitions: snapshot.blockAcquisitions.length,
   );
 }

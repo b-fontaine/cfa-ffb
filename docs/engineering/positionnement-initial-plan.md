@@ -1,7 +1,7 @@
 # Positionnement initial / bloc acquis : plan
 
-Statut : **conception** (lot 7 de la [roadmap](roadmap.md) ; décisions A1 à A5
-de l'animateur du 2026-10-14, A5 précisée par deux arbitrages ; aucun code écrit). Décision :
+Statut : **livré** (2026-10-14, lots B1 à B6 ; lot 7 de la [roadmap](roadmap.md) ; décisions A1 à A5
+de l'animateur du 2026-10-14, A5 précisée par deux arbitrages). Décision :
 [ADR 0008](adr/0008-positionnement-initial-bloc-acquis.md). Contexte :
 application V1 non livrée, aucune compatibilité de données à préserver. Règles
 de développement : `AGENTS.md`, skills `dev-feature`, `dev-bdd`, `dev-tdd` ;
@@ -37,7 +37,7 @@ marqueur se retire ou cède la place aux vrais passages.
 
 ## 3. Modèle de domaine
 
-### Entité `entities/block_acquisition/domain`
+### Entité `BlockAcquisition` (`entities/exercise_result/domain`, voir § 10 bis)
 
 | Fichier | Contenu |
 |---|---|
@@ -48,7 +48,7 @@ marqueur se retire ou cède la place aux vrais passages.
 `AcquisitionId` s'ajoute à `shared/lib/identifiers.dart`
 (`extension type const AcquisitionId(String value)`, comme `AssessmentId`).
 
-`entities/block_acquisition/data` : `drift_acquisition_repository.dart`,
+`entities/exercise_result/data` : `drift_acquisition_repository.dart`,
 `in_memory_acquisition_repository.dart` (journal partagé, `UnitOfWork`
 compatible comme les autres) ; enregistrés dans `app/di`.
 
@@ -115,8 +115,7 @@ compatible comme les autres) ; enregistrés dans `app/di`.
 | Cas d'usage | Règles |
 |---|---|
 | `MarkBlockAcquired(studentId, blockId, date, today)` | élève inconnu → `NotFound('student')` ; bloc hors catalogue → `unknownBlock` ; `date` après `today` → `dateInFuture` ; marqueur non supprimé existant pour (élève, bloc) → `blockAlreadyAcquired` ; sinon `add` et retourne le `BlockAcquisition` |
-| `RevokeBlockAcquired(studentId, blockId)` | aucun marqueur non supprimé → `NotFound('acquisition')` ; sinon `delete(id)` (logique) |
-| `ListStudentAcquisitions(studentId)` | lecture simple pour le bloc ; la fiche lit déjà tout via `GetStudentSheet` |
+| `RevokeBlockAcquired(studentId, blockId)` | aucun marqueur non supprimé → `NotFound('acquisition')` ; sinon `delete(id)` (logique) de chaque marqueur du bloc, dans une `UnitOfWork` (tout ou rien : des données importées peuvent en porter plusieurs) |
 
 `GetStudentSheet`, `GetStudentReport`, `GetClubOverview`, `SuggestSession`,
 `SuggestRecall` et `RecordAttempt` (les six appelants de
@@ -258,8 +257,7 @@ Inchangée visuellement. Mention des blocs sautés : hors lot (§ 9).
 | `shared` | `ui` | `failure_message.dart` : cas `blockAlreadyAcquired`, `backupUnknownBlock` du `switch` exhaustif |
 | `shared` | `persistence` | table `BlockAcquisitions`, schéma v5, `from4To5`, instantanés |
 | `shared` | `l10n` | `shared/l10n/app_fr.arb` et `app_en.arb` : clés `placement*`, `statusAcquiredAtPlacement`, `failBlockAlreadyAcquired`, `failBackupUnknownBlock` |
-| `entities` | `block_acquisition/domain` | entité, source, port |
-| `entities` | `block_acquisition/data` | dépôts drift et mémoire |
+| `entities` | `exercise_result/domain` et `exercise_result/data` | entité `BlockAcquisition`, source, port ; dépôts drift et mémoire (§ 10 bis) |
 | `entities` | `exercise_result/domain` | `StudentProgress.derive(acquisitions)`, `acquiredBlocks`, `acquiredExercises`, `resumedExercises`, `validated`, `activeAlerts` |
 | `features` | `place_student/domain` | `MarkBlockAcquired`, `RevokeBlockAcquired` |
 | `features` | `place_student/presentation` | `PlacementBloc` (événements `markRequested`, `revokeRequested` ; états `idle`, `done(change)`, `refused(failure)`), `acquire_block_dialog.dart` |
@@ -396,6 +394,110 @@ logique, effacement physique) ; migration v4 → v5.
 | B4 | Sauvegarde : snapshot, encodeur, décodeur, règles, résumé | contrat de sauvegarde et `data_backup` verts |
 | B5 | Bloc `PlacementBloc`, l10n fr / en, UI (fiche, boîte de dialogue), routeur, Widgetbook | scénarios BDD verts, `check_l10n`, `check_widgetbook` verts |
 | B6 | Docs (`architecture.md`, ADR 0001, ADR 0003, `guide-animateur.md`, roadmap, adr/README), `check.sh --full`, revues `architecte-fsd` + `testeur-bdd` | tout vert, revues sans réserve bloquante |
+
+## 10 bis. Écarts constatés à l'implémentation (B1 à B5)
+
+- **`ListStudentAcquisitions`** n'existe pas : la fiche lit les marqueurs via
+  `GetStudentSheet` (le cas d'usage prévu au § 5 n'a pas de consommateur).
+- **Rappel** : `selectRecall` ignore les exercices acquis au positionnement
+  (`acquiredExercises`) ; leurs anciens passages dormants ne déclenchent plus
+  de rappel. La page `student_sheet` recharge aussi `StudentRecallBloc` après
+  un marquage ou un retrait.
+
+- **Slice de l'entité** : `BlockAcquisition`, `AcquisitionSource` et le port
+  `AcquisitionRepository` vivent dans `entities/exercise_result` (segments
+  `domain` et `data`), pas dans une slice `entities/block_acquisition` :
+  `StudentProgress.derive` (slice `exercise_result`) lit les marqueurs, et la
+  règle FSD 2 interdit l'import entre slices d'une même couche. `AcquisitionId`
+  reste dans `shared/lib/identifiers.dart`. Les dépôts mémoire et drift
+  (B3) s'y rangent aussi.
+- **`StudentProgress.acquiredBlocks`** contient le marqueur retenu de chaque
+  bloc marqué dont le bloc existe au catalogue, **y compris le marqueur
+  dormant** (tous exercices repris) : la fiche doit pouvoir afficher sa date et
+  « N exercices repris ». `isAcquired(blockId)` = marqueur sans exercice repris.
+- **Constructeurs** : `AcquisitionRepository` se place juste après
+  `AttemptRepository` dans `GetStudentSheet`, `GetStudentReport`,
+  `GetClubOverview`, `SuggestSession`, `SuggestRecall`, `RecordAttempt`, et
+  avant l'unité de travail dans `EraseStudent`.
+- **`ExerciseSeries.alert`** d'un exercice encore acquis vaut `AlertLevel.none`
+  (la pastille de la courbe est masquée comme l'alerte de la fiche, scénario
+  BDD 12).
+- **`RevokeBlockAcquired`** supprime tous les marqueurs non supprimés du bloc
+  (données importées), sans retour de valeur.
+- **Contrat** : `acquisition_contract.dart` est une suite séparée
+  (`RepositoryHarness` inchangé) exécutée contre la mémoire ; B3 l'exécute
+  contre drift et peut la fondre dans le harnais.
+- **Scénarios BDD d'interface** de `block_placement.feature` : rouges jusqu'à
+  B5 (bouton, boîte de dialogue, ligne « repris »). Étapes accessibles :
+  « Mark block as acquired: <bloc> » par nom sémantique ; « Remove acquired
+  status » est un bouton texte (un seul bloc marqué par scénario) ; la boîte
+  porte le libellé cliquable « Placement date » qui ouvre le sélecteur de date
+  (borne haute au-delà d'aujourd'hui pour que `dateInFuture` s'affiche).
+
+## 10 ter. Écarts constatés à l'implémentation (B3)
+
+- **Index** : `from4To5` crée aussi l'index `acquisitions_by_student`
+  (`m.createIndex(schema.acquisitionsByStudent)`) ; `createTable` seul ne le
+  crée pas et `migrateAndValidate` le détecte.
+- **Dépôt drift** : `entities/exercise_result/data/drift_acquisition_repository.dart`
+  (même slice que le port, § 10 bis) ; `forStudent` trie par date, à égalité
+  par ordre d'insertion.
+- **Contrat** : `acquisition_contract.dart` est exécuté contre drift dans
+  `drift_contract_test.dart` (suite séparée, `RepositoryHarness` inchangé).
+- **Test de sauvegarde de version** : `migration_test` « refuses newer
+  version » passe à `user_version = 6`.
+
+## 10 quater. Écarts constatés à l'implémentation (B4)
+
+- **Constructeurs** : `AcquisitionRepository` se place juste après
+  `AttemptRepository` dans `ImportBackup` et `ExportBackup`.
+- **Harnais** : `RepositoryHarness` gagne `acquisitions` (requis) pour que le
+  contrat de sauvegarde exerce l'aller-retour contre mémoire et drift.
+- **Date normalisée** : refusée au décodage par l'invariant de
+  `BlockAcquisition` (`invalidRange` devient `backupInvalid`) ; `BackupRules`
+  ne contrôle que le bloc connu et la date non future.
+- **Unicité** : l'identifiant, puis le couple (élève, bloc) dans
+  `BackupUniqueness` (`backupInconsistent`).
+- **Résumé** : `ImportSummary.blockAcquisitions` est compté ; la ligne
+  correspondante de l'aperçu (`backup_view`, clé l10n) n'est pas ajoutée en B4
+  (écran et l10n en B5).
+- **BDD** : deux scénarios ajoutés à `data_backup.feature` (restauration,
+  bloc inconnu → `backupUnknownBlock`).
+
+## 10 quinquies. Écarts constatés à l'implémentation (B5)
+
+- **`PlacementState`** : `status` (`idle`, `working`, `done`, `refused`),
+  `action` (`mark`, `revoke`), `blockId`, `failure` ; `PlacementBloc` injecte
+  `Clock` (la date du jour borne `MarkBlockAcquired`, la boîte ne la fournit
+  pas).
+- **Pluriel** : `placementResumed` utilise `=1{1 exercice repris} other{{count}
+  exercices repris}` (et son équivalent en) : `gen-l10n` laisse le `#` du
+  format `one{# …}` littéral dans la chaîne.
+- **Clé ajoutée** : `backupBlockAcquisitions` (ligne de l'aperçu de sauvegarde,
+  `backup_view`), absente du § 7.
+- **Composition** : `StudentSheetPage` reçoit `today` (obligatoire) et lit
+  `PlacementBloc` ; `StudentSheetView` et `BlockProgressList` reçoivent les
+  callbacks facultatifs `onMarkAcquired` / `onRevokeAcquired` (sans eux, aucune
+  action n'est affichée). Un refus de marquage reste dans la boîte ; seul un
+  refus de retrait passe par la `SnackBar`.
+- **Boîte** : `showAcquireBlockDialog` (fournit le `PlacementBloc` de la page
+  par `BlocProvider.value`) ; elle ne se ferme que sur `done` après sa propre
+  soumission.
+- **Widgetbook** : le monde de démonstration marque « Posture » et « La
+  puissance » acquis au 1er septembre ; les passages de Léa sur « La
+  puissance » reprennent la main (cas « repris » visible dans la fiche).
+- **Scénario 15 (rouvrir la fiche)** : l'étape partagée « I tap the back
+  button » émet un avertissement de tap hors écran (le bouton retour défile
+  avec la page) ; le scénario passe mais ne prouve pas la réouverture
+  effective. À durcir avec l'étape (hors périmètre B5).
+
+## 10 sexies. Écarts constatés à l'implémentation (B6)
+
+- **Documentation** : `architecture.md`, ADR 0001 (schéma v5, `from4To5`),
+  ADR 0003, ADR 0008 (statut livré), `guide-animateur.md`, `roadmap.md`
+  (lot 7 livré) et `adr/README.md` mis à jour.
+- **Revues** `architecte-fsd` et `testeur-bdd` : à lancer par l'orchestrateur
+  dans un contexte séparé (non faites par l'agent d'écriture).
 
 ## 11. Risques
 

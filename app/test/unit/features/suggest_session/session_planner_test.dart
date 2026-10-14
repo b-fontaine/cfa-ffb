@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
 import 'package:billard_cfa/features/suggest_session/domain/session_plan.dart';
@@ -28,11 +29,13 @@ List<ExerciseAttempt> validated(
 Map<StudentId, StudentProgress> progress(
   Map<String, List<ExerciseAttempt>> byStudent, {
   RulesConfig? config,
+  List<BlockAcquisition> acquisitions = const [],
 }) => {
   for (final entry in byStudent.entries)
     StudentId(entry.key): StudentProgress.derive(
       studentId: StudentId(entry.key),
       attempts: entry.value,
+      acquisitions: acquisitions,
       rates: buildCatalogue().rates,
       config: config ?? _config,
     ),
@@ -45,13 +48,47 @@ void main() {
     Map<String, List<ExerciseAttempt>> byStudent, {
     Audience audience = Audience.children,
     RulesConfig? config,
+    List<BlockAcquisition> acquisitions = const [],
   }) => planSession(
     catalogue: cat,
     audience: audience,
-    progress: progress(byStudent, config: config),
+    progress: progress(byStudent, config: config, acquisitions: acquisitions),
     groupSessions: const [],
     config: config ?? _config,
   );
+
+  test('skips a block acquired at placement without reordering the rest', () {
+    final p = plan({'s1': []}, acquisitions: [acquisition('a')]);
+
+    expect(p.mainBlockId, 'b');
+    expect(p.exercises, [ref('b', 1), ref('b', 2)]);
+  });
+
+  test('resumes the exercise taken over inside an acquired block', () {
+    final p = plan(
+      {
+        's1': [attempt(ref('a', 2), potted: 0, dayOfMonth: 5, id: 'f')],
+      },
+      acquisitions: [acquisition('a', day: 5)],
+    );
+
+    expect(p.mainBlockId, 'a');
+    expect(p.exercises.first, ref('a', 2));
+  });
+
+  test('refuses when acquired blocks cover the whole level', () {
+    expect(
+      () => plan(
+        {'s1': []},
+        acquisitions: [
+          acquisition('a'),
+          acquisition('b', id: 'q2'),
+          acquisition('c', id: 'q3'),
+        ],
+      ),
+      violation(InvariantCode.nothingToTeach),
+    );
+  });
 
   test('refuses a group without expected students', () {
     expect(() => plan({}), violation(InvariantCode.noStudents));

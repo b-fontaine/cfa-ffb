@@ -57,6 +57,7 @@ void main() {
             since: DateTime(2026, 9),
           ),
         ],
+        blockAcquisitions: const [],
       ),
       exportedAt: exportedAt,
     );
@@ -73,6 +74,7 @@ void main() {
         attempts: 0,
         assessments: 0,
         plannedSessions: 0,
+        blockAcquisitions: 0,
       ),
     );
   });
@@ -86,7 +88,10 @@ void main() {
 
   test('refuses an inconsistent file like the import would', () async {
     final content = codec.encode(
-      BackupSnapshot(attempts: [attempt(ref('a', 1), potted: 3)]),
+      BackupSnapshot(
+        attempts: [attempt(ref('a', 1), potted: 3)],
+        blockAcquisitions: const [],
+      ),
       exportedAt: exportedAt,
     );
 
@@ -130,6 +135,7 @@ void main() {
           ),
         ],
         attempts: [attempt(ref('unknown', 1), potted: 3)],
+        blockAcquisitions: const [],
       ),
       exportedAt: exportedAt,
     );

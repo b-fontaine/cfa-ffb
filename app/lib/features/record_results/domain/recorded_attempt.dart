@@ -20,6 +20,10 @@ abstract class RecordedAttempt with _$RecordedAttempt {
     /// Ce passage est celui qui valide l'exercice.
     required bool justValidated,
 
+    /// Ce passage reprend la main sur un exercice acquis au positionnement
+    /// (ADR 0008) : l'exercice est de nouveau dérivé de ses passages.
+    required bool resumedFromPlacement,
+
     /// Exercice suivant recommandé (R2) ; `null` quand le niveau est terminé.
     required ExerciseRef? nextExercise,
   }) = _RecordedAttempt;

@@ -187,6 +187,23 @@ Depuis **Élèves**, touchez un élève :
   réussi est un disque plein, un essai manqué un anneau creux ; la liste des
   essais est aussi donnée en texte.
 
+### Marquer un bloc acquis (positionnement)
+
+Pour un élève qui n'est pas débutant ou qui arrive en cours de saison, la
+carte **Progression par bloc** propose **Marquer le bloc acquis** sur chaque
+bloc non acquis.
+
+- Choisissez la **date du positionnement** (aujourd'hui par défaut, jamais dans
+  le futur) puis **Marquer acquis**. Les exercices du bloc comptent comme
+  validés dans « n / 72 », sans passage enregistré ; le bloc s'affiche
+  **Acquis au positionnement** avec sa date, et la suggestion saute ce bloc.
+- Un passage saisi **le jour du positionnement ou après** reprend la main sur
+  son exercice seulement : le reste du bloc reste acquis et la fiche indique
+  « N exercices repris par les passages saisis depuis ».
+- **Retirer l'acquis** (avec confirmation) rend les exercices à valider selon
+  les passages saisis.
+- Un bloc acquis n'est jamais rappelé ni signalé en retard.
+
 Chaque fiche a une adresse propre : vous pouvez l'ajouter aux favoris du
 navigateur.
 
@@ -230,7 +247,7 @@ Ouvrez **Sauvegarde**.
   partage de fichier sur mobile). Faites-le régulièrement, en fin de séance ou
   de mois.
 - **Importer** lit un fichier et affiche d'abord une **prévisualisation**
-  (nombre d'élèves, de séances, de passages) ; rien n'est écrit tant que vous
+  (nombre d'élèves, de séances, de passages, de blocs acquis) ; rien n'est écrit tant que vous
   n'avez pas confirmé. Un fichier invalide est refusé en entier.
 - Si l'application vous avertit que les données ne sont conservées **qu'en
   mémoire** (navigateur sans stockage durable), exportez une sauvegarde avant
@@ -242,7 +259,7 @@ Les élèves sont souvent mineurs : l'application ne garde que le **prénom** et
 le **public**, sur votre appareil, et ne les envoie nulle part.
 
 - Sur la fiche de l'élève, **Effacer** supprime définitivement l'élève, ses
-  résultats, ses bilans et ses appartenances à un groupe. Une confirmation est
+  résultats, ses blocs acquis, ses bilans et ses appartenances à un groupe. Une confirmation est
   demandée ; l'action ne peut pas être annulée.
 - Effacez les élèves **à la fin de la saison**, ou à la demande de l'élève ou de
   ses parents. Exportez d'abord une sauvegarde si vous voulez garder une copie.

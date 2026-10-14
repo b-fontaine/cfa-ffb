@@ -1,4 +1,6 @@
 import 'package:billard_cfa/app/di/injection.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart';
 import 'package:billard_cfa/features/assess_maturity/presentation/bloc/assessment_bloc.dart';
 import 'package:billard_cfa/features/assess_maturity/presentation/ui/assessment_form.dart';
 import 'package:billard_cfa/features/assess_maturity/presentation/ui/score_selector.dart';
@@ -12,6 +14,9 @@ import 'package:billard_cfa/features/manage_students/presentation/bloc/student_f
 import 'package:billard_cfa/features/manage_students/presentation/ui/club_list.dart';
 import 'package:billard_cfa/features/manage_students/presentation/ui/erase_student_card.dart';
 import 'package:billard_cfa/features/manage_students/presentation/ui/student_form.dart';
+import 'package:billard_cfa/features/place_student/presentation/bloc/placement_bloc.dart';
+import 'package:billard_cfa/features/place_student/presentation/ui/acquire_block_dialog.dart';
+import 'package:billard_cfa/features/record_results/domain/recorded_attempt.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/ui/pass_entry_card.dart';
 import 'package:billard_cfa/features/record_results/presentation/ui/record_session_view.dart';
@@ -28,6 +33,8 @@ import 'package:billard_cfa/features/track_progress/presentation/ui/exercise_cur
 import 'package:billard_cfa/features/track_progress/presentation/ui/student_sheet_view.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -111,9 +118,55 @@ Widget buildPassEntryCardUseCase(BuildContext context) => WorldScope(
       spec: world.catalogue.exercise(PreviewWorld.struggling)!,
       passesDone: 1,
       maxPasses: 2,
+      passesRequired: 5,
       onSubmit: (_, _) {},
     ),
   ),
+);
+
+@widgetbook.UseCase(
+  name: 'Reprise après positionnement',
+  type: PassEntryCard,
+  path: _path,
+)
+Widget buildPassEntryCardResumedUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) {
+    final spec = world.catalogue.exercise(PreviewWorld.validated)!;
+    final attempt = ExerciseAttempt(
+      id: const AttemptId('apercu-passage'),
+      studentId: world.children.id,
+      sessionId: const SessionId('apercu-seance'),
+      exercise: spec.ref,
+      date: world.today,
+      passIndex: 1,
+      potted: spec.rate.successes,
+      total: spec.rate.attempts,
+    );
+    return _scroll(
+      PassEntryCard(
+        studentName: world.children.firstName,
+        spec: spec,
+        passesDone: 1,
+        maxPasses: 2,
+        passesRequired: 5,
+        onSubmit: (_, _) {},
+        feedback: RecordedAttempt(
+          attempt: attempt,
+          result: ExerciseResult.derive(
+            studentId: world.children.id,
+            exercise: spec.ref,
+            rate: spec.rate,
+            attempts: [attempt],
+            config: RulesConfig(),
+          ),
+          passed: true,
+          justValidated: false,
+          resumedFromPlacement: true,
+          nextExercise: spec.ref,
+        ),
+      ),
+    );
+  },
 );
 
 @widgetbook.UseCase(name: 'Limite atteinte', type: PassEntryCard, path: _path)
@@ -124,6 +177,7 @@ Widget buildPassEntryCardLimitUseCase(BuildContext context) => WorldScope(
       spec: world.catalogue.exercise(PreviewWorld.validated)!,
       passesDone: 2,
       maxPasses: 2,
+      passesRequired: 5,
       onSubmit: (_, _) {},
       refusedMessage: 'Deux passages au maximum par séance.',
     ),
@@ -279,7 +333,31 @@ Widget buildStudentSheetViewUseCase(BuildContext context) => LoadedScope(
 )
 Widget buildBlockProgressListUseCase(BuildContext context) => LoadedScope(
   load: (world) => getIt<GetStudentSheet>()(world.children.id),
-  builder: (context, world, sheet) => _scroll(BlockProgressList(sheet: sheet)),
+  builder: (context, world, sheet) => _scroll(
+    BlockProgressList(
+      sheet: sheet,
+      onMarkAcquired: (_) {},
+      onRevokeAcquired: (_) {},
+    ),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Marquer le bloc acquis',
+  type: AcquireBlockDialog,
+  path: _path,
+)
+Widget buildAcquireBlockDialogUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) => BlocProvider(
+    create: (_) => getIt<PlacementBloc>(),
+    child: AcquireBlockDialog(
+      studentId: world.children.id,
+      blockId: 'posture',
+      blockTitle: 'Posture, visée et coup de queue',
+      exerciseCount: 4,
+      today: world.today,
+    ),
+  ),
 );
 
 @widgetbook.UseCase(name: 'Courbe', type: ExerciseCurveCard, path: _path)

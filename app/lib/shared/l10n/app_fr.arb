@@ -181,6 +181,84 @@
   "statusNotStarted": "Non commencé",
   "statusMastered": "Acquis",
   "statusToReview": "À revoir",
+  "statusAcquiredAtPlacement": "Acquis au positionnement",
+  "placementMarkAction": "Marquer le bloc acquis",
+  "placementMarkActionFor": "Marquer le bloc acquis : {block}",
+  "@placementMarkActionFor": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      }
+    }
+  },
+  "placementDialogTitle": "Marquer le bloc acquis",
+  "placementDialogBody": "{count, plural, =1{L'exercice de ce bloc comptera comme validé} other{Les {count} exercices de ce bloc compteront comme validés}}, sans passage enregistré. Un passage saisi à cette date ou après reprend la main sur son exercice.",
+  "@placementDialogBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placementDateLabel": "Date du positionnement",
+  "placementConfirm": "Marquer acquis",
+  "placementRevokeAction": "Retirer l’acquis",
+  "placementRevokeTitle": "Retirer l’acquis du bloc « {block} » ?",
+  "@placementRevokeTitle": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      }
+    }
+  },
+  "placementRevokeBody": "Les exercices redeviennent à valider selon les passages saisis.",
+  "placementMarked": "Bloc marqué acquis : {block}",
+  "@placementMarked": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      }
+    }
+  },
+  "placementRevoked": "Acquis retiré.",
+  "placementOn": "Acquis au positionnement le {date}",
+  "@placementOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "placementResumed": "Acquis au positionnement le {date} ; {count, plural, =1{1 exercice repris} other{{count} exercices repris}} par les passages saisis depuis",
+  "@placementResumed": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placementResumedFeedback": "Exercice acquis au positionnement : les passages reprennent la main sur cet exercice ({count} sur {required}).",
+  "@placementResumedFeedback": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "backupBlockAcquisitions": "{count, plural, =1{1 bloc acquis} other{{count} blocs acquis}}",
+  "@backupBlockAcquisitions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "failBlankName": "Le prénom est obligatoire.",
   "failPassesLimit": "Deux passages au plus par exercice et par séance.",
   "failStudentNotPresent": "Cet élève n’est pas présent à la séance.",
@@ -203,6 +281,8 @@
   "failBackupInvalid": "Ce fichier contient des données invalides.",
   "failBackupInconsistent": "Ce fichier est incohérent : références manquantes ou doublons.",
   "failBackupUnknownSheet": "Ce fichier désigne une séance du catalogue que cette version de l’application ne connaît pas.",
+  "failBackupUnknownBlock": "La sauvegarde cite un bloc inconnu du catalogue.",
+  "failBlockAlreadyAcquired": "Ce bloc est déjà marqué acquis pour cet élève.",
   "failUnknownSheet": "Cette séance du catalogue est inconnue : choisissez-en une autre.",
   "failGeneric": "Une erreur est survenue. Vérifiez les données et réessayez.",
   "studentsTitle": "Les élèves du club",

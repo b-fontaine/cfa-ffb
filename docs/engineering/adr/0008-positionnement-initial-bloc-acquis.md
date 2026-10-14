@@ -1,6 +1,6 @@
 # ADR 0008 — Positionnement initial : marquer un bloc acquis sans passage
 
-- Statut : **accepté** (2026-10-14), conception ; implémentation à faire.
+- Statut : **accepté** (2026-10-14), **livré** (2026-10-14, lots B1 à B6).
   Plan : `../positionnement-initial-plan.md`. Lot 7 de `../roadmap.md`.
   Complète l'[ADR 0003](0003-suivi-des-eleves.md) (règles de suivi) et suit le
   patron des [ADR 0006](0006-historique-et-correction-des-passages.md) et
@@ -86,9 +86,12 @@ passages fictifs, ce qui fausse courbes, alertes, assiduité de bloc et
    fichiers antérieurs, `BackupCodec.currentVersion` et `supportedVersions`
    inchangés). Effacement d'un élève
    (`EraseStudent`) : suppression physique de ses marqueurs.
-8. **Placement.** Entité `entities/block_acquisition` (domain + data) ;
-   feature `features/place_student` (cas d'usage, bloc, boîte de dialogue) ;
-   la dérivation reste dans `entities/exercise_result` (`StudentProgress`) et
+8. **Placement.** L'entité `BlockAcquisition`, `AcquisitionSource` et le port
+   `AcquisitionRepository` vivent dans `entities/exercise_result` (segments
+   `domain` et `data`), pas dans une slice dédiée : `StudentProgress.derive`
+   lit les marqueurs et la règle FSD interdit l'import entre slices d'une même
+   couche (plan § 10 bis). Feature `features/place_student` (cas d'usage,
+   bloc, boîte de dialogue) ; la dérivation reste dans `entities/exercise_result` (`StudentProgress`) et
    `features/track_progress` (`BlockProgress`, `StudentReport`). La page
    `student_sheet` compose le bloc de la nouvelle feature (aucune feature
    n'importe une autre feature).

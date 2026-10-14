@@ -145,6 +145,7 @@ void main() {
       attempts: attempts,
       catalogue: buildCatalogue(),
       maxPassesPerExercise: 2,
+      passesRequired: 5,
     );
 
     RecordedAttempt recordedOf(ExerciseAttempt attempt) {
@@ -160,6 +161,7 @@ void main() {
         result: result,
         passed: true,
         justValidated: false,
+        resumedFromPlacement: false,
         nextExercise: ref('a', 1),
       );
     }

@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
@@ -18,6 +19,7 @@ class SuggestRecall {
     this._students,
     this._sessions,
     this._attempts,
+    this._acquisitions,
     this._catalogue,
     this._config,
   );
@@ -25,6 +27,7 @@ class SuggestRecall {
   final StudentRepository _students;
   final SessionRecordRepository _sessions;
   final AttemptRepository _attempts;
+  final AcquisitionRepository _acquisitions;
   final CatalogueRepository _catalogue;
   final RulesConfig _config;
 
@@ -37,6 +40,7 @@ class SuggestRecall {
         final progress = StudentProgress.derive(
           studentId: studentId,
           attempts: await _attempts.forStudent(studentId),
+          acquisitions: await _acquisitions.forStudent(studentId),
           rates: catalogue.rates,
           config: _config,
         );

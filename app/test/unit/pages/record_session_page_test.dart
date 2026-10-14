@@ -36,6 +36,7 @@ RecordResultsState _ready({String? mainBlockId, SheetOption? sheet}) =>
         attempts: const [],
         catalogue: buildCatalogue(),
         maxPassesPerExercise: 2,
+        passesRequired: 5,
         sheet: sheet,
       ),
       exercise: ref('a', 1),

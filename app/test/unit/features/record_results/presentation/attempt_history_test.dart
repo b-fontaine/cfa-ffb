@@ -45,6 +45,7 @@ SessionOverview _overview(List<ExerciseAttempt> attempts) => SessionOverview(
   attempts: attempts,
   catalogue: buildCatalogue(),
   maxPassesPerExercise: 2,
+  passesRequired: 5,
 );
 
 RecordResultsState _state({
