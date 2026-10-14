@@ -1,0 +1,44 @@
+# Canal de prévisualisation Firebase Hosting pour chaque pull request interne
+# (URL temporaire commentée sur la PR). Généré par la CLI Firebase puis adapté :
+# la recette de build est celle du job build-web de ci.yml.
+
+name: Prévisualiser sur Firebase Hosting (PR)
+on: pull_request
+
+concurrency:
+  group: firebase-hosting-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+
+env:
+  # Version épinglée : alignée sur ci.yml et sur le Flutter utilisé en local.
+  FLUTTER_VERSION: "3.47.7"
+
+jobs:
+  build_and_preview:
+    name: Build web + canal de prévisualisation
+    # Les PR issues d'un fork n'ont pas accès aux secrets : pas de prévisualisation.
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Génération du code
+        run: scripts/generate.sh
+      - name: Build web
+        working-directory: app
+        run: flutter build web --release --no-pub
+      - name: Déploiement sur un canal de prévisualisation
+        uses: FirebaseExtended/action-hosting-deploy@500ac625ca2dd40cbd15f7659af953801858032a # v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ANIMATION_BILLARD }}
+          projectId: animation-billard

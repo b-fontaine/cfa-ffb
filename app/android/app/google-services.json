@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "173719719523",
+    "project_id": "animation-billard",
+    "storage_bucket": "animation-billard.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173719719523:android:4cdc0d24ddb101b028f256",
+        "android_client_info": {
+          "package_name": "fr.cfaffb.billard_cfa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAA4qami2kZtNejJaCt90Nu4NsW54HdfU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

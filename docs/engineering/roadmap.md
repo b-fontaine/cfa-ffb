@@ -108,8 +108,10 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
 
 ## H4 — Technique et distribution
 
-21. Déploiement web depuis la CI (le build existe dans `ci.yml`, il n'est pas
-    publié) ; build Android signé (plateforme prioritaire).
+21. Déploiement web depuis la CI : fait (`firebase-hosting-merge.yml` publie
+    `main` sur Firebase Hosting, `firebase-hosting-pull-request.yml` ouvre un
+    canal de prévisualisation par PR, même recette de build que `ci.yml`) ;
+    reste le build Android signé (plateforme prioritaire).
 22. Synchronisation multi-appareils (Firebase derrière les repositories, ADR
     0001) seulement si la question ouverte n° 4 est tranchée « oui » ; sinon
     rappel périodique de sauvegarde et export en fin de séance.

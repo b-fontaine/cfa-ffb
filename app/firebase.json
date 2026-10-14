@@ -1,0 +1,25 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "animation-billard",
+          "appId": "1:173719719523:android:4cdc0d24ddb101b028f256",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/app/firebase_options.dart": {
+          "projectId": "animation-billard",
+          "configurations": {
+            "android": "1:173719719523:android:4cdc0d24ddb101b028f256",
+            "ios": "1:173719719523:ios:e6a0292df26c332e28f256",
+            "macos": "1:173719719523:ios:e6a0292df26c332e28f256",
+            "web": "1:173719719523:web:da12c9d824c4dca128f256",
+            "windows": "1:173719719523:web:c2060492b5b28bcd28f256"
+          }
+        }
+      }
+    }
+  }
+}

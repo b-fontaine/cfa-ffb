@@ -51,6 +51,7 @@ app/
 │   ├── app/                           # couche app
 │   │   ├── app.dart                   # MaterialApp.router + l10n
 │   │   ├── router.dart                # GoRouter (AppRoutes)
+│   │   ├── firebase_options.dart      # généré par `flutterfire configure` (chemin fixé dans app/firebase.json)
 │   │   └── di/injection.dart          # @InjectableInit → injection.config.dart (généré)
 │   ├── pages/                         # une page par parcours, Bloc fourni par le routeur
 │   │   ├── home/  session_planner/
