@@ -1,6 +1,7 @@
 import 'package:billard_cfa/app/router.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/ui/app_navigation.dart';
+import 'package:billard_cfa/shared/ui/nav_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -38,28 +39,28 @@ class AppShell extends StatelessWidget {
     return AppNavigation(
       destinations: [
         AppDestination(
-          icon: Icons.home_outlined,
-          selectedIcon: Icons.home,
+          icon: const NavIcon(NavGlyph.today),
+          selectedIcon: const NavIcon(NavGlyph.today, selected: true),
           label: l10n.navHome,
         ),
         AppDestination(
-          icon: Icons.groups_outlined,
-          selectedIcon: Icons.groups,
+          icon: const NavIcon(NavGlyph.students),
+          selectedIcon: const NavIcon(NavGlyph.students, selected: true),
           label: l10n.navStudents,
         ),
         AppDestination(
-          icon: Icons.edit_note_outlined,
-          selectedIcon: Icons.edit_note,
+          icon: const NavIcon(NavGlyph.results),
+          selectedIcon: const NavIcon(NavGlyph.results, selected: true),
           label: l10n.navResults,
         ),
         AppDestination(
-          icon: Icons.event_note_outlined,
-          selectedIcon: Icons.event_note,
+          icon: const NavIcon(NavGlyph.sessions),
+          selectedIcon: const NavIcon(NavGlyph.sessions, selected: true),
           label: l10n.navSessions,
         ),
         AppDestination(
-          icon: Icons.save_alt_outlined,
-          selectedIcon: Icons.save_alt,
+          icon: const NavIcon(NavGlyph.more),
+          selectedIcon: const NavIcon(NavGlyph.more, selected: true),
           label: l10n.navBackup,
         ),
       ],

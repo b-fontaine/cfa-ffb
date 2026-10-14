@@ -13,11 +13,12 @@ Widgetbook séparé `widgetbook/`.
 - **Thème évoquant la FFB et le Blackball** : bleu FFB, rouge FFB assombri,
   tapis « bleu poudre », billes rouges/jaunes/noire/blanche, police Exo 2.
 - **Logo FFB** : `assets/images/ffb-logo.png`, exposé par le thème
-  (`BrandAssets`, `AppTheme.light(assetPackage: …)`) et affiché par `FfbLogo`
-  (accueil en grand, en-tête de chaque page en petit et décoratif). Son usage
-  est encadré par la charte graphique de la fédération (contact
-  `site@ffbillard.com`) : l'autorisation d'usage reste à obtenir ou à
-  documenter. L'application se présente comme un outil d'animateur, jamais
+  (`BrandAssets`) et affiché par `FfbLogo`, **éteint par défaut**
+  (`AppTheme.light(showFfbLogo: false)`, [ADR 0010](adr/0010-roles-de-couleur-bleu-tapis-et-accent.md)) :
+  sans logo, rien n'est affiché ni réservé. Son usage est encadré par la
+  charte graphique de la fédération (contact `site@ffbillard.com`) :
+  l'autorisation écrite reste à obtenir ; `showFfbLogo: true` est le seul
+  endroit à rallumer. L'application se présente comme un outil d'animateur, jamais
   comme une application officielle de la fédération.
 - **Un seul jeu de jetons** pour les publics enfants et adultes ; seules la
   densité (`AppTheme.light(density: …)`) et la taille du texte (réglage
@@ -35,7 +36,8 @@ Widgetbook séparé `widgetbook/`.
 |---|---|---|
 | Bleu FFB (`primary` clair) | `#1964af` | **Publié** : charte graphique FFB v1.0 (2015) |
 | Rouge FFB (référence) | `#e10a19` | **Publié** (4,93:1 sur blanc : trop juste pour du texte) |
-| Rouge assombri (`secondary` clair) | `#b80d1a` | Proposition (dérivé du rouge FFB, 6,75:1) |
+| Rouge assombri (`BrandColors.accent` clair) | `#b80d1a` | Proposition (dérivé du rouge FFB, 6,75:1) ; accent de marque hors `ColorScheme` (ADR 0010) |
+| Bleu-tapis des états (`secondary` clair / sombre) | `#2f6b8a` / `#9fcfe8` (conteneurs `#cfe6f3` / `#1f5873`) | Proposition (famille du tapis, ADR 0010) |
 | Autres rôles `ColorScheme`, clair et sombre | voir `app_color_schemes.dart` | **Proposition** (non publiée par la FFB) |
 | Billes : rouge `#d4101e`, jaune `#f2c200`, noire `#111111`, blanche `#ffffff` | `ball_colors.dart` | **Proposition** à valider visuellement par l'animateur |
 | Tapis : `#7fb0cf` (clair), `#2d6a8a` (sombre) | `ball_colors.dart` | **Proposition** : le règlement FFB impose un drap « bleu poudre » sans valeur hexadécimale |
@@ -58,12 +60,18 @@ app/lib/shared/ui/
 ├── theme/
 │   ├── app_color_schemes.dart   # ColorScheme M3 explicite, clair + sombre (pas fromSeed)
 │   ├── ball_colors.dart         # ThemeExtension : billes + tapis
+│   ├── brand_colors.dart        # ThemeExtension : accent de marque (rouge FFB)
 │   ├── status_colors.dart       # ThemeExtension : succès, attention
 │   ├── table_colors.dart        # ThemeExtension : rails, bande, poches, losanges, queue, craie
 │   ├── app_typography.dart      # échelle Exo 2 (axe wght de la police variable)
 │   ├── app_spacing.dart         # AppSpacing (4/8/16/24/32, cible 48) et AppRadii (8/12/16)
 │   └── app_theme.dart           # AppTheme.light() / AppTheme.dark()
+├── nav_icon.dart                # NavIcon : cinq glyphes de navigation (plein / contour)
 ├── score_indicator.dart         # score x/n : pastilles pleines/creuses + texte
+├── pass_dots.dart               # PassDots : n pastilles tapables (pleine = empochée, creuse = manquée) + « x/n »
+├── timer_chip.dart              # TimerChip : minuteur compact, ton neutre / attention / dépassé, lecture-pause
+├── phase_timeline.dart          # PhaseTimeline : frise proportionnelle des phases (minutes), phase courante, tapable
+├── step_app_bar.dart            # StepAppBar : en-tête d'étape (titre, « 6/9 », menu ⋮ d'actions injectées)
 ├── ball_chip.dart               # pastille de bille avec lettre
 ├── table_geometry.dart          # repère table (cases) <-> pixels, poches, rayon de bille
 ├── billiard_table.dart          # table peinte 2:1 + overlay (billes, flèches, queue)
@@ -102,11 +110,96 @@ La police Exo 2 vient de `github.com/google/fonts` (`ofl/exo2`) ; la licence
 OFL est conservée à côté des fichiers et mentionnée dans `app/pubspec.yaml`.
 Pas de téléchargement à l'exécution (Linux, Windows, web hors ligne).
 
+### Rôles de couleur, surfaces et icônes (lot U1, R1 à R3)
+
+[ADR 0010](adr/0010-roles-de-couleur-bleu-tapis-et-accent.md).
+
+| Rôle | Jeton | Usage |
+|---|---|---|
+| État (sélection, puces, segments, pistes) | `secondary` / `secondaryContainer` (bleu-tapis) | indicateur de la navigation, `FilterChip`, `SegmentedButton`, piste de `ProgressMeter`, bord de `SectionCard` forte |
+| Marque | `BrandColors.accent`, `onAccent`, `accentContainer`, `onAccentContainer` (rouge FFB) | ligne d'objectif de `ProgressChart`, badge « Enfants » ; **toujours via un composant** |
+| Statut | `StatusColors` (`success`, `attention`) | réussite, alerte ambrée, ton `attention` de `TimerChip` |
+| Erreur | `error` / `errorContainer` | échec, minuteur dépassé |
+
+- **`BrandColors`** : `ThemeExtension` branchée dans `AppTheme.light` et
+  `AppTheme.dark`. Un écran ne la lit pas directement ; `contrast_test.dart`
+  vérifie chaque paire (≥ 4,5:1).
+- **Surfaces** : `SectionCard.emphasis` (`SectionEmphasis.low` par défaut :
+  `surfaceContainerLow`, sans bord ; `medium` : `surfaceContainer` et bord
+  `outlineVariant` ; `high` : `surfaceContainer` et bord `secondary` de 2 dp,
+  réservée à l'étape courante, à l'élève en cours de saisie, à l'alerte). Le
+  titre reste l'en-tête sémantique : le niveau ne porte jamais seul le sens.
+- **Logo** : `showFfbLogo` (faux par défaut) est le seul interrupteur ; sans
+  logo, `FfbLogo` et `PageHeader` n'affichent ni ne réservent rien.
+- **`NavIcon`** : cinq glyphes (`NavGlyph` : séances, élèves, résultats,
+  aujourd'hui, plus), dessinés par `CustomPainter` sans police d'icônes, à la
+  couleur et à la taille de l'`IconTheme` courant (plein = sélectionné,
+  contour = non sélectionné). Exclu de la sémantique : le libellé de la
+  destination porte le sens. `AppDestination` accepte des widgets d'icône
+  (constructeur `AppDestination.material` pour une `IconData`).
+- Widgetbook : feuille `[Design system]/Thème/Rôles de couleur`
+  (`widgetbook/lib/support/color_roles_sheet.dart`), qui montre côte à côte,
+  en thème clair et sombre, la barre de navigation, une puce et un segment
+  sélectionnés, un compteur, une barre de progression, les trois emphases de
+  `SectionCard`, `BrandColors` et `StatusColors`. Use cases :
+  `nav_icon_use_cases.dart` et `section_card_use_cases.dart` (knob et trois
+  niveaux).
+
+### PassDots et TimerChip (lot U1, R4)
+
+- **`PassDots`** : `value` est la **liste des issues par essai** (ordre des
+  passages conservé pour la saisie en grille, U5) et `total` le nombre
+  d'essais ; les essais absents de `value` sont manqués. Taper la pastille `k`
+  appelle `onChanged` avec la liste complète (longueur `total`) dont l'essai
+  `k` a basculé. États : interactif ; `readOnly` (bilan, fiche élève) ;
+  désactivé (`onChanged == null`, atténué). Cible de 48 dp par pastille, retour
+  à la ligne quand `total` est grand (aucun débordement à 320 dp). Jamais la
+  couleur seule : pleine avec coche ou creuse avec contour (`secondary`,
+  bleu-tapis). Sémantique : un bouton par pastille (« Essai k sur n :
+  empochée / manquée ») dans un conteneur « x sur n empochées ».
+- **`TimerChip`** : reçoit `remaining`, `running` et `onToggle` (aucune
+  minuterie interne). Le ton vient de la fonction pure `timerToneFor` :
+  `neutral` (≥ 1 min, `surfaceContainerHighest`), `attention` (de 0 inclus à
+  1 min exclue, `StatusColors.attention`), `overdue` (< 0,
+  `errorContainer`, temps affiché `+mm:ss`). Une icône accompagne les tons
+  `attention` et `overdue`. La région vive (`liveRegion`) n'existe qu'à ces
+  deux seuils : le lecteur d'écran n'annonce pas chaque seconde.
+- Use cases Widgetbook : `pass_dots_use_cases.dart` (interactif, lecture
+  seule, désactivé, vingt essais) et `timer_chip_use_cases.dart` (interactif
+  avec curseur du temps, neutre, attention, dépassé, en pause).
+
+### PhaseTimeline et StepAppBar (lot U1, R4)
+
+- **`PhaseTimeline`** : `phases` est une liste de `PhaseTimelineEntry`
+  (libellé, minutes ; données du parent, aucune dépendance au domaine),
+  `currentIndex` (à partir de 0) et `onSelected(index)`. Largeur de chaque
+  segment proportionnelle aux minutes, relevée à 48 dp pour rester tapable
+  (le surplus est reparti au prorata sur les autres) ; la frise défile
+  horizontalement si les segments minimaux ne tiennent pas. Phase courante :
+  remplissage `secondaryContainer`, contour de 3 dp et libellé gras (jamais la
+  couleur seule). Libellé tronqué à l'écran, entier dans la sémantique
+  (« Phase 2 sur 5 : entraînement, 35 min, en cours ») et l'infobulle. Prévue
+  pour 3 à 6 phases et des totaux de 90 ou 120 min. Non branchée avant U4 (guide)
+  et U8 (détail).
+- **`StepAppBar`** : `PreferredSizeWidget` de 48 dp. `title` (en-tête
+  sémantique, une ligne, ellipse), `position` / `total` affichés « 6/9 » et
+  annoncés « Étape 6 sur 9 », menu ⋮ construit depuis `actions`
+  (`StepAppBarAction` : libellé, rappel, icône optionnelle ; pas de menu si la
+  liste est vide), bouton `onBack` (flèche) ou `onClose` (croix) optionnel.
+  Aucune logique de guide : libellés et rappels viennent du parent (U4).
+- Use cases Widgetbook : `phase_timeline_use_cases.dart` (interactif adultes,
+  enfants, phases courtes et libellés longs) et `step_app_bar_use_cases.dart`
+  (interactif, bouton fermer sans menu, titre long).
+
 ## Règles d'usage
 
+0. **Une seule action principale par page** : `FilledButton` ; les autres
+   actions sont `OutlinedButton` ou `TextButton` (R2, ADR 0010).
 1. **Jamais de couleur ou de style en dur** dans les écrans : lire
    `Theme.of(context).colorScheme`, `textTheme` et les extensions
-   (`BallColors`, `StatusColors`, `TableColors`).
+   (`BallColors`, `StatusColors`, `TableColors`, `BrandColors`). Les états
+   (sélection, puces, pistes) lisent `secondary` (bleu-tapis) ; le rouge de
+   marque passe par `BrandColors`, jamais directement dans un écran.
 2. **Espacements et rayons** : constantes `AppSpacing` / `AppRadii`.
 3. **Textes** : uniquement via `AppLocalizations` (clés `fr` **et** `en`,
    voir [i18n.md](i18n.md)). Un composant du design system reçoit ses textes

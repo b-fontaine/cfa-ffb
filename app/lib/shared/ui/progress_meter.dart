@@ -33,7 +33,8 @@ class ProgressMeter extends StatelessWidget {
             child: LinearProgressIndicator(
               value: value / maximum,
               minHeight: 8,
-              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+              // La piste n'est jamais rouge : bleu-tapis neutre (ADR 0010).
+              backgroundColor: theme.colorScheme.secondaryContainer,
             ),
           ),
         ),

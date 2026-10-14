@@ -29,15 +29,18 @@ lots fonctionnels. Trois besoins restent sans lot :
 
 | Lot | Contenu | Recommandations | Effort | Dépend de |
 |---|---|---|---|---|
-| **U1** Fondations du design system | ADR 0010 (0008 et 0009 sont prises par les lots 7 et 8) ; rôles de couleur (bleu-tapis en `secondary`, `BrandColors`) ; `SectionCard.emphasis` ; retrait du logo derrière un drapeau ; icônes de navigation ; `PassDots`, `TimerChip`, `PhaseTimeline`, `StepAppBar` avec tests, use cases et feuille Widgetbook « Rôles de couleur » | R1, R2, R3, R4 | M | : |
+| **U1** Fondations du design system (**livré le 2026-10-14**) | ADR 0010 (0008 et 0009 sont prises par les lots 7 et 8) ; rôles de couleur (bleu-tapis en `secondary`, `BrandColors`) ; `SectionCard.emphasis` ; retrait du logo derrière un drapeau ; icônes de navigation ; `PassDots`, `TimerChip`, `PhaseTimeline`, `StepAppBar` avec tests, use cases et feuille Widgetbook « Rôles de couleur » | R1, R2, R3 (partiel), R4 (partiel) ; voir « Hors U1 » en § 4 | M | : |
 | **U2** Lisibilité des schémas | annotations hors trajectoire, halo, queue non coupée, repères à la taille de la blanche, médaillon `inset`, étiquettes ≥ 16 px en présentation ; corrige F2 | R5 | M | : |
 | **U3** Présentation plein écran | `DiagramStage`, plein écran natif, bandeau de légende réservé, flèches latérales, bandeau « tournez l'appareil » ; corrige F1 et le lot 13 | R10 | M | U1, U2 |
 | **U4** Guide en mode « Mener » | route hors shell, `StepAppBar` + `PhaseTimeline`, schéma en premier, sections repliées, badges masqués sauf « Relecture », minuteur en en-tête, barre basse à trois actions ; corrige F3 et le lot 12 | R7, R9 | L | U1 |
-| **U5** Saisie rapide en grille | grille élève × passage avec `PassDots`, sélecteur d'exercice nommé et non tronqué, liste compacte sur téléphone, historique groupé, feuille basse depuis le guide ; corrige F4 | R11 | L | U1 |
+| **U5** Saisie rapide en grille | grille élève × passage avec `PassDots` et `StudentChip`, sélecteur d'exercice nommé et non tronqué, liste compacte sur téléphone, historique groupé, feuille basse depuis le guide ; corrige F4 | R11 | L | U1 |
 | **U6** Navigation recentrée | destinations « Aujourd'hui / Élèves / Résultats / Séances (onglets) / Plus » ; réglages (F8) sous « Plus » ; rappel de sauvegarde | R6, R12 (onglets) | M | U1 |
 | **U7** Accueil « Aujourd'hui » et bilan de fin de séance | `NowCard`, séance en cours, prochaine séance, alertes, semaine, sauvegarde ; écran de bilan à « Terminer » avec proposition de la séance suivante | R8, § 4.4 | L | U6, lots 6 et 8 (livrés : date, groupe, « Résultats saisis », séance suivante) |
 | **U8** Catalogue et détail en mode « Préparer » | hiérarchie des lignes, badge unique de relecture, marqueur de parcours par groupe, `PhaseTimeline` dans le détail, deux colonnes | R12, R13 | M | U1, lot 8 (livré : marqueur) |
 | **U9** Fiche élève, vue élève et vue de groupe | parcours en cases, en-tête « en cours / prochain / alerte », courbes repliées, vue « à montrer à l'élève », heat-map de groupe et assiduité | R14, R15 | M | U1, lot 7 (livré), lot 10 |
+
+Reporté depuis U1 : bille n° 8 et motif de tapis (U7, U3), `StudentChip` (U5),
+`NowCard` (U7), `DiagramStage` (U3).
 
 Chaque lot suit `dev-feature` : scénarios `.feature` d'abord (voir § 4),
 puis TDD, revue `architecte-fsd` + `testeur-bdd` dans un contexte séparé,
@@ -109,7 +112,7 @@ code ; les existants (`session_guide.feature`, `record_results.feature`,
 `navigation.feature`, `student_sheet.feature`, `design_system.feature`) sont
 adaptés plutôt que dupliqués.
 
-**U1**
+**U1** (livré le 2026-10-14, [ADR 0010](../adr/0010-roles-de-couleur-bleu-tapis-et-accent.md))
 
 - `design_system.feature` : « Les états sélectionnés de la navigation, des
   puces et des segments utilisent le conteneur bleu-tapis, dans les deux
@@ -117,6 +120,15 @@ adaptés plutôt que dupliqués.
   « Le logo FFB n'est pas affiché quand le thème ne porte pas de ressource de
   marque » ; « Une pastille de `PassDots` tapée bascule et le texte x/n suit ».
 - `contrast_test.dart` étendu à `BrandColors`.
+
+*Hors U1 / reporté* (livré en partie : R3 et R4 ne sont pas complets) :
+
+- R3, signe de l'application en bille n° 8 (icône d'application, en-tête de
+  l'accueil, état vide) : **U7** (accueil, état vide).
+- R3, motif de tapis (`BallColors.cloth` à 6 %, grille 8 × 4) : **U7** (en-tête
+  de l'accueil) et **U3** (mode présentation).
+- R4, `StudentChip` : **U5** (grille de saisie) ; `NowCard` : **U7** ;
+  `DiagramStage` : **U3**.
 
 **U2**
 

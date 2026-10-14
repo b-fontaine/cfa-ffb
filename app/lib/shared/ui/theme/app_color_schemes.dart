@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 ///
 /// Bleu `#1964af` : couleur du logotype de la FFB (charte graphique v1.0).
 /// Rouge `#b80d1a` : rouge FFB `#e10a19` assombri pour atteindre 4,5:1 en
-/// texte. Les autres valeurs (conteneurs, surfaces) sont des **propositions**
-/// non publiées par la FFB ; chaque paire est vérifiée par le test de
-/// contraste.
+/// texte ; il n'est **pas** dans ce schéma mais dans `BrandColors` (ADR 0010).
+/// `secondary` porte les états (sélection, puces, pistes) dans la famille du
+/// tapis bleu poudre ; `tertiary` reste dans la même famille. Les autres
+/// valeurs (conteneurs, surfaces) sont des **propositions** non publiées par
+/// la FFB ; chaque paire est vérifiée par le test de contraste.
 abstract final class AppColorSchemes {
   static const light = ColorScheme(
     brightness: Brightness.light,
@@ -14,10 +16,10 @@ abstract final class AppColorSchemes {
     onPrimary: Color(0xFFFFFFFF),
     primaryContainer: Color(0xFFD6E6F7),
     onPrimaryContainer: Color(0xFF0D3258),
-    secondary: Color(0xFFB80D1A),
+    secondary: Color(0xFF2F6B8A),
     onSecondary: Color(0xFFFFFFFF),
-    secondaryContainer: Color(0xFFFDDAD7),
-    onSecondaryContainer: Color(0xFF5C0008),
+    secondaryContainer: Color(0xFFCFE6F3),
+    onSecondaryContainer: Color(0xFF0B2F40),
     tertiary: Color(0xFF2F6B8A),
     onTertiary: Color(0xFFFFFFFF),
     tertiaryContainer: Color(0xFFCFE6F3),
@@ -52,10 +54,10 @@ abstract final class AppColorSchemes {
     onPrimary: Color(0xFF08284A),
     primaryContainer: Color(0xFF134B83),
     onPrimaryContainer: Color(0xFFD6E6F7),
-    secondary: Color(0xFFFFB3AD),
-    onSecondary: Color(0xFF5C0008),
-    secondaryContainer: Color(0xFF8C0012),
-    onSecondaryContainer: Color(0xFFFFDAD6),
+    secondary: Color(0xFF9FCFE8),
+    onSecondary: Color(0xFF0B2F40),
+    secondaryContainer: Color(0xFF1F5873),
+    onSecondaryContainer: Color(0xFFCFE6F3),
     tertiary: Color(0xFF9FCFE8),
     onTertiary: Color(0xFF0B2F40),
     tertiaryContainer: Color(0xFF1F5873),

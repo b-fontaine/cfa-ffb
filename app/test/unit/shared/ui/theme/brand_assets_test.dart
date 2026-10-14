@@ -11,21 +11,27 @@ void main() {
     'light': AppTheme.light,
     'dark': AppTheme.dark,
   }.entries) {
-    test('the ${entry.key} theme carries the FFB logo', () {
+    test('the ${entry.key} theme carries no logo by default', () {
       final assets = entry.value().extension<BrandAssets>()!;
 
-      expect(assets.logo.assetName, 'assets/images/ffb-logo.png');
-      expect(assets.logo.package, isNull);
+      expect(assets.logo, isNull);
+    });
+
+    test('the ${entry.key} theme carries the FFB logo once enabled', () {
+      final assets = entry.value(showFfbLogo: true).extension<BrandAssets>()!;
+
+      expect(assets.logo!.assetName, 'assets/images/ffb-logo.png');
+      expect(assets.logo!.package, isNull);
     });
 
     test('the ${entry.key} theme resolves the logo from a host package', () {
       final assets = entry
-          .value(assetPackage: 'billard_cfa')
+          .value(assetPackage: 'billard_cfa', showFfbLogo: true)
           .extension<BrandAssets>()!;
 
-      expect(assets.logo.package, 'billard_cfa');
+      expect(assets.logo!.package, 'billard_cfa');
       expect(
-        assets.logo.keyName,
+        assets.logo!.keyName,
         'packages/billard_cfa/assets/images/ffb-logo.png',
       );
     });
@@ -36,7 +42,7 @@ void main() {
     const other = BrandAssets(logo: AssetImage('b.png'));
 
     expect(
-      base.copyWith(logo: const AssetImage('c.png')).logo.assetName,
+      base.copyWith(logo: const AssetImage('c.png')).logo!.assetName,
       'c.png',
     );
     expect(base.copyWith(), base);

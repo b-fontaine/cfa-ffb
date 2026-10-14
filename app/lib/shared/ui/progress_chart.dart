@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
+import 'package:billard_cfa/shared/ui/theme/brand_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Un essai de la courbe : billes empochées et objectif atteint ou non.
@@ -50,6 +51,11 @@ class ProgressChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final brand =
+        theme.extension<BrandColors>() ??
+        (scheme.brightness == Brightness.dark
+            ? BrandColors.dark
+            : BrandColors.light);
     final labelStyle = theme.textTheme.labelSmall?.copyWith(
       color: scheme.onSurfaceVariant,
     );
@@ -69,7 +75,7 @@ class ProgressChart extends StatelessWidget {
             axisLabelY: axisLabelY,
             targetLabel: targetLabel,
             lineColor: scheme.primary,
-            targetColor: scheme.secondary,
+            targetColor: brand.accent,
             axisColor: scheme.outline,
             gridColor: scheme.outlineVariant,
             fillColor: scheme.surface,

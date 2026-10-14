@@ -1,5 +1,6 @@
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
+import 'package:billard_cfa/shared/ui/theme/brand_colors.dart';
 import 'package:flutter/material.dart';
 
 /// Public d'une séance, côté interface (indépendant du domaine).
@@ -16,10 +17,15 @@ class AudienceBadge extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
+    final brand =
+        theme.extension<BrandColors>() ??
+        (scheme.brightness == Brightness.dark
+            ? BrandColors.dark
+            : BrandColors.light);
     final (background, foreground, icon, label) = switch (kind) {
       AudienceKind.children => (
-        scheme.secondaryContainer,
-        scheme.onSecondaryContainer,
+        brand.accentContainer,
+        brand.onAccentContainer,
         Icons.child_care,
         l10n.audienceChildren,
       ),

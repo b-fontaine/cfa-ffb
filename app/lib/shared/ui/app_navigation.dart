@@ -3,6 +3,9 @@ import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
 /// Une destination de la navigation principale.
+///
+/// Les icônes sont des widgets (glyphes dédiés, `NavIcon`) ;
+/// `AppDestination.material` garde le cas simple d'une icône Material.
 @immutable
 class AppDestination {
   const AppDestination({
@@ -11,8 +14,15 @@ class AppDestination {
     required this.label,
   });
 
-  final IconData icon;
-  final IconData selectedIcon;
+  AppDestination.material({
+    required IconData icon,
+    required IconData selectedIcon,
+    required this.label,
+  }) : icon = Icon(icon),
+       selectedIcon = Icon(selectedIcon);
+
+  final Widget icon;
+  final Widget selectedIcon;
   final String label;
 }
 
@@ -57,8 +67,8 @@ class AppNavigation extends StatelessWidget {
                       destinations: [
                         for (final destination in destinations)
                           NavigationRailDestination(
-                            icon: Icon(destination.icon),
-                            selectedIcon: Icon(destination.selectedIcon),
+                            icon: destination.icon,
+                            selectedIcon: destination.selectedIcon,
                             label: Text(destination.label),
                           ),
                       ],
@@ -83,8 +93,8 @@ class AppNavigation extends StatelessWidget {
               destinations: [
                 for (final destination in destinations)
                   NavigationDestination(
-                    icon: Icon(destination.icon),
-                    selectedIcon: Icon(destination.selectedIcon),
+                    icon: destination.icon,
+                    selectedIcon: destination.selectedIcon,
                     label: destination.label,
                   ),
               ],

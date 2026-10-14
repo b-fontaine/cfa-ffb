@@ -156,6 +156,114 @@
       }
     }
   },
+  "passDotsPocketed": "Essai {index} sur {total} : empochée",
+  "@passDotsPocketed": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "passDotsMissed": "Essai {index} sur {total} : manquée",
+  "@passDotsMissed": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "passDotsSummary": "{score} empochées sur {total}",
+  "@passDotsSummary": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "timerRemaining": "Temps restant : {time}",
+  "@timerRemaining": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "timerOverdue": "Temps dépassé de {time}",
+  "@timerOverdue": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "timerLiveAttention": "Moins d’une minute restante",
+  "timerLiveOverdue": "Temps écoulé",
+  "timerStart": "Démarrer le minuteur",
+  "timerPause": "Mettre le minuteur en pause",
+  "phaseTimelineLabel": "Phases de la séance, {minutes} min",
+  "@phaseTimelineLabel": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "phaseTimelinePhase": "Phase {index} sur {total} : {label}, {minutes} min",
+  "@phaseTimelinePhase": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "phaseTimelinePhaseCurrent": "Phase {index} sur {total} : {label}, {minutes} min, en cours",
+  "@phaseTimelinePhaseCurrent": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stepAppBarPosition": "Étape {position} sur {total}",
+  "@stepAppBarPosition": {
+    "placeholders": {
+      "position": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "stepAppBarMenu": "Plus d’actions",
+  "stepAppBarClose": "Fermer",
   "alertAttention": "Attention",
   "alertPersistent": "À traiter",
   "plannerFormTitle": "Nouvelle séance",

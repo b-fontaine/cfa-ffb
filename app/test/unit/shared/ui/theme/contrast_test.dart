@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:billard_cfa/shared/ui/theme/app_color_schemes.dart';
 import 'package:billard_cfa/shared/ui/theme/ball_colors.dart';
+import 'package:billard_cfa/shared/ui/theme/brand_colors.dart';
 import 'package:billard_cfa/shared/ui/theme/status_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,46 +27,64 @@ double contrast(Color a, Color b) {
 
 typedef _Pair = (String, Color, Color);
 
-List<_Pair> _textPairs(ColorScheme s, BallColors balls, StatusColors status) =>
-    [
-      ('primary', s.primary, s.onPrimary),
-      ('primaryContainer', s.primaryContainer, s.onPrimaryContainer),
-      ('secondary', s.secondary, s.onSecondary),
-      ('secondaryContainer', s.secondaryContainer, s.onSecondaryContainer),
-      ('tertiary', s.tertiary, s.onTertiary),
-      ('tertiaryContainer', s.tertiaryContainer, s.onTertiaryContainer),
-      ('error', s.error, s.onError),
-      ('errorContainer', s.errorContainer, s.onErrorContainer),
-      ('surface', s.surface, s.onSurface),
-      ('surface/variant', s.surface, s.onSurfaceVariant),
-      ('surfaceContainerLowest', s.surfaceContainerLowest, s.onSurface),
-      ('surfaceContainerLow', s.surfaceContainerLow, s.onSurface),
-      ('surfaceContainer', s.surfaceContainer, s.onSurface),
-      ('surfaceContainerHigh', s.surfaceContainerHigh, s.onSurface),
-      ('surfaceContainerHighest', s.surfaceContainerHighest, s.onSurface),
-      (
-        'surfaceContainerHighest/variant',
-        s.surfaceContainerHighest,
-        s.onSurfaceVariant,
-      ),
-      ('inverseSurface', s.inverseSurface, s.onInverseSurface),
-      ('success', status.success, status.onSuccess),
-      ('attention', status.attention, status.onAttention),
-      ('ball red', balls.red, balls.onRed),
-      ('ball yellow', balls.yellow, balls.onYellow),
-      ('ball black', balls.black, balls.onBlack),
-      ('ball white', balls.white, balls.onWhite),
-      ('cloth', balls.cloth, balls.onCloth),
-    ];
+List<_Pair> _textPairs(
+  ColorScheme s,
+  BallColors balls,
+  StatusColors status,
+  BrandColors brand,
+) => [
+  ('primary', s.primary, s.onPrimary),
+  ('primaryContainer', s.primaryContainer, s.onPrimaryContainer),
+  ('secondary', s.secondary, s.onSecondary),
+  ('secondaryContainer', s.secondaryContainer, s.onSecondaryContainer),
+  ('tertiary', s.tertiary, s.onTertiary),
+  ('tertiaryContainer', s.tertiaryContainer, s.onTertiaryContainer),
+  ('error', s.error, s.onError),
+  ('errorContainer', s.errorContainer, s.onErrorContainer),
+  ('surface', s.surface, s.onSurface),
+  ('surface/variant', s.surface, s.onSurfaceVariant),
+  ('surfaceContainerLowest', s.surfaceContainerLowest, s.onSurface),
+  ('surfaceContainerLow', s.surfaceContainerLow, s.onSurface),
+  ('surfaceContainer', s.surfaceContainer, s.onSurface),
+  ('surfaceContainerHigh', s.surfaceContainerHigh, s.onSurface),
+  ('surfaceContainerHighest', s.surfaceContainerHighest, s.onSurface),
+  (
+    'surfaceContainerHighest/variant',
+    s.surfaceContainerHighest,
+    s.onSurfaceVariant,
+  ),
+  ('inverseSurface', s.inverseSurface, s.onInverseSurface),
+  ('success', status.success, status.onSuccess),
+  ('brand accent', brand.accent, brand.onAccent),
+  ('brand accentContainer', brand.accentContainer, brand.onAccentContainer),
+  ('brand accent on surface', s.surface, brand.accent),
+  ('attention', status.attention, status.onAttention),
+  ('ball red', balls.red, balls.onRed),
+  ('ball yellow', balls.yellow, balls.onYellow),
+  ('ball black', balls.black, balls.onBlack),
+  ('ball white', balls.white, balls.onWhite),
+  ('cloth', balls.cloth, balls.onCloth),
+];
 
 void main() {
-  final schemes = <String, (ColorScheme, BallColors, StatusColors)>{
-    'light': (AppColorSchemes.light, BallColors.light, StatusColors.light),
-    'dark': (AppColorSchemes.dark, BallColors.dark, StatusColors.dark),
-  };
+  final schemes =
+      <String, (ColorScheme, BallColors, StatusColors, BrandColors)>{
+        'light': (
+          AppColorSchemes.light,
+          BallColors.light,
+          StatusColors.light,
+          BrandColors.light,
+        ),
+        'dark': (
+          AppColorSchemes.dark,
+          BallColors.dark,
+          StatusColors.dark,
+          BrandColors.dark,
+        ),
+      };
 
   for (final entry in schemes.entries) {
-    final (scheme, balls, status) = entry.value;
+    final (scheme, balls, status, brand) = entry.value;
 
     test('${entry.key}: every text pair reaches WCAG AA (4.5:1)', () {
       final failures = <String>[
@@ -73,6 +92,7 @@ void main() {
           scheme,
           balls,
           status,
+          brand,
         ))
           if (contrast(background, foreground) < 4.5)
             '$name = ${contrast(background, foreground).toStringAsFixed(2)}',

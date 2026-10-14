@@ -46,7 +46,6 @@ revues séparées, `check.sh --full`).
 
 | Lot | Contenu | Remplace / corrige |
 |---|---|---|
-| **U1** Fondations du design system | ADR 0010 (le numéro 0008 est pris par le positionnement initial, 0009 par la suggestion ↔ catalogue) : bleu-tapis en `secondary`, rouge FFB en accent (`BrandColors`) ; `SectionCard.emphasis` ; logo FFB derrière un drapeau (ADR 0002, décision 5) ; icônes de navigation ; composants `PassDots`, `TimerChip`, `PhaseTimeline`, `StepAppBar` | états « sélectionné » roses, piste rouge en sombre |
 | **U2** Lisibilité des schémas | annotations hors trajectoire, halo, queue non coupée, repères à la taille de la blanche, médaillon `inset` (quantité de bille), étiquettes ≥ 16 px en présentation | F2 |
 | **U3** Présentation plein écran | `DiagramStage` (table sur la plus grande dimension, légende réservée, contrôles en barre basse), plein écran natif, « tournez l'appareil » | F1, lot 13 |
 | **U4** Guide en mode « Mener » | route hors shell, en-tête compact + frise des phases, schéma en premier, sections repliées, badges de provenance masqués sauf mode « Relecture », minuteur en en-tête, barre basse Précédent / Noter / Suivant | F3, lot 12 |
@@ -78,10 +77,15 @@ revues séparées, `check.sh --full`).
 
 Lots UX en H0 :
 
-- **U1** Fondations du design system : prérequis de tout nouvel écran, sans
-  dépendance fonctionnelle. Les lots 7 et 8 ont été livrés avant lui : les
-  écrans qu'ils ont touchés (fiche élève, séance suggérée) seront repris par
-  U9 et U8, qui absorbent cette reprise.
+- ~~**U1** Fondations du design system~~ : **livré le 2026-10-14**,
+  [ADR 0010](adr/0010-roles-de-couleur-bleu-tapis-et-accent.md) (bleu-tapis
+  en `secondary`, `BrandColors`, `SectionCard.emphasis`, logo derrière
+  `showFfbLogo`, icônes de navigation, `PassDots`, `TimerChip`,
+  `PhaseTimeline`, `StepAppBar`, feuille Widgetbook « Rôles de couleur »).
+  Reporté hors U1 : bille n° 8 et motif de tapis (U7, U3), `StudentChip`
+  (U5), `NowCard` (U7), `DiagramStage` (U3).
+  Les écrans touchés par les lots 7 et 8 (fiche élève, séance suggérée) seront
+  repris par U9 et U8.
 - **U2** Lisibilité des schémas : court, sans dépendance, au cœur de la
   précision pédagogique.
 
@@ -185,14 +189,14 @@ Lots UX en H0 :
 ## Ordre recommandé
 
 ```
-H0 : U1 → U2 → F7 → revue T8 → réaliser D5 (les questions ouvertes sont tranchées)
+H0 : U2 → F7 → revue T8 → réaliser D5 (les questions ouvertes sont tranchées)
 H1 : U5 → U6 → 9 → U7 → 10 + U9 + U8 → 11   (5 à 8 livrés)
 H2 : U4 → U3 → 14 → 15
 H3 : 16 (avec le mode Relecture de U4) → 17 → 18 → 19 → 20
 H4 : 21 → 22 (+ rappels) → 23
 ```
 
-U1 d'abord parce que tout en dépend et qu'il n'a aucune dépendance ; U5 tôt
+U1 (livré) a posé les fondations dont tout dépend ; U5 tôt
 parce que la saisie est l'action quotidienne et que le lot 6 (livré) lui
 fournit groupe, date et séance du catalogue ; les lots 7 et 8 sont livrés
 (ADR 0008 et 0009), U7 a donc déjà toutes les données qu'il affiche et U8

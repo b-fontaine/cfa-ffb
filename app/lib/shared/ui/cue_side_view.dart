@@ -356,7 +356,7 @@ class _ScenePainter extends CustomPainter {
       topRight: Radius.circular(handWidth / 2),
     );
     canvas
-      ..drawRRect(hand, Paint()..color = scheme.secondaryContainer)
+      ..drawRRect(hand, Paint()..color = scheme.surfaceContainerLowest)
       ..drawRRect(hand, outline);
   }
 
