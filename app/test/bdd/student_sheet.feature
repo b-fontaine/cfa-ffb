@@ -31,6 +31,18 @@ Feature: Student sheet
     And I see {'La puissance, exercise 2'} text
     And I see {'Last pass missed'} text
 
+  # Assiduité (ADR 0006) : séances des groupes de l'élève aux dates où il en
+  # est membre ; Léa n'était présente qu'à la sienne, pas à celle de Hugo.
+  Scenario: Attendance counts the sessions of the group
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the club has the student {'Hugo'} in the {'children'} audience
+    And {'Léa'} has {2} successful passes on {'puissance 1'}
+    And {'Hugo'} has {1} successful passes on {'puissance 1'}
+    And the app is running
+    When I open the sheet of {'Léa'}
+    Then I see {'Attendance'} text
+    And I see {'Present at 1 session of 2'} text
+
   Scenario: A student sheet opens from its direct link
     Given the club has the student {'Léa'} in the {'adults'} audience
     And the app is running

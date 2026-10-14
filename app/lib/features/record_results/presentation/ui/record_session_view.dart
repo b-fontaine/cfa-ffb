@@ -1,12 +1,12 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
+import 'package:billard_cfa/features/record_results/presentation/ui/attempt_history.dart';
 import 'package:billard_cfa/features/record_results/presentation/ui/pass_entry_card.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/ui/exercise_title.dart' as title;
 import 'package:billard_cfa/shared/ui/failure_message.dart';
-import 'package:billard_cfa/shared/ui/section_card.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,7 +49,6 @@ class RecordSessionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     final overview = state.overview!;
     final exercise = state.exercise!;
     final catalogue = overview.catalogue;
@@ -109,31 +108,7 @@ class RecordSessionView extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
         ],
-        SectionCard(
-          title: l10n.recordHistory,
-          child: overview.attempts.isEmpty
-              ? Text(l10n.recordHistoryEmpty)
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (final attempt in overview.attempts)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 2),
-                        child: Text(
-                          l10n.recordHistoryRow(
-                            overview.students
-                                .firstWhere((s) => s.id == attempt.studentId)
-                                .firstName,
-                            _title(l10n, catalogue, attempt.exercise),
-                            attempt.potted,
-                            attempt.total,
-                          ),
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                  ],
-                ),
-        ),
+        AttemptHistory(state: state),
       ],
     );
   }

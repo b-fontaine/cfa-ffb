@@ -15,5 +15,5 @@
 
 - Placement FSD : entités `exercise_catalog`, `exercise_result`, `student`, `season`, `group`, `session_record`, `maturity_assessment` ; features `record_results`, `suggest_session`, `assess_maturity`, `change_audience`, `track_progress` ; noyau partagé Dart pur dans `shared/lib` (voir `architecture.md`).
 - Écart assumé : les passages (`ExerciseAttempt`) sont stockés à part de `SessionRecord` (ils portent `sessionId`) ; le plafond de 2 passages par exercice et par séance est vérifié par `RecordAttempt`.
-- Non implémenté : acquittement explicite d'une alerte, `birthYear` facultatif (données minimales), note de jeu de la séance, vues de groupe (carte de chaleur, assiduité).
+- Non implémenté : acquittement explicite d'une alerte, `birthYear` facultatif (données minimales), note de jeu de la séance, vues de groupe (carte de chaleur, assiduité du groupe). L'assiduité par élève, l'historique des séances saisies et la correction des passages sont livrés par l'[ADR 0006](0006-historique-et-correction-des-passages.md).
 - La persistance drift et le test de contrat commun aux implémentations de repository sont en place (ADR 0001, `test/contract/`).

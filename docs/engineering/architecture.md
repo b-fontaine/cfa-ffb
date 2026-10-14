@@ -119,8 +119,19 @@ widgetbook/                            # projet séparé : catalogue du design s
 - **Routage** : `go_router` (`app/router.dart`, `AppRoutes`). Chaque élève a une
   adresse (`/students/:studentId`, `…/edit`, `…/assessment`), de même qu'une séance
   saisie (`/record/:sessionId`) et une fiche source (`/exercises/:blockId/:number`).
-  La barre de navigation (smartphone) devient un rail dès 720 px
+  `/record` est l'**historique** des séances saisies (ADR 0006) ; l'ouverture
+  d'une nouvelle saisie est `/record/new` (déclarée avant `/record/:sessionId`,
+  comme `/students/new`), avec les paramètres des liens profonds (`main`,
+  `recall`, `exercise`, `from`, `group`, `absent`, `date`). La barre de
+  navigation (smartphone) devient un rail dès 720 px
   (`shared/ui/app_navigation.dart`).
+- **Historique et correction des passages** (ADR 0006) : `ListRecordedSessions`
+  (`features/record_results/domain`) résume chaque séance ; `CorrectAttempt`
+  remplace un passage en place (`AttemptRepository.add` est idempotent) et
+  `DeleteAttempt` le supprime puis renumérote les `passIndex` restants du même
+  élève, exercice et séance dans une `UnitOfWork`. Aucune méthode ajoutée aux
+  ports. L'assiduité (`attendanceOf`, `features/track_progress/domain`) est une
+  fonction pure sur les séances et les appartenances aux groupes.
 - **Pages** (couche `pages`) : composent des Bloc fournis par le routeur et des vues
   de `features/*/presentation/ui` ; elles ne contiennent aucune règle métier ni
   `StatefulWidget` : la sélection du groupe et des présents vit dans

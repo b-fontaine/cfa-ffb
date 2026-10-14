@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
+import 'package:billard_cfa/features/track_progress/domain/attendance.dart';
 import 'package:billard_cfa/features/track_progress/domain/block_progress.dart';
 import 'package:billard_cfa/features/track_progress/domain/get_student_sheet.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
@@ -23,6 +24,7 @@ void main() {
       world.students,
       world.attempts,
       world.sessions,
+      world.groups,
       world.assessments,
       world.catalogueRepository,
       world.config,
@@ -145,6 +147,15 @@ void main() {
 
     expect(result.nextExercise, isNull);
     expect(result.report.validatedCount, 9);
+  });
+
+  test('reports the attendance over the sessions of the group', () async {
+    await world.session(id: 'x2', dayOfMonth: 4, present: const {});
+    await world.session(id: 'x3', dayOfMonth: 6);
+
+    final result = ok(await sheet(student));
+
+    expect(result.report.attendance, const Attendance(attended: 2, total: 3));
   });
 
   test('refuses an unknown student', () async {

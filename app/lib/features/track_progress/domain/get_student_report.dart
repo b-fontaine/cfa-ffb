@@ -1,7 +1,9 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
+import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
+import 'package:billard_cfa/features/track_progress/domain/attendance.dart';
 import 'package:billard_cfa/features/track_progress/domain/block_progress.dart';
 import 'package:billard_cfa/features/track_progress/domain/student_report.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
@@ -15,12 +17,14 @@ class GetStudentReport {
   GetStudentReport(
     this._attempts,
     this._sessions,
+    this._groups,
     this._catalogue,
     this._config,
   );
 
   final AttemptRepository _attempts;
   final SessionRecordRepository _sessions;
+  final GroupRepository _groups;
   final CatalogueRepository _catalogue;
   final RulesConfig _config;
 
@@ -53,6 +57,11 @@ class GetStudentReport {
               ),
           ],
           activeAlerts: progress.activeAlerts,
+          attendance: attendanceOf(
+            studentId: studentId,
+            sessions: await _sessions.all(),
+            groups: await _groups.all(),
+          ),
         );
       });
 }

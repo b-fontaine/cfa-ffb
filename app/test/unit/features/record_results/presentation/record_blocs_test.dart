@@ -2,6 +2,8 @@ import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dar
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
+import 'package:billard_cfa/features/record_results/domain/correct_attempt.dart';
+import 'package:billard_cfa/features/record_results/domain/delete_attempt.dart';
 import 'package:billard_cfa/features/record_results/domain/get_session_overview.dart';
 import 'package:billard_cfa/features/record_results/domain/open_or_resume_session.dart';
 import 'package:billard_cfa/features/record_results/domain/record_attempt.dart';
@@ -25,10 +27,15 @@ class _MockGetSessionOverview extends Mock implements GetSessionOverview;
 
 class _MockRecordAttempt extends Mock implements RecordAttempt;
 
+class _MockCorrectAttempt extends Mock implements CorrectAttempt;
+
+class _MockDeleteAttempt extends Mock implements DeleteAttempt;
+
 void main() {
   setUpAll(() {
     registerFallbackValue(const SessionId('x'));
     registerFallbackValue(const StudentId('s'));
+    registerFallbackValue(const AttemptId('a'));
     registerFallbackValue(ref('a', 1));
   });
 
@@ -157,12 +164,18 @@ void main() {
       );
     }
 
+    late _MockCorrectAttempt correct;
+    late _MockDeleteAttempt delete;
+
     setUp(() {
       overview = _MockGetSessionOverview();
       record = _MockRecordAttempt();
+      correct = _MockCorrectAttempt();
+      delete = _MockDeleteAttempt();
     });
 
-    RecordResultsBloc build() => RecordResultsBloc(overview, record);
+    RecordResultsBloc build() =>
+        RecordResultsBloc(overview, record, correct, delete);
 
     blocTest<RecordResultsBloc, RecordResultsState>(
       'starts on the first exercise of the catalogue',
@@ -399,6 +412,198 @@ void main() {
         ),
       ],
     );
+
+    group('correction of a pass (ADR 0006)', () {
+      final before = attempt(ref('a', 1), potted: 2);
+      final after = attempt(ref('a', 1), potted: 4);
+      final seeded = RecordResultsState(
+        status: RecordStatus.ready,
+        overview: overviewOf(attempts: [before]),
+        exercise: ref('a', 1),
+        feedback: {studentId: recordedOf(before)},
+        refused: const {
+          studentId: InvariantViolation(InvariantCode.passesLimitReached),
+        },
+        attemptRefused: const InvariantViolation(InvariantCode.totalBelowSheet),
+      );
+
+      blocTest<RecordResultsBloc, RecordResultsState>(
+        'corrects a pass, refreshes the session and clears the feedback',
+        build: () {
+          when(
+            () => correct(
+              sessionId: sessionId,
+              attemptId: const AttemptId('a1'),
+              potted: 4,
+              total: 5,
+            ),
+          ).thenAnswer((_) async => Ok(after));
+          when(() => overview(sessionId))
+              .thenAnswer((_) async => Ok(overviewOf(attempts: [after])));
+          return build();
+        },
+        seed: () => seeded,
+        act: (bloc) => bloc.add(
+          const RecordResultsEvent.attemptCorrected(
+            attemptId: AttemptId('a1'),
+            potted: 4,
+            total: 5,
+          ),
+        ),
+        expect: () => [
+          RecordResultsState(
+            status: RecordStatus.ready,
+            overview: overviewOf(attempts: [after]),
+            exercise: ref('a', 1),
+            attemptChange: AttemptChange.corrected(attempt: after),
+          ),
+        ],
+      );
+
+      blocTest<RecordResultsBloc, RecordResultsState>(
+        'shows why a correction is refused and keeps the session',
+        build: () {
+          when(
+            () => correct(
+              sessionId: sessionId,
+              attemptId: const AttemptId('a1'),
+              potted: 4,
+              total: 5,
+            ),
+          ).thenAnswer(
+            (_) async =>
+                const Err(InvariantViolation(InvariantCode.pottedExceedsTotal)),
+          );
+          return build();
+        },
+        seed: () => seeded.copyWith(
+          attemptChange: AttemptChange.corrected(attempt: before),
+        ),
+        act: (bloc) => bloc.add(
+          const RecordResultsEvent.attemptCorrected(
+            attemptId: AttemptId('a1'),
+            potted: 4,
+            total: 5,
+          ),
+        ),
+        expect: () => [
+          seeded.copyWith(
+            attemptChange: null,
+            attemptRefused: const InvariantViolation(
+              InvariantCode.pottedExceedsTotal,
+            ),
+          ),
+        ],
+        verify: (_) => verifyNever(() => overview(any())),
+      );
+
+      blocTest<RecordResultsBloc, RecordResultsState>(
+        'deletes a pass, refreshes the session and clears the feedback',
+        build: () {
+          when(
+            () =>
+                delete(sessionId: sessionId, attemptId: const AttemptId('a1')),
+          ).thenAnswer((_) async => const Ok(null));
+          when(() => overview(sessionId))
+              .thenAnswer((_) async => Ok(overviewOf()));
+          return build();
+        },
+        seed: () => seeded,
+        act: (bloc) => bloc.add(
+          const RecordResultsEvent.attemptDeleted(attemptId: AttemptId('a1')),
+        ),
+        expect: () => [
+          RecordResultsState(
+            status: RecordStatus.ready,
+            overview: overviewOf(),
+            exercise: ref('a', 1),
+            attemptChange: const AttemptChange.deleted(),
+          ),
+        ],
+      );
+
+      blocTest<RecordResultsBloc, RecordResultsState>(
+        'shows why a deletion is refused',
+        build: () {
+          when(
+            () =>
+                delete(sessionId: sessionId, attemptId: const AttemptId('a1')),
+          ).thenAnswer((_) async => const Err(NotFound('attempt', 'a1')));
+          return build();
+        },
+        seed: () => seeded.copyWith(attemptRefused: null),
+        act: (bloc) => bloc.add(
+          const RecordResultsEvent.attemptDeleted(attemptId: AttemptId('a1')),
+        ),
+        expect: () => [
+          seeded.copyWith(attemptRefused: const NotFound('attempt', 'a1')),
+        ],
+      );
+
+      blocTest<RecordResultsBloc, RecordResultsState>(
+        'a new pass clears the last change',
+        build: () {
+          when(
+            () => record(
+              sessionId: sessionId,
+              studentId: studentId,
+              exercise: ref('a', 1),
+              potted: 4,
+              total: 5,
+            ),
+          ).thenAnswer((_) async => Ok(recordedOf(after)));
+          when(() => overview(sessionId))
+              .thenAnswer((_) async => Ok(overviewOf(attempts: [after])));
+          return build();
+        },
+        seed: () =>
+            seeded.copyWith(attemptChange: const AttemptChange.deleted()),
+        act: (bloc) => bloc.add(
+          const RecordResultsEvent.passSubmitted(
+            studentId: studentId,
+            potted: 4,
+            total: 5,
+          ),
+        ),
+        verify: (bloc) {
+          expect(bloc.state.attemptChange, isNull);
+          expect(bloc.state.attemptRefused, isNull);
+        },
+      );
+
+      blocTest<RecordResultsBloc, RecordResultsState>(
+        'ignores a change before the session is loaded',
+        build: build,
+        act: (bloc) => bloc
+          ..add(
+            const RecordResultsEvent.attemptCorrected(
+              attemptId: AttemptId('a1'),
+              potted: 4,
+              total: 5,
+            ),
+          )
+          ..add(
+            const RecordResultsEvent.attemptDeleted(attemptId: AttemptId('a1')),
+          ),
+        expect: () => <RecordResultsState>[],
+        verify: (_) {
+          verifyNever(
+            () => correct(
+              sessionId: any(named: 'sessionId'),
+              attemptId: any(named: 'attemptId'),
+              potted: any(named: 'potted'),
+              total: any(named: 'total'),
+            ),
+          );
+          verifyNever(
+            () => delete(
+              sessionId: any(named: 'sessionId'),
+              attemptId: any(named: 'attemptId'),
+            ),
+          );
+        },
+      );
+    });
 
     blocTest<RecordResultsBloc, RecordResultsState>(
       'ignores a pass before the session is loaded',

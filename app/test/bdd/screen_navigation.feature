@@ -6,7 +6,7 @@ Feature: Leaving a screen
   Scenario: The date of the record is changed to the exact day chosen
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running
-    When I go to the address {'/record'}
+    When I go to the address {'/record/new'}
     Then I see text containing {'Oct 12'}
     When I tap {'Change the date'} text
     And I pick the day {5} in the date picker
@@ -16,7 +16,7 @@ Feature: Leaving a screen
   Scenario: The record opens on the date and the group of the guided session
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running
-    When I go to the address {'/record?main=demi-bille&exercise=1&date=2026-10-05&from=%2Fcatalogue%2Fdemi-bille-1%2Fguide%3Fstep%3D5'}
+    When I go to the address {'/record/new?main=demi-bille&exercise=1&date=2026-10-05&from=%2Fcatalogue%2Fdemi-bille-1%2Fguide%3Fstep%3D5'}
     Then I see text containing {'Oct 5'}
     And I see {'Back to the guided session'} text
     When I tap {'Back to the guided session'} text
@@ -25,13 +25,13 @@ Feature: Leaving a screen
   Scenario: A record without a way back offers none and an unreadable date is ignored
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running
-    When I go to the address {'/record?date=pas-une-date'}
+    When I go to the address {'/record/new?date=pas-une-date'}
     Then I see text containing {'Oct 12'}
     And I do not see {'Back to the guided session'} text
 
   Scenario: A club without students sends the record to the students screen
     Given the app is running
-    When I go to the address {'/record'}
+    When I go to the address {'/record/new'}
     And I tap {'Add students'} text
     Then I see {'New student'} text
     When I tap the back button

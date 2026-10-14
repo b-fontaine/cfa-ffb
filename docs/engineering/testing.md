@@ -49,8 +49,9 @@ et les dépôts en mémoire, sans widget. Les steps partagent un monde
 ## Scénarios BDD de l'interface
 
 Les parcours de l'interface (`students`, `student_sheet`, `progress_curve`,
-`record_session`, `suggested_session_screen`, `maturity_assessment`,
-`backup_screen`, `navigation`, `localization`, `design_system`) pilotent
+`record_session`, `record_history`, `suggested_session_screen`,
+`maturity_assessment`, `backup_screen`, `navigation`, `localization`,
+`design_system`) pilotent
 l'application complète (`App`, routeur, get_it en environnement `test`) via
 `test/support/ui_world.dart`, qui amorce le club par les vrais cas d'usage et fige
 l'horloge au 12/10/2026. Les scénarios d'interface couvrent aussi :

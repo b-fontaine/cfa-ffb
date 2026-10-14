@@ -125,8 +125,9 @@ n'est obligatoire et toutes les étapes sont accessibles.
 
 1. Depuis la séance guidée, touchez **Noter les résultats** sur un exercice :
    la saisie s'ouvre sur le bloc et l'exercice en cours ; choisissez le groupe,
-   la date et les élèves **présents**. Sinon, ouvrez **Résultats** (ou le bouton
-   depuis la séance suggérée) et ouvrez la séance.
+   la date et les élèves **présents**. Sinon, ouvrez **Résultats**, puis
+   **Nouvelle séance** (ou le bouton depuis la séance suggérée) et ouvrez la
+   séance.
 2. Choisissez l'exercice, puis, pour chaque élève, indiquez les **billes
    empochées** sur le **nombre de tentatives** de chaque passage.
 3. L'application applique les règles :
@@ -142,6 +143,22 @@ explique pourquoi et rien n'est enregistré.
 Depuis la séance guidée, **Retour à la séance guidée** ramène à la même étape,
 compteurs intacts.
 
+### Relire, corriger ou supprimer un passage
+
+L'onglet **Résultats** liste les **séances saisies**, de la plus récente à la
+plus ancienne : date, groupe, notion principale, nombre de présents et de
+passages. Touchez une séance pour la rouvrir : la saisie reprend, et la section
+**Passages de la séance** permet, pour chaque passage :
+
+- **Modifier** (crayon) : corriger les billes empochées ou les tentatives (au
+  moins celles de la fiche) ; le résultat, les alertes et la courbe de l'élève
+  sont recalculés ;
+- **Supprimer** (corbeille) : après confirmation, le passage disparaît et un
+  nouveau passage peut être saisi à sa place dans la séance.
+
+Pour rouvrir une séance en changeant les présents, ouvrez **Nouvelle séance**
+avec le même groupe et la même date : la séance existante est reprise.
+
 ## 5. Lire la fiche d'un élève
 
 Depuis **Élèves**, touchez un élève :
@@ -149,6 +166,8 @@ Depuis **Élèves**, touchez un élève :
 - la **progression par bloc** (pourcentage validé, exercice suivant
   recommandé) ;
 - la **notion à rappeler** quand le dernier passage a été manqué ;
+- l'**assiduité** : séances où l'élève était présent, sur les séances de son
+  groupe depuis son arrivée ;
 - la **courbe de performance** de chaque exercice : les essais en abscisse, les
   billes empochées en ordonnée, comme sur la fiche résultats fédérale. Un essai
   réussi est un disque plein, un essai manqué un anneau creux ; la liste des
@@ -223,7 +242,7 @@ le **public**, sur votre appareil, et ne les envoie nulle part.
 | Rentrée | Ajouter les élèves et leur public |
 | Avant chaque séance | Choisir et planifier une séance du catalogue, ou consulter la séance suggérée du groupe |
 | Pendant la séance | Lancer la séance guidée, montrer les schémas, noter les résultats |
-| Après chaque séance | Saisir les passages de chaque élève (si pas déjà fait) |
+| Après chaque séance | Saisir les passages de chaque élève (si pas déjà fait) ; corriger une erreur de saisie depuis l'historique |
 | Une fois | Relire les propositions « à valider » du catalogue |
 | Régulièrement | Lire les fiches, rappeler les notions signalées |
 | Vers 16-17 ans | Faire un bilan de maturité, décider du passage à la main |

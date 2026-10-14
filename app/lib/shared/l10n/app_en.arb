@@ -1817,5 +1817,135 @@
         "type": "String"
       }
     }
-  }
+  },
+  "historyTitle": "Recorded sessions",
+  "historySubtitle": "The sessions given, newest first.",
+  "historyEmpty": "No session recorded yet.",
+  "historyNew": "New session",
+  "historyOpen": "Open the session of {date} ({group})",
+  "@historyOpen": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "historyGroupLine": "{group} · {audience}",
+  "@historyGroupLine": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      }
+    }
+  },
+  "historyPresent": "{count, plural, =0{Nobody present} =1{1 present} other{{count} present}}",
+  "@historyPresent": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyPasses": "{count, plural, =0{No pass} =1{1 pass} other{{count} passes}}",
+  "@historyPasses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recordEditAttempt": "Edit the pass of {name} ({potted} of {total})",
+  "@recordEditAttempt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordDeleteAttempt": "Delete the pass of {name} ({potted} of {total})",
+  "@recordDeleteAttempt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordDeleteAttemptTitle": "Delete this pass?",
+  "recordDeleteAttemptBody": "{name} · {exercise}: {potted} of {total}. The student’s result and curve will be recalculated.",
+  "@recordDeleteAttemptBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "exercise": {
+        "type": "String"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordEditAttemptTitle": "Edit the pass",
+  "recordEditAttemptSubject": "{name} · {exercise}",
+  "@recordEditAttemptSubject": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "recordEditAttemptSave": "Save the correction",
+  "recordCorrectionPottedMore": "More balls potted in the correction",
+  "recordCorrectionPottedLess": "Fewer balls potted in the correction",
+  "recordCorrectionAttemptsMore": "More attempts in the correction",
+  "recordCorrectionAttemptsLess": "Fewer attempts in the correction",
+  "recordAttemptCorrected": "Pass corrected: {potted} of {total}",
+  "@recordAttemptCorrected": {
+    "placeholders": {
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordAttemptDeleted": "Pass deleted.",
+  "sheetAttendanceTitle": "Attendance",
+  "sheetAttendance": "{attended, plural, =1{Present at 1 session of {total}} other{Present at {attended} sessions of {total}}}",
+  "@sheetAttendance": {
+    "placeholders": {
+      "attended": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetAttendanceNone": "No group session yet."
 }

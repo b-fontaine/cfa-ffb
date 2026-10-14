@@ -96,7 +96,7 @@ Feature: Guided session
   Scenario: An outside return address is ignored by the record
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running
-    When I go to the address {'/record?main=posture&exercise=2&from=https://example.org/page'}
+    When I go to the address {'/record/new?main=posture&exercise=2&from=https://example.org/page'}
     Then I do not see {'Back to the guided session'} text
     When I tap {'Open the session'} text
     Then the exercise {'posture 2'} is selected for the record
@@ -105,7 +105,7 @@ Feature: Guided session
   Scenario: A return address outside the catalogue is ignored by the record
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running
-    When I go to the address {'/record?main=posture&from=/backup'}
+    When I go to the address {'/record/new?main=posture&from=/backup'}
     Then I do not see {'Back to the guided session'} text
 
   Scenario: The second exercise is the one preselected for the record

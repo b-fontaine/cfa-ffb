@@ -9,14 +9,24 @@ sealed class RecordResultsEvent with _$RecordResultsEvent {
     required SessionId sessionId,
     int? initialExercise,
   }) = RecordResultsStarted;
-
   const factory RecordResultsEvent.exerciseSelected({
     required ExerciseRef exercise,
   }) = RecordResultsExerciseSelected;
-
   const factory RecordResultsEvent.passSubmitted({
     required StudentId studentId,
     required int potted,
     required int total,
   }) = RecordResultsPassSubmitted;
+
+  /// Correction en place d'un passage de la séance (ADR 0006).
+  const factory RecordResultsEvent.attemptCorrected({
+    required AttemptId attemptId,
+    required int potted,
+    required int total,
+  }) = RecordResultsAttemptCorrected;
+
+  /// Suppression d'un passage de la séance (ADR 0006).
+  const factory RecordResultsEvent.attemptDeleted({
+    required AttemptId attemptId,
+  }) = RecordResultsAttemptDeleted;
 }

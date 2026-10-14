@@ -46,6 +46,7 @@ void main() {
     getReport = GetStudentReport(
       world.attempts,
       world.sessions,
+      world.groups,
       world.catalogueRepository,
       world.config,
     );

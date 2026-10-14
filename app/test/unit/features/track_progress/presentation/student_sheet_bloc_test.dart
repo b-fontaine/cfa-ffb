@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/student/domain/student.dart';
+import 'package:billard_cfa/features/track_progress/domain/attendance.dart';
 import 'package:billard_cfa/features/track_progress/domain/get_student_sheet.dart';
 import 'package:billard_cfa/features/track_progress/domain/student_report.dart';
 import 'package:billard_cfa/features/track_progress/domain/student_sheet.dart';
@@ -30,6 +31,7 @@ void main() {
       exerciseCount: 9,
       blocks: [],
       activeAlerts: [],
+      attendance: Attendance(attended: 0, total: 0),
     ),
     catalogue: buildCatalogue(),
     series: const [],

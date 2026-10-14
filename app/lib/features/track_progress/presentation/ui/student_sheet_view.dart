@@ -86,6 +86,19 @@ class StudentSheetView extends StatelessWidget {
         ),
         if (recall != null) ...[const SizedBox(height: AppSpacing.md), recall],
         const SizedBox(height: AppSpacing.md),
+        SectionCard(
+          title: l10n.sheetAttendanceTitle,
+          child: Text(
+            sheet.report.attendance.isEmpty
+                ? l10n.sheetAttendanceNone
+                : l10n.sheetAttendance(
+                    sheet.report.attendance.attended,
+                    sheet.report.attendance.total,
+                  ),
+            style: theme.textTheme.bodyLarge,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
         BlockProgressList(sheet: sheet),
         const SizedBox(height: AppSpacing.md),
         Semantics(

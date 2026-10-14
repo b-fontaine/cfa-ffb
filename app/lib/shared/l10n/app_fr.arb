@@ -1817,5 +1817,135 @@
         "type": "String"
       }
     }
-  }
+  },
+  "historyTitle": "Séances saisies",
+  "historySubtitle": "Les séances données, de la plus récente à la plus ancienne.",
+  "historyEmpty": "Aucune séance saisie pour le moment.",
+  "historyNew": "Nouvelle séance",
+  "historyOpen": "Ouvrir la séance du {date} ({group})",
+  "@historyOpen": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "historyGroupLine": "{group} · {audience}",
+  "@historyGroupLine": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      }
+    }
+  },
+  "historyPresent": "{count, plural, =0{Aucun présent} =1{1 présent} other{{count} présents}}",
+  "@historyPresent": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyPasses": "{count, plural, =0{Aucun passage} =1{1 passage} other{{count} passages}}",
+  "@historyPasses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recordEditAttempt": "Modifier le passage de {name} ({potted} sur {total})",
+  "@recordEditAttempt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordDeleteAttempt": "Supprimer le passage de {name} ({potted} sur {total})",
+  "@recordDeleteAttempt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordDeleteAttemptTitle": "Supprimer ce passage ?",
+  "recordDeleteAttemptBody": "{name} · {exercise} : {potted} sur {total}. Le résultat et la courbe de l’élève seront recalculés.",
+  "@recordDeleteAttemptBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "exercise": {
+        "type": "String"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordEditAttemptTitle": "Modifier le passage",
+  "recordEditAttemptSubject": "{name} · {exercise}",
+  "@recordEditAttemptSubject": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "recordEditAttemptSave": "Enregistrer la correction",
+  "recordCorrectionPottedMore": "Une bille empochée de plus dans la correction",
+  "recordCorrectionPottedLess": "Une bille empochée de moins dans la correction",
+  "recordCorrectionAttemptsMore": "Une tentative de plus dans la correction",
+  "recordCorrectionAttemptsLess": "Une tentative de moins dans la correction",
+  "recordAttemptCorrected": "Passage corrigé : {potted} sur {total}",
+  "@recordAttemptCorrected": {
+    "placeholders": {
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordAttemptDeleted": "Passage supprimé.",
+  "sheetAttendanceTitle": "Assiduité",
+  "sheetAttendance": "{attended, plural, =1{Présent à 1 séance sur {total}} other{Présent à {attended} séances sur {total}}}",
+  "@sheetAttendance": {
+    "placeholders": {
+      "attended": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetAttendanceNone": "Aucune séance du groupe pour le moment."
 }

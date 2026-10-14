@@ -109,7 +109,8 @@ void main() {
         ),
       );
 
-      expect(uri.path, '/record');
+      expect(uri.path, AppRoutes.newRecord);
+      expect(AppRoutes.newRecord, '/record/new');
       expect(uri.queryParameters, {
         'main': 'demi-bille',
         'recall': 'bille-pleine',

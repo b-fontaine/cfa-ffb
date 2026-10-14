@@ -13,6 +13,7 @@ import 'package:billard_cfa/features/manage_students/presentation/bloc/students_
 import 'package:billard_cfa/features/plan_session/presentation/bloc/session_planner_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/open_session_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
+import 'package:billard_cfa/features/record_results/presentation/bloc/recorded_sessions_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/session_date_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_presentation_cubit.dart';
@@ -26,6 +27,7 @@ import 'package:billard_cfa/pages/backup/presentation/backup_page.dart';
 import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_page.dart';
 import 'package:billard_cfa/pages/home/presentation/home_page.dart';
 import 'package:billard_cfa/pages/not_found/presentation/not_found_page.dart';
+import 'package:billard_cfa/pages/record_history/presentation/record_history_page.dart';
 import 'package:billard_cfa/pages/record_session/presentation/record_session_page.dart';
 import 'package:billard_cfa/pages/record_setup/presentation/record_setup_page.dart';
 import 'package:billard_cfa/pages/session_planner/presentation/session_planner_page.dart';
@@ -54,6 +56,10 @@ abstract final class AppRoutes {
   static const students = '/students';
   static const newStudent = '/students/new';
   static const record = '/record';
+
+  /// Ouverture d'une nouvelle saisie (groupe, présents, date) ; `/record`
+  /// est l'historique des séances saisies (ADR 0006).
+  static const newRecord = '/record/new';
   static const session = '/session';
   static const exercises = '/exercises';
   static const backup = '/backup';
@@ -98,7 +104,7 @@ abstract final class AppRoutes {
     GroupId? group,
     Set<StudentId> absent = const {},
     DateTime? date,
-  }) => _url(record, {
+  }) => _url(newRecord, {
     'main': exercise.blockId,
     'recall': ?recall,
     'exercise': '${exercise.number}',
@@ -339,6 +345,18 @@ GoRouter buildRouter() => GoRouter(
         ),
         GoRoute(
           path: AppRoutes.record,
+          builder: (context, state) => BlocProvider(
+            create: (_) =>
+                getIt<RecordedSessionsBloc>()
+                  ..add(const RecordedSessionsEvent.started()),
+            child: RecordHistoryPage(
+              onOpenSession: (id) => context.go(AppRoutes.recordSession(id)),
+              onNewSession: () => context.go(AppRoutes.newRecord),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.newRecord,
           builder: (context, state) {
             final query = state.uri.queryParameters;
             final group = query['group'];
@@ -430,7 +448,7 @@ GoRouter buildRouter() => GoRouter(
               onOpenSource: (ref) => context.go(AppRoutes.exercise(ref)),
               onRecord: (group, main, recall) => context.go(
                 Uri(
-                  path: AppRoutes.record,
+                  path: AppRoutes.newRecord,
                   queryParameters: {
                     'group': group.value,
                     'main': main,
