@@ -41,9 +41,15 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
    `relecteur-pedagogique`, dans un contexte séparé.
 3. Corriger F1, F2 et F7 (un texte « pas de rappel : une notion par séance
    enfants »).
-4. Faire trancher par l'animateur : D2 (ligne de départ 2,0 ou 1,6), D5
-   (`contact_height`), unité « séance » des nombres conseillés, dimensionnement
-   groupes / saison (questions 2 à 4 de `docs/knowledge/08-lacunes-et-questions-ouvertes.md`).
+4. ~~Faire trancher par l'animateur~~ — **tranché le 2026-10-14** : D2 = ligne
+   de départ à **1,6 `[FFB]`** (au lieu de 2,0 `[Prop]`) ; D5 = **ajouter**
+   l'illustration `contact_height` ; questions 2 à 4 de
+   `docs/knowledge/08-lacunes-et-questions-ouvertes.md` (unité « séance »,
+   dimensionnement groupes / saison, synchronisation) : recommandations de
+   l'assistant suivies, à consigner dans ce fichier. Reste à **réaliser** D2 et
+   D5 dans `tailles-et-illustrations-plan.md` (la ligne de départ à 1,6
+   modifie la lecture de 46 à 60 diagrammes transcrits : à rejouer avec
+   `tool/diagrammes.dart` et à faire relire).
 
 ## H1 — La boucle de saison complète (priorité)
 
@@ -58,7 +64,14 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
    la saisie et l'historique nomment la séance du catalogue.
 7. **Positionnement initial / bloc acquis** : marquer un bloc comme acquis sans
    passage (élèves non débutants, rentrée) ; sinon la suggestion repart de
-   « posture » et la fiche affiche « 0 / 72 » toute la saison.
+   « posture » et la fiche affiche « 0 / 72 » toute la saison. **Statut :
+   conception** (2026-10-14) — [ADR 0008](adr/0008-positionnement-initial-bloc-acquis.md),
+   [plan](positionnement-initial-plan.md). Décisions : action sur la fiche élève
+   par bloc, état distinct stocké (date + source « positionnement », pas de
+   passage fictif), bloc entier (15 blocs), compté dans « n / 72 » et saute
+   l'ordre de suggestion (libellé « acquis au positionnement », ordre rebond
+   puis rejet inchangé), réversible, un passage daté du même jour ou après
+   reprend la main sur son exercice seulement (le reste du bloc reste acquis).
 8. **Suggestion ↔ catalogue** : la séance suggérée pointe un bloc ; elle doit
    proposer la séance du catalogue correspondante (partie suivante non faite
    par le groupe).
