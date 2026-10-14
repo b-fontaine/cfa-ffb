@@ -5,8 +5,6 @@ import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
-import 'package:billard_cfa/features/track_progress/domain/attendance.dart';
-import 'package:billard_cfa/features/track_progress/domain/block_progress.dart';
 import 'package:billard_cfa/features/track_progress/domain/exercise_curve.dart';
 import 'package:billard_cfa/features/track_progress/domain/student_report.dart';
 import 'package:billard_cfa/features/track_progress/domain/student_sheet.dart';
@@ -43,7 +41,6 @@ class GetStudentSheet {
         if (student == null) throw NotFound('student', studentId.value);
         final catalogue = await _catalogue.load();
         final attempts = await _attempts.forStudent(studentId);
-        final sessions = await _sessions.forStudent(studentId);
         final assessments = await _assessments.forStudent(studentId);
         final progress = StudentProgress.derive(
           studentId: studentId,
@@ -55,29 +52,13 @@ class GetStudentSheet {
         return StudentSheet(
           student: student,
           catalogue: catalogue,
-          report: StudentReport(
+          report: StudentReport.derive(
             studentId: studentId,
-            validatedCount: progress.validated.length,
-            exerciseCount: catalogue.exercises.length,
-            blocks: [
-              for (final block in catalogue.blocks)
-                BlockProgress.of(
-                  block: block,
-                  progress: progress,
-                  sessionsSpent: sessionsSpentOnBlock(
-                    block: block,
-                    studentId: studentId,
-                    attempts: attempts,
-                    sessions: sessions,
-                  ),
-                ),
-            ],
-            activeAlerts: progress.activeAlerts,
-            attendance: attendanceOf(
-              studentId: studentId,
-              sessions: await _sessions.all(),
-              groups: await _groups.all(),
-            ),
+            progress: progress,
+            catalogue: catalogue,
+            attempts: attempts,
+            sessions: await _sessions.all(),
+            groups: await _groups.all(),
           ),
           series: [
             for (final spec in catalogue.exercises)
