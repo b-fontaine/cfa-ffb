@@ -11,6 +11,7 @@ règles sont **vérifiées automatiquement** (voir [quality-gates.md](quality-ga
 | [quality-gates.md](quality-gates.md) | Garde-fous déterministes : commande, où ils tournent (hook git, hook agent, CI) |
 | [i18n.md](i18n.md) | Localisation fr/en (gen-l10n, ARB), ajout d'une langue ou d'une clé |
 | [design-system.md](design-system.md) | Thème FFB/Blackball, jetons, composants `shared/ui`, Widgetbook, ajouter un composant + use case |
+| [roadmap.md](roadmap.md) | Lots restants par horizon (clôture, boucle de saison, usage en salle, contenu, distribution) et ordre recommandé |
 
 ## Démarrage rapide
 
