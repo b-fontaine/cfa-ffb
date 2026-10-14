@@ -12,6 +12,9 @@ règles sont **vérifiées automatiquement** (voir [quality-gates.md](quality-ga
 | [i18n.md](i18n.md) | Localisation fr/en (gen-l10n, ARB), ajout d'une langue ou d'une clé |
 | [design-system.md](design-system.md) | Thème FFB/Blackball, jetons, composants `shared/ui`, Widgetbook, ajouter un composant + use case |
 | [roadmap.md](roadmap.md) | Lots restants par horizon (clôture, boucle de saison, usage en salle, contenu, distribution) et ordre recommandé |
+| [ux/audit-ux-ui.md](ux/audit-ux-ui.md) | Audit UX / UI des écrans (2026-10-14) : constats par écran et transversaux, sévérités |
+| [ux/recommandations-design.md](ux/recommandations-design.md) | Recommandations : rôles de couleur, composants, modes Préparer / Mener / Montrer, écrans cibles |
+| [ux/plan-ux-proposition.md](ux/plan-ux-proposition.md) | Détail des lots UX U1 à U9 (intégrés à la roadmap), scénarios BDD à écrire d'abord, décisions Q1 à Q8 tranchées `[U]` |
 
 ## Démarrage rapide
 
