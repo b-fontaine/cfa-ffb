@@ -3,6 +3,7 @@ import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:billard_cfa/shared/ui/theme/app_theme.dart';
 import 'package:billard_cfa/shared/ui/theme/app_typography.dart';
 import 'package:billard_cfa/shared/ui/theme/ball_colors.dart';
+import 'package:billard_cfa/shared/ui/theme/brand_colors.dart';
 import 'package:billard_cfa/shared/ui/theme/status_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,10 +11,10 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('AppColorSchemes', () {
     test(
-      'uses the FFB blue as light primary and a darkened red as secondary',
+      'uses the FFB blue as light primary and the cloth blue as secondary',
       () {
         expect(AppColorSchemes.light.primary, const Color(0xFF1964AF));
-        expect(AppColorSchemes.light.secondary, const Color(0xFFB80D1A));
+        expect(AppColorSchemes.light.secondary, const Color(0xFF2F6B8A));
         expect(AppColorSchemes.light.brightness, Brightness.light);
       },
     );
@@ -40,6 +41,7 @@ void main() {
       expect(theme.colorScheme, AppColorSchemes.dark);
       expect(theme.extension<BallColors>(), BallColors.dark);
       expect(theme.extension<StatusColors>(), StatusColors.dark);
+      expect(theme.extension<BrandColors>(), BrandColors.dark);
     });
 
     test('light theme carries the light extensions', () {
@@ -47,6 +49,16 @@ void main() {
 
       expect(theme.extension<BallColors>(), BallColors.light);
       expect(theme.extension<StatusColors>(), StatusColors.light);
+      expect(theme.extension<BrandColors>(), BrandColors.light);
+    });
+
+    test('the progress track is the cloth blue container, never red', () {
+      for (final theme in [AppTheme.light(), AppTheme.dark()]) {
+        final track = theme.progressIndicatorTheme.linearTrackColor!;
+
+        expect(track, theme.colorScheme.secondaryContainer);
+        expect(track.b, greaterThan(track.r));
+      }
     });
 
     test('density is the only knob that changes between audiences', () {

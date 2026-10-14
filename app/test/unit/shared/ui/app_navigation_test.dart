@@ -4,13 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'pump_ui.dart';
 
-const _destinations = [
-  AppDestination(
+final _destinations = [
+  AppDestination.material(
     icon: Icons.home_outlined,
     selectedIcon: Icons.home,
     label: 'Home',
   ),
-  AppDestination(
+  AppDestination.material(
     icon: Icons.groups_outlined,
     selectedIcon: Icons.groups,
     label: 'Students',

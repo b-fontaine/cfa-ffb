@@ -2,6 +2,7 @@ import 'package:billard_cfa/shared/ui/app_navigation.dart';
 import 'package:billard_cfa/shared/ui/counter_field.dart';
 import 'package:billard_cfa/shared/ui/error_view.dart';
 import 'package:billard_cfa/shared/ui/loading_view.dart';
+import 'package:billard_cfa/shared/ui/nav_icon.dart';
 import 'package:billard_cfa/shared/ui/progress_chart.dart';
 import 'package:billard_cfa/shared/ui/progress_meter.dart';
 import 'package:billard_cfa/shared/ui/scroll_page.dart';
@@ -169,18 +170,18 @@ class _NavDemoState extends State<_NavDemo> {
   Widget build(BuildContext context) => AppNavigation(
     destinations: const [
       AppDestination(
-        icon: Icons.home_outlined,
-        selectedIcon: Icons.home,
+        icon: NavIcon(NavGlyph.today),
+        selectedIcon: NavIcon(NavGlyph.today, selected: true),
         label: 'Accueil',
       ),
       AppDestination(
-        icon: Icons.groups_outlined,
-        selectedIcon: Icons.groups,
+        icon: NavIcon(NavGlyph.students),
+        selectedIcon: NavIcon(NavGlyph.students, selected: true),
         label: 'Élèves',
       ),
       AppDestination(
-        icon: Icons.save_alt_outlined,
-        selectedIcon: Icons.save_alt,
+        icon: NavIcon(NavGlyph.more),
+        selectedIcon: NavIcon(NavGlyph.more, selected: true),
         label: 'Sauvegarde',
       ),
     ],

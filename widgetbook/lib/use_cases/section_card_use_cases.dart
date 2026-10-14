@@ -13,6 +13,12 @@ Widget buildSectionCardUseCase(BuildContext context) => Padding(
   padding: const EdgeInsets.all(16),
   child: SectionCard(
     title: context.knobs.string(label: 'titre', initialValue: 'Posture'),
+    emphasis: context.knobs.object.dropdown(
+      label: 'mise en avant',
+      options: SectionEmphasis.values,
+      initialOption: SectionEmphasis.low,
+      labelBuilder: (emphasis) => emphasis.name,
+    ),
     child: Text(
       context.knobs.string(
         label: 'contenu',
@@ -32,5 +38,31 @@ Widget buildSectionCardScoreUseCase(BuildContext context) => const Padding(
   child: SectionCard(
     title: 'Dernier exercice',
     child: ScoreIndicator(score: 4, total: 6),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Trois niveaux de mise en avant',
+  type: SectionCard,
+  path: '[Design system]/Composants',
+)
+Widget buildSectionEmphasisUseCase(BuildContext context) => Padding(
+  padding: const EdgeInsets.all(16),
+  child: Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    spacing: 12,
+    children: [
+      for (final (emphasis, text) in const [
+        (SectionEmphasis.low, 'Carte de contenu : sans bord.'),
+        (SectionEmphasis.medium, 'Carte intermédiaire : bord discret.'),
+        (SectionEmphasis.high, 'Carte en évidence : étape courante, alerte.'),
+      ])
+        SectionCard(
+          title: 'Mise en avant « ${emphasis.name} »',
+          emphasis: emphasis,
+          child: Text(text),
+        ),
+    ],
   ),
 );

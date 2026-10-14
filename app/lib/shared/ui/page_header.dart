@@ -29,7 +29,7 @@ class PageHeader extends StatelessWidget {
     final subtitle = this.subtitle;
     final titleStyle = DefaultTextStyle.of(context).style
         .merge(theme.textTheme.headlineMedium);
-    final hasLogo = showLogo && theme.extension<BrandAssets>() != null;
+    final hasLogo = showLogo && theme.extension<BrandAssets>()?.logo != null;
     final heading = Semantics(
       header: true,
       child: Text(title, style: theme.textTheme.headlineMedium),

@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'pump_ui.dart';
 
+final ThemeData _withLogo = AppTheme.light(showFfbLogo: true);
+
 void main() {
   testWidgets('shows the title and the subtitle', (tester) async {
     await pumpUi(
@@ -38,14 +40,25 @@ void main() {
   });
 
   testWidgets('shows the decorative FFB logo by default', (tester) async {
-    await pumpUi(tester, const PageHeader(title: 'Planning'));
+    await pumpUi(tester, const PageHeader(title: 'Planning'), theme: _withLogo);
 
     expect(find.byType(FfbLogo), findsOneWidget);
     expect(tester.widget<FfbLogo>(find.byType(FfbLogo)).decorative, isTrue);
   });
 
+  testWidgets('shows no logo with the default theme', (tester) async {
+    await pumpUi(tester, const PageHeader(title: 'Planning'));
+
+    expect(find.byType(FfbLogo), findsNothing);
+    expect(find.text('Planning'), findsOneWidget);
+  });
+
   testWidgets('hides the logo on request', (tester) async {
-    await pumpUi(tester, const PageHeader(title: 'Planning', showLogo: false));
+    await pumpUi(
+      tester,
+      const PageHeader(title: 'Planning', showLogo: false),
+      theme: _withLogo,
+    );
 
     expect(find.byType(FfbLogo), findsNothing);
   });
@@ -53,7 +66,11 @@ void main() {
   testWidgets('drops the logo rather than wrapping a long title', (
     tester,
   ) async {
-    await pumpUi(tester, PageHeader(title: 'A very long page title ' * 8));
+    await pumpUi(
+      tester,
+      PageHeader(title: 'A very long page title ' * 8),
+      theme: _withLogo,
+    );
 
     expect(find.byType(FfbLogo), findsNothing);
   });
@@ -76,7 +93,11 @@ void main() {
   );
 
   testWidgets('keeps the logo when the title fits next to it', (tester) async {
-    await pumpUi(tester, inWidth(600, const PageHeader(title: 'Planning')));
+    await pumpUi(
+      tester,
+      inWidth(600, const PageHeader(title: 'Planning')),
+      theme: _withLogo,
+    );
 
     expect(find.byType(FfbLogo), findsOneWidget);
     expect(tester.getSize(find.byType(FfbLogo)).width, closeTo(32 * 1.6, 0.01));
@@ -87,7 +108,11 @@ void main() {
   testWidgets('drops the logo and keeps the whole title when narrow', (
     tester,
   ) async {
-    await pumpUi(tester, inWidth(120, const PageHeader(title: 'Planning')));
+    await pumpUi(
+      tester,
+      inWidth(120, const PageHeader(title: 'Planning')),
+      theme: _withLogo,
+    );
 
     expect(find.byType(FfbLogo), findsNothing);
     expect(find.text('Planning'), findsOneWidget);
@@ -99,7 +124,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
-        theme: AppTheme.light(),
+        theme: _withLogo,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         builder: (context, child) => MediaQuery(
@@ -118,7 +143,11 @@ void main() {
     tester,
   ) async {
     final handle = tester.ensureSemantics();
-    await pumpUi(tester, inWidth(600, const PageHeader(title: 'Planning')));
+    await pumpUi(
+      tester,
+      inWidth(600, const PageHeader(title: 'Planning')),
+      theme: _withLogo,
+    );
 
     expect(find.byType(FfbLogo), findsOneWidget);
     expect(

@@ -156,6 +156,114 @@
       }
     }
   },
+  "passDotsPocketed": "Attempt {index} of {total}: pocketed",
+  "@passDotsPocketed": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "passDotsMissed": "Attempt {index} of {total}: missed",
+  "@passDotsMissed": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "passDotsSummary": "{score} of {total} pocketed",
+  "@passDotsSummary": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "timerRemaining": "Time remaining: {time}",
+  "@timerRemaining": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "timerOverdue": "Over time by {time}",
+  "@timerOverdue": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "timerLiveAttention": "Less than one minute left",
+  "timerLiveOverdue": "Time is up",
+  "timerStart": "Start the timer",
+  "timerPause": "Pause the timer",
+  "phaseTimelineLabel": "Session phases, {minutes} min",
+  "@phaseTimelineLabel": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "phaseTimelinePhase": "Phase {index} of {total}: {label}, {minutes} min",
+  "@phaseTimelinePhase": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "phaseTimelinePhaseCurrent": "Phase {index} of {total}: {label}, {minutes} min, current",
+  "@phaseTimelinePhaseCurrent": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "stepAppBarPosition": "Step {position} of {total}",
+  "@stepAppBarPosition": {
+    "placeholders": {
+      "position": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "stepAppBarMenu": "More actions",
+  "stepAppBarClose": "Close",
   "alertAttention": "Warning",
   "alertPersistent": "Action needed",
   "plannerFormTitle": "New session",

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 ///
 /// [decorative] le retire de l'arbre sémantique (en-tête répété sur chaque
 /// page) ; sinon il porte son libellé localisé. Rien n'est affiché si le thème
-/// ne porte pas de ressources de marque.
+/// ne porte pas de logo (`BrandAssets.logo == null`, cas par défaut).
 class FfbLogo extends StatelessWidget {
   const FfbLogo({this.height = 48, this.decorative = false, super.key});
 
@@ -16,12 +16,12 @@ class FfbLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final assets = Theme.of(context).extension<BrandAssets>();
-    if (assets == null) {
+    final logo = Theme.of(context).extension<BrandAssets>()?.logo;
+    if (logo == null) {
       return const SizedBox.shrink();
     }
     return Image(
-      image: assets.logo,
+      image: logo,
       height: height,
       width: height * BrandAssets.logoAspectRatio,
       fit: BoxFit.contain,

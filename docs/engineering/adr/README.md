@@ -11,5 +11,6 @@
 | 0007 | Séance planifiée datée et par groupe, saisie qui note sa séance du catalogue, lien planifiée ↔ saisie dérivé (même groupe, même jour), schéma v4 |
 | 0008 | Positionnement initial : bloc acquis sans passage (état distinct stocké, compté dans n/72, saute la suggestion, réversible), schéma v5 (livré) |
 | 0009 | Suggestion ↔ catalogue : séance du catalogue proposée depuis la suggestion (règle déterministe, aucune migration), **accepté et livré**, arbitrages S1 à S8 intégrés |
+| 0010 | Rôles de couleur : bleu-tapis pour les états (`secondary`), rouge FFB en accent (`BrandColors`), `SectionCard.emphasis`, logo FFB derrière un drapeau de thème, icônes de navigation dédiées ; amende l'ADR 0002 décision 2 |
 
 Recherches sources : `../research/`.
