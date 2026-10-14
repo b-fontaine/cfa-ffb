@@ -46,7 +46,7 @@ Widgetbook séparé `widgetbook/`.
 | Queue : fût `#e8c98f`, talon `#3b2412` (contour `#f1ddb5` en sombre), virole `#f6f1e4`, procédé `#2b4a63` | `table_colors.dart` | **Proposition** |
 | Craie bleue (point d'impact du procédé) `#1b55b5` | `table_colors.dart` | **Proposition** (point bleu des fiches) |
 | Dimensions du matériel : blanche 48,0 mm, bille de but 50,8 mm, poche 76,2 mm, surface 1850 × 925 mm (1 case = 231,25 mm) | `blackball_dimensions.dart` (source unique) | **`[FFB]`** (voir `docs/knowledge/02-techniques/06-dimensions-du-materiel.md`) ; la blanche est plus petite que les billes de but `[S]` |
-| Dessin : ligne de départ x = 2, rails = 0,5 case | `table_geometry.dart` | **Proposition** `[Prop]` (voir `docs/knowledge/03-exercices/diagrammes/FORMAT.md`) |
+| Dessin : ligne de départ x = 1,6 `[FFB]`, rails = 0,5 case | `table_geometry.dart` | Ligne `[FFB]` ; rails **Proposition** `[Prop]` (voir `docs/knowledge/03-exercices/diagrammes/FORMAT.md`) |
 
 Toute couleur « non publiée par la FFB » est une **proposition** : ne jamais la
 présenter comme la couleur officielle.
@@ -136,7 +136,7 @@ Primitives de dessin des schémas d'exercices (les diagrammes YAML de
   d'environ 0,5 px (1,7 px à 1280 px), il se montre par la comparaison de tailles
   de Widgetbook, sans exagération silencieuse dans les schémas de table.
 - **`BilliardTable`** : surface 2:1 plus rails d'une demi-case (le widget a donc le
-  rapport 9:5). `showGrid` (grille 8 × 4 pointillée), `showHeadString` (x = 2) et
+  rapport 9:5). `showGrid` (grille 8 × 4 pointillée), `showHeadString` (x = 1,6) et
   `overlay` (`Widget Function(BuildContext, TableGeometry)`) pour poser billes,
   flèches et queue avec `geometry.ballRect(...)`.
 - **`BilliardBall`** : diamètre en pixels ou issu de la géométrie. À partir de
@@ -307,8 +307,8 @@ jeu de la puissance (`jeux/p03.yaml`), deux bandes (`entrainement/p16.yaml`).
   affiché, mais le tir n'est joué qu'une fois.
 - `inset` (quantité de bille, point du procédé) n'est pas rendu dans le
   schéma ; utiliser `BallContactDiagram` à côté.
-- La ligne de départ est toujours à x = 2 (écart de lecture consigné dans
-  `uncertainties` de chaque transcription) ; `via`, `order` et `bridge` du
+- La ligne de départ est toujours à x = 1,6 `[FFB]` (écart de lecture consigné
+  dans `uncertainties` de chaque transcription ; les mentions « et non 2,0 » ou « FORMAT : 2,0 [Prop] » y renvoient à l'ancienne convention 2,0 `[Prop]`, la lecture source ≈ 1,8 restant valable, comparée à 1,6) ; `via`, `order` et `bridge` du
   FORMAT ne sont pas portés par le modèle.
 - Les positions sont des mesures à ≈ 0,15 case : les trajectoires animées
   indiquent la direction du tir, pas une simulation physique (pas de rebond de

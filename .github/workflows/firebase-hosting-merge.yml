@@ -1,0 +1,45 @@
+# Déploiement de la version web sur Firebase Hosting (canal « live ») à chaque
+# push sur main. Généré par la CLI Firebase puis adapté : la recette de build
+# est celle du job build-web de ci.yml (Flutter épinglé, scripts/generate.sh).
+# Seul l'hébergement web est déployé ici (pas les règles Firestore).
+
+name: Déployer sur Firebase Hosting (main)
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: firebase-hosting-live
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  # Version épinglée : alignée sur ci.yml et sur le Flutter utilisé en local.
+  FLUTTER_VERSION: "3.47.7"
+
+jobs:
+  build_and_deploy:
+    name: Build web + déploiement live
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Génération du code
+        run: scripts/generate.sh
+      - name: Build web
+        working-directory: app
+        run: flutter build web --release --no-pub
+      - name: Déploiement Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@500ac625ca2dd40cbd15f7659af953801858032a # v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ANIMATION_BILLARD }}
+          channelId: live
+          projectId: animation-billard

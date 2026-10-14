@@ -23,7 +23,7 @@ Définitions tirées des sources `[S]` sauf mention contraire.
 | **Limage** | Va-et-vient d'ajustement de la queue avant le tir. |
 | **Œil directeur** | Œil dominant pour la visée ; détermine la position de la tête. |
 | **Procédé** | Embout de la queue en contact avec la blanche ; diamètre 8 à 9 mm `[FFB]`. |
-| **Ligne de départ** | Trait vertical dessiné sur les schémas d'exercices, derrière lequel la blanche est placée. Position (x = 2,0) : `[Prop]`, voir `03-exercices/diagrammes/FORMAT.md`. |
+| **Ligne de départ** | Trait vertical dessiné sur les schémas d'exercices, derrière lequel la blanche est placée. Position (x = 1,6, 1/5 de la longueur) : `[FFB]`, voir `03-exercices/diagrammes/FORMAT.md`. |
 | **Quantité de bille** | Portion de la bille de couleur couverte par la blanche selon l'axe de visée. Le quart de bille se mesure par rapport à la blanche `[S]` (fiche n° 7) ; définitions chiffrées dans `02-techniques/06-dimensions-du-materiel.md` `[Prop]`. |
 | **Rejet naturel** | Déviation ≈ 45° de la blanche après impact, attaque haute, proche du demi-bille. |
 | **Rétro** | Coup d'attaque basse faisant reculer la blanche (180° en plein, 90° en demi). |

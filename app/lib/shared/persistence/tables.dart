@@ -164,3 +164,19 @@ class PlannedSessions extends Table with AuditColumns {
   /// catalogue sont des assets : pas de clé étrangère ; nul = séance libre.
   TextColumn get sheetId => text().nullable()();
 }
+
+/// Blocs déclarés acquis au positionnement (schéma version 5, ADR 0008).
+/// Pas de clé étrangère : suppression logique, blocs issus d'un asset.
+@DataClassName('BlockAcquisitionRow')
+@TableIndex(name: 'acquisitions_by_student', columns: {#studentId})
+class BlockAcquisitions extends Table with AuditColumns {
+  TextColumn get studentId => text()();
+
+  TextColumn get blockId => text()();
+
+  /// Jour du positionnement (normalisé).
+  TextColumn get date => text().map(const IsoDateTimeConverter())();
+
+  /// Nom de `AcquisitionSource`.
+  TextColumn get source => text()();
+}

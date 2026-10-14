@@ -42,6 +42,8 @@ enum InvariantCode {
   backupInvalid,
   backupInconsistent,
   backupUnknownSheet,
+  blockAlreadyAcquired,
+  backupUnknownBlock,
 }
 
 /// Échec métier attendu (sceller : un `switch` exhaustif suffit à le traiter).

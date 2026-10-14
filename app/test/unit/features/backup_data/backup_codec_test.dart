@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
@@ -66,6 +68,14 @@ final _planned = Session(
   sheetId: SheetId('demi-bille-2'),
 );
 
+final _acquisition = BlockAcquisition(
+  id: const AcquisitionId('q1'),
+  studentId: const StudentId('s1'),
+  blockId: 'puissance',
+  date: DateTime(2026, 9, 15),
+  source: AcquisitionSource.placement,
+);
+
 final _snapshot = BackupSnapshot(
   seasons: [_season],
   students: [_student],
@@ -73,6 +83,7 @@ final _snapshot = BackupSnapshot(
   sessionRecords: [_record],
   attempts: [attempt(ref('a', 1), potted: 3)],
   plannedSessions: [_planned],
+  blockAcquisitions: [_acquisition],
 );
 
 InvariantCode _codeOf(String content) {
@@ -89,7 +100,10 @@ void main() {
 
   test('writes the format, its own version and the export date', () {
     final document = jsonDecode(
-      codec.encode(const BackupSnapshot(), exportedAt: _exportedAt),
+      codec.encode(
+        const BackupSnapshot(blockAcquisitions: []),
+        exportedAt: _exportedAt,
+      ),
     ) as Map<String, Object?>;
 
     expect(document['format'], BackupCodec.format);
@@ -103,6 +117,7 @@ void main() {
       'attempts': <Object?>[],
       'assessments': <Object?>[],
       'plannedSessions': <Object?>[],
+      'blockAcquisitions': <Object?>[],
     });
   });
 
@@ -135,6 +150,27 @@ void main() {
     expect(
       codec.decode(jsonEncode(document)).assessments.single,
       assessment.copyWith(comment: null),
+    );
+  });
+
+  test('writes the acquired blocks with their day, source and student', () {
+    final document = jsonDecode(
+      codec.encode(_snapshot, exportedAt: _exportedAt),
+    ) as Map<String, Object?>;
+    final data = document['data']! as Map<String, Object?>;
+
+    expect((data['blockAcquisitions']! as List<Object?>).single, {
+      'id': 'q1',
+      'studentId': 's1',
+      'blockId': 'puissance',
+      'date': '2026-09-15T00:00:00.000',
+      'source': 'placement',
+    });
+    expect(
+      codec
+          .decode(codec.encode(_snapshot, exportedAt: _exportedAt))
+          .blockAcquisitions,
+      [_acquisition],
     );
   });
 
@@ -364,6 +400,51 @@ void main() {
       (memberships.single! as Map<String, Object?>)['to'] = 'jamais';
 
       expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('a file without the blockAcquisitions key', () {
+      final d = document();
+      data(d).remove('blockAcquisitions');
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('an acquired block with an unknown source', () {
+      final d = document();
+      first(d, 'blockAcquisitions')['source'] = 'magie';
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('an acquired block with a missing field', () {
+      final d = document();
+      first(d, 'blockAcquisitions').remove('blockId');
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('an acquired block whose date is not a whole day', () {
+      final d = document();
+      first(d, 'blockAcquisitions')['date'] = '2026-09-15T10:30:00.000';
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('the same block acquired twice for a student', () {
+      final d = document();
+      (data(d)['blockAcquisitions']! as List<Object?>).add({
+        ...first(d, 'blockAcquisitions'),
+        'id': 'q2',
+      });
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInconsistent);
+    });
+
+    test('an acquired block of an unknown student', () {
+      final d = document();
+      first(d, 'blockAcquisitions')['studentId'] = 'ghost';
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInconsistent);
     });
 
     test('a membership closed before it opens', () {

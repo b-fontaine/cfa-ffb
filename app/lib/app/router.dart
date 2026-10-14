@@ -10,6 +10,7 @@ import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_erasure_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_form_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/students_bloc.dart';
+import 'package:billard_cfa/features/place_student/presentation/bloc/placement_bloc.dart';
 import 'package:billard_cfa/features/plan_session/presentation/bloc/session_planner_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/open_session_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
@@ -79,8 +80,10 @@ abstract final class AppRoutes {
       date.toIso8601String().substring(0, 10);
 
   /// Planificateur, séance du catalogue (et public) présélectionnés.
-  static String plan(SheetId id, {Audience? audience}) =>
-      _url(planner, {'sheet': id.value, 'audience': ?audience?.name});
+  /// Sans [id] (notion sans séance du catalogue), le planificateur s'ouvre
+  /// sans séance présélectionnée.
+  static String plan(SheetId? id, {Audience? audience}) =>
+      _url(planner, {'sheet': ?id?.value, 'audience': ?audience?.name});
 
   static String student(StudentId id) => '$students/${id.value}';
 
@@ -133,18 +136,36 @@ abstract final class AppRoutes {
     'sheet': ?sheet?.value,
   });
 
+  /// Ouverture de la saisie depuis la séance suggérée : groupe, notion
+  /// principale, rappel et séance du catalogue proposée ([sheet], nul pour
+  /// une notion sans séance, ADR 0009).
+  static String recordFromSuggestion({
+    required GroupId group,
+    required String main,
+    String? recall,
+    SheetId? sheet,
+  }) => _url(newRecord, {
+    'group': group.value,
+    'main': main,
+    'recall': ?recall,
+    'sheet': ?sheet?.value,
+  });
+
   /// Séance guidée d'une séance du catalogue. [audience] absent : public de
   /// la séance planifiée [session], sinon les enfants ; [step] : étape à
-  /// partir de 0.
+  /// partir de 0 ; [group] : groupe du guide lancé depuis la séance
+  /// suggérée, proposé à la saisie des résultats.
   static String guide(
     SheetId id, {
     Audience? audience,
     String? session,
     int? step,
+    GroupId? group,
   }) => _url('$catalogue/${id.value}/$guideSegment', {
     'audience': ?audience?.name,
     'session': ?session,
     'step': ?step?.toString(),
+    'group': ?group?.value,
   });
 
   /// Présentation plein écran d'une étape de la séance guidée.
@@ -153,10 +174,12 @@ abstract final class AppRoutes {
     Audience? audience,
     String? session,
     int? step,
+    GroupId? group,
   }) => _url('$catalogue/${id.value}/$presentationSegment', {
     'audience': ?audience?.name,
     'session': ?session,
     'step': ?step?.toString(),
+    'group': ?group?.value,
   });
 
   static String exercise(ExerciseRef ref) =>
@@ -215,7 +238,13 @@ RunKey _runKey(SheetId id, Map<String, String> query) => RunKey(
   sheetId: id,
   audience: _audienceParam(query['audience']),
   sessionId: _nonBlank(query['session']),
+  group: _groupParam(query['group']),
 );
+
+GroupId? _groupParam(String? raw) {
+  final value = _nonBlank(raw);
+  return value == null ? null : GroupId(value);
+}
 
 /// Clé de la séance guidée désignée par [guideUrl] (adresse de retour d'une
 /// saisie), `null` si ce n'est pas l'adresse d'un guide.
@@ -324,8 +353,10 @@ GoRouter buildRouter() => GoRouter(
                         ..add(StudentRecallEvent.started(studentId: id)),
                 ),
                 BlocProvider(create: (_) => getIt<StudentErasureBloc>()),
+                BlocProvider(create: (_) => getIt<PlacementBloc>()),
               ],
               child: StudentSheetPage(
+                today: getIt<Clock>().today,
                 onBack: () => context.go(AppRoutes.students),
                 onEdit: () => context.go(AppRoutes.editStudent(id)),
                 onOpenAssessment: () => context.go(AppRoutes.assessment(id)),
@@ -476,16 +507,21 @@ GoRouter buildRouter() => GoRouter(
             ],
             child: SuggestedSessionPage(
               onOpenSource: (ref) => context.go(AppRoutes.exercise(ref)),
-              onRecord: (group, main, recall) => context.go(
-                Uri(
-                  path: AppRoutes.newRecord,
-                  queryParameters: {
-                    'group': group.value,
-                    'main': main,
-                    ?(recall == null ? null : 'recall'): recall,
-                  },
-                ).toString(),
+              onRecord: (group, main, recall, sheet) => context.go(
+                AppRoutes.recordFromSuggestion(
+                  group: group,
+                  main: main,
+                  recall: recall,
+                  sheet: sheet,
+                ),
               ),
+              onOpenSheet: (id, audience) =>
+                  context.go(AppRoutes.sheet(id, audience: audience)),
+              onLaunch: (id, audience, group) => context.go(
+                AppRoutes.guide(id, audience: audience, group: group),
+              ),
+              onPlan: (id, audience) =>
+                  context.go(AppRoutes.plan(id, audience: audience)),
               onAddStudents: () => context.go(AppRoutes.newStudent),
             ),
           ),
@@ -574,6 +610,7 @@ GoRouter buildRouter() => GoRouter(
               audience: key.audience,
               session: key.sessionId,
               step: step,
+              group: key.group,
             );
             // Retour et fin : la séance planifiée d'où le guide a été lancé,
             // sinon la séance du catalogue.
@@ -593,6 +630,7 @@ GoRouter buildRouter() => GoRouter(
                     audience: key.audience,
                     session: key.sessionId,
                     step: step,
+                    group: key.group,
                   ),
                 ),
                 onRecord: (exercise, recall, step) {
@@ -603,7 +641,7 @@ GoRouter buildRouter() => GoRouter(
                       recall: recall,
                       sheet: id,
                       from: guide(step),
-                      group: defaults.group,
+                      group: defaults.group ?? key.group,
                       absent: defaults.absent,
                       date: defaults.date,
                     ),
@@ -638,6 +676,7 @@ GoRouter buildRouter() => GoRouter(
         final query = state.uri.queryParameters;
         final audience = _audienceParam(query['audience']);
         final session = _nonBlank(query['session']);
+        final group = _groupParam(query['group']);
         return BlocProvider(
           create: (_) {
             final cubit = getIt<RunPresentationCubit>();
@@ -658,6 +697,7 @@ GoRouter buildRouter() => GoRouter(
                 audience: audience,
                 session: session,
                 step: step,
+                group: group,
               ),
             ),
             onHome: () => context.go(AppRoutes.home),

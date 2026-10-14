@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repository.dart';
@@ -20,6 +21,7 @@ class ExportBackup {
     this._groups,
     this._sessionRecords,
     this._attempts,
+    this._acquisitions,
     this._assessments,
     this._plannedSessions,
     this._codec,
@@ -31,6 +33,7 @@ class ExportBackup {
   final GroupRepository _groups;
   final SessionRecordRepository _sessionRecords;
   final AttemptRepository _attempts;
+  final AcquisitionRepository _acquisitions;
   final AssessmentRepository _assessments;
   final SessionRepository _plannedSessions;
   final BackupCodec _codec;
@@ -44,6 +47,7 @@ class ExportBackup {
       groups: await _groups.all(),
       sessionRecords: await _sessionRecords.all(),
       attempts: await _attempts.all(),
+      blockAcquisitions: await _acquisitions.all(),
       assessments: await _assessments.all(),
       plannedSessions: await _plannedSessions.getAll(),
     );

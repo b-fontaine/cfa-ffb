@@ -62,9 +62,12 @@ void main() {
       expect(geometry.pocketRadiusPx, closeTo(8.2379, 1e-3));
     });
 
-    test('the head string is at x = 2', () {
-      expect(TableGeometry.headStringX, 2);
-      expect(geometry.toPixel(const Offset(2, 0)).dx, 150);
+    test('the head string is at x = 1.6', () {
+      expect(TableGeometry.headStringX, closeTo(1.6, 1e-12));
+      expect(
+        geometry.toPixel(const Offset(TableGeometry.headStringX, 0)).dx,
+        closeTo(130, 1e-9),
+      );
     });
 
     test('exposes the six pocket centres at the corners and sides', () {

@@ -7,6 +7,7 @@ import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_reposito
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/features/manage_students/domain/enroll_student.dart';
+import 'package:billard_cfa/features/place_student/domain/mark_block_acquired.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
 import 'package:billard_cfa/features/record_results/domain/record_attempt.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
@@ -30,6 +31,7 @@ class UiWorld {
   /// « Aujourd'hui » des scénarios.
   static final today = DateTime(2026, 10, 12, 9, 30);
 
+  static late FixedClock _clock;
   static bool _ready = false;
   static int _seededDays = 0;
 
@@ -38,7 +40,8 @@ class UiWorld {
     await getIt.reset();
     await configureDependencies(environment: Environment.test);
     await getIt.unregister<Clock>();
-    getIt.registerSingleton<Clock>(FixedClock(today));
+    _clock = FixedClock(today);
+    getIt.registerSingleton<Clock>(_clock);
     _ready = true;
     _seededDays = 0;
     addTearDown(() async {
@@ -53,6 +56,9 @@ class UiWorld {
       await getIt<SessionSheetRepository>().getAll();
     });
   }
+
+  /// Fait avancer « aujourd'hui » sans reconstruire les écrans ouverts.
+  static void advanceDays(int days) => _clock.advance(Duration(days: days));
 
   static T _value<T>(Result<T> result) => switch (result) {
     Ok(:final value) => value,
@@ -151,6 +157,27 @@ class UiWorld {
     for (final spec in catalogue!.blockById(blockId)!.exercises) {
       await seedPasses(tester, name, spec.ref, 5, passed: true);
     }
+  }
+
+  /// Marque [blockId] acquis au positionnement le [date] (cas d'usage réel).
+  static Future<void> seedAcquired(
+    WidgetTester tester,
+    String name,
+    String blockId,
+    DateTime date,
+  ) async {
+    await prepare(tester);
+    await tester.runAsync(() async {
+      final student = await studentNamed(name);
+      _value(
+        await getIt<MarkBlockAcquired>()(
+          studentId: student.id,
+          blockId: blockId,
+          date: date,
+          today: DateTime(today.year, today.month, today.day),
+        ),
+      );
+    });
   }
 
   static Future<int> attemptCountOf(String name) async {

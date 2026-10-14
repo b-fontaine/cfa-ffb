@@ -18,6 +18,7 @@ class PassEntryCard extends StatefulWidget {
     required this.spec,
     required this.passesDone,
     required this.maxPasses,
+    required this.passesRequired,
     required this.onSubmit,
     this.feedback,
     this.nextExerciseLabel,
@@ -29,6 +30,10 @@ class PassEntryCard extends StatefulWidget {
   final ExerciseSpec spec;
   final int passesDone;
   final int maxPasses;
+
+  /// Passages réussis cumulés pour valider l'exercice (« n sur 5 » à la
+  /// reprise d'un exercice acquis au positionnement).
+  final int passesRequired;
   final void Function(int potted, int total) onSubmit;
 
   /// Dernier passage enregistré (retour affiché sous le bouton).
@@ -131,6 +136,15 @@ class _PassEntryCardState extends State<PassEntryCard> {
                     ),
               style: theme.textTheme.bodyLarge,
             ),
+            if (feedback.resumedFromPlacement) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                l10n.placementResumedFeedback(
+                  feedback.result.passedCount,
+                  widget.passesRequired,
+                ),
+              ),
+            ],
             if (feedback.justValidated) ...[
               const SizedBox(height: AppSpacing.xs),
               StatusBadge(tone: BadgeTone.success, label: l10n.recordValidated),

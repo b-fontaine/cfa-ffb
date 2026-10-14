@@ -52,7 +52,7 @@ Feature: Leaving a screen
     And I tap {'Record the results of this session'} text
     Then I see {'Record the results'} text
     When I tap {'Open the session'} text
-    Then I see text containing {'Main notion:'}
+    Then I see text containing {'Catalogue session:'}
 
   Scenario: An exercise sheet leads back to the suggestion
     Given the club has the student {'Léa'} in the {'children'} audience

@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/data/drift_acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
@@ -103,6 +104,7 @@ void main() {
           attempt(ref('a', 1), potted: 3),
           attempt(ref('a', 1), potted: 4, id: 'a2', passIndex: 2),
         ],
+        blockAcquisitions: const [],
       ),
       exportedAt: DateTime.utc(2026, 10, 12),
     );
@@ -112,6 +114,7 @@ void main() {
       DriftGroupRepository(db, clock),
       DriftSessionRecordRepository(db, clock),
       _FailingSecondAttempt(DriftAttemptRepository(db, clock)),
+      DriftAcquisitionRepository(db, clock),
       DriftAssessmentRepository(db, clock),
       DriftSessionRepository(db, clock),
       BackupCodec(),
@@ -143,6 +146,7 @@ void main() {
       DriftGroupRepository(db, clock),
       DriftSessionRecordRepository(db, clock),
       DriftAttemptRepository(db, clock),
+      DriftAcquisitionRepository(db, clock),
       DriftAssessmentRepository(db, clock),
       DriftSessionRepository(db, clock),
       BackupCodec(),

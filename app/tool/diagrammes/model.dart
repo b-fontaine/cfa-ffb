@@ -20,8 +20,8 @@ const double objectBallRadius = BlackballDimensions.objectBallRadius;
 /// les billes tangentes ou posées contre une bande à ce près sont tolérées.
 const double placementTolerance = 0.01;
 
-/// Ligne de départ dessinée `[Prop]` (la règle `[FFB]` donne 1,6).
-const double startLineX = BlackballDimensions.headStringDrawn;
+/// Ligne de départ `[FFB]` : 1/5 de la longueur (1,6 case).
+const double startLineX = BlackballDimensions.headString;
 
 /// Bornes tolérées pour les coordonnées (poches, bords).
 const minX = -0.5;

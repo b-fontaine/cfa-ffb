@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/data/drift_acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
 import 'package:billard_cfa/entities/group/data/drift_group_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/drift_assessment_repository.dart';
@@ -9,6 +10,7 @@ import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/drift_support.dart';
+import 'acquisition_contract.dart';
 import 'backup_contract.dart';
 import 'repository_contract.dart';
 import 'repository_harness.dart';
@@ -22,6 +24,7 @@ Future<RepositoryHarness> _open() async {
     seasons: DriftSeasonRepository(db, clock),
     sessionRecords: DriftSessionRecordRepository(db, clock),
     attempts: DriftAttemptRepository(db, clock),
+    acquisitions: DriftAcquisitionRepository(db, clock),
     assessments: DriftAssessmentRepository(db, clock),
     sessions: DriftSessionRepository(db, clock),
     unitOfWork: DriftUnitOfWork(db),
@@ -32,4 +35,11 @@ Future<RepositoryHarness> _open() async {
 void main() {
   repositoryContract('drift (SQLite)', _open);
   backupContract('drift (SQLite)', _open);
+  acquisitionContract('drift (SQLite)', () async {
+    final db = openMemoryDatabase();
+    return (
+      repository: DriftAcquisitionRepository(db, TickingClock()),
+      close: db.close,
+    );
+  });
 }

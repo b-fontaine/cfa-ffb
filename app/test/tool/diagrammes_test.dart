@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../tool/diagrammes/ascii_renderer.dart';
 import '../../tool/diagrammes/cli.dart';
 import '../../tool/diagrammes/ghosts.dart';
+import '../../tool/diagrammes/model.dart';
 import '../../tool/diagrammes/summary.dart';
 import '../../tool/diagrammes/validator.dart';
 
@@ -450,6 +451,18 @@ diagrams:
       text = renderAscii(example);
       lines = text.split('\n');
     });
+
+    test(
+      'puts the start line at 1.6 [FFB] (column 25), not 2.0 (column 30)',
+      () {
+        expect(startLineX, closeTo(1.6, 1e-12));
+        expect(text, contains('départ x=1.6'));
+        final grid = lines.take(31).toList();
+        bool hasBarAt(int c) => grid.any((l) => l.length > c && l[c] == '|');
+        expect(hasBarAt(6 + (1.6 * 12).round()), isTrue);
+        expect(hasBarAt(6 + (2.0 * 12).round()), isFalse);
+      },
+    );
 
     test('draws the table frame, pockets and start line', () {
       final grid = lines.where((l) => l.contains('O')).toList();

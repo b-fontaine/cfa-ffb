@@ -20,6 +20,7 @@ void main() {
       world.students,
       world.seasons,
       world.attempts,
+      world.acquisitions,
       world.catalogueRepository,
       world.config,
     );
@@ -68,6 +69,17 @@ void main() {
     expect(first.alertCount, 0);
     expect(group.members.last.alertCount, 1);
     expect(club.alertCount, 1);
+  });
+
+  test('counts the exercises acquired at placement in the progress', () async {
+    await world.seedClub(studentNames: ['s1', 's2']);
+    await world.acquisitions.add(acquisition('b', student: 's2'));
+
+    final club = ok(await overview(today: day(12)));
+
+    final members = club.groups.single.members;
+    expect(members.first.validatedCount, 0);
+    expect(members.last.validatedCount, 3);
   });
 
   test('puts a student without membership in the unassigned list', () async {

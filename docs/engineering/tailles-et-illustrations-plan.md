@@ -1,6 +1,6 @@
 # Tailles du matériel et illustrations « où se placer, où viser, doser » : plan de conception
 
-Statut : **lots A, B et C réalisés** (T1 à T7 : module de dimensions, blanche plus petite partout, géométrie de la bille fantôme et des quantités, validateurs, FORMAT, recalcul des positions dérivées ; `CueBallTarget`, `PlayerFigure`, `PowerRatio`, ADR 0005 et migration des séances). **Restent** : la revue séparée du lot T8 (`architecte-fsd`, `testeur-bdd`, `relecteur-pedagogique`), la validation visuelle par l'animateur dans Widgetbook, et les arbitrages D2 (ligne de départ) et D5 (`contact_height` : `CueSideView.showContact` reste le seul rendu, sans type YAML). Écarts à la conception : pas de `FigureColors` (couleurs lues dans `ColorScheme`, `BallColors`, `TableColors`), pas de paramètre `compact` ni d'axe « Centre » sur la cible, `lead_eye` facultatif (déduit de `head_case`), `CueSideView` conservé. Rédigé le 2026-10-13 à la suite de quatre retours de l'utilisateur. Contexte : application V1 non livrée, aucune compatibilité de données à préserver (schéma, assets, YAML se modifient directement). Dimensions de référence : `../knowledge/02-techniques/06-dimensions-du-materiel.md` (non modifié par ce plan). Règles de développement : `AGENTS.md`, skills `dev-feature`, `dev-bdd`, `dev-tdd`, et `architecture.md`, `testing.md`, `quality-gates.md`, `design-system.md`, `i18n.md`.
+Statut : **lots A, B et C réalisés, D2 (ligne de départ à 1,6 `[FFB]`) réalisée** (T1 à T7 : module de dimensions, blanche plus petite partout, géométrie de la bille fantôme et des quantités, validateurs, FORMAT, recalcul des positions dérivées ; `CueBallTarget`, `PlayerFigure`, `PowerRatio`, ADR 0005 et migration des séances). **Restent** : la revue séparée du lot T8 (`architecte-fsd`, `testeur-bdd`, `relecteur-pedagogique`), la validation visuelle par l'animateur dans Widgetbook, et l'arbitrage D5 (`contact_height` : `CueSideView.showContact` reste le seul rendu, sans type YAML). Écarts à la conception : pas de `FigureColors` (couleurs lues dans `ColorScheme`, `BallColors`, `TableColors`), pas de paramètre `compact` ni d'axe « Centre » sur la cible, `lead_eye` facultatif (déduit de `head_case`), `CueSideView` conservé. Rédigé le 2026-10-13 à la suite de quatre retours de l'utilisateur. Contexte : application V1 non livrée, aucune compatibilité de données à préserver (schéma, assets, YAML se modifient directement). Dimensions de référence : `../knowledge/02-techniques/06-dimensions-du-materiel.md` (non modifié par ce plan). Règles de développement : `AGENTS.md`, skills `dev-feature`, `dev-bdd`, `dev-tdd`, et `architecture.md`, `testing.md`, `quality-gates.md`, `design-system.md`, `i18n.md`.
 
 ## 0. Retours de l'utilisateur et réponse
 
@@ -16,7 +16,7 @@ Statut : **lots A, B et C réalisés** (T1 à T7 : module de dimensions, blanche
 | Réf. | Décision proposée | Alternative écartée | Pourquoi |
 |---|---|---|---|
 | D1 | Dessiner **à l'échelle réelle** : 1 case = 925 / 4 = 231,25 mm ; bille de but r = 0,1098 case, blanche r = 0,1038 case ; la convention « r = 0,1 » disparaît | Garder r_o = 0,1 et ne corriger que le rapport (r_c = 0,0945) | L'utilisateur demande de la rigueur « avec toutes les tailles » ; une seule source en mm évite deux conventions ; coût mesuré (revérifié le 2026-10-13 sur les 191 diagrammes transcrits) : 2 paires de billes de but à 0,2195 case passent sous le nouveau seuil 2 r_o = 0,2197 (tangentes à 0,0001 case = 0,03 mm près, précision de transcription 0,01) et 3 billes dépassent la bande de 0,01 case ; le validateur de placement doit donc tolérer 0,01 case (voir 1.3 et 1.4) |
-| D2 | Ligne de départ **laissée à x = 2,0 `[Prop]`** (hors périmètre), mais isolée dans le module avec la valeur `[FFB]` 1,6 | La passer à 1,6 | 46 (bornes exclues) à 60 (bornes incluses) des 191 diagrammes transcrits `[S]` ont au moins une bille ou un cercle entre x = 1,6 et x = 2,0 : un changement modifie leur lecture. Arbitrage de l'animateur (déjà ouvert dans le doc de dimensions § 4) |
+| D2 | **Tranchée le 2026-10-14 : ligne de départ à x = 1,6 `[FFB]`** (réalisée ; constante unique `headString`) | La laisser à 2,0 `[Prop]` | 46 (bornes exclues) à 60 (bornes incluses) des 191 diagrammes transcrits `[S]` ont au moins une bille ou un cercle entre x = 1,6 et x = 2,0 : le changement modifie leur lecture visuelle, mais les positions YAML sont absolues et inchangées. Arbitrage de l'animateur (doc de dimensions § 4) |
 | D3 | Le **quart de bille** se mesure par rapport à la blanche : d = r_o + r_c / 2 (fiche n° 7) ; `thin` = 0,95 · s `[Prop]` | « Demi-rayon de la bille de but » | Lecture de la source ; écart de 0,7 mm seulement mais la source le dit explicitement |
 | D4 | **Marqueur du procédé** à l'échelle réelle (8,5 mm, soit 0,177 r_c), avec **anneau de visibilité** ajouté pour la projection ; position « haut / bas / côté » à mi-rayon `[Prop]` | Point bleu agrandi sans échelle | Le procédé est 12 fois plus grand que le décalage de contact : à l'échelle il reste lisible, l'anneau le rend visible de loin |
 | D5 | Ajouter **en option** une 4e illustration `contact_height` (deux billes inégales au contact, vue de côté, écart exagéré et signalé) | Rien | La fiche n° 4 `[S]` dit « légèrement au-dessus de l'axe horizontal » ; à valider : c'est un ajout hors des trois demandes |
@@ -55,8 +55,7 @@ abstract final class BlackballDimensions {
   static const double cueBallRadius    = cueBallDiameterMm / 2 / cellMm;    // 0,10378
   static const double ghostDistance    = objectBallRadius + cueBallRadius;  // 0,21362 = s
   static const double pocketOpening    = pocketOpeningMm / cellMm;          // 0,32951
-  static const double headStringFromRule = columns * headStringFraction;    // 1,6 [FFB]
-  static const double headStringDrawn  = 2.0;                               // [Prop], arbitrage D2
+  static const double headString       = columns * headStringFraction;      // 1,6 [FFB], D2 tranchée
   static const double tipRadiusOnCueBall = tipDiameterMm / cueBallDiameterMm; // 0,177 (en rayons de blanche)
   static const double centerHeightGap  = objectBallRadius - cueBallRadius;  // 0,00605 case = 1,4 mm
 }
@@ -120,9 +119,9 @@ Constats par grep sur `ballRadius`, `0.1`, `2 *`, `DiagramLayout`, `TableGeometr
 
 | Fichier | Supposition | Changement |
 |---|---|---|
-| `tool/diagrammes/model.dart` | `ballRadius = 0.1`, `startLineX = 2.0` | importer `blackball_dimensions.dart` (fichier pur Dart, `dart run tool/diagrammes.dart` doit rester vert) ; sinon dupliquer **avec un test d'égalité** au module |
+| `tool/diagrammes/model.dart` | `ballRadius = 0.1` ; état actuel : `startLineX = BlackballDimensions.headString` (1,6) | importer `blackball_dimensions.dart` (fichier pur Dart, `dart run tool/diagrammes.dart` doit rester vert) ; sinon dupliquer **avec un test d'égalité** au module |
 | `tool/diagrammes/placement.dart` | chevauchement si distance < `2·ballRadius` | seuil selon les couleurs : blanche–bille de but `s`, bille de but–bille de but `2·r_o`, **moins une tolérance de 0,01 case** (précision de transcription : 2 paires `[S]` à 0,2195 pour un seuil de 0,2197 ; 3 billes à 0,01 case de la bande, à tolérer aussi dans le contrôle « dans la surface ») ; message avec la valeur |
-| `tool/diagrammes/ascii_renderer.dart` | utilise `startLineX` (l. 78 et 240) ; pas de rayon | suivre le renommage de la ligne de départ du module (D2) |
+| `tool/diagrammes/ascii_renderer.dart` | utilise `startLineX` (l. 78 et 240) ; pas de rayon | suivre la ligne de départ du module (D2) : faite, `startLineX` = `headString` |
 | `tool/diagrammes/validator.dart`, `summary.dart` | pas de rayon de bille (le `radius` du validateur est celui des zones `circle`) | aucun |
 | `tool/fiches/session_rules.dart` | liste fermée des 10 types (l. 20-24), clés par type (l. 159-165), `_ghostAim` (bornes seulement) | 3.4 et 4 |
 
@@ -440,8 +439,7 @@ Tolérance par défaut `1e-6` sur les cases ; `1e-4` si la valeur est arrondie i
 | variante 47,6 | `BallSizes(cueDiameterMm: 47.6)` | `s` = 49,2 / 231,25 = 0,212757 ; rapport 0,937008 |
 | billes égales (régression) | `BallSizes(cue: 50.8)` | `s` = 0,219676 (= 2 r_o) |
 | poche | 76,2 / 231,25 ; 76,2 / 50,8 | 0,329514 ; 1,5 |
-| ligne de départ (règle) | 8 × 0,2 | 1,6 |
-| ligne de départ (dessinée) | constante `[Prop]` | 2,0 |
+| ligne de départ (règle, dessinée) | 8 × 0,2 | 1,6 |
 | procédé / blanche | 8,5 / 48 | 0,177083 (bornes 0,1667 et 0,1875) |
 | écart de hauteur | 25,4 − 24,0 | 1,4 mm = 0,006054 case |
 | aucune autre déclaration | grep sur `lib/`, `tool/` | pas de `ballRadius` hors module (règle d'architecture) |
@@ -560,7 +558,7 @@ Widgets : légendes présentes, ordre 1 à 6, texte ≥ 14 ; `Semantics` ; `view
 | `FORMAT` des diagrammes parle de « transcriptions à rayon 0.1 » | Mise à jour documentée (1.3) ; les positions `[S]` restent la mesure du PDF |
 | Poches à 0,33 case peu visibles en projection | D6 : contrôle visuel ; repli possible sur un disque d'ombre plus large sans changer l'ouverture réelle |
 | Grille amplitude × vitesse présentée comme règle fédérale | Mention `[Prop]` dans le FORMAT, l'`alt` et le badge « Proposition » (V19 : pas le mot « officiel ») |
-| Ligne de départ 1,6 (`[FFB]`) contre 2,0 (`[Prop]`) | D2 : laissée ; arbitrage de l'animateur, toute valeur change 50 diagrammes |
+| Ligne de départ 1,6 (`[FFB]`) contre 2,0 (`[Prop]`) | D2 tranchée le 2026-10-14 : 1,6 `[FFB]` ; positions YAML inchangées |
 | Masses (94 g / 116 g) non dessinables | Non utilisées par les illustrations ; ne jamais les afficher comme règle fédérale |
 | Longueur de queue non spécifiée | Dessinée à 0,83 H `[Prop]`, sans cote affichée |
 | `tool/` importe `shared/lib` | À vérifier par `dart run tool/fiches.dart` et `check_architecture` ; repli : constantes dupliquées + test d'égalité |

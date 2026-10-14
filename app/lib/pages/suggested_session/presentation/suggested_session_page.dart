@@ -3,8 +3,10 @@ import 'package:billard_cfa/features/manage_students/presentation/bloc/students_
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/suggested_session_bloc.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/ui/session_plan_view.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/ui/empty_state.dart';
 import 'package:billard_cfa/shared/ui/error_view.dart';
 import 'package:billard_cfa/shared/ui/failure_message.dart';
@@ -19,11 +21,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Séance suggérée pour un groupe : élèves attendus, déroulé minuté,
 /// exercices (liens vers leur fiche), rappel. [onRecord] ouvre la saisie des
-/// résultats de la séance proposée.
+/// résultats de la séance proposée ; [onOpenSheet], [onLaunch] et [onPlan]
+/// agissent sur la séance du catalogue proposée (ADR 0009).
 class SuggestedSessionPage extends StatelessWidget {
   const SuggestedSessionPage({
     required this.onOpenSource,
     required this.onRecord,
+    required this.onOpenSheet,
+    required this.onLaunch,
+    required this.onPlan,
     required this.onAddStudents,
     super.key,
   });
@@ -33,8 +39,14 @@ class SuggestedSessionPage extends StatelessWidget {
     GroupId groupId,
     String mainBlockId,
     String? recallBlockId,
+    SheetId? sheetId,
   )
   onRecord;
+  final void Function(SheetId id, Audience audience) onOpenSheet;
+  final void Function(SheetId id, Audience audience, GroupId group) onLaunch;
+
+  /// `id` nul : notion sans séance du catalogue.
+  final void Function(SheetId? id, Audience audience) onPlan;
   final VoidCallback onAddStudents;
 
   @override
@@ -157,7 +169,12 @@ class SuggestedSessionPage extends StatelessWidget {
                       state.groupId!,
                       plan.mainBlockId,
                       plan.recallBlockId,
+                      plan.sheet?.option.id,
                     ),
+                    onOpenSheet: (id) => onOpenSheet(id, plan.audience),
+                    onLaunch: (id) =>
+                        onLaunch(id, plan.audience, state.groupId!),
+                    onPlan: (id) => onPlan(id, plan.audience),
                   );
               }
             },

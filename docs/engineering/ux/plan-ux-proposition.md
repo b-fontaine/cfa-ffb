@@ -29,15 +29,15 @@ lots fonctionnels. Trois besoins restent sans lot :
 
 | Lot | Contenu | Recommandations | Effort | Dépend de |
 |---|---|---|---|---|
-| **U1** Fondations du design system | ADR 0008 ; rôles de couleur (bleu-tapis en `secondary`, `BrandColors`) ; `SectionCard.emphasis` ; retrait du logo derrière un drapeau ; icônes de navigation ; `PassDots`, `TimerChip`, `PhaseTimeline`, `StepAppBar` avec tests, use cases et feuille Widgetbook « Rôles de couleur » | R1, R2, R3, R4 | M | : |
+| **U1** Fondations du design system | ADR 0010 (0008 et 0009 sont prises par les lots 7 et 8) ; rôles de couleur (bleu-tapis en `secondary`, `BrandColors`) ; `SectionCard.emphasis` ; retrait du logo derrière un drapeau ; icônes de navigation ; `PassDots`, `TimerChip`, `PhaseTimeline`, `StepAppBar` avec tests, use cases et feuille Widgetbook « Rôles de couleur » | R1, R2, R3, R4 | M | : |
 | **U2** Lisibilité des schémas | annotations hors trajectoire, halo, queue non coupée, repères à la taille de la blanche, médaillon `inset`, étiquettes ≥ 16 px en présentation ; corrige F2 | R5 | M | : |
 | **U3** Présentation plein écran | `DiagramStage`, plein écran natif, bandeau de légende réservé, flèches latérales, bandeau « tournez l'appareil » ; corrige F1 et le lot 13 | R10 | M | U1, U2 |
 | **U4** Guide en mode « Mener » | route hors shell, `StepAppBar` + `PhaseTimeline`, schéma en premier, sections repliées, badges masqués sauf « Relecture », minuteur en en-tête, barre basse à trois actions ; corrige F3 et le lot 12 | R7, R9 | L | U1 |
 | **U5** Saisie rapide en grille | grille élève × passage avec `PassDots`, sélecteur d'exercice nommé et non tronqué, liste compacte sur téléphone, historique groupé, feuille basse depuis le guide ; corrige F4 | R11 | L | U1 |
 | **U6** Navigation recentrée | destinations « Aujourd'hui / Élèves / Résultats / Séances (onglets) / Plus » ; réglages (F8) sous « Plus » ; rappel de sauvegarde | R6, R12 (onglets) | M | U1 |
-| **U7** Accueil « Aujourd'hui » et bilan de fin de séance | `NowCard`, séance en cours, prochaine séance, alertes, semaine, sauvegarde ; écran de bilan à « Terminer » avec proposition de la séance suivante | R8, § 4.4 | L | U6, lot 6 (livré : date, groupe, « Résultats saisis »), lot 8 |
-| **U8** Catalogue et détail en mode « Préparer » | hiérarchie des lignes, badge unique de relecture, marqueur de parcours par groupe, `PhaseTimeline` dans le détail, deux colonnes | R12, R13 | M | U1, lot 8 (marqueur) |
-| **U9** Fiche élève, vue élève et vue de groupe | parcours en cases, en-tête « en cours / prochain / alerte », courbes repliées, vue « à montrer à l'élève », heat-map de groupe et assiduité | R14, R15 | M | U1, lot 7, lot 10 |
+| **U7** Accueil « Aujourd'hui » et bilan de fin de séance | `NowCard`, séance en cours, prochaine séance, alertes, semaine, sauvegarde ; écran de bilan à « Terminer » avec proposition de la séance suivante | R8, § 4.4 | L | U6, lots 6 et 8 (livrés : date, groupe, « Résultats saisis », séance suivante) |
+| **U8** Catalogue et détail en mode « Préparer » | hiérarchie des lignes, badge unique de relecture, marqueur de parcours par groupe, `PhaseTimeline` dans le détail, deux colonnes | R12, R13 | M | U1, lot 8 (livré : marqueur) |
+| **U9** Fiche élève, vue élève et vue de groupe | parcours en cases, en-tête « en cours / prochain / alerte », courbes repliées, vue « à montrer à l'élève », heat-map de groupe et assiduité | R14, R15 | M | U1, lot 7 (livré), lot 10 |
 
 Chaque lot suit `dev-feature` : scénarios `.feature` d'abord (voir § 4),
 puis TDD, revue `architecte-fsd` + `testeur-bdd` dans un contexte séparé,
@@ -62,8 +62,10 @@ mis à jour.
 
 ### H1 — La boucle de saison complète
 
-- Les lots 5 et 6 sont **livrés** (ADR 0006 et 0007) ; les lots 7, 8, 9, 10,
-  11 restent, dans le même ordre.
+- Les lots 5 à 8 sont **livrés** (ADR 0006 à 0009) ; les lots 9, 10, 11
+  restent, dans le même ordre. Les lots 7 et 8 ont été livrés avant U1 : la
+  fiche élève (bloc acquis) et la séance suggérée (séance du catalogue
+  proposée) seront reprises avec le design system par U9 et U8.
 - Le lot 6 fournit déjà ce que U7 consomme : séances planifiées triées par
   date, groupe, lien dérivé « Résultats saisis » (`PlannedSessionSummary`).
   U7 n'a plus qu'à exposer « prochaine » et « en cours » (`RunSheetSessions`).
@@ -71,10 +73,12 @@ mis à jour.
   que comme sixième onglet ; U6 est donc placé avant le lot 9.
 - **Ajout U5** en tête de H1 : la saisie est l'action la plus fréquente de la
   saison ; sa grille rend le lien séance ↔ saisie (lot 6) utilisable en salle.
-- **Ajout U7** après le lot 8 : l'accueil « Aujourd'hui » n'a de sens qu'avec
-  une séance datée (livré) et une suggestion reliée au catalogue.
-- **Ajout U9** avec le lot 10 (vues de groupe, acquittement) et après le
-  lot 7 (positionnement initial) : même objet, même écran.
+- **Ajout U7** après le lot 9 : l'accueil « Aujourd'hui » n'a de sens qu'avec
+  une séance datée et une suggestion reliée au catalogue, toutes deux livrées
+  (lots 6 et 8).
+- **Ajout U9** avec le lot 10 (vues de groupe, acquittement) ; le lot 7
+  (positionnement initial, livré) lui fournit les cases « acquis ».
+- **Ajout U8** avec U9 : le lot 8 (livré) fournit le marqueur de parcours.
 
 ### H2 — Usage en salle
 
@@ -97,7 +101,6 @@ mis à jour.
 - Ajouter aux rappels périodiques (lot 22) les deux rappels sobres de
   [recommandations § 4](recommandations-design.md#4-envie-de-revenir) :
   veille de séance planifiée et sauvegarde ancienne.
-- **Ajout U8** ici si le lot 8 tarde ; sinon en H1 avec lui.
 
 ## 4. Critères d'acceptation et scénarios BDD par lot
 
@@ -205,7 +208,7 @@ s'imposent aux lots U1 à U9 ; toute remise en cause passe par un ADR.
 
 | # | Question | Décision `[U]` |
 |---|---|---|
-| Q1 | Bleu-tapis pour les états et rouge en accent (ADR 0008) ? | **oui** |
+| Q1 | Bleu-tapis pour les états et rouge en accent (ADR 0010) ? | **oui** |
 | Q2 | Retirer le logo FFB tant que l'autorisation n'est pas écrite ? | **oui**, derrière un drapeau de thème |
 | Q3 | Destination « Plus » (sauvegarde + réglages) à la place de « Sauvegarde » ? | **oui** |
 | Q4 | Mode « Relecture » par défaut quand le guide est lancé sans séance planifiée ? | **oui** |

@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
 import 'package:billard_cfa/entities/group/domain/current_groups.dart';
@@ -20,6 +21,7 @@ class GetClubOverview {
     this._students,
     this._seasons,
     this._attempts,
+    this._acquisitions,
     this._catalogue,
     this._config,
   );
@@ -28,6 +30,7 @@ class GetClubOverview {
   final StudentRepository _students;
   final SeasonRepository _seasons;
   final AttemptRepository _attempts;
+  final AcquisitionRepository _acquisitions;
   final CatalogueRepository _catalogue;
   final RulesConfig _config;
 
@@ -35,6 +38,7 @@ class GetClubOverview {
       runGuarded(() async {
         final catalogue = await _catalogue.load();
         final attempts = await _attempts.all();
+        final acquisitions = await _acquisitions.all();
         final groups = currentGroups(
           await _groups.all(),
           currentSeasons: {
@@ -48,6 +52,7 @@ class GetClubOverview {
               final progress = StudentProgress.derive(
                 studentId: student.id,
                 attempts: attempts,
+                acquisitions: acquisitions,
                 rates: catalogue.rates,
                 config: _config,
               );

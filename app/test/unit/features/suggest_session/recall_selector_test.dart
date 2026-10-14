@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
@@ -36,11 +37,13 @@ ExerciseAttempt pass(
 Map<StudentId, StudentProgress> progress(
   Map<String, List<ExerciseAttempt>> byStudent, {
   RulesConfig? config,
+  List<BlockAcquisition> acquisitions = const [],
 }) => {
   for (final entry in byStudent.entries)
     StudentId(entry.key): StudentProgress.derive(
       studentId: StudentId(entry.key),
       attempts: entry.value,
+      acquisitions: acquisitions,
       rates: buildCatalogue().rates,
       config: config ?? _config,
     ),

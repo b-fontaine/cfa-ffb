@@ -23,6 +23,7 @@ void main() {
     sheet = GetStudentSheet(
       world.students,
       world.attempts,
+      world.acquisitions,
       world.sessions,
       world.groups,
       world.assessments,
@@ -103,6 +104,29 @@ void main() {
     expect(result.series.single.alert, AlertLevel.attention);
     expect(result.series.single.consecutiveFailures, 3);
     expect(result.report.activeAlerts, hasLength(1));
+  });
+
+  test('skips an acquired block and counts its exercises', () async {
+    await world.acquisitions.add(acquisition('a'));
+
+    final result = ok(await sheet(student));
+
+    expect(result.nextExercise, ref('b', 1));
+    expect(result.report.validatedCount, 3);
+    expect(result.report.blocks.first.status, BlockStatus.acquiredAtPlacement);
+    expect(result.series, isEmpty, reason: 'aucun passage fictif');
+  });
+
+  test('hides the alert of an exercise acquired after the failures', () async {
+    for (var i = 0; i < 3; i++) {
+      await pass(ref('a', 1), 0, id: 'f$i', dayOfMonth: 2 + i);
+    }
+    await world.acquisitions.add(acquisition('a', day: 6));
+
+    final result = ok(await sheet(student));
+
+    expect(result.series.single.alert, AlertLevel.none);
+    expect(result.report.activeAlerts, isEmpty);
   });
 
   test('gives the latest assessment with the readiness hint', () async {

@@ -30,6 +30,7 @@ void main() {
     attempts: 3,
     assessments: 0,
     plannedSessions: 0,
+    blockAcquisitions: 0,
   );
 
   setUp(() {

@@ -46,7 +46,7 @@ revues séparées, `check.sh --full`).
 
 | Lot | Contenu | Remplace / corrige |
 |---|---|---|
-| **U1** Fondations du design system | ADR 0008 : bleu-tapis en `secondary`, rouge FFB en accent (`BrandColors`) ; `SectionCard.emphasis` ; logo FFB derrière un drapeau (ADR 0002, décision 5) ; icônes de navigation ; composants `PassDots`, `TimerChip`, `PhaseTimeline`, `StepAppBar` | états « sélectionné » roses, piste rouge en sombre |
+| **U1** Fondations du design system | ADR 0010 (le numéro 0008 est pris par le positionnement initial, 0009 par la suggestion ↔ catalogue) : bleu-tapis en `secondary`, rouge FFB en accent (`BrandColors`) ; `SectionCard.emphasis` ; logo FFB derrière un drapeau (ADR 0002, décision 5) ; icônes de navigation ; composants `PassDots`, `TimerChip`, `PhaseTimeline`, `StepAppBar` | états « sélectionné » roses, piste rouge en sombre |
 | **U2** Lisibilité des schémas | annotations hors trajectoire, halo, queue non coupée, repères à la taille de la blanche, médaillon `inset` (quantité de bille), étiquettes ≥ 16 px en présentation | F2 |
 | **U3** Présentation plein écran | `DiagramStage` (table sur la plus grande dimension, légende réservée, contrôles en barre basse), plein écran natif, « tournez l'appareil » | F1, lot 13 |
 | **U4** Guide en mode « Mener » | route hors shell, en-tête compact + frise des phases, schéma en premier, sections repliées, badges de provenance masqués sauf mode « Relecture », minuteur en en-tête, barre basse Précédent / Noter / Suivant | F3, lot 12 |
@@ -65,9 +65,13 @@ revues séparées, `check.sh --full`).
    `relecteur-pedagogique`, dans un contexte séparé.
 3. Corriger F7 (un texte « pas de rappel : une notion par séance enfants »).
    F1 et F2 sont absorbés par U3 et U2, pour ne pas corriger deux fois.
-4. Faire trancher par l'animateur : D2 (ligne de départ 2,0 ou 1,6), D5
-   (`contact_height`), unité « séance » des nombres conseillés, dimensionnement
-   groupes / saison (questions 2 à 4 de `docs/knowledge/08-lacunes-et-questions-ouvertes.md`).
+4. ~~Faire trancher par l'animateur~~ — **tranché le 2026-10-14** : D5 =
+   **ajouter** l'illustration `contact_height` ; questions 2 à 4 de
+   `docs/knowledge/08-lacunes-et-questions-ouvertes.md` (unité « séance »,
+   dimensionnement groupes / saison, synchronisation) : recommandations de
+   l'assistant suivies, à consigner dans ce fichier. Reste à **réaliser** D5
+   dans `tailles-et-illustrations-plan.md`. D2 (ligne de départ à 1,6 `[FFB]`)
+   est **réalisée** : les positions YAML, absolues, sont inchangées.
    Les questions Q1 à Q8 du plan UX sont **tranchées** `[U]` le 2026-10-14
    (toutes dans le sens recommandé : voir
    [ux/plan-ux-proposition.md § 6](ux/plan-ux-proposition.md)).
@@ -75,8 +79,9 @@ revues séparées, `check.sh --full`).
 Lots UX en H0 :
 
 - **U1** Fondations du design system : prérequis de tout nouvel écran, sans
-  dépendance fonctionnelle ; à livrer avant les lots 7 et 8 pour ne pas les
-  reprendre ensuite.
+  dépendance fonctionnelle. Les lots 7 et 8 ont été livrés avant lui : les
+  écrans qu'ils ont touchés (fiche élève, séance suggérée) seront repris par
+  U9 et U8, qui absorbent cette reprise.
 - **U2** Lisibilité des schémas : court, sans dépendance, au cœur de la
   précision pédagogique.
 
@@ -92,16 +97,29 @@ Lots UX en H0 :
    « Noter les résultats » pré-rempli depuis le guide comme depuis la liste,
    la saisie et l'historique nomment la séance du catalogue. La liste expose
    déjà date, groupe et « Résultats saisis » : ce sont les données du lot U7.
-   - **U5** Saisie rapide en grille, juste après : la saisie est l'action la
+   - **U5** Saisie rapide en grille, en tête de H1 : la saisie est l'action la
      plus fréquente de la saison ; sa grille rend le lien séance ↔ saisie du
      lot 6 utilisable en salle. Dépend de U1.
-7. **Positionnement initial / bloc acquis** : marquer un bloc comme acquis sans
+7. ~~Positionnement initial / bloc acquis~~ : marquer un bloc comme acquis sans
    passage (élèves non débutants, rentrée) ; sinon la suggestion repart de
-   « posture » et la fiche affiche « 0 / 72 » toute la saison.
-8. **Suggestion ↔ catalogue** : la séance suggérée pointe un bloc ; elle doit
-   proposer la séance du catalogue correspondante (partie suivante non faite
-   par le groupe), avec « Planifier » (séance planifiée datée pour le groupe)
-   et « Lancer ».
+   « posture » et la fiche affiche « 0 / 72 » toute la saison. **Livré le
+   2026-10-14** — [ADR 0008](adr/0008-positionnement-initial-bloc-acquis.md),
+   [plan](positionnement-initial-plan.md). Décisions : action sur la fiche élève
+   par bloc, état distinct stocké (date + source « positionnement », pas de
+   passage fictif), bloc entier (15 blocs), compté dans « n / 72 » et saute
+   l'ordre de suggestion (libellé « acquis au positionnement », ordre rebond
+   puis rejet inchangé), réversible, un passage daté du même jour ou après
+   reprend la main sur son exercice seulement (le reste du bloc reste acquis).
+8. ~~Suggestion ↔ catalogue~~ : la séance suggérée propose la séance du
+   catalogue correspondante (partie suivante non faite par le groupe).
+   **Livré le 2026-10-14** — [ADR 0009](adr/0009-suggestion-seance-du-catalogue.md),
+   [plan](suggestion-catalogue-plan.md). Décisions : l'exercice de tête décide
+   (S1), « faite » = saisie avec séance et passage (S2, S7), notion sans séance
+   = repli explicite (S8), guide lancé avec le groupe (S6) ; aucune migration.
+   Actions livrées : « Ouvrir », « Lancer la séance guidée », « Saisir les
+   résultats » pré-rempli et « Planifier » (ouvre le planificateur ; la
+   création directe d'une séance planifiée datée pour le groupe revient à U7,
+   bilan de fin de séance).
    - **U6** Navigation recentrée, ensuite : « Aujourd'hui / Élèves /
      Résultats / Séances / Plus » ; à livrer avant le lot 9, qui prend place
      sous « Plus ». Dépend de U1.
@@ -109,13 +127,15 @@ Lots UX en H0 :
    `passesRequired`, seuil d'alerte, `recallStaleSessions`, part d'échec du
    groupe ; sous la destination « Plus » (U6), pas de sixième onglet.
    - **U7** Accueil « Aujourd'hui » et bilan de fin de séance, ensuite.
-     Dépend de U6, du lot 6 (livré) et du lot 8 (séance suivante proposée
-     dans le bilan).
+     Dépend de U6 ; les lots 6 et 8 dont il affiche les données sont livrés
+     (séance datée, séance suivante proposée dans le bilan).
 10. Reste de l'ADR 0003 : acquittement d'une alerte, note de jeu de la séance,
     vues de groupe (carte de chaleur bloc × élève, assiduité), compteurs
     d'initiation et de jeu persistés. **Livré avec U9** (fiche élève en
-    parcours, vue « à montrer à l'élève », vue de groupe), qui dépend aussi du
-    lot 7 pour les cases « acquis ».
+    parcours, vue « à montrer à l'élève », vue de groupe) ; les cases
+    « acquis » s'appuient sur le lot 7 (livré, ADR 0008).
+    - **U8** Catalogue et détail en mode « Préparer », avec U9 : le lot 8 est
+      livré, le marqueur de parcours par groupe a ses données.
 11. **Saisons et groupes** : clôture de saison (archiver, effacer les mineurs en
     lot), plusieurs groupes par public, déplacer un élève de groupe.
 
@@ -138,9 +158,8 @@ Lots UX en H0 :
 16. Workflow de validation des `[Prop]` : 18 séances sur 29 « à valider »,
     12 jeux adaptés ; marque « relu » persistante (point ouvert n° 1 du plan
     catalogue) ou export des remarques de l'animateur vers le YAML. S'appuie
-    sur le mode « Relecture » (U4) et le badge unique du catalogue (U8).
-    - **U8** Catalogue et détail en mode « Préparer » : ici si le lot 8
-      tarde, sinon en H1 avec lui (le marqueur de parcours en dépend).
+    sur le mode « Relecture » (U4) et le badge unique du catalogue (U8, en
+    H1 puisque le lot 8 est livré).
 17. Validation des diagrammes par l'animateur (lecture ≈ 0,15 case, jamais
     contrôlée) : mode « comparer au PDF page N ».
 18. Ingérer les règles officielles du Blackball (FFB / WPA) et le contenu du
@@ -151,8 +170,10 @@ Lots UX en H0 :
 
 ## H4 — Technique et distribution
 
-21. Déploiement web depuis la CI (le build existe dans `ci.yml`, il n'est pas
-    publié) ; build Android signé (plateforme prioritaire).
+21. Déploiement web depuis la CI : fait (`firebase-hosting-merge.yml` publie
+    `main` sur Firebase Hosting, `firebase-hosting-pull-request.yml` ouvre un
+    canal de prévisualisation par PR, même recette de build que `ci.yml`) ;
+    reste le build Android signé (plateforme prioritaire).
 22. Synchronisation multi-appareils (Firebase derrière les repositories, ADR
     0001) seulement si la question ouverte n° 4 est tranchée « oui » ; sinon
     rappel périodique de sauvegarde et export en fin de séance, plus deux
@@ -164,16 +185,16 @@ Lots UX en H0 :
 ## Ordre recommandé
 
 ```
-H0 : U1 → U2 → F7 → revue T8 → questions ouvertes (D2, D5, unité « séance »)
-H1 : U5 → 7 → 8 → U6 → 9 → U7 → 10 + U9 → 11
+H0 : U1 → U2 → F7 → revue T8 → réaliser D5 (les questions ouvertes sont tranchées)
+H1 : U5 → U6 → 9 → U7 → 10 + U9 + U8 → 11   (5 à 8 livrés)
 H2 : U4 → U3 → 14 → 15
-H3 : 16 (avec le mode Relecture de U4) → U8 → 17 → 18 → 19 → 20
+H3 : 16 (avec le mode Relecture de U4) → 17 → 18 → 19 → 20
 H4 : 21 → 22 (+ rappels) → 23
 ```
 
 U1 d'abord parce que tout en dépend et qu'il n'a aucune dépendance ; U5 tôt
 parce que la saisie est l'action quotidienne et que le lot 6 (livré) lui
-fournit groupe, date et séance du catalogue ; 7 et 8 ensuite (sans
-positionnement initial, le suivi ne tient pas une saison, et la suggestion
-doit mener à la séance du catalogue) ; U4 et U3 avant la première séance
-réelle en salle ; U7 quand les données qu'il affiche existent (6 livré, 8).
+fournit groupe, date et séance du catalogue ; les lots 7 et 8 sont livrés
+(ADR 0008 et 0009), U7 a donc déjà toutes les données qu'il affiche et U8
+son marqueur de parcours ; U4 et U3 avant la première séance réelle en
+salle.

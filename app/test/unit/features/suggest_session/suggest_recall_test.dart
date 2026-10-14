@@ -23,6 +23,7 @@ void main() {
       world.students,
       world.sessions,
       world.attempts,
+      world.acquisitions,
       world.catalogueRepository,
       world.config,
     );
@@ -40,6 +41,24 @@ void main() {
   }
 
   test('suggests nothing for a new student', () async {
+    expect(ok(await suggest(student)), isNull);
+  });
+
+  test('never recalls a block acquired at placement', () async {
+    await world.acquisitions.add(acquisition('a'));
+    for (var i = 0; i < 4; i++) {
+      await world.session(id: 'g$i', dayOfMonth: 10 + i);
+    }
+
+    expect(ok(await suggest(student)), isNull);
+  });
+
+  test('ignores the old failed passes of a block acquired since', () async {
+    await world.attempts.add(
+      attempt(ref('a', 2), potted: 0, id: 'old', dayOfMonth: 12),
+    );
+    await world.acquisitions.add(acquisition('a', day: 15));
+
     expect(ok(await suggest(student)), isNull);
   });
 
@@ -105,6 +124,7 @@ void main() {
       proposalWorld.students,
       proposalWorld.sessions,
       proposalWorld.attempts,
+      proposalWorld.acquisitions,
       proposalWorld.catalogueRepository,
       proposalWorld.config,
     );

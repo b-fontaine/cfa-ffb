@@ -420,15 +420,15 @@ void main() {
   });
 
   group('table markings', () {
-    testWidgets('draws the head string at x = 2 across the table', (
+    testWidgets('draws the head string at x = 1.6 across the table', (
       tester,
     ) async {
       final g = await _pump(tester, _arrows(const []));
       final lines = _calls(tester, '_TablePainter').where(
         (c) =>
             c.name == #drawLine &&
-            c.args[0] == g.toPixel(const Offset(2, 0)) &&
-            c.args[1] == g.toPixel(const Offset(2, 4)),
+            c.args[0] == g.toPixel(const Offset(1.6, 0)) &&
+            c.args[1] == g.toPixel(const Offset(1.6, 4)),
       );
       expect(lines, hasLength(1));
       expect(
@@ -442,8 +442,8 @@ void main() {
       final lines = _calls(tester, '_TablePainter').where(
         (c) =>
             c.name == #drawLine &&
-            c.args[0] == g.toPixel(const Offset(2, 0)) &&
-            c.args[1] == g.toPixel(const Offset(2, 4)),
+            c.args[0] == g.toPixel(const Offset(1.6, 0)) &&
+            c.args[1] == g.toPixel(const Offset(1.6, 4)),
       );
       expect(lines, isEmpty);
     });

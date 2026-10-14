@@ -64,7 +64,7 @@ class TableColors extends ThemeExtension<TableColors> {
   /// Losanges (diamants) posés sur les rails.
   final Color diamond;
 
-  /// Ligne de départ (x = 2).
+  /// Ligne de départ (x = 1,6).
   final Color headString;
 
   /// Grille pointillée 8 × 4.

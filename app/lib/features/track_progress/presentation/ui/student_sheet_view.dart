@@ -15,12 +15,22 @@ import 'package:flutter/material.dart';
 
 /// Fiche élève : synthèse, alertes, exercice suivant, progression par bloc et
 /// courbes de performance. [recall] est la carte de notion à rappeler, fournie
-/// par la page (autre fonctionnalité).
+/// par la page (autre fonctionnalité) ; [onMarkAcquired] et
+/// [onRevokeAcquired] sont les actions de positionnement (ADR 0008), aussi
+/// fournies par la page.
 class StudentSheetView extends StatelessWidget {
-  const StudentSheetView({required this.sheet, this.recall, super.key});
+  const StudentSheetView({
+    required this.sheet,
+    this.recall,
+    this.onMarkAcquired,
+    this.onRevokeAcquired,
+    super.key,
+  });
 
   final StudentSheet sheet;
   final Widget? recall;
+  final ValueChanged<String>? onMarkAcquired;
+  final ValueChanged<String>? onRevokeAcquired;
 
   /// Titre localisé « bloc · exercice n ».
   static String exerciseTitle(
@@ -99,7 +109,11 @@ class StudentSheetView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
-        BlockProgressList(sheet: sheet),
+        BlockProgressList(
+          sheet: sheet,
+          onMarkAcquired: onMarkAcquired,
+          onRevokeAcquired: onRevokeAcquired,
+        ),
         const SizedBox(height: AppSpacing.md),
         Semantics(
           header: true,

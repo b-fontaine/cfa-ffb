@@ -965,6 +965,7 @@ void main() {
       expect(TableGeometry.columns, DiagramLayout.columns);
       expect(TableGeometry.rows, DiagramLayout.rows);
       expect(TableGeometry.headStringX, DiagramLayout.headStringX);
+      expect(DiagramLayout.headStringX, closeTo(1.6, 1e-12));
       expect(TableGeometry.objectBallRadius, BallKind.red.radius);
       expect(TableGeometry.cueBallRadius, BallKind.white.radius);
     });

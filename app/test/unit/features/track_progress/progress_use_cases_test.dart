@@ -45,6 +45,7 @@ void main() {
     );
     getReport = GetStudentReport(
       world.attempts,
+      world.acquisitions,
       world.sessions,
       world.groups,
       world.catalogueRepository,
@@ -94,6 +95,16 @@ void main() {
         isTrue,
       );
       expect(report.activeAlerts, isEmpty);
+    });
+
+    test('counts the blocks acquired at placement', () async {
+      await world.acquisitions.add(acquisition('b'));
+
+      final report = ok(await getReport(_student));
+
+      expect(report.validatedCount, 3);
+      expect(report.blocks[1].status, BlockStatus.acquiredAtPlacement);
+      expect(report.blocks[1].acquiredOn, day(1));
     });
 
     test('counts validated exercises and lists active alerts', () async {

@@ -1,5 +1,7 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repository.dart';
@@ -20,6 +22,7 @@ class GetStudentSheet {
   GetStudentSheet(
     this._students,
     this._attempts,
+    this._acquisitions,
     this._sessions,
     this._groups,
     this._assessments,
@@ -29,6 +32,7 @@ class GetStudentSheet {
 
   final StudentRepository _students;
   final AttemptRepository _attempts;
+  final AcquisitionRepository _acquisitions;
   final SessionRecordRepository _sessions;
   final GroupRepository _groups;
   final AssessmentRepository _assessments;
@@ -45,6 +49,7 @@ class GetStudentSheet {
         final progress = StudentProgress.derive(
           studentId: studentId,
           attempts: attempts,
+          acquisitions: await _acquisitions.forStudent(studentId),
           rates: catalogue.rates,
           config: _config,
         );
@@ -67,7 +72,10 @@ class GetStudentSheet {
                   exercise: spec.ref,
                   rate: spec.rate,
                   status: result.status,
-                  alert: result.alert,
+                  // L'alerte d'un exercice acquis est masquée (ADR 0008).
+                  alert: progress.acquiredExercises.contains(spec.ref)
+                      ? AlertLevel.none
+                      : result.alert,
                   consecutiveFailures: result.consecutiveFailures,
                   passedCount: result.passedCount,
                   curve: ExerciseCurve.of(result, _config),

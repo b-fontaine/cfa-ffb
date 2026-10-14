@@ -93,6 +93,7 @@ void main() {
     final record = RecordAttempt(
       f.world.sessions,
       f.world.attempts,
+      f.world.acquisitions,
       f.world.catalogueRepository,
       f.world.ids,
       f.world.config,

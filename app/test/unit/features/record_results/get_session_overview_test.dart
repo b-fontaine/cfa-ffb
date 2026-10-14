@@ -34,6 +34,7 @@ void main() {
     expect(result.students.map((s) => s.firstName), ['abel', 'zoe']);
     expect(result.catalogue, world.catalogue);
     expect(result.maxPassesPerExercise, 2);
+    expect(result.passesRequired, 5);
   });
 
   test('lists the passes of the session in order', () async {

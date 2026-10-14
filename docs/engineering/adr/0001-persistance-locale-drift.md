@@ -42,7 +42,7 @@ transitivement ; SQLite vient des build hooks de `sqlite3` 3.x.
   base au lancement via `@preResolve`) et `test` (dépôts en mémoire,
   identifiants séquentiels). `configureDependencies` est asynchrone.
 
-### Schéma (version 4)
+### Schéma (version 5)
 
 - Chaque agrégat : `id` UUID texte unique, `seq` (ordre d'insertion stable,
   clé primaire), `createdAt`, `updatedAt`, `deletedAt` (suppression logique :
@@ -66,6 +66,12 @@ transitivement ; SQLite vient des build hooks de `sqlite3` 3.x.
   dit « groupe indisponible ») ; `session_records.sheet_id` (version 4,
   nullable) : séance du catalogue notée par la saisie, même règle de lecture
   que `planned_sessions.sheet_id` (jamais d'échec, import refusé si inconnue).
+- `block_acquisitions` (version 5, ADR 0008) : marqueur « bloc acquis au
+  positionnement » (`student_id`, `block_id`, `date` jour normalisé, `source`
+  texte), index `acquisitions_by_student`. Aucune clé étrangère : l'élève est
+  supprimé logiquement et le bloc est un asset du catalogue. Effacée
+  physiquement avec l'élève (`EraseStudent`, suppressions logiques comprises) ;
+  à l'import, bloc inconnu refusé (`backupUnknownBlock`).
 - Dates stockées en texte ISO 8601 (relues à l'identique, locale ou UTC).
 - Tables enfants (`student_audience_changes`, `group_memberships`,
   `session_presences`) remplacées avec leur parent. Aucune clé étrangère entre
@@ -73,9 +79,9 @@ transitivement ; SQLite vient des build hooks de `sqlite3` 3.x.
 
 ### Migrations
 
-- `schemaVersion = 4` (`AppDatabase.currentSchemaVersion`). Instantanés
+- `schemaVersion = 5` (`AppDatabase.currentSchemaVersion`). Instantanés
   `app/drift_schemas/app_database/drift_schema_v1.json` à
-  `drift_schema_v4.json`,
+  `drift_schema_v5.json`,
   helpers générés `app/test/drift/app_database/generated/` (`dart run drift_dev
   make-migrations`, puis `dart run drift_dev schema generate`).
 - Migration `from1To2` (`stepByStep`) : ajoute `assessments.comment`
@@ -84,11 +90,13 @@ transitivement ; SQLite vient des build hooks de `sqlite3` 3.x.
   (`TableMigration`, première migration avec transformation : `date` prend
   `created_at` **tel quel** pour les lignes existantes, instant UTC compris,
   sans conversion en heure locale ; `group_id` nulle) et ajoute
-  `session_records.sheet_id`. Tests
+  `session_records.sheet_id` ; `from4To5` crée la table `block_acquisitions` et
+  son index (additive). Tests
   (`test/unit/shared/persistence/migration_test.dart`) : le schéma créé par le
-  code égale les instantanés v1 à v4, une base v1 migre vers v2, une base v2
-  vers v3 et une base v3 vers v4 en gardant ses lignes (la séance planifiée
-  prend sa date de création, la séance saisie reste sans séance du catalogue),
+  code égale les instantanés v1 à v5, une base v1 migre vers v2, une base v2
+  vers v3, une base v3 vers v4 et une base v4 vers v5 en gardant ses lignes (la
+  séance planifiée prend sa date de création, la séance saisie reste sans séance
+  du catalogue, la table des marqueurs démarre vide),
   une base créée depuis un instantané est lisible, et l'ouverture d'une base
   d'une version plus récente est **refusée** (`DowngradeNotSupported`). Chaque
   évolution suivante ajoute son instantané, son `fromNToN+1` et son test.

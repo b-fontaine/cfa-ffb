@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repository.dart';
@@ -28,6 +29,7 @@ class ImportBackup {
     this._groups,
     this._sessionRecords,
     this._attempts,
+    this._acquisitions,
     this._assessments,
     this._plannedSessions,
     this._codec,
@@ -40,6 +42,7 @@ class ImportBackup {
   final GroupRepository _groups;
   final SessionRecordRepository _sessionRecords;
   final AttemptRepository _attempts;
+  final AcquisitionRepository _acquisitions;
   final AssessmentRepository _assessments;
   final SessionRepository _plannedSessions;
   final BackupCodec _codec;
@@ -64,6 +67,9 @@ class ImportBackup {
       }
       for (final attempt in snapshot.attempts) {
         await _attempts.add(attempt);
+      }
+      for (final acquisition in snapshot.blockAcquisitions) {
+        await _acquisitions.add(acquisition);
       }
       for (final assessment in snapshot.assessments) {
         await _assessments.add(assessment);

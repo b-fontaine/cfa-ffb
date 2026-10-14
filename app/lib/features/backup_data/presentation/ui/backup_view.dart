@@ -129,5 +129,6 @@ class BackupView extends StatelessWidget {
     l10n.backupAttempts(summary.attempts),
     l10n.backupAssessments(summary.assessments),
     l10n.backupPlannedSessions(summary.plannedSessions),
+    l10n.backupBlockAcquisitions(summary.blockAcquisitions),
   ];
 }

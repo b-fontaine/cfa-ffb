@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
@@ -45,6 +46,7 @@ void main() {
   StudentReport derive({
     List<SessionRecord> sessions = const [],
     List<Group>? groups,
+    List<BlockAcquisition> acquisitions = const [],
   }) {
     final attempts = [
       attempt(ref('a', 1), potted: 4, id: 'p1', dayOfMonth: 2),
@@ -55,6 +57,7 @@ void main() {
       progress: StudentProgress.derive(
         studentId: _student,
         attempts: attempts,
+        acquisitions: acquisitions,
         rates: catalogue.rates,
         config: RulesConfig(),
       ),
@@ -92,5 +95,23 @@ void main() {
 
   test('has an empty attendance without any group session', () {
     expect(derive(groups: const []).attendance.isEmpty, isTrue);
+  });
+
+  test('counts the exercises acquired at placement in the total', () {
+    final report = derive(acquisitions: [acquisition('b')]);
+
+    expect(report.validatedCount, 3);
+    expect(report.blocks[1].status, BlockStatus.acquiredAtPlacement);
+    expect(report.blocks[1].validatedCount, 3);
+    expect(report.blocks[1].acquiredOn, day(1));
+  });
+
+  test('loses only the exercise taken over by a recorded pass', () {
+    final report = derive(acquisitions: [acquisition('a', day: 3)]);
+
+    expect(report.validatedCount, 2, reason: 'a2 et a3 restent acquis');
+    expect(report.blocks.first.resumedCount, 1);
+    expect(report.blocks.first.acquiredOn, day(3));
+    expect(report.blocks.first.validatedCount, 2);
   });
 }

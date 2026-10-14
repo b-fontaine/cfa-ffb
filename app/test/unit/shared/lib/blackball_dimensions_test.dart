@@ -65,9 +65,8 @@ void main() {
       );
     });
 
-    test('the head string is 1/5 of the length by rule, drawn at 2.0', () {
-      expect(BlackballDimensions.headStringFromRule, closeTo(1.6, 1e-12));
-      expect(BlackballDimensions.headStringDrawn, 2.0);
+    test('the head string is 1/5 of the length, at 1.6 cell', () {
+      expect(BlackballDimensions.headString, closeTo(1.6, 1e-12));
     });
 
     test(

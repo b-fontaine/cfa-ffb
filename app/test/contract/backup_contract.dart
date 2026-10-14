@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:billard_cfa/entities/exercise_catalog/data/catalogue_yaml_parser.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
@@ -49,6 +51,7 @@ ExportBackup _export(RepositoryHarness r) => ExportBackup(
   r.groups,
   r.sessionRecords,
   r.attempts,
+  r.acquisitions,
   r.assessments,
   r.sessions,
   BackupCodec(),
@@ -61,6 +64,7 @@ ImportBackup _import(RepositoryHarness r) => ImportBackup(
   r.groups,
   r.sessionRecords,
   r.attempts,
+  r.acquisitions,
   r.assessments,
   r.sessions,
   BackupCodec(),
@@ -93,7 +97,8 @@ Future<InvariantCode> _refused(RepositoryHarness r, String content) async =>
     };
 
 /// Un club complet : une saison, deux élèves (dont un changé de public), un
-/// groupe, deux séances, trois passages, un bilan et une séance planifiée.
+/// groupe, deux séances, trois passages, un bloc acquis, un bilan et une
+/// séance planifiée.
 Future<void> _seed(RepositoryHarness r) async {
   await r.seasons.save(
     Season(
@@ -169,6 +174,15 @@ Future<void> _seed(RepositoryHarness r) async {
       ),
     );
   }
+  await r.acquisitions.add(
+    BlockAcquisition(
+      id: const AcquisitionId('q1'),
+      studentId: const StudentId('s2'),
+      blockId: 'puissance',
+      date: DateTime(2026, 9, 15),
+      source: AcquisitionSource.placement,
+    ),
+  );
   await r.assessments.add(
     MaturityAssessment(
       id: const AssessmentId('b1'),
@@ -234,6 +248,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
       expect(await r.groups.all(), isEmpty);
       expect(await r.sessionRecords.all(), isEmpty);
       expect(await r.attempts.all(), isEmpty);
+      expect(await r.acquisitions.all(), isEmpty);
       expect(await r.assessments.all(), isEmpty);
       expect(await r.sessions.getAll(), isEmpty);
     }
@@ -260,6 +275,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
           attempts: 3,
           assessments: 1,
           plannedSessions: 2,
+          blockAcquisitions: 1,
         ),
       );
     });
@@ -273,6 +289,29 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
       expect(
         _list(document, 'plannedSessions').map((s) => (s! as Map)['sheetId']),
         [null, 'demi-bille-2'],
+      );
+    });
+
+    test('keeps the acquired blocks of a student', () async {
+      await _imported(target, backup);
+
+      final acquired = await target.acquisitions.forStudent(
+        const StudentId('s2'),
+      );
+      expect(acquired.single.blockId, 'puissance');
+      expect(acquired.single.date, DateTime(2026, 9, 15));
+      expect(
+        _first(_parse(backup), 'blockAcquisitions')['source'],
+        'placement',
+      );
+    });
+
+    test('exports nothing of a revoked acquired block', () async {
+      await source.acquisitions.delete(const AcquisitionId('q1'));
+
+      expect(
+        _list(_parse(await _exported(source)), 'blockAcquisitions'),
+        isEmpty,
       );
     });
 
@@ -391,6 +430,14 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
             _first(d, 'plannedSessions')['sheetId'] = 7,
         'a malformed sheet identifier': (d) =>
             _first(d, 'plannedSessions')['sheetId'] = 'Pas un slug',
+        'a missing blockAcquisitions section': (d) =>
+            (d['data']! as Map<String, Object?>).remove('blockAcquisitions'),
+        'an acquired block with an unknown source': (d) =>
+            _first(d, 'blockAcquisitions')['source'] = 'magie',
+        'an acquired block dated in the future': (d) =>
+            _first(d, 'blockAcquisitions')['date'] = '2027-05-01T00:00:00.000',
+        'an acquired block dated at an hour of the day': (d) =>
+            _first(d, 'blockAcquisitions')['date'] = '2026-09-15T10:00:00.000',
         'a comment that is not text': (d) =>
             _first(d, 'assessments')['comment'] = 7,
         'a comment longer than the maximum': (d) =>
@@ -459,6 +506,16 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
               _list(d, 'seasons').add({..._first(d, 'seasons'), 'id': 'other'});
               _first(d, 'sessionRecords')['seasonId'] = 'other';
             },
+            'a duplicated acquired block id': (d) => _list(
+              d,
+              'blockAcquisitions',
+            ).add(_first(d, 'blockAcquisitions')),
+            'the same block acquired twice for a student': (d) => _list(
+              d,
+              'blockAcquisitions',
+            ).add({..._first(d, 'blockAcquisitions'), 'id': 'q2'}),
+            'an acquired block of an unknown student': (d) =>
+                _first(d, 'blockAcquisitions')['studentId'] = 'ghost',
             'an assessment of an unknown student': (d) =>
                 _first(d, 'assessments')['studentId'] = 'ghost',
           };
@@ -471,6 +528,17 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
         expect(
           await _refused(target, jsonEncode(document)),
           InvariantCode.backupUnknownSheet,
+        );
+        await expectEmpty(target);
+      });
+
+      test('an acquired block unknown to the catalogue', () async {
+        final document = _parse(backup);
+        _first(document, 'blockAcquisitions')['blockId'] = 'ghost';
+
+        expect(
+          await _refused(target, jsonEncode(document)),
+          InvariantCode.backupUnknownBlock,
         );
         await expectEmpty(target);
       });

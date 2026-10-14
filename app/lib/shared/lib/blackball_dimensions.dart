@@ -72,12 +72,9 @@ abstract final class BlackballDimensions {
   /// Ouverture d'une poche, en cases (0,329514).
   static const double pocketOpening = pocketOpeningMm / cellMm;
 
-  /// Ligne de départ selon la règle `[FFB]` : 1/5 de la longueur (1,6 case).
-  static const double headStringFromRule = columns * headStringFraction;
-
-  /// Ligne de départ dessinée par le dépôt `[Prop]` (arbitrage ouvert : doc de
-  /// dimensions § 4).
-  static const double headStringDrawn = 2;
+  /// Ligne de départ `[FFB]` : 1/5 de la longueur (1,6 case), dessinée telle
+  /// quelle (arbitrage rendu le 2026-10-14 : doc de dimensions § 4).
+  static const double headString = columns * headStringFraction;
 
   /// Longueur de la queue, en cases (6,27).
   static const double cueLength = cueLengthMm / cellMm;

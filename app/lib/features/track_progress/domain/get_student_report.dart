@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
@@ -14,6 +15,7 @@ import 'package:injectable/injectable.dart';
 class GetStudentReport {
   GetStudentReport(
     this._attempts,
+    this._acquisitions,
     this._sessions,
     this._groups,
     this._catalogue,
@@ -21,6 +23,7 @@ class GetStudentReport {
   );
 
   final AttemptRepository _attempts;
+  final AcquisitionRepository _acquisitions;
   final SessionRecordRepository _sessions;
   final GroupRepository _groups;
   final CatalogueRepository _catalogue;
@@ -35,6 +38,7 @@ class GetStudentReport {
           progress: StudentProgress.derive(
             studentId: studentId,
             attempts: attempts,
+            acquisitions: await _acquisitions.forStudent(studentId),
             rates: catalogue.rates,
             config: _config,
           ),

@@ -52,9 +52,10 @@ d'accent de marque explicite.
 - Le test `contrast_test.dart` couvre la nouvelle extension (≥ 4,5:1).
 - Widgetbook : feuille « Rôles de couleur » montrant côte à côte navigation,
   puces, compteur, progression, dans les deux thèmes.
-- ADR 0008 « Rôles de couleur : bleu-tapis pour les états, rouge en accent »
-  (amende l'ADR 0002, décision 2 ; le numéro 0007 est pris par le lien
-  séance planifiée ↔ saisie).
+- ADR 0010 « Rôles de couleur : bleu-tapis pour les états, rouge en accent »
+  (amende l'ADR 0002, décision 2 ; les numéros 0007 à 0009 sont pris par le
+  lien séance planifiée ↔ saisie, le positionnement initial et la suggestion
+  ↔ catalogue).
 
 ### R2 — Hiérarchie de surfaces (T2) — effort S
 
@@ -264,8 +265,8 @@ aujourd'hui ; « en cours » = séance planifiée du jour dont le guide a une
   détail au survol et dans le détail) ; la pastille « Source fédérale » est
   retirée de la liste (elle est vraie partout) et reste dans le détail.
 - Marqueur de parcours par groupe sélectionné (puce en tête) : ✓ faite,
-  ▶ recommandée ensuite, ○ à venir (roadmap lot 8 ; en attendant, sans
-  groupe, aucun marqueur).
+  ▶ recommandée ensuite, ○ à venir (données du lot 8, livré ; sans groupe,
+  aucun marqueur).
 - Le bandeau « contenu en français » ne s'affiche qu'en `en` (déjà le cas) ;
   la ligne « 14 techniques · 29 séances » devient le sous-titre de l'en-tête.
 - Onglets de la destination « Séances » : *Planifiées* (liste datée, « Lancer »
@@ -304,7 +305,7 @@ aujourd'hui ; « en cours » = séance planifiée du jour dont le guide a une
   case par exercice (pleine = validé, hachurée = en cours, vide = à faire),
   tapable vers la courbe. Remplace la liste de 15 cartes.
 - « 0 sur 72 » devient « 0 validé · 72 au programme » et disparaît dès que le
-  positionnement initial (lot 7) marque des blocs acquis.
+  positionnement initial (lot 7, livré) marque des blocs acquis.
 - Courbes repliées, actions rares en bas.
 
 ### R15 — Vue de groupe (E5) — effort M (roadmap lot 10)
@@ -313,12 +314,14 @@ Dans « Élèves », une grille technique × élève (cases pleines / hachurées
 vides, comme R14) et l'assiduité du groupe. C'est la vue qui fait ouvrir
 l'application **entre** deux séances pour préparer la suivante.
 
-### R16 — Suggestion reliée (S1 à S3) — effort M (roadmap lot 8)
+### R16 — Suggestion reliée (S1 à S3) — effort S (roadmap lot 8, livré)
 
-La suggestion affiche la **séance du catalogue correspondante** (titre,
-schémas) et deux actions : « Planifier » (crée la séance planifiée datée pour
-ce groupe) et « Lancer ». « Pas de rappel » pour les enfants est accompagné de
-« une seule notion par séance enfants » (F7).
+Le lot 8 (ADR 0009) affiche la **séance du catalogue correspondante** avec
+« Ouvrir », « Lancer la séance guidée », « Saisir les résultats » pré-rempli
+et « Planifier » (ouvre le planificateur). Reste pour U8 / U9 : les schémas
+dans la carte, et pour U7 la création directe d'une séance planifiée datée
+pour le groupe depuis le bilan. « Pas de rappel » pour les enfants est
+accompagné de « une seule notion par séance enfants » (F7, toujours ouvert).
 
 ## 4. Envie de revenir
 
@@ -333,7 +336,7 @@ Ce qui fait ouvrir l'application, dans l'ordre d'impact :
    notes d'animateur, prénom et parcours seulement), ouverte depuis la fiche.
 4. **Le bilan de fin de séance** : à « Terminer », un écran récapitule
    passages saisis, validations du jour, qui est à surveiller, et propose la
-   prochaine séance du catalogue (roadmap lot 8) ; un bouton « Planifier »
+   prochaine séance du catalogue (règle du lot 8, livrée) ; un bouton « Planifier »
    la crée. La boucle se ferme sans quitter l'écran.
 5. **Rappels sobres** (H4, plateformes natives) : la veille d'une séance
    planifiée, « Préparer la séance de demain » ; trente jours sans sauvegarde,
@@ -348,11 +351,11 @@ exercices (bronze) et de la progression lisible, pas d'une couche de jeu.
 
 | Effort | Recommandations |
 |---|---|
-| S | R2, R7, R13 |
-| M | R1, R3, R5, R6, R10, R12, R14, R15, R16 |
+| S | R2, R7, R13, R16 (reste) |
+| M | R1, R3, R5, R6, R10, R12, R14, R15 |
 | L | R8, R9, R11 |
 
 Dépendances fonctionnelles (roadmap) : R8 s'appuie sur le lot 6, livré
 (séance planifiée datée et liée, ADR 0007) ; R12 (marqueur de parcours) et
-R16 dépendent du lot 8 ; R14 (cases « acquis ») du lot 7 ; R14
-(acquittement) et R15 du lot 10.
+R16 sur le lot 8, livré (ADR 0009) ; R14 (cases « acquis ») sur le lot 7,
+livré (ADR 0008) ; R14 (acquittement) et R15 dépendent du lot 10.

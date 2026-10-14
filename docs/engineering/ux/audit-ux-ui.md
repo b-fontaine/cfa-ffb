@@ -7,8 +7,11 @@ revue du code (`app/lib/pages`, `app/lib/features/*/presentation/ui`,
 (build release, Chrome : 1 280 × 800 puis 390 × 844, thèmes clair et sombre,
 deux élèves et une séance saisis). Le test a été fait avant la livraison du
 lot 6 (ADR 0007 : séance planifiée datée et par groupe) ; la section 4.2 et
-le constat T6 ont été relus sur le code livré. Les captures sont hors dépôt ;
-chaque constat cite l'écran et le fichier.
+le constat T6 ont été relus sur le code livré. Les lots 7 (positionnement
+initial, ADR 0008) et 8 (suggestion ↔ catalogue, ADR 0009) ont été livrés le
+même jour, après l'audit : les constats qui les citent (« 0 sur 72 », C3, S1)
+décrivent l'état antérieur ; leur reprise visuelle revient aux lots U8 et U9.
+Les captures sont hors dépôt ; chaque constat cite l'écran et le fichier.
 
 Documents liés : [recommandations-design.md](recommandations-design.md)
 (quoi changer et comment) et [plan-ux-proposition.md](plan-ux-proposition.md)
