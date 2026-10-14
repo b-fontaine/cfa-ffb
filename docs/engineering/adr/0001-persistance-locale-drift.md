@@ -42,7 +42,7 @@ transitivement ; SQLite vient des build hooks de `sqlite3` 3.x.
   base au lancement via `@preResolve`) et `test` (dépôts en mémoire,
   identifiants séquentiels). `configureDependencies` est asynchrone.
 
-### Schéma (version 3)
+### Schéma (version 4)
 
 - Chaque agrégat : `id` UUID texte unique, `seq` (ordre d'insertion stable,
   clé primaire), `createdAt`, `updatedAt`, `deletedAt` (suppression logique :
@@ -60,6 +60,12 @@ transitivement ; SQLite vient des build hooks de `sqlite3` 3.x.
   (insertion **et** `DoUpdate`) l'écrit, sans quoi une replanification ou un
   import perdrait le lien. À l'import, un identifiant inconnu est refusé
   (`backupInconsistent`, `BackupRules`).
+- `planned_sessions.date` (version 4, texte non nul, ADR 0007) : jour de la
+  séance planifiée ; `planned_sessions.group_id` (version 4, nullable) : groupe
+  qui la suivra, sans clé étrangère (groupes supprimés logiquement, l'affichage
+  dit « groupe indisponible ») ; `session_records.sheet_id` (version 4,
+  nullable) : séance du catalogue notée par la saisie, même règle de lecture
+  que `planned_sessions.sheet_id` (jamais d'échec, import refusé si inconnue).
 - Dates stockées en texte ISO 8601 (relues à l'identique, locale ou UTC).
 - Tables enfants (`student_audience_changes`, `group_memberships`,
   `session_presences`) remplacées avec leur parent. Aucune clé étrangère entre
@@ -67,20 +73,25 @@ transitivement ; SQLite vient des build hooks de `sqlite3` 3.x.
 
 ### Migrations
 
-- `schemaVersion = 3` (`AppDatabase.currentSchemaVersion`). Instantanés
-  `app/drift_schemas/app_database/drift_schema_v1.json`, `drift_schema_v2.json`
-  et `drift_schema_v3.json`,
+- `schemaVersion = 4` (`AppDatabase.currentSchemaVersion`). Instantanés
+  `app/drift_schemas/app_database/drift_schema_v1.json` à
+  `drift_schema_v4.json`,
   helpers générés `app/test/drift/app_database/generated/` (`dart run drift_dev
   make-migrations`, puis `dart run drift_dev schema generate`).
 - Migration `from1To2` (`stepByStep`) : ajoute `assessments.comment`
   (nullable) ; `from2To3` ajoute `planned_sessions.sheet_id` (nullable, aucune
-  transformation de données). Tests
+  transformation de données) ; `from3To4` **recrée** `planned_sessions`
+  (`TableMigration`, première migration avec transformation : `date` prend
+  `created_at` **tel quel** pour les lignes existantes, instant UTC compris,
+  sans conversion en heure locale ; `group_id` nulle) et ajoute
+  `session_records.sheet_id`. Tests
   (`test/unit/shared/persistence/migration_test.dart`) : le schéma créé par le
-  code égale les instantanés v1, v2 et v3, une base v1 migre vers v2 et une
-  base v2 vers v3 en gardant ses lignes, une base créée depuis un instantané est lisible, et
-  l'ouverture d'une base d'une version plus récente est **refusée**
-  (`DowngradeNotSupported`). Chaque évolution suivante ajoute son instantané,
-  son `fromNToN+1` et son test.
+  code égale les instantanés v1 à v4, une base v1 migre vers v2, une base v2
+  vers v3 et une base v3 vers v4 en gardant ses lignes (la séance planifiée
+  prend sa date de création, la séance saisie reste sans séance du catalogue),
+  une base créée depuis un instantané est lisible, et l'ouverture d'une base
+  d'une version plus récente est **refusée** (`DowngradeNotSupported`). Chaque
+  évolution suivante ajoute son instantané, son `fromNToN+1` et son test.
 
 ### Sauvegarde JSON (`features/backup_data`)
 

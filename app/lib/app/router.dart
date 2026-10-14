@@ -74,6 +74,10 @@ abstract final class AppRoutes {
   static String _url(String path, Map<String, String> query) =>
       Uri(path: path, queryParameters: query.isEmpty ? null : query).toString();
 
+  /// Jour en paramètre d'adresse (`2026-10-13`), relu par `_dateParam`.
+  static String _dateQuery(DateTime date) =>
+      date.toIso8601String().substring(0, 10);
+
   /// Planificateur, séance du catalogue (et public) présélectionnés.
   static String plan(SheetId id, {Audience? audience}) =>
       _url(planner, {'sheet': id.value, 'audience': ?audience?.name});
@@ -94,13 +98,15 @@ abstract final class AppRoutes {
       });
 
   /// Ouverture de la saisie depuis la séance guidée : bloc de l'exercice,
-  /// bloc du rappel de résultats, exercice à présélectionner, et retour à
-  /// [from]. [group], [absent] et [date] reprennent le choix de la saisie
-  /// précédente (sans eux, le groupe se choisit à la saisie).
+  /// bloc du rappel de résultats, exercice à présélectionner, séance du
+  /// catalogue notée ([sheet], ADR 0007) et retour à [from]. [group],
+  /// [absent] et [date] reprennent le choix de la saisie précédente ou la
+  /// séance planifiée (sans eux, le groupe se choisit à la saisie).
   static String recordFromGuide({
     required ExerciseRef exercise,
     required String from,
     String? recall,
+    SheetId? sheet,
     GroupId? group,
     Set<StudentId> absent = const {},
     DateTime? date,
@@ -108,10 +114,23 @@ abstract final class AppRoutes {
     'main': exercise.blockId,
     'recall': ?recall,
     'exercise': '${exercise.number}',
+    'sheet': ?sheet?.value,
     'from': from,
     'group': ?group?.value,
     if (absent.isNotEmpty) 'absent': absent.map((id) => id.value).join(','),
-    'date': ?date?.toIso8601String().substring(0, 10),
+    'date': ?(date == null ? null : _dateQuery(date)),
+  });
+
+  /// Ouverture de la saisie d'une séance planifiée : groupe et date de la
+  /// séance, séance du catalogue suivie si elle est connue (ADR 0007).
+  static String recordFromPlan({
+    required GroupId group,
+    required DateTime date,
+    SheetId? sheet,
+  }) => _url(newRecord, {
+    'group': group.value,
+    'date': _dateQuery(date),
+    'sheet': ?sheet?.value,
   });
 
   /// Séance guidée d'une séance du catalogue. [audience] absent : public de
@@ -240,6 +259,7 @@ GoRouter buildRouter() => GoRouter(
               create: (_) => getIt<SessionPlannerBloc>()
                 ..add(
                   SessionPlannerEvent.started(
+                    today: getIt<Clock>().today(),
                     sheetId: SheetId.tryParse(query['sheet']),
                     audience:
                         _audienceParam(query['audience']) ?? Audience.children,
@@ -253,6 +273,14 @@ GoRouter buildRouter() => GoRouter(
                 onLaunchSheet: (id, audience, sessionId) => context.go(
                   AppRoutes.guide(id, audience: audience, session: sessionId),
                 ),
+                onRecord: (group, date, sheet) => context.go(
+                  AppRoutes.recordFromPlan(
+                    group: group,
+                    date: date,
+                    sheet: sheet,
+                  ),
+                ),
+                onOpenRecord: (id) => context.go(AppRoutes.recordSession(id)),
               ),
             );
           },
@@ -363,6 +391,7 @@ GoRouter buildRouter() => GoRouter(
             final absent = _absentParam(query['absent']);
             final exercise = int.tryParse(query['exercise'] ?? '');
             final from = _guideReturn(query['from']);
+            final sheet = SheetId.tryParse(query['sheet']);
             final today = getIt<Clock>().today();
             final date = _dateParam(query['date']) ?? today;
             return MultiBlocProvider(
@@ -386,6 +415,7 @@ GoRouter buildRouter() => GoRouter(
                 today: today,
                 mainBlockId: query['main'],
                 recallBlockId: query['recall'],
+                sheetId: sheet,
                 onOpened: (opened) {
                   // La séance guidée retient le choix : l'exercice suivant
                   // ne redemande ni groupe, ni présents, ni date.
@@ -566,15 +596,16 @@ GoRouter buildRouter() => GoRouter(
                   ),
                 ),
                 onRecord: (exercise, recall, step) {
-                  final choice = cubit.state.recordChoice;
+                  final defaults = cubit.state.recordDefaults;
                   context.go(
                     AppRoutes.recordFromGuide(
                       exercise: exercise,
                       recall: recall,
+                      sheet: id,
                       from: guide(step),
-                      group: choice?.group,
-                      absent: choice?.absent ?? const {},
-                      date: choice?.date,
+                      group: defaults.group,
+                      absent: defaults.absent,
+                      date: defaults.date,
                     ),
                   );
                 },

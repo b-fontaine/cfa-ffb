@@ -89,14 +89,19 @@ dans l'ordre d'enseignement. Une technique compte une à quatre séances, notée
 
 1. Dans le détail d'une séance, touchez **Planifier cette séance** (ou ouvrez la
    planification depuis l'accueil et choisissez **Séance du catalogue**).
-2. Indiquez le public et le titre (prérempli, modifiable), puis **Ajouter la
-   séance**.
-3. La séance planifiée affiche la séance du catalogue qu'elle suit. Sans séance du
+2. Choisissez le **groupe** qui suivra la séance : son public est repris (sans
+   groupe, choisissez le public à la main). Indiquez la **date** (le jour même
+   est proposé ; **Modifier la date** ouvre le calendrier) et le titre
+   (prérempli, modifiable), puis **Ajouter la séance**. Une date hors de la
+   saison du groupe est refusée avec un message.
+3. La liste, triée par date, affiche pour chaque séance planifiée sa date, son
+   groupe, son public et la séance du catalogue qu'elle suit. Sans séance du
    catalogue (« séance libre »), la liste propose **Choisir une séance**. Si la
-   séance du catalogue n'est plus disponible, la liste l'indique sans erreur.
+   séance du catalogue ou le groupe n'est plus disponible, la liste l'indique
+   sans erreur.
 
-La séance planifiée conserve l'identifiant de la séance du catalogue : il est
-inclus dans la sauvegarde.
+La séance planifiée conserve sa date, son groupe et l'identifiant de la séance
+du catalogue : ils sont inclus dans la sauvegarde.
 
 ## 3. Lancer et présenter la séance
 
@@ -121,13 +126,22 @@ celui que vous avez choisi.
 Pour relire une séance sans élèves, lancez-la depuis le détail : aucune saisie
 n'est obligatoire et toutes les étapes sont accessibles.
 
+Lancée depuis une séance planifiée **pour un groupe**, la séance guidée
+pré-remplit la saisie des résultats avec ce groupe et cette date : il ne reste
+qu'à décocher les absents. Le choix fait à la première saisie est repris aux
+exercices suivants.
+
 ## 4. Noter les résultats
 
 1. Depuis la séance guidée, touchez **Noter les résultats** sur un exercice :
-   la saisie s'ouvre sur le bloc et l'exercice en cours ; choisissez le groupe,
-   la date et les élèves **présents**. Sinon, ouvrez **Résultats**, puis
-   **Nouvelle séance** (ou le bouton depuis la séance suggérée) et ouvrez la
-   séance.
+   la saisie s'ouvre sur le bloc et l'exercice en cours ; vérifiez le groupe,
+   la date et les élèves **présents**. Depuis la liste des séances planifiées,
+   **Noter les résultats** ouvre de même la saisie du groupe à la date prévue,
+   avec la notion principale et le rappel de la séance du catalogue suivie ;
+   une fois la saisie faite, la ligne affiche **Résultats saisis** et l'ouvre.
+   Sinon, ouvrez **Résultats**, puis **Nouvelle séance** (ou le bouton depuis
+   la séance suggérée) et ouvrez la séance. La saisie et l'historique nomment
+   la séance du catalogue notée (« Séance du catalogue : … »).
 2. Choisissez l'exercice, puis, pour chaque élève, indiquez les **billes
    empochées** sur le **nombre de tentatives** de chaque passage.
 3. L'application applique les règles :
@@ -240,8 +254,8 @@ le **public**, sur votre appareil, et ne les envoie nulle part.
 | Quand | Action |
 |-------|--------|
 | Rentrée | Ajouter les élèves et leur public |
-| Avant chaque séance | Choisir et planifier une séance du catalogue, ou consulter la séance suggérée du groupe |
-| Pendant la séance | Lancer la séance guidée, montrer les schémas, noter les résultats |
+| Avant chaque séance | Planifier une séance du catalogue pour le groupe à sa date, ou consulter la séance suggérée du groupe |
+| Pendant la séance | Lancer la séance planifiée, montrer les schémas, noter les résultats (groupe et date déjà renseignés) |
 | Après chaque séance | Saisir les passages de chaque élève (si pas déjà fait) ; corriger une erreur de saisie depuis l'historique |
 | Une fois | Relire les propositions « à valider » du catalogue |
 | Régulièrement | Lire les fiches, rappeler les notions signalées |

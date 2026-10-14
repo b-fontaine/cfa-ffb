@@ -15,6 +15,7 @@ Future<void> jePlanifieLaSeancePourLesAvecLaSeanceDuCatalogue(
 ) async {
   await getIt<PlanSession>()(
     title: title,
+    date: TrackingWorld.today,
     audience: TrackingWorld.audience(audience),
     sheetId: SheetId(sheetId),
   );

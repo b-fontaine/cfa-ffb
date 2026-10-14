@@ -1,6 +1,7 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
+import 'package:billard_cfa/entities/group/domain/current_groups.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
@@ -34,17 +35,13 @@ class GetClubOverview {
       runGuarded(() async {
         final catalogue = await _catalogue.load();
         final attempts = await _attempts.all();
-        final current = {
-          for (final season in await _seasons.all())
-            if (season.contains(today)) season.id,
-        };
-        final every = await _groups.all();
-        final groups = current.isEmpty
-            ? every
-            : [
-                for (final group in every)
-                  if (current.contains(group.seasonId)) group,
-              ];
+        final groups = currentGroups(
+          await _groups.all(),
+          currentSeasons: {
+            for (final season in await _seasons.all())
+              if (season.contains(today)) season.id,
+          },
+        );
         final summaries = [
           for (final student in await _students.all())
             () {

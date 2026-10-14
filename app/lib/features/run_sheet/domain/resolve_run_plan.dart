@@ -2,12 +2,13 @@ import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repositor
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart';
 import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_repository.dart';
 import 'package:billard_cfa/entities/exercise_diagram/domain/exercise_diagram.dart';
+import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session/domain/session_repository.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/results_recall_block.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_grouping.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_timing.dart';
-import 'package:billard_cfa/features/run_sheet/domain/results_recall_block.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
@@ -50,7 +51,8 @@ class ResolveRunPlan {
     final sheet = await _sheets.getById(id);
     if (sheet == null) throw NotFound('sheet', id.value);
     final all = await _sheets.getAll();
-    final resolved = audience ?? await _plannedAudience(sessionId);
+    final planned = await _planned(sessionId);
+    final resolved = audience ?? planned?.audience ?? Audience.children;
     final previousId = sheet.previous;
     final previous = previousId == null
         ? null
@@ -91,17 +93,19 @@ class ResolveRunPlan {
           : partCountOf(all, previous.technique),
       recallBlockId: resultsRecallBlock(sheet, all),
       blockTitle: catalogue.blockById(sheet.catalogueBlock)?.title,
+      planned: planned,
       exerciseSpecs: specs,
       diagrams: diagrams,
       diagramsUnreadable: unreadable,
     );
   });
 
-  Future<Audience> _plannedAudience(String? sessionId) async {
-    if (sessionId == null) return Audience.children;
+  /// La séance planifiée [sessionId], `null` sans identifiant ou si elle a
+  /// été retirée de la planification.
+  Future<Session?> _planned(String? sessionId) async {
+    if (sessionId == null) return null;
     final sessions = await _sessions.getAll();
-    return sessions.where((s) => s.id == sessionId).firstOrNull?.audience ??
-        Audience.children;
+    return sessions.where((s) => s.id == sessionId).firstOrNull;
   }
 
   static List<RunStep> _steps(

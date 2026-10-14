@@ -2,12 +2,14 @@ import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart'
 import 'package:billard_cfa/entities/exercise_catalog/domain/session_range.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/training_block.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/sheet_option.dart';
 import 'package:billard_cfa/features/record_results/domain/recorded_session_summary.dart';
 import 'package:billard_cfa/features/record_results/presentation/ui/recorded_session_list.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/provenance.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -21,6 +23,7 @@ RecordedSessionSummary _summary({
   Audience audience = Audience.children,
   TrainingBlock? mainBlock,
   int attemptCount = 2,
+  SheetOption? sheet,
 }) => RecordedSessionSummary(
   session: SessionRecord(
     id: SessionId(id),
@@ -34,6 +37,7 @@ RecordedSessionSummary _summary({
   groupName: 'Jeunes',
   mainBlock: mainBlock,
   attemptCount: attemptCount,
+  sheet: sheet,
 );
 
 /// Bloc proposé `[Prop]` : le bloc et ses exercices portent la même source.
@@ -89,6 +93,30 @@ void main() {
     await pump(tester, [_summary(mainBlock: block('a', 1))]);
 
     expect(find.text(l10nOf(tester).recordBlockHint('Bloc a')), findsOneWidget);
+  });
+
+  testWidgets('names the catalogue session over the main block', (
+    tester,
+  ) async {
+    await pump(tester, [
+      _summary(
+        mainBlock: block('a', 1),
+        sheet: SheetOption(
+          id: SheetId('demi-bille-2'),
+          technique: 'demi-bille',
+          techniqueRank: 2,
+          title: 'Quantité demi-bille',
+          part: 2,
+          partCount: 2,
+        ),
+      ),
+    ]);
+
+    expect(
+      find.text('Catalogue session: Quantité demi-bille, session 2/2'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('Main notion'), findsNothing);
   });
 
   testWidgets('tags a proposed block as a proposal', (tester) async {

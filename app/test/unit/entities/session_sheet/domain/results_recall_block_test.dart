@@ -1,7 +1,7 @@
-import 'package:billard_cfa/features/run_sheet/domain/results_recall_block.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/results_recall_block.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../support/session_sheet_fixtures.dart';
+import '../../../../support/session_sheet_fixtures.dart';
 
 void main() {
   final all = catalogueFixture();

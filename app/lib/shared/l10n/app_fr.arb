@@ -41,6 +41,56 @@
       }
     }
   },
+  "plannerSessionLine": "{date} · {audience} · {minutes} min",
+  "@plannerSessionLine": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerGroupField": "Groupe",
+  "plannerGroupNone": "Aucun groupe (public au choix)",
+  "plannerGroupPickerTitle": "Choisir un groupe",
+  "plannerGroupOption": "{group} · {audience}",
+  "@plannerGroupOption": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerGroupUnavailable": "Groupe indisponible",
+  "plannerDate": "Date de la séance",
+  "plannerChangeDate": "Modifier la date",
+  "plannerSessionGroupLine": "{date} · {group} · {audience} · {minutes} min",
+  "@plannerSessionGroupLine": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerRecord": "Noter les résultats",
+  "plannerRecorded": "Résultats saisis",
   "homeAudiencesTitle": "Deux publics",
   "ballRed": "Bille rouge",
   "ballYellow": "Bille jaune",
@@ -153,6 +203,7 @@
   "failBackupInvalid": "Ce fichier contient des données invalides.",
   "failBackupInconsistent": "Ce fichier est incohérent : références manquantes ou doublons.",
   "failBackupUnknownSheet": "Ce fichier désigne une séance du catalogue que cette version de l’application ne connaît pas.",
+  "failUnknownSheet": "Cette séance du catalogue est inconnue : choisissez-en une autre.",
   "failGeneric": "Une erreur est survenue. Vérifiez les données et réessayez.",
   "studentsTitle": "Les élèves du club",
   "studentsSubtitle": "Public et alertes de chaque groupe de la saison.",
@@ -401,6 +452,25 @@
   "@recordSessionTitle": {
     "placeholders": {
       "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordSessionSubtitle": "{group} · {hint}",
+  "@recordSessionSubtitle": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "recordSheetHint": "Séance du catalogue : {title}",
+  "@recordSheetHint": {
+    "placeholders": {
+      "title": {
         "type": "String"
       }
     }
@@ -1769,12 +1839,11 @@
     }
   },
   "guideRecapPasses": "Les passages des exercices ne s’affichent pas ici : ils s’enregistrent avec « Noter les résultats », exercice par exercice, et se retrouvent dans la fiche de chaque élève.",
-  "guideTimerTitle": "Minuteur de la phase",
   "guideTimerStart": "Démarrer le minuteur",
   "guideTimerPause": "Mettre le minuteur en pause",
   "guideTimerReset": "Remettre le minuteur à zéro",
-  "guideTimerValue": "{elapsed} sur environ {minutes} min",
-  "@guideTimerValue": {
+  "guideTimerLine": "Minuteur de la phase · {elapsed} sur environ {minutes} min",
+  "@guideTimerLine": {
     "placeholders": {
       "elapsed": {
         "type": "String"

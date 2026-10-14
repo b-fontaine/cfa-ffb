@@ -59,4 +59,17 @@ abstract class RunSheetState with _$RunSheetState {
 
   /// L'étape courante, une fois le déroulé prêt.
   RunStep? get currentStep => plan?.steps.elementAtOrNull(step);
+
+  /// Groupe, date et absents proposés à la saisie des résultats : le choix
+  /// d'une saisie précédente de ce guide, sinon la séance planifiée d'où il a
+  /// été lancé (ADR 0007), sinon rien (le groupe se choisit à la saisie).
+  ({GroupId? group, DateTime? date, Set<StudentId> absent}) get recordDefaults {
+    final choice = recordChoice;
+    final planned = plan?.planned;
+    return (
+      group: choice?.group ?? planned?.groupId,
+      date: choice?.date ?? planned?.date,
+      absent: choice?.absent ?? const {},
+    );
+  }
 }

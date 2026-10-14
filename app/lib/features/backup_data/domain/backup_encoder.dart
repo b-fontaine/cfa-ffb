@@ -68,6 +68,7 @@ class BackupEncoder {
     'present': [for (final id in record.present) id.value],
     'mainBlockId': record.mainBlockId,
     'recallBlockId': record.recallBlockId,
+    'sheetId': record.sheetId?.value,
   };
 
   Map<String, Object?> _encodeAttempt(ExerciseAttempt attempt) => {
@@ -95,7 +96,9 @@ class BackupEncoder {
   Map<String, Object?> _encodePlanned(Session session) => {
     'id': session.id,
     'title': session.title,
+    'date': _date(session.date),
     'audience': session.audience.name,
+    'groupId': session.groupId?.value,
     'sheetId': session.sheetId?.value,
   };
 

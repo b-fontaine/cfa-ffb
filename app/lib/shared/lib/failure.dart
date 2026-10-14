@@ -19,6 +19,7 @@ enum InvariantCode {
   unknownExercise,
   unknownBlock,
   unknownGroup,
+  unknownSheet,
   audienceMismatch,
   emptyAudienceHistory,
   audienceUnchanged,

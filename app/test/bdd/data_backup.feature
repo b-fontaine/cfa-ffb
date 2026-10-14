@@ -57,3 +57,13 @@ Feature: Sauvegarde et restauration des données
     When j'importe cette sauvegarde dans un club vide avec une séance planifiée du catalogue inconnue
     Then l'import est refusé avec le motif {'backupUnknownSheet'}
     And aucune séance planifiée n'est enregistrée
+
+  Scenario: Conserver la date, le groupe et la séance du catalogue des séances
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And je planifie la séance {'Cours'} pour le groupe {'Jeunes'} le {'2026-10-19'} avec la séance du catalogue {'demi-bille-2'}
+    And la séance du groupe {'Jeunes'} le {'2026-10-19'} note la séance du catalogue {'demi-bille-2'} avec {'Léa'}
+    And j'exporte une sauvegarde du club
+    When j'importe cette sauvegarde dans un club vide
+    Then la séance planifiée {'Cours'} est prévue le {'2026-10-19'} pour le groupe {'Jeunes'}
+    And la séance planifiée {'Cours'} est liée à la séance du catalogue {'demi-bille-2'}
+    And la séance saisie du groupe {'Jeunes'} le {'2026-10-19'} note la séance du catalogue {'demi-bille-2'}

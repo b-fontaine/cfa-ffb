@@ -11,7 +11,7 @@ Feature: Session planner
     And I enter {'Posture basics'} into {0} input field
     And I tap {'Add session'} text
     Then I see {'Posture basics'} text
-    And I see {'Children · 90 min'} text
+    And I see {'Mon, Oct 12 · Children · 90 min'} text
 
   Scenario: An adult session lasts 2h
     Given the app is running
@@ -20,7 +20,7 @@ Feature: Session planner
     And I tap {'Adults'} text
     And I tap {'Add session'} text
     Then I see {'Position play'} text
-    And I see {'Adults · 120 min'} text
+    And I see {'Mon, Oct 12 · Adults · 120 min'} text
 
   Scenario: A session needs a title
     Given the app is running
@@ -37,7 +37,7 @@ Feature: Session planner
     When I tap {'Add session'} text
     Then I see {'La puissance, session 1/2'} text
     And I see {'Catalogue session: La puissance, session 1/2'} text
-    And I see {'Children · 90 min'} text
+    And I see {'Mon, Oct 12 · Children · 90 min'} text
 
   Scenario: The prefilled title stays editable
     Given the app is running
@@ -66,7 +66,7 @@ Feature: Session planner
     And I tap {'Add session'} text
     Then I see {'Quantité demi-bille, session 2/2'} text
     And I see {'Catalogue session: Quantité demi-bille, session 2/2'} text
-    And I see {'Adults · 120 min'} text
+    And I see {'Mon, Oct 12 · Adults · 120 min'} text
     When I tap {'Catalogue session: Quantité demi-bille, session 2/2'} text
     Then I see {'Previous session: Quantité demi-bille, session 1/2'} text
 
@@ -78,7 +78,7 @@ Feature: Session planner
     Then the session title is {'Quantité demi-bille, session 2/2'}
     When I tap {'Add session'} text
     Then I see {'Catalogue session: Quantité demi-bille, session 2/2'} text
-    And I see {'Adults · 120 min'} text
+    And I see {'Mon, Oct 12 · Adults · 120 min'} text
 
   Scenario: An unknown catalogue session is shown as unavailable without error
     Given a session {'Old plan'} is planned with the catalogue session {'inconnue-9'}
@@ -87,3 +87,67 @@ Feature: Session planner
     Then I see {'Old plan'} text
     And I see {'Catalogue session unavailable'} text
     And I see {'Choose a session'} text
+
+  # Date et groupe sur la séance planifiée, lien avec la saisie (ADR 0007).
+  # « Aujourd'hui » des scénarios : lundi 12 octobre 2026.
+  Scenario: A planned session has a date and a group
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
+    When I tap {'Plan a session'} text
+    And I enter {'Posture basics'} into {0} input field
+    And I choose the group {'Children group'}
+    And I tap {'Add session'} text
+    Then I see {'Mon, Oct 12 · Children group · Children · 90 min'} text
+    And I see {'Note the results'} text
+
+  Scenario: Choosing a group sets the audience of the session
+    Given the club has the student {'Hugo'} in the {'adults'} audience
+    And the app is running
+    When I tap {'Plan a session'} text
+    And I enter {'Position play'} into {0} input field
+    And I choose the group {'Adults group'}
+    And I tap {'Add session'} text
+    Then I see {'Mon, Oct 12 · Adults group · Adults · 120 min'} text
+
+  Scenario: Planned sessions are listed by date
+    Given the app is running
+    When I tap {'Plan a session'} text
+    And I enter {'Later'} into {0} input field
+    And I move the session date to day {19}
+    And I tap {'Add session'} text
+    And I enter {'Sooner'} into {0} input field
+    And I move the session date to day {12}
+    And I tap {'Add session'} text
+    Then the planned session {'Sooner'} is listed before {'Later'}
+    And I see {'Mon, Oct 12 · Children · 90 min'} text
+    And I see {'Mon, Oct 19 · Children · 90 min'} text
+
+  Scenario: Noting the results of a planned session opens a record that knows its catalogue session
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
+    When I tap {'Plan a session'} text
+    And I choose the catalogue session {'puissance-1'}
+    And I choose the group {'Children group'}
+    And I tap {'Add session'} text
+    And I tap {'Note the results'} text
+    Then I see {'Record the results'} text
+    And I see {'Mon, Oct 12'} text
+    When I tap {'Open the session'} text
+    Then I see {'Children group · Catalogue session: La puissance, session 1/2'} text
+    And the opened session has the main block {'puissance'} and the recall block {'posture'}
+    When I tap {'Home'} text
+    And I tap {'Plan a session'} text
+    Then I see {'Results recorded'} text
+    And I do not see {'Note the results'} text
+
+  Scenario: A planned session already recorded opens its record
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-05'} with the catalogue session {'puissance-1'}
+    And a session is recorded for the group {'Children group'} on {'2026-10-05'} with the catalogue session {'puissance-1'}
+    And the app is running
+    When I tap {'Plan a session'} text
+    Then I see {'Mon, Oct 5 · Children group · Children · 90 min'} text
+    And I see {'Results recorded'} text
+    When I tap {'Results recorded'} text
+    Then I see {'Session of Mon, Oct 5'} text
+    And I see {'Children group · Catalogue session: La puissance, session 1/2'} text

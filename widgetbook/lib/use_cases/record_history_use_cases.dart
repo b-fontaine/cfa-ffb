@@ -1,6 +1,7 @@
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/sheet_option.dart';
 import 'package:billard_cfa/features/record_results/domain/recorded_session_summary.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/recorded_sessions_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:billard_cfa/features/record_results/presentation/ui/recorded_ses
 import 'package:billard_cfa/pages/record_history/presentation/record_history_page.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/lib/success_rate.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +41,14 @@ List<RecordedSessionSummary> _summaries(PreviewWorld world) => [
     groupName: 'Enfants',
     mainBlock: world.catalogue.blockById('puissance'),
     attemptCount: 3,
+    sheet: SheetOption(
+      id: SheetId('puissance-1'),
+      technique: 'puissance',
+      techniqueRank: 2,
+      title: 'La puissance',
+      part: 1,
+      partCount: 2,
+    ),
   ),
   RecordedSessionSummary(
     session: SessionRecord(

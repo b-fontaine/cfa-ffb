@@ -41,6 +41,56 @@
       }
     }
   },
+  "plannerSessionLine": "{date} · {audience} · {minutes} min",
+  "@plannerSessionLine": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerGroupField": "Group",
+  "plannerGroupNone": "No group (choose the audience)",
+  "plannerGroupPickerTitle": "Choose a group",
+  "plannerGroupOption": "{group} · {audience}",
+  "@plannerGroupOption": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerGroupUnavailable": "Group unavailable",
+  "plannerDate": "Session date",
+  "plannerChangeDate": "Change the date",
+  "plannerSessionGroupLine": "{date} · {group} · {audience} · {minutes} min",
+  "@plannerSessionGroupLine": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerRecord": "Note the results",
+  "plannerRecorded": "Results recorded",
   "homeAudiencesTitle": "Two audiences",
   "ballRed": "Red ball",
   "ballYellow": "Yellow ball",
@@ -153,6 +203,7 @@
   "failBackupInvalid": "This file contains invalid data.",
   "failBackupInconsistent": "This file is inconsistent: missing references or duplicates.",
   "failBackupUnknownSheet": "This file refers to a catalogue session that this version of the app does not know.",
+  "failUnknownSheet": "This catalogue session is unknown: choose another one.",
   "failGeneric": "Something went wrong. Check the data and try again.",
   "studentsTitle": "Club students",
   "studentsSubtitle": "Audience and alerts of every group this season.",
@@ -401,6 +452,25 @@
   "@recordSessionTitle": {
     "placeholders": {
       "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordSessionSubtitle": "{group} · {hint}",
+  "@recordSessionSubtitle": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      },
+      "hint": {
+        "type": "String"
+      }
+    }
+  },
+  "recordSheetHint": "Catalogue session: {title}",
+  "@recordSheetHint": {
+    "placeholders": {
+      "title": {
         "type": "String"
       }
     }
@@ -1769,12 +1839,11 @@
     }
   },
   "guideRecapPasses": "The passes of the exercises are not shown here: they are saved with “Note the results”, exercise by exercise, and found again on each student’s sheet.",
-  "guideTimerTitle": "Timer of the phase",
   "guideTimerStart": "Start the timer",
   "guideTimerPause": "Pause the timer",
   "guideTimerReset": "Reset the timer",
-  "guideTimerValue": "{elapsed} of about {minutes} min",
-  "@guideTimerValue": {
+  "guideTimerLine": "Timer of the phase · {elapsed} of about {minutes} min",
+  "@guideTimerLine": {
     "placeholders": {
       "elapsed": {
         "type": "String"

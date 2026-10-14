@@ -1,13 +1,14 @@
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'session_record.freezed.dart';
 
 /// Une séance réellement donnée à un groupe : date, public, notion principale,
-/// rappel éventuel et élèves présents. Les passages sont enregistrés à part
-/// (`ExerciseAttempt.sessionId`).
+/// rappel éventuel, séance du catalogue notée et élèves présents. Les passages
+/// sont enregistrés à part (`ExerciseAttempt.sessionId`).
 @freezed
 abstract class SessionRecord with _$SessionRecord {
   factory SessionRecord({
@@ -19,6 +20,11 @@ abstract class SessionRecord with _$SessionRecord {
     required Set<StudentId> present,
     String? mainBlockId,
     String? recallBlockId,
+
+    /// Séance du catalogue que cette saisie note (ADR 0007) ; `null` pour une
+    /// séance ouverte sans séance du catalogue. Peut désigner une séance que
+    /// le catalogue ne connaît plus : l'affichage le traite sans échouer.
+    SheetId? sheetId,
   }) = _SessionRecord;
 
   SessionRecord._() {

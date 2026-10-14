@@ -9,6 +9,7 @@ import 'package:billard_cfa/pages/record_setup/presentation/record_setup_page.da
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/widgets/roster_picker/presentation/roster_selection_cubit.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
@@ -117,6 +118,7 @@ void main() {
           onAddStudents: () {},
           mainBlockId: 'demi-bille',
           recallBlockId: 'bille-pleine',
+          sheetId: SheetId('demi-bille-2'),
           onBackToGuide: onBackToGuide,
         ),
       ),
@@ -178,6 +180,7 @@ void main() {
     expect(captured.date, today);
     expect(captured.mainBlockId, 'demi-bille');
     expect(captured.recallBlockId, 'bille-pleine');
+    expect(captured.sheetId?.value, 'demi-bille-2');
   });
 
   testWidgets('reports the opened session with the choice that opened it', (

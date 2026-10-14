@@ -147,6 +147,7 @@ Future<void> _seed(RepositoryHarness r) async {
         audience: Audience.children,
         present: {const StudentId('s1'), const StudentId('s2')},
         mainBlockId: 'puissance',
+        sheetId: id == 'x2' ? SheetId('demi-bille-1') : null,
       ),
     );
   }
@@ -180,12 +181,19 @@ Future<void> _seed(RepositoryHarness r) async {
     ),
   );
   await r.sessions.add(
-    const Session(id: 'p1', title: 'Rebond', audience: Audience.children),
+    Session(
+      id: 'p1',
+      title: 'Rebond',
+      date: DateTime(2026, 10, 12),
+      audience: Audience.children,
+      groupId: const GroupId('g1'),
+    ),
   );
   await r.sessions.add(
     Session(
       id: 'p2',
       title: 'Demi-bille',
+      date: DateTime(2026, 10, 19),
       audience: Audience.adults,
       sheetId: SheetId('demi-bille-2'),
     ),

@@ -1,11 +1,15 @@
+import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
-import 'package:billard_cfa/features/plan_session/domain/sheet_option.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/sheet_option.dart';
+import 'package:billard_cfa/features/plan_session/domain/planned_session_summary.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/widgets/session_list/presentation/session_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/fixtures.dart';
 import '../../shared/ui/pump_ui.dart';
 
 void main() {
@@ -17,26 +21,58 @@ void main() {
     part: 2,
     partCount: 2,
   );
-  const free = Session(id: 'a', title: 'Libre', audience: Audience.children);
-  final linked = Session(
-    id: 'b',
-    title: 'Lié',
-    audience: Audience.adults,
-    sheetId: SheetId('demi-bille-2'),
-  );
-  final lost = Session(
-    id: 'c',
-    title: 'Perdu',
+  final jeunes = Group(
+    id: const GroupId('g1'),
+    seasonId: const SeasonId('season'),
+    name: 'Jeunes',
     audience: Audience.children,
-    sheetId: SheetId('inconnue-9'),
+  );
+  final free = PlannedSessionSummary(
+    session: Session(
+      id: 'a',
+      title: 'Libre',
+      date: day(12),
+      audience: Audience.children,
+    ),
+  );
+  final linked = PlannedSessionSummary(
+    session: Session(
+      id: 'b',
+      title: 'Lié',
+      date: day(19),
+      audience: Audience.adults,
+      sheetId: SheetId('demi-bille-2'),
+    ),
+  );
+  final lost = PlannedSessionSummary(
+    session: Session(
+      id: 'c',
+      title: 'Perdu',
+      date: day(12),
+      audience: Audience.children,
+      sheetId: SheetId('inconnue-9'),
+    ),
+  );
+  final forGroup = PlannedSessionSummary(
+    session: Session(
+      id: 'd',
+      title: 'Jeunes du samedi',
+      date: day(12),
+      audience: Audience.children,
+      groupId: const GroupId('g1'),
+      sheetId: SheetId('demi-bille-2'),
+    ),
+    group: jeunes,
   );
 
   Future<void> pump(
     WidgetTester tester,
-    List<Session> sessions, {
+    List<PlannedSessionSummary> sessions, {
     void Function(SheetId, Audience)? onOpenSheet,
     VoidCallback? onChooseSheet,
     void Function(SheetId, Audience, String)? onLaunchSheet,
+    void Function(GroupId, DateTime, SheetId?)? onRecord,
+    ValueChanged<SessionId>? onOpenRecord,
     ValueChanged<Session>? onDelete,
   }) => pumpUi(
     tester,
@@ -46,6 +82,8 @@ void main() {
       onOpenSheet: onOpenSheet ?? (_, _) {},
       onChooseSheet: onChooseSheet ?? () {},
       onLaunchSheet: onLaunchSheet ?? (_, _, _) {},
+      onRecord: onRecord ?? (_, _, _) {},
+      onOpenRecord: onOpenRecord ?? (_) {},
       onDelete: onDelete,
     ),
   );
@@ -87,7 +125,7 @@ void main() {
     await tester.tap(find.text('Choose a session'));
 
     expect(chosen, 1);
-    expect(find.text('Children · 90 min'), findsOneWidget);
+    expect(find.text('Mon, Oct 12 · Children · 90 min'), findsOneWidget);
   });
 
   testWidgets('opens the linked catalogue session for its audience', (
@@ -103,7 +141,7 @@ void main() {
     );
 
     expect(opened, [(SheetId('demi-bille-2'), Audience.adults)]);
-    expect(find.text('Adults · 120 min'), findsOneWidget);
+    expect(find.text('Mon, Oct 19 · Adults · 120 min'), findsOneWidget);
   });
 
   testWidgets('shows a vanished catalogue session as unavailable', (
@@ -114,6 +152,69 @@ void main() {
     expect(find.text('Catalogue session unavailable'), findsOneWidget);
     expect(find.text('Choose a session'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  group('a session planned for a group', () {
+    testWidgets('names the group and offers to note the results', (
+      tester,
+    ) async {
+      final recorded = <(GroupId, DateTime, SheetId?)>[];
+      await pump(tester, [
+        forGroup,
+      ], onRecord: (group, date, sheet) => recorded.add((group, date, sheet)));
+
+      expect(
+        find.text('Mon, Oct 12 · Jeunes · Children · 90 min'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Note the results'));
+
+      expect(recorded, [
+        (const GroupId('g1'), day(12), SheetId('demi-bille-2')),
+      ]);
+    });
+
+    testWidgets('notes a free session without catalogue session', (
+      tester,
+    ) async {
+      final recorded = <SheetId?>[];
+      await pump(tester, [
+        forGroup.copyWith(session: forGroup.session.copyWith(sheetId: null)),
+      ], onRecord: (_, _, sheet) => recorded.add(sheet));
+
+      await tester.tap(find.text('Note the results'));
+
+      expect(recorded, [null]);
+    });
+
+    testWidgets('opens the record once the results are recorded', (
+      tester,
+    ) async {
+      final opened = <SessionId>[];
+      await pump(tester, [
+        forGroup.copyWith(recordId: const SessionId('x1')),
+      ], onOpenRecord: opened.add);
+
+      expect(find.text('Note the results'), findsNothing);
+      await tester.tap(find.text('Results recorded'));
+
+      expect(opened, [const SessionId('x1')]);
+    });
+
+    testWidgets('flags a group the club no longer knows', (tester) async {
+      await pump(tester, [forGroup.copyWith(group: null)]);
+
+      expect(find.text('Group unavailable'), findsOneWidget);
+      expect(find.text('Note the results'), findsNothing);
+      expect(find.text('Mon, Oct 12 · Children · 90 min'), findsOneWidget);
+    });
+  });
+
+  testWidgets('does not offer to note a session without group', (tester) async {
+    await pump(tester, [free, linked]);
+
+    expect(find.text('Note the results'), findsNothing);
+    expect(find.text('Results recorded'), findsNothing);
   });
 
   group('deleting a planned session', () {
@@ -127,7 +228,9 @@ void main() {
       final deleted = <Session>[];
       await pump(tester, [free, linked], onDelete: deleted.add);
 
-      await tester.tap(find.byTooltip('Delete session ${linked.title}'));
+      await tester.tap(
+        find.byTooltip('Delete session ${linked.session.title}'),
+      );
       await tester.pumpAndSettle();
       expect(find.text('Delete this planned session?'), findsOneWidget);
       expect(deleted, isEmpty);
@@ -135,7 +238,7 @@ void main() {
       await tester.tap(find.text('Confirm'));
       await tester.pumpAndSettle();
 
-      expect(deleted, [linked]);
+      expect(deleted, [linked.session]);
     });
 
     testWidgets('keeps the session when the confirmation is cancelled', (
@@ -144,7 +247,9 @@ void main() {
       final deleted = <Session>[];
       await pump(tester, [linked], onDelete: deleted.add);
 
-      await tester.tap(find.byTooltip('Delete session ${linked.title}'));
+      await tester.tap(
+        find.byTooltip('Delete session ${linked.session.title}'),
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();

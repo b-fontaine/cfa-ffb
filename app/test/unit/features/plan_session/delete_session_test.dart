@@ -5,6 +5,8 @@ import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/fixtures.dart';
+
 void main() {
   late InMemorySessionRepository repository;
   late DeleteSession delete;
@@ -15,12 +17,18 @@ void main() {
       Session(
         id: 'p1',
         title: 'Cours',
+        date: day(12),
         audience: Audience.adults,
         sheetId: SheetId('demi-bille-2'),
       ),
     );
     await repository.add(
-      const Session(id: 'p2', title: 'Libre', audience: Audience.children),
+      Session(
+        id: 'p2',
+        title: 'Libre',
+        date: day(12),
+        audience: Audience.children,
+      ),
     );
     delete = DeleteSession(repository);
   });

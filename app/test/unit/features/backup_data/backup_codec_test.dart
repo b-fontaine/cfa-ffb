@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
+import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_codec.dart';
@@ -11,6 +12,7 @@ import 'package:billard_cfa/features/backup_data/domain/json_reader.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/fixtures.dart';
@@ -52,6 +54,16 @@ final _record = SessionRecord(
   date: DateTime(2026, 10, 3),
   audience: Audience.children,
   present: {const StudentId('s1')},
+  sheetId: SheetId('demi-bille-1'),
+);
+
+final _planned = Session(
+  id: 'p1',
+  title: 'Cours',
+  date: DateTime(2026, 10, 19),
+  audience: Audience.children,
+  groupId: const GroupId('g1'),
+  sheetId: SheetId('demi-bille-2'),
 );
 
 final _snapshot = BackupSnapshot(
@@ -60,6 +72,7 @@ final _snapshot = BackupSnapshot(
   groups: [_group],
   sessionRecords: [_record],
   attempts: [attempt(ref('a', 1), potted: 3)],
+  plannedSessions: [_planned],
 );
 
 InvariantCode _codeOf(String content) {
@@ -147,6 +160,40 @@ void main() {
           .microsecondsSinceEpoch,
       DateTime(2026, 9, 1, 14, 30, 15, 123, 456).microsecondsSinceEpoch,
     );
+  });
+
+  test('writes the planned date and group and the recorded sheet', () {
+    final document = jsonDecode(
+      codec.encode(_snapshot, exportedAt: _exportedAt),
+    ) as Map<String, Object?>;
+    final data = document['data']! as Map<String, Object?>;
+    final planned =
+        (data['plannedSessions']! as List<Object?>).single!
+            as Map<String, Object?>;
+    final record =
+        (data['sessionRecords']! as List<Object?>).single!
+            as Map<String, Object?>;
+
+    expect(planned['date'], '2026-10-19T00:00:00.000');
+    expect(planned['groupId'], 'g1');
+    expect(planned['sheetId'], 'demi-bille-2');
+    expect(record['sheetId'], 'demi-bille-1');
+  });
+
+  test('reads a planned session without group and a record without sheet', () {
+    final free = _planned.copyWith(groupId: null, sheetId: null);
+    final content = codec.encode(
+      _snapshot.copyWith(
+        plannedSessions: [free],
+        sessionRecords: [_record.copyWith(sheetId: null)],
+      ),
+      exportedAt: _exportedAt,
+    );
+
+    final decoded = codec.decode(content);
+
+    expect(decoded.plannedSessions.single, free);
+    expect(decoded.sessionRecords.single.sheetId, isNull);
   });
 
   test('writes open memberships with a null end and keeps closed ones', () {

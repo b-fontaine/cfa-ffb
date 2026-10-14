@@ -5,6 +5,7 @@ import 'package:billard_cfa/features/record_results/presentation/bloc/session_da
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/ui/empty_state.dart';
 import 'package:billard_cfa/shared/ui/error_view.dart';
 import 'package:billard_cfa/shared/ui/failure_message.dart';
@@ -40,6 +41,7 @@ class RecordSetupPage extends StatelessWidget {
     required this.onAddStudents,
     this.mainBlockId,
     this.recallBlockId,
+    this.sheetId,
     this.onBackToGuide,
     super.key,
   });
@@ -49,6 +51,9 @@ class RecordSetupPage extends StatelessWidget {
   final VoidCallback onAddStudents;
   final String? mainBlockId;
   final String? recallBlockId;
+
+  /// Séance du catalogue que la saisie notera (ADR 0007).
+  final SheetId? sheetId;
   final VoidCallback? onBackToGuide;
 
   Future<void> _pickDate(BuildContext context) async {
@@ -197,6 +202,7 @@ class RecordSetupPage extends StatelessWidget {
                       present: selection.present,
                       mainBlockId: mainBlockId,
                       recallBlockId: recallBlockId,
+                      sheetId: sheetId,
                     ),
                   ),
             child: Text(l10n.recordOpen),

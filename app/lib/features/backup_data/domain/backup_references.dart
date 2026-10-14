@@ -30,6 +30,10 @@ class BackupReferences {
     for (final assessment in snapshot.assessments) {
       _require(students.contains(assessment.studentId));
     }
+    for (final planned in snapshot.plannedSessions) {
+      final groupId = planned.groupId;
+      _require(groupId == null || groups.contains(groupId));
+    }
   }
 
   void _requireAll(Set<StudentId> present, Set<StudentId> students) {

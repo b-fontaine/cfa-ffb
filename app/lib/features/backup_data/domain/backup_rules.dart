@@ -18,8 +18,8 @@ import 'package:injectable/injectable.dart';
 /// Codes : `backupInconsistent` pour une référence qui ne se résout pas (au
 /// catalogue, à la séance, au groupe) ; `backupInvalid` pour une valeur qui
 /// viole une règle (plafond de passages, période, public, date). Une séance
-/// planifiée dont la séance du catalogue est inconnue est refusée par
-/// `backupUnknownSheet`, pour nommer la cause à l'animateur.
+/// planifiée ou saisie dont la séance du catalogue est inconnue est refusée
+/// par `backupUnknownSheet`, pour nommer la cause à l'animateur.
 @injectable
 class BackupRules {
   BackupRules(this._catalogue, this._sheets, this._config, this._clock);
@@ -42,7 +42,8 @@ class BackupRules {
     _checkSessions(snapshot, catalogue);
     _checkAttempts(snapshot, catalogue);
     _checkAssessments(snapshot);
-    await _checkPlanned(snapshot);
+    _checkPlanned(snapshot);
+    await _checkSheets(snapshot);
   }
 
   void _checkSessions(BackupSnapshot snapshot, ExerciseCatalogue catalogue) {
@@ -83,15 +84,31 @@ class BackupRules {
     }
   }
 
-  /// Une séance planifiée ne peut suivre qu'une séance du catalogue connue :
-  /// l'application n'étant pas encore livrée, aucun identifiant d'une version
-  /// antérieure n'est à tolérer (erreur claire, `backupUnknownSheet`, plutôt
-  /// qu'un lien orphelin).
-  Future<void> _checkPlanned(BackupSnapshot snapshot) async {
-    final linked = snapshot.plannedSessions
-        .map((session) => session.sheetId)
-        .nonNulls
-        .toSet();
+  /// Une séance planifiée pour un groupe prend le public du groupe et tombe
+  /// dans sa saison (règles de `PlanSession`).
+  void _checkPlanned(BackupSnapshot snapshot) {
+    final seasons = {for (final s in snapshot.seasons) s.id: s};
+    final groups = {for (final g in snapshot.groups) g.id: g};
+    for (final planned in snapshot.plannedSessions) {
+      final groupId = planned.groupId;
+      if (groupId == null) continue;
+      final group = groups[groupId];
+      final season = group == null ? null : seasons[group.seasonId];
+      if (group == null || season == null) throw _inconsistent;
+      if (planned.audience != group.audience) throw _invalid;
+      if (!season.contains(planned.date)) throw _invalid;
+    }
+  }
+
+  /// Une séance planifiée ou saisie ne peut noter qu'une séance du catalogue
+  /// connue : l'application n'étant pas encore livrée, aucun identifiant d'une
+  /// version antérieure n'est à tolérer (erreur claire, `backupUnknownSheet`,
+  /// plutôt qu'un lien orphelin).
+  Future<void> _checkSheets(BackupSnapshot snapshot) async {
+    final linked = {
+      ...snapshot.plannedSessions.map((session) => session.sheetId).nonNulls,
+      ...snapshot.sessionRecords.map((session) => session.sheetId).nonNulls,
+    };
     if (linked.isEmpty) return;
     final known = {for (final sheet in await _sheets.getAll()) sheet.id};
     if (!known.containsAll(linked)) throw _unknownSheet;

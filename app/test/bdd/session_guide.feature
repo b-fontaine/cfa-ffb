@@ -77,7 +77,7 @@ Feature: Guided session
     And I tap {'Note the results'} text
     Then I see {'Record the results'} text
     When I tap {'Open the session'} text
-    Then I see text containing {'Main notion:'}
+    Then I see text containing {'Catalogue session: Quantité demi-bille, session 1/2'}
     And the exercise {'demi-bille 1'} is selected for the record
     When I tap {'Back to the guided session'} text
     Then I see {'Step 6 of 9'} text
@@ -313,3 +313,26 @@ Feature: Guided session
     Then I see {'Étape 1 sur 9'} text
     And I see {'Suivant'} text
     And I see {'Montrer'} text
+
+  # Lancer une séance planifiée pour un groupe pré-remplit la saisie (ADR 0007).
+  Scenario: Launching a planned session prefills the record with its group and date
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the club has the student {'Hugo'} in the {'adults'} audience
+    And a session {'Cours'} is planned for the group {'Adults group'} on {'2026-10-19'} with the catalogue session {'demi-bille-1'}
+    And the app is running
+    When I tap {'Plan a session'} text
+    And I tap {'Launch'} text
+    Then I see {'Adults · 120 min'} text
+    When I tap {'Next'} text
+    And I tap {'Next'} text
+    And I tap {'Next'} text
+    And I tap {'Next'} text
+    And I tap {'Next'} text
+    And I tap {'Note the results'} text
+    Then I see {'Record the results'} text
+    And I see {'Mon, Oct 19'} text
+    And I see {'Hugo'} text
+    And I do not see {'Léa'} text
+    When I tap {'Open the session'} text
+    Then I see {'Adults group · Catalogue session: Quantité demi-bille, session 1/2'} text
+    And the opened session has the main block {'demi-bille'} and the recall block {'bille-pleine'}

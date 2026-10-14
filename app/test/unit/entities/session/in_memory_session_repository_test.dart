@@ -3,6 +3,11 @@ import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/fixtures.dart';
+
+Session _session(String id, Audience audience) =>
+    Session(id: id, title: id, date: day(12), audience: audience);
+
 void main() {
   test('starts empty', () async {
     expect(await InMemorySessionRepository().getAll(), isEmpty);
@@ -10,8 +15,8 @@ void main() {
 
   test('returns added sessions in insertion order', () async {
     final repository = InMemorySessionRepository();
-    const first = Session(id: '1', title: 'a', audience: Audience.children);
-    const second = Session(id: '2', title: 'b', audience: Audience.adults);
+    final first = _session('1', Audience.children);
+    final second = _session('2', Audience.adults);
 
     await repository.add(first);
     await repository.add(second);
@@ -24,9 +29,7 @@ void main() {
     final sessions = await repository.getAll();
 
     expect(
-      () => sessions.add(
-        const Session(id: '1', title: 'a', audience: Audience.children),
-      ),
+      () => sessions.add(_session('1', Audience.children)),
       throwsUnsupportedError,
     );
   });

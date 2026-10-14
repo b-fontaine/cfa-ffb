@@ -97,6 +97,10 @@ const _expected = <InvariantCode, (String, String)>{
     'Ce fichier désigne une séance du catalogue que cette version de '
         'l’application ne connaît pas.',
   ),
+  InvariantCode.unknownSheet: (
+    'This catalogue session is unknown: choose another one.',
+    'Cette séance du catalogue est inconnue : choisissez-en une autre.',
+  ),
   InvariantCode.invalidPeriod: (_genericEn, _genericFr),
   InvariantCode.invalidRange: (_genericEn, _genericFr),
   InvariantCode.invalidExerciseRef: (_genericEn, _genericFr),

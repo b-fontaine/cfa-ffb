@@ -26,6 +26,7 @@ import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' show Environment;
 
@@ -76,9 +77,12 @@ class TrackingWorld {
       ),
     );
     // Le chargement d'asset est de l'E/S réelle : hors de la zone de faux temps.
-    final catalogue = await tester.runAsync(
-      () => getIt<CatalogueRepository>().load(),
-    );
+    // Les séances du catalogue sont lues par l'ouverture d'une saisie qui en
+    // note une (ADR 0007) : une fois en cache, elles se lisent sans attendre.
+    final catalogue = await tester.runAsync(() async {
+      await getIt<SessionSheetRepository>().getAll();
+      return await getIt<CatalogueRepository>().load();
+    });
     return current = TrackingWorld._(catalogue!);
   }
 
@@ -153,11 +157,13 @@ class TrackingWorld {
     required String group,
     required DateTime on,
     required List<String> present,
+    SheetId? sheet,
   }) async {
     final result = await getIt<OpenSession>()(
       groupId: groupId(group),
       date: on,
       present: {for (final name in present) studentId(name)},
+      sheetId: sheet,
     );
     final session = _valueOf(result);
     currentSession = session.id;

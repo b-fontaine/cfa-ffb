@@ -1,7 +1,7 @@
 import 'package:billard_cfa/features/record_results/domain/recorded_session_summary.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
-import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/ui/audience_labels.dart';
 import 'package:billard_cfa/shared/ui/empty_state.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -49,12 +49,15 @@ class _SessionRow extends StatelessWidget {
     final theme = Theme.of(context);
     final session = summary.session;
     final date = dates.formatMediumDate(session.date);
-    final audience = switch (session.audience) {
-      Audience.children => l10n.audienceChildren,
-      Audience.adults => l10n.audienceAdults,
-    };
+    final audience = session.audience.label(l10n);
+    final sheet = summary.sheet;
     final block = summary.mainBlock;
-    final blockHint = block == null
+    // La séance du catalogue notée prime sur la notion principale (ADR 0007).
+    final blockHint = sheet != null
+        ? l10n.recordSheetHint(
+            l10n.sheetFullTitle(sheet.title, sheet.part, sheet.partCount),
+          )
+        : block == null
         ? null
         : block.isProposal
         ? l10n.proposalTagged(l10n.recordBlockHint(block.title))

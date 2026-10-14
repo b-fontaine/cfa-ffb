@@ -100,6 +100,7 @@ class BackupDecoder {
         },
         mainBlockId: _read.optionalString(json['mainBlockId']),
         recallBlockId: _read.optionalString(json['recallBlockId']),
+        sheetId: _read.optionalSheetId(json['sheetId']),
       );
 
   ExerciseAttempt _decodeAttempt(Map<String, Object?> json) => ExerciseAttempt(
@@ -130,7 +131,12 @@ class BackupDecoder {
   Session _decodePlanned(Map<String, Object?> json) => Session(
     id: _read.string(json['id']),
     title: _read.string(json['title']),
+    date: _read.dateTime(json['date']),
     audience: _read.audience(json['audience']),
+    groupId: switch (_read.optionalString(json['groupId'])) {
+      null => null,
+      final id => GroupId(id),
+    },
     sheetId: _read.optionalSheetId(json['sheetId']),
   );
 }

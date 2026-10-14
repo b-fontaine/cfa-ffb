@@ -207,6 +207,41 @@ List<SessionSheet> catalogueFixture() => [
   ),
 ];
 
+/// Séances du catalogue de test dont les blocs sont ceux du catalogue
+/// d'entraînement de test (`a`, `b`, `c`) : `posture-1` (bloc a),
+/// `demi-bille-1` et `demi-bille-2` (bloc b).
+List<SessionSheet> sheetsOnTestBlocks() => [
+  buildSheet(
+    technique: 'posture',
+    order: 1,
+    previous: null,
+    block: 'a',
+    exercises: [
+      sheetExercise('e1', 1, block: 'a'),
+      sheetExercise('e2', 2, block: 'a'),
+    ],
+  ),
+  buildSheet(
+    order: 2,
+    previous: 'posture-1',
+    block: 'b',
+    exercises: [
+      sheetExercise('e1', 1, block: 'b'),
+      sheetExercise('e2', 2, block: 'b'),
+    ],
+  ),
+  buildSheet(
+    part: 2,
+    order: 3,
+    previous: 'demi-bille-1',
+    block: 'b',
+    exercises: [
+      sheetExercise('e3', 3, block: 'b'),
+      sheetExercise('e4', 4, block: 'b'),
+    ],
+  ),
+];
+
 /// Port de lecture sur une liste de séances (aucune écriture : le port n'en
 /// déclare pas).
 class FixtureSessionSheetRepository implements SessionSheetRepository {

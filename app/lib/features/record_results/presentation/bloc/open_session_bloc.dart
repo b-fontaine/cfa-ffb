@@ -2,6 +2,7 @@ import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/features/record_results/domain/open_or_resume_session.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -30,6 +31,7 @@ class OpenSessionBloc extends Bloc<OpenSessionEvent, OpenSessionState> {
       present: event.present,
       mainBlockId: event.mainBlockId,
       recallBlockId: event.recallBlockId,
+      sheetId: event.sheetId,
     );
     switch (result) {
       case Ok(:final value):

@@ -1,17 +1,23 @@
+import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/sheet_option.dart';
 import 'package:billard_cfa/features/plan_session/domain/delete_session.dart';
 import 'package:billard_cfa/features/plan_session/domain/invalid_session_title.dart';
+import 'package:billard_cfa/features/plan_session/domain/list_plannable_groups.dart';
 import 'package:billard_cfa/features/plan_session/domain/list_sessions.dart';
 import 'package:billard_cfa/features/plan_session/domain/list_sheet_options.dart';
 import 'package:billard_cfa/features/plan_session/domain/plan_session.dart';
-import 'package:billard_cfa/features/plan_session/domain/sheet_option.dart';
+import 'package:billard_cfa/features/plan_session/domain/planned_session_summary.dart';
 import 'package:billard_cfa/features/plan_session/presentation/bloc/session_planner_bloc.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../support/fixtures.dart';
 
 class _MockPlanSession extends Mock implements PlanSession;
 
@@ -19,10 +25,19 @@ class _MockListSessions extends Mock implements ListSessions;
 
 class _MockListOptions extends Mock implements ListSheetOptions;
 
+class _MockListGroups extends Mock implements ListPlannableGroups;
+
 class _MockDeleteSession extends Mock implements DeleteSession;
 
 void main() {
-  const session = Session(id: '1', title: 'a', audience: Audience.children);
+  final today = day(12);
+  final session = Session(
+    id: '1',
+    title: 'a',
+    date: today,
+    audience: Audience.children,
+  );
+  final summary = PlannedSessionSummary(session: session);
   final option = SheetOption(
     id: SheetId('demi-bille-2'),
     technique: 'demi-bille',
@@ -31,29 +46,56 @@ void main() {
     part: 2,
     partCount: 2,
   );
+  final adults = Group(
+    id: const GroupId('g2'),
+    seasonId: const SeasonId('season'),
+    name: 'Adultes',
+    audience: Audience.adults,
+  );
   late _MockPlanSession planSession;
   late _MockListSessions listSessions;
   late _MockListOptions listOptions;
+  late _MockListGroups listGroups;
   late _MockDeleteSession deleteSession;
 
   setUp(() {
     planSession = _MockPlanSession();
     listSessions = _MockListSessions();
     listOptions = _MockListOptions();
+    listGroups = _MockListGroups();
     deleteSession = _MockDeleteSession();
     when(listOptions.call).thenAnswer((_) async => Ok([option]));
+    when(() => listGroups(today: today)).thenAnswer((_) async => [adults]);
   });
 
-  SessionPlannerBloc build() =>
-      SessionPlannerBloc(planSession, listSessions, listOptions, deleteSession);
+  SessionPlannerBloc build() => SessionPlannerBloc(
+    planSession,
+    listSessions,
+    listOptions,
+    listGroups,
+    deleteSession,
+  );
+
+  /// État après un `started` sans lien profond.
+  SessionPlannerState started({
+    List<PlannedSessionSummary> sessions = const [],
+    Audience audience = Audience.children,
+  }) => SessionPlannerState(
+    sessions: sessions,
+    sheetOptions: [option],
+    groups: [adults],
+    date: today,
+    audience: audience,
+  );
 
   blocTest<SessionPlannerBloc, SessionPlannerState>(
-    'loads the sessions and the catalogue options on start',
-    setUp: () => when(listSessions.call).thenAnswer((_) async => [session]),
+    'loads the sessions, the catalogue options, the groups and the day on '
+    'start',
+    setUp: () => when(listSessions.call).thenAnswer((_) async => [summary]),
     build: build,
-    act: (bloc) => bloc.add(const SessionPlannerEvent.started()),
+    act: (bloc) => bloc.add(SessionPlannerEvent.started(today: today)),
     expect: () => [
-      SessionPlannerState(sessions: const [session], sheetOptions: [option]),
+      started(sessions: [summary]),
     ],
   );
 
@@ -62,14 +104,21 @@ void main() {
     setUp: () => when(listSessions.call).thenAnswer((_) async => const []),
     build: build,
     act: (bloc) => bloc
-      ..add(SessionPlannerEvent.started(sheetId: SheetId('demi-bille-2')))
-      ..add(SessionPlannerEvent.started(sheetId: SheetId('inconnue-9'))),
-    expect: () => [
-      SessionPlannerState(
-        sheetOptions: [option],
-        selectedSheet: SheetId('demi-bille-2'),
+      ..add(
+        SessionPlannerEvent.started(
+          today: today,
+          sheetId: SheetId('demi-bille-2'),
+        ),
+      )
+      ..add(
+        SessionPlannerEvent.started(
+          today: today,
+          sheetId: SheetId('inconnue-9'),
+        ),
       ),
-      SessionPlannerState(sheetOptions: [option]),
+    expect: () => [
+      started().copyWith(selectedSheet: SheetId('demi-bille-2')),
+      started(),
     ],
   );
 
@@ -81,8 +130,14 @@ void main() {
           .thenAnswer((_) async => const Err(NotFound('sheet', 'x')));
     },
     build: build,
-    act: (bloc) => bloc.add(const SessionPlannerEvent.started()),
-    expect: () => [const SessionPlannerState(sheetsUnavailable: true)],
+    act: (bloc) => bloc.add(SessionPlannerEvent.started(today: today)),
+    expect: () => [
+      SessionPlannerState(
+        sheetsUnavailable: true,
+        groups: [adults],
+        date: today,
+      ),
+    ],
   );
 
   blocTest<SessionPlannerBloc, SessionPlannerState>(
@@ -101,11 +156,10 @@ void main() {
     'takes the audience of the deep link on start',
     setUp: () => when(listSessions.call).thenAnswer((_) async => const []),
     build: build,
-    act: (bloc) =>
-        bloc.add(const SessionPlannerEvent.started(audience: Audience.adults)),
-    expect: () => [
-      SessionPlannerState(sheetOptions: [option], audience: Audience.adults),
-    ],
+    act: (bloc) => bloc.add(
+      SessionPlannerEvent.started(today: today, audience: Audience.adults),
+    ),
+    expect: () => [started(audience: Audience.adults)],
   );
 
   blocTest<SessionPlannerBloc, SessionPlannerState>(
@@ -120,6 +174,55 @@ void main() {
       SessionPlannerState(audience: Audience.adults),
       SessionPlannerState(audience: Audience.adults, title: 'Cours'),
     ],
+  );
+
+  group('the group of the next session', () {
+    blocTest<SessionPlannerBloc, SessionPlannerState>(
+      'takes the audience of the chosen group',
+      build: build,
+      seed: () => SessionPlannerState(groups: [adults]),
+      act: (bloc) => bloc.add(
+        const SessionPlannerEvent.groupSelected(groupId: GroupId('g2')),
+      ),
+      expect: () => [
+        SessionPlannerState(
+          groups: [adults],
+          selectedGroup: const GroupId('g2'),
+          audience: Audience.adults,
+        ),
+      ],
+    );
+
+    blocTest<SessionPlannerBloc, SessionPlannerState>(
+      'clears the group and keeps the audience',
+      build: build,
+      seed: () => SessionPlannerState(
+        groups: [adults],
+        selectedGroup: const GroupId('g2'),
+        audience: Audience.adults,
+      ),
+      act: (bloc) => bloc.add(const SessionPlannerEvent.groupSelected()),
+      expect: () => [
+        SessionPlannerState(groups: [adults], audience: Audience.adults),
+      ],
+    );
+
+    blocTest<SessionPlannerBloc, SessionPlannerState>(
+      'ignores a group that is not proposable',
+      build: build,
+      seed: () => SessionPlannerState(groups: [adults]),
+      act: (bloc) => bloc.add(
+        const SessionPlannerEvent.groupSelected(groupId: GroupId('ghost')),
+      ),
+      expect: () => const <SessionPlannerState>[],
+    );
+  });
+
+  blocTest<SessionPlannerBloc, SessionPlannerState>(
+    'remembers the chosen day',
+    build: build,
+    act: (bloc) => bloc.add(SessionPlannerEvent.dateChanged(date: day(19))),
+    expect: () => [SessionPlannerState(date: day(19))],
   );
 
   group('the title proposed by a catalogue session', () {
@@ -164,28 +267,37 @@ void main() {
   });
 
   blocTest<SessionPlannerBloc, SessionPlannerState>(
-    'plans the selected catalogue session, reloads and clears the form',
+    'plans the session with its day, group and catalogue session, reloads '
+    'and clears the title and the sheet but keeps the day and the group',
     setUp: () {
       when(
         () => planSession(
           title: 'a',
+          date: day(19),
           audience: Audience.adults,
           sheetId: SheetId('quart-1'),
+          groupId: const GroupId('g2'),
         ),
       ).thenAnswer((_) async => session);
-      when(listSessions.call).thenAnswer((_) async => [session]);
+      when(listSessions.call).thenAnswer((_) async => [summary]);
     },
     build: build,
     seed: () => SessionPlannerState(
+      groups: [adults],
       selectedSheet: SheetId('quart-1'),
+      selectedGroup: const GroupId('g2'),
+      date: day(19),
       audience: Audience.adults,
       title: 'a',
       prefilledTitle: 'a',
     ),
     act: (bloc) => bloc.add(const SessionPlannerEvent.sessionSubmitted()),
-    expect: () => const [
+    expect: () => [
       SessionPlannerState(
-        sessions: [session],
+        sessions: [summary],
+        groups: [adults],
+        selectedGroup: const GroupId('g2'),
+        date: day(19),
         audience: Audience.adults,
         plannedCount: 1,
       ),
@@ -193,17 +305,63 @@ void main() {
   );
 
   blocTest<SessionPlannerBloc, SessionPlannerState>(
-    'flags an invalid title, then clears the flag when it is edited',
-    setUp: () =>
-        when(() => planSession(title: '', audience: Audience.children))
-            .thenThrow(const InvalidSessionTitle()),
+    'does nothing before the day is known',
     build: build,
+    act: (bloc) => bloc.add(const SessionPlannerEvent.sessionSubmitted()),
+    expect: () => const <SessionPlannerState>[],
+    verify: (_) => verifyZeroInteractions(planSession),
+  );
+
+  blocTest<SessionPlannerBloc, SessionPlannerState>(
+    'flags an invalid title, then clears the flag when it is edited',
+    setUp: () => when(
+      () => planSession(title: '', date: today, audience: Audience.children),
+    ).thenThrow(const InvalidSessionTitle()),
+    build: build,
+    seed: () => SessionPlannerState(date: today),
     act: (bloc) => bloc
       ..add(const SessionPlannerEvent.sessionSubmitted())
       ..add(const SessionPlannerEvent.titleEdited(title: 'a')),
-    expect: () => const [
-      SessionPlannerState(titleInvalid: true),
-      SessionPlannerState(title: 'a'),
+    expect: () => [
+      SessionPlannerState(date: today, titleInvalid: true),
+      SessionPlannerState(date: today, title: 'a'),
+    ],
+  );
+
+  blocTest<SessionPlannerBloc, SessionPlannerState>(
+    'reports a refused rule, cleared by the next change of day or group',
+    setUp: () => when(
+      () => planSession(
+        title: 'a',
+        date: DateTime(2027, 7),
+        audience: Audience.children,
+        groupId: const GroupId('g2'),
+      ),
+    ).thenThrow(const InvariantViolation(InvariantCode.seasonOutsidePeriod)),
+    build: build,
+    seed: () => SessionPlannerState(
+      groups: [adults],
+      selectedGroup: const GroupId('g2'),
+      date: DateTime(2027, 7),
+      title: 'a',
+    ),
+    act: (bloc) => bloc
+      ..add(const SessionPlannerEvent.sessionSubmitted())
+      ..add(SessionPlannerEvent.dateChanged(date: today)),
+    expect: () => [
+      SessionPlannerState(
+        groups: [adults],
+        selectedGroup: const GroupId('g2'),
+        date: DateTime(2027, 7),
+        title: 'a',
+        failure: const InvariantViolation(InvariantCode.seasonOutsidePeriod),
+      ),
+      SessionPlannerState(
+        groups: [adults],
+        selectedGroup: const GroupId('g2'),
+        date: today,
+        title: 'a',
+      ),
     ],
   );
 
@@ -214,7 +372,7 @@ void main() {
       when(listSessions.call).thenAnswer((_) async => const []);
     },
     build: build,
-    seed: () => const SessionPlannerState(sessions: [session]),
+    seed: () => SessionPlannerState(sessions: [summary]),
     act: (bloc) =>
         bloc.add(const SessionPlannerEvent.sessionDeleted(sessionId: '1')),
     verify: (_) => verify(() => deleteSession('1')).called(1),

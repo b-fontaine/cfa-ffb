@@ -28,7 +28,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Version du schéma SQL. Elle est indépendante de la version du format de
   /// sauvegarde JSON (`BackupCodec.currentVersion`).
-  static const currentSchemaVersion = 3;
+  static const currentSchemaVersion = 4;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -52,6 +52,27 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(
             schema.plannedSessions,
             schema.plannedSessions.sheetId,
+          );
+        },
+        // Version 4 (ADR 0007) : date obligatoire et groupe facultatif sur la
+        // séance planifiée (table recréée ; les lignes existantes prennent
+        // leur date de création), séance du catalogue notée par une saisie.
+        from3To4: (m, schema) async {
+          await m.alterTable(
+            TableMigration(
+              schema.plannedSessions,
+              newColumns: [
+                schema.plannedSessions.date,
+                schema.plannedSessions.groupId,
+              ],
+              columnTransformer: {
+                schema.plannedSessions.date: schema.plannedSessions.createdAt,
+              },
+            ),
+          );
+          await m.addColumn(
+            schema.sessionRecords,
+            schema.sessionRecords.sheetId,
           );
         },
       )(migrator, from, to);

@@ -8,5 +8,8 @@ sealed class OpenSessionEvent with _$OpenSessionEvent {
     required Set<StudentId> present,
     String? mainBlockId,
     String? recallBlockId,
+
+    /// Séance du catalogue notée par la saisie (ADR 0007).
+    SheetId? sheetId,
   }) = OpenSessionRequested;
 }

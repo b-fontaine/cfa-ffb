@@ -251,15 +251,40 @@ ADR 0004, lot L4. Lecture seule de bout en bout :
   reste accessible par un bouton en tête du catalogue.
 - Lien séance planifiée ↔ séance du catalogue (lot L5) : `Session.sheetId`
   (`SheetId?`, `shared/lib`) ; `features/plan_session` lit le catalogue par
-  `ListSheetOptions` (`SheetOption` : identifiant, technique, rang, partie) et
-  `PlanSession(title, audience, sheetId?)`. Le choix vit dans
-  `SessionPlannerBloc` (`selectedSheet`) ; le formulaire préremplit le titre,
-  qui reste modifiable. `/planner?sheet=<id>&audience=` présélectionne une
-  séance (bouton « Planifier cette séance » du détail). La liste
-  (`widgets/session_list`) ouvre le détail de la séance liée, ou affiche
-  « séance indisponible » et « Choisir une séance » (vers `/catalogue`). La
-  sauvegarde écrit `sheetId` ; `BackupRules` refuse un identifiant inconnu
-  (`backupInconsistent`), sans décodeur ancien (V1 non livrée).
+  `ListSheetOptions` (`SheetOption` et `sheetOptionsOf` vivent en
+  `entities/session_sheet/domain` : identifiant, technique, rang, partie, pour
+  la planification, la saisie et l'historique) et `PlanSession(title, date,
+  audience, sheetId?, groupId?)`. Le choix vit dans `SessionPlannerBloc`
+  (`selectedSheet`) ; le formulaire préremplit le titre, qui reste modifiable.
+  `/planner?sheet=<id>&audience=` présélectionne une séance (bouton
+  « Planifier cette séance » du détail). La liste (`widgets/session_list`)
+  ouvre le détail de la séance liée, ou affiche « séance indisponible » et
+  « Choisir une séance » (vers `/catalogue`). La sauvegarde écrit `sheetId` ;
+  `BackupRules` refuse un identifiant inconnu (`backupUnknownSheet`), sans
+  décodeur ancien (V1 non livrée).
+- **Séance planifiée datée et par groupe, saisie liée** ([ADR 0007](adr/0007-lien-seance-planifiee-saisie-catalogue.md)) :
+  `Session(id, title, date, audience, groupId?, sheetId?)` ; `PlanSession`
+  prend le public du groupe et refuse une date hors de sa saison
+  (`seasonOutsidePeriod`) ou un groupe inconnu (`unknownGroup`) ;
+  `ListPlannableGroups` (groupes de la saison en cours, règle `currentGroups`
+  de `entities/group/domain`, partagée avec `GetClubOverview`) ;
+  `ListSessions` rend des `PlannedSessionSummary` (séance, groupe, saisie du
+  même groupe le même jour, `DateOnly.isSameDayAs` de `shared/lib`) triés par
+  date. Le lien planifiée ↔ saisie est **dérivé** (aucune clé étrangère).
+  `SessionRecord.sheetId` note la séance du catalogue ; `ResolveSheetBlocks`
+  (`features/record_results/domain`) en dérive la notion principale et le
+  rappel de résultats (`resultsRecallBlock`, en `entities/session_sheet/domain`)
+  pour `OpenSession` et `OpenOrResumeSession` quand ils ne sont pas donnés ;
+  une séance inconnue est refusée (`unknownSheet`). `SessionOverview.sheet` et
+  `RecordedSessionSummary.sheet` libellent la séance notée dans la saisie et
+  l'historique. Routes : `/record/new?group=&date=&sheet=` depuis la liste des
+  séances planifiées (`AppRoutes.recordFromPlan`) ; le guide lancé depuis une
+  séance planifiée (`RunPlan.planned`) pré-remplit groupe et date
+  (`RunSheetState.recordDefaults` : le choix d'une saisie précédente prime sur
+  la séance planifiée ; le routeur ne fait que le lire, puis
+  `AppRoutes.recordFromGuide(sheet:)`). Les blocs dérivés d'une séance
+  (`SheetBlocks.resolve`) ne remplacent jamais des blocs donnés. Schéma drift
+  v4 (ADR 0001).
 - Garde-fous : `test/contract/session_sheets_render_test.dart` rend les 29
   séances (fr et en, deux publics, texte à 200 % sur téléphone, tablette en
   paysage) et chaque illustration, sans erreur de rendu.
@@ -309,9 +334,10 @@ jamais modifier le contenu du catalogue :
   planifiée) et `/catalogue/:sheetId/presentation?audience=&session=&step=`
   (hors du shell). Le guide est lancé depuis le détail d'une séance ou depuis la
   liste des séances planifiées.
-- Notation : « Noter les résultats » ouvre `/record?main=<bloc>&recall=<bloc
-  de rappel>&exercise=<n>&from=<adresse du guide>` (sans groupe : il se choisit
-  à la saisie), puis `/record/:sessionId?exercise=<n>&from=…`. `from` n'est
+- Notation : « Noter les résultats » ouvre `/record/new?main=<bloc>&recall=<bloc
+  de rappel>&exercise=<n>&sheet=<séance>&from=<adresse du guide>` (le groupe
+  et la date viennent du choix précédent ou de la séance planifiée ; sans eux,
+  le groupe se choisit à la saisie), puis `/record/:sessionId?exercise=<n>&from=…`. `from` n'est
   suivi que s'il est intérieur à l'application et sous `/catalogue/` ; sinon il
   est ignoré. `RecordResultsEvent.started` présélectionne l'exercice du bloc
   principal ; le retour ramène au guide à la même étape.

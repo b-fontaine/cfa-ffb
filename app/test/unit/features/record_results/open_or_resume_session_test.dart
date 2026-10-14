@@ -1,29 +1,35 @@
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/features/record_results/domain/open_or_resume_session.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
+import 'package:billard_cfa/features/record_results/domain/resolve_sheet_blocks.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/domain_world.dart';
 import '../../../support/fixtures.dart';
+import '../../../support/session_sheet_fixtures.dart';
 
 void main() {
   late DomainWorld world;
   late OpenOrResumeSession openOrResume;
 
   setUp(() async {
-    world = DomainWorld();
+    world = DomainWorld(sheets: sheetsOnTestBlocks());
     await world.seedClub(studentNames: ['s1', 's2']);
+    final sheetBlocks = ResolveSheetBlocks(world.sheets);
     openOrResume = OpenOrResumeSession(
       world.groups,
       world.sessions,
+      sheetBlocks,
       OpenSession(
         world.groups,
         world.seasons,
         world.sessions,
         world.catalogueRepository,
+        sheetBlocks,
         world.ids,
       ),
     );
@@ -34,12 +40,14 @@ void main() {
     Set<String> present = const {'s1'},
     String? main,
     String? recall,
+    String? sheet,
   }) => openOrResume(
     groupId: const GroupId('g1'),
     date: day(dayOfMonth),
     present: {for (final name in present) StudentId(name)},
     mainBlockId: main,
     recallBlockId: recall,
+    sheetId: sheet == null ? null : SheetId(sheet),
   );
 
   test('opens a new session when none exists for that group and day', () async {
@@ -82,6 +90,60 @@ void main() {
 
     expect(resumed.mainBlockId, 'b');
     expect(resumed.recallBlockId, 'a');
+  });
+
+  test('keeps the catalogue session and its blocks when resuming', () async {
+    final first = ok(await call(sheet: 'demi-bille-2'));
+
+    final resumed = ok(await call(present: {'s1', 's2'}));
+
+    expect(resumed.id, first.id);
+    expect(resumed.sheetId?.value, 'demi-bille-2');
+    expect(resumed.mainBlockId, 'b');
+    expect(resumed.recallBlockId, 'a');
+  });
+
+  test(
+    'derives the missing blocks of a resumed session from the sheet',
+    () async {
+      ok(await call());
+
+      final resumed = ok(await call(sheet: 'demi-bille-2'));
+
+      expect(resumed.sheetId?.value, 'demi-bille-2');
+      expect(resumed.mainBlockId, 'b');
+      expect(resumed.recallBlockId, 'a');
+    },
+  );
+
+  test('keeps the blocks already set over those of the sheet', () async {
+    ok(await call(main: 'c'));
+
+    final resumed = ok(await call(sheet: 'demi-bille-2'));
+
+    expect(resumed.mainBlockId, 'c');
+    expect(resumed.recallBlockId, 'a', reason: 'rappel dérivé, non donné');
+  });
+
+  test(
+    'ignores a derived recall equal to the main block already set',
+    () async {
+      ok(await call(main: 'a'));
+
+      final resumed = ok(await call(sheet: 'demi-bille-2'));
+
+      expect(resumed.mainBlockId, 'a');
+      expect(resumed.recallBlockId, isNull);
+    },
+  );
+
+  test('refuses an unknown sheet when resuming and changes nothing', () async {
+    final first = ok(await call(main: 'a'));
+
+    final result = await call(present: {'s1', 's2'}, sheet: 'inconnue-9');
+
+    expect(codeOf(result), InvariantCode.unknownSheet);
+    expect(await world.sessions.byId(first.id), first);
   });
 
   test('opens another session on another day', () async {

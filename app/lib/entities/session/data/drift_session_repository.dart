@@ -2,6 +2,7 @@ import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session/domain/session_repository.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
 import 'package:drift/drift.dart';
@@ -27,7 +28,12 @@ class DriftSessionRepository implements SessionRepository {
         Session(
           id: row.id,
           title: row.title,
+          date: row.date,
           audience: Audience.values.byName(row.audience),
+          groupId: switch (row.groupId) {
+            null => null,
+            final id => GroupId(id),
+          },
           sheetId: SheetId.tryParse(row.sheetId),
         ),
     ]);
@@ -42,7 +48,9 @@ class DriftSessionRepository implements SessionRepository {
           PlannedSessionsCompanion.insert(
             id: session.id,
             title: session.title,
+            date: session.date,
             audience: session.audience.name,
+            groupId: Value(session.groupId?.value),
             sheetId: Value(session.sheetId?.value),
             createdAt: now,
             updatedAt: now,
@@ -50,7 +58,9 @@ class DriftSessionRepository implements SessionRepository {
           onConflict: DoUpdate(
             (_) => PlannedSessionsCompanion(
               title: Value(session.title),
+              date: Value(session.date),
               audience: Value(session.audience.name),
+              groupId: Value(session.groupId?.value),
               sheetId: Value(session.sheetId?.value),
               updatedAt: Value(now),
               deletedAt: const Value(null),

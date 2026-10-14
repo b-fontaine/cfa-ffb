@@ -411,20 +411,25 @@ void repositoryContract(
 
     group('séances planifiées', () {
       test('round-trips, replaces by id and deletes logically', () async {
-        const first = Session(
+        final first = Session(
           id: 'p1',
           title: 'Rebond',
+          date: DateTime(2026, 10, 12),
           audience: Audience.children,
         );
-        const second = Session(
+        final second = Session(
           id: 'p2',
           title: 'Rejet',
+          date: DateTime(2026, 10, 19),
           audience: Audience.adults,
+          groupId: const GroupId('g1'),
         );
-        const renamed = Session(
+        final renamed = Session(
           id: 'p1',
           title: 'Rebond 2',
+          date: DateTime(2026, 10, 13),
           audience: Audience.children,
+          groupId: const GroupId('g2'),
         );
 
         expect(await repos.sessions.getAll(), isEmpty);
@@ -442,6 +447,7 @@ void repositoryContract(
         final linked = Session(
           id: 'p1',
           title: 'Demi-bille',
+          date: DateTime(2026, 10, 12),
           audience: Audience.adults,
           sheetId: SheetId('demi-bille-2'),
         );
@@ -458,12 +464,33 @@ void repositoryContract(
         expect(await repos.sessions.getAll(), [free]);
       });
 
+      test('keeps the group, replaced or cleared by add', () async {
+        final planned = Session(
+          id: 'p1',
+          title: 'Cours',
+          date: DateTime(2026, 10, 12),
+          audience: Audience.children,
+          groupId: const GroupId('g1'),
+        );
+
+        await repos.sessions.add(planned);
+        expect(await repos.sessions.getAll(), [planned]);
+
+        await repos.sessions.add(planned.copyWith(groupId: null));
+        expect((await repos.sessions.getAll()).single.groupId, isNull);
+      });
+
       test('exposes an unmodifiable snapshot', () async {
         final sessions = await repos.sessions.getAll();
 
         expect(
           () => sessions.add(
-            const Session(id: '1', title: 'a', audience: Audience.children),
+            Session(
+              id: '1',
+              title: 'a',
+              date: DateTime(2026, 10, 12),
+              audience: Audience.children,
+            ),
           ),
           throwsUnsupportedError,
         );

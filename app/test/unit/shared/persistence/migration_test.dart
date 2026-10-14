@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/maturity_assessment/data/drift_assessment_repository.dart';
 import 'package:billard_cfa/entities/session/data/drift_session_repository.dart';
+import 'package:billard_cfa/entities/session_record/data/drift_session_record_repository.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
@@ -47,6 +48,51 @@ void main() {
     await verifier.migrateAndValidate(db, 3);
   });
 
+  test('a fresh database matches the committed v4 snapshot', () async {
+    final connection = await verifier.startAt(4);
+    final db = AppDatabase(connection);
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 4);
+  });
+
+  test('upgrading v3 to v4 dates planned sessions from their creation and '
+      'keeps records without catalogue session', () async {
+    final schema = await verifier.schemaAt(3);
+    schema.rawDatabase
+      ..execute(
+        'INSERT INTO planned_sessions (id, created_at, updated_at, title, '
+        'audience, sheet_id) '
+        "VALUES ('p1', '2026-10-01T00:00:00.000Z', "
+        "'2026-10-02T00:00:00.000Z', 'Rebond', 'adults', 'rebond-bande-1')",
+      )
+      ..execute(
+        'INSERT INTO session_records (id, created_at, updated_at, group_id, '
+        'season_id, date, audience, main_block_id) '
+        "VALUES ('x1', '2026-10-01T00:00:00.000Z', "
+        "'2026-10-01T00:00:00.000Z', 'g1', 's1', '2026-10-03T00:00:00.000', "
+        "'children', 'posture')",
+      );
+    final db = AppDatabase(schema.newConnection());
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 4);
+
+    final clock = TickingClock();
+    final planned = (await DriftSessionRepository(db, clock).getAll()).single;
+    expect(planned.id, 'p1');
+    expect(planned.title, 'Rebond');
+    expect(planned.date, DateTime.utc(2026, 10));
+    expect(planned.audience.name, 'adults');
+    expect(planned.groupId, isNull);
+    expect(planned.sheetId?.value, 'rebond-bande-1');
+    final record = (await DriftSessionRecordRepository(db, clock).all()).single;
+    expect(record.id.value, 'x1');
+    expect(record.date, DateTime(2026, 10, 3));
+    expect(record.mainBlockId, 'posture');
+    expect(record.sheetId, isNull);
+  });
+
   test(
     'upgrading v2 to v3 adds the sheet and keeps planned sessions',
     () async {
@@ -62,13 +108,18 @@ void main() {
 
       await verifier.migrateAndValidate(db, 3);
 
-      final session = (await DriftSessionRepository(
-        db,
-        TickingClock(),
-      ).getAll()).single;
-      expect(session.id, 'p1');
-      expect(session.title, 'Rebond');
-      expect(session.sheetId, isNull);
+      // Le dépôt lit le schéma courant (v4) : la ligne v3 se vérifie en SQL.
+      final row =
+          (await db
+                  .customSelect(
+                    'SELECT id, title, sheet_id FROM planned_sessions',
+                  )
+                  .get())
+              .single
+              .data;
+      expect(row['id'], 'p1');
+      expect(row['title'], 'Rebond');
+      expect(row['sheet_id'], isNull);
     },
   );
 
@@ -122,7 +173,7 @@ void main() {
   test('refuses to open a database written by a newer version', () async {
     final db = AppDatabase(
       NativeDatabase.memory(
-        setup: (raw) => raw.execute('PRAGMA user_version = 4'),
+        setup: (raw) => raw.execute('PRAGMA user_version = 5'),
       ),
     );
     addTearDown(db.close);
@@ -131,9 +182,9 @@ void main() {
       db.customSelect('SELECT 1').get(),
       throwsA(
         isA<DowngradeNotSupported>()
-            .having((e) => e.from, 'from', 4)
-            .having((e) => e.to, 'to', 3)
-            .having((e) => e.toString(), 'message', contains('version 4')),
+            .having((e) => e.from, 'from', 5)
+            .having((e) => e.to, 'to', 4)
+            .having((e) => e.toString(), 'message', contains('version 5')),
       ),
     );
   });

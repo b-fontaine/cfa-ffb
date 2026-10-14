@@ -641,7 +641,10 @@ void main() {
     testWidgets('starts and pauses from its buttons', (tester) async {
       final (cubit, _) = await pump(tester, world(), 'demi-bille-1');
 
-      expect(find.textContaining('00:00 of about 10 min'), findsOneWidget);
+      expect(
+        find.text('Timer of the phase · 00:00 of about 10 min'),
+        findsOneWidget,
+      );
       await tapVisible(tester, find.byTooltip('Start the timer'));
       await tester.pump();
       expect(cubit.state.timerRunning, isTrue);

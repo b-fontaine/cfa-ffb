@@ -3,12 +3,18 @@ import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
+import 'package:billard_cfa/features/record_results/domain/resolve_sheet_blocks.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/id_generator.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:injectable/injectable.dart';
 
 /// Cas d'usage : ouvrir la séance d'un groupe à une date, avec ses présents.
+///
+/// Avec une séance du catalogue `sheetId`, la notion principale et le rappel
+/// de résultats **non fournis** en sont dérivés (`SheetBlocks.resolve`, ADR
+/// 0007).
 @injectable
 class OpenSession {
   OpenSession(
@@ -16,6 +22,7 @@ class OpenSession {
     this._seasons,
     this._sessions,
     this._catalogue,
+    this._sheetBlocks,
     this._ids,
   );
 
@@ -23,6 +30,7 @@ class OpenSession {
   final SeasonRepository _seasons;
   final SessionRecordRepository _sessions;
   final CatalogueRepository _catalogue;
+  final ResolveSheetBlocks _sheetBlocks;
   final IdGenerator _ids;
 
   Future<Result<SessionRecord>> call({
@@ -31,6 +39,7 @@ class OpenSession {
     required Set<StudentId> present,
     String? mainBlockId,
     String? recallBlockId,
+    SheetId? sheetId,
   }) => runGuarded(() async {
     final group = await _groups.byId(groupId);
     if (group == null) throw NotFound('group', groupId.value);
@@ -42,8 +51,10 @@ class OpenSession {
     if (!present.every((student) => group.isMemberOn(student, date))) {
       throw const InvariantViolation(InvariantCode.studentNotInGroup);
     }
+    final (:main, :recall) = (await _sheetBlocks(sheetId))
+        .resolve(main: mainBlockId, recall: recallBlockId);
     final catalogue = await _catalogue.load();
-    final blocks = [mainBlockId, recallBlockId].nonNulls;
+    final blocks = [main, recall].nonNulls;
     if (blocks.any((id) => catalogue.blockById(id) == null)) {
       throw const InvariantViolation(InvariantCode.unknownBlock);
     }
@@ -54,8 +65,9 @@ class OpenSession {
       date: date,
       audience: group.audience,
       present: present,
-      mainBlockId: mainBlockId,
-      recallBlockId: recallBlockId,
+      mainBlockId: main,
+      recallBlockId: recall,
+      sheetId: sheetId,
     );
     await _sessions.save(session);
     return session;

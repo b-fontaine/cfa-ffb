@@ -9,6 +9,7 @@ import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:billard_cfa/shared/lib/session_shape.dart';
@@ -133,7 +134,12 @@ void main() {
     'takes the audience of the planned session when none is given',
     () async {
       await sessions.add(
-        const Session(id: 'p1', title: 'Cours', audience: Audience.adults),
+        Session(
+          id: 'p1',
+          title: 'Cours',
+          date: day(12),
+          audience: Audience.adults,
+        ),
       );
 
       final plan = ok(await build()(SheetId('demi-bille-1'), sessionId: 'p1'));
@@ -142,9 +148,37 @@ void main() {
     },
   );
 
+  test('exposes the planned session it was launched from', () async {
+    await sessions.add(
+      Session(
+        id: 'p1',
+        title: 'Cours',
+        date: day(19),
+        audience: Audience.adults,
+        groupId: const GroupId('g1'),
+      ),
+    );
+
+    final launched = ok(
+      await build()(SheetId('demi-bille-1'), sessionId: 'p1'),
+    );
+    final free = ok(await build()(SheetId('demi-bille-1')));
+    final gone = ok(await build()(SheetId('demi-bille-1'), sessionId: 'p9'));
+
+    expect(launched.planned?.groupId, const GroupId('g1'));
+    expect(launched.planned?.date, day(19));
+    expect(free.planned, isNull);
+    expect(gone.planned, isNull);
+  });
+
   test('prefers the requested audience to the planned session', () async {
     await sessions.add(
-      const Session(id: 'p1', title: 'Cours', audience: Audience.adults),
+      Session(
+        id: 'p1',
+        title: 'Cours',
+        date: day(12),
+        audience: Audience.adults,
+      ),
     );
 
     final plan = ok(

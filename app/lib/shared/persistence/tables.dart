@@ -90,6 +90,11 @@ class SessionRecords extends Table with AuditColumns {
   TextColumn get mainBlockId => text().nullable()();
 
   TextColumn get recallBlockId => text().nullable()();
+
+  /// Séance du catalogue notée (ajoutée au schéma version 4, ADR 0007). Les
+  /// séances du catalogue sont des assets : pas de clé étrangère ; nul =
+  /// séance ouverte sans séance du catalogue.
+  TextColumn get sheetId => text().nullable()();
 }
 
 @DataClassName('PresenceRow')
@@ -144,7 +149,16 @@ class Assessments extends Table with AuditColumns {
 class PlannedSessions extends Table with AuditColumns {
   TextColumn get title => text()();
 
+  /// Jour de la séance (schéma version 4, ADR 0007 ; la table est recréée et
+  /// les lignes antérieures prennent leur date de création).
+  TextColumn get date => text().map(const IsoDateTimeConverter())();
+
   TextColumn get audience => text()();
+
+  /// Groupe qui suivra la séance (version 4, nullable). Pas de clé étrangère :
+  /// les groupes sont supprimés logiquement et l'affichage traite un groupe
+  /// disparu sans échouer.
+  TextColumn get groupId => text().nullable()();
 
   /// Séance du catalogue suivie (ajoutée au schéma version 3). Les séances du
   /// catalogue sont des assets : pas de clé étrangère ; nul = séance libre.

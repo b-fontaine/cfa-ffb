@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart';
 import 'package:billard_cfa/entities/exercise_diagram/domain/exercise_diagram.dart';
+import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_exercise.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_initiation.dart';
@@ -45,6 +46,11 @@ abstract class RunPlan with _$RunPlan {
 
     /// Titre du bloc d'entraînement de la séance.
     String? blockTitle,
+
+    /// Séance planifiée d'où le guide a été lancé (`?session=`), si elle
+    /// existe encore : son groupe et sa date pré-remplissent la saisie des
+    /// résultats (ADR 0007).
+    Session? planned,
 
     /// Exercice du catalogue d'entraînement (taux, chevalet, bronze) par
     /// identifiant d'exercice de la séance.

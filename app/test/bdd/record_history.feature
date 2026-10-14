@@ -83,3 +83,11 @@ Feature: Recorded sessions history
     And I tap {'Cancel'} text
     Then I see {'Léa · La puissance · exercise 1: 7 of 9'} text {2} times
     And the club keeps {2} passes in total
+
+  # La saisie connaît la séance du catalogue qu'elle note (ADR 0007).
+  Scenario: A recorded session names the catalogue session it noted
+    Given a session is recorded for the group {'Children group'} on {'2026-10-05'} with the catalogue session {'puissance-1'}
+    And the app is running
+    When I tap {'Results'} text
+    Then I see {'Catalogue session: La puissance, session 1/2'} text
+    And I do not see text containing {'Main notion:'}

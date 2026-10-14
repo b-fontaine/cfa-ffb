@@ -1,13 +1,16 @@
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
+import 'package:billard_cfa/features/record_results/domain/resolve_sheet_blocks.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/domain_world.dart';
 import '../../../support/fixtures.dart';
+import '../../../support/session_sheet_fixtures.dart';
 
 class Fixture {
   Fixture(this.world)
@@ -16,6 +19,7 @@ class Fixture {
         world.seasons,
         world.sessions,
         world.catalogueRepository,
+        ResolveSheetBlocks(world.sheets),
         world.ids,
       );
 
@@ -28,17 +32,19 @@ class Fixture {
     Set<String> present = const {'s1'},
     String? main,
     String? recall,
+    String? sheet,
   }) => openSession(
     groupId: GroupId(group),
     date: day(dayOfMonth),
     present: {for (final name in present) StudentId(name)},
     mainBlockId: main,
     recallBlockId: recall,
+    sheetId: sheet == null ? null : SheetId(sheet),
   );
 }
 
 Future<Fixture> fixture({Audience audience = Audience.children}) async {
-  final world = DomainWorld();
+  final world = DomainWorld(sheets: sheetsOnTestBlocks());
   await world.seedClub(studentNames: ['s1', 's2'], audience: audience);
   return Fixture(world);
 }
@@ -58,6 +64,55 @@ void main() {
     expect(session.recallBlockId, 'b');
     expect(session.seasonId, const SeasonId('season'));
     expect(await f.world.sessions.byId(session.id), session);
+  });
+
+  group('with a catalogue session', () {
+    test('derives the main and the recall blocks from the session', () async {
+      final f = await fixture();
+
+      final session = ok(await f.open(sheet: 'demi-bille-2'));
+
+      expect(session.sheetId?.value, 'demi-bille-2');
+      expect(session.mainBlockId, 'b');
+      expect(session.recallBlockId, 'a');
+    });
+
+    test('has no recall block for the first session', () async {
+      final f = await fixture();
+
+      final session = ok(await f.open(sheet: 'posture-1'));
+
+      expect(session.mainBlockId, 'a');
+      expect(session.recallBlockId, isNull);
+    });
+
+    test('keeps the blocks given over the derived ones', () async {
+      final f = await fixture();
+
+      final session = ok(await f.open(sheet: 'demi-bille-2', main: 'c'));
+
+      expect(session.mainBlockId, 'c');
+      expect(session.recallBlockId, 'a');
+    });
+
+    test('ignores a derived recall equal to the main block given', () async {
+      final f = await fixture();
+
+      final session = ok(await f.open(sheet: 'demi-bille-2', main: 'a'));
+
+      expect(session.mainBlockId, 'a');
+      expect(session.recallBlockId, isNull);
+    });
+
+    test('refuses a session unknown to the catalogue', () async {
+      final f = await fixture();
+
+      expect(
+        codeOf(await f.open(sheet: 'inconnue-9')),
+        InvariantCode.unknownSheet,
+      );
+      expect(await f.world.sessions.all(), isEmpty);
+    });
   });
 
   test('accepts the first and the last day of the season', () async {

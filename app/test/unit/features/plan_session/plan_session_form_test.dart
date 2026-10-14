@@ -1,9 +1,12 @@
 import 'dart:async';
 
-import 'package:billard_cfa/features/plan_session/domain/sheet_option.dart';
+import 'package:billard_cfa/entities/group/domain/group.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/sheet_option.dart';
 import 'package:billard_cfa/features/plan_session/presentation/bloc/session_planner_bloc.dart';
 import 'package:billard_cfa/features/plan_session/presentation/ui/plan_session_form.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +38,9 @@ void main() {
   ];
 
   setUpAll(() {
-    registerFallbackValue(const SessionPlannerEvent.started());
+    registerFallbackValue(
+      SessionPlannerEvent.started(today: DateTime(2026, 10, 12)),
+    );
   });
   setUp(() => bloc = _MockBloc());
 
@@ -235,5 +240,119 @@ void main() {
     await pump(tester, const SessionPlannerState(titleInvalid: true));
 
     expect(find.text('The session title is required.'), findsOneWidget);
+  });
+
+  group('the group of the session', () {
+    final groups = [
+      Group(
+        id: const GroupId('g1'),
+        seasonId: const SeasonId('season'),
+        name: 'Jeunes',
+        audience: Audience.children,
+      ),
+      Group(
+        id: const GroupId('g2'),
+        seasonId: const SeasonId('season'),
+        name: 'Adultes',
+        audience: Audience.adults,
+      ),
+    ];
+
+    testWidgets('lists the groups and asks the bloc to select one or none', (
+      tester,
+    ) async {
+      await pump(tester, SessionPlannerState(groups: groups));
+
+      await tester.tap(find.byKey(const ValueKey('planner-group-field')));
+      await tester.pumpAndSettle();
+      expect(find.text('Choose a group'), findsOneWidget);
+      expect(find.text('Jeunes · Children'), findsOneWidget);
+      expect(find.text('Adultes · Adults'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('group-option:g2')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('planner-group-field')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('group-option:none')));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => bloc.add(
+          const SessionPlannerEvent.groupSelected(groupId: GroupId('g2')),
+        ),
+      ).called(1);
+      verify(() => bloc.add(const SessionPlannerEvent.groupSelected()))
+          .called(1);
+    });
+
+    testWidgets('shows the chosen group and locks the audience on its own', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        SessionPlannerState(
+          groups: groups,
+          selectedGroup: const GroupId('g2'),
+          audience: Audience.adults,
+        ),
+      );
+
+      expect(find.text('Adultes · Adults'), findsOneWidget);
+      final segmented = tester.widget<SegmentedButton<Audience>>(
+        find.byType(SegmentedButton<Audience>),
+      );
+      expect(segmented.selected, {Audience.adults});
+      expect(segmented.onSelectionChanged, isNull);
+    });
+
+    testWidgets('disables the picker when the club has no group', (
+      tester,
+    ) async {
+      await pump(tester, const SessionPlannerState());
+
+      await tester.tap(find.byKey(const ValueKey('planner-group-field')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('No group (choose the audience)'), findsOneWidget);
+      expect(find.text('Choose a group'), findsNothing);
+    });
+  });
+
+  group('the day of the session', () {
+    testWidgets('shows the day and asks the bloc to change it', (tester) async {
+      await pump(tester, SessionPlannerState(date: DateTime(2026, 10, 12)));
+
+      expect(find.text('Session date'), findsOneWidget);
+      expect(find.text('Mon, Oct 12'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('planner-change-date')));
+      await tester.pumpAndSettle();
+      final dialog = find.byType(DatePickerDialog);
+      await tester.tap(find.descendant(of: dialog, matching: find.text('19')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.descendant(of: dialog, matching: find.text('OK')));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => bloc.add(
+          SessionPlannerEvent.dateChanged(date: DateTime(2026, 10, 19)),
+        ),
+      ).called(1);
+    });
+
+    testWidgets('shows no day before the bloc knows it', (tester) async {
+      await pump(tester, const SessionPlannerState());
+
+      expect(find.text('Session date'), findsNothing);
+    });
+  });
+
+  testWidgets('shows the rule refused by the last planning', (tester) async {
+    await pump(
+      tester,
+      const SessionPlannerState(
+        failure: InvariantViolation(InvariantCode.seasonOutsidePeriod),
+      ),
+    );
+
+    expect(find.text('This date is outside the season.'), findsOneWidget);
   });
 }

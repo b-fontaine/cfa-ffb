@@ -3,6 +3,7 @@ import 'package:billard_cfa/entities/session_record/domain/session_record_reposi
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
@@ -29,6 +30,7 @@ class DriftSessionRecordRepository implements SessionRecordRepository {
             audience: session.audience.name,
             mainBlockId: Value(session.mainBlockId),
             recallBlockId: Value(session.recallBlockId),
+            sheetId: Value(session.sheetId?.value),
             createdAt: now,
             updatedAt: now,
           ),
@@ -40,6 +42,7 @@ class DriftSessionRecordRepository implements SessionRecordRepository {
               audience: Value(session.audience.name),
               mainBlockId: Value(session.mainBlockId),
               recallBlockId: Value(session.recallBlockId),
+              sheetId: Value(session.sheetId?.value),
               updatedAt: Value(now),
               deletedAt: const Value(null),
             ),
@@ -130,6 +133,7 @@ class DriftSessionRecordRepository implements SessionRecordRepository {
           },
           mainBlockId: row.mainBlockId,
           recallBlockId: row.recallBlockId,
+          sheetId: SheetId.tryParse(row.sheetId),
         ),
     ];
   }

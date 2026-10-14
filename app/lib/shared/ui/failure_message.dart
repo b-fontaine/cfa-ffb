@@ -28,6 +28,7 @@ String failureMessage(AppLocalizations l10n, Failure failure) =>
         InvariantCode.backupInvalid => l10n.failBackupInvalid,
         InvariantCode.backupInconsistent => l10n.failBackupInconsistent,
         InvariantCode.backupUnknownSheet => l10n.failBackupUnknownSheet,
+        InvariantCode.unknownSheet => l10n.failUnknownSheet,
         InvariantCode.invalidPeriod ||
         InvariantCode.invalidRange ||
         InvariantCode.invalidExerciseRef ||

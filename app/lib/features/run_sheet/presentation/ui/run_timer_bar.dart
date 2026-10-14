@@ -48,7 +48,7 @@ class _TimerBar extends StatelessWidget {
     final phase = plan.steps[state.step].phase;
     final planned = plan.timing.phaseMinutes[phase] ?? 0;
     final remaining = planned * 60 - state.timerSeconds;
-    final value = l10n.guideTimerValue(runClock(state.timerSeconds), planned);
+    final line = l10n.guideTimerLine(runClock(state.timerSeconds), planned);
     final started = state.timerRunning || state.timerSeconds > 0;
     final alert = !started
         ? null
@@ -71,12 +71,7 @@ class _TimerBar extends StatelessWidget {
               children: [
                 const ExcludeSemantics(child: Icon(Icons.timer_outlined)),
                 const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Text(
-                    '${l10n.guideTimerTitle} · $value',
-                    style: theme.textTheme.bodyLarge,
-                  ),
-                ),
+                Expanded(child: Text(line, style: theme.textTheme.bodyLarge)),
                 IconButton(
                   constraints: _touchTarget,
                   tooltip: state.timerRunning

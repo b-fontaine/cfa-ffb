@@ -1,6 +1,7 @@
 import 'package:billard_cfa/features/record_results/domain/list_recorded_sessions.dart';
 import 'package:billard_cfa/features/record_results/domain/recorded_session_summary.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/domain_world.dart';
@@ -16,6 +17,7 @@ Future<(DomainWorld, ListRecordedSessions)> fixture() async {
       world.groups,
       world.attempts,
       world.catalogueRepository,
+      world.sheets,
     ),
   );
 }
@@ -51,6 +53,24 @@ void main() {
     await world.session();
 
     expect(ok(await list()).single.mainBlock, isNull);
+  });
+
+  test('names the catalogue session of each recorded session', () async {
+    final (world, list) = await fixture();
+    await world.session(id: 'known', sheet: SheetId('demi-bille-2'));
+    await world.session(
+      id: 'gone',
+      dayOfMonth: 2,
+      sheet: SheetId('inconnue-9'),
+    );
+    await world.session(id: 'none', dayOfMonth: 3);
+
+    final sheets = {
+      for (final summary in ok(await list()))
+        summary.session.id.value: summary.sheet?.id.value,
+    };
+
+    expect(sheets, {'known': 'demi-bille-2', 'gone': null, 'none': null});
   });
 
   test('orders the newest session first, then the latest recorded', () async {

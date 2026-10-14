@@ -2,6 +2,8 @@ import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repositor
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/sheet_option.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/features/record_results/domain/session_overview.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
@@ -18,6 +20,7 @@ class GetSessionOverview {
     this._students,
     this._attempts,
     this._catalogue,
+    this._sheets,
     this._config,
   );
 
@@ -26,6 +29,7 @@ class GetSessionOverview {
   final StudentRepository _students;
   final AttemptRepository _attempts;
   final CatalogueRepository _catalogue;
+  final SessionSheetRepository _sheets;
   final RulesConfig _config;
 
   Future<Result<SessionOverview>> call(SessionId sessionId) =>
@@ -43,6 +47,9 @@ class GetSessionOverview {
           attempts: await _attempts.forSession(sessionId),
           catalogue: await _catalogue.load(),
           maxPassesPerExercise: _config.maxPassesPerExercisePerSession,
+          sheet: session.sheetId == null
+              ? null
+              : sheetOptionOf(await _sheets.getAll(), session.sheetId),
         );
       });
 }

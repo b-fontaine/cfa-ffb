@@ -6,8 +6,10 @@ import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/in_memory_assessment_repository.dart';
 import 'package:billard_cfa/entities/season/data/in_memory_season_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
+import 'package:billard_cfa/entities/session/data/in_memory_session_repository.dart';
 import 'package:billard_cfa/entities/session_record/data/in_memory_session_record_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
 import 'package:billard_cfa/entities/student/data/in_memory_student_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
@@ -15,9 +17,11 @@ import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/id_generator.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'fixtures.dart';
+import 'session_sheet_fixtures.dart';
 
 class FixedCatalogueRepository implements CatalogueRepository {
   FixedCatalogueRepository(this.catalogue);
@@ -38,14 +42,22 @@ class CountingIds implements IdGenerator {
 /// Dépôts en mémoire + catalogue de test + configuration, pour tester les cas
 /// d'usage sans mock (le domaine pur se teste avec de vrais objets).
 class DomainWorld {
-  DomainWorld({ExerciseCatalogue? catalogue, RulesConfig? config})
-    : catalogue = catalogue ?? defaultCatalogue(),
-      config = config ?? RulesConfig();
+  DomainWorld({
+    ExerciseCatalogue? catalogue,
+    RulesConfig? config,
+    List<SessionSheet>? sheets,
+  }) : catalogue = catalogue ?? defaultCatalogue(),
+       config = config ?? RulesConfig(),
+       sheets = FixtureSessionSheetRepository(sheets ?? catalogueFixture());
 
   final ExerciseCatalogue catalogue;
   final RulesConfig config;
+
+  /// Séances du catalogue de test (`catalogueFixture`, ou [sheets] donné).
+  final FixtureSessionSheetRepository sheets;
   final attempts = InMemoryAttemptRepository();
   final sessions = InMemorySessionRecordRepository();
+  final plannedSessions = InMemorySessionRepository();
   final groups = InMemoryGroupRepository();
   final seasons = InMemorySeasonRepository();
   final students = InMemoryStudentRepository();
@@ -101,6 +113,7 @@ class DomainWorld {
     Audience audience = Audience.children,
     String? main,
     String? recall,
+    SheetId? sheet,
   }) async {
     final record = SessionRecord(
       id: SessionId(id),
@@ -111,6 +124,7 @@ class DomainWorld {
       present: {for (final name in present) StudentId(name)},
       mainBlockId: main,
       recallBlockId: recall,
+      sheetId: sheet,
     );
     await sessions.save(record);
     return record;

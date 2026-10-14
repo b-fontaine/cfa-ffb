@@ -28,7 +28,7 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
 | F3 | Guide : l'en-tête (titre, public, thème, barre d'étape, minuteur, boutons) occupe ~45 % de l'écran desktop et ~60 % sur mobile ; le schéma d'exercice est sous la ligne de flottaison | `pages/sheet_guide` |
 | F4 | Saisie : le sélecteur d'exercice est un bouton sans libellé accessible | `pages/record_session` |
 | F5 | ~~Onglet « Résultats » : aucun historique des séances saisies ; impossible de relire, corriger ou supprimer un passage~~ — corrigé (ADR 0006) | `pages/record_history` |
-| F6 | Séance planifiée sans date ni groupe, non liée à la saisie (décision 10 de l'ADR 0004, assumée mais visible) | `pages/session_planner` |
+| F6 | ~~Séance planifiée sans date ni groupe, non liée à la saisie (décision 10 de l'ADR 0004, assumée mais visible)~~ — corrigé (ADR 0007) | `pages/session_planner` |
 | F7 | Séance suggérée : « Pas de rappel » pour les enfants (`recallCount = 0`, voulu) alors que la fiche élève affiche une notion à rappeler ; rien ne l'explique à l'écran | `pages/suggested_session` |
 | F8 | Les seuils (`passesRequired`, alertes, `recallStaleSessions`) sont dans `RulesConfig.standard()` sans écran de réglages | `app/di` |
 
@@ -50,9 +50,12 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
 5. ~~Historique des séances saisies~~ (F5) : **livré le 2026-10-14** —
    [ADR 0006](adr/0006-historique-et-correction-des-passages.md),
    [plan](historique-seances-plan.md). Reste l'assiduité **du groupe** (lot 10).
-6. **Lier séance planifiée ↔ saisie ↔ séance du catalogue** (lot L9 de l'ADR
-   0004) : date et groupe sur la séance planifiée ; « Lancer » ouvre la saisie
-   déjà renseignée ; la saisie sait quelle séance du catalogue elle note.
+6. ~~Lier séance planifiée ↔ saisie ↔ séance du catalogue~~ (F6, lot L9 de
+   l'ADR 0004) : **livré le 2026-10-14** —
+   [ADR 0007](adr/0007-lien-seance-planifiee-saisie-catalogue.md),
+   [plan](seance-planifiee-plan.md). Date et groupe sur la séance planifiée,
+   « Noter les résultats » pré-rempli depuis le guide comme depuis la liste,
+   la saisie et l'historique nomment la séance du catalogue.
 7. **Positionnement initial / bloc acquis** : marquer un bloc comme acquis sans
    passage (élèves non débutants, rentrée) ; sinon la suggestion repart de
    « posture » et la fiche affiche « 0 / 72 » toute la saison.
@@ -104,7 +107,8 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
 
 ## Ordre recommandé
 
-6 → 7 (le lot 5 est livré ; sans lien planifié / saisi / catalogue ni
-positionnement initial, le suivi ne tient pas une saison), H0 en parallèle par
-petits lots (dont la revue T8), puis 12 et 13 avant la première séance réelle
+7 → 8 (les lots 5 et 6 sont livrés ; sans positionnement initial, le suivi
+ne tient pas une saison, et la suggestion doit mener à la séance du catalogue),
+H0 en parallèle par petits lots (dont la revue T8), puis 12 et 13 avant la
+première séance réelle
 en salle.

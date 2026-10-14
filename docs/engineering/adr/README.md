@@ -8,5 +8,6 @@
 | 0004 | Catalogue de séances (14 techniques, 29 séances), blocs d'entraînement `[Prop]` ajoutés, lecture seule, lancement guidé |
 | 0005 | Illustrations du joueur (personnage), de la cible sur la blanche et du dosage (plan amplitude × vitesse) |
 | 0006 | Historique des séances saisies (`/record`), formulaire en `/record/new`, correction en place et suppression renumérotée des passages, assiduité |
+| 0007 | Séance planifiée datée et par groupe, saisie qui note sa séance du catalogue, lien planifiée ↔ saisie dérivé (même groupe, même jour), schéma v4 |
 
 Recherches sources : `../research/`.

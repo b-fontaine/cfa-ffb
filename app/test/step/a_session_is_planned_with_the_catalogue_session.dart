@@ -21,6 +21,7 @@ Future<void> aSessionIsPlannedWithTheCatalogueSession(
     Session(
       id: 'planned-$title',
       title: title,
+      date: UiWorld.today,
       audience: Audience.children,
       sheetId: SheetId(sheetId),
     ),

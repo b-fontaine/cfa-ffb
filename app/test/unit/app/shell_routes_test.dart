@@ -135,6 +135,18 @@ void main() {
       expect(uri.queryParameters['date'], '2026-10-03');
     });
 
+    test('carries the catalogue session noted by the record', () {
+      final uri = Uri.parse(
+        AppRoutes.recordFromGuide(
+          exercise: exercise,
+          from: '/catalogue/demi-bille-2/guide?step=3',
+          sheet: SheetId('demi-bille-2'),
+        ),
+      );
+
+      expect(uri.queryParameters['sheet'], 'demi-bille-2');
+    });
+
     test('leaves out what was not chosen', () {
       final uri = Uri.parse(
         AppRoutes.recordFromGuide(exercise: exercise, from: '/catalogue/x-1'),
@@ -144,6 +156,37 @@ void main() {
       expect(uri.queryParameters.keys, isNot(contains('group')));
       expect(uri.queryParameters.keys, isNot(contains('absent')));
       expect(uri.queryParameters.keys, isNot(contains('date')));
+      expect(uri.queryParameters.keys, isNot(contains('sheet')));
+    });
+  });
+
+  group('AppRoutes.recordFromPlan', () {
+    test('carries the group, the day and the catalogue session', () {
+      final uri = Uri.parse(
+        AppRoutes.recordFromPlan(
+          group: const GroupId('g1'),
+          date: DateTime(2026, 10, 19, 9, 30),
+          sheet: SheetId('puissance-1'),
+        ),
+      );
+
+      expect(uri.path, AppRoutes.newRecord);
+      expect(uri.queryParameters, {
+        'group': 'g1',
+        'date': '2026-10-19',
+        'sheet': 'puissance-1',
+      });
+    });
+
+    test('leaves out the catalogue session of a free session', () {
+      final uri = Uri.parse(
+        AppRoutes.recordFromPlan(
+          group: const GroupId('g1'),
+          date: DateTime(2026, 10, 19),
+        ),
+      );
+
+      expect(uri.queryParameters.keys, isNot(contains('sheet')));
     });
   });
 }

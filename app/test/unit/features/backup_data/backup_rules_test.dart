@@ -37,6 +37,7 @@ SessionRecord _session({
   SeasonId season = _season,
   String? main,
   String? recall,
+  String? sheet,
   Set<StudentId> present = const {_student},
 }) => SessionRecord(
   id: SessionId(id),
@@ -47,6 +48,7 @@ SessionRecord _session({
   present: present,
   mainBlockId: main,
   recallBlockId: recall,
+  sheetId: sheet == null ? null : SheetId(sheet),
 );
 
 BackupSnapshot _snapshot({
@@ -231,16 +233,26 @@ void main() {
   });
 
   group('planned sessions', () {
-    Session plannedOn(String? sheet) => Session(
+    Session plannedOn(
+      String? sheet, {
+      GroupId? group,
+      Audience audience = Audience.children,
+      int dayOfMonth = 5,
+    }) => Session(
       id: 'p1',
       title: 'Demi-bille',
-      audience: Audience.children,
+      date: day(dayOfMonth),
+      audience: audience,
+      groupId: group,
       sheetId: sheet == null ? null : SheetId(sheet),
     );
 
     test('accepts a free session and a known catalogue session', () async {
       final snapshot = _snapshot(
-        planned: [plannedOn(null), plannedOn('demi-bille-2')],
+        planned: [
+          plannedOn(null),
+          plannedOn('demi-bille-2', group: _group),
+        ],
       );
 
       expect(await _codeOf(snapshot), isNull);
@@ -248,6 +260,61 @@ void main() {
 
     test('refuses a catalogue session the catalogue does not know', () async {
       final snapshot = _snapshot(planned: [plannedOn('inconnue-9')]);
+
+      expect(await _codeOf(snapshot), InvariantCode.backupUnknownSheet);
+    });
+
+    test('refuses an audience that differs from the group', () async {
+      final snapshot = _snapshot(
+        planned: [plannedOn(null, group: _group, audience: Audience.adults)],
+      );
+
+      expect(await _codeOf(snapshot), InvariantCode.backupInvalid);
+    });
+
+    test('accepts the first and the last day of the season', () async {
+      for (final dayOfMonth in [1, 31]) {
+        final snapshot = _snapshot(
+          planned: [plannedOn(null, group: _group, dayOfMonth: dayOfMonth)],
+        );
+
+        expect(await _codeOf(snapshot), isNull, reason: 'jour $dayOfMonth');
+      }
+    });
+
+    test('refuses the eve of the season and the day after its end', () async {
+      // `day(0)` est le 30 septembre, `day(32)` le 1er novembre.
+      for (final dayOfMonth in [0, 32]) {
+        final snapshot = _snapshot(
+          planned: [plannedOn(null, group: _group, dayOfMonth: dayOfMonth)],
+        );
+
+        expect(
+          await _codeOf(snapshot),
+          InvariantCode.backupInvalid,
+          reason: 'jour $dayOfMonth',
+        );
+      }
+    });
+
+    test('refuses a group the backup does not hold', () async {
+      final snapshot = _snapshot(
+        planned: [plannedOn(null, group: const GroupId('ghost'))],
+      );
+
+      expect(await _codeOf(snapshot), InvariantCode.backupInconsistent);
+    });
+  });
+
+  group('recorded sessions noting a catalogue session', () {
+    test('accepts a known catalogue session', () async {
+      final snapshot = _snapshot(sessions: [_session(sheet: 'demi-bille-1')]);
+
+      expect(await _codeOf(snapshot), isNull);
+    });
+
+    test('refuses a catalogue session the catalogue does not know', () async {
+      final snapshot = _snapshot(sessions: [_session(sheet: 'inconnue-9')]);
 
       expect(await _codeOf(snapshot), InvariantCode.backupUnknownSheet);
     });

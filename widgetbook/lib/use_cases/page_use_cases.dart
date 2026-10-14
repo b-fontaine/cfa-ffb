@@ -1,14 +1,16 @@
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/sheet_option.dart';
 import 'package:billard_cfa/features/plan_session/domain/list_sheet_options.dart';
-import 'package:billard_cfa/features/plan_session/domain/sheet_option.dart';
+import 'package:billard_cfa/features/plan_session/domain/planned_session_summary.dart';
 import 'package:billard_cfa/features/plan_session/presentation/bloc/session_planner_bloc.dart';
 import 'package:billard_cfa/features/plan_session/presentation/ui/plan_session_form.dart';
 import 'package:billard_cfa/pages/home/presentation/home_page.dart';
 import 'package:billard_cfa/pages/not_found/presentation/not_found_page.dart';
 import 'package:billard_cfa/pages/session_planner/presentation/session_planner_page.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/ui/missing_page_view.dart';
 import 'package:billard_cfa/widgets/session_list/presentation/session_list.dart';
@@ -43,20 +45,23 @@ ListSheetOptions _options() =>
     ListSheetOptions(getIt<SessionSheetRepository>());
 
 final _plannedSessions = [
-  const Session(
+  Session(
     id: 'session-1',
     title: 'Bases de la posture',
+    date: DateTime(2026, 10, 12),
     audience: Audience.children,
   ),
   Session(
     id: 'session-2',
     title: 'Quantité demi-bille, séance 2/2',
+    date: DateTime(2026, 10, 19),
     audience: Audience.adults,
     sheetId: SheetId('demi-bille-2'),
   ),
   Session(
     id: 'session-3',
     title: 'Ancienne séance',
+    date: DateTime(2026, 10, 26),
     audience: Audience.children,
     sheetId: SheetId('inconnue-9'),
   ),
@@ -74,6 +79,8 @@ Widget buildPlannerEmptyUseCase(BuildContext context) => WorldScope(
       onOpenSheet: (_, _) {},
       onChooseSheet: () {},
       onLaunchSheet: (_, _, _) {},
+      onRecord: (_, _, _) {},
+      onOpenRecord: (_) {},
     ),
   ),
 );
@@ -90,6 +97,8 @@ Widget buildPlannerFilledUseCase(BuildContext context) => WorldScope(
       onOpenSheet: (_, _) {},
       onChooseSheet: () {},
       onLaunchSheet: (_, _, _) {},
+      onRecord: (_, _, _) {},
+      onOpenRecord: (_) {},
     ),
   ),
 );
@@ -110,6 +119,8 @@ Widget buildPlannerFromSheetUseCase(BuildContext context) => WorldScope(
       onOpenSheet: (_, _) {},
       onChooseSheet: () {},
       onLaunchSheet: (_, _, _) {},
+      onRecord: (_, _, _) {},
+      onOpenRecord: (_) {},
     ),
   ),
 );
@@ -126,6 +137,23 @@ Widget buildPlanSessionFormUseCase(BuildContext context) => WorldScope(
   ),
 );
 
+/// Résumés des séances planifiées : la première pour le groupe « Jeunes »,
+/// la deuxième déjà saisie, la troisième pour un groupe disparu.
+final _summaries = [
+  PlannedSessionSummary(
+    session: _plannedSessions[0].copyWith(groupId: const GroupId('g1')),
+    group: plannerGroups.first,
+  ),
+  PlannedSessionSummary(
+    session: _plannedSessions[1].copyWith(groupId: const GroupId('g2')),
+    group: plannerGroups.last,
+    recordId: const SessionId('x1'),
+  ),
+  PlannedSessionSummary(
+    session: _plannedSessions[2].copyWith(groupId: const GroupId('gone')),
+  ),
+];
+
 @widgetbook.UseCase(name: 'Liste vide', type: SessionList, path: '[Widgets]')
 Widget buildSessionListEmptyUseCase(BuildContext context) => SessionList(
   sessions: const [],
@@ -133,6 +161,8 @@ Widget buildSessionListEmptyUseCase(BuildContext context) => SessionList(
   onOpenSheet: (_, _) {},
   onChooseSheet: () {},
   onLaunchSheet: (_, _, _) {},
+  onRecord: (_, _, _) {},
+  onOpenRecord: (_) {},
 );
 
 @widgetbook.UseCase(name: 'Liste remplie', type: SessionList, path: '[Widgets]')
@@ -140,11 +170,37 @@ Widget buildSessionListFilledUseCase(BuildContext context) => WorldScope(
   builder: (context, world) => LoadedScope<List<SheetOption>>(
     load: (_) => _options()(),
     builder: (context, world, options) => SessionList(
-      sessions: _plannedSessions,
+      sessions: [
+        for (final session in _plannedSessions)
+          PlannedSessionSummary(session: session),
+      ],
       sheetOptions: options,
       onOpenSheet: (_, _) {},
       onChooseSheet: () {},
       onLaunchSheet: (_, _, _) {},
+      onRecord: (_, _, _) {},
+      onOpenRecord: (_) {},
+    ),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Liste avec groupes et saisies',
+  type: SessionList,
+  path: '[Widgets]',
+)
+Widget buildSessionListGroupsUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) => LoadedScope<List<SheetOption>>(
+    load: (_) => _options()(),
+    builder: (context, world, options) => SessionList(
+      sessions: _summaries,
+      sheetOptions: options,
+      onOpenSheet: (_, _) {},
+      onChooseSheet: () {},
+      onLaunchSheet: (_, _, _) {},
+      onRecord: (_, _, _) {},
+      onOpenRecord: (_) {},
+      onDelete: (_) {},
     ),
   ),
 );

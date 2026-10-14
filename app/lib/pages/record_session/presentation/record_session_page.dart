@@ -1,4 +1,4 @@
-import 'package:billard_cfa/entities/exercise_catalog/domain/training_block.dart';
+import 'package:billard_cfa/features/record_results/domain/session_overview.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/ui/record_session_view.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
@@ -39,18 +39,14 @@ class RecordSessionPage extends StatelessWidget {
             );
           case RecordStatus.ready:
             final overview = state.overview!;
-            final blockId = overview.session.mainBlockId;
-            final block = blockId == null
-                ? null
-                : overview.catalogue.blockById(blockId);
+            final hint = _hint(l10n, overview);
             return ScrollPage(
               title: l10n.recordSessionTitle(
                 dates.formatMediumDate(overview.session.date),
               ),
-              subtitle: block == null
+              subtitle: hint == null
                   ? overview.groupName
-                  : '${overview.groupName} · '
-                        '${_blockHint(l10n, block)}',
+                  : l10n.recordSessionSubtitle(overview.groupName, hint),
               onBack: onBack,
               backLabel: fromGuide ? l10n.guideBackToGuide : l10n.recordTitle,
               children: [RecordSessionView(state: state)],
@@ -60,7 +56,20 @@ class RecordSessionPage extends StatelessWidget {
     );
   }
 
-  String _blockHint(AppLocalizations l10n, TrainingBlock block) {
+  /// La séance du catalogue notée quand elle est connue (ADR 0007), sinon la
+  /// notion principale, sinon rien.
+  String? _hint(AppLocalizations l10n, SessionOverview overview) {
+    final sheet = overview.sheet;
+    if (sheet != null) {
+      return l10n.recordSheetHint(
+        l10n.sheetFullTitle(sheet.title, sheet.part, sheet.partCount),
+      );
+    }
+    final blockId = overview.session.mainBlockId;
+    final block = blockId == null
+        ? null
+        : overview.catalogue.blockById(blockId);
+    if (block == null) return null;
     final hint = l10n.recordBlockHint(block.title);
     return block.isProposal ? l10n.proposalTagged(hint) : hint;
   }
