@@ -148,3 +148,7 @@ passages fictifs, ce qui fausse courbes, alertes, assiduité de bloc et
   bloc acquis n'a pas de courbe ; la séance suggérée ne dit pas
   quels blocs ont été sautés (pointé dans le plan, § 9) ; le positionnement
   est par élève, pas par groupe.
+
+Voir aussi l'[ADR 0009](0009-suggestion-seance-du-catalogue.md) : la séance
+suggérée propose la séance du catalogue ; une partie dont tous les exercices
+sont validés ou acquis par chaque élève est « sans objet ».

@@ -277,7 +277,18 @@ Widget buildStudentRecallCardEmptyUseCase(BuildContext context) =>
     _scroll(const StudentRecallCard(advice: null));
 
 @widgetbook.UseCase(name: 'Séance suggérée', type: SessionPlanView, path: _path)
-Widget buildSessionPlanViewUseCase(BuildContext context) => WorldScope(
+Widget buildSessionPlanViewUseCase(BuildContext context) =>
+    _sessionPlanView(sheetKept: true);
+
+@widgetbook.UseCase(
+  name: 'Séance suggérée sans séance du catalogue',
+  type: SessionPlanView,
+  path: _path,
+)
+Widget buildSessionPlanViewWithoutSheetUseCase(BuildContext context) =>
+    _sessionPlanView(sheetKept: false);
+
+Widget _sessionPlanView({required bool sheetKept}) => WorldScope(
   builder: (context, world) => BlocProvider(
     create: (_) => getIt<SuggestedSessionBloc>()
       ..add(
@@ -294,11 +305,14 @@ Widget buildSessionPlanViewUseCase(BuildContext context) => WorldScope(
         }
         return _scroll(
           SessionPlanView(
-            plan: plan,
+            plan: sheetKept ? plan : plan.copyWith(sheet: null),
             exercises: state.exercises,
             recall: state.recall,
             onOpenSource: (_) {},
             onRecord: () {},
+            onOpenSheet: (_) {},
+            onLaunch: (_) {},
+            onPlan: (_) {},
           ),
         );
       },

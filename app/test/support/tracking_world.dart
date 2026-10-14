@@ -8,7 +8,10 @@ import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
+import 'package:billard_cfa/entities/session/domain/session.dart';
+import 'package:billard_cfa/entities/session/domain/session_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
+import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
@@ -18,18 +21,22 @@ import 'package:billard_cfa/features/backup_data/domain/import_backup.dart';
 import 'package:billard_cfa/features/backup_data/domain/import_summary.dart';
 import 'package:billard_cfa/features/change_audience/domain/audience_change_outcome.dart';
 import 'package:billard_cfa/features/place_student/domain/mark_block_acquired.dart';
+import 'package:billard_cfa/features/record_results/domain/open_or_resume_session.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
 import 'package:billard_cfa/features/record_results/domain/record_attempt.dart';
 import 'package:billard_cfa/features/record_results/domain/recorded_attempt.dart';
 import 'package:billard_cfa/features/suggest_session/domain/session_plan.dart';
 import 'package:billard_cfa/features/track_progress/domain/exercise_curve.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' show Environment;
+
+import 'fixed_clock.dart';
 
 /// Monde d'un scénario de suivi : le graphe de dépendances réel (get_it +
 /// repositories en mémoire + catalogue de l'asset) et les identifiants
@@ -67,6 +74,9 @@ class TrackingWorld {
   static Future<TrackingWorld> open(WidgetTester tester, String label) async {
     await getIt.reset();
     await configureDependencies(environment: Environment.test);
+    // « Aujourd'hui » est connu : « faite », « future » dépendent de l'horloge.
+    await getIt.unregister<Clock>();
+    getIt.registerSingleton<Clock>(FixedClock(today));
     addTearDown(getIt.reset);
     final years = label.split('-').map(int.parse).toList();
     await getIt<SeasonRepository>().save(
@@ -238,6 +248,117 @@ class TrackingWorld {
       }
     }
   }
+
+  /// Séance du groupe à la date [on] pour la séance du catalogue [sheet] (ou
+  /// sans séance du catalogue), tous les élèves suivis du groupe présents ;
+  /// [withPass] ajoute un passage réussi du premier élève sur le premier
+  /// exercice de la séance (sinon sur `posture 1`).
+  Future<SessionRecord> giveSession({
+    required String group,
+    required DateTime on,
+    SheetId? sheet,
+    bool withPass = true,
+  }) async {
+    final present = [
+      for (final entry in _groupOfStudent.entries)
+        if (entry.value == group) entry.key,
+    ];
+    final session = await openSession(
+      group: group,
+      on: on,
+      present: present,
+      sheet: sheet,
+    );
+    if (withPass) {
+      final exercise = sheet == null
+          ? ExerciseRef(blockId: 'posture', number: 1)
+          : (await getIt<SessionSheetRepository>().getById(sheet))!
+                .exercises
+                .first
+                .ref;
+      final spec = catalogue.exercise(exercise)!;
+      _valueOf(
+        await getIt<RecordAttempt>()(
+          sessionId: session.id,
+          studentId: studentId(present.first),
+          exercise: exercise,
+          potted: spec.rate.successes,
+          total: spec.rate.attempts,
+        ),
+      );
+    }
+    return session;
+  }
+
+  /// Saisie du groupe portant [sheet], absente du catalogue (écrite
+  /// directement : l'ouverture refuse une séance inconnue), avec un passage.
+  Future<void> giveSessionOfUnknownSheet({
+    required String group,
+    required DateTime on,
+    required SheetId sheet,
+  }) async {
+    final student = _groupOfStudent.entries
+        .firstWhere((entry) => entry.value == group)
+        .key;
+    final session = SessionRecord(
+      id: SessionId('unknown-${sheet.value}'),
+      groupId: groupId(group),
+      seasonId: seasonId,
+      date: on,
+      audience: _audienceOfGroup[group]!,
+      present: {studentId(student)},
+      sheetId: sheet,
+    );
+    await getIt<SessionRecordRepository>().save(session);
+    final spec = catalogue.exercise(
+      ExerciseRef(blockId: 'posture', number: 1),
+    )!;
+    _valueOf(
+      await getIt<RecordAttempt>()(
+        sessionId: session.id,
+        studentId: studentId(student),
+        exercise: spec.ref,
+        potted: spec.rate.successes,
+        total: spec.rate.attempts,
+      ),
+    );
+  }
+
+  /// Reprend la saisie du groupe du jour [on] avec la séance [sheet].
+  Future<void> resumeSession({
+    required String group,
+    required DateTime on,
+    required SheetId sheet,
+  }) async {
+    final present = [
+      for (final entry in _groupOfStudent.entries)
+        if (entry.value == group) studentId(entry.key),
+    ];
+    _valueOf(
+      await getIt<OpenOrResumeSession>()(
+        groupId: groupId(group),
+        date: on,
+        present: present.toSet(),
+        sheetId: sheet,
+      ),
+    );
+  }
+
+  /// Planifie [sheet] pour le groupe à la date [on] (sans saisie).
+  Future<void> planSheet({
+    required String group,
+    required DateTime on,
+    required SheetId sheet,
+  }) => getIt<SessionRepository>().add(
+    Session(
+      id: 'planned-${sheet.value}',
+      title: sheet.value,
+      date: on,
+      audience: _audienceOfGroup[group]!,
+      groupId: groupId(group),
+      sheetId: sheet,
+    ),
+  );
 
   /// Marque [blockId] acquis au positionnement pour [student] le [on].
   Future<void> markAcquired(String student, String blockId, DateTime on) async {

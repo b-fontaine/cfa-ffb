@@ -723,6 +723,29 @@
   },
   "suggestSource": "Fiche source",
   "suggestRecord": "Saisir les résultats de cette séance",
+  "suggestSheetTitle": "Séance du catalogue",
+  "suggestSheetNextPending": "Une partie encore à faire pour ce groupe",
+  "suggestSheetCoversHead": "Couvre l'exercice de tête de la suggestion",
+  "suggestSheetRepeat": "Déjà donnée le {date}",
+  "@suggestSheetRepeat": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "suggestSheetHeadElsewhere": "L'exercice de tête (n° {number}) relève d'une partie déjà donnée",
+  "@suggestSheetHeadElsewhere": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "suggestSheetNone": "Aucune séance du catalogue pour cette notion : les exercices du bloc sont listés ci-dessous",
+  "suggestSheetOpen": "Ouvrir la séance du catalogue",
+  "suggestSheetLaunch": "Lancer la séance guidée",
+  "suggestSheetPlan": "Planifier une séance",
   "suggestReasonGroupFailure": "Plusieurs élèves ont manqué le dernier passage",
   "suggestReasonActiveAlert": "Une alerte est en cours",
   "suggestReasonLastFailed": "Un élève a manqué le dernier passage",

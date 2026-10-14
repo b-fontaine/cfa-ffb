@@ -33,3 +33,117 @@ Feature: Suggested session screen
     And I open the source sheet of exercise {1}
     Then I see {'Technical sheet no. 2'} text
     And I see {'Required: 7 out of 9'} text
+
+  # Lot 8 (ADR 0009) : la séance du catalogue proposée. Ces scénarios
+  # dépendent de la présentation (C3) et du guide avec groupe (C4).
+  Scenario: The suggestion proposes the first part of the catalogue session
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
+    When I tap {'Sessions'} text
+    And I tap {'Group suggestion'} text
+    And I tap {'Suggest a session'} text
+    Then I see {'Catalogue session'} text
+    And I see {'Posture, visée et coup de queue'} text
+    And I see {'Session 1/2'} text
+    And I see {'Covers the lead exercise of the suggestion'} text
+
+  Scenario: A part already given is not proposed again and the lead exercise is noted
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And a session is recorded for the group {'Children group'} on {'2026-10-05'} with the catalogue session {'posture-1'} and a pass
+    And the app is running
+    When I tap {'Sessions'} text
+    And I tap {'Group suggestion'} text
+    And I tap {'Suggest a session'} text
+    Then I see {'A part still to do for this group'} text
+    And I see {'Session 2/2'} text
+    And I see text containing {'The lead exercise (no. 1) belongs to a part already given'}
+
+  Scenario: Every part given, the part of the lead exercise is proposed again with its date
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And a session is recorded for the group {'Children group'} on {'2026-10-05'} with the catalogue session {'posture-1'} and a pass
+    And a session is recorded for the group {'Children group'} on {'2026-10-06'} with the catalogue session {'posture-2'} and a pass
+    And the app is running
+    When I tap {'Sessions'} text
+    And I tap {'Group suggestion'} text
+    And I tap {'Suggest a session'} text
+    Then I see {'Session 1/2'} text
+    And I see {'Already given on Mon, Oct 5'} text
+
+  Scenario: The catalogue session opens from the suggestion
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
+    When I tap {'Sessions'} text
+    And I tap {'Group suggestion'} text
+    And I tap {'Suggest a session'} text
+    And I tap {'Open the catalogue session'} text
+    Then I see text containing {'Posture, visée et coup de queue'}
+    And I see text containing {'session 1/2'}
+
+  Scenario: The guided session launched from the suggestion knows the group
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the club has the student {'Hugo'} in the {'adults'} audience
+    And the app is running
+    When I tap {'Sessions'} text
+    And I tap {'Group suggestion'} text
+    And I tap {'Adults group'} text
+    And I tap {'Suggest a session'} text
+    And I tap {'Launch the guided session'} text
+    And I go to the guide step {'Note the results'}
+    And I tap {'Note the results'} text
+    Then I see {'Record the results'} text
+    And I see {'Hugo'} text
+    And I do not see {'Léa'} text
+
+  Scenario: The catalogue session is planned from the suggestion
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
+    When I tap {'Sessions'} text
+    And I tap {'Group suggestion'} text
+    And I tap {'Suggest a session'} text
+    And I tap {'Plan a session'} text
+    Then the session title is {'Posture, visée et coup de queue, session 1/2'}
+
+  Scenario: The record opened from the suggestion follows the catalogue session
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
+    When I tap {'Sessions'} text
+    And I tap {'Group suggestion'} text
+    And I tap {'Suggest a session'} text
+    And I tap {'Record the results of this session'} text
+    And I tap {'Open the session'} text
+    Then the opened session follows the catalogue session {'posture-1'}
+
+  Scenario: A block without catalogue session explains it and keeps the actions
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And {'Léa'} has validated the block {'posture'}
+    And {'Léa'} has validated the block {'puissance'}
+    And {'Léa'} has validated the block {'bille-fantome'}
+    And {'Léa'} has validated the block {'bille-pleine'}
+    And {'Léa'} has validated the block {'demi-bille'}
+    And {'Léa'} has validated the block {'trois-quarts'}
+    And {'Léa'} has validated the block {'quart-finesses'}
+    And the app is running
+    When I tap {'Sessions'} text
+    And I tap {'Group suggestion'} text
+    And I tap {'Suggest a session'} text
+    Then I see {'No catalogue session for this notion: the block exercises are listed below'} text
+    And I see {'Record the results of this session'} text
+    And I see {'Plan a session'} text
+    And I do not see {'Open the catalogue session'} text
+    And I do not see {'Launch the guided session'} text
+
+  Scenario: Planning without catalogue session opens the planner with no session chosen
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And {'Léa'} has validated the block {'posture'}
+    And {'Léa'} has validated the block {'puissance'}
+    And {'Léa'} has validated the block {'bille-fantome'}
+    And {'Léa'} has validated the block {'bille-pleine'}
+    And {'Léa'} has validated the block {'demi-bille'}
+    And {'Léa'} has validated the block {'trois-quarts'}
+    And {'Léa'} has validated the block {'quart-finesses'}
+    And the app is running
+    When I tap {'Sessions'} text
+    And I tap {'Group suggestion'} text
+    And I tap {'Suggest a session'} text
+    And I tap {'Plan a session'} text
+    Then the session title is {''}

@@ -1,8 +1,10 @@
 import 'package:billard_cfa/features/suggest_session/domain/exercise_sheet.dart';
 import 'package:billard_cfa/features/suggest_session/domain/session_plan.dart';
+import 'package:billard_cfa/features/suggest_session/domain/sheet_suggestion.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/session_shape.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/ui/audience_badge.dart';
 import 'package:billard_cfa/shared/ui/audience_labels.dart';
 import 'package:billard_cfa/shared/ui/exercise_title.dart';
@@ -19,6 +21,9 @@ class SessionPlanView extends StatelessWidget {
     required this.exercises,
     required this.onOpenSource,
     required this.onRecord,
+    required this.onOpenSheet,
+    required this.onLaunch,
+    required this.onPlan,
     this.recall,
     super.key,
   });
@@ -28,6 +33,16 @@ class SessionPlanView extends StatelessWidget {
   final ExerciseSheet? recall;
   final ValueChanged<ExerciseRef> onOpenSource;
   final VoidCallback onRecord;
+
+  /// Ouvre la séance du catalogue proposée.
+  final ValueChanged<SheetId> onOpenSheet;
+
+  /// Lance la séance guidée de la séance du catalogue proposée.
+  final ValueChanged<SheetId> onLaunch;
+
+  /// Planifie la séance proposée ; `null` pour une notion sans séance du
+  /// catalogue.
+  final ValueChanged<SheetId?> onPlan;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +76,14 @@ class SessionPlanView extends StatelessWidget {
               ],
             ],
           ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        _SheetCard(
+          suggestion: plan.sheet,
+          mainTitle: main.title,
+          onOpen: onOpenSheet,
+          onLaunch: onLaunch,
+          onPlan: onPlan,
         ),
         const SizedBox(height: AppSpacing.md),
         SectionCard(
@@ -135,6 +158,93 @@ class SessionPlanView extends StatelessWidget {
         SessionPhase.game => l10n.suggestPhaseGame,
         SessionPhase.review => l10n.suggestPhaseReview,
       };
+}
+
+/// La séance du catalogue proposée et ses actions ; sans proposition, le
+/// message de repli (notion sans séance) et la seule planification libre.
+class _SheetCard extends StatelessWidget {
+  const _SheetCard({
+    required this.suggestion,
+    required this.mainTitle,
+    required this.onOpen,
+    required this.onLaunch,
+    required this.onPlan,
+  });
+
+  final SheetSuggestion? suggestion;
+  final String mainTitle;
+  final ValueChanged<SheetId> onOpen;
+  final ValueChanged<SheetId> onLaunch;
+  final ValueChanged<SheetId?> onPlan;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final suggestion = this.suggestion;
+    if (suggestion == null) {
+      return SectionCard(
+        title: l10n.suggestSheetTitle,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.suggestSheetNone),
+            const SizedBox(height: AppSpacing.sm),
+            OutlinedButton(
+              onPressed: () => onPlan(null),
+              child: Text(l10n.suggestSheetPlan),
+            ),
+          ],
+        ),
+      );
+    }
+    final option = suggestion.option;
+    final reason = switch (suggestion.kind) {
+      SheetSuggestionKind.nextPending => l10n.suggestSheetNextPending,
+      SheetSuggestionKind.coversHead => l10n.suggestSheetCoversHead,
+      SheetSuggestionKind.repeat => l10n.suggestSheetRepeat(
+        MaterialLocalizations.of(context)
+            .formatMediumDate(suggestion.lastGivenOn!),
+      ),
+    };
+    return SectionCard(
+      title: l10n.suggestSheetTitle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Le titre de la notion est déjà celui de la carte précédente.
+          if (option.title != mainTitle)
+            Text(option.title, style: theme.textTheme.titleMedium),
+          Text(l10n.sheetPartLabel(option.part, option.partCount)),
+          Text(reason, style: theme.textTheme.bodyMedium),
+          if (!suggestion.headCovered)
+            Text(
+              l10n.suggestSheetHeadElsewhere(suggestion.head.number),
+              style: theme.textTheme.bodyMedium,
+            ),
+          const SizedBox(height: AppSpacing.sm),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: [
+              FilledButton.tonal(
+                onPressed: () => onOpen(option.id),
+                child: Text(l10n.suggestSheetOpen),
+              ),
+              FilledButton.tonal(
+                onPressed: () => onLaunch(option.id),
+                child: Text(l10n.suggestSheetLaunch),
+              ),
+              OutlinedButton(
+                onPressed: () => onPlan(option.id),
+                child: Text(l10n.suggestSheetPlan),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _ExerciseLine extends StatelessWidget {

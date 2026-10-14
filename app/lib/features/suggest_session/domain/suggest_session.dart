@@ -4,8 +4,12 @@ import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.d
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/features/suggest_session/domain/session_plan.dart';
 import 'package:billard_cfa/features/suggest_session/domain/session_planner.dart';
+import 'package:billard_cfa/features/suggest_session/domain/suggest_sheet.dart';
+import 'package:billard_cfa/shared/lib/clock.dart';
+import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
@@ -13,6 +17,11 @@ import 'package:injectable/injectable.dart';
 
 /// Cas d'usage : proposer la séance (90 min enfants, 120 min adultes) d'un
 /// groupe pour les élèves attendus. Voir [planSession] pour les règles.
+///
+/// Propose en plus la séance du catalogue de la notion principale
+/// ([suggestSheet], ADR 0009) ; si elle ne contient pas l'exercice de tête,
+/// les exercices du plan sont ceux de la séance non validés par tout le
+/// groupe. Un catalogue de séances illisible fait échouer la suggestion.
 @injectable
 class SuggestSession {
   SuggestSession(
@@ -22,6 +31,8 @@ class SuggestSession {
     this._acquisitions,
     this._catalogue,
     this._config,
+    this._sheets,
+    this._clock,
   );
 
   final GroupRepository _groups;
@@ -30,6 +41,8 @@ class SuggestSession {
   final AcquisitionRepository _acquisitions;
   final CatalogueRepository _catalogue;
   final RulesConfig _config;
+  final SessionSheetRepository _sheets;
+  final Clock _clock;
 
   Future<Result<SessionPlan>> call({
     required GroupId groupId,
@@ -48,12 +61,41 @@ class SuggestSession {
           config: _config,
         ),
     };
-    return planSession(
+    final groupSessions = await _sessions.forGroup(groupId);
+    final plan = planSession(
       catalogue: catalogue,
       audience: group.audience,
       progress: progress,
-      groupSessions: await _sessions.forGroup(groupId),
+      groupSessions: groupSessions,
       config: _config,
+    );
+    final sheets = await _sheets.getAll();
+    final everyoneValidated = validatedByAll(progress.values);
+    final suggestion = suggestSheet(
+      mainBlockId: plan.mainBlockId,
+      head: plan.exercises.first,
+      sheets: sheets,
+      groupSessions: groupSessions,
+      attemptCountBySession: {
+        for (final session in groupSessions)
+          if (session.sheetId != null)
+            session.id: (await _attempts.forSession(session.id)).length,
+      },
+      today: _clock.today(),
+      validatedByAll: everyoneValidated,
+    );
+    if (suggestion == null) return plan;
+    return plan.copyWith(
+      sheet: suggestion,
+      exercises: suggestion.headCovered
+          ? plan.exercises
+          : [
+              for (final number in suggestion.exerciseNumbers)
+                if (!everyoneValidated.contains(
+                  ExerciseRef(blockId: plan.mainBlockId, number: number),
+                ))
+                  ExerciseRef(blockId: plan.mainBlockId, number: number),
+            ],
     );
   });
 }

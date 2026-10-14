@@ -35,6 +35,16 @@ suivantes) ou demander à l'application une **séance suggérée** pour un group
    un élève en a besoin, jeu final.
 3. Chaque exercice renvoie vers sa **fiche source** (fiche fédérale) pour
    l'expliquer aux élèves.
+4. La carte **Séance du catalogue** propose la séance du catalogue à donner :
+   la partie qui contient l'exercice de tête, ou une partie encore à faire si la
+   tête relève d'une partie déjà donnée (une note le signale). Une partie est
+   « donnée » quand une saisie du groupe la nomme et compte au moins un
+   passage. **Ouvrir la séance du catalogue**, **Lancer la séance guidée**
+   (le groupe est repris à la saisie) ou **Planifier une séance**.
+5. Quand toutes les parties ont été données, la carte propose celle de
+   l'exercice de tête, « déjà donnée le … ». Pour une notion sans séance du
+   catalogue, la carte l'indique : les exercices du bloc sont listés, vous
+   pouvez toujours saisir les résultats et planifier.
 
 ### Voir le schéma animé d'un exercice
 

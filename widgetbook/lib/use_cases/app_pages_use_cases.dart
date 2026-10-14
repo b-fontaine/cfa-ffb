@@ -161,7 +161,10 @@ Widget buildSuggestedSessionPageUseCase(BuildContext context) => WorldScope(
     ],
     child: SuggestedSessionPage(
       onOpenSource: (_) {},
-      onRecord: (_, _, _) {},
+      onRecord: (_, _, _, _) {},
+      onOpenSheet: (_, _) {},
+      onLaunch: (_, _, _) {},
+      onPlan: (_, _) {},
       onAddStudents: () {},
     ),
   ),

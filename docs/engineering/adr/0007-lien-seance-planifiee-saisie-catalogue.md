@@ -82,3 +82,7 @@ coupée en deux endroits.
 - Limites : le lien dérivé confond deux séances planifiées le même jour pour
   un groupe ; une saisie ouverte sans planification n'apparaît pas comme
   « séance planifiée » (elle reste dans l'historique).
+
+Voir aussi l'[ADR 0009](0009-suggestion-seance-du-catalogue.md) : la saisie
+ouverte depuis la séance suggérée reçoit désormais la séance du catalogue
+proposée (`sheetId`), et le guide lancé depuis la suggestion connaît le groupe.

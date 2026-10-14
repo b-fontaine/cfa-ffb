@@ -1,3 +1,4 @@
+import 'package:billard_cfa/features/suggest_session/domain/sheet_suggestion.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/session_shape.dart';
@@ -21,6 +22,10 @@ abstract class SessionPlan with _$SessionPlan {
     String? recallBlockId,
     ExerciseRef? recallExercise,
     RecallReason? recallReason,
+
+    /// Séance du catalogue proposée pour la notion principale ; `null` pour un
+    /// bloc sans séance (ADR 0009).
+    SheetSuggestion? sheet,
   }) = _SessionPlan;
 
   const SessionPlan._();

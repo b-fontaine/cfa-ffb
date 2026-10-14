@@ -723,6 +723,29 @@
   },
   "suggestSource": "Source sheet",
   "suggestRecord": "Record the results of this session",
+  "suggestSheetTitle": "Catalogue session",
+  "suggestSheetNextPending": "A part still to do for this group",
+  "suggestSheetCoversHead": "Covers the lead exercise of the suggestion",
+  "suggestSheetRepeat": "Already given on {date}",
+  "@suggestSheetRepeat": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "suggestSheetHeadElsewhere": "The lead exercise (no. {number}) belongs to a part already given",
+  "@suggestSheetHeadElsewhere": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "suggestSheetNone": "No catalogue session for this notion: the block exercises are listed below",
+  "suggestSheetOpen": "Open the catalogue session",
+  "suggestSheetLaunch": "Launch the guided session",
+  "suggestSheetPlan": "Plan a session",
   "suggestReasonGroupFailure": "Several students missed the last pass",
   "suggestReasonActiveAlert": "An alert is in progress",
   "suggestReasonLastFailed": "A student missed the last pass",

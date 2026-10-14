@@ -70,9 +70,12 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
    l'ordre de suggestion (libellé « acquis au positionnement », ordre rebond
    puis rejet inchangé), réversible, un passage daté du même jour ou après
    reprend la main sur son exercice seulement (le reste du bloc reste acquis).
-8. **Suggestion ↔ catalogue** : la séance suggérée pointe un bloc ; elle doit
-   proposer la séance du catalogue correspondante (partie suivante non faite
-   par le groupe).
+8. ~~Suggestion ↔ catalogue~~ : la séance suggérée propose la séance du
+   catalogue correspondante (partie suivante non faite par le groupe).
+   **Livré le 2026-10-14** — [ADR 0009](adr/0009-suggestion-seance-du-catalogue.md),
+   [plan](suggestion-catalogue-plan.md). Décisions : l'exercice de tête décide
+   (S1), « faite » = saisie avec séance et passage (S2, S7), notion sans séance
+   = repli explicite (S8), guide lancé avec le groupe (S6) ; aucune migration.
 9. **Réglages** (F8) : écran persisté (drift + sauvegarde) pour
    `passesRequired`, seuil d'alerte, `recallStaleSessions`, part d'échec du
    groupe.

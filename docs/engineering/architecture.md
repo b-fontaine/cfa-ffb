@@ -67,7 +67,7 @@ app/
 │   │   └── presentation/{bloc,ui}/    # SessionPlannerBloc, PlanSessionForm
 │   ├── features/manage_students/          # EnrollStudent, GetClubOverview ; StudentsBloc, ClubList
 │   ├── features/record_results/           # OpenSession, RecordAttempt (R1, R2, R4) ; RecordResultsBloc
-│   ├── features/suggest_session/          # planSession (R6), selectRecall (R5) ; SessionPlanView, ExerciseDiagramView
+│   ├── features/suggest_session/          # planSession (R6), selectRecall (R5), suggestSheet (lot 8) ; SessionPlanView, ExerciseDiagramView
 │   ├── features/place_student/            # MarkBlockAcquired, RevokeBlockAcquired ; PlacementBloc, boîte de dialogue
 │   ├── features/assess_maturity/          # RecordAssessment (aide, jamais un déclencheur)
 │   ├── features/change_audience/          # ChangeAudience (R7, manuel, confirmation)
@@ -321,8 +321,8 @@ jamais modifier le contenu du catalogue :
   « acquis », le score du jeu et le minuteur indicatif (source `RunTicker`
   injectable, jamais bloquant). Tout est local et jamais enregistré ; toutes
   les étapes sont atteignables librement (relecture sans élèves). Les cubits
-  vivent dans `RunSheetSessions` (singleton, clé = séance, public demandé,
-  séance planifiée), au-dessus du routeur : `context.go` retire la page du
+  vivent dans `RunSheetSessions` (singleton, clé `RunKey` = séance, public
+  demandé, séance planifiée, groupe), au-dessus du routeur : `context.go` retire la page du
   guide, mais les compteurs survivent à un aller-retour par la saisie.
   « Terminer la séance » (après confirmation) réinitialise l'état puis
   **libère** le cubit (`release`) ; au plus `maxRunning` séances restent en
@@ -345,11 +345,14 @@ jamais modifier le contenu du catalogue :
 - Pages `sheet_guide` et `sheet_presentation` : composition par callbacks.
   `features/run_sheet` n'importe ni `record_results` ni `suggest_session` : la
   saisie des résultats est composée par la couche `app`.
-- Routes : `/catalogue/:sheetId/guide?audience=&session=&step=` (`step` à
+- Routes : `/catalogue/:sheetId/guide?audience=&session=&step=&group=`
+  (`group` : groupe de la séance suggérée d'où le guide est lancé, ADR 0009 ;
+  `step` à
   partir de 0, ramené dans la plage ; le public absent est celui de la séance
-  planifiée) et `/catalogue/:sheetId/presentation?audience=&session=&step=`
-  (hors du shell). Le guide est lancé depuis le détail d'une séance ou depuis la
-  liste des séances planifiées.
+  planifiée) et `/catalogue/:sheetId/presentation?audience=&session=&step=&group=`
+  (hors du shell). Le guide est lancé depuis le détail d'une séance, depuis la
+  liste des séances planifiées ou depuis la séance suggérée (qui transmet le
+  groupe).
 - Notation : « Noter les résultats » ouvre `/record/new?main=<bloc>&recall=<bloc
   de rappel>&exercise=<n>&sheet=<séance>&from=<adresse du guide>` (le groupe
   et la date viennent du choix précédent ou de la séance planifiée ; sans eux,
@@ -360,6 +363,36 @@ jamais modifier le contenu du catalogue :
 - Garde-fous : `test/contract/session_sheets_guide_test.dart` rend le guide et
   la présentation sur les 29 séances, à chaque étape (fr et en, deux publics,
   texte à 200 % sur téléphone, tablette en paysage).
+
+## Suggestion ↔ catalogue (lot 8)
+
+ADR 0009, [plan](suggestion-catalogue-plan.md). La séance suggérée propose la
+séance du catalogue correspondant à sa notion, sans migration :
+
+- `features/suggest_session/domain` : `suggestSheet` (fonction pure : bloc
+  principal, exercice de tête, séances, saisies du groupe, passages par saisie,
+  jour courant, exercices validés par tout le groupe) renvoie une
+  `SheetSuggestion?` (`option`, `kind` : `coversHead` / `nextPending` /
+  `repeat`, `exerciseNumbers`, `headCovered`, `head`, `lastGivenOn`), nulle
+  pour un bloc sans séance du catalogue (`quantites-de-billes`,
+  `trajectoires-blanche`). `SuggestSession` lit `SessionSheetRepository` et
+  `Clock`, calcule les passages par saisie et pose `SessionPlan.sheet` ; si la
+  séance ne contient pas l'exercice de tête, `plan.exercises` devient ceux de la
+  séance non validés par tout le groupe (durée et phases inchangées).
+  « Faite » = saisie du groupe avec `sheetId` et au moins un passage, datée
+  d'aujourd'hui ou avant.
+- `SessionPlanView` : carte « Séance du catalogue » (titre, partie, raison,
+  note sur l'exercice de tête) et actions Ouvrir, Lancer, Planifier ; sans
+  séance, message de repli et Planifier sans séance. `SuggestedSessionPage`
+  relaie `onOpenSheet`, `onLaunch`, `onPlan` avec le public du plan et le
+  groupe ; `onRecord` reçoit aussi la séance proposée.
+- Routes : `AppRoutes.recordFromSuggestion(group, main, recall?, sheet?)`,
+  `AppRoutes.guide(group:)` et `AppRoutes.presentation(group:)` (`RunKey.group`,
+  repris par `_runKey` / `_guideKey`), `AppRoutes.plan(SheetId?)`. La saisie
+  ouverte depuis le guide reçoit le groupe (`recordDefaults.group` puis
+  `key.group`).
+- Garde-fou : `test/contract/session_sheets_block_coverage_test.dart` (chaque
+  exercice d'un bloc à séances est dans exactement une séance).
 
 ## Design system et Widgetbook
 

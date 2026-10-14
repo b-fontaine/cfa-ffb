@@ -3,6 +3,7 @@ import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_sessions.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_ticker.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -19,20 +20,24 @@ void main() {
     expect(sessions.of(key), same(sessions.of(key)));
   });
 
-  test('tells the keys apart by session, audience and planned session', () {
-    final other = [
-      RunKey(sheetId: SheetId('demi-bille-2')),
-      RunKey(sheetId: SheetId('demi-bille-1'), audience: Audience.adults),
-      RunKey(sheetId: SheetId('demi-bille-1'), sessionId: 'p1'),
-    ];
+  test(
+    'tells the keys apart by session, audience, planned session and group',
+    () {
+      final other = [
+        RunKey(sheetId: SheetId('demi-bille-2')),
+        RunKey(sheetId: SheetId('demi-bille-1'), audience: Audience.adults),
+        RunKey(sheetId: SheetId('demi-bille-1'), sessionId: 'p1'),
+        RunKey(sheetId: SheetId('demi-bille-1'), group: const GroupId('g1')),
+      ];
 
-    for (final k in other) {
-      expect(sessions.of(k), isNot(same(sessions.of(key))));
-      expect(k, isNot(key));
-    }
-    expect(RunKey(sheetId: SheetId('demi-bille-1')), key);
-    expect(RunKey(sheetId: SheetId('demi-bille-1')).hashCode, key.hashCode);
-  });
+      for (final k in other) {
+        expect(sessions.of(k), isNot(same(sessions.of(key))));
+        expect(k, isNot(key));
+      }
+      expect(RunKey(sheetId: SheetId('demi-bille-1')), key);
+      expect(RunKey(sheetId: SheetId('demi-bille-1')).hashCode, key.hashCode);
+    },
+  );
 
   test('release closes the cubit and forgets it', () async {
     final cubit = sessions.of(key);
