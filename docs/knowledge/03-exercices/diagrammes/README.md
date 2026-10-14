@@ -246,5 +246,5 @@ Les deux dernières lignes viennent de `proposition/` (hors PDF, `[Prop]`), les 
 ### Limites connues
 
 - Positions et trajectoires : lecture approchée (≈ 0,15 case) du schéma `[S]` ; jamais publiées par la FFB sous cette forme.
-- Rayon de bille (0,1 unité) et ligne de départ (x = 2,0) : `[Prop]` ; la ligne dessinée est lue vers x ≈ 1,75 à 1,85 sur la plupart des pages.
+- Rayon de bille (0,1 unité) : `[Prop]` ; ligne de départ : x = 1,6 `[FFB]` (arbitrage du 2026-10-14), alors que la ligne dessinée est lue vers x ≈ 1,75 à 1,85 sur la plupart des pages.
 - Le champ `uncertainties` de chaque diagramme est la liste autoritaire des doutes (rôle des billes d'obstacle, ordre des tirs, poches déduites, chevalet non précisé, bille blanche absente du dessin…). La synthèse est dans `../../08-lacunes-et-questions-ouvertes.md`.

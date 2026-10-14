@@ -26,9 +26,9 @@ abstract final class DiagramLayout {
   /// Nombre de cases dans la largeur.
   static const double rows = BlackballDimensions.rows;
 
-  /// Position de la ligne de départ (`[Prop]`, voir FORMAT.md) : x = 2, alors
-  /// que la règle `[FFB]` donne 1,6 (1/5 de la longueur).
-  static const double headStringX = BlackballDimensions.headStringDrawn;
+  /// Position de la ligne de départ (`[FFB]`, voir FORMAT.md) : x = 1,6
+  /// (1/5 de la longueur).
+  static const double headStringX = BlackballDimensions.headString;
 }
 
 /// Point du repère de la table, en cases (`x` le long, `y` en travers).

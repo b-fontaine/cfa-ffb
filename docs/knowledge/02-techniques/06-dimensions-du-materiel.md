@@ -114,11 +114,11 @@ Dans le repère des diagrammes (`03-exercices/diagrammes/FORMAT.md`, 1 case = 1/
 | r_c | 0,104 case | **0,0945 case** (0,945 × 0,1) |
 | s = r_c + r_o | 0,214 case | **0,1945 case** |
 | Entrée de poche | 0,33 case | 0,30 case (le code dessine aujourd'hui un disque de rayon 0,28, soit 0,56 case : 1,7 fois trop grand) |
-| Ligne de départ | 1,6 case (1/5 de 8) | à trancher (voir § 4) |
+| Ligne de départ | 1,6 case (1/5 de 8) | 1,6 case `[FFB]` (arbitrage rendu le 2026-10-14, voir § 4) |
 
 Le rayon 0,1 du `FORMAT.md` est une convention de dessin 9 % trop petite (0,110 case à l'échelle réelle). Les rapports, eux, ne doivent plus être confondus (aujourd'hui le code et le `FORMAT.md` utilisent un rayon unique de 0,1 pour toutes les billes : seule la correction du rapport 0,945 est impérative, le passage à l'échelle réelle est une décision du plan).
 
-**Réalisé dans le dépôt** (lots A et B du plan `docs/engineering/tailles-et-illustrations-plan.md`) : les schémas et les calculs de l'application utilisent l'**échelle réelle** (colonne « Échelle réelle » ci-dessus : r_o = 0,1098 case, r_c = 0,1038 case, s = 0,2136 case, poche 0,3295 case) ; la source unique des cotes est `app/lib/shared/lib/blackball_dimensions.dart` et la convention « r = 0,1 » a disparu. La ligne de départ reste à x = 2,0 `[Prop]` (arbitrage ouvert, § 4).
+**Réalisé dans le dépôt** (lots A et B du plan `docs/engineering/tailles-et-illustrations-plan.md`) : les schémas et les calculs de l'application utilisent l'**échelle réelle** (colonne « Échelle réelle » ci-dessus : r_o = 0,1098 case, r_c = 0,1038 case, s = 0,2136 case, poche 0,3295 case) ; la source unique des cotes est `app/lib/shared/lib/blackball_dimensions.dart` et la convention « r = 0,1 » a disparu. La ligne de départ est dessinée à x = 1,6 `[FFB]` (arbitrage rendu le 2026-10-14, § 4).
 
 **Visibilité.** À l'échelle réelle, la blanche n'est que 5,5 % plus petite (diamètres 48,0 et 50,8 mm) : sur une table de 8 cases large de 360 px (≈ 40 px par case) l'écart de diamètre est d'environ 0,5 px, et d'environ 1,7 px à 1280 px. La différence réelle est donc correcte mais **à peine perceptible** dans un schéma de table ; elle se montre par une comparaison dédiée (deux billes côte à côte, légende « 48,0 mm / 50,8 mm »), pas en exagérant silencieusement les tailles dans les schémas d'exercices.
 
@@ -128,6 +128,6 @@ Le rayon 0,1 du `FORMAT.md` est une convention de dessin 9 % trop petite (0,110 
 - **Masses** (94 g / 116 g) : `[Web]` indicatif ; pas de valeur fédérale trouvée.
 - **Hauteur d'attaque du procédé** : seulement haut / centre / bas dans `[S]` ; aucune graduation fédérale (`03-exercices/diagrammes/initiation/p19.yaml` donne « ≈ mi-rayon sous le centre », `[Prop]`).
 - **Longueur et masse de la queue** : non spécifiées ; ne pas les dessiner comme une cote.
-- **Ligne de départ** : `[FFB]` donne 1/5 de la longueur, soit x = 1,6 sur 8 cases ; le dépôt l'a fixée à x = 2,0 `[Prop]` et le schéma `[S]` la montre vers x ≈ 1,75 à 1,85. Conflit à arbitrer par l'animateur ; non modifié ici.
+- **Ligne de départ** : `[FFB]` donne 1/5 de la longueur, soit x = 1,6 sur 8 cases ; le dépôt la dessinait à x = 2,0 `[Prop]` et le schéma `[S]` la montre vers x ≈ 1,75 à 1,85. **Arbitrage rendu le 2026-10-14** : x = 1,6 `[FFB]` ; les positions transcrites (absolues) ne changent pas.
 - **Définition du quart de bille** (d = r_o + r_c / 2) : lecture `[S]` p. 17, mais l'ambiguïté « au-delà de la bille de couleur » reste ; la base la lit comme « au-delà de la tangente ».
 - **Échelle des diagrammes** : 1 case ne correspond pas à une cote métrique exacte (grille des PDF).

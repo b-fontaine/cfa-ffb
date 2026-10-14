@@ -41,15 +41,13 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
    `relecteur-pedagogique`, dans un contexte séparé.
 3. Corriger F1, F2 et F7 (un texte « pas de rappel : une notion par séance
    enfants »).
-4. ~~Faire trancher par l'animateur~~ — **tranché le 2026-10-14** : D2 = ligne
-   de départ à **1,6 `[FFB]`** (au lieu de 2,0 `[Prop]`) ; D5 = **ajouter**
-   l'illustration `contact_height` ; questions 2 à 4 de
+4. ~~Faire trancher par l'animateur~~ — **tranché le 2026-10-14** : D5 =
+   **ajouter** l'illustration `contact_height` ; questions 2 à 4 de
    `docs/knowledge/08-lacunes-et-questions-ouvertes.md` (unité « séance »,
    dimensionnement groupes / saison, synchronisation) : recommandations de
-   l'assistant suivies, à consigner dans ce fichier. Reste à **réaliser** D2 et
-   D5 dans `tailles-et-illustrations-plan.md` (la ligne de départ à 1,6
-   modifie la lecture de 46 à 60 diagrammes transcrits : à rejouer avec
-   `tool/diagrammes.dart` et à faire relire).
+   l'assistant suivies, à consigner dans ce fichier. Reste à **réaliser** D5
+   dans `tailles-et-illustrations-plan.md`. D2 (ligne de départ à 1,6 `[FFB]`)
+   est **réalisée** : les positions YAML, absolues, sont inchangées.
 
 ## H1 — La boucle de saison complète (priorité)
 

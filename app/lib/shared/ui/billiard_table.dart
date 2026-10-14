@@ -13,7 +13,7 @@ typedef TableOverlayBuilder = Widget Function(
 /// Table de Blackball vue de dessus, en paysage (surface 2:1).
 ///
 /// Tapis, bandes, rails gris bois avec losanges, six poches ; en option la
-/// grille pointillée 8 × 4 ([showGrid]) et la ligne de départ à x = 2
+/// grille pointillée 8 × 4 ([showGrid]) et la ligne de départ à x = 1,6
 /// ([showHeadString]). Les poches ont l'ouverture réelle (76,2 mm, 1,5 bille
 /// de but). [overlay] reçoit la [TableGeometry] pour placer billes, flèches et
 /// queue dans le repère de la table (blanche plus petite que les billes de

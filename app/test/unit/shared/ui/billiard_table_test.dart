@@ -205,7 +205,7 @@ void main() {
       }
     });
 
-    testWidgets('the head string alone is one line at x = 2', (tester) async {
+    testWidgets('the head string alone is one line at x = 1.6', (tester) async {
       final all = await record(
         tester,
         const BilliardTable(showHeadString: true),
@@ -217,14 +217,14 @@ void main() {
       expect(
         close(
           lines.single.positionalArguments[0] as Offset,
-          geometry.toPixel(const Offset(2, 0)),
+          geometry.toPixel(const Offset(1.6, 0)),
         ),
         isTrue,
       );
       expect(
         close(
           lines.single.positionalArguments[1] as Offset,
-          geometry.toPixel(const Offset(2, 4)),
+          geometry.toPixel(const Offset(1.6, 4)),
         ),
         isTrue,
       );

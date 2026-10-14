@@ -16,9 +16,10 @@ non sourcée n'est écrite ici.
 - Unité = **une case de la grille pointillée du PDF** : `x ∈ [0, 8]` le long de la table (gauche → droite),
   `y ∈ [0, 4]` en travers (haut → bas). Origine = coin haut-gauche de la **surface de jeu** (bord intérieur
   des bandes). Rapport longueur/largeur = 2:1.
-- Ligne de départ (trait plein vertical du schéma) : `x = 2.0` (`[Prop]` à vérifier visuellement ; l'écart
-  éventuel est consigné dans `uncertainties`). La règle `[FFB]` (1/5 de la longueur) donne `x = 1.6` : conflit
-  non arbitré, voir `../../02-techniques/06-dimensions-du-materiel.md` § 4.
+- Ligne de départ (trait plein vertical du schéma) : règle `[FFB]` `x = 1.6` (1/5 de la longueur), dessinée
+  telle quelle (arbitrage rendu le 2026-10-14) ; le schéma `[S]` la montre vers 1,8 (écart consigné dans
+  `uncertainties` ; les mentions « et non 2,0 » ou « FORMAT : 2,0 [Prop] » des `uncertainties` YAML renvoient à l'ancienne convention 2,0 `[Prop]` ; la lecture source ≈ 1,8 reste valable, comparée à 1,6). Les positions des billes restent absolues. Voir
+  `../../02-techniques/06-dimensions-du-materiel.md` § 4.
 - **Rayons de bille, aux tailles réelles** (une case = 925 / 4 = 231,25 mm ; cotes `[FFB]`, voir
   `../../02-techniques/06-dimensions-du-materiel.md`) : bille de but (rouge, jaune, noire) 50,8 mm, soit
   **rayon `0.1098`** ; **blanche 48,0 mm, rayon `0.1038`**. La blanche est **plus petite** que les billes de but
