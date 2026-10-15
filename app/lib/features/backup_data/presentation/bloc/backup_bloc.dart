@@ -3,6 +3,7 @@ import 'package:billard_cfa/features/backup_data/domain/export_backup.dart';
 import 'package:billard_cfa/features/backup_data/domain/import_backup.dart';
 import 'package:billard_cfa/features/backup_data/domain/import_summary.dart';
 import 'package:billard_cfa/features/backup_data/domain/preview_backup.dart';
+import 'package:billard_cfa/features/backup_data/domain/record_backup_done.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/storage_status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +20,7 @@ part 'backup_state.dart';
 class BackupBloc extends Bloc<BackupEvent, BackupState> {
   BackupBloc(
     this._export,
+    this._recordDone,
     this._preview,
     this._import,
     this._files,
@@ -32,6 +34,7 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
   }
 
   final ExportBackup _export;
+  final RecordBackupDone _recordDone;
   final PreviewBackup _preview;
   final ImportBackup _import;
   final BackupFiles _files;
@@ -57,6 +60,9 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
           fileName: event.fileName,
           content: value,
         );
+        // Un fichier enregistré = une sauvegarde faite (rappel U6) ; l'échec
+        // de cette mémoire ne fait pas échouer l'export.
+        if (saved) await _recordDone();
         emit(
           state.copyWith(
             status: saved

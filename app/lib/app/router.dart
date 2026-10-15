@@ -5,7 +5,10 @@ import 'package:billard_cfa/app/record_screens.dart';
 import 'package:billard_cfa/app/record_sheet.dart';
 import 'package:billard_cfa/app/shell.dart';
 import 'package:billard_cfa/features/assess_maturity/presentation/bloc/assessment_bloc.dart';
+import 'package:billard_cfa/features/backup_data/domain/backup_reminder.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_bloc.dart';
+import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_reminder_cubit.dart';
+import 'package:billard_cfa/features/backup_data/presentation/ui/backup_reminder_banner.dart';
 import 'package:billard_cfa/features/browse_sheets/presentation/bloc/sheet_catalogue_bloc.dart';
 import 'package:billard_cfa/features/browse_sheets/presentation/bloc/sheet_detail_bloc.dart';
 import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_change_bloc.dart';
@@ -26,6 +29,7 @@ import 'package:billard_cfa/pages/assessment/presentation/assessment_page.dart';
 import 'package:billard_cfa/pages/backup/presentation/backup_page.dart';
 import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_page.dart';
 import 'package:billard_cfa/pages/home/presentation/home_page.dart';
+import 'package:billard_cfa/pages/more/presentation/more_page.dart';
 import 'package:billard_cfa/pages/not_found/presentation/not_found_page.dart';
 import 'package:billard_cfa/pages/record_history/presentation/record_history_page.dart';
 import 'package:billard_cfa/pages/session_planner/presentation/session_planner_page.dart';
@@ -60,6 +64,7 @@ abstract final class AppRoutes {
   static const newRecord = '/record/new';
   static const session = '/session';
   static const exercises = '/exercises';
+  static const more = '/more';
   static const backup = '/backup';
   static const catalogue = '/catalogue';
 
@@ -255,8 +260,22 @@ GoRouter buildRouter() => GoRouter(
       routes: [
         GoRoute(
           path: AppRoutes.home,
-          builder: (context, state) =>
-              HomePage(onOpenPlanner: () => context.go(AppRoutes.planner)),
+          builder: (context, state) => BlocProvider(
+            create: (_) {
+              final cubit = getIt<BackupReminderCubit>();
+              unawaited(cubit.check());
+              return cubit;
+            },
+            child: HomePage(
+              onOpenPlanner: () => context.go(AppRoutes.planner),
+              banner: BlocBuilder<BackupReminderCubit, BackupReminder>(
+                builder: (context, reminder) => BackupReminderBanner(
+                  reminder: reminder,
+                  onBackup: () => context.go(AppRoutes.backup),
+                ),
+              ),
+            ),
+          ),
         ),
         GoRoute(
           path: AppRoutes.planner,
@@ -625,8 +644,16 @@ GoRouter buildRouter() => GoRouter(
           builder: (context, state) => BlocProvider(
             create: (_) =>
                 getIt<BackupBloc>()..add(const BackupEvent.started()),
-            child: BackupPage(today: getIt<Clock>().today()),
+            child: BackupPage(
+              today: getIt<Clock>().today(),
+              onBack: () => context.go(AppRoutes.more),
+            ),
           ),
+        ),
+        GoRoute(
+          path: AppRoutes.more,
+          builder: (context, state) =>
+              MorePage(onOpenBackup: () => context.go(AppRoutes.backup)),
         ),
       ],
     ),

@@ -6,6 +6,7 @@ import 'package:billard_cfa/entities/maturity_assessment/data/drift_assessment_r
 import 'package:billard_cfa/entities/session/data/drift_session_repository.dart';
 import 'package:billard_cfa/entities/session_record/data/drift_session_record_repository.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
+import 'package:billard_cfa/features/backup_data/data/drift_backup_marker_repository.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
 import 'package:drift/native.dart';
@@ -66,6 +67,45 @@ void main() {
     addTearDown(db.close);
 
     await verifier.migrateAndValidate(db, 5);
+  });
+
+  test('a fresh database matches the committed v6 snapshot', () async {
+    final connection = await verifier.startAt(6);
+    final db = AppDatabase(connection);
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 6);
+  });
+
+  test('upgrading v5 to v6 creates an empty backup history and keeps '
+      'attempts', () async {
+    final schema = await verifier.schemaAt(5);
+    schema.rawDatabase
+      ..execute(
+        'INSERT INTO students (id, created_at, updated_at, first_name) '
+        "VALUES ('s1', '2026-10-01T00:00:00.000Z', "
+        "'2026-10-01T00:00:00.000Z', 'Léa')",
+      )
+      ..execute(
+        'INSERT INTO attempts (id, created_at, updated_at, student_id, '
+        'session_id, block_id, exercise_number, date, pass_index, potted, '
+        'total) '
+        "VALUES ('a1', '2026-10-01T00:00:00.000Z', "
+        "'2026-10-01T00:00:00.000Z', 's1', 'x1', 'posture', 1, "
+        "'2026-10-01T00:00:00.000', 1, 3, 5)",
+      );
+    final db = AppDatabase(schema.newConnection());
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 6);
+
+    expect(await DriftBackupMarkerRepository(db).last(), isNull);
+    final attempt = (await DriftAttemptRepository(
+      db,
+      TickingClock(),
+    ).all()).single;
+    expect(attempt.id.value, 'a1');
+    expect(attempt.potted, 3);
   });
 
   test('upgrading v4 to v5 creates an empty acquisitions table and keeps '
@@ -228,7 +268,7 @@ void main() {
   test('refuses to open a database written by a newer version', () async {
     final db = AppDatabase(
       NativeDatabase.memory(
-        setup: (raw) => raw.execute('PRAGMA user_version = 6'),
+        setup: (raw) => raw.execute('PRAGMA user_version = 7'),
       ),
     );
     addTearDown(db.close);
@@ -237,9 +277,9 @@ void main() {
       db.customSelect('SELECT 1').get(),
       throwsA(
         isA<DowngradeNotSupported>()
-            .having((e) => e.from, 'from', 6)
-            .having((e) => e.to, 'to', 5)
-            .having((e) => e.toString(), 'message', contains('version 6')),
+            .having((e) => e.from, 'from', 7)
+            .having((e) => e.to, 'to', 6)
+            .having((e) => e.toString(), 'message', contains('version 7')),
       ),
     );
   });

@@ -180,3 +180,16 @@ class BlockAcquisitions extends Table with AuditColumns {
   /// Nom de `AcquisitionSource`.
   TextColumn get source => text()();
 }
+
+/// Sauvegardes enregistrées sur l'appareil (rappel de sauvegarde) : une ligne
+/// par export, la plus récente fait foi. Donnée locale, hors fichier de
+/// sauvegarde.
+@DataClassName('BackupExportRow')
+class BackupExports extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  TextColumn get exportedAt => text().map(const IsoDateTimeConverter())();
+
+  /// Passages du club au moment de l'export.
+  IntColumn get attemptCount => integer()();
+}

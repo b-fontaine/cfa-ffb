@@ -6,12 +6,14 @@ import 'package:billard_cfa/entities/season/data/drift_season_repository.dart';
 import 'package:billard_cfa/entities/session/data/drift_session_repository.dart';
 import 'package:billard_cfa/entities/session_record/data/drift_session_record_repository.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
+import 'package:billard_cfa/features/backup_data/data/drift_backup_marker_repository.dart';
 import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/drift_support.dart';
 import 'acquisition_contract.dart';
 import 'backup_contract.dart';
+import 'backup_marker_contract.dart';
 import 'repository_contract.dart';
 import 'repository_harness.dart';
 
@@ -41,5 +43,9 @@ void main() {
       repository: DriftAcquisitionRepository(db, TickingClock()),
       close: db.close,
     );
+  });
+  backupMarkerContract('drift (SQLite)', () async {
+    final db = openMemoryDatabase();
+    return (repository: DriftBackupMarkerRepository(db), close: db.close);
   });
 }

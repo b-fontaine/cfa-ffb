@@ -8,9 +8,13 @@ import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({required this.onOpenPlanner, super.key});
+  const HomePage({required this.onOpenPlanner, this.banner, super.key});
 
   final VoidCallback onOpenPlanner;
+
+  /// Bandeau facultatif au-dessus du contenu (rappel de sauvegarde, composé
+  /// par la couche app).
+  final Widget? banner;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +26,7 @@ class HomePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                ?banner,
                 PageHeader(
                   title: l10n.homeTitle,
                   subtitle: l10n.homeSubtitle,

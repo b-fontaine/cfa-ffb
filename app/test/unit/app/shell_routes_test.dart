@@ -22,10 +22,36 @@ void main() {
 
     test('keeps the other destinations', () {
       expect(AppShell.indexOf('/'), 0);
-      expect(AppShell.indexOf('/planner'), 0);
       expect(AppShell.indexOf('/students/s1'), 1);
       expect(AppShell.indexOf('/record/x1'), 2);
+    });
+
+    test('keeps the planner under Sessions', () {
+      expect(AppShell.indexOf('/planner'), 3);
+    });
+
+    test('selects More for its list and for the backup', () {
+      expect(AppShell.indexOf('/more'), 4);
       expect(AppShell.indexOf('/backup'), 4);
+    });
+  });
+
+  group('AppShell.sessionsTabOf', () {
+    test('maps the three screens of Sessions to their tab', () {
+      expect(AppShell.sessionsTabOf('/planner'), 0);
+      expect(AppShell.sessionsTabOf('/catalogue'), 1);
+      expect(AppShell.sessionsTabOf('/session'), 2);
+    });
+
+    test('ignores a trailing slash', () {
+      expect(AppShell.sessionsTabOf('/catalogue/'), 1);
+    });
+
+    test('shows no tab on the pages opened from a tab', () {
+      expect(AppShell.sessionsTabOf('/catalogue/demi-bille-2'), isNull);
+      expect(AppShell.sessionsTabOf('/exercises/puissance/1'), isNull);
+      expect(AppShell.sessionsTabOf('/students'), isNull);
+      expect(AppShell.sessionsTabOf('/'), isNull);
     });
   });
 

@@ -4,7 +4,9 @@ import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart
 import 'package:billard_cfa/features/assess_maturity/presentation/bloc/assessment_bloc.dart';
 import 'package:billard_cfa/features/assess_maturity/presentation/ui/assessment_form.dart';
 import 'package:billard_cfa/features/assess_maturity/presentation/ui/score_selector.dart';
+import 'package:billard_cfa/features/backup_data/domain/backup_reminder.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_bloc.dart';
+import 'package:billard_cfa/features/backup_data/presentation/ui/backup_reminder_banner.dart';
 import 'package:billard_cfa/features/backup_data/presentation/ui/backup_view.dart';
 import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_change_bloc.dart';
 import 'package:billard_cfa/features/change_audience/presentation/ui/audience_change_card.dart';
@@ -38,6 +40,7 @@ import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/preview_world.dart';
 
@@ -434,3 +437,21 @@ Widget buildBackupViewUseCase(BuildContext context) => WorldScope(
     child: _scroll(const BackupView(fileName: 'sauvegarde-2026-10-12.json')),
   ),
 );
+
+@widgetbook.UseCase(
+  name: 'Rappel de sauvegarde',
+  type: BackupReminderBanner,
+  path: _path,
+)
+Widget buildBackupReminderBannerUseCase(BuildContext context) =>
+    BackupReminderBanner(
+      reminder: switch (context.knobs.object.dropdown<String>(
+        label: 'rappel',
+        options: const ['jamais sauvegardé', 'ancienne', 'nouveaux passages'],
+      )) {
+        'ancienne' => const StaleBackup(34),
+        'nouveaux passages' => const NewPassesSinceBackup(12),
+        _ => const NeverBackedUp(),
+      },
+      onBackup: () {},
+    );

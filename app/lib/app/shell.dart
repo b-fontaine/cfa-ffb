@@ -1,12 +1,16 @@
 import 'package:billard_cfa/app/router.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/ui/app_navigation.dart';
+import 'package:billard_cfa/shared/ui/app_tabs.dart';
 import 'package:billard_cfa/shared/ui/nav_icon.dart';
+import 'package:billard_cfa/shared/ui/responsive_body.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// Cadre de navigation principale : barre (smartphone) ou rail (tablette,
-/// desktop, web), l'onglet étant déduit de l'adresse courante.
+/// desktop, web), la destination étant déduite de l'adresse courante. Les trois
+/// écrans de « Séances » (Planifiées, Catalogue, Suggestion) sont surmontés de
+/// leurs onglets.
 class AppShell extends StatelessWidget {
   const AppShell({required this.location, required this.child, super.key});
 
@@ -17,25 +21,47 @@ class AppShell extends StatelessWidget {
     if (location.startsWith(AppRoutes.students)) return 1;
     if (location.startsWith(AppRoutes.record)) return 2;
     if (location.startsWith(AppRoutes.catalogue) ||
+        location.startsWith(AppRoutes.planner) ||
         location.startsWith(AppRoutes.session) ||
         location.startsWith(AppRoutes.exercises)) {
       return 3;
     }
-    if (location.startsWith(AppRoutes.backup)) return 4;
+    if (location.startsWith(AppRoutes.more) ||
+        location.startsWith(AppRoutes.backup)) {
+      return 4;
+    }
     return 0;
   }
+
+  /// Onglet de la destination « Séances » pour [location] : un des trois
+  /// écrans à onglets (Planifiées, Catalogue, Suggestion), `null` ailleurs
+  /// (les pages ouvertes depuis un onglet n'affichent pas les onglets).
+  static int? sessionsTabOf(String location) {
+    final path = location.length > 1 && location.endsWith('/')
+        ? location.substring(0, location.length - 1)
+        : location;
+    final index = _sessionsTabPaths.indexOf(path);
+    return index < 0 ? null : index;
+  }
+
+  static const List<String> _sessionsTabPaths = [
+    AppRoutes.planner,
+    AppRoutes.catalogue,
+    AppRoutes.session,
+  ];
 
   static const List<String> _paths = [
     AppRoutes.home,
     AppRoutes.students,
     AppRoutes.record,
     AppRoutes.catalogue,
-    AppRoutes.backup,
+    AppRoutes.more,
   ];
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final tab = sessionsTabOf(location);
     return AppNavigation(
       destinations: [
         AppDestination(
@@ -61,12 +87,34 @@ class AppShell extends StatelessWidget {
         AppDestination(
           icon: const NavIcon(NavGlyph.more),
           selectedIcon: const NavIcon(NavGlyph.more, selected: true),
-          label: l10n.navBackup,
+          label: l10n.navMore,
         ),
       ],
       selectedIndex: indexOf(location),
       onSelected: (index) => context.go(_paths[index]),
-      body: child,
+      body: tab == null
+          ? child
+          : Column(
+              children: [
+                SafeArea(
+                  bottom: false,
+                  child: ResponsiveBody(
+                    child: AppTabs(
+                      semanticLabel: l10n.sessionsTabsLabel,
+                      labels: [
+                        l10n.sessionsTabPlanned,
+                        l10n.sessionsTabCatalogue,
+                        l10n.sessionsTabSuggestion,
+                      ],
+                      selectedIndex: tab,
+                      onSelected: (index) =>
+                          context.go(_sessionsTabPaths[index]),
+                    ),
+                  ),
+                ),
+                Expanded(child: child),
+              ],
+            ),
     );
   }
 }

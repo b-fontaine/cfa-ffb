@@ -18,6 +18,7 @@ import 'package:billard_cfa/features/track_progress/presentation/bloc/student_sh
 import 'package:billard_cfa/pages/assessment/presentation/assessment_page.dart';
 import 'package:billard_cfa/pages/backup/presentation/backup_page.dart';
 import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_page.dart';
+import 'package:billard_cfa/pages/more/presentation/more_page.dart';
 import 'package:billard_cfa/pages/record_session/presentation/record_session_page.dart';
 import 'package:billard_cfa/pages/record_setup/presentation/record_setup_page.dart';
 import 'package:billard_cfa/pages/student_form/presentation/student_form_page.dart';
@@ -180,11 +181,15 @@ Widget buildExerciseSheetPageUseCase(BuildContext context) => WorldScope(
   ),
 );
 
+@widgetbook.UseCase(name: 'Plus', type: MorePage, path: _path)
+Widget buildMorePageUseCase(BuildContext context) =>
+    MorePage(onOpenBackup: () {});
+
 @widgetbook.UseCase(name: 'Sauvegarde', type: BackupPage, path: _path)
 Widget buildBackupPageUseCase(BuildContext context) => WorldScope(
   builder: (context, world) => BlocProvider(
     create: (_) => getIt<BackupBloc>()..add(const BackupEvent.started()),
-    child: BackupPage(today: world.today),
+    child: BackupPage(today: world.today, onBack: () {}),
   ),
 );
 

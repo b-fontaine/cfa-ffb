@@ -4,11 +4,13 @@ import 'package:billard_cfa/shared/ui/scroll_page.dart';
 import 'package:flutter/material.dart';
 
 /// Sauvegarde et restauration des données du club (bloc fourni par
-/// l'appelant). [today] date le nom du fichier exporté.
+/// l'appelant). [today] date le nom du fichier exporté ; [onBack] ramène à la
+/// destination « Plus » qui l'a ouverte.
 class BackupPage extends StatelessWidget {
-  const BackupPage({required this.today, super.key});
+  const BackupPage({required this.today, required this.onBack, super.key});
 
   final DateTime today;
+  final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +21,8 @@ class BackupPage extends StatelessWidget {
         '${today.day.toString().padLeft(2, '0')}';
     return ScrollPage(
       title: l10n.backupTitle,
+      onBack: onBack,
+      backLabel: l10n.backupBackToMore,
       children: [BackupView(fileName: l10n.backupFileName(date))],
     );
   }

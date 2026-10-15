@@ -305,12 +305,20 @@
   "alertAttention": "Attention",
   "alertPersistent": "À traiter",
   "plannerFormTitle": "Nouvelle séance",
-  "navHome": "Accueil",
+  "navHome": "Aujourd'hui",
   "navStudents": "Élèves",
   "navResults": "Résultats",
   "navSessions": "Séances",
-  "navBackup": "Sauvegarde",
+  "navMore": "Plus",
   "navigationLabel": "Navigation principale",
+  "sessionsTabsLabel": "Rubriques des séances",
+  "sessionsTabPlanned": "Planifiées",
+  "sessionsTabCatalogue": "Catalogue",
+  "sessionsTabSuggestion": "Suggestion",
+  "moreTitle": "Plus",
+  "moreBackup": "Sauvegarde",
+  "moreBackupHint": "Exporter ou importer les données du club",
+  "backupBackToMore": "Retour à Plus",
   "commonSave": "Enregistrer",
   "commonCancel": "Annuler",
   "commonConfirm": "Confirmer",
@@ -2411,5 +2419,23 @@
   "studentChipTodo": "à faire",
   "studentChipMissed": "manqué",
   "studentChipReached": "réussi",
-  "recordHistoryUnknownStudent": "Élève absent du groupe"
+  "recordHistoryUnknownStudent": "Élève absent du groupe",
+  "backupReminderNever": "Vos données n'ont jamais été sauvegardées. Exportez une sauvegarde pour mettre les résultats des élèves à l'abri.",
+  "backupReminderStale": "La dernière sauvegarde date d'il y a {days, plural, =1{1 jour} other{{days} jours}}. Exportez-en une nouvelle pour garder vos données en sécurité.",
+  "@backupReminderStale": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "backupReminderNewPasses": "{count, plural, =1{1 passage saisi} other{{count} passages saisis}} depuis la dernière sauvegarde.",
+  "@backupReminderNewPasses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupReminderAction": "Sauvegarder"
 }

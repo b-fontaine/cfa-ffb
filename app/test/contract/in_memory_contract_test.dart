@@ -6,10 +6,12 @@ import 'package:billard_cfa/entities/season/data/in_memory_season_repository.dar
 import 'package:billard_cfa/entities/session/data/in_memory_session_repository.dart';
 import 'package:billard_cfa/entities/session_record/data/in_memory_session_record_repository.dart';
 import 'package:billard_cfa/entities/student/data/in_memory_student_repository.dart';
+import 'package:billard_cfa/features/backup_data/data/in_memory_backup_marker_repository.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_unit_of_work.dart';
 
 import 'acquisition_contract.dart';
 import 'backup_contract.dart';
+import 'backup_marker_contract.dart';
 import 'repository_contract.dart';
 import 'repository_harness.dart';
 
@@ -33,5 +35,10 @@ void main() {
     'en mémoire',
     () async =>
         (repository: InMemoryAcquisitionRepository(), close: () async {}),
+  );
+  backupMarkerContract(
+    'en mémoire',
+    () async =>
+        (repository: InMemoryBackupMarkerRepository(), close: () async {}),
   );
 }

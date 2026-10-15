@@ -305,12 +305,20 @@
   "alertAttention": "Warning",
   "alertPersistent": "Action needed",
   "plannerFormTitle": "New session",
-  "navHome": "Home",
+  "navHome": "Today",
   "navStudents": "Students",
   "navResults": "Results",
   "navSessions": "Sessions",
-  "navBackup": "Backup",
+  "navMore": "More",
   "navigationLabel": "Main navigation",
+  "sessionsTabsLabel": "Sessions sections",
+  "sessionsTabPlanned": "Planned",
+  "sessionsTabCatalogue": "Catalogue",
+  "sessionsTabSuggestion": "Suggestion",
+  "moreTitle": "More",
+  "moreBackup": "Backup",
+  "moreBackupHint": "Export or import the club data",
+  "backupBackToMore": "Back to More",
   "commonSave": "Save",
   "commonCancel": "Cancel",
   "commonConfirm": "Confirm",
@@ -2411,5 +2419,23 @@
   "studentChipTodo": "to do",
   "studentChipMissed": "missed",
   "studentChipReached": "reached",
-  "recordHistoryUnknownStudent": "Student no longer in the group"
+  "recordHistoryUnknownStudent": "Student no longer in the group",
+  "backupReminderNever": "Your data has never been backed up. Export a backup to keep your students' results safe.",
+  "backupReminderStale": "The last backup was {days, plural, =1{1 day} other{{days} days}} ago. Export a new one to keep your data safe.",
+  "@backupReminderStale": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "backupReminderNewPasses": "{count, plural, =1{1 pass entered} other{{count} passes entered}} since the last backup.",
+  "@backupReminderNewPasses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupReminderAction": "Back up now"
 }

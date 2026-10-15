@@ -3,6 +3,7 @@ import 'package:billard_cfa/features/backup_data/domain/export_backup.dart';
 import 'package:billard_cfa/features/backup_data/domain/import_backup.dart';
 import 'package:billard_cfa/features/backup_data/domain/import_summary.dart';
 import 'package:billard_cfa/features/backup_data/domain/preview_backup.dart';
+import 'package:billard_cfa/features/backup_data/domain/record_backup_done.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_bloc.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/storage_status.dart';
@@ -12,12 +13,15 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockExport extends Mock implements ExportBackup;
 
+class _MockRecord extends Mock implements RecordBackupDone;
+
 class _MockPreview extends Mock implements PreviewBackup;
 
 class _MockImport extends Mock implements ImportBackup;
 
 void main() {
   late _MockExport export;
+  late _MockRecord record;
   late _MockPreview preview;
   late _MockImport import;
   late InMemoryBackupFiles files;
@@ -35,13 +39,16 @@ void main() {
 
   setUp(() {
     export = _MockExport();
+    record = _MockRecord();
+    when(() => record()).thenAnswer((_) async => const Ok(null));
     preview = _MockPreview();
     import = _MockImport();
     files = InMemoryBackupFiles();
     storage = InMemoryStorageStatus();
   });
 
-  BackupBloc build() => BackupBloc(export, preview, import, files, storage);
+  BackupBloc build() =>
+      BackupBloc(export, record, preview, import, files, storage);
 
   blocTest<BackupBloc, BackupState>(
     'knows a persistent storage',
@@ -85,7 +92,26 @@ void main() {
       ],
       verify: (_) {
         expect(files.lastSaved, (fileName: 'club.json', content: '{"a":1}'));
+        verify(() => record()).called(1);
       },
+    );
+
+    blocTest<BackupBloc, BackupState>(
+      'stays exported when the backup marker cannot be recorded',
+      build: () {
+        when(() => export()).thenAnswer((_) async => const Ok('{}'));
+        when(() => record()).thenAnswer(
+          (_) async =>
+              const Err(InvariantViolation(InvariantCode.invalidCatalogue)),
+        );
+        return build();
+      },
+      act: (bloc) =>
+          bloc.add(const BackupEvent.exportRequested(fileName: 'club.json')),
+      expect: () => [
+        const BackupState(status: BackupStatus.working),
+        const BackupState(status: BackupStatus.exported),
+      ],
     );
 
     blocTest<BackupBloc, BackupState>(
@@ -101,6 +127,7 @@ void main() {
         const BackupState(status: BackupStatus.working),
         const BackupState(status: BackupStatus.exportCancelled),
       ],
+      verify: (_) => verifyNever(() => record()),
     );
 
     blocTest<BackupBloc, BackupState>(

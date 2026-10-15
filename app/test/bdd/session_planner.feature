@@ -135,7 +135,7 @@ Feature: Session planner
     When I tap {'Open the session'} text
     Then I see {'Children group · Catalogue session: La puissance, session 1/2'} text
     And the opened session has the main block {'puissance'} and the recall block {'posture'}
-    When I tap {'Home'} text
+    When I tap {'Today'} text
     And I tap {'Plan a session'} text
     Then I see {'Results recorded'} text
     And I do not see {'Note the results'} text
