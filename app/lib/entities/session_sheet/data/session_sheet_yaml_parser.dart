@@ -571,6 +571,11 @@ Illustration _illustration(_Obj o) {
       cueHeight: o.optionalEnum(CueHeight.values, 'cue_height'),
     ),
     'ball_size' => Illustration.ballSize(id: id, caption: caption, alt: alt),
+    'contact_height' => Illustration.contactHeight(
+      id: id,
+      caption: caption,
+      alt: alt,
+    ),
     'player_figure' => _playerFigure(o, id, caption, alt),
     'power_ratio' => _powerRatio(o, id, caption, alt),
     'angle' => Illustration.angle(

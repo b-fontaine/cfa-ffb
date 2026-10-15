@@ -2,6 +2,7 @@ import 'package:billard_cfa/features/suggest_session/domain/exercise_sheet.dart'
 import 'package:billard_cfa/features/suggest_session/domain/session_plan.dart';
 import 'package:billard_cfa/features/suggest_session/domain/sheet_suggestion.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/session_shape.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
@@ -123,7 +124,17 @@ class SessionPlanView extends StatelessWidget {
         SectionCard(
           title: l10n.suggestRecall,
           child: recall == null
-              ? Text(l10n.suggestRecallNone)
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.suggestRecallNone),
+                    if (plan.audience == Audience.children)
+                      Text(
+                        l10n.suggestRecallNoneChildren,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                  ],
+                )
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

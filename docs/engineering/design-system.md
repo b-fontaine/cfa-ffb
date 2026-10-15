@@ -92,7 +92,8 @@ app/lib/shared/ui/
 ├── contact_strip.dart           # bande des cinq quantités de bille (une en évidence)
 ├── ghost_aim_diagram.dart       # visée à la bille fantôme (table, ligne de visée, fantôme calculé)
 ├── cue_ball_target.dart         # la blanche de face avec une cible et le point d'impact du procédé (à l'échelle), profil de la queue
-├── cue_side_view.dart           # queue et blanche vues de côté (hauteur, chevalet) ; contact au-dessus de l'équateur (écart ×10)
+├── cue_side_view.dart           # queue et blanche vues de côté (hauteur, chevalet)
+├── contact_height_view.dart     # deux billes inégales au contact, vue de côté, inclinaison exagérée ×10 et signalée
 ├── player_figure.dart           # joueur schématique de profil / de dessus, six repères numérotés et légendés
 ├── ball_size_comparison.dart    # la blanche (48,0 mm) et une bille de but (50,8 mm) côte à côte, à l'échelle, diamètres écrits
 ├── power_ratio.dart             # plan amplitude × vitesse : trois zones (doux, moyen, puissant), exemples placés
@@ -455,6 +456,7 @@ alternatif (`alt`) de la séance remplace la description générée du composant
 | `cue_ball_target` | `CueBallTarget` | `tipPoint`, `compare`, `cueHeight?` | `tipHeightFactor`, `cueElevation`, `tipOffsetShare` (`cue_side_geometry.dart`) ; `CueBallTargetGeometry` (rayon du procédé 0,177 R) |
 | `player_figure` | `PlayerFigure` | `view`, `focus`, `leadEye?`, `headCase?`, `bridge` | `SidePose`, `TopPose`, `PlayerMark`, `HeadCase` (`player_figure_layout.dart`) |
 | `ball_size` | `BallSizeComparison` | aucun | `BallSizes` (`blackball_dimensions.dart`) : rapport 48,0 / 50,8 = 0,945 |
+| `contact_height` | `ContactHeightView` | aucun | `contactHeight`, `exaggeratedObjectRadius` (`cue_side_geometry.dart`) ; `BlackballDimensions.contactHeightAboveCueEquatorMm` |
 | `power_ratio` | `PowerRatio` | `points` (≤ 2 : `amplitude`, `speed`, `label?`), `highlight?`, `distanceLabel?` | `powerZone`, `AmplitudeLevel`, `SpeedLevel` (`power_ratio.dart`) ; `PowerPlaneGeometry` |
 | `angle` | `AngleMark` | `kind`, `vertex`, `rays` | `angleBetween`, `angleDegrees` (`angle_geometry.dart`) |
 | `pdf_ref` | `PdfPageChip` | `file`, `page` | : |
@@ -467,8 +469,9 @@ couleur) et `FrenchContentNotice` (bandeau « contenu en français » sous une
 interface qui n'est pas en français, ADR 0004 décision 12). `CueBallTarget`,
 `PlayerFigure` et `PowerRatio` réservent la largeur de leurs légendes selon la
 taille du texte système : aucun débordement à 200 %. `CueSideView` n'est plus
-rendu par une séance (le type `cue_side` est retiré) : il reste le composant de
-la vue de côté avec contact (`showContact`), décision D5 ouverte.
+rendu par une séance (le type `cue_side` est retiré) ; le contact des deux
+billes de côté est porté par `ContactHeightView` (type `contact_height`, D5
+réalisé : `CueSideView.showContact` est supprimé).
 `MissingPageView` est l'écran « page introuvable » (message localisé et retour à
 l'accueil) partagé par `NotFoundPage` et par les pages de séance dont
 l'identifiant est bien formé mais inconnu.
@@ -503,10 +506,15 @@ l'identifiant est bien formé mais inconnu.
   annoncée (`fraction`) nomme l'illustration, sa cohérence avec la géométrie
   (`|d - d_nominal| ≤ 0,07 s`) est contrôlée par la règle V17 (outil et test de
   contrat), pas par le composant.
-- **Vue de côté avec contact** (`CueSideView.showContact`) : une bille de but
-  touche la blanche, toutes deux posées sur le tapis ; le contact est au-dessus
-  de l'équateur de la blanche (0,68 mm en réalité). L'écart de rayon est
-  **exagéré ×10** pour être visible, et la légende le dit.
+- **Contact vu de côté** (`ContactHeightView`, type `contact_height`, D5) :
+  une bille de but touche la blanche, toutes deux posées sur le tapis ; le
+  contact est au-dessus de l'équateur de la blanche (fiche n° 4 `[S]` ; 0,68 mm
+  et 1,62° en réalité, dérivés des diamètres). L'**inclinaison** de la ligne des
+  centres est **exagérée ×10** (16,24°, `exaggeratedObjectRadius`) pour être
+  visible : la légende (« Inclinaison exagérée ×10 … Ce dessin n'est pas une mesure »)
+  et la description parlée le disent, jamais présenté comme une mesure ; point
+  de contact plein et équateur en pointillé, nommés dans une légende (texte
+  16 px, traits 3 px).
 - **Hauteur de la queue** (`CueHeight`, schématique) : `low` talon presque à
   plat (0°), `level` inclinaison moyenne (10°), `high` talon relevé (25°).
   De côté, un impact à gauche ou à droite ne se voit pas : il est dessiné à
@@ -541,10 +549,11 @@ l'identifiant est bien formé mais inconnu.
 ### Galerie Widgetbook
 
 Use case **« Galerie des illustrations »** (`[Design system]/Illustrations`) :
-les 11 types côte à côte, chacun avec sa légende. Les illustrations du pilote
+les 12 types côte à côte, chacun avec sa légende. Les illustrations du pilote
 `09-demi-bille-1.yaml` sont lues par le vrai parseur (`parseSessionSheet`) et
 résolues dans la vraie bibliothèque de schémas ; les types que le pilote
-n'utilise pas (`table`, `cue_ball_target`, `player_figure`, `power_ratio`,
+n'utilise pas (`table`, `cue_ball_target`, `player_figure`, `contact_height`,
+`power_ratio`,
 `angle`, `pdf_ref`) sont des exemples, signalés « exemple hors pilote ». Le
 commutateur « affichage élèves » montre chaque illustration dans un
 `PresentationScope`.

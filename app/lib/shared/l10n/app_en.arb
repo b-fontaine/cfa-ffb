@@ -803,6 +803,7 @@
   "suggestMainNotion": "Main notion",
   "suggestRecall": "Recall",
   "suggestRecallNone": "No recall for this group.",
+  "suggestRecallNoneChildren": "Children sessions cover a single notion: no recall is intended.",
   "suggestExercises": "Exercises",
   "suggestPhases": "Timeline",
   "suggestPhaseWelcome": "Welcome",
@@ -1288,13 +1289,23 @@
   "@cueNotToScale": {
     "description": "Mention sous les schémas où la queue est dessinée plus mince que nature."
   },
-  "cueSideContactNote": "Size gap and contact height exaggerated ×10: in reality the cue ball ({cue} mm) is only slightly smaller than the object ball ({object} mm) and the contact is slightly above its equator.",
-  "@cueSideContactNote": {
+  "contactHeightLabel": "Contact height, side view: the object ball touches the cue ball slightly above the cue ball's equator.",
+  "@contactHeightLabel": {
+    "description": "Description parlée de la vue de côté du contact des deux billes (début)."
+  },
+  "contactHeightEquatorLegend": "Cue ball equator",
+  "contactHeightContactLegend": "Contact point",
+  "contactHeightNote": "Tilt exaggerated ×10: the object ball is drawn much bigger than in reality (cue ball {cue} mm, object ball {object} mm) and the contact is only {height} mm above the cue ball's equator. This drawing is not a measure.",
+  "@contactHeightNote": {
+    "description": "Mention d'exagération de l'inclinaison sous la vue de côté du contact et dans sa description parlée.",
     "placeholders": {
       "cue": {
         "type": "String"
       },
       "object": {
+        "type": "String"
+      },
+      "height": {
         "type": "String"
       }
     }

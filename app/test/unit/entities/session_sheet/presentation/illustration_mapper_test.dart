@@ -8,6 +8,7 @@ import 'package:billard_cfa/shared/lib/table_pocket.dart';
 import 'package:billard_cfa/shared/ui/angle_mark.dart';
 import 'package:billard_cfa/shared/ui/ball_contact_diagram.dart';
 import 'package:billard_cfa/shared/ui/ball_size_comparison.dart';
+import 'package:billard_cfa/shared/ui/contact_height_view.dart';
 import 'package:billard_cfa/shared/ui/contact_strip.dart';
 import 'package:billard_cfa/shared/ui/cue_ball_target.dart';
 import 'package:billard_cfa/shared/ui/ghost_aim_diagram.dart';
@@ -146,6 +147,14 @@ final _all = <(Illustration, Type)>[
       alt: 'Alt size',
     ),
     BallSizeComparison,
+  ),
+  (
+    const Illustration.contactHeight(
+      id: 'height',
+      caption: 'Légende',
+      alt: 'Alt height',
+    ),
+    ContactHeightView,
   ),
   (
     const Illustration.powerRatio(

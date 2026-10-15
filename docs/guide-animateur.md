@@ -32,7 +32,8 @@ suivantes) ou demander à l'application une **séance suggérée** pour un group
 1. Ouvrez **Séances**, puis le bouton **Suggestion par groupe**, choisissez le groupe et cochez les élèves attendus.
 2. L'application propose une séance de **90 min** (enfants) ou **120 min**
    (adultes) : déroulé minuté, exercices à travailler, rappel d'une notion si
-   un élève en a besoin, jeu final.
+   un élève en a besoin, jeu final. Pour les enfants, la carte « Rappel » reste
+   vide : une séance enfants porte une seule notion, l'écran le précise.
 3. Chaque exercice renvoie vers sa **fiche source** (fiche fédérale) pour
    l'expliquer aux élèves.
 4. La carte **Séance du catalogue** propose la séance du catalogue à donner :

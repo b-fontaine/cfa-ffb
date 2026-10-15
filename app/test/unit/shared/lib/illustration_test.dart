@@ -17,6 +17,7 @@ String kindOf(Illustration illustration) => switch (illustration) {
   CueBallTargetIllustration() => 'cue_ball_target',
   PlayerFigureIllustration() => 'player_figure',
   BallSizeIllustration() => 'ball_size',
+  ContactHeightIllustration() => 'contact_height',
   PowerRatioIllustration() => 'power_ratio',
   AngleIllustration() => 'angle',
   PdfRefIllustration() => 'pdf_ref',
@@ -76,6 +77,11 @@ void main() {
       caption: 'Légende',
       alt: 'Texte alternatif',
     ),
+    const Illustration.contactHeight(
+      id: 'i',
+      caption: 'Légende',
+      alt: 'Texte alternatif',
+    ),
     const Illustration.powerRatio(
       id: 'i',
       caption: 'Légende',
@@ -98,7 +104,7 @@ void main() {
     ),
   ];
 
-  test('has the eleven closed types of the sheet format', () {
+  test('has the twelve closed types of the sheet format', () {
     expect(all.map(kindOf), [
       'diagram_ref',
       'table',
@@ -108,6 +114,7 @@ void main() {
       'cue_ball_target',
       'player_figure',
       'ball_size',
+      'contact_height',
       'power_ratio',
       'angle',
       'pdf_ref',
@@ -162,7 +169,7 @@ void main() {
   });
 
   test('a power ratio is an empty plane by default', () {
-    final ratio = all[8] as PowerRatioIllustration;
+    final ratio = all[9] as PowerRatioIllustration;
 
     expect(ratio.points, isEmpty);
     expect(ratio.highlight, isNull);

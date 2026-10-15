@@ -193,6 +193,15 @@ sealed class Illustration with _$Illustration {
     required String alt,
   }) = BallSizeIllustration;
 
+  /// Contact de deux billes inégales, vue de côté : le contact est
+  /// légèrement au-dessus de l'équateur de la blanche (fiche n° 4 `[S]`).
+  /// L'écart, 1,62° en réalité, est exagéré ×10 et signalé : aucun paramètre.
+  const factory Illustration.contactHeight({
+    required String id,
+    required String caption,
+    required String alt,
+  }) = ContactHeightIllustration;
+
   /// Plan amplitude × vitesse avec trois zones (doux, moyen, puissant) et des
   /// exemples placés.
   const factory Illustration.powerRatio({

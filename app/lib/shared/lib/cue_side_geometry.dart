@@ -49,11 +49,18 @@ const double tipOffsetShare = 0.5;
   return (tilt: math.asin(sin), height: cueRadius * sin);
 }
 
-/// Rayon d'une bille de but dont l'écart avec la blanche est multiplié par
-/// [factor] (exagération pour rendre le contact visible, à signaler dans la
-/// légende) : `r_c + factor · (r_o - r_c)`.
+/// Rayon d'une bille de but dont l'inclinaison de la ligne des centres est
+/// multipliée par [factor] (exagération pour rendre le contact visible, à
+/// signaler dans la légende). Avec `sin φ' = sin(factor · φ)`, les billes
+/// restant posées sur le même tapis : `r_o' = r_c · (1 + sin φ') / (1 - sin φ')`.
 double exaggeratedObjectRadius({
   required double cueRadius,
   required double objectRadius,
   required double factor,
-}) => cueRadius + factor * (objectRadius - cueRadius);
+}) {
+  final tilt =
+      factor *
+      contactHeight(cueRadius: cueRadius, objectRadius: objectRadius).tilt;
+  final sin = math.sin(tilt);
+  return cueRadius * (1 + sin) / (1 - sin);
+}
