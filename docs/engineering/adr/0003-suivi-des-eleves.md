@@ -9,6 +9,7 @@
 - **Tranché par l'animateur `[U]` (2026-10-11)** :
   - Un exercice est validé après **plusieurs passages réussis, 5 le plus souvent** (`passesRequired`, défaut 5, réglable) ; un seul passage ne suffit pas. Les scénarios BDD 3, 4 et 6 de `research/suivi-eleves-domaine.md` supposaient 1 passage : ils sont à réécrire avec 5.
   - Ordre d'enseignement : **rebond sur bande puis rejet naturel** (`teaching_order` du catalogue).
+- Mise à jour (2026-10-15, ADR 0012) : `passesRequired`, `alertThreshold`, `recallStaleSessions` et `groupFailureSharePercent` sont réglables depuis l'écran « Réglages » ; les valeurs par défaut de cet ADR restent celles de `RulesConfig`.
 - Reste à faire trancher : unité « séance » des nombres conseillés (une séance de groupe = 90 ou 120 min ?).
 
 ## Mise en œuvre (2026-10-12)

@@ -29,8 +29,9 @@ contenu de deux d'entre elles change.
 
 ## Reports (documentés, rien de stubbé)
 
-- **Réglages** : l'entrée vit avec le lot 9 (l'écran n'existe pas) ; aucune
-  entrée sans écran n'est créée sous « Plus ».
+- ~~**Réglages**~~ : **livré avec le lot 9** (2026-10-15, [plan](reglages-plan.md)) :
+  l'entrée « Réglages » de « Plus » mène à `/settings` (retour « Retour à
+  Plus ») ; « Plus » contient Sauvegarde et Réglages.
 - **À propos et sources** : aucun contenu à y mettre aujourd'hui ; reporté.
 - **Bouton « Suggestion par groupe »** du catalogue : conservé, redondant avec
   l'onglet ; son retrait relève de U8.
@@ -59,8 +60,8 @@ contenu de deux d'entre elles change.
   « Sauvegarder » vers `/backup`), posé sur l'accueil par le routeur via le
   paramètre `banner` de `HomePage` : l'accueil n'est pas refondu (U7). Évalué à
   chaque ouverture de « Aujourd'hui ».
-- **Reporté** : rappel natif (notification) en H4, désactivable (Q7) ; seuil
-  de 30 jours non réglable avant le lot 9.
+- **Reporté** : rappel natif (notification) en H4, désactivable (Q7). Le seuil
+  de 30 jours est réglable depuis le lot 9 (« Réglages », 7 à 90 jours).
 
 ## Fichiers par couche
 

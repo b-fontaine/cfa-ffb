@@ -224,6 +224,16 @@ Pas de téléchargement à l'exécution (Linux, Windows, web hors ligne).
   tonale « Sauvegarder » de 48 dp qui ouvre `/backup` ; non bloquant, absent
   tant que la règle ne dit rien. Trois messages : jamais sauvegardé, sauvegarde
   ancienne (jours), passages saisis depuis.
+- **Réglages** (`SettingsForm`, `/settings` sous « Plus ») : une `SectionCard`
+  par thème (Validation des exercices ; Alertes et rappels ; Sauvegarde) et un
+  `CounterField` par réglage (boutons de 48 dp, info-bulles « moins / plus »,
+  `step` de 10 pour la part d'échec, de 5 pour le délai). Une phrase fixe sous
+  le titre dit que les passages saisis ne sont pas modifiés. États en
+  bleu-tapis (`secondary`) dans une région `liveRegion` (« Modifications non
+  enregistrées », « Réglages enregistrés », « Valeurs par défaut rétablies ») ;
+  refus des règles : `AppAlert` attention, jamais de rouge d'état (ADR 0010).
+  « Enregistrer » est un `FilledButton` actif seulement si le formulaire
+  diffère de l'enregistré ; « Rétablir » ouvre `showConfirmDialog`.
 - **Tentatives** : le changement est rare, relégué sous la ligne
   (« Tentatives : n (fiche) » + « Changer pour ce passage » qui déplie le
   `CounterField`).

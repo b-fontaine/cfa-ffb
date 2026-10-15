@@ -30,7 +30,7 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
 | F5 | ~~Onglet « Résultats » : aucun historique des séances saisies ; impossible de relire, corriger ou supprimer un passage~~ — corrigé (ADR 0006) | `pages/record_history` |
 | F6 | ~~Séance planifiée sans date ni groupe, non liée à la saisie (décision 10 de l'ADR 0004, assumée mais visible)~~ — corrigé (ADR 0007) | `pages/session_planner` |
 | F7 | ~~Séance suggérée : « Pas de rappel » pour les enfants (`recallCount = 0`, voulu) alors que la fiche élève affiche une notion à rappeler ; rien ne l'explique à l'écran~~ — corrigé (H0) : la carte « Rappel » explique, pour les enfants, qu'une séance porte une seule notion | `pages/suggested_session` |
-| F8 | Les seuils (`passesRequired`, alertes, `recallStaleSessions`) sont dans `RulesConfig.standard()` sans écran de réglages — livré sous la destination « Plus » du lot **U6** | `app/di` |
+| F8 | ~~Les seuils (`passesRequired`, alertes, `recallStaleSessions`) sont dans `RulesConfig.standard()` sans écran de réglages~~ — corrigé par le lot **9** (livré le 2026-10-15, [plan](reglages-plan.md), [ADR 0012](adr/0012-reglages-du-club.md)) : écran « Réglages » sous « Plus » | `app/di` |
 
 ## Lots UX / UI (audit du 2026-10-14)
 
@@ -145,8 +145,8 @@ Lots UX en H0 :
      [plan](navigation-plan.md) (cinq destinations, « Séances » à onglets,
      « Plus » → Sauvegarde, rappel de sauvegarde sur « Aujourd'hui » après 30
      jours ou des passages saisis ; schéma drift v6). L'entrée « Réglages »
-     arrive avec le lot 9 et « À propos et sources » faute de contenu
-     (reports, aucune entrée sans écran).
+     est livrée par le lot 9 ; « À propos et sources » reste reporté faute de
+     contenu (aucune entrée sans écran).
 7. ~~Positionnement initial / bloc acquis~~ : marquer un bloc comme acquis sans
    passage (élèves non débutants, rentrée) ; sinon la suggestion repart de
    « posture » et la fiche affiche « 0 / 70 » toute la saison. **Livré le
@@ -168,10 +168,13 @@ Lots UX en H0 :
    création directe d'une séance planifiée datée pour le groupe revient à U7,
    bilan de fin de séance).
    - ~~**U6** Navigation recentrée~~ : livré (voir plus haut) ; le lot 9
-     prend place sous « Plus».
-9. **Réglages** (F8) : écran persisté (drift + sauvegarde) pour
-   `passesRequired`, seuil d'alerte, `recallStaleSessions`, part d'échec du
-   groupe ; sous la destination « Plus » (U6), pas de sixième onglet.
+     a pris place sous « Plus ».
+9. ~~**Réglages** (F8)~~ : **livré le 2026-10-15** — [ADR 0012](adr/0012-reglages-du-club.md),
+   [plan](reglages-plan.md). Écran persisté (drift v7 + sauvegarde JSON v2)
+   pour `passesRequired`, seuil d'alerte, `recallStaleSessions`, part d'échec
+   du groupe et délai du rappel de sauvegarde ; sous « Plus » (`/settings`),
+   pas de sixième onglet ; « Rétablir les valeurs par défaut » avec
+   confirmation ; les règles lisent la valeur courante (`RulesStore`).
    - **U7** Accueil « Aujourd'hui » et bilan de fin de séance, ensuite.
      Dépend de U6 ; les lots 6 et 8 dont il affiche les données sont livrés
      (séance datée, séance suivante proposée dans le bilan).

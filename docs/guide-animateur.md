@@ -8,7 +8,7 @@ ou adultes (120 min), passage d'un public à l'autre toujours manuel.
 L'application fonctionne sur smartphone, tablette et navigateur. La navigation
 est en bas de l'écran sur smartphone, à gauche sur grand écran : **Aujourd'hui**,
 **Élèves**, **Résultats**, **Séances** (onglets Planifiées, Catalogue,
-Suggestion) et **Plus** (qui mène à la sauvegarde).
+Suggestion) et **Plus** (qui mène à la sauvegarde et aux réglages).
 
 ## 1. Constituer le groupe
 
@@ -266,8 +266,9 @@ Ouvrez **Plus**, puis **Sauvegarde**.
 Sur **Aujourd'hui**, un bandeau vous rappelle de sauvegarder dès que des
 passages sont saisis et que vous n'avez jamais sauvegardé, qu'il y en a de
 nouveaux depuis la dernière sauvegarde, ou que celle-ci date de 30 jours ou
-plus. Il n'apparaît pas tant qu'aucun passage n'est saisi, ne bloque rien, et
-son bouton **Sauvegarder** ouvre directement l'écran de sauvegarde. Il
+plus (délai réglable dans **Plus**, **Réglages**). Il n'apparaît pas
+tant qu'aucun passage n'est saisi, ne bloque rien, et son bouton
+**Sauvegarder** ouvre directement l'écran de sauvegarde. Il
 disparaît dès qu'un export a été enregistré (un export annulé ne compte pas).
 
 - **Exporter** produit un fichier JSON (téléchargement dans le navigateur,
@@ -279,6 +280,29 @@ disparaît dès qu'un export a été enregistré (un export annulé ne compte pa
 - Si l'application vous avertit que les données ne sont conservées **qu'en
   mémoire** (navigateur sans stockage durable), exportez une sauvegarde avant
   de fermer l'onglet : sinon elles seraient perdues.
+
+## Régler l'application
+
+Ouvrez **Plus**, puis **Réglages**. Cinq réglages, chacun avec deux boutons
+« moins » et « plus » :
+
+| Réglage | Par défaut | Plage |
+|---------|-----------|-------|
+| Passages réussis pour valider un exercice | 5 | 1 à 10 |
+| Échecs consécutifs avant une alerte | 3 | 1 à 5 |
+| Séances sans pratique avant un rappel | 4 | 1 à 12 |
+| Part du groupe en échec (%) qui fait rappeler un exercice | 50 | 10 à 100 (par 10) |
+| Jours avant un rappel de sauvegarde | 30 | 7 à 90 (par 5) |
+
+- **Rien ne change avant « Enregistrer les réglages »** ; quitter l'écran
+  abandonne les modifications non enregistrées.
+- **Les passages déjà saisis ne sont jamais modifiés.** Un réglage change ce
+  qui est validé et les alertes : baisser le nombre de passages requis valide
+  d'un coup des exercices, le relever les remet « en cours ».
+- **Rétablir les valeurs par défaut** demande une confirmation et ne touche
+  pas aux passages.
+- Les réglages sont inclus dans le fichier de sauvegarde ; importer un fichier
+  qui n'en contient pas laisse vos réglages en place.
 
 ## Effacer un élève
 

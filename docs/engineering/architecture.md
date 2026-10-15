@@ -62,7 +62,8 @@ app/
 │   │   ├── record_setup/  record_session/   # (c) saisie des résultats d'une séance
 │   │   ├── suggested_session/  exercise_sheet/   # (d) séance suggérée, fiche source
 │   │   ├── assessment/                # (e) bilan de maturité, changement de public manuel
-│   │   └── backup/                    # (f) export / import JSON
+│   │   ├── backup/                    # (f) export / import JSON
+│   │   └── settings/                  # réglages du club (sous « Plus »)
 │   ├── widgets/session_list/  widgets/roster_picker/   # blocs réutilisables entre pages
 │   ├── features/plan_session/
 │   │   ├── domain/                    # PlanSession, ListSessions, InvalidSessionTitle
@@ -89,6 +90,9 @@ app/
 │   ├── entities/student/              # Student, AudienceChange (historique)
 │   ├── entities/season/  entities/group/  entities/session_record/
 │   ├── entities/maturity_assessment/  # chacun : domain/ (+ port) et data/ (en mémoire + drift)
+│   ├── entities/settings/             # ClubSettings, SettingsRepository (drift + en mémoire)
+│   ├── features/manage_settings/      # LoadSettings, SaveSettings, ResetSettings, SettingsField ;
+│   │                                  # SettingsBloc, SettingsForm
 │   ├── features/backup_data/          # ExportBackup, ImportBackup, BackupCodec, BackupMarkerRepository,
 │   │                                  # CheckBackupReminder, RecordBackupDone ; BackupBloc, BackupView,
 │   │                                  # BackupReminderCubit, BackupReminderBanner
@@ -180,11 +184,20 @@ widgetbook/                            # projet séparé : catalogue du design s
   `features/backup_data/domain`, implémentations drift et en mémoire) retient
   la date et le nombre de passages à chaque export enregistré (table
   `backup_exports`, schéma v6 ; donnée locale, absente du fichier de
-  sauvegarde). `BackupReminder.evaluate` (règle pure, seuil de 30 jours
-  révolus, horloge injectée via `CheckBackupReminder`) ; `RecordBackupDone`
+  sauvegarde). `BackupReminder.evaluate` (règle pure, seuil `staleAfterDays` issu de
+  `RulesConfig.backupReminderDays` (défaut 30 jours), horloge injectée via `CheckBackupReminder`) ; `RecordBackupDone`
   est appelé par `BackupBloc` quand le fichier est enregistré ;
   `BackupReminderCubit` + `BackupReminderBanner`, composés dans `HomePage`
   par le routeur.
+- **Réglages** (lot 9, ADR 0012) : `ClubSettings` (`entities/settings`, 5
+  entiers, aucune validation propre) ; `RulesConfig` n'est plus un singleton
+  mais une fabrique qui lit `RulesStore.current` (`shared/lib`, initialisé au
+  lancement par `app/di/rules_module.dart`) ; `SaveSettings` valide par
+  `RulesConfig`, écrit (table `app_settings`, schéma v7), puis remplace la
+  valeur courante. `SettingsField` (domaine de la feature) porte les bornes et
+  le pas d'écran, sous-ensemble des bornes de `RulesConfig`. Les réglages
+  voyagent dans la sauvegarde JSON (format 2, clé `data.settings` facultative).
+  `BackupReminder.evaluate` reçoit `staleAfterDays` (`backupReminderDays`).
 
 ## Noyau partagé (`shared/lib`) et slices d'entités
 
