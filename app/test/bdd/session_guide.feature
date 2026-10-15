@@ -55,6 +55,20 @@ Feature: Guided session
     Then I see {'Step 6 of 9'} text
     And I see {'Adults · 120 min'} text
 
+  Scenario Outline: The presentation fits the figure, its controls and its caption on one screen
+    Given the screen is {<width>} by {<height>}
+    And the app is running
+    When I go to the address {'/catalogue/demi-bille-1/presentation?audience=children&step=<step>'}
+    Then the presentation is open
+    And the figure, its controls and its caption are above the navigation bar
+
+    Examples:
+      | width | height | step |
+      | 1280  | 800    | 5    |
+      | 1280  | 800    | 6    |
+      | 1280  | 800    | 7    |
+      | 1280  | 800    | 8    |
+
   Scenario: The presentation can be opened directly for an audience
     Given the app is running
     When I go to the address {'/catalogue/demi-bille-1/presentation?audience=children&step=1'}

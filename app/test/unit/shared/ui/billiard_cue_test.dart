@@ -144,7 +144,8 @@ void main() {
           children: [
             BilliardCue.positionedAgainst(
               geometry: geometry,
-              ball: const Offset(5, 2),
+              // Assez loin de la bande de gauche pour que le talon tienne.
+              ball: const Offset(7, 2),
             ),
           ],
         ),
@@ -320,6 +321,74 @@ void main() {
       final thickness = await thicknessFor(tester, 800);
 
       expect(thickness, lessThan(2 * 0.109838 * 100));
+    });
+  });
+
+  group('lengthWithin', () {
+    const bounds = Rect.fromLTWH(0, 0, 400, 200);
+
+    test('keeps the full length when the butt is inside', () {
+      final length = BilliardCue.lengthWithin(
+        bounds: bounds,
+        tip: const Offset(300, 100),
+        length: 200,
+        thickness: 10,
+        angle: 0,
+      );
+
+      expect(length, 200);
+    });
+
+    test('shortens a cue whose butt would leave the bounds', () {
+      // Pointe vers la gauche à x = 100 : le talon est à droite, à x = 100 + L.
+      final length = BilliardCue.lengthWithin(
+        bounds: bounds,
+        tip: const Offset(100, 100),
+        length: 500,
+        thickness: 10,
+        angle: math.pi,
+      );
+
+      expect(length, closeTo(300, 0.01));
+    });
+
+    test('accounts for the butt corners of a diagonal cue', () {
+      const tip = Offset(200, 100);
+      const angle = math.pi / 4;
+      final length = BilliardCue.lengthWithin(
+        bounds: bounds,
+        tip: tip,
+        length: 1000,
+        thickness: 10,
+        angle: angle,
+      );
+      final direction = Offset(math.cos(angle), math.sin(angle));
+      final side = Offset(-direction.dy, direction.dx) * 5;
+      final butt = tip - direction * length;
+
+      for (final corner in [butt + side, butt - side]) {
+        expect(bounds.inflate(0.01).contains(corner), isTrue);
+      }
+      // Un des deux coins touche le bord : la longueur est maximale.
+      expect(
+        [
+          butt + side,
+          butt - side,
+        ].any((c) => (c.dx - 0).abs() < 0.01 || (c.dy - 0).abs() < 0.01),
+        isTrue,
+      );
+    });
+
+    test('is never negative', () {
+      final length = BilliardCue.lengthWithin(
+        bounds: bounds,
+        tip: const Offset(401, 100),
+        length: 200,
+        thickness: 10,
+        angle: math.pi,
+      );
+
+      expect(length, 0);
     });
   });
 }

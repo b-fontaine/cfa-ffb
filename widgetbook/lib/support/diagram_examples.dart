@@ -346,10 +346,132 @@ const twoCushions = DiagramExample(
   ),
 );
 
+/// `entrainement/p05.yaml`, `entrainement-p05-e1` : six repères numérotés de
+/// la blanche, deux alignements ; sert à vérifier que les numéros se posent
+/// à côté des trajectoires et non dessus.
+const sixPositions = DiagramExample(
+  name: 'Six repères (demi-bille)',
+  source: 'entrainement/p05.yaml#entrainement-p05-e1',
+  description:
+      'Empocher six billes en quantité demi-bille selon des distances '
+      'différentes.',
+  spec: TableDiagramSpec(
+    id: 'entrainement-p05-e1',
+    balls: [
+      DiagramBall(id: 'r1', color: BallKind.red, at: DiagramPoint(4, 0.98)),
+      DiagramBall(
+        id: 'w',
+        color: BallKind.white,
+        at: DiagramPoint(3.51, 1.97),
+        role: DiagramBallRole.cue,
+        label: '1',
+      ),
+    ],
+    ghosts: [
+      DiagramGhost(
+        id: 'g2',
+        at: DiagramPoint(4.47, 1.97),
+        role: DiagramGhostRole.cueStart,
+        label: '2',
+        forBallId: 'w',
+      ),
+      DiagramGhost(
+        id: 'g3',
+        at: DiagramPoint(2.98, 2.79),
+        role: DiagramGhostRole.cueStart,
+        label: '3',
+        forBallId: 'w',
+      ),
+      DiagramGhost(
+        id: 'g4',
+        at: DiagramPoint(4.99, 2.79),
+        role: DiagramGhostRole.cueStart,
+        label: '4',
+        forBallId: 'w',
+      ),
+      DiagramGhost(
+        id: 'g5',
+        at: DiagramPoint(2.43, 3.64),
+        role: DiagramGhostRole.cueStart,
+        label: '5',
+        forBallId: 'w',
+      ),
+      DiagramGhost(
+        id: 'g6',
+        at: DiagramPoint(5.57, 3.64),
+        role: DiagramGhostRole.cueStart,
+        label: '6',
+        forBallId: 'w',
+      ),
+      DiagramGhost(
+        id: 'gi',
+        at: DiagramPoint(4, 1.25),
+        role: DiagramGhostRole.impact,
+        forBallId: 'w',
+      ),
+    ],
+    arrows: [
+      DiagramArrow(
+        id: 'a1',
+        kind: DiagramArrowKind.object,
+        path: [DiagramPoint(4, 0.98), DiagramPoint(4, 0)],
+        ballId: 'r1',
+        pocket: DiagramPocket.tm,
+      ),
+      DiagramArrow(
+        id: 'a2',
+        kind: DiagramArrowKind.cue,
+        path: [DiagramPoint(2.43, 3.64), DiagramPoint(4, 1.25)],
+        ballId: 'w',
+      ),
+      DiagramArrow(
+        id: 'a3',
+        kind: DiagramArrowKind.cue,
+        path: [DiagramPoint(5.57, 3.64), DiagramPoint(4, 1.25)],
+        ballId: 'w',
+      ),
+    ],
+  ),
+);
+
+/// Les six repères avec le médaillon de la quantité de bille (`inset` de la
+/// transcription : demi-bille, point d'impact au centre).
+final sixPositionsInset = DiagramExample(
+  name: 'Six repères avec médaillon (demi-bille)',
+  source: 'entrainement/p05.yaml#entrainement-p05-e1',
+  description: sixPositions.description,
+  spec: sixPositions.spec.copyWith(
+    inset: const DiagramInset(contact: ContactFraction.half),
+  ),
+);
+
+/// Blanche à 0,4 case de la bande de droite, jouée vers la gauche : le talon
+/// de la queue serait coupé par le rail, il est raccourci pour y rester.
+const againstTheRail = DiagramExample(
+  name: 'Queue contre la bande',
+  source: 'illustratif (hors transcription)',
+  description: 'Blanche contre la bande : la queue reste dans la table.',
+  spec: TableDiagramSpec(
+    id: 'against-the-rail',
+    balls: [
+      DiagramBall(
+        id: 'w',
+        color: BallKind.white,
+        at: DiagramPoint(7.6, 2),
+        role: DiagramBallRole.cue,
+      ),
+      DiagramBall(id: 'y1', color: BallKind.yellow, at: DiagramPoint(4, 2)),
+    ],
+    steps: [DiagramStep(cueId: 'w', hitId: 'y1', pocket: DiagramPocket.tl)],
+  ),
+);
+
 /// Tous les exemples, pour les knobs.
 const List<DiagramExample> diagramExamples = [
   fullBall,
   halfBall,
+  sixPositions,
+  againstTheRail,
   powerGame,
   twoCushions,
 ];

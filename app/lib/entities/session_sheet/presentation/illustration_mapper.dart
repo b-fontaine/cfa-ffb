@@ -25,11 +25,13 @@ import 'package:flutter/material.dart';
 abstract final class IllustrationMapper {
   /// Widget de [illustration]. [diagrams] donne le schéma de chaque
   /// identifiant de diagramme résolu ; un identifiant absent est signalé en
-  /// clair (la séance reste lisible).
+  /// clair (la séance reste lisible). [diagramMaxHeight] borne la hauteur d'un
+  /// schéma de table et de ses commandes (mode présentation).
   static Widget build(
     BuildContext context,
     Illustration illustration, {
     required Map<String, ui.TableDiagramSpec> diagrams,
+    double? diagramMaxHeight,
   }) {
     final alt = illustration.alt;
     switch (illustration) {
@@ -38,11 +40,16 @@ abstract final class IllustrationMapper {
         if (spec == null) {
           return Text(AppLocalizations.of(context).sheetIllustrationMissing);
         }
-        return TableDiagramPlayer(spec: spec, semanticLabel: alt);
+        return TableDiagramPlayer(
+          spec: spec,
+          semanticLabel: alt,
+          maxHeight: diagramMaxHeight,
+        );
       case TableIllustration():
         return TableDiagramPlayer(
           spec: tableSpecOf(illustration),
           semanticLabel: alt,
+          maxHeight: diagramMaxHeight,
         );
       case ContactIllustration(:final fraction, :final tipPoint):
         return _described(

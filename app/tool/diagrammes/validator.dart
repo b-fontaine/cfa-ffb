@@ -251,6 +251,9 @@ class _Checker {
     if (inset.containsKey('contact')) {
       _enum('$path.inset.contact', inset['contact'], contacts);
     }
+    if (inset.containsKey('tip_point')) {
+      _enum('$path.inset.tip_point', inset['tip_point'], tipPoints);
+    }
   }
 
   /// Éléments objets d'une liste optionnelle, avec leur index.

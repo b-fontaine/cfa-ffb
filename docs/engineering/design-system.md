@@ -80,6 +80,7 @@ app/lib/shared/ui/
 ├── ball_contact_diagram.dart    # schéma de la quantité de bille (+ point du procédé)
 ├── table_diagram/
 │   ├── table_diagram_spec.dart  # modèle immuable d'un schéma d'exercice (Dart pur)
+│   ├── label_placement.dart     # placement des étiquettes et des médaillons hors trajectoire (Dart pur)
 │   ├── diagram_timeline.dart    # déroulé : position des billes à l'instant t (Dart pur)
 │   ├── table_diagram.dart       # rendu statique (table, billes, cercles, flèches, zones)
 │   └── table_diagram_player.dart # lecteur animé : lecture, pause, rejouer, ×0,5 / ×1 / ×2
@@ -265,6 +266,7 @@ table, en cases.
 | `DiagramArrow`, `DiagramArrowKind`, `DiagramBand` | flèche et rebonds | `arrows` (`kind` : `object`/`cue`/`indication`, `path`, `bounces`, `to`) ; `aim` (ligne de visée) n'existe que dans les illustrations de séance |
 | `DiagramAnnotation` | texte posé sur la table (« 90° », « Bille fantôme »), déjà localisé par l'appelant | : (illustrations de séance) |
 | `DiagramZone` | zone grisée (rectangle) | `zones` (`shape: rect`, `from`, `to`) |
+| `DiagramInset`, `ContactFraction`, `TipPoint` | médaillon de la quantité de bille ; absent quand la fiche ne la précise pas (`contact: none`) | `inset` (`contact`, `tip_point`) |
 | `DiagramStep`, `ContactFraction` | un tir | `sequence` (`cue`, `hit`, `contact`, `pocket`, `repeat`, `from`) |
 | `DiagramPocket` | poche (source unique des coordonnées ; `TablePocket` en dérive) | `tl`/`tm`/`tr`/`bl`/`bm`/`br` |
 | `DiagramLayout` | dimensions de la table (colonnes, rangées, ligne de départ ; les rayons de bille viennent de `BlackballDimensions`, blanche et bille de but distincts) ; `TableGeometry` en dérive | : |
@@ -300,6 +302,27 @@ le catalogue (rang 1) ; un test de contrat vérifie que les transcriptions n'y
 contredisent pas.
 Scénarios : `app/test/bdd/exercise_sheet_diagram.feature` ; use cases
 Widgetbook `ExerciseDiagramView` (un schéma, deux schémas, aucun, illisible).
+
+### Lisibilité des schémas (lot U2, R5, corrige F2)
+
+Règles de rendu de `TableDiagram`, vérifiées par des tests géométriques
+(`exercise_diagram.feature`, `ball_sizes.feature`, tests unitaires de
+`table_diagram`, `label_placement` et `billiard_cue`) :
+
+| Règle | Détail |
+|---|---|
+| Étiquettes hors trajectoire | `placeLabels` essaie seize positions autour du point (huit points cardinaux, puis huit intermédiaires), sur quatre anneaux de distance croissante, et retient la première qui ne croise ni flèche, ni queue, ni bille, ni cercle, ni autre étiquette, ni le bord de la table (une étiquette qui en sortirait glisse vers l'intérieur). Un texte plus large que 40 % de la table passe à la ligne ; sur une table chargée, des largeurs plus étroites (25 %, 15 %) sont essayées avant de s'entasser. Calculé sur l'**état initial affiché** (la blanche part de son point de départ, pas de `at`) : les étiquettes suivent leur bille sans bouger pendant l'animation. |
+| Halo | si aucune position n'est libre, l'étiquette est posée sur un halo de tapis (`BallColors.cloth` à 85 %). Le repli choisit le moins gênant : le bord (prohibitif), puis recouvrir une bille, un cercle ou une autre étiquette (50), puis croiser un trait (1 par segment, que le halo compense). |
+| Pointe de flèche | la pointe qui arrive sur un cercle creux s'arrête à son bord : le cercle reste visible. |
+| Queue | `BilliardCue.positionedAgainst` raccourcit la queue pour que les deux coins du talon restent dans la table, rails compris (jamais coupée). Longueur nominale 1450 mm quand elle tient. |
+| Repères numérotés | cercle creux du diamètre de la blanche (`TableGeometry.ghostRadiusPx`) ; le numéro est écrit **dans** le cercle quand ce diamètre mesure au moins 28 px (même seuil que les lettres de bille) et qu'aucune bille n'est posée en son centre, **à côté** (placé comme les autres étiquettes) sinon. |
+| Médaillon `inset` | `BallContactDiagram` (quantité + point du procédé) sur fond de surface, large de 20 % de la surface de jeu (au moins la largeur de son libellé, qui ne se coupe pas). `placeBlock` le pose en premier sur la table : coins (bas droite, bas gauche, haut droite, haut gauche), puis le long des bords, à pleine taille puis réduit à 75 %, sans jamais recouvrir une trajectoire, la queue, une bille, un cercle ou un point d'annotation ; les étiquettes l'évitent ensuite. S'il n'y a aucune place libre (ou si son libellé dépasse 25 % de la table, cas du téléphone), il est **écrit sous la table**, à droite, jamais sur un objet. Une seule quantité par schéma : celle de la fiche ; il reste affiché pendant toutes les étapes. |
+| Présentation | sous `PresentationScope`, étiquettes de **16 px au moins** (taille logique, agrandissement du texte compris, `TableDiagram.presentationMinLabel`) ; hors présentation la taille ne change pas. La page de présentation borne la hauteur de la figure (`RunPresentationView`, `SheetIllustrationView.presentationHeight`) : sous une hauteur bornée, `TableDiagramPlayer` laisse au schéma ce que les commandes ne prennent pas, pour que schéma, commandes et légende tiennent au-dessus de la barre précédent/suivant ; sous 320 px de figure, la page défile. |
+| Limites connues | mesuré sur les 111 schémas à billes du catalogue, avec la police de test (Ahem, environ deux fois plus large que la police réelle) : aucune étiquette ne recouvre une bille ou une autre étiquette à 390, 450 et 900 px à plat, ni à 900 px en présentation ; à 310 px à plat, un schéma (`initiation-p11-sb`, dont les « étiquettes » de billes sont des phrases) et trois croisements de flèche restent ; en présentation sous 900 px, le texte de 16 px ne tient pas sur les schémas de dix billes ou plus (39 recouvrements à 310 px). Le halo rend ces cas lisibles sans les supprimer. |
+
+Widgetbook : « Statique, six repères », « six repères sur grande table »,
+« médaillon de la quantité de bille », « médaillon sous la table (écran étroit) », « queue contre la bande », « En
+présentation », et la visée à la bille fantôme (`GhostAimDiagram`).
 
 ### Déroulé (`DiagramTimeline`, Dart pur)
 
@@ -398,8 +421,6 @@ jeu de la puissance (`jeux/p03.yaml`), deux bandes (`entrainement/p16.yaml`).
   pas dessinés.
 - `repeat` (« x 4 ») est conservé dans le modèle et le repère « x4 » est
   affiché, mais le tir n'est joué qu'une fois.
-- `inset` (quantité de bille, point du procédé) n'est pas rendu dans le
-  schéma ; utiliser `BallContactDiagram` à côté.
 - La ligne de départ est toujours à x = 1,6 `[FFB]` (écart de lecture consigné
   dans `uncertainties` de chaque transcription ; les mentions « et non 2,0 » ou « FORMAT : 2,0 [Prop] » y renvoient à l'ancienne convention 2,0 `[Prop]`, la lecture source ≈ 1,8 restant valable, comparée à 1,6) ; `via`, `order` et `bridge` du
   FORMAT ne sont pas portés par le modèle.

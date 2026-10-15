@@ -33,9 +33,48 @@ class BilliardCue extends StatelessWidget {
   /// Direction de la pointe, en radians (0 = vers la droite, π/2 = vers le bas).
   final double angle;
 
+  /// Longueur maximale (px) d'une queue de pointe [tip], d'épaisseur de talon
+  /// [thickness] et de direction [angle], pour que ses deux coins de talon
+  /// restent dans [bounds] : au-delà, le rail ou le bord du widget la
+  /// couperait. Vaut au plus [length] et au moins 0.
+  static double lengthWithin({
+    required Rect bounds,
+    required Offset tip,
+    required double length,
+    required double thickness,
+    required double angle,
+  }) {
+    final direction = Offset(math.cos(angle), math.sin(angle));
+    final side = Offset(-direction.dy, direction.dx);
+    var fit = length;
+    for (final sign in [1.0, -1.0]) {
+      // Coin du talon à la distance L : corner = from - direction * L.
+      final from = tip + side * (sign * thickness / 2);
+      fit = math.min(
+        fit,
+        math.min(
+          _reach(from.dx, direction.dx, bounds.left, bounds.right),
+          _reach(from.dy, direction.dy, bounds.top, bounds.bottom),
+        ),
+      );
+    }
+    return math.max(0, fit);
+  }
+
+  /// Distance max L telle que `from - step * L` reste dans [low, high].
+  static double _reach(double from, double step, double low, double high) {
+    if (step.abs() < 1e-9) return double.infinity;
+    final toLow = (from - low) / step;
+    final toHigh = (from - high) / step;
+    return math.max(toLow, toHigh);
+  }
+
   /// Queue posée dans la pile d'un `BilliardTable.overlay`, la pointe contre
   /// la bille en [ball] (repère de la table, de couleur [touching] : la blanche
   /// est plus petite qu'une bille de but), visant dans la direction [angle].
+  ///
+  /// Le talon ne sort jamais de la table (rails compris) : la queue est
+  /// raccourcie de ce qu'il faut quand la blanche est près d'une bande.
   static Positioned positionedAgainst({
     required TableGeometry geometry,
     required Offset ball,
@@ -44,7 +83,37 @@ class BilliardCue extends StatelessWidget {
     BallKind touching = BallKind.white,
     Key? key,
   }) {
-    final length = lengthCells * geometry.unit;
+    final layout = layoutAgainst(
+      geometry: geometry,
+      ball: ball,
+      angle: angle,
+      lengthCells: lengthCells,
+      touching: touching,
+    );
+    return Positioned(
+      key: key,
+      left: layout.tip.dx - layout.length,
+      top: layout.tip.dy - layout.thickness / 2,
+      width: layout.length,
+      height: layout.thickness,
+      child: BilliardCue(
+        length: layout.length,
+        thickness: layout.thickness,
+        angle: angle,
+      ),
+    );
+  }
+
+  /// Pointe (px), longueur et épaisseur retenues pour une queue posée contre la
+  /// bille en [ball] : ce que [positionedAgainst] dessine, pour que d'autres
+  /// calculs (placement des étiquettes) voient la même queue.
+  static ({Offset tip, double length, double thickness}) layoutAgainst({
+    required TableGeometry geometry,
+    required Offset ball,
+    double angle = 0,
+    double lengthCells = BlackballDimensions.cueLength,
+    BallKind touching = BallKind.white,
+  }) {
     final thickness = math.max<double>(
       7,
       geometry.unit * BlackballDimensions.cueButtThickness,
@@ -52,14 +121,14 @@ class BilliardCue extends StatelessWidget {
     final direction = Offset(math.cos(angle), math.sin(angle));
     final tip =
         geometry.toPixel(ball) - direction * geometry.radiusPxOf(touching);
-    return Positioned(
-      key: key,
-      left: tip.dx - length,
-      top: tip.dy - thickness / 2,
-      width: length,
-      height: thickness,
-      child: BilliardCue(length: length, thickness: thickness, angle: angle),
+    final length = lengthWithin(
+      bounds: geometry.tableRect,
+      tip: tip,
+      length: lengthCells * geometry.unit,
+      thickness: thickness,
+      angle: angle,
     );
+    return (tip: tip, length: length, thickness: thickness);
   }
 
   @override

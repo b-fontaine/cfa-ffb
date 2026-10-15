@@ -2,6 +2,7 @@ import 'dart:math' show Point;
 
 import 'package:billard_cfa/shared/lib/blackball_dimensions.dart';
 import 'package:billard_cfa/shared/lib/contact_fraction.dart';
+import 'package:billard_cfa/shared/lib/tip_point.dart';
 import 'package:billard_cfa/shared/ui/ball_kind.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -198,6 +199,16 @@ abstract class DiagramStep with _$DiagramStep {
   }) = _DiagramStep;
 }
 
+/// Médaillon « quantité de bille » du schéma (FORMAT : `inset`) : la quantité
+/// de bille de la fiche et le point d'impact du procédé sur la blanche.
+@freezed
+abstract class DiagramInset with _$DiagramInset {
+  const factory DiagramInset({
+    required ContactFraction contact,
+    @Default(TipPoint.center) TipPoint tipPoint,
+  }) = _DiagramInset;
+}
+
 /// Schéma complet d'un exercice.
 @freezed
 abstract class TableDiagramSpec with _$TableDiagramSpec {
@@ -211,5 +222,9 @@ abstract class TableDiagramSpec with _$TableDiagramSpec {
 
     /// Textes posés sur la table.
     @Default(<DiagramAnnotation>[]) List<DiagramAnnotation> annotations,
+
+    /// Médaillon de la quantité de bille ; `null` quand la fiche n'en précise
+    /// pas (FORMAT : `inset.contact: none`).
+    DiagramInset? inset,
   }) = _TableDiagramSpec;
 }

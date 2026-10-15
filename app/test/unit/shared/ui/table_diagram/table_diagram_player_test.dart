@@ -1,3 +1,4 @@
+import 'package:billard_cfa/shared/ui/billiard_table.dart';
 import 'package:billard_cfa/shared/ui/error_view.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_player.dart';
@@ -554,5 +555,60 @@ void main() {
 
     expect(after, before);
     expect(after.y, lessThan(3.2));
+  });
+
+  group('maxHeight', () {
+    Widget bounded(TableDiagramSpec spec, double maxHeight) => Align(
+      alignment: Alignment.topCenter,
+      child: SizedBox(
+        width: 700,
+        child: TableDiagramPlayer(
+          spec: spec,
+          semanticLabel: 'Full ball',
+          maxHeight: maxHeight,
+        ),
+      ),
+    );
+
+    testWidgets('fits the diagram and its controls under the bound', (
+      tester,
+    ) async {
+      await pumpUi(tester, bounded(_spec, 400));
+
+      final table = tester.getRect(find.byType(BilliardTable));
+      final controls = tester.getRect(find.byType(SegmentedButton<double>));
+      expect(controls.bottom - table.top, lessThanOrEqualTo(400.01));
+      // Le schéma a rétréci : à 700 px de large il ferait 389 px de haut,
+      // sans compter les commandes.
+      expect(table.width, lessThan(700));
+      expect(table.height, greaterThan(120));
+    });
+
+    testWidgets('keeps the natural height when the bound leaves too little', (
+      tester,
+    ) async {
+      await pumpUi(tester, bounded(_spec, 150));
+
+      expect(tester.getSize(find.byType(BilliardTable)).width, 700);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('bounds a diagram without a shot, without controls', (
+      tester,
+    ) async {
+      await pumpUi(tester, bounded(_static, 300));
+
+      final table = tester.getRect(find.byType(BilliardTable));
+      expect(table.height, lessThanOrEqualTo(300.01));
+      expect(find.byType(SegmentedButton<double>), findsNothing);
+    });
+
+    testWidgets('lets the controls act inside the bound', (tester) async {
+      await pumpUi(tester, bounded(_spec, 400));
+      await tester.tap(find.text('Play'));
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('Pause'), findsOneWidget);
+    });
   });
 }

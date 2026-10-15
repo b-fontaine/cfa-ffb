@@ -1,6 +1,7 @@
 import 'package:billard_cfa/entities/exercise_diagram/data/diagram_yaml_parser.dart';
 import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_table.dart';
 import 'package:billard_cfa/entities/exercise_diagram/domain/exercise_diagram.dart';
+import 'package:billard_cfa/shared/lib/tip_point.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _page = '''
@@ -400,5 +401,52 @@ diagrams: []
       const InvalidDiagramPage('p03 : bronze').toString(),
       'InvalidDiagramPage(p03 : bronze)',
     );
+  });
+
+  group('inset', () {
+    test('reads the ball quantity and the tip point', () {
+      expect(
+        parsed.single.table.inset,
+        const TableInset(contact: TableContact.full),
+      );
+    });
+
+    test('maps the transcribed tip point to the nearest of the nine', () {
+      final page = parseDiagramPage(
+        _page1('''
+    balls:
+      - {id: w, color: white, at: [1, 1], role: cue}
+    inset: {contact: half, tip_point: lower_center, bridge_height: surface}
+'''),
+      );
+
+      expect(
+        page.single.table.inset,
+        const TableInset(contact: TableContact.half, tipPoint: TipPoint.bottom),
+      );
+    });
+
+    test('is absent when the sheet draws no ball quantity', () {
+      final page = parseDiagramPage(
+        _page1('''
+    balls:
+      - {id: w, color: white, at: [1, 1], role: cue}
+    inset: {contact: none, tip_point: center}
+'''),
+      );
+
+      expect(page.single.table.inset, isNull);
+    });
+
+    test('refuses a tip point it does not know', () {
+      expectInvalid(
+        _page1('''
+    balls:
+      - {id: w, color: white, at: [1, 1], role: cue}
+    inset: {contact: half, tip_point: sideways}
+'''),
+        ['inset.tip_point', 'sideways'],
+      );
+    });
   });
 }

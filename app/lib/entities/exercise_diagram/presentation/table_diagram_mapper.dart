@@ -59,6 +59,12 @@ ui.TableDiagramSpec tableDiagramSpecOf(ExerciseDiagram diagram) {
       for (final z in table.zones)
         ui.DiagramZone(id: z.id, from: z.from, to: z.to, label: z.label),
     ],
+    inset: table.inset == null
+        ? null
+        : ui.DiagramInset(
+            contact: contactFractionOf(table.inset!.contact),
+            tipPoint: table.inset!.tipPoint,
+          ),
     steps: [
       for (final s in table.steps)
         ui.DiagramStep(

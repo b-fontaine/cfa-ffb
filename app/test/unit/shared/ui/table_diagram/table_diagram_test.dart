@@ -3,11 +3,14 @@ import 'package:billard_cfa/shared/ui/billiard_ball.dart';
 import 'package:billard_cfa/shared/ui/billiard_cue.dart';
 import 'package:billard_cfa/shared/ui/billiard_table.dart';
 import 'package:billard_cfa/shared/ui/error_view.dart';
+import 'package:billard_cfa/shared/ui/presentation_scope.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/diagram_timeline.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_spec.dart';
 import 'package:billard_cfa/shared/ui/table_geometry.dart';
+import 'package:billard_cfa/shared/ui/theme/ball_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../pump_ui.dart';
@@ -98,14 +101,69 @@ Future<void> _pump(
   Widget child, {
   Locale locale = const Locale('en'),
   ThemeData? theme,
+  double width = 450,
 }) => pumpUi(
   tester,
-  Center(child: SizedBox(width: 450, child: child)),
+  Center(
+    child: SizedBox(width: width, child: child),
+  ),
   locale: locale,
   theme: theme,
 );
 
 void main() {
+  testWidgets('puts the text on a cloth halo when no position is free', (
+    tester,
+  ) async {
+    // Un texte plus large que la table ne tient dans aucune des positions.
+    final text = List.filled(60, 'XXXX').join(' ');
+    await _pump(
+      tester,
+      TableDiagram(
+        spec: TableDiagramSpec(
+          id: 'crowded',
+          balls: const [
+            DiagramBall(id: 'w', color: BallKind.white, at: DiagramPoint(4, 2)),
+          ],
+          annotations: [
+            DiagramAnnotation(
+              id: 'n',
+              at: const DiagramPoint(4, 2),
+              text: text,
+            ),
+          ],
+        ),
+        semanticLabel: 'Crowded',
+      ),
+    );
+
+    final box = tester.widget<DecoratedBox>(
+      find.descendant(
+        of: find.byKey(const ValueKey('annotation-n')),
+        matching: find.byType(DecoratedBox),
+      ),
+    );
+    final cloth = BallColors.light.cloth.withValues(alpha: 0.85);
+    expect((box.decoration as BoxDecoration).color, cloth);
+  });
+
+  testWidgets('leaves the halo off when the label has a free position', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const TableDiagram(spec: _spec, semanticLabel: 'Full ball, 4 times'),
+    );
+
+    final box = tester.widget<DecoratedBox>(
+      find.descendant(
+        of: find.byKey(const ValueKey('ball-label-y1')),
+        matching: find.byType(DecoratedBox),
+      ),
+    );
+    expect((box.decoration as BoxDecoration).color, isNull);
+  });
+
   testWidgets('draws every ball of the spec on a table', (tester) async {
     await _pump(
       tester,
@@ -375,5 +433,233 @@ void main() {
       ),
       findsOneWidget,
     );
+  });
+
+  group('numbered marks', () {
+    // Largeur de table pour laquelle la blanche mesure `diameter` px.
+    double widthFor(double diameter) =>
+        (diameter / (2 * TableGeometry.cueBallRadius)) *
+        (TableGeometry.columns + 2 * TableGeometry.railWidth);
+
+    const spec = TableDiagramSpec(
+      id: 'marks',
+      balls: [
+        DiagramBall(id: 'r1', color: BallKind.red, at: DiagramPoint(6, 2)),
+      ],
+      ghosts: [
+        DiagramGhost(
+          id: 'g1',
+          at: DiagramPoint(2, 2),
+          role: DiagramGhostRole.cueStart,
+          label: '3',
+        ),
+      ],
+    );
+
+    Future<void> pumpAt(WidgetTester tester, double diameter) async {
+      tester.view.physicalSize = const Size(1600, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await pumpUi(
+        tester,
+        Center(
+          child: SizedBox(
+            width: widthFor(diameter),
+            child: const TableDiagram(spec: spec, semanticLabel: 'Marks'),
+          ),
+        ),
+      );
+    }
+
+    testWidgets('writes the number inside the circle from 28 px', (
+      tester,
+    ) async {
+      await pumpAt(tester, 28.5);
+
+      expect(find.byKey(const ValueKey('ghost-mark-g1')), findsOneWidget);
+      expect(find.byKey(const ValueKey('ghost-label-g1')), findsNothing);
+    });
+
+    testWidgets('sizes the mark circle like the white ball', (tester) async {
+      await pumpAt(tester, 28.5);
+
+      final geometry = TableGeometry.fitting(
+        tester.getSize(find.byType(BilliardTable)),
+      );
+      final size = tester.getSize(find.byKey(const ValueKey('ghost-mark-g1')));
+      expect(size.width, closeTo(geometry.ghostRadiusPx * 2, 0.01));
+      expect(
+        size.width,
+        closeTo(geometry.radiusPxOf(BallKind.white) * 2, 0.01),
+      );
+    });
+
+    testWidgets('writes the number beside the circle under 28 px', (
+      tester,
+    ) async {
+      await pumpAt(tester, 27.5);
+
+      expect(find.byKey(const ValueKey('ghost-mark-g1')), findsNothing);
+      expect(find.byKey(const ValueKey('ghost-label-g1')), findsOneWidget);
+    });
+  });
+
+  group('inset', () {
+    const spec = TableDiagramSpec(
+      id: 'inset',
+      balls: [
+        DiagramBall(id: 'w', color: BallKind.white, at: DiagramPoint(2, 3)),
+        DiagramBall(id: 'r1', color: BallKind.red, at: DiagramPoint(4, 2)),
+      ],
+      inset: DiagramInset(contact: ContactFraction.half),
+    );
+
+    testWidgets('shows the ball quantity label in a corner', (tester) async {
+      await _pump(
+        tester,
+        const TableDiagram(spec: spec, semanticLabel: 'Inset'),
+      );
+
+      expect(find.byKey(const ValueKey('contact-inset')), findsOneWidget);
+      expect(find.text('Half ball'), findsOneWidget);
+    });
+
+    testWidgets('moves to a free corner when a ball sits in the first', (
+      tester,
+    ) async {
+      const crowded = TableDiagramSpec(
+        id: 'inset-crowded',
+        balls: [
+          DiagramBall(id: 'r1', color: BallKind.red, at: DiagramPoint(7, 3.4)),
+        ],
+        inset: DiagramInset(contact: ContactFraction.half),
+      );
+      await _pump(
+        tester,
+        const TableDiagram(spec: crowded, semanticLabel: 'Inset'),
+        width: 900,
+      );
+
+      final table = tester.getRect(find.byType(BilliardTable));
+      final inset = tester.getRect(find.byKey(const ValueKey('contact-inset')));
+      expect(inset.center.dx, lessThan(table.center.dx));
+      expect(table.contains(inset.center), isTrue);
+    });
+
+    testWidgets('goes under the table when no place on it is free', (
+      tester,
+    ) async {
+      // Quatre traits sur toute la largeur, espacés d'une case : un médaillon
+      // posé sur la table en croise forcément un.
+      final walls = TableDiagramSpec(
+        id: 'inset-walls',
+        balls: const [
+          DiagramBall(id: 'w', color: BallKind.white, at: DiagramPoint(4, 2)),
+        ],
+        arrows: [
+          for (final y in [0.5, 1.5, 2.5, 3.5])
+            DiagramArrow(
+              id: 'a$y',
+              kind: DiagramArrowKind.indication,
+              path: [DiagramPoint(0, y), DiagramPoint(8, y)],
+            ),
+        ],
+        inset: const DiagramInset(contact: ContactFraction.half),
+      );
+      await _pump(
+        tester,
+        TableDiagram(spec: walls, semanticLabel: 'Inset'),
+        width: 900,
+      );
+
+      final table = tester.getRect(find.byType(BilliardTable));
+      final inset = tester.getRect(find.byKey(const ValueKey('contact-inset')));
+      expect(inset.top, greaterThanOrEqualTo(table.bottom));
+      expect(find.text('Half ball'), findsOneWidget);
+    });
+
+    testWidgets('goes under a table too small for its caption', (tester) async {
+      await _pump(
+        tester,
+        const TableDiagram(
+          spec: TableDiagramSpec(
+            id: 'inset-small',
+            balls: [
+              DiagramBall(
+                id: 'w',
+                color: BallKind.white,
+                at: DiagramPoint(1, 1),
+              ),
+            ],
+            inset: DiagramInset(contact: ContactFraction.threeQuarter),
+          ),
+          semanticLabel: 'Inset',
+        ),
+        width: 300,
+      );
+
+      final table = tester.getRect(find.byType(BilliardTable));
+      final inset = tester.getRect(find.byKey(const ValueKey('contact-inset')));
+      expect(inset.top, greaterThanOrEqualTo(table.bottom));
+      expect(inset.right, lessThanOrEqualTo(table.right));
+      // La description du schéma reste exactement celle de l'appelant.
+      expect(find.bySemanticsLabel('Inset'), findsOneWidget);
+    });
+
+    testWidgets('keeps the caption on one line', (tester) async {
+      await _pump(
+        tester,
+        const TableDiagram(spec: spec, semanticLabel: 'Inset'),
+        width: 900,
+      );
+
+      // Une seule ligne de bodyMedium (14 px, interligne 1,43 ≈ 20 px).
+      expect(tester.getSize(find.text('Half ball')).height, lessThan(24));
+    });
+  });
+
+  group('presentation label size', () {
+    const spec = TableDiagramSpec(
+      id: 'size',
+      balls: [
+        DiagramBall(
+          id: 'r1',
+          color: BallKind.red,
+          at: DiagramPoint(4, 2),
+          label: 'x4',
+        ),
+      ],
+    );
+
+    double labelSize(WidgetTester tester) {
+      final paragraph = tester.renderObject<RenderParagraph>(
+        find.descendant(
+          of: find.byKey(const ValueKey('ball-label-r1')),
+          matching: find.byType(RichText),
+        ),
+      );
+      return paragraph.textScaler.scale(paragraph.text.style!.fontSize!);
+    }
+
+    testWidgets('raises the labels to 16 px in presentation', (tester) async {
+      await _pump(
+        tester,
+        const PresentationScope(
+          scale: 1,
+          child: TableDiagram(spec: spec, semanticLabel: 'Size'),
+        ),
+      );
+
+      expect(labelSize(tester), greaterThanOrEqualTo(16));
+    });
+
+    testWidgets('keeps the label size outside presentation', (tester) async {
+      await _pump(
+        tester,
+        const TableDiagram(spec: spec, semanticLabel: 'Size'),
+      );
+
+      expect(labelSize(tester), lessThan(16));
+    });
   });
 }
