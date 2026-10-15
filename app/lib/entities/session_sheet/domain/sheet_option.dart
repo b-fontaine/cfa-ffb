@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_grouping.dart';
+import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -25,6 +26,10 @@ abstract class SheetOption with _$SheetOption {
     /// Partie (`k`) et nombre de parties (`n`) de la technique.
     required int part,
     required int partCount,
+
+    /// Titre évocateur de chaque exercice d'entraînement de la séance
+    /// (« Les six parts de gâteau »), par référence au catalogue.
+    @Default(<ExerciseRef, String>{}) Map<ExerciseRef, String> exerciseTitles,
   }) = _SheetOption;
 }
 
@@ -41,6 +46,10 @@ List<SheetOption> sheetOptionsOf(Iterable<SessionSheet> sheets) =>
             title: sheet.title,
             part: sheet.part,
             partCount: group.partCount,
+            exerciseTitles: {
+              for (final exercise in sheet.exercises)
+                exercise.ref: exercise.title,
+            },
           ),
     ]);
 

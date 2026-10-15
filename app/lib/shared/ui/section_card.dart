@@ -18,12 +18,17 @@ class SectionCard extends StatelessWidget {
     required this.title,
     required this.child,
     this.emphasis = SectionEmphasis.low,
+    this.header,
     super.key,
   });
 
   final String title;
   final Widget child;
   final SectionEmphasis emphasis;
+
+  /// Remplace le texte du titre par un composant (un `StudentChip`, par
+  /// exemple) ; [title] reste le libellé sémantique de l'en-tête.
+  final Widget? header;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +59,8 @@ class SectionCard extends StatelessWidget {
           children: [
             Semantics(
               header: true,
-              child: Text(title, style: theme.textTheme.titleMedium),
+              label: header == null ? null : title,
+              child: header ?? Text(title, style: theme.textTheme.titleMedium),
             ),
             const SizedBox(height: AppSpacing.sm),
             child,

@@ -16,6 +16,23 @@ void main() {
     expect(find.text('2/5'), findsOneWidget);
   });
 
+  testWidgets('hides the x/n text on request, keeping the dots', (
+    tester,
+  ) async {
+    await pumpUi(
+      tester,
+      PassDots(
+        value: const [true, false],
+        total: 4,
+        showScore: false,
+        onChanged: (_) {},
+      ),
+    );
+
+    expect(find.text('1/4'), findsNothing);
+    expect(find.byKey(const ValueKey('pass-dot-4')), findsOneWidget);
+  });
+
   testWidgets('draws one dot per attempt, filled when pocketed', (
     tester,
   ) async {

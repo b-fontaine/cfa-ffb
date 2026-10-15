@@ -9,7 +9,7 @@ Future<void> iRecordThePassOf(WidgetTester tester, String name) async {
   final card = find.byKey(ValueKey('pass-card-${student.id.value}'));
   final button = find.descendant(
     of: card,
-    matching: find.text('Record the pass'),
+    matching: find.byKey(const ValueKey('pass-submit')),
   );
   await tester.ensureVisible(button);
   await tester.tap(button);

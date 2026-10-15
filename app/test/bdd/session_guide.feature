@@ -127,6 +127,33 @@ Feature: Guided session
     When I tap {'Previous'} text
     Then I see {'2 of 2 successes'} text
 
+  # U5 : la saisie depuis le guide s'ouvre en feuille basse, le guide reste en place.
+  Scenario: Noting the results opens a bottom sheet on the current exercise and the guide stays on its step
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
+    When I go to the address {'/catalogue/demi-bille-1/guide?audience=children&step=5'}
+    And I tap {'Note the results'} text
+    Then the record sheet is open
+    And I see {'Step 6 of 10'} text
+    When I tap {'Open the session'} text
+    Then the exercise {'demi-bille 1'} is selected for the record
+    And the record sheet is open
+    When I tap {'Back to the guided session'} text
+    Then the record sheet is closed
+    And I see {'Step 6 of 10'} text
+
+  Scenario: The system back gesture closes the record sheet and the guide stays on its step
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
+    When I go to the address {'/catalogue/demi-bille-1/guide?audience=children&step=5'}
+    And I tap {'Note the results'} text
+    And I tap {'Open the session'} text
+    Then the exercise {'demi-bille 1'} is selected for the record
+    When I press the system back button
+    Then the record sheet is closed
+    And I see {'Step 6 of 10'} text
+    And I see {'Note the results'} text
+
   Scenario: The record offers to go back to the guide before opening a session
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running

@@ -86,3 +86,106 @@ Feature: Recording the results of a session
     And I add {3} balls potted for {'Léa'}
     And I record the pass of {'Léa'}
     Then I do not see text containing {'acquired at placement'}
+
+  # Lot U5 (grille de saisie) : une ligne par élève présent, une pastille par
+  # essai, l'état de validation à droite, les tentatives sous la ligne.
+  Scenario: Each present student has a row with the validation state
+    Given the app is running
+    When I open the session of the group {'Children group'}
+    Then I see {'0 of 5 successful passes'} text {2} times
+
+  Scenario: Tapping four dots out of six then recording stores 4 of 6 and marks the row reached
+    Given the app is running
+    When I open the session of the group {'Children group'}
+    And I choose the exercise {'Posture, visée et coup de queue · no. 4 (4/6) · Proposal'}
+    And I tap the pass dot {1} for {'Léa'}
+    And I tap the pass dot {2} for {'Léa'}
+    And I tap the pass dot {3} for {'Léa'}
+    And I tap the pass dot {4} for {'Léa'}
+    And I record the pass of {'Léa'}
+    Then I see {'Pass recorded: 4 of 6, target reached'} text
+    And I see {'Pass 1: 4 of 6, reached'} text
+    And I see {'1 of 5 successful passes'} text
+
+  Scenario: A missed pass marks the row with a neutral result
+    Given the app is running
+    When I open the session of the group {'Children group'}
+    And I tap the pass dot {1} for {'Hugo'}
+    And I record the pass of {'Hugo'}
+    Then I see {'Pass 1: 1 of 4, missed'} text
+
+  Scenario: The attempts of the sheet are shown under the row and can be changed
+    Given the app is running
+    When I open the session of the group {'Children group'}
+    Then I see {'Attempts: 4 (sheet)'} text {2} times
+    When I add {1} attempts for {'Léa'}
+    Then I see {'Attempts: 5 (sheet: 4)'} text
+
+  # Lot U5 (suite) : sélecteur nommé, liste compacte, historique groupé.
+  Scenario: The exercise selector is named after the catalogue session and is not truncated
+    Given the screen is {390} by {844}
+    And a session is recorded for the group {'Children group'} on {'2026-10-05'} with the catalogue session {'demi-bille-1'}
+    And the app is running
+    When I tap {'Results'} text
+    And I open the recorded session of {'Oct 5'}
+    Then I see {'Les six parts de gâteau'} text
+    And the exercise selector is named {'Exercise'} and not truncated
+
+  Scenario: Ten students fit on a phone screen
+    Given the club has the student {'Ada'} in the {'children'} audience
+    And the club has the student {'Ben'} in the {'children'} audience
+    And the club has the student {'Cléo'} in the {'children'} audience
+    And the club has the student {'Dan'} in the {'children'} audience
+    And the club has the student {'Eva'} in the {'children'} audience
+    And the club has the student {'Fred'} in the {'children'} audience
+    And the club has the student {'Gus'} in the {'children'} audience
+    And the club has the student {'Ines'} in the {'children'} audience
+    And the screen is {390} by {844}
+    And the app is running
+    When I open the session of the group {'Children group'}
+    Then I see {10} student rows on the screen
+
+  Scenario: A compact row records a pass with its dots on a phone
+    Given the screen is {390} by {844}
+    And the app is running
+    When I open the session of the group {'Children group'}
+    And I tap the pass dot {1} for {'Léa'}
+    And I tap the pass dot {2} for {'Léa'}
+    And I tap the pass dot {3} for {'Léa'}
+    And I record the pass of {'Léa'}
+    Then I see {'Pass 1: 3 of 4, reached'} text
+
+  Scenario: A compact row is one 48 dp line and its dots carry no score
+    Given the screen is {390} by {844}
+    And the app is running
+    When I open the session of the group {'Children group'}
+    Then the compact row of {'Léa'} is {48} dp high without a score
+
+  Scenario: Beyond the second pass the record button is gone
+    Given the app is running
+    When I open the session of the group {'Children group'}
+    And I add {3} balls potted for {'Léa'}
+    And I record the pass of {'Léa'}
+    And I record the pass of {'Léa'}
+    Then I see {'Maximum reached for this session'} text
+    And the record button is absent for {'Léa'}
+    And the record button is present for {'Hugo'}
+
+  Scenario: An exercise acquired at placement shows all the passes required
+    Given {'Léa'} has the block {'posture'} acquired on {'2026-10-12'}
+    And the app is running
+    When I open the session of the group {'Children group'}
+    Then I see {'5 of 5 successful passes'} text
+    And I see {'0 of 5 successful passes'} text
+
+  Scenario: The history of the session is grouped by student then by exercise
+    Given the app is running
+    When I open the session of the group {'Children group'}
+    And I add {3} balls potted for {'Léa'}
+    And I record the pass of {'Léa'}
+    And I choose the exercise {'Posture, visée et coup de queue · no. 4 (4/6) · Proposal'}
+    And I tap the pass dot {1} for {'Léa'}
+    And I record the pass of {'Léa'}
+    Then the history of {'Léa'} lists {2} exercises
+    And I see {'Pass 1: 3 of 4'} text
+    And I see {'Pass 1: 1 of 6'} text

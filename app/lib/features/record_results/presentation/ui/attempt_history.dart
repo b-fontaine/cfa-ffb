@@ -4,9 +4,11 @@ import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dar
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/ui/attempt_edit_dialog.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/ui/confirm_dialog.dart';
 import 'package:billard_cfa/shared/ui/exercise_title.dart' as title;
 import 'package:billard_cfa/shared/ui/failure_message.dart';
+import 'package:billard_cfa/shared/ui/pass_dots.dart';
 import 'package:billard_cfa/shared/ui/section_card.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -84,11 +86,108 @@ class AttemptHistory extends StatelessWidget {
     }
   }
 
+  /// Les passages d'un élève, groupés par exercice dans l'ordre de saisie ;
+  /// rien pour un élève sans passage.
+  List<Widget> _studentGroup(
+    BuildContext context,
+    ThemeData theme,
+    String groupKey,
+    String groupName,
+    List<ExerciseAttempt> studentAttempts,
+  ) {
+    if (studentAttempts.isEmpty) return const [];
+    final l10n = AppLocalizations.of(context);
+    final byExercise = <ExerciseRef, List<ExerciseAttempt>>{};
+    for (final attempt in studentAttempts) {
+      byExercise.putIfAbsent(attempt.exercise, () => []).add(attempt);
+    }
+    return [
+      Padding(
+        padding: const EdgeInsets.only(top: AppSpacing.sm),
+        child: Semantics(
+          header: true,
+          child: Text(
+            groupName,
+            key: ValueKey('history-student-$groupKey'),
+            style: theme.textTheme.titleSmall,
+          ),
+        ),
+      ),
+      for (final MapEntry(key: exercise, value: passes)
+          in byExercise.entries) ...[
+        Padding(
+          padding: const EdgeInsets.only(top: AppSpacing.xs),
+          child: Text(
+            _exerciseTitle(l10n, passes.first),
+            key: ValueKey(
+              'history-exercise-$groupKey-'
+              '${exercise.blockId}-${exercise.number}',
+            ),
+            style: theme.textTheme.bodySmall,
+          ),
+        ),
+        for (final (i, attempt) in passes.indexed)
+          Row(
+            children: [
+              Expanded(
+                child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: AppSpacing.sm,
+                  children: [
+                    Text(
+                      l10n.recordHistoryPass(
+                        i + 1,
+                        attempt.potted,
+                        attempt.total,
+                      ),
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    PassDots(
+                      value: [
+                        for (var k = 0; k < attempt.total; k++)
+                          k < attempt.potted,
+                      ],
+                      total: attempt.total,
+                      showScore: false,
+                      readOnly: true,
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                tooltip: l10n.recordEditAttempt(
+                  groupName,
+                  attempt.potted,
+                  attempt.total,
+                ),
+                icon: const Icon(Icons.edit_outlined),
+                // Sans fiche au catalogue, pas de borne de tentatives :
+                // la correction est impossible, le bouton le dit.
+                onPressed: _isInCatalogue(attempt)
+                    ? () => unawaited(_edit(context, attempt))
+                    : null,
+              ),
+              IconButton(
+                tooltip: l10n.recordDeleteAttempt(
+                  groupName,
+                  attempt.potted,
+                  attempt.total,
+                ),
+                icon: const Icon(Icons.delete_outline),
+                onPressed: () => unawaited(_delete(context, attempt)),
+              ),
+            ],
+          ),
+      ],
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final attempts = state.overview!.attempts;
+    final overview = state.overview!;
+    final attempts = overview.attempts;
     final change = state.attemptChange;
     final refused = state.attemptRefused;
     return SectionCard(
@@ -99,44 +198,30 @@ class AttemptHistory extends StatelessWidget {
           if (attempts.isEmpty)
             Text(l10n.recordHistoryEmpty)
           else
-            for (final attempt in attempts)
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      l10n.recordHistoryRow(
-                        _studentName(attempt),
-                        _exerciseTitle(l10n, attempt),
-                        attempt.potted,
-                        attempt.total,
-                      ),
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: l10n.recordEditAttempt(
-                      _studentName(attempt),
-                      attempt.potted,
-                      attempt.total,
-                    ),
-                    icon: const Icon(Icons.edit_outlined),
-                    // Sans fiche au catalogue, pas de borne de tentatives :
-                    // la correction est impossible, le bouton le dit.
-                    onPressed: _isInCatalogue(attempt)
-                        ? () => unawaited(_edit(context, attempt))
-                        : null,
-                  ),
-                  IconButton(
-                    tooltip: l10n.recordDeleteAttempt(
-                      _studentName(attempt),
-                      attempt.potted,
-                      attempt.total,
-                    ),
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: () => unawaited(_delete(context, attempt)),
-                  ),
+            for (final student in overview.students)
+              ..._studentGroup(
+                context,
+                theme,
+                student.id.value,
+                student.firstName,
+                [
+                  for (final attempt in attempts)
+                    if (attempt.studentId == student.id) attempt,
                 ],
               ),
+          // Passages d'un élève qui n'est plus résolu : ils restent visibles,
+          // donc corrigeables et supprimables.
+          ..._studentGroup(
+            context,
+            theme,
+            'orphans',
+            l10n.recordHistoryUnknownStudent,
+            [
+              for (final attempt in attempts)
+                if (!overview.students.any((s) => s.id == attempt.studentId))
+                  attempt,
+            ],
+          ),
           if (change != null) ...[
             const SizedBox(height: AppSpacing.sm),
             Text(switch (change) {

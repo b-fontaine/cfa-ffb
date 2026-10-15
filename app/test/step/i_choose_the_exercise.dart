@@ -6,7 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 ///
 /// Ouvre le menu des exercices de la saisie et choisit l'entrée [label].
 Future<void> iChooseTheExercise(WidgetTester tester, String label) async {
-  await tester.tap(find.byType(DropdownMenu<ExerciseRef>));
+  final selector = find.byType(DropdownMenu<ExerciseRef>);
+  await tester.ensureVisible(selector);
+  await tester.tap(selector);
   await tester.pumpAndSettle();
   await tester.tap(find.text(label).last);
   await tester.pumpAndSettle();

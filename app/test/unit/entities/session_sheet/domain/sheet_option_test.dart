@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_option.dart';
+import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -21,6 +22,15 @@ void main() {
     expect(options.map((o) => o.partCount), [1, 2, 2, 1]);
     expect(options[1].technique, 'demi-bille');
     expect(options[1].title, 'Quantité demi-bille');
+  });
+
+  test('carries the title of each exercise of the session by reference', () {
+    final options = sheetOptionsOf(sheets);
+
+    expect(options[2].exerciseTitles, {
+      ExerciseRef(blockId: 'demi-bille', number: 3): 'Exercice e3',
+      ExerciseRef(blockId: 'demi-bille', number: 4): 'Exercice e4',
+    });
   });
 
   test('finds the option of a known session only', () {

@@ -1,15 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/attempts_counter.dart';
+
 /// Usage: I remove {3} attempts for {'Léa'}
-Future<void> iRemoveAttemptsFor(
-  WidgetTester tester,
-  num count,
-  String name,
-) async {
-  final button = find.byTooltip('Fewer attempts for $name');
-  for (var i = 0; i < count; i++) {
-    await tester.tap(button, warnIfMissed: false);
-    await tester.pump();
-  }
-  await tester.pumpAndSettle();
-}
+Future<void> iRemoveAttemptsFor(WidgetTester tester, num count, String name) =>
+    tapAttemptsCounter(tester, name, 'Fewer attempts for $name', count);

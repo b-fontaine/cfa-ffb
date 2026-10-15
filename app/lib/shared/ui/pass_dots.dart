@@ -21,6 +21,7 @@ class PassDots extends StatelessWidget {
     required this.total,
     this.onChanged,
     this.readOnly = false,
+    this.showScore = true,
     super.key,
   }) : assert(total > 0, 'total must be positive');
 
@@ -28,6 +29,10 @@ class PassDots extends StatelessWidget {
   final int total;
   final ValueChanged<List<bool>>? onChanged;
   final bool readOnly;
+
+  /// Affiche le texte « x/n » à la suite des pastilles. À `false` (liste
+  /// compacte), le score reste lu par la sémantique de la rangée.
+  final bool showScore;
 
   static const double _dotSize = 28;
   static const double _disabledOpacity = 0.38;
@@ -90,12 +95,13 @@ class PassDots extends StatelessWidget {
               ),
             ),
           ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-          child: ExcludeSemantics(
-            child: Text('$score/$total', style: theme.textTheme.labelLarge),
+        if (showScore)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+            child: ExcludeSemantics(
+              child: Text('$score/$total', style: theme.textTheme.labelLarge),
+            ),
           ),
-        ),
       ],
     );
     return Semantics(

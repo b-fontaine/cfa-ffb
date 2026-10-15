@@ -14,6 +14,8 @@ Future<void> iOpenTheSessionOfTheGroup(
   await tester.pumpAndSettle();
   await tester.tap(find.text(group));
   await tester.pumpAndSettle();
-  await tester.tap(find.text('Open the session'));
+  final open = find.text('Open the session');
+  await tester.ensureVisible(open);
+  await tester.tap(open);
   await tester.pumpAndSettle();
 }

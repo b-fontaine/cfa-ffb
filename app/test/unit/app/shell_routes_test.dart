@@ -1,7 +1,6 @@
 import 'package:billard_cfa/app/router.dart';
 import 'package:billard_cfa/app/shell.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
-import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -117,69 +116,6 @@ void main() {
         ),
         '/catalogue/demi-bille-2/presentation?group=g1',
       );
-    });
-  });
-
-  group('AppRoutes.recordFromGuide', () {
-    final exercise = ExerciseRef(blockId: 'demi-bille', number: 3);
-
-    test('carries the block, the exercise and the way back', () {
-      final uri = Uri.parse(
-        AppRoutes.recordFromGuide(
-          exercise: exercise,
-          from: '/catalogue/demi-bille-2/guide?step=3',
-          recall: 'bille-pleine',
-        ),
-      );
-
-      expect(uri.path, AppRoutes.newRecord);
-      expect(AppRoutes.newRecord, '/record/new');
-      expect(uri.queryParameters, {
-        'main': 'demi-bille',
-        'recall': 'bille-pleine',
-        'exercise': '3',
-        'from': '/catalogue/demi-bille-2/guide?step=3',
-      });
-    });
-
-    test('carries the group, the absentees and the date already chosen', () {
-      final uri = Uri.parse(
-        AppRoutes.recordFromGuide(
-          exercise: exercise,
-          from: '/catalogue/demi-bille-2/guide?step=3',
-          group: const GroupId('g1'),
-          absent: {const StudentId('s1'), const StudentId('s2')},
-          date: DateTime(2026, 10, 3),
-        ),
-      );
-
-      expect(uri.queryParameters['group'], 'g1');
-      expect(uri.queryParameters['absent'], 's1,s2');
-      expect(uri.queryParameters['date'], '2026-10-03');
-    });
-
-    test('carries the catalogue session noted by the record', () {
-      final uri = Uri.parse(
-        AppRoutes.recordFromGuide(
-          exercise: exercise,
-          from: '/catalogue/demi-bille-2/guide?step=3',
-          sheet: SheetId('demi-bille-2'),
-        ),
-      );
-
-      expect(uri.queryParameters['sheet'], 'demi-bille-2');
-    });
-
-    test('leaves out what was not chosen', () {
-      final uri = Uri.parse(
-        AppRoutes.recordFromGuide(exercise: exercise, from: '/catalogue/x-1'),
-      );
-
-      expect(uri.queryParameters.keys, containsAll(['main', 'exercise']));
-      expect(uri.queryParameters.keys, isNot(contains('group')));
-      expect(uri.queryParameters.keys, isNot(contains('absent')));
-      expect(uri.queryParameters.keys, isNot(contains('date')));
-      expect(uri.queryParameters.keys, isNot(contains('sheet')));
     });
   });
 

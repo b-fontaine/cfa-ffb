@@ -2,7 +2,7 @@ import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/ui/attempt_history.dart';
-import 'package:billard_cfa/features/record_results/presentation/ui/pass_entry_card.dart';
+import 'package:billard_cfa/features/record_results/presentation/ui/student_pass_row.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/ui/exercise_title.dart' as title;
@@ -32,6 +32,8 @@ class RecordSessionView extends StatelessWidget {
     );
   }
 
+  /// Bloc, numéro et taux : le libellé complet d'un exercice, sous-titre de
+  /// l'exercice nommé et libellé de celui qui ne l'est pas.
   String _optionLabel(
     AppLocalizations l10n,
     ExerciseCatalogue catalogue,
@@ -53,21 +55,47 @@ class RecordSessionView extends StatelessWidget {
     final exercise = state.exercise!;
     final catalogue = overview.catalogue;
     final spec = catalogue.exercise(exercise)!;
+    final compact =
+        MediaQuery.sizeOf(context).width < StudentPassRow.compactBreakpoint;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // Le nom évocateur de l'exercice (séance du catalogue notée) tient
+        // lieu de libellé, le bloc et le numéro passent en sous-titre ; sans
+        // nom connu, le libellé reste « bloc · n° (taux) ». Aucune
+        // troncature : deux lignes et pleine largeur.
         DropdownMenu<ExerciseRef>(
           key: ValueKey('exercise-${exercise.blockId}-${exercise.number}'),
           expandedInsets: EdgeInsets.zero,
+          maxLines: 2,
           label: Text(l10n.recordExercise),
+          helperText: overview.exerciseName(exercise) == null
+              ? null
+              : _optionLabel(l10n, catalogue, spec),
           initialSelection: exercise,
           requestFocusOnTap: false,
           dropdownMenuEntries: [
             for (final option in catalogue.exercises)
-              DropdownMenuEntry(
-                value: option.ref,
-                label: _optionLabel(l10n, catalogue, option),
-              ),
+              switch (overview.exerciseName(option.ref)) {
+                final name? => DropdownMenuEntry(
+                  value: option.ref,
+                  label: name,
+                  labelWidget: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(name),
+                      Text(
+                        _optionLabel(l10n, catalogue, option),
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                null => DropdownMenuEntry(
+                  value: option.ref,
+                  label: _optionLabel(l10n, catalogue, option),
+                ),
+              },
           ],
           onSelected: (selected) {
             if (selected != null) {
@@ -81,10 +109,11 @@ class RecordSessionView extends StatelessWidget {
         for (final student in overview.students) ...[
           KeyedSubtree(
             key: ValueKey('pass-card-${student.id.value}'),
-            child: PassEntryCard(
+            child: StudentPassRow(
               studentName: student.firstName,
               spec: spec,
-              passesDone: overview.passesOf(student.id, exercise),
+              passes: overview.passesFor(student.id, exercise),
+              passedCount: overview.passedCount(student.id, exercise),
               maxPasses: overview.maxPassesPerExercise,
               passesRequired: overview.passesRequired,
               feedback: state.feedback[student.id],
@@ -107,8 +136,10 @@ class RecordSessionView extends StatelessWidget {
                   ),
             ),
           ),
-          const SizedBox(height: AppSpacing.md),
+          // Liste compacte : les lignes se suivent, séparées par un filet.
+          if (!compact) const SizedBox(height: AppSpacing.md),
         ],
+        const SizedBox(height: AppSpacing.md),
         AttemptHistory(state: state),
       ],
     );

@@ -35,7 +35,7 @@ Feature: Recorded sessions history
     When I tap {'Results'} text
     And I open the recorded session of {'Sep 12'}
     Then I see text containing {'Session of'}
-    And I see {'Léa · La puissance · exercise 1: 7 of 9'} text
+    And I see {'Pass 1: 7 of 9'} text
 
   Scenario: The new session button opens the record form
     Given the app is running
@@ -53,7 +53,7 @@ Feature: Recorded sessions history
     And I add {1} balls potted in the correction
     And I tap {'Save the correction'} text
     Then I see {'Pass corrected: 7 of 9'} text
-    And I see {'Léa · La puissance · exercise 1: 7 of 9'} text
+    And I see {'Pass 1: 7 of 9'} text
     When I open the sheet of {'Léa'}
     Then I see {'Attempt 1: 7 of 9'} text
     And I do not see {'Last pass missed'} text
@@ -67,7 +67,7 @@ Feature: Recorded sessions history
     Then I see {'Delete this pass?'} text
     When I tap {'Confirm'} text
     Then I see {'Pass deleted.'} text
-    And I see {'Léa · La puissance · exercise 1: 7 of 9'} text
+    And I see {'Pass 1: 7 of 9'} text
     And the club keeps {1} passes in total
     When I choose the exercise {'La puissance · no. 1 (7/9)'}
     Then I see {'1 of 2 passes'} text
@@ -81,7 +81,8 @@ Feature: Recorded sessions history
     And I open the recorded session of {'Sep 12'}
     And I delete the pass {'7 of 9'} of {'Léa'}
     And I tap {'Cancel'} text
-    Then I see {'Léa · La puissance · exercise 1: 7 of 9'} text {2} times
+    Then I see {'Pass 1: 7 of 9'} text
+    And I see {'Pass 2: 7 of 9'} text
     And the club keeps {2} passes in total
 
   # La saisie connaît la séance du catalogue qu'elle note (ADR 0007).

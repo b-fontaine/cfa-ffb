@@ -19,9 +19,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// la séance du catalogue, [onHome] est proposé quand elle n'existe pas,
 /// [onShow] ouvre la présentation à l'étape donnée, [onRecord] ouvre la saisie
 /// des résultats de l'exercice (avec le bloc principal de la séance, le bloc
-/// du rappel de résultats, celui de l'exercice de rappel quand il diffère, et
-/// l'étape à retrouver), [onFinish] ferme la séance et [onStepChanged] reporte
-/// dans l'adresse l'étape que l'animateur vient de choisir. [fromPlanner] dit
+/// du rappel de résultats, celui de l'exercice de rappel quand il diffère ;
+/// le guide reste monté : pas d'étape à retrouver), [onFinish] ferme la
+/// séance et [onStepChanged] reporte dans l'adresse l'étape que l'animateur
+/// vient de choisir. [fromPlanner] dit
 /// que le guide a été lancé depuis une séance planifiée : « Retour » mène
 /// alors au planificateur, et le libellé le dit.
 class SheetGuidePage extends StatelessWidget {
@@ -45,7 +46,6 @@ class SheetGuidePage extends StatelessWidget {
     ExerciseRef exercise,
     String mainBlockId,
     String? recallBlockId,
-    int step,
   )
   onRecord;
   final VoidCallback onFinish;
@@ -113,7 +113,6 @@ class SheetGuidePage extends StatelessWidget {
                           exercise.blockId != plan.sheet.catalogueBlock
                               ? exercise.blockId
                               : plan.recallBlockId,
-                          state.step,
                         ),
                       ),
                     ),

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:billard_cfa/app/di/injection.dart';
+import 'package:billard_cfa/app/record_screens.dart';
+import 'package:billard_cfa/app/record_sheet.dart';
 import 'package:billard_cfa/app/shell.dart';
 import 'package:billard_cfa/features/assess_maturity/presentation/bloc/assessment_bloc.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_bloc.dart';
@@ -12,10 +14,7 @@ import 'package:billard_cfa/features/manage_students/presentation/bloc/student_f
 import 'package:billard_cfa/features/manage_students/presentation/bloc/students_bloc.dart';
 import 'package:billard_cfa/features/place_student/presentation/bloc/placement_bloc.dart';
 import 'package:billard_cfa/features/plan_session/presentation/bloc/session_planner_bloc.dart';
-import 'package:billard_cfa/features/record_results/presentation/bloc/open_session_bloc.dart';
-import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/recorded_sessions_bloc.dart';
-import 'package:billard_cfa/features/record_results/presentation/bloc/session_date_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_presentation_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_sessions.dart';
@@ -29,8 +28,6 @@ import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_pag
 import 'package:billard_cfa/pages/home/presentation/home_page.dart';
 import 'package:billard_cfa/pages/not_found/presentation/not_found_page.dart';
 import 'package:billard_cfa/pages/record_history/presentation/record_history_page.dart';
-import 'package:billard_cfa/pages/record_session/presentation/record_session_page.dart';
-import 'package:billard_cfa/pages/record_setup/presentation/record_setup_page.dart';
 import 'package:billard_cfa/pages/session_planner/presentation/session_planner_page.dart';
 import 'package:billard_cfa/pages/sheet_catalogue/presentation/sheet_catalogue_page.dart';
 import 'package:billard_cfa/pages/sheet_detail/presentation/sheet_detail_page.dart';
@@ -103,35 +100,6 @@ abstract final class AppRoutes {
     'exercise': ?exercise?.toString(),
     'exercise_block': ?exerciseBlock,
     'from': ?from,
-  });
-
-  /// Ouverture de la saisie depuis la séance guidée : bloc de l'exercice,
-  /// bloc du rappel de résultats, exercice à présélectionner, séance du
-  /// catalogue notée ([sheet], ADR 0007) et retour à [from]. [group],
-  /// [absent] et [date] reprennent le choix de la saisie précédente ou la
-  /// séance planifiée (sans eux, le groupe se choisit à la saisie).
-  static String recordFromGuide({
-    required ExerciseRef exercise,
-    required String from,
-    String? main,
-    String? recall,
-    SheetId? sheet,
-    GroupId? group,
-    Set<StudentId> absent = const {},
-    DateTime? date,
-  }) => _url(newRecord, {
-    'main': main ?? exercise.blockId,
-    'recall': ?recall,
-    'exercise': '${exercise.number}',
-    // Exercice d'un autre bloc que le principal (créneau de rappel, ADR 0011).
-    'exercise_block': ?(main != null && main != exercise.blockId
-        ? exercise.blockId
-        : null),
-    'sheet': ?sheet?.value,
-    'from': from,
-    'group': ?group?.value,
-    if (absent.isNotEmpty) 'absent': absent.map((id) => id.value).join(','),
-    'date': ?(date == null ? null : _dateQuery(date)),
   });
 
   /// Ouverture de la saisie d'une séance planifiée : groupe et date de la
@@ -435,54 +403,38 @@ GoRouter buildRouter() => GoRouter(
             final from = _guideReturn(query['from']);
             final sheet = SheetId.tryParse(query['sheet']);
             final today = getIt<Clock>().today();
-            final date = _dateParam(query['date']) ?? today;
-            return MultiBlocProvider(
-              providers: [
-                BlocProvider(
-                  create: (_) =>
-                      getIt<StudentsBloc>()..add(const StudentsEvent.started()),
-                ),
-                BlocProvider(create: (_) => getIt<OpenSessionBloc>()),
-                BlocProvider(
-                  create: (_) => getIt<RosterSelectionCubit>(
-                    param1: group == null ? null : GroupId(group),
-                    param2: absent,
+            return buildRecordSetup(
+              today: today,
+              main: query['main'],
+              recall: query['recall'],
+              sheet: sheet,
+              group: group == null ? null : GroupId(group),
+              absent: absent,
+              date: _dateParam(query['date']),
+              onOpened: (opened) {
+                // La séance guidée retient le choix : l'exercice suivant
+                // ne redemande ni groupe, ni présents, ni date.
+                final key = from == null ? null : _guideKey(from);
+                if (key != null) {
+                  getIt<RunSheetSessions>()
+                      .of(key)
+                      .recordChosen(
+                        group: opened.group,
+                        date: opened.date,
+                        absent: opened.absent,
+                      );
+                }
+                context.go(
+                  AppRoutes.recordSession(
+                    opened.id,
+                    exercise: exercise,
+                    exerciseBlock: exerciseBlock,
+                    from: from,
                   ),
-                ),
-                BlocProvider(
-                  create: (_) => getIt<SessionDateCubit>(param1: date),
-                ),
-              ],
-              child: RecordSetupPage(
-                today: today,
-                mainBlockId: query['main'],
-                recallBlockId: query['recall'],
-                sheetId: sheet,
-                onOpened: (opened) {
-                  // La séance guidée retient le choix : l'exercice suivant
-                  // ne redemande ni groupe, ni présents, ni date.
-                  final key = from == null ? null : _guideKey(from);
-                  if (key != null) {
-                    getIt<RunSheetSessions>()
-                        .of(key)
-                        .recordChosen(
-                          group: opened.group,
-                          date: opened.date,
-                          absent: opened.absent,
-                        );
-                  }
-                  context.go(
-                    AppRoutes.recordSession(
-                      opened.id,
-                      exercise: exercise,
-                      exerciseBlock: exerciseBlock,
-                      from: from,
-                    ),
-                  );
-                },
-                onAddStudents: () => context.go(AppRoutes.newStudent),
-                onBackToGuide: from == null ? null : () => context.go(from),
-              ),
+                );
+              },
+              onAddStudents: () => context.go(AppRoutes.newStudent),
+              onBackToGuide: from == null ? null : () => context.go(from),
             );
           },
         ),
@@ -491,19 +443,12 @@ GoRouter buildRouter() => GoRouter(
           builder: (context, state) {
             final query = state.uri.queryParameters;
             final from = _guideReturn(query['from']);
-            return BlocProvider(
-              create: (_) => getIt<RecordResultsBloc>()
-                ..add(
-                  RecordResultsEvent.started(
-                    sessionId: SessionId(state.pathParameters['sessionId']!),
-                    initialExercise: int.tryParse(query['exercise'] ?? ''),
-                    initialBlock: query['exercise_block'],
-                  ),
-                ),
-              child: RecordSessionPage(
-                onBack: () => context.go(from ?? AppRoutes.record),
-                fromGuide: from != null,
-              ),
+            return buildRecordSession(
+              id: SessionId(state.pathParameters['sessionId']!),
+              exercise: int.tryParse(query['exercise'] ?? ''),
+              exerciseBlock: query['exercise_block'],
+              onBack: () => context.go(from ?? AppRoutes.record),
+              fromGuide: from != null,
             );
           },
         ),
@@ -646,18 +591,23 @@ GoRouter buildRouter() => GoRouter(
                     group: key.group,
                   ),
                 ),
-                onRecord: (exercise, main, recall, step) {
+                // U5 : feuille basse sur l'exercice courant ; le guide reste
+                // monté à la même étape (la route plein écran reste valide).
+                onRecord: (exercise, main, recall) {
                   final defaults = cubit.state.recordDefaults;
-                  context.go(
-                    AppRoutes.recordFromGuide(
-                      exercise: exercise,
+                  unawaited(
+                    showRecordSheet(
+                      context,
+                      key: key,
+                      sheet: id,
+                      exercise: exercise.number,
+                      exerciseBlock: exercise.blockId,
                       main: main,
                       recall: recall,
-                      sheet: id,
-                      from: guide(step),
                       group: defaults.group ?? key.group,
                       absent: defaults.absent,
                       date: defaults.date,
+                      onAddStudents: () => context.go(AppRoutes.newStudent),
                     ),
                   );
                 },

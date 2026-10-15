@@ -260,6 +260,23 @@ void main() {
     );
 
     blocTest<RecordResultsBloc, RecordResultsState>(
+      'preselects the same exercise when the named block is the main block',
+      build: () {
+        when(() => overview(sessionId))
+            .thenAnswer((_) async => Ok(overviewOf(main: 'b')));
+        return build();
+      },
+      act: (bloc) => bloc.add(
+        const RecordResultsEvent.started(
+          sessionId: sessionId,
+          initialExercise: 2,
+          initialBlock: 'b',
+        ),
+      ),
+      verify: (bloc) => expect(bloc.state.exercise, ref('b', 2)),
+    );
+
+    blocTest<RecordResultsBloc, RecordResultsState>(
       'ignores an exercise number without a main block',
       build: () {
         when(() => overview(sessionId))

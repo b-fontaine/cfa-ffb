@@ -721,22 +721,6 @@
   },
   "recordPotted": "Billes empochées",
   "recordAttempts": "Tentatives",
-  "recordPottedMore": "Une bille empochée de plus pour {name}",
-  "@recordPottedMore": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "recordPottedLess": "Une bille empochée de moins pour {name}",
-  "@recordPottedLess": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "recordAttemptsMore": "Une tentative de plus pour {name}",
   "@recordAttemptsMore": {
     "placeholders": {
@@ -753,7 +737,66 @@
       }
     }
   },
-  "recordSubmit": "Enregistrer le passage",
+  "recordSubmit": "Saisir",
+  "recordPassReached": "Passage {index} : {potted} sur {total}, atteint",
+  "@recordPassReached": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordPassMissed": "Passage {index} : {potted} sur {total}, manqué",
+  "@recordPassMissed": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordValidationState": "{done} sur {required} passages réussis",
+  "@recordValidationState": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "recordAttemptsSummary": "Tentatives : {total} (fiche)",
+  "@recordAttemptsSummary": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordAttemptsSummaryCustom": "Tentatives : {total} (fiche : {sheet})",
+  "@recordAttemptsSummaryCustom": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "sheet": {
+        "type": "int"
+      }
+    }
+  },
+  "recordAttemptsChange": "Changer pour ce passage",
   "recordPassesDone": "{done} sur {max} passages",
   "@recordPassesDone": {
     "placeholders": {
@@ -808,23 +851,6 @@
   },
   "recordHistory": "Passages de la séance",
   "recordHistoryEmpty": "Aucun passage saisi dans cette séance.",
-  "recordHistoryRow": "{name} · {exercise} : {potted} sur {total}",
-  "@recordHistoryRow": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "exercise": {
-        "type": "String"
-      },
-      "potted": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "recordBlockHint": "Notion principale : {block}",
   "@recordBlockHint": {
     "placeholders": {
@@ -2329,5 +2355,61 @@
       }
     }
   },
-  "sheetAttendanceNone": "Aucune séance du groupe pour le moment."
+  "sheetAttendanceNone": "Aucune séance du groupe pour le moment.",
+  "recordValidationStateShort": "{done}/{required}",
+  "@recordValidationStateShort": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "recordAttemptsChangeFor": "Changer les tentatives de {name}",
+  "@recordAttemptsChangeFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordSubmitFor": "Saisir le passage de {name}",
+  "@recordSubmitFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordHistoryPass": "Passage {number} : {potted} sur {total}",
+  "@recordHistoryPass": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordCompactRowLabel": "{name}, {state}",
+  "@recordCompactRowLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "studentChipTodo": "à faire",
+  "studentChipMissed": "manqué",
+  "studentChipReached": "réussi",
+  "recordHistoryUnknownStudent": "Élève absent du groupe"
 }

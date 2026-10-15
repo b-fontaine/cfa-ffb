@@ -18,8 +18,8 @@ import 'package:billard_cfa/features/place_student/presentation/bloc/placement_b
 import 'package:billard_cfa/features/place_student/presentation/ui/acquire_block_dialog.dart';
 import 'package:billard_cfa/features/record_results/domain/recorded_attempt.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
-import 'package:billard_cfa/features/record_results/presentation/ui/pass_entry_card.dart';
 import 'package:billard_cfa/features/record_results/presentation/ui/record_session_view.dart';
+import 'package:billard_cfa/features/record_results/presentation/ui/student_pass_row.dart';
 import 'package:billard_cfa/features/suggest_session/domain/get_exercise_sheet.dart';
 import 'package:billard_cfa/features/suggest_session/domain/suggest_recall.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/suggested_session_bloc.dart';
@@ -110,13 +110,14 @@ Widget buildClubListUseCase(BuildContext context) => LoadedScope(
       _scroll(ClubList(club: club, onOpenStudent: (_) {})),
 );
 
-@widgetbook.UseCase(name: 'Sans retour', type: PassEntryCard, path: _path)
-Widget buildPassEntryCardUseCase(BuildContext context) => WorldScope(
+@widgetbook.UseCase(name: 'Sans retour', type: StudentPassRow, path: _path)
+Widget buildStudentPassRowUseCase(BuildContext context) => WorldScope(
   builder: (context, world) => _scroll(
-    PassEntryCard(
+    StudentPassRow(
       studentName: world.children.firstName,
       spec: world.catalogue.exercise(PreviewWorld.struggling)!,
-      passesDone: 1,
+      passes: const [],
+      passedCount: 0,
       maxPasses: 2,
       passesRequired: 5,
       onSubmit: (_, _) {},
@@ -126,10 +127,10 @@ Widget buildPassEntryCardUseCase(BuildContext context) => WorldScope(
 
 @widgetbook.UseCase(
   name: 'Reprise après positionnement',
-  type: PassEntryCard,
+  type: StudentPassRow,
   path: _path,
 )
-Widget buildPassEntryCardResumedUseCase(BuildContext context) => WorldScope(
+Widget buildStudentPassRowResumedUseCase(BuildContext context) => WorldScope(
   builder: (context, world) {
     final spec = world.catalogue.exercise(PreviewWorld.validated)!;
     final attempt = ExerciseAttempt(
@@ -143,10 +144,11 @@ Widget buildPassEntryCardResumedUseCase(BuildContext context) => WorldScope(
       total: spec.rate.attempts,
     );
     return _scroll(
-      PassEntryCard(
+      StudentPassRow(
         studentName: world.children.firstName,
         spec: spec,
-        passesDone: 1,
+        passes: [attempt],
+        passedCount: 1,
         maxPasses: 2,
         passesRequired: 5,
         onSubmit: (_, _) {},
@@ -169,21 +171,56 @@ Widget buildPassEntryCardResumedUseCase(BuildContext context) => WorldScope(
   },
 );
 
-@widgetbook.UseCase(name: 'Limite atteinte', type: PassEntryCard, path: _path)
-Widget buildPassEntryCardLimitUseCase(BuildContext context) => WorldScope(
-  builder: (context, world) => _scroll(
-    PassEntryCard(
-      studentName: world.children.firstName,
-      spec: world.catalogue.exercise(PreviewWorld.validated)!,
-      passesDone: 2,
-      maxPasses: 2,
-      passesRequired: 5,
-      onSubmit: (_, _) {},
-      refusedMessage: 'Deux passages au maximum par séance.',
+@widgetbook.UseCase(
+  name: 'Liste compacte (téléphone)',
+  type: StudentPassRow,
+  path: _path,
+)
+Widget buildStudentPassRowCompactUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) => MediaQuery(
+    data: MediaQuery.of(context).copyWith(size: const Size(390, 844)),
+    child: _scroll(
+      StudentPassRow(
+        studentName: world.children.firstName,
+        spec: world.catalogue.exercise(PreviewWorld.struggling)!,
+        passes: const [],
+        passedCount: 2,
+        maxPasses: 2,
+        passesRequired: 5,
+        onSubmit: (_, _) {},
+      ),
     ),
   ),
 );
 
+@widgetbook.UseCase(name: 'Limite atteinte', type: StudentPassRow, path: _path)
+Widget buildStudentPassRowLimitUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) {
+    final spec = world.catalogue.exercise(PreviewWorld.validated)!;
+    ExerciseAttempt pass(int index) => ExerciseAttempt(
+      id: AttemptId('apercu-passage-$index'),
+      studentId: world.children.id,
+      sessionId: const SessionId('apercu-seance'),
+      exercise: spec.ref,
+      date: world.today,
+      passIndex: index,
+      potted: spec.rate.successes,
+      total: spec.rate.attempts,
+    );
+    return _scroll(
+      StudentPassRow(
+        studentName: world.children.firstName,
+        spec: spec,
+        passes: [pass(1), pass(2)],
+        passedCount: 2,
+        maxPasses: 2,
+        passesRequired: 5,
+        onSubmit: (_, _) {},
+        refusedMessage: 'Deux passages au maximum par séance.',
+      ),
+    );
+  },
+);
 @widgetbook.UseCase(
   name: 'Séance ouverte',
   type: RecordSessionView,

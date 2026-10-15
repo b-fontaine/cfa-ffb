@@ -10,6 +10,7 @@ import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/ui/failure_message.dart';
+import 'package:billard_cfa/shared/ui/pass_dots.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -89,9 +90,29 @@ void main() {
   testWidgets('lists the passes of the session', (tester) async {
     await pump(tester, _state(attempts: [pass]));
 
-    expect(find.text('Léa · Bloc a · exercise 1: 3 of 5'), findsOneWidget);
+    expect(find.text('Pass 1: 3 of 5'), findsOneWidget);
     expect(find.byTooltip('Edit the pass of Léa (3 of 5)'), findsOneWidget);
     expect(find.byTooltip('Delete the pass of Léa (3 of 5)'), findsOneWidget);
+  });
+
+  testWidgets('draws read-only dots next to the pass text', (tester) async {
+    await pump(tester, _state(attempts: [pass]));
+
+    final dots = tester.widget<PassDots>(find.byType(PassDots));
+    expect(dots.readOnly, isTrue);
+    expect(dots.total, 5);
+    expect(dots.value.where((pocketed) => pocketed), hasLength(3));
+  });
+
+  testWidgets('keeps the pass of an unknown student visible and editable', (
+    tester,
+  ) async {
+    final stray = attempt(ref('a', 1), potted: 2, student: 'gone', id: 'a2');
+    await pump(tester, _state(attempts: [stray]));
+
+    expect(find.text('Student no longer in the group'), findsOneWidget);
+    expect(find.text('Pass 1: 2 of 5'), findsOneWidget);
+    expect(find.byIcon(Icons.delete_outline), findsOneWidget);
   });
 
   testWidgets('says when a pass was corrected or deleted', (tester) async {
@@ -177,6 +198,6 @@ void main() {
     );
 
     expect(edit.onPressed, isNull);
-    expect(find.text('Léa · zzz · exercise 1: 3 of 5'), findsOneWidget);
+    expect(find.text('Pass 1: 3 of 5'), findsOneWidget);
   });
 }

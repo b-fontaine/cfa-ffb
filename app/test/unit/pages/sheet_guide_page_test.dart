@@ -17,7 +17,7 @@ class _Calls {
   int back = 0;
   int home = 0;
   final shown = <int>[];
-  final recorded = <(ExerciseRef, String, String?, int)>[];
+  final recorded = <(ExerciseRef, String, String?)>[];
   int finished = 0;
   final steps = <int>[];
 }
@@ -41,8 +41,8 @@ void main() {
           onBack: () => calls.back++,
           onHome: () => calls.home++,
           onShow: calls.shown.add,
-          onRecord: (exercise, main, recall, step) =>
-              calls.recorded.add((exercise, main, recall, step)),
+          onRecord: (exercise, main, recall) =>
+              calls.recorded.add((exercise, main, recall)),
           onFinish: () => calls.finished++,
           onStepChanged: calls.steps.add,
         ),
@@ -202,7 +202,7 @@ void main() {
     expect(cubit.state.step, 0);
   });
 
-  testWidgets('records the exercise with the recall block and the step', (
+  testWidgets('records the exercise with the main and the recall blocks', (
     tester,
   ) async {
     final cubit = await real(tester, step: 2);
@@ -212,12 +212,7 @@ void main() {
     await tester.tap(find.text('Note the results'));
 
     expect(calls.recorded, [
-      (
-        ExerciseRef(blockId: 'demi-bille', number: 3),
-        'demi-bille',
-        'posture',
-        2,
-      ),
+      (ExerciseRef(blockId: 'demi-bille', number: 3), 'demi-bille', 'posture'),
     ]);
   });
 
@@ -233,12 +228,7 @@ void main() {
 
     // Sans élève suivi : dernier exercice de la séance précédente.
     expect(calls.recorded, [
-      (
-        ExerciseRef(blockId: 'demi-bille', number: 2),
-        'demi-bille',
-        'posture',
-        4,
-      ),
+      (ExerciseRef(blockId: 'demi-bille', number: 2), 'demi-bille', 'posture'),
     ]);
   });
 }

@@ -721,22 +721,6 @@
   },
   "recordPotted": "Balls potted",
   "recordAttempts": "Attempts",
-  "recordPottedMore": "More balls potted for {name}",
-  "@recordPottedMore": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "recordPottedLess": "Fewer balls potted for {name}",
-  "@recordPottedLess": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "recordAttemptsMore": "More attempts for {name}",
   "@recordAttemptsMore": {
     "placeholders": {
@@ -754,6 +738,65 @@
     }
   },
   "recordSubmit": "Record the pass",
+  "recordPassReached": "Pass {index}: {potted} of {total}, reached",
+  "@recordPassReached": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordPassMissed": "Pass {index}: {potted} of {total}, missed",
+  "@recordPassMissed": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordValidationState": "{done} of {required} successful passes",
+  "@recordValidationState": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "recordAttemptsSummary": "Attempts: {total} (sheet)",
+  "@recordAttemptsSummary": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordAttemptsSummaryCustom": "Attempts: {total} (sheet: {sheet})",
+  "@recordAttemptsSummaryCustom": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "sheet": {
+        "type": "int"
+      }
+    }
+  },
+  "recordAttemptsChange": "Change for this pass",
   "recordPassesDone": "{done} of {max} passes",
   "@recordPassesDone": {
     "placeholders": {
@@ -808,23 +851,6 @@
   },
   "recordHistory": "Passes of this session",
   "recordHistoryEmpty": "No pass recorded in this session yet.",
-  "recordHistoryRow": "{name} · {exercise}: {potted} of {total}",
-  "@recordHistoryRow": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "exercise": {
-        "type": "String"
-      },
-      "potted": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "recordBlockHint": "Main notion: {block}",
   "@recordBlockHint": {
     "placeholders": {
@@ -2329,5 +2355,61 @@
       }
     }
   },
-  "sheetAttendanceNone": "No group session yet."
+  "sheetAttendanceNone": "No group session yet.",
+  "recordValidationStateShort": "{done}/{required}",
+  "@recordValidationStateShort": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "recordAttemptsChangeFor": "Change the attempts for {name}",
+  "@recordAttemptsChangeFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordSubmitFor": "Record the pass of {name}",
+  "@recordSubmitFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordHistoryPass": "Pass {number}: {potted} of {total}",
+  "@recordHistoryPass": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recordCompactRowLabel": "{name}, {state}",
+  "@recordCompactRowLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "studentChipTodo": "to do",
+  "studentChipMissed": "missed",
+  "studentChipReached": "reached",
+  "recordHistoryUnknownStudent": "Student no longer in the group"
 }
