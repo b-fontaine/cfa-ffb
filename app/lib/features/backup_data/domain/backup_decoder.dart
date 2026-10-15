@@ -6,6 +6,7 @@ import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessm
 import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
+import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_consistency.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
@@ -13,6 +14,7 @@ import 'package:billard_cfa/features/backup_data/domain/json_reader.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/rules_config.dart';
 
 /// Lit et valide le contenu d'une sauvegarde (section `data`).
 ///
@@ -24,9 +26,15 @@ class BackupDecoder {
 
   static const _read = JsonReader();
 
-  BackupSnapshot decode(Object? data) {
+  /// [withSettings] : le format du fichier connaît la clé `settings` (format 2
+  /// et suivants) ; dans un fichier du format 1 elle est refusée.
+  BackupSnapshot decode(Object? data, {bool withSettings = true}) {
     try {
-      final snapshot = _decodeData(_read.object(data));
+      final object = _read.object(data);
+      if (!withSettings && object.containsKey('settings')) {
+        throw const InvariantViolation(InvariantCode.backupInvalid);
+      }
+      final snapshot = _decodeData(object);
       const BackupConsistency().check(snapshot);
       return snapshot;
     } on InvariantViolation catch (violation) {
@@ -58,7 +66,24 @@ class BackupDecoder {
         .objects(data['blockAcquisitions'])
         .map(_decodeAcquisition)
         .toList(),
+    settings: _decodeSettings(data['settings']),
   );
+
+  /// Clé facultative ; si elle est présente, les cinq entiers sont exigés et
+  /// la configuration doit être acceptée par `RulesConfig`.
+  ClubSettings? _decodeSettings(Object? value) {
+    if (value == null) return null;
+    final json = _read.object(value);
+    final settings = ClubSettings(
+      passesRequired: _read.integer(json['passesRequired']),
+      alertThreshold: _read.integer(json['alertThreshold']),
+      recallStaleSessions: _read.integer(json['recallStaleSessions']),
+      groupFailureSharePercent: _read.integer(json['groupFailureSharePercent']),
+      backupReminderDays: _read.integer(json['backupReminderDays']),
+    );
+    // La configuration doit être acceptée par `RulesConfig` (sinon refus).
+    return settings..applyTo(RulesConfig());
+  }
 
   Season _decodeSeason(Map<String, Object?> json) => Season(
     id: SeasonId(_read.string(json['id'])),

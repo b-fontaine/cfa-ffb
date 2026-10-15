@@ -105,3 +105,17 @@ Feature: Adaptive navigation
     And the destination {'More'} is selected
     When I tap {'Back to More'} text
     Then I see {'Backup'} text
+
+  # Lot 9 : « Plus » contient Sauvegarde et Réglages (scénario U6 reporté).
+  Scenario: More contains Backup and Settings
+    Given the app is running
+    When I tap {'More'} text
+    Then I see {'Backup'} text
+    And I see {'Settings'} text
+
+  Scenario: The settings address selects More and leads back to it
+    Given the app is running
+    When I go to the address {'/settings'}
+    Then the destination {'More'} is selected
+    When I tap {'Back to More'} text
+    Then I see {'Backup'} text

@@ -12,6 +12,7 @@ import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessm
 import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
+import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_codec.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_rules.dart';
@@ -56,6 +57,7 @@ ExportBackup _export(RepositoryHarness r) => ExportBackup(
   r.sessions,
   BackupCodec(),
   _FixedClock(),
+  r.rules,
 );
 
 ImportBackup _import(RepositoryHarness r) => ImportBackup(
@@ -75,6 +77,8 @@ ImportBackup _import(RepositoryHarness r) => ImportBackup(
     _FixedClock(),
   ),
   r.unitOfWork,
+  r.settings,
+  r.rules,
 );
 
 Future<String> _exported(RepositoryHarness r) async =>
@@ -276,8 +280,103 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
           assessments: 1,
           plannedSessions: 2,
           blockAcquisitions: 1,
+          settings: true,
         ),
       );
+    });
+
+    group('settings (format 2)', () {
+      const settingsKey = 'settings';
+
+      Map<String, Object?> settingsOf(String content) =>
+          (_parse(content)['data']! as Map<String, Object?>)[settingsKey]!
+              as Map<String, Object?>;
+
+      test('exports the current settings', () async {
+        source.rules.current = RulesConfig(
+          passesRequired: 3,
+          backupReminderDays: 14,
+        );
+
+        final settings = settingsOf(await _exported(source));
+
+        expect(settings, {
+          'passesRequired': 3,
+          'alertThreshold': 3,
+          'recallStaleSessions': 4,
+          'groupFailureSharePercent': 50,
+          'backupReminderDays': 14,
+        });
+      });
+
+      test('restores the settings and the current rules', () async {
+        source.rules.current = RulesConfig(alertThreshold: 4);
+        final content = await _exported(source);
+
+        await _imported(target, content);
+
+        expect((await target.settings.load()).alertThreshold, 4);
+        expect(target.rules.current.alertThreshold, 4);
+      });
+
+      test('keeps the settings in place when the file has none', () async {
+        await target.settings.save(
+          ClubSettings.defaults.copyWith(passesRequired: 4),
+        );
+        target.rules.current = RulesConfig(passesRequired: 4);
+        final document = _parse(backup)..['schemaVersion'] = 1;
+        (document['data']! as Map<String, Object?>).remove(settingsKey);
+
+        await _imported(target, jsonEncode(document));
+
+        expect(await target.students.all(), hasLength(2));
+        expect((await target.settings.load()).passesRequired, 4);
+        expect(target.rules.current.passesRequired, 4);
+      });
+
+      test('refuses a settings key in a file of format 1', () async {
+        final document = _parse(backup)..['schemaVersion'] = 1;
+
+        expect(
+          await _refused(target, jsonEncode(document)),
+          InvariantCode.backupInvalid,
+        );
+        await expectEmpty(target);
+      });
+
+      final invalidSettings = <String, void Function(Map<String, Object?>)>{
+        'a setting above its bound': (s) => s['alertThreshold'] = 6,
+        'a setting below its bound': (s) => s['passesRequired'] = 0,
+        'a reminder delay above one year': (s) => s['backupReminderDays'] = 366,
+        'a setting that is not an integer': (s) => s['passesRequired'] = '5',
+        'a missing setting': (s) => s.remove('recallStaleSessions'),
+      };
+      for (final entry in invalidSettings.entries) {
+        test('refuses ${entry.key} without writing anything', () async {
+          final document = _parse(backup);
+          final data = document['data']! as Map<String, Object?>;
+          entry.value(data[settingsKey]! as Map<String, Object?>);
+
+          expect(
+            await _refused(target, jsonEncode(document)),
+            InvariantCode.backupInvalid,
+          );
+          await expectEmpty(target);
+          expect(await target.settings.load(), ClubSettings.defaults);
+          expect(target.rules.current, RulesConfig());
+        });
+      }
+
+      test('refuses settings that are not an object', () async {
+        final document = _parse(backup);
+        (document['data']! as Map<String, Object?>)[settingsKey] = [1, 2];
+
+        expect(
+          await _refused(target, jsonEncode(document)),
+          InvariantCode.backupInvalid,
+        );
+        await expectEmpty(target);
+      });
     });
 
     test('keeps the catalogue session of a planned session', () async {
@@ -387,7 +486,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
         await expectEmpty(target);
       });
 
-      for (final version in <Object?>[0, 2, 99, '1', null]) {
+      for (final version in <Object?>[0, 3, 99, '1', null]) {
         test('an unsupported schemaVersion ($version)', () async {
           final document = _parse(backup)..['schemaVersion'] = version;
 

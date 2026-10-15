@@ -27,7 +27,8 @@ class AppShell extends StatelessWidget {
       return 3;
     }
     if (location.startsWith(AppRoutes.more) ||
-        location.startsWith(AppRoutes.backup)) {
+        location.startsWith(AppRoutes.backup) ||
+        location.startsWith(AppRoutes.settings)) {
       return 4;
     }
     return 0;

@@ -7,6 +7,7 @@ import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessm
 import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
+import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_codec.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
@@ -107,7 +108,7 @@ void main() {
     ) as Map<String, Object?>;
 
     expect(document['format'], BackupCodec.format);
-    expect(document['schemaVersion'], 1);
+    expect(document['schemaVersion'], 2);
     expect(document['exportedAt'], '2026-10-12T08:00:00.000Z');
     expect(document['data'], {
       'seasons': <Object?>[],
@@ -175,7 +176,58 @@ void main() {
   });
 
   test('exposes the supported versions', () {
-    expect(BackupCodec.supportedVersions, {BackupCodec.currentVersion});
+    expect(BackupCodec.currentVersion, 2);
+    expect(BackupCodec.supportedVersions, {1, 2});
+  });
+
+  test('writes the settings only when the snapshot has some', () {
+    const settings = ClubSettings(
+      passesRequired: 3,
+      alertThreshold: 4,
+      recallStaleSessions: 6,
+      groupFailureSharePercent: 30,
+      backupReminderDays: 14,
+    );
+
+    final content = codec.encode(
+      const BackupSnapshot(blockAcquisitions: [], settings: settings),
+      exportedAt: _exportedAt,
+    );
+
+    final data =
+        (jsonDecode(content) as Map<String, Object?>)['data']!
+            as Map<String, Object?>;
+    expect(data['settings'], {
+      'passesRequired': 3,
+      'alertThreshold': 4,
+      'recallStaleSessions': 6,
+      'groupFailureSharePercent': 30,
+      'backupReminderDays': 14,
+    });
+    expect(codec.decode(content).settings, settings);
+    final without = codec.encode(
+      const BackupSnapshot(blockAcquisitions: []),
+      exportedAt: _exportedAt,
+    );
+    expect(
+      ((jsonDecode(without) as Map<String, Object?>)['data']!
+              as Map<String, Object?>)
+          .containsKey('settings'),
+      isFalse,
+    );
+    expect(codec.decode(without).settings, isNull);
+  });
+
+  test('still reads a file of format 1, which has no settings', () {
+    final document = jsonDecode(
+      codec.encode(
+        const BackupSnapshot(blockAcquisitions: []),
+        exportedAt: _exportedAt,
+      ),
+    ) as Map<String, Object?>;
+    document['schemaVersion'] = 1;
+
+    expect(codec.decode(jsonEncode(document)).settings, isNull);
   });
 
   test('round-trips every entity with exact dates and UTC flags', () {

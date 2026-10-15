@@ -8,12 +8,14 @@ Widget _field({
   int value = 3,
   int min = 0,
   int max = 5,
+  int step = 1,
   ValueChanged<int>? onChanged,
 }) => CounterField(
   label: 'Balls potted',
   value: value,
   min: min,
   max: max,
+  step: step,
   onChanged: onChanged ?? (_) {},
   decreaseTooltip: 'Fewer',
   increaseTooltip: 'More',
@@ -35,6 +37,33 @@ void main() {
     await tester.tap(find.byTooltip('Fewer'));
 
     expect(values, [4, 2]);
+  });
+
+  testWidgets('moves to the next multiple of the step within bounds', (
+    tester,
+  ) async {
+    final values = <int>[];
+    await pumpUi(
+      tester,
+      _field(value: 95, min: 10, max: 100, step: 10, onChanged: values.add),
+    );
+
+    await tester.tap(find.byTooltip('More'));
+    await tester.tap(find.byTooltip('Fewer'));
+
+    expect(values, [100, 90]);
+  });
+
+  testWidgets('a step never goes below the minimum', (tester) async {
+    final values = <int>[];
+    await pumpUi(
+      tester,
+      _field(value: 10, min: 7, max: 90, step: 5, onChanged: values.add),
+    );
+
+    await tester.tap(find.byTooltip('Fewer'));
+
+    expect(values, [7]);
   });
 
   testWidgets('disables the buttons at the bounds', (tester) async {
@@ -72,5 +101,20 @@ void main() {
       matchesSemantics(label: 'Balls potted', value: '3'),
     );
     handle.dispose();
+  });
+
+  testWidgets('a value off the grid returns to the grid of the step', (
+    tester,
+  ) async {
+    final values = <int>[];
+    await pumpUi(
+      tester,
+      _field(value: 12, min: 7, max: 90, step: 5, onChanged: values.add),
+    );
+
+    await tester.tap(find.byTooltip('More'));
+    await tester.tap(find.byTooltip('Fewer'));
+
+    expect(values, [15, 10]);
   });
 }

@@ -78,6 +78,33 @@ class _CounterDemoState extends State<_CounterDemo> {
   );
 }
 
+@widgetbook.UseCase(name: 'Pas de 10', type: CounterField, path: _path)
+Widget buildCounterFieldStepUseCase(BuildContext context) => _StepCounterDemo();
+
+class _StepCounterDemo extends StatefulWidget {
+  @override
+  State<_StepCounterDemo> createState() => _StepCounterDemoState();
+}
+
+class _StepCounterDemoState extends State<_StepCounterDemo> {
+  int _value = 50;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(16),
+    child: CounterField(
+      label: "Part d'échec du groupe (%)",
+      value: _value,
+      min: 10,
+      max: 100,
+      step: 10,
+      onChanged: (next) => setState(() => _value = next),
+      decreaseTooltip: 'Baisser la part',
+      increaseTooltip: 'Relever la part',
+    ),
+  );
+}
+
 @widgetbook.UseCase(name: 'Avec retour', type: ScrollPage, path: _path)
 Widget buildScrollPageUseCase(BuildContext context) => ScrollPage(
   title: 'Titre de la page',

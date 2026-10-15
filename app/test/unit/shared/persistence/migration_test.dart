@@ -5,6 +5,8 @@ import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.da
 import 'package:billard_cfa/entities/maturity_assessment/data/drift_assessment_repository.dart';
 import 'package:billard_cfa/entities/session/data/drift_session_repository.dart';
 import 'package:billard_cfa/entities/session_record/data/drift_session_record_repository.dart';
+import 'package:billard_cfa/entities/settings/data/drift_settings_repository.dart';
+import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
 import 'package:billard_cfa/features/backup_data/data/drift_backup_marker_repository.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
@@ -106,6 +108,63 @@ void main() {
     ).all()).single;
     expect(attempt.id.value, 'a1');
     expect(attempt.potted, 3);
+  });
+
+  test('a fresh database matches the committed v7 snapshot', () async {
+    final connection = await verifier.startAt(7);
+    final db = AppDatabase(connection);
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 7);
+  });
+
+  test('upgrading v6 to v7 creates the settings table: defaults are read, '
+      'a saved row is kept, and the data stay', () async {
+    final schema = await verifier.schemaAt(6);
+    schema.rawDatabase
+      ..execute(
+        'INSERT INTO attempts (id, created_at, updated_at, student_id, '
+        'session_id, block_id, exercise_number, date, pass_index, potted, '
+        'total) '
+        "VALUES ('a1', '2026-10-01T00:00:00.000Z', "
+        "'2026-10-01T00:00:00.000Z', 's1', 'x1', 'posture', 1, "
+        "'2026-10-01T00:00:00.000', 1, 3, 5)",
+      )
+      ..execute(
+        'INSERT INTO backup_exports (exported_at, attempt_count) '
+        "VALUES ('2026-10-01T00:00:00.000Z', 3)",
+      );
+    final db = AppDatabase(schema.newConnection());
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 7);
+
+    final settings = DriftSettingsRepository(db, TickingClock());
+    expect(await settings.load(), ClubSettings.defaults);
+    await settings.save(ClubSettings.defaults.copyWith(passesRequired: 3));
+    expect((await settings.load()).passesRequired, 3);
+    expect((await DriftBackupMarkerRepository(db).last())!.attemptCount, 3);
+    expect(
+      (await DriftAttemptRepository(db, TickingClock()).all()).single.id.value,
+      'a1',
+    );
+  });
+
+  test('the settings table holds a single row (id = 1)', () async {
+    final db = openMemoryDatabase();
+    addTearDown(db.close);
+
+    await expectLater(
+      db.customStatement(
+        'INSERT INTO app_settings (id, passes_required, alert_threshold, '
+        'recall_stale_sessions, group_failure_share_percent, '
+        'backup_reminder_days, updated_at) '
+        "VALUES (2, 5, 3, 4, 50, 30, '2026-10-01T00:00:00.000Z')",
+      ),
+      throwsA(
+        predicate((e) => e.toString().contains('CHECK constraint failed')),
+      ),
+    );
   });
 
   test('upgrading v4 to v5 creates an empty acquisitions table and keeps '
@@ -268,7 +327,7 @@ void main() {
   test('refuses to open a database written by a newer version', () async {
     final db = AppDatabase(
       NativeDatabase.memory(
-        setup: (raw) => raw.execute('PRAGMA user_version = 7'),
+        setup: (raw) => raw.execute('PRAGMA user_version = 8'),
       ),
     );
     addTearDown(db.close);
@@ -277,9 +336,9 @@ void main() {
       db.customSelect('SELECT 1').get(),
       throwsA(
         isA<DowngradeNotSupported>()
-            .having((e) => e.from, 'from', 7)
-            .having((e) => e.to, 'to', 6)
-            .having((e) => e.toString(), 'message', contains('version 7')),
+            .having((e) => e.from, 'from', 8)
+            .having((e) => e.to, 'to', 7)
+            .having((e) => e.toString(), 'message', contains('version 8')),
       ),
     );
   });

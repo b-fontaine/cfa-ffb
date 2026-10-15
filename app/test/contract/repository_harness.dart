@@ -5,7 +5,10 @@ import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repos
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session/domain/session_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
+import 'package:billard_cfa/entities/settings/domain/settings_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
+import 'package:billard_cfa/shared/lib/rules_config.dart';
+import 'package:billard_cfa/shared/lib/rules_store.dart';
 import 'package:billard_cfa/shared/lib/unit_of_work.dart';
 
 /// Tous les ports de persistance d'une implémentation, ouverts sur un stockage
@@ -20,6 +23,7 @@ class RepositoryHarness {
     required this.acquisitions,
     required this.assessments,
     required this.sessions,
+    required this.settings,
     required this.unitOfWork,
     required this.close,
   });
@@ -32,6 +36,10 @@ class RepositoryHarness {
   final AcquisitionRepository acquisitions;
   final AssessmentRepository assessments;
   final SessionRepository sessions;
+  final SettingsRepository settings;
   final UnitOfWork unitOfWork;
   final Future<void> Function() close;
+
+  /// Valeur courante des règles (ADR 0012), neuve pour chaque stockage.
+  final RulesStore rules = RulesStore(RulesConfig());
 }

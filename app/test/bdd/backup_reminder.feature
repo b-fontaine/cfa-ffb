@@ -58,3 +58,26 @@ Feature: Backup reminder
     And I tap {'Export a backup (JSON)'} text
     And I tap {'Today'} text
     Then I see {'Back up now'} text
+
+  # Lot 9 (ADR 0012) : le délai du rappel est un réglage.
+  Scenario: A shorter reminder delay brings the reminder back sooner
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And {'Léa'} has {2} successful passes on {'puissance 1'}
+    And the backup reminder delay is {7} days
+    And the app is running
+    When I tap {'Back up now'} text
+    And I tap {'Export a backup (JSON)'} text
+    And the day advances by {8} days
+    And I tap {'Today'} text
+    Then I see text containing {'8 days ago'}
+
+  Scenario: A longer reminder delay keeps the reminder silent
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And {'Léa'} has {2} successful passes on {'puissance 1'}
+    And the backup reminder delay is {60} days
+    And the app is running
+    When I tap {'Back up now'} text
+    And I tap {'Export a backup (JSON)'} text
+    And the day advances by {31} days
+    And I tap {'Today'} text
+    Then I do not see {'Back up now'} text

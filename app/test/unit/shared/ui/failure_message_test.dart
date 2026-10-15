@@ -109,6 +109,10 @@ const _expected = <InvariantCode, (String, String)>{
     'This catalogue session is unknown: choose another one.',
     'Cette séance du catalogue est inconnue : choisissez-en une autre.',
   ),
+  InvariantCode.invalidRules: (
+    'These settings are not accepted: nothing was saved.',
+    "Ces réglages ne sont pas acceptés : rien n'a été enregistré.",
+  ),
   InvariantCode.invalidPeriod: (_genericEn, _genericFr),
   InvariantCode.invalidRange: (_genericEn, _genericFr),
   InvariantCode.invalidExerciseRef: (_genericEn, _genericFr),
@@ -126,7 +130,6 @@ const _expected = <InvariantCode, (String, String)>{
   InvariantCode.invalidCatalogue: (_genericEn, _genericFr),
   InvariantCode.invalidDiagram: (_genericEn, _genericFr),
   InvariantCode.invalidSheet: (_genericEn, _genericFr),
-  InvariantCode.invalidRules: (_genericEn, _genericFr),
 };
 
 void main() {
@@ -164,6 +167,6 @@ void main() {
         if (entry.value.$1 == _genericEn) entry.key,
     };
 
-    expect(generic, hasLength(18));
+    expect(generic, hasLength(17));
   });
 }

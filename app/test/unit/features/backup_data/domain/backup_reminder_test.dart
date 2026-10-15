@@ -5,6 +5,7 @@ import 'package:billard_cfa/features/backup_data/domain/backup_reminder.dart';
 import 'package:billard_cfa/features/backup_data/domain/check_backup_reminder.dart';
 import 'package:billard_cfa/features/backup_data/domain/record_backup_done.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
+import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../support/fixed_clock.dart';
@@ -20,8 +21,10 @@ BackupReminder _rule({
   required int attempts,
   DateTime? backupAt,
   int backupAttempts = 0,
+  int staleAfterDays = 30,
 }) => BackupReminder.evaluate(
   now: _now,
+  staleAfterDays: staleAfterDays,
   attemptCount: attempts,
   last: backupAt == null
       ? null
@@ -83,6 +86,70 @@ void main() {
       expect((reminder as StaleBackup).days, 30);
     });
 
+    test('follows the configured delay at its bounds', () {
+      // Sauvegarde du 5/10 (7 jours) : silence à 8 jours, rappel dès 7 jours.
+      final backup = DateTime(2026, 10, 5, 12);
+
+      expect(
+        _rule(
+          attempts: 4,
+          backupAt: backup,
+          backupAttempts: 4,
+          staleAfterDays: 8,
+        ),
+        isA<NoBackupReminder>(),
+      );
+      final reminder = _rule(
+        attempts: 4,
+        backupAt: backup,
+        backupAttempts: 4,
+        staleAfterDays: 7,
+      );
+      expect(reminder, isA<StaleBackup>());
+      expect((reminder as StaleBackup).days, 7);
+    });
+
+    test('accepts the smallest and the largest delay', () {
+      final today = DateTime(2026, 10, 12, 8);
+
+      expect(
+        _rule(
+          attempts: 4,
+          backupAt: today,
+          backupAttempts: 4,
+          staleAfterDays: 1,
+        ),
+        isA<NoBackupReminder>(),
+      );
+      expect(
+        _rule(
+          attempts: 4,
+          backupAt: DateTime(2026, 10, 11),
+          backupAttempts: 4,
+          staleAfterDays: 1,
+        ),
+        isA<StaleBackup>(),
+      );
+      expect(
+        _rule(
+          attempts: 4,
+          backupAt: DateTime(2025, 10, 13),
+          backupAttempts: 4,
+          staleAfterDays: 365,
+        ),
+        isA<NoBackupReminder>(),
+      );
+      expect(
+        _rule(
+          attempts: 4,
+          backupAt: DateTime(2025, 10, 12),
+          backupAttempts: 4,
+          staleAfterDays: 365,
+        ),
+        isA<StaleBackup>(),
+      );
+    });
+
     test('prefers the age when the backup is old and passes are new', () {
       expect(
         _rule(attempts: 9, backupAt: _backup, backupAttempts: 4),
@@ -102,8 +169,8 @@ void main() {
       clock = FixedClock(_now);
     });
 
-    CheckBackupReminder check() =>
-        CheckBackupReminder(attempts, markers, clock);
+    CheckBackupReminder check([RulesConfig? rules]) =>
+        CheckBackupReminder(attempts, markers, clock, rules ?? RulesConfig());
 
     test('check is silent on an empty club', () async {
       expect(await check()(), isA<NoBackupReminder>());
@@ -140,6 +207,18 @@ void main() {
       final reminder = await check()();
 
       expect((reminder as StaleBackup).days, 31);
+    });
+
+    test('reads the delay from the rules, not a constant', () async {
+      await attempts.add(_attempt('a1'));
+      await RecordBackupDone(attempts, markers, clock)();
+      clock.advance(const Duration(days: 8));
+
+      expect(await check()(), isA<NoBackupReminder>());
+      expect(
+        await check(RulesConfig(backupReminderDays: 7))(),
+        isA<StaleBackup>(),
+      );
     });
   });
 }

@@ -3,13 +3,15 @@ import 'package:billard_cfa/shared/lib/default_session_shapes.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/session_shape.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:injectable/injectable.dart';
 
 part 'rules_config.freezed.dart';
 
 /// Seuils et paramètres des règles : de la configuration, jamais des
 /// constantes cachées dans les règles (ADR 0003).
-@lazySingleton
+///
+/// La valeur courante vient de `RulesStore` (ADR 0012) : ne pas conserver une
+/// instance à travers un changement de réglage ; ne jamais l'injecter dans un
+/// singleton.
 @freezed
 abstract class RulesConfig with _$RulesConfig {
   /// Configuration validée. Les valeurs par défaut sont celles de l'ADR 0003.
@@ -25,11 +27,11 @@ abstract class RulesConfig with _$RulesConfig {
     @Default(2) int maxPassesPerExercisePerSession,
     @Default(2) int minDistinctExercises,
     @Default(3) int readinessMinScore,
+    @Default(30) int backupReminderDays,
     @Default(defaultSessionShapes) Map<Audience, SessionShape> shapes,
   }) = _RulesConfig;
 
-  /// Configuration par défaut enregistrée pour l'injection.
-  @factoryMethod
+  /// Configuration par défaut (ADR 0003).
   factory RulesConfig.standard() => RulesConfig();
 
   RulesConfig._() {
@@ -50,6 +52,8 @@ abstract class RulesConfig with _$RulesConfig {
         groupFailureSharePercent <= 100 &&
         readinessMinScore >= 1 &&
         readinessMinScore <= 4 &&
+        backupReminderDays >= 1 &&
+        backupReminderDays <= 365 &&
         trendWindow >= 2 &&
         Audience.values.every(
           (audience) =>

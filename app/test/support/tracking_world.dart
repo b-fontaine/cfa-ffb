@@ -13,6 +13,7 @@ import 'package:billard_cfa/entities/session/domain/session_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
+import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/features/assess_maturity/domain/assessment_outcome.dart';
@@ -20,6 +21,7 @@ import 'package:billard_cfa/features/backup_data/domain/export_backup.dart';
 import 'package:billard_cfa/features/backup_data/domain/import_backup.dart';
 import 'package:billard_cfa/features/backup_data/domain/import_summary.dart';
 import 'package:billard_cfa/features/change_audience/domain/audience_change_outcome.dart';
+import 'package:billard_cfa/features/manage_settings/domain/save_settings.dart';
 import 'package:billard_cfa/features/place_student/domain/mark_block_acquired.dart';
 import 'package:billard_cfa/features/record_results/domain/open_or_resume_session.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
@@ -37,6 +39,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' show Environment;
 
 import 'fixed_clock.dart';
+import 'settings_names.dart';
 
 /// Monde d'un scénario de suivi : le graphe de dépendances réel (get_it +
 /// repositories en mémoire + catalogue de l'asset) et les identifiants
@@ -70,6 +73,9 @@ class TrackingWorld {
   /// Dernière sauvegarde exportée (JSON) et dernier résultat d'import.
   late String backup;
   late Result<ImportSummary> lastImport;
+
+  /// Dernier enregistrement de réglage (accepté ou refusé).
+  late Result<ClubSettings> lastSettingsSave;
 
   static Future<TrackingWorld> open(WidgetTester tester, String label) async {
     await getIt.reset();
@@ -378,9 +384,18 @@ class TrackingWorld {
 
   /// Recompose un graphe de dépendances neuf (club vide, sans saison) puis
   /// importe [content].
-  Future<void> importIntoEmptyClub(WidgetTester tester, String content) async {
+  ///
+  /// [settings] : réglages déjà enregistrés dans ce club vide.
+  Future<void> importIntoEmptyClub(
+    WidgetTester tester,
+    String content, {
+    ClubSettings? settings,
+  }) async {
     await getIt.reset();
     await configureDependencies(environment: Environment.test);
+    if (settings != null) {
+      valueOf(await getIt<SaveSettings>()(settings));
+    }
     // Les règles d'import lisent les catalogues : E/S réelle, hors faux temps.
     await tester.runAsync(() async {
       await getIt<CatalogueRepository>().load();
@@ -391,6 +406,31 @@ class TrackingWorld {
 
   Future<void> importAgain(String content) async {
     lastImport = await getIt<ImportBackup>()(content);
+  }
+
+  /// La sauvegarde exportée sans la clé `data.settings`, au format [version].
+  String backupWithoutSettings(int version) {
+    final document = jsonDecode(backup) as Map<String, Object?>;
+    document['schemaVersion'] = version;
+    (document['data']! as Map<String, Object?>).remove('settings');
+    return jsonEncode(document);
+  }
+
+  /// La sauvegarde exportée dont le réglage [name] vaut [value].
+  String backupWithSetting(String name, int value) {
+    final document = jsonDecode(backup) as Map<String, Object?>;
+    final data = document['data']! as Map<String, Object?>;
+    (data['settings']! as Map<String, Object?>)[SettingsNames.key(name)] =
+        value;
+    return jsonEncode(document);
+  }
+
+  /// Valeur du réglage [name] écrite dans la sauvegarde exportée.
+  int backupSetting(String name) {
+    final document = jsonDecode(backup) as Map<String, Object?>;
+    final data = document['data']! as Map<String, Object?>;
+    final settings = data['settings']! as Map<String, Object?>;
+    return settings[SettingsNames.key(name)]! as int;
   }
 
   /// La sauvegarde exportée, avec `schemaVersion` remplacé par [version].

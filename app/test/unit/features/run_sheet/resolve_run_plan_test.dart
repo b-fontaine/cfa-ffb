@@ -13,6 +13,7 @@ import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
+import 'package:billard_cfa/shared/lib/rules_store.dart';
 import 'package:billard_cfa/shared/lib/session_shape.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -57,7 +58,7 @@ void main() {
     world.groups,
     world.attempts,
     world.acquisitions,
-    world.config,
+    RulesStore(world.config),
   );
 
   ResolveRunPlan build({
@@ -72,7 +73,7 @@ void main() {
       sessions,
       domain.catalogueRepository,
       _Diagrams(library ?? () async => DiagramLibrary(diagrams)),
-      rules ?? RulesConfig(),
+      RulesStore(rules ?? RulesConfig()),
       validated(domain),
     );
   }
@@ -123,7 +124,7 @@ void main() {
       sessions,
       world.catalogueRepository,
       _Diagrams(() async => DiagramLibrary(const [])),
-      RulesConfig(),
+      RulesStore(RulesConfig()),
       validated(world),
     );
 
@@ -263,6 +264,25 @@ void main() {
     expect(plan.passesRequired, 3);
   });
 
+  test('reads the rules at each call, not at construction', () async {
+    final store = RulesStore(RulesConfig());
+    final domain = DomainWorld(catalogue: catalogue);
+    final resolve = ResolveRunPlan(
+      FixtureSessionSheetRepository(catalogueFixture()),
+      sessions,
+      domain.catalogueRepository,
+      _Diagrams(() async => DiagramLibrary(const [])),
+      store,
+      validated(domain),
+    );
+    final before = ok(await resolve(SheetId('demi-bille-1')));
+
+    store.current = RulesConfig(passesRequired: 2);
+    final after = ok(await resolve(SheetId('demi-bille-1')));
+
+    expect([before.passesRequired, after.passesRequired], [5, 2]);
+  });
+
   test('resolves the diagrams of the exercises and the cited ones', () async {
     final sheets = [
       for (final s in catalogueFixture())
@@ -292,7 +312,7 @@ void main() {
             _diagram('autre'),
           ]),
         ),
-        RulesConfig(),
+        RulesStore(RulesConfig()),
         validated(DomainWorld(catalogue: catalogue)),
       )(SheetId('demi-bille-1')),
     );

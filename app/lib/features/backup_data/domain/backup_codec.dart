@@ -18,7 +18,7 @@ class BackupCodec {
   static const format = 'billard-cfa-backup';
 
   /// Version du format écrite par [encode] ; propre au format JSON.
-  static const currentVersion = 1;
+  static const currentVersion = 2;
 
   /// Taille maximale (en caractères) d'un fichier lu : au-delà, ce n'est pas
   /// une sauvegarde d'un club (plusieurs saisons tiennent en quelques Mo).
@@ -28,7 +28,7 @@ class BackupCodec {
   static const maxDepth = 12;
 
   /// Versions que [decode] sait lire.
-  static const supportedVersions = {1};
+  static const supportedVersions = {1, 2};
 
   String encode(BackupSnapshot snapshot, {required DateTime exportedAt}) {
     final document = <String, Object?>{
@@ -58,7 +58,11 @@ class BackupCodec {
     if (version is! int || !supportedVersions.contains(version)) {
       throw const InvariantViolation(InvariantCode.backupVersionUnsupported);
     }
-    return const BackupDecoder().decode(parsed['data']);
+    // Le format 2 ajoute les réglages du club (`data.settings`, ADR 0012).
+    return const BackupDecoder().decode(
+      parsed['data'],
+      withSettings: version >= 2,
+    );
   }
 
   /// Vrai si l'imbrication dépasse [maxDepth] ; les crochets et accolades des

@@ -10,6 +10,8 @@ import 'package:billard_cfa/features/backup_data/presentation/ui/backup_reminder
 import 'package:billard_cfa/features/backup_data/presentation/ui/backup_view.dart';
 import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_change_bloc.dart';
 import 'package:billard_cfa/features/change_audience/presentation/ui/audience_change_card.dart';
+import 'package:billard_cfa/features/manage_settings/presentation/bloc/settings_bloc.dart';
+import 'package:billard_cfa/features/manage_settings/presentation/ui/settings_form.dart';
 import 'package:billard_cfa/features/manage_students/domain/get_club_overview.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_erasure_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_form_bloc.dart';
@@ -436,6 +438,12 @@ Widget buildBackupViewUseCase(BuildContext context) => WorldScope(
     create: (_) => getIt<BackupBloc>()..add(const BackupEvent.started()),
     child: _scroll(const BackupView(fileName: 'sauvegarde-2026-10-12.json')),
   ),
+);
+
+@widgetbook.UseCase(name: 'Réglages', type: SettingsForm, path: _path)
+Widget buildSettingsFormUseCase(BuildContext context) => BlocProvider(
+  create: (_) => getIt<SettingsBloc>()..add(const SettingsEvent.started()),
+  child: _scroll(const SettingsForm()),
 );
 
 @widgetbook.UseCase(

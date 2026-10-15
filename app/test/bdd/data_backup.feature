@@ -85,3 +85,44 @@ Feature: Sauvegarde et restauration des données
     When j'importe cette sauvegarde dans un club vide avec un bloc acquis inconnu
     Then l'import est refusé avec le motif {'backupUnknownBlock'}
     And le club compte {0} blocs acquis
+
+  # Lot 9 (ADR 0012) : les réglages font partie de la sauvegarde (format 2) ;
+  # un fichier du format 1 reste lisible.
+  Scenario: La sauvegarde exportée contient les réglages
+    Given je règle {'passages requis'} à {3}
+    When j'exporte une sauvegarde du club
+    Then la sauvegarde contient le réglage {'passages requis'} à {3}
+
+  Scenario: Restaurer les réglages avec les données
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And je règle {'passages requis'} à {3}
+    And je règle {'délai rappel sauvegarde'} à {14}
+    And j'exporte une sauvegarde du club
+    When j'importe cette sauvegarde dans un club vide
+    Then le club compte {1} élèves et {0} passages
+    And le réglage {'passages requis'} vaut {3}
+    And le réglage {'délai rappel sauvegarde'} vaut {14}
+
+  Scenario: Importer un fichier du format 1 sans réglages garde les valeurs par défaut d'un club neuf
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And {'Léa'} a réussi {5} passages sur {'puissance 1'} lors de séances précédentes
+    And j'exporte une sauvegarde du club
+    When j'importe cette sauvegarde de format {1} sans réglages dans un club vide
+    Then le club compte {1} élèves et {5} passages
+    And le réglage {'passages requis'} vaut {5}
+
+  Scenario: Importer un fichier sans réglages laisse les réglages du club inchangés
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And j'exporte une sauvegarde du club
+    When j'importe cette sauvegarde sans réglages dans un club vide réglé à {3} passages requis
+    Then le club compte {1} élèves et {0} passages
+    And le réglage {'passages requis'} vaut {3}
+
+  Scenario: Refuser une sauvegarde dont un réglage est hors bornes sans rien écrire
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And {'Léa'} a réussi {5} passages sur {'puissance 1'} lors de séances précédentes
+    And j'exporte une sauvegarde du club
+    When j'importe cette sauvegarde dans un club vide avec le réglage {'seuil alerte'} à {9}
+    Then l'import est refusé avec le motif {'backupInvalid'}
+    And le club compte {0} élèves et {0} passages
+    And le réglage {'seuil alerte'} vaut {3}

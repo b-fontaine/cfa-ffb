@@ -2,6 +2,7 @@ import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/features/assess_maturity/presentation/bloc/assessment_bloc.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_bloc.dart';
 import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_change_bloc.dart';
+import 'package:billard_cfa/features/manage_settings/presentation/bloc/settings_bloc.dart';
 import 'package:billard_cfa/features/manage_students/domain/club_overview.dart';
 import 'package:billard_cfa/features/manage_students/domain/get_club_overview.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_erasure_bloc.dart';
@@ -21,6 +22,7 @@ import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_pag
 import 'package:billard_cfa/pages/more/presentation/more_page.dart';
 import 'package:billard_cfa/pages/record_session/presentation/record_session_page.dart';
 import 'package:billard_cfa/pages/record_setup/presentation/record_setup_page.dart';
+import 'package:billard_cfa/pages/settings/presentation/settings_page.dart';
 import 'package:billard_cfa/pages/student_form/presentation/student_form_page.dart';
 import 'package:billard_cfa/pages/student_sheet/presentation/student_sheet_page.dart';
 import 'package:billard_cfa/pages/students/presentation/students_page.dart';
@@ -183,7 +185,13 @@ Widget buildExerciseSheetPageUseCase(BuildContext context) => WorldScope(
 
 @widgetbook.UseCase(name: 'Plus', type: MorePage, path: _path)
 Widget buildMorePageUseCase(BuildContext context) =>
-    MorePage(onOpenBackup: () {});
+    MorePage(onOpenBackup: () {}, onOpenSettings: () {});
+
+@widgetbook.UseCase(name: 'Réglages', type: SettingsPage, path: _path)
+Widget buildSettingsPageUseCase(BuildContext context) => BlocProvider(
+  create: (_) => getIt<SettingsBloc>()..add(const SettingsEvent.started()),
+  child: SettingsPage(onBack: () {}),
+);
 
 @widgetbook.UseCase(name: 'Sauvegarde', type: BackupPage, path: _path)
 Widget buildBackupPageUseCase(BuildContext context) => WorldScope(

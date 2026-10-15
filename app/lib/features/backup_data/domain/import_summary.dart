@@ -3,7 +3,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'import_summary.freezed.dart';
 
-/// Nombre d'éléments écrits par un import (fusion par identifiant).
+/// Nombre d'éléments écrits par un import (fusion par identifiant) ;
+/// [settings] : la sauvegarde contient les réglages du club.
 @freezed
 abstract class ImportSummary with _$ImportSummary {
   const factory ImportSummary({
@@ -15,6 +16,7 @@ abstract class ImportSummary with _$ImportSummary {
     required int assessments,
     required int plannedSessions,
     required int blockAcquisitions,
+    @Default(false) bool settings,
   }) = _ImportSummary;
 
   const ImportSummary._();
@@ -28,5 +30,6 @@ abstract class ImportSummary with _$ImportSummary {
     assessments: snapshot.assessments.length,
     plannedSessions: snapshot.plannedSessions.length,
     blockAcquisitions: snapshot.blockAcquisitions.length,
+    settings: snapshot.settings != null,
   );
 }

@@ -5,12 +5,14 @@ sealed class BackupReminder {
   const BackupReminder();
 
   /// Règle pure. Pas de rappel tant qu'aucun passage n'a été saisi ; sinon
-  /// sauvegarde ancienne (30 jours révolus ou plus), puis passages saisis
+  /// sauvegarde ancienne ([staleAfterDays] jours révolus ou plus, réglable :
+  /// `RulesConfig.backupReminderDays`), puis passages saisis
   /// depuis la dernière sauvegarde, puis aucune sauvegarde jamais faite.
   factory BackupReminder.evaluate({
     required DateTime now,
     required int attemptCount,
     required BackupMarker? last,
+    required int staleAfterDays,
   }) {
     if (attemptCount <= 0) return const NoBackupReminder();
     if (last == null) return const NeverBackedUp();
@@ -20,9 +22,6 @@ sealed class BackupReminder {
     if (entered > 0) return NewPassesSinceBackup(entered);
     return const NoBackupReminder();
   }
-
-  /// Nombre de jours révolus à partir duquel une sauvegarde est « ancienne ».
-  static const staleAfterDays = 30;
 
   static int _daysBetween(DateTime from, DateTime to) => DateTime.utc(
     to.year,

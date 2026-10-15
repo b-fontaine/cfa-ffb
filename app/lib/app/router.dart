@@ -12,6 +12,7 @@ import 'package:billard_cfa/features/backup_data/presentation/ui/backup_reminder
 import 'package:billard_cfa/features/browse_sheets/presentation/bloc/sheet_catalogue_bloc.dart';
 import 'package:billard_cfa/features/browse_sheets/presentation/bloc/sheet_detail_bloc.dart';
 import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_change_bloc.dart';
+import 'package:billard_cfa/features/manage_settings/presentation/bloc/settings_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_erasure_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_form_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/students_bloc.dart';
@@ -33,6 +34,7 @@ import 'package:billard_cfa/pages/more/presentation/more_page.dart';
 import 'package:billard_cfa/pages/not_found/presentation/not_found_page.dart';
 import 'package:billard_cfa/pages/record_history/presentation/record_history_page.dart';
 import 'package:billard_cfa/pages/session_planner/presentation/session_planner_page.dart';
+import 'package:billard_cfa/pages/settings/presentation/settings_page.dart';
 import 'package:billard_cfa/pages/sheet_catalogue/presentation/sheet_catalogue_page.dart';
 import 'package:billard_cfa/pages/sheet_detail/presentation/sheet_detail_page.dart';
 import 'package:billard_cfa/pages/sheet_guide/presentation/sheet_guide_page.dart';
@@ -66,6 +68,7 @@ abstract final class AppRoutes {
   static const exercises = '/exercises';
   static const more = '/more';
   static const backup = '/backup';
+  static const settings = '/settings';
   static const catalogue = '/catalogue';
 
   /// Segments des sous-pages d'une séance du catalogue : chemin des routes ET
@@ -652,8 +655,18 @@ GoRouter buildRouter() => GoRouter(
         ),
         GoRoute(
           path: AppRoutes.more,
-          builder: (context, state) =>
-              MorePage(onOpenBackup: () => context.go(AppRoutes.backup)),
+          builder: (context, state) => MorePage(
+            onOpenBackup: () => context.go(AppRoutes.backup),
+            onOpenSettings: () => context.go(AppRoutes.settings),
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.settings,
+          builder: (context, state) => BlocProvider(
+            create: (_) =>
+                getIt<SettingsBloc>()..add(const SettingsEvent.started()),
+            child: SettingsPage(onBack: () => context.go(AppRoutes.more)),
+          ),
         ),
       ],
     ),

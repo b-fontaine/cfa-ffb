@@ -31,6 +31,7 @@ String failureMessage(AppLocalizations l10n, Failure failure) =>
         InvariantCode.backupUnknownBlock => l10n.failBackupUnknownBlock,
         InvariantCode.blockAlreadyAcquired => l10n.failBlockAlreadyAcquired,
         InvariantCode.unknownSheet => l10n.failUnknownSheet,
+        InvariantCode.invalidRules => l10n.failInvalidRules,
         InvariantCode.invalidPeriod ||
         InvariantCode.invalidRange ||
         InvariantCode.invalidExerciseRef ||
@@ -47,7 +48,6 @@ String failureMessage(AppLocalizations l10n, Failure failure) =>
         InvariantCode.recallEqualsMainBlock ||
         InvariantCode.invalidCatalogue ||
         InvariantCode.invalidDiagram ||
-        InvariantCode.invalidSheet ||
-        InvariantCode.invalidRules => l10n.failGeneric,
+        InvariantCode.invalidSheet => l10n.failGeneric,
       },
     };

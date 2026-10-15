@@ -8,7 +8,7 @@ import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
-import 'package:billard_cfa/shared/lib/rules_config.dart';
+import 'package:billard_cfa/shared/lib/rules_store.dart';
 import 'package:injectable/injectable.dart';
 
 /// Exercices validés (par passages ou acquis au positionnement, ADR 0008) de
@@ -31,7 +31,7 @@ class LoadValidatedExercises {
   final GroupRepository _groups;
   final AttemptRepository _attempts;
   final AcquisitionRepository _acquisitions;
-  final RulesConfig _config;
+  final RulesStore _config;
 
   Future<Map<StudentId, Set<ExerciseRef>>> call({
     required Audience audience,
@@ -55,7 +55,7 @@ class LoadValidatedExercises {
         attempts: await _attempts.forStudent(student.id),
         acquisitions: await _acquisitions.forStudent(student.id),
         rates: catalogue.rates,
-        config: _config,
+        config: _config.current,
       );
       validated[student.id] = progress.validated;
     }

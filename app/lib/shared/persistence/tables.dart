@@ -193,3 +193,27 @@ class BackupExports extends Table {
   /// Passages du club au moment de l'export.
   IntColumn get attemptCount => integer()();
 }
+
+/// Réglages du club (ADR 0012) : une seule ligne (`id = 1`) ; sans ligne, les
+/// valeurs par défaut s'appliquent. Donnée de configuration : ni `seq`, ni
+/// identifiant UUID, ni suppression logique. Les bornes sont celles de
+/// `RulesConfig`, pas de la base.
+@DataClassName('AppSettingsRow')
+class AppSettings extends Table {
+  IntColumn get id => integer().customConstraint('NOT NULL CHECK (id = 1)')();
+
+  IntColumn get passesRequired => integer()();
+
+  IntColumn get alertThreshold => integer()();
+
+  IntColumn get recallStaleSessions => integer()();
+
+  IntColumn get groupFailureSharePercent => integer()();
+
+  IntColumn get backupReminderDays => integer()();
+
+  TextColumn get updatedAt => text().map(const IsoDateTimeConverter())();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}

@@ -82,6 +82,7 @@ class BackupView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     for (final line in _lines(l10n, preview)) Text(line),
+                    if (preview.settings) Text(l10n.backupPreviewSettings),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
                       l10n.backupMergeNote,

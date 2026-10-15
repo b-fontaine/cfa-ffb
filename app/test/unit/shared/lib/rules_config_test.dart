@@ -26,6 +26,7 @@ void main() {
       expect(config.maxPassesPerExercisePerSession, 2);
       expect(config.minDistinctExercises, 2);
       expect(config.readinessMinScore, 3);
+      expect(config.backupReminderDays, 30);
     });
 
     test('children phases are 10/20/35/20/5 (90 min)', () {
@@ -52,6 +53,22 @@ void main() {
   });
 
   group('validation', () {
+    test('accepts the backup reminder delay from 1 to 365 days', () {
+      expect(RulesConfig(backupReminderDays: 1).backupReminderDays, 1);
+      expect(RulesConfig(backupReminderDays: 365).backupReminderDays, 365);
+    });
+
+    test('refuses a backup reminder delay of 0 or 366 days', () {
+      expect(
+        () => RulesConfig(backupReminderDays: 0),
+        violation(InvariantCode.invalidRules),
+      );
+      expect(
+        () => RulesConfig(backupReminderDays: 366),
+        violation(InvariantCode.invalidRules),
+      );
+    });
+
     test('accepts passesRequired 1', () {
       expect(RulesConfig(passesRequired: 1).passesRequired, 1);
     });

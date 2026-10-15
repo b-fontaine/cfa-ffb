@@ -10,6 +10,8 @@ import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/entities/session/data/drift_session_repository.dart';
 import 'package:billard_cfa/entities/session_record/data/drift_session_record_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
+import 'package:billard_cfa/entities/settings/data/drift_settings_repository.dart';
+import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_codec.dart';
@@ -20,6 +22,7 @@ import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
+import 'package:billard_cfa/shared/lib/rules_store.dart';
 import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -105,9 +108,11 @@ void main() {
           attempt(ref('a', 1), potted: 4, id: 'a2', passIndex: 2),
         ],
         blockAcquisitions: const [],
+        settings: ClubSettings.defaults.copyWith(passesRequired: 3),
       ),
       exportedAt: DateTime.utc(2026, 10, 12),
     );
+    final store = RulesStore(RulesConfig());
     final import = ImportBackup(
       DriftSeasonRepository(db, clock),
       DriftStudentRepository(db, clock),
@@ -125,6 +130,8 @@ void main() {
         clock,
       ),
       DriftUnitOfWork(db),
+      DriftSettingsRepository(db, clock),
+      store,
     );
 
     await expectLater(import(content), throwsStateError);
@@ -134,6 +141,13 @@ void main() {
     expect(await DriftGroupRepository(db, clock).all(), isEmpty);
     expect(await DriftSessionRecordRepository(db, clock).all(), isEmpty);
     expect(await DriftAttemptRepository(db, clock).all(), isEmpty);
+    // Les réglages, écrits dans la même unité de travail, sont annulés ; la
+    // valeur courante des règles n'a pas changé.
+    expect(
+      await DriftSettingsRepository(db, clock).load(),
+      ClubSettings.defaults,
+    );
+    expect(store.current.passesRequired, 5);
   });
 
   test('a refused file is reported as a failure, not thrown', () async {
@@ -157,6 +171,8 @@ void main() {
         clock,
       ),
       DriftUnitOfWork(db),
+      DriftSettingsRepository(db, clock),
+      RulesStore(RulesConfig()),
     );
 
     final result = await import('{"format": "autre"}');

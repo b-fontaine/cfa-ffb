@@ -5,11 +5,13 @@ import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repos
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session/domain/session_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
+import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_codec.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/rules_store.dart';
 import 'package:injectable/injectable.dart';
 
 /// Cas d'usage : exporter toutes les données du club en JSON versionné.
@@ -26,6 +28,7 @@ class ExportBackup {
     this._plannedSessions,
     this._codec,
     this._clock,
+    this._rules,
   );
 
   final SeasonRepository _seasons;
@@ -38,6 +41,7 @@ class ExportBackup {
   final SessionRepository _plannedSessions;
   final BackupCodec _codec;
   final Clock _clock;
+  final RulesStore _rules;
 
   /// Contenu JSON de la sauvegarde.
   Future<Result<String>> call() => runGuarded(() async {
@@ -50,6 +54,7 @@ class ExportBackup {
       blockAcquisitions: await _acquisitions.all(),
       assessments: await _assessments.all(),
       plannedSessions: await _plannedSessions.getAll(),
+      settings: ClubSettings.fromRules(_rules.current),
     );
     return _codec.encode(snapshot, exportedAt: _clock.now());
   });

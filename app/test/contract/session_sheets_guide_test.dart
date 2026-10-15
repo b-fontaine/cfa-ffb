@@ -20,6 +20,7 @@ import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
+import 'package:billard_cfa/shared/lib/rules_store.dart';
 import 'package:billard_cfa/shared/ui/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -69,13 +70,13 @@ void main() {
       InMemorySessionRepository(),
       AssetCatalogueRepository.fromBundle(),
       AssetDiagramRepository.fromBundle(),
-      RulesConfig(),
+      RulesStore(RulesConfig()),
       LoadValidatedExercises(
         InMemoryStudentRepository(),
         InMemoryGroupRepository(),
         InMemoryAttemptRepository(),
         InMemoryAcquisitionRepository(),
-        RulesConfig(),
+        RulesStore(RulesConfig()),
       ),
     );
   });

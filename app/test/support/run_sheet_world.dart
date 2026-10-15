@@ -14,6 +14,7 @@ import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_ticker.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
+import 'package:billard_cfa/shared/lib/rules_store.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 
 import 'domain_world.dart';
@@ -80,13 +81,13 @@ class RunSheetWorld {
       sessions,
       domain.catalogueRepository,
       _Diagrams(DiagramLibrary(diagrams)),
-      config,
+      RulesStore(config),
       LoadValidatedExercises(
         domain.students,
         domain.groups,
         domain.attempts,
         domain.acquisitions,
-        config,
+        RulesStore(config),
       ),
     );
   }

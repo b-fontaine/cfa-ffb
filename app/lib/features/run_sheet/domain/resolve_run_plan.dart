@@ -15,7 +15,7 @@ import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
-import 'package:billard_cfa/shared/lib/rules_config.dart';
+import 'package:billard_cfa/shared/lib/rules_store.dart';
 import 'package:billard_cfa/shared/lib/session_shape.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:injectable/injectable.dart';
@@ -23,8 +23,9 @@ import 'package:injectable/injectable.dart';
 /// Cas d'usage : le déroulé d'une séance du catalogue pour un public.
 ///
 /// Accueil ou rappel, théorie, initiation, exercices, jeu, bilan, avec les
-/// minutes calculées (`RulesConfig.shapes`), les taux du catalogue
-/// d'entraînement, les schémas par identifiant et le bloc du rappel de
+/// minutes calculées (`RulesConfig.shapes`, lues dans le `RulesStore` à
+/// chaque appel : ADR 0012), les taux du catalogue d'entraînement, les
+/// schémas par identifiant et le bloc du rappel de
 /// résultats, et l'exercice du créneau de rappel choisi d'après le suivi des
 /// élèves (ADR 0011). Sans `audience`, le public est celui de la séance
 /// planifiée `sessionId` ; à défaut, les enfants. Identifiant inconnu :
@@ -45,7 +46,7 @@ class ResolveRunPlan {
   final SessionRepository _sessions;
   final CatalogueRepository _catalogue;
   final DiagramRepository _diagrams;
-  final RulesConfig _rules;
+  final RulesStore _rules;
   final LoadValidatedExercises _validated;
 
   Future<Result<RunPlan>> call(
@@ -99,7 +100,7 @@ class ResolveRunPlan {
     final timing = sheetTiming(
       sheet,
       audience: resolved,
-      shapes: _rules.shapes,
+      shapes: _rules.current.shapes,
     );
     return RunPlan(
       sheet: sheet,
@@ -107,7 +108,7 @@ class ResolveRunPlan {
       partCount: partCountOf(all, sheet.technique),
       timing: timing,
       steps: _steps(sheet, resolved, timing),
-      passesRequired: _rules.passesRequired,
+      passesRequired: _rules.current.passesRequired,
       previous: previous,
       previousPartCount: previous == null
           ? null

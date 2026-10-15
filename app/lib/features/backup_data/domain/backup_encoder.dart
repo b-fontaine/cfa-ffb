@@ -5,6 +5,7 @@ import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessm
 import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
+import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
 
@@ -27,6 +28,16 @@ class BackupEncoder {
     'blockAcquisitions': [
       for (final a in snapshot.blockAcquisitions) _encodeAcquisition(a),
     ],
+    if (snapshot.settings case final settings?)
+      'settings': _encodeSettings(settings),
+  };
+
+  Map<String, Object?> _encodeSettings(ClubSettings settings) => {
+    'passesRequired': settings.passesRequired,
+    'alertThreshold': settings.alertThreshold,
+    'recallStaleSessions': settings.recallStaleSessions,
+    'groupFailureSharePercent': settings.groupFailureSharePercent,
+    'backupReminderDays': settings.backupReminderDays,
   };
 
   Map<String, Object?> _encodeSeason(Season season) => {
