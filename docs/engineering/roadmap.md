@@ -24,7 +24,7 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
 | # | Constat | Où |
 |---|---|---|
 | F1 | En présentation, la légende du bas est tronquée à 1280 × 800 ; les commandes du lecteur sont coupées — traité par le lot **U3** | `pages/sheet_presentation` |
-| F2 | Diagramme bille fantôme : l'étiquette « Bille fantôme » chevauche la ligne de visée et la bille ; le cercle fantôme disparaît sous la pointe de flèche ; même défaut sur les repères numérotés (« 3 », « 5 » sous la trajectoire) — traité par le lot **U2** | `shared/ui/ghost_aim_diagram`, `table_diagram` |
+| F2 | ~~Diagramme bille fantôme : l'étiquette « Bille fantôme » chevauche la ligne de visée et la bille ; le cercle fantôme disparaît sous la pointe de flèche ; même défaut sur les repères numérotés (« 3 », « 5 » sous la trajectoire)~~ — corrigé par le lot **U2** (livré le 2026-10-15, voir [design-system.md](design-system.md#lisibilité-des-schémas-lot-u2-r5-corrige-f2)) ; **restes mesurés** : un schéma à 310 px et la présentation sous 900 px sur les schémas denses (« Limites connues ») | `shared/ui/ghost_aim_diagram`, `table_diagram` |
 | F3 | Guide : l'en-tête (titre, public, thème, barre d'étape, minuteur, boutons) occupe ~45 % de l'écran desktop et ~60 % sur mobile ; le schéma d'exercice est sous la ligne de flottaison — traité par le lot **U4** | `pages/sheet_guide` |
 | F4 | Saisie : le sélecteur d'exercice est un bouton sans libellé accessible, au libellé tronqué sur mobile — traité par le lot **U5** | `pages/record_session` |
 | F5 | ~~Onglet « Résultats » : aucun historique des séances saisies ; impossible de relire, corriger ou supprimer un passage~~ — corrigé (ADR 0006) | `pages/record_history` |
@@ -46,7 +46,6 @@ revues séparées, `check.sh --full`).
 
 | Lot | Contenu | Remplace / corrige |
 |---|---|---|
-| **U2** Lisibilité des schémas | annotations hors trajectoire, halo, queue non coupée, repères à la taille de la blanche, médaillon `inset` (quantité de bille), étiquettes ≥ 16 px en présentation | F2 |
 | **U3** Présentation plein écran | `DiagramStage` (table sur la plus grande dimension, légende réservée, contrôles en barre basse), plein écran natif, « tournez l'appareil » | F1, lot 13 |
 | **U4** Guide en mode « Mener » | route hors shell, en-tête compact + frise des phases, schéma en premier, sections repliées, badges de provenance masqués sauf mode « Relecture », minuteur en en-tête, barre basse Précédent / Noter / Suivant | F3, lot 12 |
 | **U5** Saisie rapide en grille | grille élève × passage avec `PassDots`, sélecteur d'exercice nommé et non tronqué, liste compacte sur téléphone, historique groupé par élève, feuille basse depuis le guide | F4 |
@@ -63,7 +62,8 @@ revues séparées, `check.sh --full`).
 2. Revue T8 du plan tailles et illustrations : `architecte-fsd`, `testeur-bdd`,
    `relecteur-pedagogique`, dans un contexte séparé.
 3. Corriger F7 (un texte « pas de rappel : une notion par séance enfants »).
-   F1 et F2 sont absorbés par U3 et U2, pour ne pas corriger deux fois.
+   F1 est absorbé par U3 pour ne pas corriger deux fois ; F2 est corrigé par
+   U2 (livré).
 4. ~~Faire trancher par l'animateur~~ — **tranché le 2026-10-14** : D5 =
    **ajouter** l'illustration `contact_height` ; questions 2 à 4 de
    `docs/knowledge/08-lacunes-et-questions-ouvertes.md` (unité « séance »,
@@ -86,8 +86,6 @@ Lots UX en H0 :
   (U5), `NowCard` (U7), `DiagramStage` (U3).
   Les écrans touchés par les lots 7 et 8 (fiche élève, séance suggérée) seront
   repris par U9 et U8.
-- **U2** Lisibilité des schémas : court, sans dépendance, au cœur de la
-  précision pédagogique.
 
 ## H1 — La boucle de saison complète (priorité)
 
@@ -189,7 +187,7 @@ Lots UX en H0 :
 ## Ordre recommandé
 
 ```
-H0 : U2 → F7 → revue T8 → réaliser D5 (les questions ouvertes sont tranchées)
+H0 : F7 → revue T8 → réaliser D5 (les questions ouvertes sont tranchées ; U2 livré)
 H1 : U5 → U6 → 9 → U7 → 10 + U9 + U8 → 11   (5 à 8 livrés)
 H2 : U4 → U3 → 14 → 15
 H3 : 16 (avec le mode Relecture de U4) → 17 → 18 → 19 → 20

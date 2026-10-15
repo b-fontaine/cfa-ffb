@@ -265,6 +265,26 @@ diagrams:
       expect(text, contains('contact'));
     });
 
+    test('rejects an unknown inset tip point', () {
+      final yaml = fileWith(
+        diagram(
+          extra: '''
+    inset: {contact: half, tip_point: sideways}
+''',
+        ),
+      );
+      expect(errorsOf(yaml).join('\n'), contains('inset.tip_point'));
+    });
+
+    test('accepts the transcribed inset tip points', () {
+      for (final tip in ['center', 'upper_center', 'lower', 'below_center']) {
+        final yaml = fileWith(
+          diagram(extra: '    inset: {contact: half, tip_point: $tip}\n'),
+        );
+        expect(errorsOf(yaml), isEmpty, reason: tip);
+      }
+    });
+
     test('rejects an invalid zone', () {
       final yaml = fileWith(
         diagram(

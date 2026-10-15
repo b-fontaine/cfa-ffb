@@ -43,6 +43,20 @@ const ballColors = {'red', 'yellow', 'black', 'white'};
 const ghostRoles = {'impact', 'cue_start'};
 const arrowKinds = {'object', 'cue', 'indication'};
 const contacts = {'full', 'three_quarter', 'half', 'quarter', 'thin', 'none'};
+
+/// Valeurs de `inset.tip_point` (point bleu du petit schéma) : milieu de la
+/// blanche, ou au-dessus / au-dessous du milieu selon la transcription.
+const tipPoints = {
+  'center',
+  'top',
+  'upper_center',
+  'above_center',
+  'bottom',
+  'lower',
+  'lower_center',
+  'low_center',
+  'below_center',
+};
 const bands = {'top', 'bottom', 'left', 'right'};
 const zoneShapes = {'rect', 'polygon', 'circle'};
 

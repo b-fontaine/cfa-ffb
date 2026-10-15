@@ -125,3 +125,72 @@ Feature: Exercise diagram
     Then I see {'This exercise diagram is invalid and cannot be displayed.'} text
     And I do not see {'Play'} text
     And I do not see the billiard table
+
+  Scenario Outline: No label covers a path on the six-position diagram
+    Given the diagram is {<width>} px wide
+    When I open the catalogue diagram {'entrainement-p05-e1'}
+    Then I see {7} diagram labels
+    And no label covers a path, a ball or another label
+
+    Examples:
+      | width |
+      | 310   |
+      | 450   |
+      | 900   |
+
+  Scenario Outline: No label covers a path on the six-position diagram in presentation
+    Given the diagram is {<width>} px wide
+    When I open the catalogue diagram {'entrainement-p05-e1'} in presentation
+    Then I see {7} diagram labels
+    And no label covers a path, a ball or another label
+
+    Examples:
+      | width |
+      | 390   |
+      | 900   |
+
+  Scenario Outline: No label covers a ball or another label on any catalogue diagram
+    Given the diagram is {<width>} px wide
+    Then no label covers a ball or another label on every catalogue diagram
+
+    Examples:
+      | width |
+      | 390   |
+      | 450   |
+      | 900   |
+
+  Scenario: The cue stays inside the table against the rail
+    When I open the diagram of the exercise {'shot against the rail'}
+    Then the cue stays inside the table
+
+  Scenario: Every catalogue diagram draws its cue inside the table
+    Then the cue stays inside the table on every catalogue diagram
+
+  Scenario: The ball quantity of the sheet is shown in a free place on the table
+    Given the diagram is {900} px wide
+    When I open the catalogue diagram {'entrainement-p05-e1'}
+    Then I see the ball quantity inset
+    And the inset covers no path, ball or label
+
+  Scenario: The ball quantity goes under the table when the table has no free place
+    Given the diagram is {310} px wide
+    When I open the catalogue diagram {'entrainement-p06-e4'}
+    Then I see the ball quantity inset under the table
+
+  Scenario Outline: The inset covers nothing on any catalogue diagram
+    Given the diagram is {<width>} px wide
+    Then the inset covers nothing on every catalogue diagram
+
+    Examples:
+      | width |
+      | 310   |
+      | 450   |
+      | 900   |
+
+  Scenario: No inset is shown when the sheet gives no ball quantity
+    When I open the diagram of the exercise {'full ball'}
+    Then I do not see the ball quantity inset
+
+  Scenario: In presentation the labels are at least 16 px
+    When I open the diagram of the exercise {'full ball'} in presentation
+    Then every label is at least {16} px

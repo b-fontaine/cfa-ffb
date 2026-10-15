@@ -1,9 +1,12 @@
+import 'dart:math' as math;
+
 import 'package:billard_cfa/entities/exercise_diagram/presentation/table_diagram_mapper.dart';
 import 'package:billard_cfa/entities/session_sheet/presentation/sheet_illustration_view.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/ui/run_step_titles.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/illustration.dart';
 import 'package:billard_cfa/shared/ui/presentation_scope.dart';
 import 'package:billard_cfa/shared/ui/proposal_badge.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_player.dart';
@@ -16,6 +19,16 @@ import 'package:flutter/services.dart';
 /// Hauteur des boutons précédent/suivant : larges, pour une tablette posée
 /// devant les élèves.
 const double _bigTarget = 56;
+
+/// Hauteur (px) sous laquelle le schéma n'est plus borné : la page défile.
+const double _minFigureHeight = 160;
+
+/// Hauteur (px) réservée au badge « Proposition » sous la figure.
+const double _badgeHeight = 48;
+
+/// Facteur d'agrandissement du texte de `PresentationScope` (sa valeur par
+/// défaut) : la légende est écrite avec.
+const double _presentationScale = 1.5;
 
 /// Vitesse (px/s) au-delà de laquelle un balayage change d'illustration.
 const double _swipeVelocity = 300;
@@ -116,20 +129,33 @@ class RunPresentationView extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.sm),
               Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Semantics(
-                        header: true,
-                        child: Text(
-                          l10n.presentationTitle(title),
-                          style: theme.textTheme.titleLarge,
+                child: LayoutBuilder(
+                  builder: (context, constraints) => SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Semantics(
+                          header: true,
+                          child: Text(
+                            l10n.presentationTitle(title),
+                            style: theme.textTheme.titleLarge,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      _content(context, l10n, current, specs),
-                    ],
+                        const SizedBox(height: AppSpacing.sm),
+                        _content(
+                          context,
+                          l10n,
+                          current,
+                          specs,
+                          figureHeight: _figureHeight(
+                            context,
+                            constraints,
+                            l10n.presentationTitle(title),
+                            current,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -172,12 +198,82 @@ class RunPresentationView extends StatelessWidget {
     );
   }
 
+  /// Hauteur (px) de [text] écrit en [style] sur [width] px, texte agrandi.
+  static double _textHeight(
+    BuildContext context,
+    String text,
+    TextStyle? style,
+    double width, {
+    double scale = 1,
+  }) {
+    final scaler = MediaQuery.textScalerOf(context);
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: Directionality.of(context),
+      textScaler: TextScaler.linear(scaler.scale(1) * scale),
+    )..layout(maxWidth: math.max(0, width));
+    return painter.height;
+  }
+
+  /// Hauteur maximale du schéma et de ses commandes pour qu'ils tiennent avec
+  /// leur légende dans la hauteur disponible [constraints], au-dessus de la
+  /// barre précédent/suivant ; `null` (hauteur naturelle, la page défile)
+  /// quand il n'y a pas un seul schéma de table à légender.
+  double? _figureHeight(
+    BuildContext context,
+    BoxConstraints constraints,
+    String title,
+    RunStep current,
+  ) {
+    if (!constraints.hasBoundedHeight) return null;
+    final String caption;
+    final exercise = plan.exerciseOf(current);
+    final diagram = exercise == null ? null : plan.diagrams[exercise.diagramId];
+    if (current.kind == RunStepKind.exercise &&
+        exercise != null &&
+        diagram != null) {
+      caption = diagram.caption;
+    } else {
+      final illustrations = plan.presentableIllustrationsOf(current);
+      if (illustrations.length != 1) return null;
+      final single = illustrations.single;
+      // Seuls les schémas de table savent se réduire à la hauteur donnée.
+      if (single is! DiagramRefIllustration && single is! TableIllustration) {
+        return null;
+      }
+      caption = single.caption;
+    }
+    final theme = Theme.of(context);
+    final reserved =
+        _textHeight(
+          context,
+          title,
+          theme.textTheme.titleLarge,
+          constraints.maxWidth,
+        ) +
+        AppSpacing.sm +
+        2 * AppSpacing.lg +
+        AppSpacing.md +
+        _textHeight(
+          context,
+          caption,
+          theme.textTheme.headlineSmall,
+          constraints.maxWidth - 2 * AppSpacing.lg,
+          scale: _presentationScale,
+        ) +
+        (plan.isProposal(current) ? _badgeHeight : 0);
+    final available = constraints.maxHeight - reserved;
+    // Trop peu de place : hauteur naturelle, la page défile.
+    return available >= _minFigureHeight ? available : null;
+  }
+
   Widget _content(
     BuildContext context,
     AppLocalizations l10n,
     RunStep current,
-    Map<String, ui.TableDiagramSpec> specs,
-  ) {
+    Map<String, ui.TableDiagramSpec> specs, {
+    double? figureHeight,
+  }) {
     final proposal = plan.isProposal(current);
     if (current.kind == RunStepKind.exercise) {
       final exercise = plan.exerciseOf(current);
@@ -194,6 +290,7 @@ class RunPresentationView extends StatelessWidget {
                   maxWidth: SheetIllustrationView.presentationMaxWidth,
                 ),
                 child: TableDiagramPlayer(
+                  maxHeight: figureHeight,
                   spec: tableDiagramSpecOf(diagram),
                   semanticLabel: l10n.exerciseDiagramSemantics(
                     exercise.ref.number,
@@ -234,6 +331,7 @@ class RunPresentationView extends StatelessWidget {
                 diagrams: specs,
                 proposal: proposal,
                 showCaption: false,
+                presentationHeight: figureHeight,
               ),
             ),
           ),

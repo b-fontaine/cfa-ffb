@@ -1,5 +1,6 @@
 import 'dart:math' show Point;
 
+import 'package:billard_cfa/shared/lib/tip_point.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'diagram_table.freezed.dart';
@@ -109,6 +110,19 @@ abstract class TableStep with _$TableStep {
   }) = _TableStep;
 }
 
+/// Médaillon de la quantité de bille d'une table (FORMAT : `inset`). Absent
+/// quand la fiche ne précise pas la quantité (`contact: none`).
+@freezed
+abstract class TableInset with _$TableInset {
+  const factory TableInset({
+    required TableContact contact,
+
+    /// Point d'impact du procédé sur la blanche, ramené aux neuf positions du
+    /// design system.
+    @Default(TipPoint.center) TipPoint tipPoint,
+  }) = _TableInset;
+}
+
 /// Table d'un exercice : état initial, tracés et déroulé.
 @freezed
 abstract class DiagramTable with _$DiagramTable {
@@ -118,5 +132,6 @@ abstract class DiagramTable with _$DiagramTable {
     @Default(<TableArrow>[]) List<TableArrow> arrows,
     @Default(<TableZone>[]) List<TableZone> zones,
     @Default(<TableStep>[]) List<TableStep> steps,
+    TableInset? inset,
   }) = _DiagramTable;
 }

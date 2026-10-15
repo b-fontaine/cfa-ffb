@@ -30,7 +30,7 @@ lots fonctionnels. Trois besoins restent sans lot :
 | Lot | Contenu | Recommandations | Effort | Dépend de |
 |---|---|---|---|---|
 | **U1** Fondations du design system (**livré le 2026-10-14**) | ADR 0010 (0008 et 0009 sont prises par les lots 7 et 8) ; rôles de couleur (bleu-tapis en `secondary`, `BrandColors`) ; `SectionCard.emphasis` ; retrait du logo derrière un drapeau ; icônes de navigation ; `PassDots`, `TimerChip`, `PhaseTimeline`, `StepAppBar` avec tests, use cases et feuille Widgetbook « Rôles de couleur » | R1, R2, R3 (partiel), R4 (partiel) ; voir « Hors U1 » en § 4 | M | : |
-| **U2** Lisibilité des schémas | annotations hors trajectoire, halo, queue non coupée, repères à la taille de la blanche, médaillon `inset`, étiquettes ≥ 16 px en présentation ; corrige F2 | R5 | M | : |
+| **U2** Lisibilité des schémas (**livré le 2026-10-15**, restes mesurés dans design-system.md « Limites connues ») | annotations hors trajectoire, halo, queue non coupée, repères à la taille de la blanche, médaillon `inset` (sur la table ou sous elle, jamais sur un objet), étiquettes ≥ 16 px en présentation, figure bornée en hauteur dans la présentation ; corrige F2 | R5 | M | : |
 | **U3** Présentation plein écran | `DiagramStage`, plein écran natif, bandeau de légende réservé, flèches latérales, bandeau « tournez l'appareil » ; corrige F1 et le lot 13 | R10 | M | U1, U2 |
 | **U4** Guide en mode « Mener » | route hors shell, `StepAppBar` + `PhaseTimeline`, schéma en premier, sections repliées, badges masqués sauf « Relecture », minuteur en en-tête, barre basse à trois actions ; corrige F3 et le lot 12 | R7, R9 | L | U1 |
 | **U5** Saisie rapide en grille | grille élève × passage avec `PassDots` et `StudentChip`, sélecteur d'exercice nommé et non tronqué, liste compacte sur téléphone, historique groupé, feuille basse depuis le guide ; corrige F4 | R11 | L | U1 |
@@ -130,7 +130,8 @@ adaptés plutôt que dupliqués.
 - R4, `StudentChip` : **U5** (grille de saisie) ; `NowCard` : **U7** ;
   `DiagramStage` : **U3**.
 
-**U2**
+**U2** (livré le 2026-10-15 : règles dans
+[design-system.md](../design-system.md#lisibilité-des-schémas-lot-u2-r5-corrige-f2))
 
 - `exercise_diagram.feature` : « Aucune étiquette de repère ne recouvre une
   trajectoire sur le schéma des six repères » (test géométrique sur les
@@ -200,7 +201,7 @@ adaptés plutôt que dupliqués.
 ## 5. Ordre recommandé (révisé)
 
 ```
-H0 : U1 → U2 → F7 → revue T8 → questions ouvertes (D2, D5, unité « séance »)
+H0 : U1 ✔ → U2 ✔ → F7 → revue T8 → questions ouvertes (D2, D5, unité « séance »)
 H1 : U5 → 7 → 8 → U6 → 9 → U7 → 10 + U9 → 11
 H2 : U4 → U3 → 14 → 15
 H3 : 16 (avec Relecture de U4) → U8 → 17 → 18 → 19 → 20

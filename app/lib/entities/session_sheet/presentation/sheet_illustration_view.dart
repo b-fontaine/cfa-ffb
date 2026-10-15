@@ -19,6 +19,7 @@ class SheetIllustrationView extends StatelessWidget {
     required this.diagrams,
     this.proposal = false,
     this.showCaption = true,
+    this.presentationHeight,
     super.key,
   });
 
@@ -30,6 +31,10 @@ class SheetIllustrationView extends StatelessWidget {
 
   /// Faux quand la légende est déjà écrite par l'appelant (présentation).
   final bool showCaption;
+
+  /// Hauteur maximale du schéma et de ses commandes en mode présentation,
+  /// quand l'appelant la borne pour que figure et légende tiennent à l'écran.
+  final double? presentationHeight;
 
   /// Largeur maximale d'une figure, en dp : lisible sans s'étirer.
   static const double maxWidth = 560;
@@ -53,6 +58,9 @@ class SheetIllustrationView extends StatelessWidget {
               context,
               illustration,
               diagrams: diagrams,
+              diagramMaxHeight: PresentationScope.isActive(context)
+                  ? presentationHeight
+                  : null,
             ),
           ),
         ),

@@ -2,6 +2,7 @@ import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_table.dart'
 import 'package:billard_cfa/entities/exercise_diagram/domain/exercise_diagram.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/success_rate.dart';
+import 'package:billard_cfa/shared/lib/tip_point.dart';
 import 'package:yaml/yaml.dart';
 
 /// Une page de transcription ne respecte pas le FORMAT (`FORMAT.md`) ou
@@ -236,7 +237,45 @@ ExerciseDiagram _build(_Fields f, {required String file, required int page}) {
       arrows: _arrows(f),
       zones: _zones(f),
       steps: steps,
+      inset: _inset(f),
     ),
+  );
+}
+
+/// Points d'impact du procédé tels que transcrits (FORMAT : `inset.tip_point`,
+/// texte libre) et leur position parmi les neuf du design system.
+const _tipPoints = <String, TipPoint>{
+  'center': TipPoint.center,
+  'top': TipPoint.top,
+  'upper_center': TipPoint.top,
+  'above_center': TipPoint.top,
+  'bottom': TipPoint.bottom,
+  'lower': TipPoint.bottom,
+  'lower_center': TipPoint.bottom,
+  'low_center': TipPoint.bottom,
+  'below_center': TipPoint.bottom,
+};
+
+/// Médaillon `inset` : `null` sans champ, ou quand `contact: none`.
+TableInset? _inset(_Fields d) {
+  final raw = d['inset'];
+  if (raw == null) return null;
+  if (raw is! _Json) d.fail('inset', 'objet attendu, trouvé : $raw');
+  final f = _Fields(raw, 'inset');
+  final contact = f['contact'];
+  final tip = f['tip_point'];
+  f.touchAll();
+  if (contact == 'none') return null;
+  final tipPoint = tip == null ? TipPoint.center : _tipPoints[tip];
+  if (tipPoint == null) {
+    f.fail(
+      'tip_point',
+      'valeur inconnue : $tip (attendu : ${_tipPoints.keys.join(' | ')})',
+    );
+  }
+  return TableInset(
+    contact: f.enumOf(TableContact.values, 'contact'),
+    tipPoint: tipPoint,
   );
 }
 

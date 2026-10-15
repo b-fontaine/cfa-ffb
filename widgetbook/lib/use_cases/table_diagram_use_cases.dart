@@ -1,3 +1,4 @@
+import 'package:billard_cfa/shared/ui/presentation_scope.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_player.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_spec.dart';
@@ -66,6 +67,102 @@ Widget buildTableDiagramNarrowUseCase(BuildContext context) => _page(
   _width(context, initial: 240),
   TableDiagram(spec: fullBall.spec, semanticLabel: fullBall.description),
 );
+
+@widgetbook.UseCase(
+  name: 'Statique, six repères (étiquettes hors trajectoires)',
+  type: TableDiagram,
+  path: '[Design system]/Composants',
+)
+Widget buildTableDiagramSixPositionsUseCase(BuildContext context) => _page(
+  _width(context),
+  TableDiagram(
+    spec: sixPositions.spec,
+    semanticLabel: sixPositions.description,
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Statique, six repères sur grande table (numéros dans les cercles)',
+  type: TableDiagram,
+  path: '[Design system]/Composants',
+)
+Widget buildTableDiagramLargeMarksUseCase(BuildContext context) =>
+    SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: _page(
+        context.knobs.double.slider(
+          label: 'largeur',
+          initialValue: 1300,
+          min: 200,
+          max: 1600,
+        ),
+        TableDiagram(
+          spec: sixPositions.spec,
+          semanticLabel: sixPositions.description,
+        ),
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Statique, médaillon de la quantité de bille',
+  type: TableDiagram,
+  path: '[Design system]/Composants',
+)
+Widget buildTableDiagramInsetUseCase(BuildContext context) => _page(
+  _width(context),
+  TableDiagram(
+    spec: sixPositionsInset.spec,
+    semanticLabel: sixPositionsInset.description,
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Statique, médaillon sous la table (écran étroit)',
+  type: TableDiagram,
+  path: '[Design system]/Composants',
+)
+Widget buildTableDiagramInsetBelowUseCase(BuildContext context) => _page(
+  // 300 px : le libellé du médaillon dépasse 25 % de la table, il est écrit
+  // dessous plutôt que posé sur la table.
+  300,
+  TableDiagram(
+    spec: sixPositionsInset.spec,
+    semanticLabel: sixPositionsInset.description,
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Statique, queue contre la bande (raccourcie)',
+  type: TableDiagram,
+  path: '[Design system]/Composants',
+)
+Widget buildTableDiagramCueAgainstRailUseCase(BuildContext context) => _page(
+  _width(context),
+  TableDiagram(
+    spec: againstTheRail.spec,
+    semanticLabel: againstTheRail.description,
+  ),
+);
+
+@widgetbook.UseCase(
+  name: "En présentation (étiquettes d'au moins 16 px)",
+  type: TableDiagram,
+  path: '[Design system]/Composants',
+)
+Widget buildTableDiagramPresentationUseCase(BuildContext context) =>
+    SingleChildScrollView(
+      child: PresentationScope(
+        scale: 1,
+        caption: fullBall.description,
+        child: SizedBox(
+          width: _width(context),
+          child: TableDiagram(
+            spec: fullBall.spec,
+            semanticLabel: fullBall.description,
+          ),
+        ),
+      ),
+    );
 
 @widgetbook.UseCase(
   name: 'Statique, table vide',

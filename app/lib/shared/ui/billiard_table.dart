@@ -31,7 +31,8 @@ class BilliardTable extends StatelessWidget {
   final bool showHeadString;
   final TableOverlayBuilder? overlay;
 
-  static const double _aspect =
+  /// Rapport largeur / hauteur du widget (surface 2:1 plus un rail autour).
+  static const double aspect =
       (TableGeometry.columns + 2 * TableGeometry.railWidth) /
       (TableGeometry.rows + 2 * TableGeometry.railWidth);
 
@@ -45,7 +46,7 @@ class BilliardTable extends StatelessWidget {
       label: label,
       container: true,
       child: AspectRatio(
-        aspectRatio: _aspect,
+        aspectRatio: aspect,
         child: LayoutBuilder(
           builder: (context, constraints) {
             final geometry = TableGeometry.fitting(constraints.biggest);

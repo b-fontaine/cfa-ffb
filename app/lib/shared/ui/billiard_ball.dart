@@ -107,6 +107,7 @@ class BilliardBall extends StatelessWidget {
     this.diameter,
     this.label,
     this.showLetter = true,
+    this.outsideLabel = true,
     super.key,
   }) : assert(
          geometry != null || diameter != null,
@@ -126,6 +127,11 @@ class BilliardBall extends StatelessWidget {
 
   /// Affiche la lettre de la bille quand elle tient dedans et sans [label].
   final bool showLetter;
+
+  /// Écrit le [label] à côté de la bille quand elle est trop petite pour le
+  /// porter. Faux quand l'appelant le pose lui-même (schéma de table, qui
+  /// l'écarte des trajectoires) ; le nom parlé le contient toujours.
+  final bool outsideLabel;
 
   static const double _insideThreshold = 28;
 
@@ -172,7 +178,7 @@ class BilliardBall extends StatelessWidget {
                   ),
                 ),
               ),
-            if (label != null && !inside)
+            if (label != null && !inside && outsideLabel)
               Positioned(
                 left: size + 2,
                 top: size * 0.5,

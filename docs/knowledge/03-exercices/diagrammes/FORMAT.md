@@ -65,7 +65,7 @@ diagrams:
       - {step: 1, cue: w, hit: y1, contact: full, pocket: tl, repeat: 4}
     inset:                             # petit schéma « quantité de bille » en bas à droite
       contact: full                    # full | three_quarter | half | quarter | thin | none
-      tip_point: center                # point d'impact du tip sur la blanche
+      tip_point: center                # point d'impact du tip sur la blanche (voir ci-dessous)
       bridge_height: surface
     annotations: ["x 4 : la même situation est répétée 4 fois"]
     description: >-
@@ -93,6 +93,12 @@ vide). Pour `exercise`/`game`/`initiation` avec table : `balls`, `table`.
 | Petite bille blanche + bille rouge en bas à droite | `inset` (quantité de bille ; point bleu = `tip_point`) |
 | Chevalet : sur cadre / sur la surface | `bridge: frame` / `surface` (texte de l'énoncé) |
 | Pastille « Billard de bronze » | `bronze: true` |
+
+`inset.tip_point` prend l'une de ces valeurs : `center`, `top` | `upper_center` | `above_center` (au-dessus du
+milieu), `bottom` | `lower` | `lower_center` | `low_center` | `below_center` (au-dessous du milieu). Le validateur
+(`app/tool/diagrammes.dart`) refuse toute autre valeur ; l'application ramène chacune à l'une des neuf positions de
+`TipPoint` (centre, haut, bas…) et dessine l'`inset` en **médaillon** sur une place libre de la table, ou sous elle à défaut (`contact: none` :
+pas de médaillon). Le format n'a pas changé : seules les valeurs de `tip_point` déjà transcrites sont énumérées.
 
 Si le schéma n'est pas une vue de table (photo de posture, de chevalet, de queue, tableau), utiliser
 `kind: technique-photo` sans `balls` et décrire précisément : `subject` (ce qui est montré), `elements`

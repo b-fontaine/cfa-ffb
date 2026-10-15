@@ -28,3 +28,11 @@ Feature: Cue ball and object ball sizes
   Scenario: The ghost ball is drawn the size of the cue ball
     When I look at the ghost aim towards the pocket {'top right'}
     Then the ghost ball is drawn the size of the cue ball
+
+  Scenario: The ghost ball name covers neither the aim line nor the ball
+    When I look at the ghost aim towards the pocket {'top right'}
+    Then no label covers a path, a ball or another label
+
+  Scenario: The ghost circle stays visible at the end of the aim line
+    When I look at the ghost aim towards the pocket {'top right'}
+    Then the ghost circle is not hidden by the arrow head
