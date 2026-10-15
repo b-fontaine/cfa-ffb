@@ -29,8 +29,8 @@ void main() {
     // Corrompre la fiche à la source ET dans l'asset : l'étape de synchro
     // reste verte, seule l'étape de validation des fiches peut échouer.
     for (final path in [
-      '${copy.path}/docs/knowledge/05-seances/catalogue/07-bille-pleine-1.yaml',
-      '${copy.path}/app/assets/fiches/07-bille-pleine-1.yaml',
+      '${copy.path}/docs/knowledge/05-seances/catalogue/06-bille-pleine-1.yaml',
+      '${copy.path}/app/assets/fiches/06-bille-pleine-1.yaml',
     ]) {
       final file = File(path);
       file.writeAsStringSync(

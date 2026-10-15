@@ -17,7 +17,7 @@ const _catalogueDir = '$_root/docs/knowledge/05-seances/catalogue';
 const _pilotName = '08-demi-bille-1.yaml';
 const _pilotPath = '$_catalogueDir/$_pilotName';
 
-const _badName = '07-bille-pleine-1.yaml';
+const _badName = '06-bille-pleine-1.yaml';
 
 /// Copie temporaire de la racine utile à l'outil (`docs/knowledge`, noms des
 /// PDF de `docs/sources`) : le dépôt réel n'est jamais modifié.
@@ -1685,7 +1685,7 @@ void main() {
       expect(err.toString(), contains('V1'));
     });
 
-    test('--complete : 28 fiches sur 29 donnent exit 1 (V2)', () {
+    test('--complete : 27 fiches sur 28 donnent exit 1 (V2)', () {
       final root = _copyRoot();
       File('$root/docs/knowledge/05-seances/catalogue/$_badName').deleteSync();
       final out = StringBuffer();
