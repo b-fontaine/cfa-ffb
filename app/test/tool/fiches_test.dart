@@ -656,18 +656,72 @@ void main() {
       }, fileName: '01-posture-1.yaml');
       expectRule(errors, 'V28', mention: 'interdit');
     });
-    test('poids manquant, passes hors de 1 et 2, clé inconnue', () {
+    List<String> v28(List<String> errors) =>
+        errors.where((e) => e.startsWith('V28 ')).toList();
+
+    test('poids manquant pour un public : refusé', () {
       expectRule(
         broken((d) => slot(d)['weight'] = {'children': 1}),
         'V28',
         mention: 'adults',
       );
+    });
+    test('poids nul : refusé', () {
+      final errors = broken(
+        (d) => slot(d)['weight'] = {'children': 0, 'adults': 1},
+      );
+      expect(errors, isNotEmpty);
+      expect(errors.join('\n'), contains('recall_slot'));
+    });
+    test('passes à 3 : refusé', () {
       expectRule(
         broken((d) => slot(d)['passes'] = 3),
         'V28',
         mention: 'passes',
       );
-      expectRule(broken((d) => slot(d)['exercise'] = 'e9'), 'V1');
+    });
+    test('passes à 0 : refusé', () {
+      expectRule(
+        broken((d) => slot(d)['passes'] = 0),
+        'V28',
+        mention: 'passes',
+      );
+    });
+    test('passes non entier : refusé', () {
+      expectRule(
+        broken((d) => slot(d)['passes'] = 1.5),
+        'V28',
+        mention: 'passes',
+      );
+      expectRule(
+        broken((d) => slot(d)['passes'] = '1'),
+        'V28',
+        mention: 'passes',
+      );
+    });
+    test('clé inconnue dans le créneau : refusée', () {
+      final errors = broken((d) => slot(d)['inconnue'] = 1);
+      expect(errors, isNotEmpty);
+      expect(errors.join('\n'), contains('inconnue'));
+    });
+    test('order 2 avec créneau valide : accepté', () {
+      final errors = broken((d) {
+        d['order'] = 2;
+        slot(d)['weight'] = {'children': 1, 'adults': 2};
+        slot(d)['passes'] = 2;
+      });
+      expect(v28(errors), isEmpty, reason: '$errors');
+    });
+    test('order 1 sans créneau : accepté', () {
+      final errors = broken((d) {
+        d['id'] = 'posture-1';
+        d['technique'] = 'posture';
+        d['order'] = 1;
+        d['previous'] = null;
+        d['catalogue_block'] = 'posture';
+        _obj(d['training']).remove('recall_slot');
+      }, fileName: '01-posture-1.yaml');
+      expect(v28(errors), isEmpty, reason: '$errors');
     });
   });
 

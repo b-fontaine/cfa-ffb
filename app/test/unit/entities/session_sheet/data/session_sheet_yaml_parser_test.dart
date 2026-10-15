@@ -87,6 +87,32 @@ void main() {
       expect(slot.passes, 1);
     });
 
+    test('refuses an unknown key in the recall slot', () {
+      _refuses(
+        _edit('passes: 1}   # exercice choisi', 'passes: 1, inconnue: 1}  #'),
+        mentioning: 'inconnue',
+      );
+    });
+
+    test('refuses a recall slot without passes', () {
+      _refuses(
+        _edit(
+          'weight: {children: 1, adults: 1}, passes: 1}',
+          'weight: {children: 1, adults: 1}}',
+        ),
+        mentioning: 'passes',
+      );
+    });
+
+    test('refuses a recall slot with a non-integer weight', () {
+      _refuses(
+        _edit(
+          'recall_slot: {weight: {children: 1,',
+          'recall_slot: {weight: {children: 1.5,',
+        ),
+      );
+    });
+
     test('reads the recall with its reused illustration', () {
       expect(sheet.recall.points, hasLength(3));
       expect(sheet.recall.ask, startsWith('En bille pleine'));

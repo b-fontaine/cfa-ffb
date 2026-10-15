@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_exercise.dart';
+import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -30,11 +31,15 @@ abstract class RecallExercise with _$RecallExercise {
 /// n'ont pas encore validé ; à égalité, le plus récent. Sans élève, ou quand
 /// tout est validé, c'est donc le dernier exercice de la séance précédente.
 ///
+/// Seuls les exercices affichés pour [audience] (`weight.isShownFor`) sont
+/// candidats : le rappel ne propose jamais un exercice absent du guide.
+///
 /// `null` quand [sheet] n'a pas de créneau ou quand aucune séance ne la
 /// précède.
 RecallExercise? chooseRecallExercise({
   required SessionSheet sheet,
   required Iterable<SessionSheet> all,
+  required Audience audience,
   required Map<StudentId, Set<ExerciseRef>> validatedByStudent,
 }) {
   if (sheet.recallSlot == null) return null;
@@ -45,6 +50,7 @@ RecallExercise? chooseRecallExercise({
   RecallExercise? best;
   for (final origin in earlier) {
     for (final exercise in origin.exercises.reversed) {
+      if (!exercise.weight.isShownFor(audience)) continue;
       final pending = validatedByStudent.values
           .where((validated) => !validated.contains(exercise.ref))
           .length;

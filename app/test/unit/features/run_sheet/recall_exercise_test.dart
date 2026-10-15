@@ -1,5 +1,7 @@
+import 'package:billard_cfa/entities/session_sheet/domain/audience_weight.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
 import 'package:billard_cfa/features/run_sheet/domain/recall_exercise.dart';
+import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,6 +22,7 @@ void main() {
       chooseRecallExercise(
         sheet: sheet('posture-1'),
         all: sheets,
+        audience: Audience.children,
         validatedByStudent: const {},
       ),
       isNull,
@@ -30,6 +33,7 @@ void main() {
     final chosen = chooseRecallExercise(
       sheet: sheet('quart-1'),
       all: sheets,
+      audience: Audience.children,
       validatedByStudent: const {},
     )!;
 
@@ -43,6 +47,7 @@ void main() {
     final chosen = chooseRecallExercise(
       sheet: sheet('quart-1'),
       all: sheets,
+      audience: Audience.children,
       validatedByStudent: {
         // Léa a tout validé sauf posture 1 ; Tom a validé demi-bille 3 et 4
         // et posture 2 : posture 1 manque aux deux.
@@ -63,6 +68,7 @@ void main() {
     final chosen = chooseRecallExercise(
       sheet: sheet('quart-1'),
       all: sheets,
+      audience: Audience.children,
       validatedByStudent: {
         lea: {ref('demi-bille', 4), ref('posture', 2)},
       },
@@ -77,6 +83,7 @@ void main() {
     final chosen = chooseRecallExercise(
       sheet: sheet('demi-bille-2'),
       all: sheets,
+      audience: Audience.children,
       validatedByStudent: {
         lea: {
           ref('posture', 1),
@@ -97,10 +104,47 @@ void main() {
     final chosen = chooseRecallExercise(
       sheet: sheet('demi-bille-1'),
       all: sheets,
+      audience: Audience.children,
       validatedByStudent: {lea: const {}},
     )!;
 
     expect(chosen.origin.id.value, 'posture-1');
     expect(chosen.exercise.ref, ref('posture', 2));
+  });
+
+  test('ignores exercises not shown for the audience of the guide', () {
+    // demi-bille 4 (dernier de la séance précédente) est réservé aux adultes.
+    final restricted = [
+      for (final s in sheets)
+        if (s.id.value == 'demi-bille-2')
+          s.copyWith(
+            exercises: [
+              for (final e in s.exercises)
+                if (e.ref == ref('demi-bille', 4))
+                  e.copyWith(weight: AudienceWeight(adults: 1))
+                else
+                  e,
+            ],
+          )
+        else
+          s,
+    ];
+    final target = restricted.firstWhere((s) => s.id.value == 'quart-1');
+
+    final forChildren = chooseRecallExercise(
+      sheet: target,
+      all: restricted,
+      audience: Audience.children,
+      validatedByStudent: const {},
+    )!;
+    final forAdults = chooseRecallExercise(
+      sheet: target,
+      all: restricted,
+      audience: Audience.adults,
+      validatedByStudent: const {},
+    )!;
+
+    expect(forChildren.exercise.ref, ref('demi-bille', 3));
+    expect(forAdults.exercise.ref, ref('demi-bille', 4));
   });
 }

@@ -70,6 +70,7 @@ class ResolveRunPlan {
     final recall = chooseRecallExercise(
       sheet: sheet,
       all: all,
+      audience: resolved,
       validatedByStudent: await _validated(
         audience: resolved,
         catalogue: catalogue,
