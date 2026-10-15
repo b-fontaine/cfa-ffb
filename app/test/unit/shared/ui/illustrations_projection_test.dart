@@ -6,6 +6,7 @@ import 'package:billard_cfa/shared/lib/power_ratio.dart';
 import 'package:billard_cfa/shared/ui/angle_mark.dart';
 import 'package:billard_cfa/shared/ui/ball_size_comparison.dart';
 import 'package:billard_cfa/shared/ui/billiard_ball.dart';
+import 'package:billard_cfa/shared/ui/contact_height_view.dart';
 import 'package:billard_cfa/shared/ui/contact_strip.dart';
 import 'package:billard_cfa/shared/ui/cue_ball_target.dart';
 import 'package:billard_cfa/shared/ui/player_figure.dart';
@@ -45,6 +46,10 @@ final Map<String, ({Widget Function() build, Finder anchor})> _figures = {
   'BallSizeComparison': (
     build: () => const BallSizeComparison(),
     anchor: find.text('48,0 mm'),
+  ),
+  'ContactHeightView': (
+    build: () => const ContactHeightView(),
+    anchor: find.text('Point de contact'),
   ),
 };
 

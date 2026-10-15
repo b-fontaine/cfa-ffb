@@ -17,6 +17,31 @@ const _catalogueDir = '$_root/docs/knowledge/05-seances/catalogue';
 const _pilotName = '09-demi-bille-1.yaml';
 const _pilotPath = '$_catalogueDir/$_pilotName';
 
+const _badName = '07-bille-pleine-1.yaml';
+
+/// Copie temporaire de la racine utile à l'outil (`docs/knowledge`, noms des
+/// PDF de `docs/sources`) : le dépôt réel n'est jamais modifié.
+String _copyRoot() {
+  final root = Directory.systemTemp.createTempSync('fiches_root_');
+  addTearDown(() => root.deleteSync(recursive: true));
+  final result = Process.runSync('cp', [
+    '-r',
+    '$_root/docs/knowledge',
+    '${root.path}/docs_knowledge_tmp',
+  ]);
+  expect(result.exitCode, 0, reason: '${result.stderr}');
+  Directory('${root.path}/docs').createSync();
+  Directory('${root.path}/docs_knowledge_tmp')
+      .renameSync('${root.path}/docs/knowledge');
+  final sources = Directory('${root.path}/docs/sources')..createSync();
+  for (final f in Directory('$_root/docs/sources').listSync()) {
+    if (f is File) {
+      File('${sources.path}/${f.uri.pathSegments.last}').createSync();
+    }
+  }
+  return root.path;
+}
+
 /// Copie profonde modifiable du pilote (JSON : un JSON est du YAML).
 Json _pilot() => jsonDecode(
   jsonEncode(toPlain(loadYaml(File(_pilotPath).readAsStringSync()))),
@@ -935,6 +960,28 @@ void main() {
     });
   });
 
+  group('contact_height : contact de côté, écart exagéré', () {
+    List<String> withIllustration(Json extra) => broken((d) {
+      (d['illustrations']! as List).add({
+        'id': 'nouvelle',
+        'caption': 'c',
+        'alt': 'a',
+        ...extra,
+      });
+    });
+
+    test('est acceptée sans paramètre', () {
+      expect(withIllustration({'type': 'contact_height'}), isEmpty);
+    });
+
+    test("refuse tout paramètre (l'exagération est interne)", () {
+      expect(
+        withIllustration({'type': 'contact_height', 'exaggeration': 10}),
+        isNotEmpty,
+      );
+    });
+  });
+
   group('V25 à V27 : cue_ball_target, player_figure, power_ratio', () {
     /// Ajoute l'illustration [extra] au pilote et rend les erreurs.
     List<String> withIllustration(Json extra) => broken((d) {
@@ -1583,6 +1630,37 @@ void main() {
       expect(code, 1);
       expect(err.toString(), contains(_pilotName));
       expect(err.toString(), contains('V1'));
+    });
+
+    test('--complete : une fiche corrompue du dossier donne exit 1 (V1)', () {
+      final root = _copyRoot();
+      final target = File(
+        '$root/docs/knowledge/05-seances/catalogue/$_badName',
+      );
+      target.writeAsStringSync(
+        target.readAsStringSync().replaceFirst('version: 1', 'version: 2'),
+      );
+      final out = StringBuffer();
+      final err = StringBuffer();
+
+      final code = runCli(const ['--complete'], out: out, err: err, root: root);
+
+      expect(code, 1);
+      expect(err.toString(), contains(_badName));
+      expect(err.toString(), contains('V1'));
+    });
+
+    test('--complete : 28 fiches sur 29 donnent exit 1 (V2)', () {
+      final root = _copyRoot();
+      File('$root/docs/knowledge/05-seances/catalogue/$_badName').deleteSync();
+      final out = StringBuffer();
+      final err = StringBuffer();
+
+      final code = runCli(const ['--complete'], out: out, err: err, root: root);
+
+      expect(code, 1);
+      expect(err.toString(), contains('V2'));
+      expect(err.toString(), contains(_badName));
     });
 
     test('fichier introuvable : exit 2', () {

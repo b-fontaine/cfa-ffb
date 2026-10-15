@@ -4,6 +4,7 @@ import 'package:billard_cfa/shared/lib/table_pocket.dart';
 import 'package:billard_cfa/shared/ui/angle_mark.dart';
 import 'package:billard_cfa/shared/ui/ball_contact_diagram.dart';
 import 'package:billard_cfa/shared/ui/ball_size_comparison.dart';
+import 'package:billard_cfa/shared/ui/contact_height_view.dart';
 import 'package:billard_cfa/shared/ui/contact_strip.dart';
 import 'package:billard_cfa/shared/ui/cue_ball_target.dart';
 import 'package:billard_cfa/shared/ui/ghost_aim_diagram.dart';
@@ -91,6 +92,8 @@ abstract final class IllustrationMapper {
         );
       case BallSizeIllustration():
         return _described(alt, const BallSizeComparison());
+      case ContactHeightIllustration():
+        return _described(alt, const ContactHeightView());
       case PlayerFigureIllustration(
         :final view,
         :final focus,

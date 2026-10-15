@@ -5,6 +5,7 @@ import 'package:billard_cfa/shared/lib/illustration.dart';
 import 'package:billard_cfa/shared/lib/power_ratio.dart';
 import 'package:billard_cfa/shared/lib/table_pocket.dart';
 import 'package:billard_cfa/shared/ui/angle_mark.dart';
+import 'package:billard_cfa/shared/ui/contact_height_view.dart';
 import 'package:billard_cfa/shared/ui/contact_strip.dart';
 import 'package:billard_cfa/shared/ui/cue_ball_target.dart';
 import 'package:billard_cfa/shared/ui/cue_side_view.dart';
@@ -193,18 +194,20 @@ Widget buildCueSideViewAllUseCase(BuildContext context) => Padding(
 );
 
 @widgetbook.UseCase(
-  name: "Contact au-dessus de l'équateur de la blanche (écart exagéré ×10)",
-  type: CueSideView,
+  name: "Contact au-dessus de l'équateur (inclinaison exagérée ×10)",
+  type: ContactHeightView,
   path: _path,
 )
-Widget buildCueSideViewContactUseCase(BuildContext context) => _page(
-  _width(context, initial: 560),
-  const CueSideView(
-    tipPoint: TipPoint.center,
-    cueHeight: CueHeight.level,
-    showContact: true,
-  ),
-);
+Widget buildContactHeightViewUseCase(BuildContext context) =>
+    _page(_width(context, initial: 560), const ContactHeightView());
+
+@widgetbook.UseCase(
+  name: "Contact au-dessus de l'équateur (largeur réduite, 320 px)",
+  type: ContactHeightView,
+  path: _path,
+)
+Widget buildContactHeightViewNarrowUseCase(BuildContext context) =>
+    _page(320, const ContactHeightView());
 
 @widgetbook.UseCase(
   name: 'Point du procédé de côté (gauche : au centre)',

@@ -803,6 +803,7 @@
   "suggestMainNotion": "Notion principale",
   "suggestRecall": "Rappel",
   "suggestRecallNone": "Pas de rappel pour ce groupe.",
+  "suggestRecallNoneChildren": "Les séances enfants portent une seule notion : pas de rappel, c’est voulu.",
   "suggestExercises": "Exercices",
   "suggestPhases": "Déroulé",
   "suggestPhaseWelcome": "Accueil",
@@ -1288,13 +1289,23 @@
   "@cueNotToScale": {
     "description": "Mention sous les schémas où la queue est dessinée plus mince que nature."
   },
-  "cueSideContactNote": "Écart de taille et hauteur du contact exagérés ×10 : en réalité, la blanche ({cue} mm) est à peine plus petite que la bille de but ({object} mm) et le contact est légèrement au-dessus de son équateur.",
-  "@cueSideContactNote": {
+  "contactHeightLabel": "Hauteur du contact, vue de côté : la bille de but touche la blanche légèrement au-dessus de l'équateur de la blanche.",
+  "@contactHeightLabel": {
+    "description": "Description parlée de la vue de côté du contact des deux billes (début)."
+  },
+  "contactHeightEquatorLegend": "Équateur de la blanche",
+  "contactHeightContactLegend": "Point de contact",
+  "contactHeightNote": "Inclinaison exagérée ×10 : la bille de but est dessinée bien plus grosse qu'en réalité (blanche {cue} mm, bille de but {object} mm) et le contact n'est que {height} mm au-dessus de l'équateur de la blanche. Ce dessin n'est pas une mesure.",
+  "@contactHeightNote": {
+    "description": "Mention d'exagération de l'inclinaison sous la vue de côté du contact et dans sa description parlée.",
     "placeholders": {
       "cue": {
         "type": "String"
       },
       "object": {
+        "type": "String"
+      },
+      "height": {
         "type": "String"
       }
     }

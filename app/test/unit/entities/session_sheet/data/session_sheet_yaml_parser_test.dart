@@ -324,6 +324,25 @@ void main() {
       expect(pdf.page, 15);
     });
 
+    test('a contact_height takes no parameter and rejects any key', () {
+      final parsed = parseSessionSheet(
+        _withIllustration(
+          '  - {id: h, type: contact_height, caption: "C.", alt: "A."}',
+        ),
+      );
+      expect(
+        parsed.illustrations.whereType<ContactHeightIllustration>(),
+        hasLength(1),
+      );
+      _refuses(
+        _withIllustration(
+          '  - {id: h, type: contact_height, exaggeration: 10, '
+          'caption: "C.", alt: "A."}',
+        ),
+        mentioning: 'exaggeration',
+      );
+    });
+
     test('a cue_ball_target needs only the tip point', () {
       final parsed = parseSessionSheet(
         _withIllustration(

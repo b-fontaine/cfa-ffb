@@ -39,7 +39,7 @@ theory:
         - "Au Blackball, la blanche est plus petite que les autres billes : le contact se fait légèrement au-dessus de l'équateur de la blanche, ce qui donne des rejets différents des autres disciplines."
       key_point: "Bille pleine : je vise le centre de la bille, elle part droit."
       demo: Poser la queue sur la trajectoire qui passe par le centre de la blanche et le centre de la bille de couleur.
-      illustrations: [contact-plein, visee-plein, schema-aligne]
+      illustrations: [contact-plein, visee-plein, hauteur-contact, schema-aligne]
       src: S
     - id: energie
       title: Toute l'énergie passe
@@ -93,6 +93,9 @@ illustrations:
   - {id: visee-plein, type: ghost_aim, cue: [4.0, 3.0], object: [2.0, 1.5], pocket: tl, fraction: full,
      caption: "La bille fantôme est collée à la bille de couleur, sur la ligne de la poche.",
      alt: "Blanche en bas à droite, bille de couleur au milieu, poche en haut à gauche : la bille fantôme, cercle creux de la taille de la blanche (un peu plus petite que la bille de couleur), est collée à la bille de couleur ; la blanche, la bille fantôme, la bille de couleur et la poche sont sur une même ligne droite."}
+  - {id: hauteur-contact, type: contact_height,
+     caption: "Vue de côté, inclinaison exagérée ×10 : la blanche, plus petite, touche la bille de couleur légèrement au-dessus de l'équateur de la blanche.",
+     alt: "Vue de côté : la blanche et la bille de couleur, un peu plus grosse, posées sur le tapis ; elles se touchent légèrement au-dessus de l'équateur de la blanche, un point marque le contact et un trait pointillé l'équateur. L'inclinaison est exagérée dix fois pour être visible, la bille de couleur est dessinée bien plus grosse qu'en réalité : ce n'est pas une mesure, en réalité le contact est à moins d'un millimètre au-dessus de l'équateur."}
   - {id: quantites, type: contact_strip, fractions: [full], highlight: full,
      caption: "Bille pleine : presque toute l'énergie passe à la bille de couleur.",
      alt: "Schéma de contact : la blanche, un peu plus petite que la bille de couleur et exactement derrière elle, la touche en bille pleine."}
@@ -182,6 +185,7 @@ sources:
 uncertainties:
   - "Mises en place en texte, défis ludiques, variante de jeu (jetons compris), règle de lien et adaptation du jeu : [Prop], à valider par un animateur dans l'application. La différenciation enfants / adultes (poids, compléments, adaptation du jeu) est aussi une proposition."
   - "La section « Où frapper la blanche ? » est [Prop] : le dessin de la fiche n° 4 n'est pas légendé et le point d'impact du procédé au centre de la blanche est une interprétation (transcription techniques p14) ; l'initiation 6 montre un point légèrement au-dessus du centre sur un des deux schémas."
+  - "Le schéma « hauteur-contact » (vue de côté, inclinaison exagérée ×10) est dans la section « Où frapper la blanche ? », donc vu par les deux publics, alors que le texte sur l'équateur est réservé aux adultes : le format ne permet pas d'illustration réservée à un public. [Prop], à faire trancher par la relecture pédagogique (règle enfants « 1 notion, explications courtes »)."
   - "Initiation 6 : la fiche cite un chevalet sur la surface de jeu et un chevalet sur cadre sans dire lequel va avec quel schéma ; la séance ne l'impose pas."
   - "Entraînement 2 : sur le schéma, les billes 1 à 4 sont alignées derrière les billes 5 et 6 ; l'ordre « la plus proche de la blanche d'abord » est une lecture [Prop] pour dégager la ligne."
   - "Entraînement 1 : le schéma note « x 4 » à côté de chaque jaune ; la consigne « quatre tirs par jaune » en est la lecture, sans ordre précisé entre les deux jaunes."

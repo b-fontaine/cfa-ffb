@@ -61,10 +61,12 @@ void main() {
   });
 
   group('exaggeratedObjectRadius', () {
-    test('x10 grows the 1.4 mm gap to 14 mm: radius 38.0 for 24.0', () {
+    // phi = asin(1,4 / 49,4) = 1,6240 deg ; x10 = 16,240 deg ;
+    // sin(16,240 deg) = 0,279659 ; r_o' = 24 x 1,279659 / 0,720341.
+    test('x10 tilts the centre line by 16.24 deg: radius 42.635 for 24.0', () {
       expect(
         exaggeratedObjectRadius(cueRadius: 24, objectRadius: 25.4, factor: 10),
-        closeTo(38, 1e-9),
+        closeTo(42.6351, 1e-3),
       );
     });
 
@@ -75,14 +77,18 @@ void main() {
       );
     });
 
-    test(
-      'the exaggerated contact is 5.419 mm above the equator (13.05 deg)',
-      () {
-        final contact = contactHeight(cueRadius: 24, objectRadius: 38);
+    test('the exaggerated contact is tilted 10 times the real angle', () {
+      final real = contactHeight(cueRadius: 24, objectRadius: 25.4);
+      final radius = exaggeratedObjectRadius(
+        cueRadius: 24,
+        objectRadius: 25.4,
+        factor: 10,
+      );
+      final contact = contactHeight(cueRadius: 24, objectRadius: radius);
 
-        expect(contact.tilt * 180 / math.pi, closeTo(13.0505, 1e-3));
-        expect(contact.height, closeTo(5.4194, 1e-3));
-      },
-    );
+      expect(contact.tilt * 180 / math.pi, closeTo(16.2398, 1e-3));
+      expect(contact.tilt, closeTo(10 * real.tilt, 1e-9));
+      expect(contact.height, closeTo(6.7118, 1e-3));
+    });
   });
 }

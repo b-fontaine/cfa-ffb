@@ -29,7 +29,7 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
 | F4 | Saisie : le sélecteur d'exercice est un bouton sans libellé accessible, au libellé tronqué sur mobile — traité par le lot **U5** | `pages/record_session` |
 | F5 | ~~Onglet « Résultats » : aucun historique des séances saisies ; impossible de relire, corriger ou supprimer un passage~~ — corrigé (ADR 0006) | `pages/record_history` |
 | F6 | ~~Séance planifiée sans date ni groupe, non liée à la saisie (décision 10 de l'ADR 0004, assumée mais visible)~~ — corrigé (ADR 0007) | `pages/session_planner` |
-| F7 | Séance suggérée : « Pas de rappel » pour les enfants (`recallCount = 0`, voulu) alors que la fiche élève affiche une notion à rappeler ; rien ne l'explique à l'écran | `pages/suggested_session` |
+| F7 | ~~Séance suggérée : « Pas de rappel » pour les enfants (`recallCount = 0`, voulu) alors que la fiche élève affiche une notion à rappeler ; rien ne l'explique à l'écran~~ — corrigé (H0) : la carte « Rappel » explique, pour les enfants, qu'une séance porte une seule notion | `pages/suggested_session` |
 | F8 | Les seuils (`passesRequired`, alertes, `recallStaleSessions`) sont dans `RulesConfig.standard()` sans écran de réglages — livré sous la destination « Plus » du lot **U6** | `app/di` |
 
 ## Lots UX / UI (audit du 2026-10-14)
@@ -56,20 +56,20 @@ revues séparées, `check.sh --full`).
 
 ## H0 — Clore ce qui est ouvert
 
-1. Lot L8 « finition » de l'ADR 0004 (seul lot non livré) : `check.sh --fast`
-   en `--complete`, docs (`progression-par-cycles.md`, glossaire).
-   L'accessibilité (F4) et la tablette paysage (F3) passent aux lots U5 et U4.
+1. ~~Lot L8 « finition » de l'ADR 0004 : `check.sh --fast` en `--complete`,
+   docs (`progression-par-cycles.md`, glossaire).~~ Livré (le garde-fou
+   exécutait déjà `fiches.dart --complete`). L'accessibilité (F4) et la tablette paysage (F3) passent aux lots U5 et U4.
 2. Revue T8 du plan tailles et illustrations : `architecte-fsd`, `testeur-bdd`,
    `relecteur-pedagogique`, dans un contexte séparé.
-3. Corriger F7 (un texte « pas de rappel : une notion par séance enfants »).
-   F1 est absorbé par U3 pour ne pas corriger deux fois ; F2 est corrigé par
+3. ~~Corriger F7 (un texte « pas de rappel : une notion par séance enfants »).~~
+   Livré. F1 est absorbé par U3 pour ne pas corriger deux fois ; F2 est corrigé par
    U2 (livré).
 4. ~~Faire trancher par l'animateur~~ — **tranché le 2026-10-14** : D5 =
    **ajouter** l'illustration `contact_height` ; questions 2 à 4 de
    `docs/knowledge/08-lacunes-et-questions-ouvertes.md` (unité « séance »,
    dimensionnement groupes / saison, synchronisation) : recommandations de
-   l'assistant suivies, à consigner dans ce fichier. Reste à **réaliser** D5
-   dans `tailles-et-illustrations-plan.md`. D2 (ligne de départ à 1,6 `[FFB]`)
+   l'assistant suivies, à consigner dans ce fichier. D5 est **réalisé**
+   (`contact_height`, `tailles-et-illustrations-plan.md` § 3.4). D2 (ligne de départ à 1,6 `[FFB]`)
    est **réalisée** : les positions YAML, absolues, sont inchangées.
    Les questions Q1 à Q8 du plan UX sont **tranchées** `[U]` le 2026-10-14
    (toutes dans le sens recommandé : voir
@@ -187,7 +187,7 @@ Lots UX en H0 :
 ## Ordre recommandé
 
 ```
-H0 : F7 → revue T8 → réaliser D5 (les questions ouvertes sont tranchées ; U2 livré)
+H0 : F7 → revue T8 → ~~réaliser D5~~ réalisé (les questions ouvertes sont tranchées ; U2 livré)
 H1 : U5 → U6 → 9 → U7 → 10 + U9 + U8 → 11   (5 à 8 livrés)
 H2 : U4 → U3 → 14 → 15
 H3 : 16 (avec le mode Relecture de U4) → 17 → 18 → 19 → 20

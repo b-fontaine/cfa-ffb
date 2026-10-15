@@ -23,6 +23,25 @@ Feature: Suggested session screen
     Then I see {'120 min'} text
     And I see {'Training · 50 min'} text
 
+  # F7 : l'absence de rappel pour les enfants est voulue, l'écran l'explique.
+  Scenario: A children session without recall explains that it is intended
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
+    When I tap {'Sessions'} text
+    And I tap {'Group suggestion'} text
+    And I tap {'Suggest a session'} text
+    Then I see {'No recall for this group.'} text
+    And I see {'Children sessions cover a single notion: no recall is intended.'} text
+
+  Scenario: An adults session without recall shows no children explanation
+    Given the club has the student {'Hugo'} in the {'adults'} audience
+    And the app is running
+    When I tap {'Sessions'} text
+    And I tap {'Group suggestion'} text
+    And I tap {'Suggest a session'} text
+    Then I see {'No recall for this group.'} text
+    And I do not see {'Children sessions cover a single notion: no recall is intended.'} text
+
   Scenario: Each exercise links to its source sheet
     Given the club has the student {'Léa'} in the {'children'} audience
     And {'Léa'} has validated the block {'posture'}

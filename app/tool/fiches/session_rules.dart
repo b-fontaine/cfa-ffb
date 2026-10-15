@@ -27,6 +27,7 @@ const _illustrationTypes = {
   'cue_ball_target',
   'player_figure',
   'ball_size',
+  'contact_height',
   'power_ratio',
   'angle',
   'pdf_ref',
@@ -195,6 +196,7 @@ const _illustrationParams = <String, _Keys>{
     {'focus', 'lead_eye', 'head_case', 'bridge'},
   ),
   'ball_size': _Keys({}),
+  'contact_height': _Keys({}),
   'power_ratio': _Keys({}, {'points', 'highlight', 'distance_label'}),
   'angle': _Keys({'kind', 'vertex', 'rays'}),
   'pdf_ref': _Keys({'file', 'page'}),
@@ -761,6 +763,7 @@ class _Session {
       case 'player_figure':
         _playerFigure(ill, path);
       case 'ball_size':
+      case 'contact_height':
         break;
       case 'power_ratio':
         _powerRatio(ill, path);

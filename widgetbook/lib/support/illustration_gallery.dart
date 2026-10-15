@@ -152,6 +152,21 @@ List<GalleryEntry> galleryEntries(List<Illustration> pilot) {
       ),
     ),
     entry(
+      'contact_height',
+      pick((i) => i is ContactHeightIllustration),
+      const Illustration.contactHeight(
+        id: 'ex-height',
+        caption:
+            'Au contact, la blanche touche la bille de couleur légèrement '
+            "au-dessus de l'équateur de la blanche (inclinaison exagérée ×10, "
+            "ce n'est pas une mesure).",
+        alt:
+            'Vue de côté : la blanche et une bille de couleur, plus grosse, '
+            'posées sur le tapis ; le point de contact est légèrement '
+            "au-dessus de l'équateur de la blanche, inclinaison exagérée.",
+      ),
+    ),
+    entry(
       'power_ratio',
       pick((i) => i is PowerRatioIllustration),
       const Illustration.powerRatio(

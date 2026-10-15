@@ -23,6 +23,12 @@
 5. **Validation d'un exercice** : il faut **plusieurs** passages réussis, **5 le plus souvent** (valeur par défaut réglable) — et non un seul.
 6. **Ordre d'enseignement** : « rebond sur bande » **puis** « rejet naturel » (l'ordre des fichiers PDF est inversé ; voir `teaching_order` dans `03-exercices/catalogue-entrainement.yaml`).
 
+## Décisions de l'utilisateur (2026-10-15) `[U]`
+
+7. **Validation et créneau de rappel** : à partir de la 2e séance du catalogue, l'entraînement comporte un **exercice de rappel** pris parmi les exercices non encore validés des séances précédentes (choisi d'après le suivi des élèves) ; les passages se **cumulent sur la saison**. La valeur par défaut reste 5 passages réussis (réglable). Résout la tension entre « 2 passages par séance » `[S]` et la validation à plusieurs passages.
+8. **Bille fantôme : une seule séance**, avant la bille pleine, avec les exercices 1 et 2 du bloc `bille-fantome` (fantôme posée puis imaginée, en plein) ; les exercices 3 et 4 (demi-bille, coupes) sont supprimés. Le catalogue passe à **28 séances**, renumérotées.
+9. **Attaque de référence au niveau 1 : le centre de la blanche.** Les encarts des fiches qui montrent un point « un peu au-dessus » sont mentionnés dans les notes animateur seulement, jamais dans le texte élève.
+
 ## Questions encore ouvertes
 
 1. Faut-il valider les positions approchées des diagrammes par un animateur (comparaison au PDF) avant de les afficher dans l'application ?
