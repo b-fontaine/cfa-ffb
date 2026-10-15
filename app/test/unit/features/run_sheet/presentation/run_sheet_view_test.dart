@@ -182,7 +182,7 @@ void main() {
             ),
           ),
         ),
-        step: 6,
+        step: 7,
       );
 
       expect(find.text('Open points'), findsOneWidget);
@@ -208,7 +208,7 @@ void main() {
             ),
           ),
         ),
-        step: 5,
+        step: 6,
       );
 
       expect(
@@ -259,7 +259,7 @@ void main() {
       await tester.pump();
 
       expect(
-        find.text('This session is already under way: step 3 of 7.'),
+        find.text('This session is already under way: step 3 of 8.'),
         findsOneWidget,
       );
       expect(find.text('Resume at step 3'), findsOneWidget);
@@ -275,7 +275,7 @@ void main() {
 
       expect(find.text('Quantité demi-bille, session 1/2'), findsOneWidget);
       expect(find.text('Children · 90 min'), findsOneWidget);
-      expect(find.text('Step 1 of 7'), findsOneWidget);
+      expect(find.text('Step 1 of 8'), findsOneWidget);
       expect(find.text('Welcome · 10 min'), findsOneWidget);
     });
 
@@ -340,7 +340,7 @@ void main() {
 
       await tapVisible(tester, find.text('Next'));
       await tester.pump();
-      expect(find.text('Step 2 of 7'), findsOneWidget);
+      expect(find.text('Step 2 of 8'), findsOneWidget);
       await tapVisible(tester, find.text('Previous'));
       await tester.pump();
 
@@ -361,7 +361,7 @@ void main() {
     });
 
     testWidgets('disables next on the last step', (tester) async {
-      await pump(tester, world(), 'demi-bille-1', step: 6);
+      await pump(tester, world(), 'demi-bille-1', step: 7);
 
       final next = tester.widget<FilledButton>(
         find.ancestor(
@@ -370,7 +370,7 @@ void main() {
         ),
       );
       expect(next.onPressed, isNull);
-      expect(find.text('Step 7 of 7'), findsOneWidget);
+      expect(find.text('Step 8 of 8'), findsOneWidget);
     });
 
     testWidgets('jumps from the outline and lists every step', (tester) async {
@@ -384,9 +384,9 @@ void main() {
       await tapVisible(tester, find.text('Jeu'));
       await tester.pumpAndSettle();
 
-      expect(calls.steps, [5]);
+      expect(calls.steps, [6]);
       expect(find.text('Steps of the session'), findsNothing);
-      expect(find.text('Step 6 of 7'), findsOneWidget);
+      expect(find.text('Step 7 of 8'), findsOneWidget);
     });
   });
 
@@ -558,7 +558,7 @@ void main() {
     });
 
     testWidgets('shows the game and keeps its score locally', (tester) async {
-      final (cubit, _) = await pump(tester, world(), 'demi-bille-1', step: 5);
+      final (cubit, _) = await pump(tester, world(), 'demi-bille-1', step: 6);
 
       expect(find.text('Jeu'), findsOneWidget);
       expect(find.text('Players: Partie à 2'), findsOneWidget);
@@ -585,7 +585,7 @@ void main() {
     testWidgets('badges the variant and the recall rule of the game', (
       tester,
     ) async {
-      await pump(tester, world(), 'demi-bille-1', step: 5);
+      await pump(tester, world(), 'demi-bille-1', step: 6);
 
       for (final element in ['variant', 'link']) {
         final badge = find.byKey(ValueKey('source:$element'));
@@ -614,7 +614,7 @@ void main() {
         ..criterionToggled('grille', 0)
         ..scoreChanged(ScoreSide.a, 2)
         ..scoreChanged(ScoreSide.b, 1)
-        ..showStep(8);
+        ..showStep(9);
       await tester.pump();
 
       expect(
@@ -631,7 +631,7 @@ void main() {
     });
 
     testWidgets('says nothing was counted when nothing was', (tester) async {
-      await pump(tester, world(), 'demi-bille-1', step: 6);
+      await pump(tester, world(), 'demi-bille-1', step: 7);
 
       expect(find.text('Nothing was counted on this screen.'), findsOneWidget);
     });

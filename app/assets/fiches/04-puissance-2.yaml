@@ -59,7 +59,16 @@ theory:
         - Comparer un tir proche et un tir lointain vers la même zone grise ; noter ce qui change dans la main arrière.
       key_point: Je choisis mon amplitude et ma vitesse avant de tirer, selon la distance.
       demo: "Tirer vers la même zone grise depuis un repère proche, puis depuis un repère lointain, en montrant le recul de la main."
-      illustrations: [plan-puissance, zones-distances]
+      illustrations: [zones-distances]
+      src: Prop
+    - id: plan
+      title: Le plan recul et vitesse
+      weight: {adults: 1}
+      body:
+        - "Pour les adultes, une image : le recul de la main en abscisse, la vitesse du coup en ordonnée ; un tir proche est en bas à gauche, un tir lointain en haut à droite. Ce n'est pas une graduation fédérale."
+      key_point: Plus la zone est loin, plus le point monte vers le haut à droite du plan.
+      demo: null
+      illustrations: [plan-puissance]
       src: Prop
 initiation:
   - id: ini-5
@@ -85,7 +94,9 @@ illustrations:
      alt: "Plan amplitude (recul de la main, en abscisse) et vitesse du coup (en ordonnée), à trois zones doux, moyen, puissant, avec deux exemples dont la zone est écrite sous le plan : en bas à gauche, peu de recul et peu de vitesse pour une zone proche (doux) ; en haut à droite, grand recul et grande vitesse pour une zone lointaine (puissant)."}
   - {id: zones-distances, type: table,
      balls: [{id: r1, color: red, at: [0.35, 0.35]}, {id: w, color: white, at: [6.0, 2.0], role: cue}],
-     ghosts: [{id: g1, at: [2.4, 1.6], role: cue_start, for: w, label: "tir proche"}],
+     ghosts: [{id: g1, at: [2.4, 1.6], role: cue_start, for: w, label: "tir proche"},
+              {id: g-loin, at: [0.555, 0.41], role: impact, for: w},
+              {id: g-pres, at: [0.532, 0.461], role: impact, for: w}],
      arrows: [{id: a1, ball: w, kind: cue, path: [[6.0, 2.0], [0.555, 0.41]], bounces: [], label: "tir lointain"},
               {id: a2, ball: w, kind: cue, path: [[2.4, 1.6], [0.532, 0.461]], bounces: [], label: "tir proche"}],
      zones: [{id: z1, shape: rect, from: [0, 0], to: [1, 1], label: "zone grise"}],
@@ -98,6 +109,7 @@ illustrations:
      caption: "Jeu 4 : tirer depuis la ligne et placer sa bille au plus près de la blanche.",
      alt: "Table vue de dessus : un groupe de rouges en haut à gauche, un groupe de jaunes en bas à gauche, la blanche posée sur la ligne au milieu de la largeur."}
 training:
+  recall_slot: {weight: {children: 1, adults: 1}, passes: 1}   # exercice choisi à l'exécution parmi les séances précédentes (ADR 0011, [U] 2026-10-15)
   exercises:
     - id: e3
       ref: {block: puissance, n: 3}
@@ -169,6 +181,7 @@ sources:
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 4, note: "Jeu 4 (pétanque avec la blanche) ; jeu 5 pour la variante adultes"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 5, note: "Jeu 5 (pétanque avec la noire), variante adultes"}
 uncertainties:
+  - "Le plan recul et vitesse (`plan-puissance`) est réservé aux adultes depuis le 2026-10-15 (audit : image abstraite pour des enfants), dans sa propre section ; les enfants voient le schéma de table `zones-distances`."
   - "Liaison avec puissance-1 (écrite) : notion et nom du thème alignés (V23) ; le pitch porte l'épisode 2. Partie 1 : jeu 3 et défi du dosage annoncé (doux, moyen, fort) ; partie 2 : jeu 4 et défi du garage. La liaison de jeu (annonce du recul) prolonge l'annonce « doux, moyen, fort » de la partie 1 ; le choix petit / moyen / grand est une proposition."
   - "Jeu 4 : la fiche [S] ne définit pas « points restants », à qui « la main passe », la règle de la pétanque (plus grand nombre de billes d'un même groupe au plus près), qui commence la manche suivante, ni le rôle de la noire ; le texte [S] est gardé intact, les précisions de décompte sont des propositions [Prop] dans l'adaptation. Matériel : un seul groupe de quatre billes par camp (schéma jeux-p04-j1) ; le tirage au sort du groupe est [Prop]."
   - "Illustration `fleche-personnage` de type `player_figure` : le joueur de profil montre la main de chevalet et la queue ; les deux positions de la main arrière (flèche courte, flèche longue) sont dites en légende, un personnage ne montrant qu'une position. Le plan `plan-puissance` est une image [Prop] (seuls les deux extrêmes viennent de la fiche n° 2)."

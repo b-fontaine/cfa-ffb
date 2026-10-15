@@ -14,7 +14,7 @@ import '../../tool/fiches/session_rules.dart';
 
 const _root = '..';
 const _catalogueDir = '$_root/docs/knowledge/05-seances/catalogue';
-const _pilotName = '09-demi-bille-1.yaml';
+const _pilotName = '08-demi-bille-1.yaml';
 const _pilotPath = '$_catalogueDir/$_pilotName';
 
 const _badName = '07-bille-pleine-1.yaml';
@@ -104,16 +104,16 @@ void main() {
 
     setUpAll(() => structure = context.structure);
 
-    test('le catalogue réel donne 29 séances sans erreur', () {
+    test('le catalogue réel donne 28 séances sans erreur', () {
       expect(structure.errors, isEmpty);
-      expect(structure.slots, hasLength(29));
+      expect(structure.slots, hasLength(28));
     });
 
     test('nombre de parties par technique (valeurs indépendantes)', () {
       expect(structure.partsByTechnique, {
         'posture': 2,
         'puissance': 2,
-        'bille-fantome': 2,
+        'bille-fantome': 1,
         'bille-pleine': 2,
         'demi-bille': 2,
         'trois-quarts': 2,
@@ -160,7 +160,7 @@ void main() {
 
     test('nom de fichier : rang sur deux chiffres puis identifiant', () {
       expect(structure.slotById('demi-bille-1')!.fileName, _pilotName);
-      expect(structure.slotById('retro-4')!.fileName, '29-retro-4.yaml');
+      expect(structure.slotById('retro-4')!.fileName, '28-retro-4.yaml');
     });
 
     test('bornage par les sessions du bloc', () {
@@ -633,6 +633,41 @@ void main() {
         broken((d) => initiation(d)['scoring'] = {'mode': 'counter', 'of': 1}),
         isEmpty,
       );
+    });
+  });
+
+  group('V28 créneau de rappel', () {
+    Json slot(Json d) => _obj(_obj(d['training'])['recall_slot']);
+
+    test('absent dès la deuxième séance : refusé', () {
+      expectRule(
+        broken((d) => _obj(d['training']).remove('recall_slot')),
+        'V28',
+        mention: 'obligatoire',
+      );
+    });
+    test('présent sur la première séance : refusé', () {
+      final errors = broken((d) {
+        d['id'] = 'posture-1';
+        d['technique'] = 'posture';
+        d['order'] = 1;
+        d['previous'] = null;
+        d['catalogue_block'] = 'posture';
+      }, fileName: '01-posture-1.yaml');
+      expectRule(errors, 'V28', mention: 'interdit');
+    });
+    test('poids manquant, passes hors de 1 et 2, clé inconnue', () {
+      expectRule(
+        broken((d) => slot(d)['weight'] = {'children': 1}),
+        'V28',
+        mention: 'adults',
+      );
+      expectRule(
+        broken((d) => slot(d)['passes'] = 3),
+        'V28',
+        mention: 'passes',
+      );
+      expectRule(broken((d) => slot(d)['exercise'] = 'e9'), 'V1');
     });
   });
 
@@ -1443,10 +1478,10 @@ void main() {
     test("partie 2 dont previous n'est pas la partie 1", () {
       final errors = broken((d) {
         d['id'] = 'demi-bille-2';
-        d['order'] = 10;
+        d['order'] = 9;
         d['part'] = 2;
         d['previous'] = 'bille-pleine-2';
-      }, fileName: '10-demi-bille-2.yaml');
+      }, fileName: '09-demi-bille-2.yaml');
       expectRule(errors, 'V22', mention: 'suit demi-bille-1');
       expectRule(errors, 'V3', mention: 'attendu demi-bille-1');
     });
@@ -1458,7 +1493,7 @@ void main() {
     Json part2() {
       final d = _pilot()
         ..['id'] = 'demi-bille-2'
-        ..['order'] = 10
+        ..['order'] = 9
         ..['part'] = 2
         ..['previous'] = 'demi-bille-1';
       final ex = _exercises(d);
@@ -1493,11 +1528,11 @@ void main() {
       expect(report.files, [_pilotName]);
     });
 
-    test('--complete : les 28 autres séances manquent (V2)', () {
+    test('--complete : les 27 autres séances manquent (V2)', () {
       final report = check(complete: true);
       expect(report.ok, isFalse);
       final missing = report.globalErrors.where((e) => e.startsWith('V2 '));
-      expect(missing, hasLength(28));
+      expect(missing, hasLength(27));
       expect(missing.join('\n'), contains('01-posture-1.yaml'));
     });
 
@@ -1510,14 +1545,14 @@ void main() {
     });
 
     test('deux parties cohérentes : vert', () {
-      write('10-demi-bille-2.yaml', part2());
+      write('09-demi-bille-2.yaml', part2());
       final report = check();
       expect(report.ok, isTrue, reason: '${report.allErrors}');
     });
 
     test('V23 : notion différente entre deux parties', () {
       final d = part2()..['notion'] = 'Autre notion.';
-      write('10-demi-bille-2.yaml', d);
+      write('09-demi-bille-2.yaml', d);
       final report = check();
       expectRule(report.globalErrors, 'V23', mention: 'notion');
     });
@@ -1525,14 +1560,14 @@ void main() {
     test('V23 : nom de thème différent', () {
       final d = part2();
       _obj(d['theme'])['name'] = 'Un autre thème';
-      write('10-demi-bille-2.yaml', d);
+      write('09-demi-bille-2.yaml', d);
       expectRule(check().globalErrors, 'V23', mention: 'theme.name');
     });
 
     test('V23 : variante ludique identique à la partie précédente', () {
       final d = part2();
       _game(d)['playful_variant'] = _game(_pilot())['playful_variant'];
-      write('10-demi-bille-2.yaml', d);
+      write('09-demi-bille-2.yaml', d);
       expectRule(check().globalErrors, 'V23', mention: 'playful_variant');
     });
 
@@ -1545,9 +1580,9 @@ void main() {
     test('V7 : reuse contrôlé dès que la séance précédente est présente', () {
       final d = part2();
       _obj(_obj(d['recall'])['reuse'])['illustration'] = 'absente';
-      write('10-demi-bille-2.yaml', d);
+      write('09-demi-bille-2.yaml', d);
       final report = check();
-      expectRule(report.errorsByFile['10-demi-bille-2.yaml']!, 'V7');
+      expectRule(report.errorsByFile['09-demi-bille-2.yaml']!, 'V7');
     });
 
     test('un fichier non YAML du dossier est ignoré', () {
@@ -1578,8 +1613,8 @@ void main() {
 
     test('une ligne du tableau des séances modifiée est détectée', () {
       final stale = format.replaceFirst(
-        '| 9 | `demi-bille-1` | 1-2 | `bille-pleine-2` |',
-        '| 9 | `demi-bille-1` | 1-2 | `puissance-2` |',
+        '| 8 | `demi-bille-1` | 1-2 | `bille-pleine-2` |',
+        '| 8 | `demi-bille-1` | 1-2 | `puissance-2` |',
       );
       expect(stale, isNot(format));
       expect(checkFormatTables(stale, context.structure), isNotEmpty);
@@ -1601,7 +1636,7 @@ void main() {
       expect(out0(out), contains(_pilotName));
     });
 
-    test('--complete : vert sur les 29 séances du catalogue', () {
+    test('--complete : vert sur les 28 séances du catalogue', () {
       final out = StringBuffer();
       final err = StringBuffer();
       final code = runCli(const ['--complete'], out: out, err: err);
@@ -1675,17 +1710,17 @@ void main() {
       expect(runCli(const ['--nope'], out: StringBuffer(), err: err), 2);
     });
 
-    test('--structure affiche les 29 séances', () {
+    test('--structure affiche les 28 séances', () {
       final out = StringBuffer();
       final code = runCli(const ['--structure'], out: out, err: StringBuffer());
       expect(code, 0);
       final lines = out.toString().trim().split('\n');
 
-      // 1 en-tête + 29 séances, une par ligne.
-      expect(lines, hasLength(30));
+      // 1 en-tête + 28 séances, une par ligne.
+      expect(lines, hasLength(29));
       expect(lines.first, startsWith('rang'));
-      expect(lines.last, startsWith('29  retro-4  9-10  retro-3'));
-      expect(out.toString(), contains('10  demi-bille-2  3-4  demi-bille-1'));
+      expect(lines.last, startsWith('28  retro-4  9-10  retro-3'));
+      expect(out.toString(), contains('9  demi-bille-2  3-4  demi-bille-1'));
     });
 
     test('--structure seul ne lit aucune séance', () {

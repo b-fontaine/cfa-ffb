@@ -105,6 +105,7 @@ illustrations:
     ghosts:
       - {id: g-milieu, at: [4.0, 2.2], role: cue_start, for: w, label: "milieu"}
       - {id: g-pres, at: [4.0, 1.2], role: cue_start, for: w, label: "près"}
+      - {id: g-impact, at: [4.0, 0.364], role: impact, for: w}
     arrows:
       - {id: a-loin, kind: cue, ball: w, path: [[4.0, 3.2], [4.0, 0.364]], to: tm}
       - {id: a-milieu, kind: cue, ball: w, path: [[4.0, 2.2], [4.0, 0.364]], to: tm}
@@ -115,14 +116,15 @@ illustrations:
      caption: "Jeu 2 : six billes à un espace de bille des poches ; la blanche se place librement.",
      alt: "Table vue de dessus : six billes rouges, une près de chacune des six poches, à environ une bille d'écart ; pas de blanche dessinée."}
 training:
+  recall_slot: {weight: {children: 1, adults: 1}, passes: 1}   # exercice choisi à l'exécution parmi les séances précédentes (ADR 0011, [U] 2026-10-15)
   exercises:
     - id: e1
       ref: {block: posture, n: 3}
       diagram: proposition-p01-e3
-      title: Les quatre emplacements
+      title: Deux cibles, quatre emplacements
       weight: {children: 2, adults: 1}
       setup: La noire près du coin haut droit et la rouge près du coin bas droit, comme sur le schéma ; la blanche posée sur le premier des quatre emplacements alignés à gauche.
-      instruction: Depuis chacun des quatre emplacements, jouer la noire puis la rouge, main d'appui à plat sur la surface de jeu, même près de la bande, car on s'entraîne à cet appui ; replacer la blanche et les billes entre deux tirs.
+      instruction: Depuis chacun des quatre emplacements, jouer la noire puis la rouge ; main d'appui à plat sur la surface de jeu quand la blanche est loin de la bande, sur le cadre quand elle en est proche (premier et quatrième emplacements) ; replacer la blanche et les billes entre deux tirs.
       expected: La queue part droit sur la ligne de visée et le corps reste immobile jusqu'à la fin du tir ; la bille visée va vers sa poche.
       mistakes:
         - {symptom: L'élève se relève avant la fin du tir, fix: Lui demander de rester immobile jusqu'à l'arrêt de la blanche.}
@@ -195,4 +197,4 @@ uncertainties:
   - "Le rappel ne porte que sur ce que posture-1 a enseigné (alignement, posture, appui sur le cadre, main à plat) ; il réutilise l'illustration `posture-personnage` de posture-1. Le coup de queue (seul l'avant-bras bouge) est nouveau et n'est pas rappelé."
   - "Pas de section d'initiation : les fiches d'initiation 3 et 4 sont déjà la base des exercices 3 et 4 ; les ajouter ferait doublon ; les deux sections nouvelles ont une démonstration que les élèves reproduisent aussitôt (chevalet à plat, trois balanciers à vide)."
   - "La section « Près ou loin, le même geste » est une glose [Prop] : la fiche technique n° 1 ne traite pas de la distance de la blanche ; son schéma aligne les trois emplacements avec la bille et la poche pour que seule la distance change."
-  - "Dans l'exercice 3, les emplacements 1 et 4 sont à moins d'une demi-case d'une bande et la main reste à plat : choix volontaire repris de la fiche d'initiation 3 [S] pour travailler ce chevalet ; la fiche technique recommande plutôt le cadre près de la bande."
+  - "Exercice 3 : les emplacements 1 et 4 sont à moins d'une demi-case d'une bande ; depuis le 2026-10-15 (audit), l'appui y est sur le cadre, comme le recommande la fiche technique n° 1, et à plat ailleurs ; le taux [Prop] est ramené de 6/8 à 4/8, les cibles étant à l'autre bout de la table (mise en place de l'initiation 3 [S]) pour une deuxième séance de débutants."

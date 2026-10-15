@@ -31,6 +31,8 @@ void main() {
     ],
   );
 
+  // Depuis l'ADR 0011, le créneau de rappel (poids 1) partage le budget
+  // d'entraînement avec les exercices : 35 min en 2/1/1 et 50 min en 1/1/1.
   test('gives the normative children timing of the pilot: 8 / 5 / 7', () {
     final timing = sheetTiming(
       heavy,
@@ -41,7 +43,8 @@ void main() {
     expect(timing.recall, 10);
     expect(timing.theory, {'tangente': 8, 'comparer': 5});
     expect(timing.initiation, {'ini-7': 7});
-    expect(timing.exercises, {'e1': 23, 'e2': 12});
+    expect(timing.exercises, {'e1': 17, 'e2': 9});
+    expect(timing.recallExercise, 9);
     expect(timing.game, 20);
     expect(timing.review, 5);
     expect(timing.total, 90);
@@ -56,7 +59,8 @@ void main() {
 
     expect(timing.theory, {'tangente': 8, 'comparer': 5, 'fantome': 5});
     expect(timing.initiation, {'ini-7': 7});
-    expect(timing.exercises, {'e1': 25, 'e2': 25});
+    expect(timing.exercises, {'e1': 17, 'e2': 17});
+    expect(timing.recallExercise, 16);
     expect(timing.game, 25);
     expect(timing.review, 10);
     expect(timing.total, 120);
@@ -138,10 +142,12 @@ void main() {
       );
 
       expect(kids.theory, {'a': 5, 'b': 10});
-      expect(kids.exercises, {'e1': 24, 'e2': 8, 'e3': 8});
+      expect(kids.exercises, {'e1': 20, 'e2': 7, 'e3': 7});
+      expect(kids.recallExercise, 6);
       expect(kids.total, 90);
       expect(grownUps.theory, {'a': 25});
-      expect(grownUps.exercises, {'e1': 25, 'e2': 25});
+      expect(grownUps.exercises, {'e1': 17, 'e2': 17});
+      expect(grownUps.recallExercise, 16);
       expect(grownUps.total, 120);
     },
   );

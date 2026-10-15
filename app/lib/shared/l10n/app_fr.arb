@@ -127,6 +127,44 @@
   "tipPointTopRight": "Procédé en haut à droite de la blanche",
   "tipPointBottomLeft": "Procédé en bas à gauche de la blanche",
   "tipPointBottomRight": "Procédé en bas à droite de la blanche",
+  "tipPointTopSlight": "Procédé un peu au-dessus du centre de la blanche",
+  "tipPointBottomSlight": "Procédé un peu au-dessous du centre de la blanche",
+  "tipPointLeftSlight": "Procédé un peu à gauche du centre de la blanche",
+  "tipPointRightSlight": "Procédé un peu à droite du centre de la blanche",
+  "contactPathsLabel": "Après le contact, la bille de couleur dévie d’environ {colour}° et la blanche d’environ {cue}°",
+  "@contactPathsLabel": {
+    "placeholders": {
+      "colour": {
+        "type": "int"
+      },
+      "cue": {
+        "type": "int"
+      }
+    }
+  },
+  "contactPathsFullLabel": "Après le contact, la bille de couleur part droit devant et la blanche s’arrête",
+  "contactDiagramPathsLabel": "{contact} ; {tip} ; {paths}",
+  "@contactDiagramPathsLabel": {
+    "placeholders": {
+      "contact": {
+        "type": "String"
+      },
+      "tip": {
+        "type": "String"
+      },
+      "paths": {
+        "type": "String"
+      }
+    }
+  },
+  "contactDegrees": "≈ {deg}°",
+  "@contactDegrees": {
+    "placeholders": {
+      "deg": {
+        "type": "int"
+      }
+    }
+  },
   "contactDiagramLabel": "{contact} ; {tip}",
   "@contactDiagramLabel": {
     "placeholders": {
@@ -1252,6 +1290,15 @@
     }
   },
   "ghostBallName": "Bille fantôme",
+  "ghostAimInsetLabel": "Loupe sur le contact : la bille fantôme, de la taille de la blanche, est collée à la bille de couleur ; le point marque le contact.",
+  "ghostAimInsetCaption": "Loupe ×{zoom} : le contact",
+  "@ghostAimInsetCaption": {
+    "placeholders": {
+      "zoom": {
+        "type": "int"
+      }
+    }
+  },
   "ghostAimLabel": "Bille fantôme, {fraction} : la blanche vise le point où elle touche la bille de couleur pour l’envoyer dans la {pocket}.",
   "@ghostAimLabel": {
     "placeholders": {
@@ -1338,6 +1385,19 @@
   "playerViewSide": "vue de profil",
   "playerViewTop": "vue de dessus",
   "playerViewBoth": "vue de profil et vue de dessus",
+  "playerMarkFeetLeft": "Pieds : ni trop serrés, ni trop espacés ; le pied gauche sous la main qui tient la queue (gaucher)",
+  "playerMarkLegsLeft": "Jambes et bassin : bassin légèrement pivoté à droite ; jambe gauche tendue et droite fléchie, ou jambe droite en avant, les deux fléchies (gaucher)",
+  "playerFigureLeftLabel": "Figure schématique d'un joueur gaucher (droitier en miroir), {view}, billes non à l'échelle. Repères : {marks}",
+  "@playerFigureLeftLabel": {
+    "placeholders": {
+      "view": {
+        "type": "String"
+      },
+      "marks": {
+        "type": "String"
+      }
+    }
+  },
   "playerMarkFeet": "Pieds : ni trop serrés, ni trop espacés ; le pied droit sous la main qui tient la queue",
   "playerMarkLegs": "Jambes et bassin : bassin légèrement pivoté à gauche ; jambe droite tendue et gauche fléchie, ou jambe gauche en avant, les deux fléchies",
   "playerMarkHead": "Tête : dans l'axe de la queue, l'œil directeur au-dessus",
@@ -1962,6 +2022,37 @@
       }
     }
   },
+  "guideRecallExerciseHeading": "Rappel · Exercice {number} · {title}",
+  "@guideRecallExerciseHeading": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "guideRecallFrom": "De la séance {sheet}",
+  "@guideRecallFrom": {
+    "placeholders": {
+      "sheet": {
+        "type": "String"
+      }
+    }
+  },
+  "guideRecallPending": "{pending, plural, =0{Tous les {students} élèves suivis l’ont déjà validé : révision.} =1{1 élève sur {students} ne l’a pas encore validé.} other{{pending} élèves sur {students} ne l’ont pas encore validé.}}",
+  "@guideRecallPending": {
+    "placeholders": {
+      "pending": {
+        "type": "int"
+      },
+      "students": {
+        "type": "int"
+      }
+    }
+  },
+  "guideRecallNoStudents": "Aucun élève suivi : le dernier exercice de la séance précédente est proposé.",
   "guideBackToGuide": "Retour à la séance guidée",
   "guideCount": "{count} réussites sur {total}",
   "@guideCount": {

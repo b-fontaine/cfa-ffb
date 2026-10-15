@@ -25,13 +25,20 @@ export 'package:billard_cfa/shared/ui/tip_point.dart';
 /// Les positions sont des propositions `[Prop]` : mi-rayon du centre
 /// (`tipOffsetShare`), comme le point bleu de la fiche n° 3.
 class CueBallTargetGeometry {
-  const CueBallTargetGeometry({required this.center, required this.radius});
+  const CueBallTargetGeometry({
+    required this.center,
+    required this.radius,
+    this.offsetShare = tipOffsetShare,
+  });
 
   /// Centre de la blanche, en pixels.
   final Offset center;
 
   /// Rayon de la blanche, en pixels.
   final double radius;
+
+  /// Écart du procédé au centre, en part du rayon (`tipOffsetShareOf`).
+  final double offsetShare;
 
   /// Rayon minimal du repère du procédé, en pixels (lisible en projection).
   static const double minMarkerRadius = 10;
@@ -41,7 +48,7 @@ class CueBallTargetGeometry {
 
   /// Centre du repère du procédé pour [tip].
   Offset markerCenter(TipPoint tip) =>
-      center + tip.direction * (radius * tipOffsetShare);
+      center + tip.direction * (radius * offsetShare);
 
   /// Rayon du repère du procédé, en pixels.
   double get markerRadius => math.max(
@@ -69,11 +76,15 @@ class CueBallTarget extends StatelessWidget {
     required this.tipPoint,
     this.compare = const [],
     this.cueHeight,
+    this.offset = TipOffset.half,
     super.key,
   });
 
   /// Point d'impact du procédé.
   final TipPoint tipPoint;
+
+  /// Écart du procédé au centre : « un peu » (quart de rayon) ou mi-rayon.
+  final TipOffset offset;
 
   /// Points d'appui de comparaison, dessinés en cercles creux lettrés.
   final List<TipPoint> compare;
@@ -91,7 +102,7 @@ class CueBallTarget extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final tip = BallContactDiagram.tipLabel(l10n, tipPoint);
+    final tip = BallContactDiagram.tipLabel(l10n, tipPoint, offset);
     final height = cueHeight == null
         ? null
         : CueSideView.heightLabel(l10n, cueHeight!);
@@ -138,6 +149,7 @@ class CueBallTarget extends StatelessWidget {
           final geometry = CueBallTargetGeometry(
             center: Offset(side / 2, side / 2),
             radius: radius,
+            offsetShare: tipOffsetShareOf(offset),
           );
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -195,6 +207,7 @@ class CueBallTarget extends StatelessWidget {
                     child: CustomPaint(
                       painter: _ProfilePainter(
                         tipPoint: tipPoint,
+                        offsetShare: tipOffsetShareOf(offset),
                         cueHeight: cueHeight!,
                         balls:
                             theme.extension<BallColors>() ?? BallColors.light,
@@ -367,6 +380,7 @@ class _FrontPainter extends CustomPainter {
 class _ProfilePainter extends CustomPainter {
   const _ProfilePainter({
     required this.tipPoint,
+    required this.offsetShare,
     required this.cueHeight,
     required this.balls,
     required this.table,
@@ -374,6 +388,7 @@ class _ProfilePainter extends CustomPainter {
   });
 
   final TipPoint tipPoint;
+  final double offsetShare;
   final CueHeight cueHeight;
   final BallColors balls;
   final TableColors table;
@@ -405,7 +420,7 @@ class _ProfilePainter extends CustomPainter {
       table: table,
     );
 
-    final dy = -tipHeightFactor(tipPoint) * r * tipOffsetShare;
+    final dy = -tipHeightFactor(tipPoint) * r * offsetShare;
     final tip = Offset(center.dx - math.sqrt(r * r - dy * dy), center.dy + dy);
     final elevation = cueElevation(cueHeight);
     final back = tip - Offset(math.cos(elevation), math.sin(elevation)) * w;
@@ -433,6 +448,7 @@ class _ProfilePainter extends CustomPainter {
   @override
   bool shouldRepaint(_ProfilePainter old) =>
       old.tipPoint != tipPoint ||
+      old.offsetShare != offsetShare ||
       old.cueHeight != cueHeight ||
       old.balls != balls ||
       old.table != table ||

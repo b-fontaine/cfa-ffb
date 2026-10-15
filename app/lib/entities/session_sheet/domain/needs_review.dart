@@ -57,7 +57,7 @@ Set<ReviewReason> reviewReasonsOf(SessionSheet sheet) {
 }
 
 /// Vrai si [sheet] est « à valider » : un motif qui compte (jeu, exercice,
-/// initiation, rappel) est présent. Sur les 29 séances réelles, la théorie
+/// initiation, rappel) est présent. Sur les 28 séances réelles, la théorie
 /// `[Prop]` (24) et la règle de lien (16 sur des jeux sourcés) sont si
 /// répandues qu'elles videraient l'indicateur de son sens : elles sont
 /// signalées par `reviewReasonsOf` sans le déclencher.

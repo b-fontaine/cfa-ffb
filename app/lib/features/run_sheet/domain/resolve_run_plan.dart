@@ -9,6 +9,8 @@ import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_grouping.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_timing.dart';
+import 'package:billard_cfa/features/run_sheet/domain/load_validated_exercises.dart';
+import 'package:billard_cfa/features/run_sheet/domain/recall_exercise.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
@@ -23,8 +25,9 @@ import 'package:injectable/injectable.dart';
 /// Accueil ou rappel, théorie, initiation, exercices, jeu, bilan, avec les
 /// minutes calculées (`RulesConfig.shapes`), les taux du catalogue
 /// d'entraînement, les schémas par identifiant et le bloc du rappel de
-/// résultats. Sans `audience`, le public est celui de la séance planifiée
-/// `sessionId` ; à défaut, les enfants. Identifiant inconnu :
+/// résultats, et l'exercice du créneau de rappel choisi d'après le suivi des
+/// élèves (ADR 0011). Sans `audience`, le public est celui de la séance
+/// planifiée `sessionId` ; à défaut, les enfants. Identifiant inconnu :
 /// `NotFound('sheet', id)`. Des schémas illisibles ne font pas échouer le
 /// déroulé.
 @injectable
@@ -35,6 +38,7 @@ class ResolveRunPlan {
     this._catalogue,
     this._diagrams,
     this._rules,
+    this._validated,
   );
 
   final SessionSheetRepository _sheets;
@@ -42,6 +46,7 @@ class ResolveRunPlan {
   final CatalogueRepository _catalogue;
   final DiagramRepository _diagrams;
   final RulesConfig _rules;
+  final LoadValidatedExercises _validated;
 
   Future<Result<RunPlan>> call(
     SheetId id, {
@@ -61,7 +66,22 @@ class ResolveRunPlan {
     final specs = <String, ExerciseSpec>{
       for (final e in sheet.exercises) e.id: ?catalogue.exercise(e.ref),
     };
-    final wanted = diagramIdsOf(sheet, previous);
+    final planGroup = planned?.groupId;
+    final recall = chooseRecallExercise(
+      sheet: sheet,
+      all: all,
+      validatedByStudent: await _validated(
+        audience: resolved,
+        catalogue: catalogue,
+        group: planGroup == null || planned == null
+            ? null
+            : (id: planGroup, on: planned.date),
+      ),
+    );
+    final wanted = {
+      ...diagramIdsOf(sheet, previous),
+      if (recall != null) recall.exercise.diagramId,
+    };
     var unreadable = false;
     final diagrams = <String, ExerciseDiagram>{};
     try {
@@ -93,6 +113,16 @@ class ResolveRunPlan {
           : partCountOf(all, previous.technique),
       recallBlockId: resultsRecallBlock(sheet, all),
       blockTitle: catalogue.blockById(sheet.catalogueBlock)?.title,
+      recallExercise: recall,
+      recallSpec: recall == null
+          ? null
+          : catalogue.exercise(recall.exercise.ref),
+      recallOriginPartCount: recall == null
+          ? null
+          : partCountOf(all, recall.origin.technique),
+      recallBlockTitle: recall == null
+          ? null
+          : catalogue.blockById(recall.exercise.ref.blockId)?.title,
       planned: planned,
       exerciseSpecs: specs,
       diagrams: diagrams,
@@ -142,6 +172,12 @@ class ResolveRunPlan {
           minutes: timing.exercises[e.id] ?? 0,
           elementId: e.id,
         ),
+    if (sheet.recallSlot != null)
+      RunStep(
+        kind: RunStepKind.recallExercise,
+        phase: SessionPhase.training,
+        minutes: timing.recallExercise ?? 0,
+      ),
     RunStep(
       kind: RunStepKind.game,
       phase: SessionPhase.game,

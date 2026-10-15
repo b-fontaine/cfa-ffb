@@ -19,6 +19,9 @@ abstract class SheetTiming with _$SheetTiming {
     required Map<String, int> exercises,
     required int game,
     required int review,
+
+    /// Minutes du créneau de rappel (ADR 0011) ; `null` sans créneau.
+    int? recallExercise,
   }) = _SheetTiming;
 
   const SheetTiming._();
@@ -55,7 +58,10 @@ SheetTiming sheetTiming(
         for (final s in theory) s.weight.of(audience),
         for (final i in initiation) i.weight.of(audience),
       ],
-      SessionPhase.training: [for (final e in exercises) e.weight.of(audience)],
+      SessionPhase.training: [
+        for (final e in exercises) e.weight.of(audience),
+        if (sheet.recallSlot != null) sheet.recallSlot!.weight.of(audience),
+      ],
       SessionPhase.game: [sheet.game.weight.of(audience)],
       SessionPhase.review: [1],
     },
@@ -74,6 +80,7 @@ SheetTiming sheetTiming(
         item.id: notion[theory.length + i],
     },
     exercises: {for (final (i, e) in exercises.indexed) e.id: training[i]},
+    recallExercise: sheet.recallSlot == null ? null : training.last,
     game: minutes[SessionPhase.game]!.single,
     review: minutes[SessionPhase.review]!.single,
   );

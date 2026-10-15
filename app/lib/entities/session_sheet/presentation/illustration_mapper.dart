@@ -52,10 +52,20 @@ abstract final class IllustrationMapper {
           semanticLabel: alt,
           maxHeight: diagramMaxHeight,
         );
-      case ContactIllustration(:final fraction, :final tipPoint):
+      case ContactIllustration(
+        :final fraction,
+        :final tipPoint,
+        :final offset,
+        :final paths,
+      ):
         return _described(
           alt,
-          BallContactDiagram(contact: fraction, tipPoint: tipPoint),
+          BallContactDiagram(
+            contact: fraction,
+            tipPoint: tipPoint,
+            tipOffset: offset,
+            showPaths: paths,
+          ),
         );
       case ContactStripIllustration(:final fractions, :final highlight):
         return _described(
@@ -81,6 +91,7 @@ abstract final class IllustrationMapper {
         :final tipPoint,
         :final compare,
         :final cueHeight,
+        :final offset,
       ):
         return _described(
           alt,
@@ -88,6 +99,7 @@ abstract final class IllustrationMapper {
             tipPoint: tipPoint,
             compare: compare,
             cueHeight: cueHeight,
+            offset: offset,
           ),
         );
       case BallSizeIllustration():
@@ -100,6 +112,7 @@ abstract final class IllustrationMapper {
         :final leadEye,
         :final headCase,
         :final bridge,
+        :final handedness,
       ):
         return _described(
           alt,
@@ -109,6 +122,7 @@ abstract final class IllustrationMapper {
             leadEye: leadEye,
             headCase: headCase,
             bridge: bridge,
+            handedness: handedness,
           ),
         );
       case PowerRatioIllustration(

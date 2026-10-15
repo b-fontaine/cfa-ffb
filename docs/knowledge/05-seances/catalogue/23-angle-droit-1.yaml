@@ -1,0 +1,206 @@
+# Séance du catalogue : « Le coup à angle droit », partie 1/2.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: angle-droit-1
+order: 23
+technique: angle-droit
+part: 1
+title: Le coup à angle droit
+technical_sheets: [13]
+previous: carreau-2
+catalogue_block: angle-droit
+notion: "Jouer un coup à angle droit : attaque au centre, sans rotation, distance courte, sur toute quantité sauf le plein."
+theme:
+  name: Le jeu de l'équerre
+  pitch: >-
+    Une équerre a deux côtés qui forment un angle droit. Quand la blanche
+    touche une bille de couleur en dehors du plein, les deux billes partent
+    chacune sur un côté d'une équerre. Aujourd'hui, on apprend à dessiner
+    l'équerre sur la table.
+recall:
+  points:
+    - Le carreau se joue en bille pleine, avec une attaque au centre de la blanche.
+    - Sans rotation à l'impact, la blanche s'arrête sur la bille de couleur.
+    - On joue à courte distance (50 cm au plus pour un débutant), pour que la blanche glisse jusqu'à l'impact.
+    - Trop puissant, la blanche recule ; trop doux, elle roule après l'impact.
+  question:
+    ask: Dans un carreau, que fait la blanche à l'impact, et pourquoi ?
+    answer: Elle s'arrête, car on joue en bille pleine avec une attaque au centre et sans rotation au moment du choc.
+  reuse: {sheet: carreau-2, illustration: carreau-distance}
+  src: S
+theory:
+  sections:
+    - id: quatre-vingt-dix
+      title: Deux billes, un angle droit
+      weight: {children: 3, adults: 3}
+      body:
+        - Sans rotation de la blanche à l'impact, et sur toute quantité de bille sauf le plein, les deux billes partent à 90°.
+        - La bille de couleur part d'un côté, la blanche part de l'autre.
+      adult_extra:
+        - "Au plein, ce n'est pas un angle droit mais un carreau : la blanche s'arrête (fiche n° 12)."
+      key_point: Pas de rotation, pas de plein, et les deux billes partent à 90°.
+      demo: "Jouer un coup à courte distance et montrer les deux trajectoires avec deux queues posées au sol en équerre."
+      illustrations: [angle-90, trajectoires-croisees]
+      src: S
+    - id: mot-equerre
+      title: Le mot « équerre »
+      weight: {children: 1}
+      body:
+        - Une équerre est un outil qui donne un angle droit, comme le coin d'une feuille.
+        - Les deux billes partent comme les deux côtés d'une équerre.
+      key_point: Les deux billes dessinent un coin de feuille sur la table.
+      demo: null
+      illustrations: [angle-90]
+      src: Prop
+    - id: attaque-centre
+      title: Attaque au centre, distance courte, coup à la mesure
+      weight: {children: 3, adults: 3}
+      body:
+        - Le procédé frappe le centre de la blanche.
+        - Elle avance d'abord en glissant, puis elle roule.
+        - En l'absence de rotation au moment de l'impact, la blanche glisse jusqu'à l'impact.
+        - On joue à courte distance entre les deux billes, pour garder le glissement.
+        - "Trop puissant, l'angle s'ouvre, d'autant plus que la bille est jouée près du plein : il dépasse 90°."
+      adult_extra:
+        - L'amplitude et la vitesse doivent être particulièrement adaptées pour que la blanche glisse jusqu'à l'impact, comme au carreau.
+        - Un coup peu puissant risque de faire rouler la blanche après l'impact et de réduire son angle de déviation (fiche d'initiation n° 16).
+        - La trajectoire résulte des différences de poids et de taille entre la blanche et la bille de couleur (fiche d'initiation n° 16).
+      key_point: "Attaque au centre, distance courte, coup à la mesure : la blanche glisse et l'angle reste droit."
+      demo: "Jouer le même coup doucement puis trop fort, et comparer les deux angles."
+      illustrations: [attaque-centre, angle-plus-90]
+      src: S
+    - id: quantites
+      title: Toutes les quantités, sauf le plein
+      weight: {children: 1, adults: 2}
+      body:
+        - "On choisit la quantité de bille (trois-quarts, demi, quart… toutes sauf le plein)."
+        - Seul le plein est exclu, car il donne un carreau.
+      adult_extra:
+        - "Refaire le coup avec des quantités différentes : l'angle reste droit si l'attaque est au centre et le coup à la mesure."
+        - "Au Blackball, la blanche est plus petite que les autres billes : pour le quart de bille, la mesure est prise par rapport à la blanche (fiche technique n° 7)."
+      key_point: Toute quantité va bien, sauf le plein.
+      demo: null
+      illustrations: [quantites-angle]
+      src: S
+initiation:
+  - id: ini-16
+    initiation_sheet: 16
+    title: La rouge à angle droit
+    weight: {children: 3, adults: 3}
+    setup: Une bille rouge face à la poche du milieu du haut, dans son axe ; trois repères pour la blanche, en bas à gauche de la rouge, à courte distance (le schéma).
+    goal: "Empocher la rouge en jouant un coup à angle droit : attaque au centre, quantité au choix sauf le plein, comme un carreau ; un essai depuis chacun des trois repères."
+    expected: La rouge part vers la poche du milieu et la blanche part à angle droit ; la blanche glisse jusqu'à l'impact.
+    scoring: {mode: counter, of: 3}
+    illustration: schema-initiation
+    src: S
+illustrations:
+  - {id: angle-90, type: angle, kind: right_angle, vertex: [4.0, 2.0], rays: [[4.0, 0.6], [5.4, 2.0]],
+     caption: "Angle droit : les deux billes partent à 90° l'une de l'autre (schéma indicatif).",
+     alt: "Angle droit en vue de dessus : à partir du point d'impact, un côté monte vers le haut et l'autre part vers la droite, à 90°."}
+  - {id: angle-plus-90, type: angle, kind: right_angle, vertex: [4.0, 2.0], rays: [[4.0, 0.6], [5.5, 2.2]],
+     caption: "Trop puissant : l'angle dépasse 90° (schéma indicatif).",
+     alt: "Angle en vue de dessus : à partir du point d'impact, un côté monte vers le haut et l'autre part vers la droite en s'inclinant légèrement vers le bas ; l'angle est plus ouvert qu'un angle droit."}
+  - {id: attaque-centre, type: cue_ball_target, tip_point: center, cue_height: level,
+     caption: "Attaque au centre : le procédé frappe la blanche en son centre (schéma indicatif).",
+     alt: "Cible sur la blanche vue de face, le procédé dessiné à l'échelle de la blanche : il touche le centre ; le profil montre la queue à hauteur moyenne."}
+  - {id: quantites-angle, type: contact_strip, fractions: [three_quarter, half, quarter], highlight: half,
+     caption: "Trois-quarts, demi, quart, parmi toutes les quantités qui conviennent : seul le plein est exclu.",
+     alt: "Trois schémas de contact côte à côte : le trois-quarts, la demi-bille mise en évidence, le quart."}
+  - {id: trajectoires-croisees, type: table,
+     balls: [{id: r, color: red, at: [4.0, 1.8]}, {id: w, color: white, at: [4.42, 2.37], role: cue}],
+     ghosts: [{id: g-impact, at: [4.0, 2.014], role: impact, for: w}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[4.42, 2.37], [4.0, 2.014]], bounces: []},
+              {id: a2, ball: r, kind: object, path: [[4.0, 1.8], [4.0, 0.0]], bounces: [], to: tm},
+              {id: a3, ball: w, kind: cue, path: [[4.0, 2.014], [2.0, 2.014]], bounces: []}],
+     zones: [],
+     caption: "La rouge part vers la poche, la blanche part sur le côté : les deux trajectoires forment un angle droit.",
+     alt: "Table vue de dessus : une bille rouge sous la poche du milieu du haut, la blanche, un peu plus petite que la rouge, en bas à droite ; après le contact, la rouge monte droit vers la poche et la blanche part horizontalement vers la gauche."}
+  - {id: schema-initiation, type: diagram_ref, diagram: initiation-p16-e1,
+     caption: "Initiation 16 : la rouge est jouée à angle droit depuis trois repères.",
+     alt: "Table vue de dessus : une bille rouge sous la poche du milieu du haut, trois repères de blanche en bas à gauche de la rouge, à courte distance ; la rouge part vers la poche et la blanche part à angle droit vers la droite."}
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p14-j1,
+     caption: "Jeu 14 : partie à difficulté réduite, quatre billes par groupe et la noire.",
+     alt: "Table vue de dessus : la blanche sur la ligne de départ à gauche ; les billes rouges, jaunes et la noire groupées vers la droite du centre."}
+training:
+  recall_slot: {weight: {children: 1, adults: 1}, passes: 1}   # exercice choisi à l'exécution parmi les séances précédentes (ADR 0011, [U] 2026-10-15)
+  exercises:
+    - id: e1
+      ref: {block: angle-droit, n: 1}
+      diagram: entrainement-p25-e1
+      title: L'équerre vers la noire
+      weight: {children: 1, adults: 1}
+      setup: La rouge du schéma sous la poche du milieu du haut ; la blanche posée sur le repère en bas à droite de la rouge ; la noire en haut à gauche, avec la zone grisée juste sous elle ; les jaunes du schéma restent en place.
+      instruction: Empocher la rouge dans la poche du milieu du haut par un coup à angle droit, de façon que la blanche reparte vers la gauche et s'arrête dans la zone grisée, près de la noire ; recommencer cinq fois.
+      expected: Attaque au centre, contact sur une quantité autre que le plein ; la rouge monte droit vers la poche et la blanche part à angle droit jusqu'à la zone grisée.
+      mistakes:
+        - {symptom: "La blanche part trop vers l'avant et dépasse la zone", fix: "Jouer moins fort ; trop puissant, l'angle s'ouvre au-delà de 90°."}
+        - {symptom: "La blanche roule après l'impact et l'angle se ferme", fix: "Garder l'attaque au centre et adapter l'amplitude pour que la blanche glisse jusqu'à l'impact."}
+        - {symptom: "La rouge ne va pas à la poche", fix: "Revenir à la visée de la quantité choisie avant de chercher l'angle."}
+      playful:
+        hook: La blanche dessine une équerre ; la zone grisée est le coin de la feuille.
+        challenge:
+          Réussir deux équerres de suite, la blanche arrêtée dans la zone grisée.
+      passes: 2
+      src: S
+    - id: e2
+      ref: {block: angle-droit, n: 2}
+      diagram: entrainement-p25-e2
+      title: L'équerre par la bande
+      weight: {children: 1, adults: 1}
+      setup: La blanche posée sur le repère à gauche du schéma, en bas à droite de la rouge ; la rouge près de la poche du haut à gauche ; la zone grisée en bas, au centre de la table ; la noire et les jaunes du schéma restent en place.
+      instruction: Empocher la rouge dans la poche du haut à gauche par un coup à angle droit, de façon que la blanche reparte vers la bande du haut, rebondisse puis s'arrête dans la zone grisée, près de la noire ; recommencer cinq fois.
+      expected: Attaque au centre ; la rouge part vers la poche, la blanche part en angle voisin de 90°, touche la bande du haut puis revient dans la zone grisée.
+      mistakes:
+        - {symptom: "La blanche rebondit trop loin de la zone", fix: "Doser la puissance ; un coup trop puissant ouvre l'angle et allonge le rebond."}
+        - {symptom: "La blanche touche la bande trop près ou trop loin de la rouge", fix: "Vérifier la position de départ de la blanche et la quantité choisie."}
+      playful:
+        hook: La blanche dessine l'équerre, puis rebondit sur la bande du haut pour revenir dans le coin.
+        challenge:
+          Réussir une équerre avec rebond, puis la refaire en changeant de quantité.
+      passes: 2
+      src: S
+game:
+  title: Partie à difficulté réduite
+  source_game: 14
+  adapted: false
+  players: Partie à 2
+  materials: Billes du jeu complet (4 par groupe et la noire).
+  setup_illustration: schema-jeu
+  rules:
+    - Partie à 2 ; les règles sont celles d'une partie classique, avec seulement 4 billes de chaque groupe et la noire.
+    - Le joueur qui casse est désigné par le tirage à la bande.
+  scoring: Comme dans une partie classique, selon le règlement FFB.
+  end: Comme dans une partie classique, selon le règlement FFB.
+  playful_variant: "Les tours d'équerre, proposition facultative en tournante par équipes de deux : le tireur annonce « équerre » quand il joue un coup à courte distance, hors du plein, avec attaque au centre ; son partenaire vérifie ces trois conditions avant le tir. Équerre réussie = bille empochée. Chaque équerre réussie compte un point d'équerre ; les rôles s'échangent à chaque tour. La partie se joue telle quelle sans cette variante."
+  link_previous:
+    notion_of: carreau-2
+    rule: "Exception facultative aux règles classiques, plutôt pour les adultes ou, pour les enfants, en fin de partie : sur une bille en plein et à courte distance (50 cm au plus), le joueur peut annoncer « carreau » à la place de « équerre » ; si la blanche s'arrête à l'impact, le coup compte comme un carreau réussi."
+    note: "Fait rejouer dans la même partie le carreau de la séance précédente (bille pleine, attaque au centre, blanche arrêtée) à côté de l'angle droit, qui garde la même attaque au centre et ne change que la quantité ; règle facultative, la partie se joue telle quelle sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Rapprocher la blanche et les billes des poches. Mise en place proposée : un joueur les rouges et l'autre les jaunes, tirage au sort pour commencer, partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes. Une seule mécanique ludique : l'annonce « équerre »."
+    adults: "Après la partie, noter, pour chaque équerre ratée, si l'erreur vient de la quantité, de la puissance ou de l'attaque. Variantes plus difficiles : annoncer aussi la quantité de bille avant le tir, ou exiger que la blanche reparte sur le côté de l'équerre, vérifié par l'adversaire avec une queue posée au sol."
+  src: S   # titre et règles du jeu 14 ; scoring et end renvoient à la partie classique (règlement FFB, non transcrit : lacune) sans réécrire la condition de victoire ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
+review:
+  prompts:
+    - Quand l'angle s'est-il ouvert au-delà de 90° ?
+    - Qu'as-tu changé pour que la blanche glisse jusqu'à l'impact ?
+    - Comment expliquerais-tu l'angle droit à un copain ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 23, note: "Fiche technique n° 13 (coup en angle droit : attaque au centre, toute quantité sauf le plein, 90°, trop puissant : angle supérieur à 90°)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 17, note: "Fiche technique n° 7 (quart de bille : au Blackball, mesure prise en référence à la blanche, plus petite)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 22, note: "Fiche technique n° 12 (carreau, pour le rappel : bille pleine, attaque au centre, blanche arrêtée)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 16, note: "Initiation 16 (coup en angle droit : consignes à l'élève et conseils à l'animateur)"}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 25, note: "Entraînement « Le coup en angle droit », exercices 1 et 2"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite), dont la partie est adaptée"}
+uncertainties:
+  - "Section « Le mot équerre » (enfants), thème, défis, variante de jeu « tours d'équerre » (annonce, point d'équerre, tournante), règle de lien, adaptations et minutes : [Prop], à valider par un animateur dans l'application."
+  - "Le jeu reprend le jeu 14 [S] tel quel (4 billes par groupe, la noire, tirage à la bande) ; l'annonce « équerre », sa définition (bille empochée) et le rappel du carreau sont des propositions [Prop] facultatives, hors règles."
+  - "Les règles de la partie classique ne sont transcrites ni dans docs/knowledge ni dans la fiche du jeu 14 (choix du groupe, fautes, rôle de la noire) : l'animateur s'en tient au règlement FFB, y compris pour le score et la fin de partie (la fiche du jeu 14 n'en donne aucun) ; lacune à signaler dans docs/knowledge/08-lacunes-et-questions-ouvertes.md."
+  - "Initiation 16 : la rouge est dessinée face à la poche du milieu du haut (x = 4,0) ; la description de diagrammes/initiation/p16.yaml dit « un peu à gauche », ce qui diffère du schéma ; correction du YAML source à faire dans un lot séparé. La notation compte un essai par repère (3 sur 3), lecture du schéma : la fiche dit « empocher 1 bille »."
+  - "Le schéma d'initiation [S] ne dessine pas la blanche : les trois repères sont lus comme trois quantités différentes ; le type de chevalet n'est pas indiqué."
+  - "Exercices 1 et 2 : le schéma [S] ne légende pas la zone grisée ni le rôle des jaunes (obstacles ou repères) ; la quantité de bille du schéma est estimée (demi à l'exercice 1, trois-quarts à l'exercice 2) et la séance ne l'impose pas."
+  - "Le schéma [S] de l'exercice 2 n'indique pas explicitement le rebond comme un angle droit exact : la séance parle d'un coup à angle droit suivi d'un rebond sur la bande du haut."
+  - "Le rappel reprend ce que carreau-2 enseigne (fiche technique n° 12 : bille pleine, attaque au centre, glissement, courte distance, recul si trop fort, roulement si trop doux) ; `recall.reuse` cite l'illustration `carreau-distance` de carreau-2."
+  - "Les marques d'angle sont indicatives, non à l'échelle. Le schéma des trajectoires est tracé avec les rayons réels de Blackball (blanche 48,0 mm, bille de but 50,8 mm [FFB] : docs/knowledge/02-techniques/06-dimensions-du-materiel.md) : la bille fantôme est une blanche posée à la distance r_c + r_o du centre de la rouge ; la quantité du schéma est un quart environ, choisie pour la lisibilité. La source [S] dit seulement que la blanche est plus petite et plus légère, sans chiffres."

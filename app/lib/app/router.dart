@@ -94,11 +94,16 @@ abstract final class AppRoutes {
   /// Saisie d'une séance ouverte ; [exercise] présélectionne un exercice du
   /// bloc principal et [from] est l'adresse à retrouver au retour (séance
   /// guidée).
-  static String recordSession(SessionId id, {int? exercise, String? from}) =>
-      _url('$record/${id.value}', {
-        'exercise': ?exercise?.toString(),
-        'from': ?from,
-      });
+  static String recordSession(
+    SessionId id, {
+    int? exercise,
+    String? exerciseBlock,
+    String? from,
+  }) => _url('$record/${id.value}', {
+    'exercise': ?exercise?.toString(),
+    'exercise_block': ?exerciseBlock,
+    'from': ?from,
+  });
 
   /// Ouverture de la saisie depuis la séance guidée : bloc de l'exercice,
   /// bloc du rappel de résultats, exercice à présélectionner, séance du
@@ -108,15 +113,20 @@ abstract final class AppRoutes {
   static String recordFromGuide({
     required ExerciseRef exercise,
     required String from,
+    String? main,
     String? recall,
     SheetId? sheet,
     GroupId? group,
     Set<StudentId> absent = const {},
     DateTime? date,
   }) => _url(newRecord, {
-    'main': exercise.blockId,
+    'main': main ?? exercise.blockId,
     'recall': ?recall,
     'exercise': '${exercise.number}',
+    // Exercice d'un autre bloc que le principal (créneau de rappel, ADR 0011).
+    'exercise_block': ?(main != null && main != exercise.blockId
+        ? exercise.blockId
+        : null),
     'sheet': ?sheet?.value,
     'from': from,
     'group': ?group?.value,
@@ -421,6 +431,7 @@ GoRouter buildRouter() => GoRouter(
             final group = query['group'];
             final absent = _absentParam(query['absent']);
             final exercise = int.tryParse(query['exercise'] ?? '');
+            final exerciseBlock = query['exercise_block'];
             final from = _guideReturn(query['from']);
             final sheet = SheetId.tryParse(query['sheet']);
             final today = getIt<Clock>().today();
@@ -464,6 +475,7 @@ GoRouter buildRouter() => GoRouter(
                     AppRoutes.recordSession(
                       opened.id,
                       exercise: exercise,
+                      exerciseBlock: exerciseBlock,
                       from: from,
                     ),
                   );
@@ -485,6 +497,7 @@ GoRouter buildRouter() => GoRouter(
                   RecordResultsEvent.started(
                     sessionId: SessionId(state.pathParameters['sessionId']!),
                     initialExercise: int.tryParse(query['exercise'] ?? ''),
+                    initialBlock: query['exercise_block'],
                   ),
                 ),
               child: RecordSessionPage(
@@ -633,11 +646,12 @@ GoRouter buildRouter() => GoRouter(
                     group: key.group,
                   ),
                 ),
-                onRecord: (exercise, recall, step) {
+                onRecord: (exercise, main, recall, step) {
                   final defaults = cubit.state.recordDefaults;
                   context.go(
                     AppRoutes.recordFromGuide(
                       exercise: exercise,
+                      main: main,
                       recall: recall,
                       sheet: id,
                       from: guide(step),

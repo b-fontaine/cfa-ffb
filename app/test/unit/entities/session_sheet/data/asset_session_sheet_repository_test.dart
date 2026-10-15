@@ -37,7 +37,7 @@ theory:
       src: S
 illustrations: []
 training:
-  exercises:
+${previous == null ? '' : '  recall_slot: {weight: {children: 1, adults: 1}, passes: 1}\n'}  exercises:
     - id: e1
       ref: {block: $technique, n: 1}
       diagram: entrainement-p01-e1
@@ -96,7 +96,7 @@ void main() {
       final found = await repository.getById(SheetId('demi-bille-1'));
 
       expect(found, isNotNull);
-      expect(found!.order, 9);
+      expect(found!.order, 8);
       expect(await repository.getById(SheetId('inconnue-9')), isNull);
     });
   });

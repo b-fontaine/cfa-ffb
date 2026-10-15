@@ -25,14 +25,51 @@ void main() {
       }
     });
 
-    test('the butt is raised by 10 degrees, never horizontal', () {
-      final angle = math.atan2(
-        surface.butt.y - surface.tip.y,
-        surface.tip.x - surface.butt.x,
-      );
+    test('the butt is raised by 10 degrees on the cloth, 14 on the rail', () {
+      double angleOf(SidePose pose) =>
+          math.atan2(pose.butt.y - pose.tip.y, pose.tip.x - pose.butt.x);
 
-      expect(angle, closeTo(cueElevation(CueHeight.level), 1e-9));
-      expect(angle, closeTo(10 * math.pi / 180, 1e-9));
+      expect(angleOf(surface), closeTo(cueElevation(CueHeight.level), 1e-9));
+      expect(angleOf(surface), closeTo(10 * math.pi / 180, 1e-9));
+      expect(angleOf(frame), closeTo(14 * math.pi / 180, 1e-9));
+      expect(surface.elevation, closeTo(angleOf(surface), 1e-9));
+    });
+
+    test('the player is bent over: the trunk rises little and the chin is '
+        'close to the cue', () {
+      for (final pose in [surface, frame]) {
+        // Buste : moins de 0,15 H de montée des hanches aux épaules.
+        expect(pose.shoulder.y - pose.hip.y, lessThan(0.15));
+        // Menton (bas de la tête) à quelques centimètres de la queue.
+        final chin = pose.head.y - SidePose.headRadius;
+        final clearance = chin - pose.cueHeightAt(pose.head.x);
+        expect(clearance, greaterThan(0.02));
+        expect(clearance, lessThan(0.08));
+      }
+      // Sur le cadre, la tête est un peu plus relevée (fiche n° 1).
+      final chinSurface =
+          surface.head.y -
+          SidePose.headRadius -
+          surface.cueHeightAt(surface.head.x);
+      final chinFrame =
+          frame.head.y - SidePose.headRadius - frame.cueHeightAt(frame.head.x);
+      expect(chinFrame, greaterThan(chinSurface));
+    });
+
+    test('the hips are just behind the back hand, the left foot in front', () {
+      for (final pose in [surface, frame]) {
+        expect(pose.hip.x, lessThan(pose.backHand.x));
+        expect(pose.backHand.x - pose.hip.x, lessThan(0.1));
+        expect(pose.leftFoot.x, greaterThan(pose.rightFoot.x));
+      }
+    });
+
+    test('on the rail the cue ball is near the cushion, the bridge short', () {
+      // La blanche est à 0,10 H du bord du rail (0,95) ; la flèche (pointe à
+      // main de chevalet) reste sous 0,20 H sur le cadre.
+      expect(frame.ballCenter.x - 0.95, closeTo(0.10, 1e-9));
+      expect(frame.tip.x - frame.bridgeHand.x, lessThan(0.20));
+      expect(surface.ballCenter.x, greaterThan(frame.ballCenter.x));
     });
 
     test('the cue line goes through the centre of the cue ball', () {
@@ -50,6 +87,7 @@ void main() {
 
     test('the cue is 0.83 H long and the table top at 0.48 H', () {
       expect(surface.tip.distanceTo(surface.butt), closeTo(0.83, 1e-9));
+      expect(frame.tip.distanceTo(frame.butt), closeTo(0.83, 1e-9));
       expect(SidePose.tableTop, 0.48);
     });
 
@@ -112,6 +150,22 @@ void main() {
       ]);
       expect(PlayerMark.cue.number, 6);
       expect(PlayerMark.feet.number, 1);
+    });
+
+    test('the whole figure stays inside the frame for both bridges', () {
+      const f = SidePose.frame;
+      for (final pose in [surface, frame]) {
+        for (final p in [
+          pose.butt,
+          pose.tip,
+          pose.head,
+          pose.hip,
+          pose.leftFoot,
+        ]) {
+          expect(p.x, inInclusiveRange(f.left, f.right));
+          expect(p.y, inInclusiveRange(f.bottom, f.top));
+        }
+      }
     });
 
     test('the side badges are inside the frame and do not touch', () {

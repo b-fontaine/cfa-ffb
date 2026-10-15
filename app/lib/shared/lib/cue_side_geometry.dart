@@ -27,10 +27,21 @@ double cueElevation(CueHeight height) => switch (height) {
   CueHeight.high => 25 * math.pi / 180,
 };
 
+/// Écart du procédé au centre de la blanche `[Prop]` : « un peu au-dessus »
+/// (quart de rayon) ou franchement décalé (mi-rayon, la valeur par défaut).
+enum TipOffset { slight, half }
+
 /// Position du procédé sur la blanche en part de son rayon `[Prop]` : pour un
 /// point de la périphérie (haut, bas, côtés), le procédé est à mi-rayon du
 /// centre, sa forme (8,5 mm) tenant dans la blanche.
 const double tipOffsetShare = 0.5;
+
+/// Part du rayon pour un [TipOffset] : quart de rayon pour « un peu »,
+/// mi-rayon sinon.
+double tipOffsetShareOf(TipOffset offset) => switch (offset) {
+  TipOffset.slight => 0.25,
+  TipOffset.half => tipOffsetShare,
+};
 
 /// Contact entre la blanche et une bille de but posées sur le tapis, vue de
 /// côté : `tilt` est l'inclinaison de la ligne des centres (radians) et

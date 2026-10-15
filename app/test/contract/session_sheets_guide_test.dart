@@ -1,8 +1,13 @@
 import 'package:billard_cfa/entities/exercise_catalog/data/asset_catalogue_repository.dart';
 import 'package:billard_cfa/entities/exercise_diagram/data/asset_diagram_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/data/in_memory_acquisition_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/data/in_memory_attempt_repository.dart';
+import 'package:billard_cfa/entities/group/data/in_memory_group_repository.dart';
 import 'package:billard_cfa/entities/session/data/in_memory_session_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/data/asset_session_sheet_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
+import 'package:billard_cfa/entities/student/data/in_memory_student_repository.dart';
+import 'package:billard_cfa/features/run_sheet/domain/load_validated_exercises.dart';
 import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
@@ -20,7 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-// Contrat de rendu de la séance guidée et de la présentation sur les 29
+// Contrat de rendu de la séance guidée et de la présentation sur les 28
 // vraies séances de `assets/fiches/` : pour chaque séance, chaque public et
 // chaque étape, aucune erreur de rendu (débordement compris), en français et
 // en anglais, texte à 200 % sur téléphone et tablette en paysage.
@@ -65,6 +70,13 @@ void main() {
       AssetCatalogueRepository.fromBundle(),
       AssetDiagramRepository.fromBundle(),
       RulesConfig(),
+      LoadValidatedExercises(
+        InMemoryStudentRepository(),
+        InMemoryGroupRepository(),
+        InMemoryAttemptRepository(),
+        InMemoryAcquisitionRepository(),
+        RulesConfig(),
+      ),
     );
   });
 

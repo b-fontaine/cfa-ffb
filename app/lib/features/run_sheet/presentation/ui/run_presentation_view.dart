@@ -229,9 +229,7 @@ class RunPresentationView extends StatelessWidget {
     final String caption;
     final exercise = plan.exerciseOf(current);
     final diagram = exercise == null ? null : plan.diagrams[exercise.diagramId];
-    if (current.kind == RunStepKind.exercise &&
-        exercise != null &&
-        diagram != null) {
+    if (current.isExerciseLike && exercise != null && diagram != null) {
       caption = diagram.caption;
     } else {
       final illustrations = plan.presentableIllustrationsOf(current);
@@ -275,7 +273,7 @@ class RunPresentationView extends StatelessWidget {
     double? figureHeight,
   }) {
     final proposal = plan.isProposal(current);
-    if (current.kind == RunStepKind.exercise) {
+    if (current.isExerciseLike) {
       final exercise = plan.exerciseOf(current);
       final diagram = exercise == null
           ? null

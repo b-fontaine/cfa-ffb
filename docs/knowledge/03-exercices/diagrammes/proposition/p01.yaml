@@ -94,9 +94,9 @@ diagrams:
     kind: exercise
     sheet: "Posture, visée et coup de queue"
     exercise: 3
-    caption: "Proposition : empocher 8 billes (2 cibles depuis chacun des 4 emplacements), chevalet sur la surface de jeu."
-    success_rate: [6, 8]
-    bridge: surface
+    caption: "Proposition : empocher 8 billes (2 cibles depuis chacun des 4 emplacements), chevalet sur le cadre près de la bande, sur la surface de jeu ailleurs."
+    success_rate: [4, 8]
+    bridge: unknown
     table: {view: top, head_end: left}
     balls:
       - {id: w, color: white, at: [1.77, 0.44], role: cue, label: "1"}
@@ -113,10 +113,10 @@ diagrams:
     sequence:
       - {step: 1, cue: w, hit: b8, contact: full, pocket: tr}
       - {step: 2, cue: w, hit: r1, contact: full, pocket: br}
-    inset: {contact: full, tip_point: center, bridge_height: surface}
+    inset: {contact: full, tip_point: center, bridge_height: frame}
     annotations:
       - "[Prop] Exercice proposé, adapté de la fiche d'initiation 3 [S] ; ce n'est pas un exercice fédéral."
-      - "[Prop] Taux 6 sur 8 : proposition, non issue d'une fiche fédérale."
+      - "[Prop] Taux 4 sur 8 : proposition, non issue d'une fiche fédérale (6 sur 8 avant l'audit du 2026-10-15 : cibles à l'autre bout de la table pour une deuxième séance)."
       - "Huit tirs : les deux cibles sont jouées depuis chacun des quatre emplacements (déduction [Prop] d'après « 8 billes »)."
       - "Replacer la blanche et les billes entre deux tirs."
     description: >-

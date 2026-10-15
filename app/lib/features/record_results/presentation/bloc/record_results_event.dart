@@ -2,12 +2,14 @@ part of 'record_results_bloc.dart';
 
 @freezed
 sealed class RecordResultsEvent with _$RecordResultsEvent {
-  /// [initialExercise] : numéro d'un exercice du bloc principal à
+  /// [initialExercise] : numéro d'un exercice du bloc principal, ou du bloc
+  /// [initialBlock] s'il est donné (exercice de rappel, ADR 0011), à
   /// présélectionner (lien profond depuis la séance guidée) ; ignoré s'il
   /// n'existe pas.
   const factory RecordResultsEvent.started({
     required SessionId sessionId,
     int? initialExercise,
+    String? initialBlock,
   }) = RecordResultsStarted;
   const factory RecordResultsEvent.exerciseSelected({
     required ExerciseRef exercise,

@@ -30,6 +30,12 @@ Feature: Where to stand
       | cue between the eyes   | Case 2: the cue between the two eyes    |
       | left eye over the cue  | Case 3: the left eye above the cue      |
 
+  Scenario: The figure shows a left-handed player as a mirror of the right-handed one
+    When I look at the player figure from the side as a left-handed player
+    Then I see the legend of {2} marks
+    And I see {'Feet: neither too close nor too far apart; the left foot under the hand that holds the cue (left-handed)'} text
+    And the diagram is described as {'Schematic figure of a left-handed player (a right-handed one mirrored), side view, balls not to scale. Marks: 1. Feet: neither too close nor too far apart; the left foot under the hand that holds the cue (left-handed). 2. Legs and hips: hips turned slightly to the right; left leg straight and right leg bent, or right leg forward with both bent (left-handed)'}
+
   Scenario: The figure is read in French on a French device
     Given the device language is {'fr'}
     When I look at the player figure from the side with the marks {'cue'}

@@ -17,7 +17,7 @@ class _Calls {
   int back = 0;
   int home = 0;
   final shown = <int>[];
-  final recorded = <(ExerciseRef, String?, int)>[];
+  final recorded = <(ExerciseRef, String, String?, int)>[];
   int finished = 0;
   final steps = <int>[];
 }
@@ -41,8 +41,8 @@ void main() {
           onBack: () => calls.back++,
           onHome: () => calls.home++,
           onShow: calls.shown.add,
-          onRecord: (exercise, recall, step) =>
-              calls.recorded.add((exercise, recall, step)),
+          onRecord: (exercise, main, recall, step) =>
+              calls.recorded.add((exercise, main, recall, step)),
           onFinish: () => calls.finished++,
           onStepChanged: calls.steps.add,
         ),
@@ -137,7 +137,7 @@ void main() {
     await tester.runAsync(cubit.syncFromRoute);
     final calls = await pump(tester, cubit);
     expect(
-      find.text('This session is already under way: step 3 of 6.'),
+      find.text('This session is already under way: step 3 of 7.'),
       findsOneWidget,
     );
 
@@ -160,7 +160,7 @@ void main() {
 
     expect(cubit.state.step, 0);
     expect(cubit.state.resumeOffered, isFalse);
-    expect(find.text('Step 1 of 6'), findsOneWidget);
+    expect(find.text('Step 1 of 7'), findsOneWidget);
   });
 
   testWidgets('reports the step the instructor chose', (tester) async {
@@ -172,7 +172,7 @@ void main() {
 
     expect(calls.steps, [1]);
     expect(cubit.state.step, 1);
-    expect(find.text('Step 2 of 6'), findsOneWidget);
+    expect(find.text('Step 2 of 7'), findsOneWidget);
   });
 
   testWidgets('shows from the current step', (tester) async {
@@ -212,7 +212,33 @@ void main() {
     await tester.tap(find.text('Note the results'));
 
     expect(calls.recorded, [
-      (ExerciseRef(blockId: 'demi-bille', number: 3), 'posture', 2),
+      (
+        ExerciseRef(blockId: 'demi-bille', number: 3),
+        'demi-bille',
+        'posture',
+        2,
+      ),
+    ]);
+  });
+
+  testWidgets('records the recall exercise on its own block as the recall', (
+    tester,
+  ) async {
+    // demi-bille-2 : rappel, théorie, e3, e4, créneau de rappel (étape 4).
+    final cubit = await real(tester, step: 4);
+    final calls = await pump(tester, cubit);
+
+    await tester.ensureVisible(find.text('Note the results'));
+    await tester.tap(find.text('Note the results'));
+
+    // Sans élève suivi : dernier exercice de la séance précédente.
+    expect(calls.recorded, [
+      (
+        ExerciseRef(blockId: 'demi-bille', number: 2),
+        'demi-bille',
+        'posture',
+        4,
+      ),
     ]);
   });
 }

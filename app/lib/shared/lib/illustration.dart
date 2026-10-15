@@ -1,6 +1,7 @@
 import 'dart:math' show Point;
 
 import 'package:billard_cfa/shared/lib/contact_fraction.dart';
+import 'package:billard_cfa/shared/lib/cue_side_geometry.dart';
 import 'package:billard_cfa/shared/lib/player_figure_layout.dart';
 import 'package:billard_cfa/shared/lib/power_ratio.dart';
 import 'package:billard_cfa/shared/lib/table_pocket.dart';
@@ -139,6 +140,13 @@ sealed class Illustration with _$Illustration {
     required String alt,
     required ContactFraction fraction,
     required TipPoint tipPoint,
+
+    /// Écart du procédé au centre (« un peu au-dessus » : `slight`).
+    @Default(TipOffset.half) TipOffset offset,
+
+    /// Dessine les trajectoires après le contact (bille de couleur dans la
+    /// ligne des centres, blanche sur la tangente) et l'angle de déviation.
+    @Default(false) bool paths,
   }) = ContactIllustration;
 
   /// Rangée de quantités de bille, l'une pouvant être mise en évidence.
@@ -170,6 +178,9 @@ sealed class Illustration with _$Illustration {
     required TipPoint tipPoint,
     @Default(<TipPoint>[]) List<TipPoint> compare,
     CueHeight? cueHeight,
+
+    /// Écart du procédé au centre (« un peu au-dessus » : `slight`).
+    @Default(TipOffset.half) TipOffset offset,
   }) = CueBallTargetIllustration;
 
   /// Joueur schématique (pictogramme neutre) : de profil, de dessus ou les
@@ -183,6 +194,9 @@ sealed class Illustration with _$Illustration {
     LeadEye? leadEye,
     HeadCase? headCase,
     @Default(CueBridge.frame) CueBridge bridge,
+
+    /// Gaucher : la figure est mise en miroir et la légende inverse les côtés.
+    @Default(Handedness.right) Handedness handedness,
   }) = PlayerFigureIllustration;
 
   /// Comparaison de taille à l'échelle : la blanche (48,0 mm) à côté d'une

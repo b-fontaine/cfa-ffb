@@ -6,7 +6,7 @@ Ordre des notions et nombre de séances conseillé : `[S]` (fiches entraînement
 |----------------|--------|---------------------------|-------------------|----------|
 | A. Fondamentaux | Visée, posture, chevalets, coup de queue | non précisé dans le PDF d'entraînement ; **1 à 2 `[Prop]`** (bloc `posture` proposé) | n° 1 | Première séance courte sur la posture (risque de rejet) |
 | A | Puissance | 1 à 2 | n° 2 | Amplitude + vitesse |
-| B. Quantités | Viser pour empocher (bille fantôme) | — dans le PDF ; **1 à 2 `[Prop]`** (bloc `bille-fantome` proposé) | n° 3 | Technique propre, avant la bille pleine ; dans le catalogue, elle a ses propres séances (`bille-fantome-1`, `bille-fantome-2`) |
+| B. Quantités | Viser pour empocher (bille fantôme) | — dans le PDF ; **1 `[U]`** (bloc `bille-fantome` proposé, une séance en plein, décision du 2026-10-15) | n° 3 | Technique propre, avant la bille pleine ; l'aide visuelle reste utile aux séances plein/demi |
 | B | Bille pleine | 2 à 3 | n° 4 | |
 | B | Demi-bille | 2 à 3 | n° 5 | |
 | B | Trois-quarts | 1 à 2 | n° 6 | |
@@ -41,7 +41,7 @@ Pas de séance au catalogue pour la synthèse des quantités de billes, la synth
 
 1. Respecter l'ordre des cycles A → B → C → D ; un retour en arrière est possible (rappel) mais pas d'enchaînement de notions non vues.
 2. Ne passer à la notion suivante qu'après atteinte des taux de réussite de la notion courante (au moins pour les premiers exercices).
-3. Une séance = une notion principale. Le rappel d'une notion précédente peut remplacer un exercice d'entraînement.
+3. Une séance = une notion principale. Dès la 2e séance, l'entraînement se termine par un **exercice de rappel** `[U]` (2026-10-15, ADR 0011) : l'application choisit, parmi les exercices des séances précédentes, celui que le plus d'élèves n'ont pas encore validé ; les passages se cumulent ainsi sur la saison jusqu'à la validation (5 passages réussis par défaut).
 4. La source ne dit pas comment la « séance » se rapporte à 90 ou 120 minutes : considérer la durée du public comme **une séance**.
 
 ## Exemple de plan sur 6 séances `[Prop]`

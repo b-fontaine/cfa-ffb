@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/blackball_dimensions.dart';
 import 'package:billard_cfa/shared/lib/contact_fraction.dart';
+import 'package:billard_cfa/shared/lib/cue_side_geometry.dart';
 import 'package:billard_cfa/shared/ui/ball_chip.dart';
 import 'package:billard_cfa/shared/ui/billiard_ball.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
@@ -21,18 +22,30 @@ export 'package:billard_cfa/shared/ui/tip_point.dart';
 /// sont à `r_c + r_o`. À droite (si [showTip]), la blanche de face avec le
 /// point bleu du procédé (8,5 mm, à l'échelle de la blanche ; la vue de face
 /// est un agrandissement). Le libellé localisé de la quantité est écrit sous
-/// le schéma.
+/// le schéma. Avec [showPaths], les trajectoires après le contact sont
+/// dessinées : la bille de couleur dans la ligne des centres (déviation `θ`
+/// par rapport à la ligne de visée) et la blanche, jouée sans rotation, sur
+/// la tangente, à angle droit de la couleur (fiche n° 13) ; en bille pleine
+/// la blanche s'arrête (carreau).
 class BallContactDiagram extends StatelessWidget {
   const BallContactDiagram({
     required this.contact,
     this.tipPoint = TipPoint.center,
+    this.tipOffset = TipOffset.half,
     this.target = BallKind.red,
     this.showTip = true,
+    this.showPaths = false,
     super.key,
   });
 
   final ContactFraction contact;
   final TipPoint tipPoint;
+
+  /// Écart du procédé au centre (« un peu au-dessus » : `slight`).
+  final TipOffset tipOffset;
+
+  /// Dessine les trajectoires des deux billes après le contact.
+  final bool showPaths;
 
   /// Dessine la blanche de face avec le procédé (à droite) ; sans cela, seul
   /// le contact des deux billes est dessiné.
@@ -56,16 +69,33 @@ class BallContactDiagram extends StatelessWidget {
         ContactFraction.thin => l10n.contactThin,
       };
 
-  static String tipLabel(AppLocalizations l10n, TipPoint p) => switch (p) {
-    TipPoint.center => l10n.tipPointCenter,
-    TipPoint.top => l10n.tipPointTop,
-    TipPoint.bottom => l10n.tipPointBottom,
-    TipPoint.left => l10n.tipPointLeft,
-    TipPoint.right => l10n.tipPointRight,
-    TipPoint.topLeft => l10n.tipPointTopLeft,
-    TipPoint.topRight => l10n.tipPointTopRight,
-    TipPoint.bottomLeft => l10n.tipPointBottomLeft,
-    TipPoint.bottomRight => l10n.tipPointBottomRight,
+  /// Angle de déviation (degrés entiers) de la bille de couleur et de la
+  /// blanche jouée sans rotation : `θ` et `90 − θ` ; `null` en bille pleine
+  /// (la blanche s'arrête).
+  static ({int colour, int cue})? pathAngles(ContactFraction contact) {
+    if (contact == ContactFraction.full) return null;
+    final theta = (contact.nominalCutAngle() * 180 / math.pi).round();
+    return (colour: theta, cue: 90 - theta);
+  }
+
+  static String tipLabel(
+    AppLocalizations l10n,
+    TipPoint p, [
+    TipOffset offset = TipOffset.half,
+  ]) => switch ((p, offset)) {
+    (TipPoint.top, TipOffset.slight) => l10n.tipPointTopSlight,
+    (TipPoint.bottom, TipOffset.slight) => l10n.tipPointBottomSlight,
+    (TipPoint.left, TipOffset.slight) => l10n.tipPointLeftSlight,
+    (TipPoint.right, TipOffset.slight) => l10n.tipPointRightSlight,
+    (TipPoint.center, _) => l10n.tipPointCenter,
+    (TipPoint.top, _) => l10n.tipPointTop,
+    (TipPoint.bottom, _) => l10n.tipPointBottom,
+    (TipPoint.left, _) => l10n.tipPointLeft,
+    (TipPoint.right, _) => l10n.tipPointRight,
+    (TipPoint.topLeft, _) => l10n.tipPointTopLeft,
+    (TipPoint.topRight, _) => l10n.tipPointTopRight,
+    (TipPoint.bottomLeft, _) => l10n.tipPointBottomLeft,
+    (TipPoint.bottomRight, _) => l10n.tipPointBottomRight,
   };
 
   @override
@@ -75,8 +105,17 @@ class BallContactDiagram extends StatelessWidget {
     final balls = theme.extension<BallColors>() ?? BallColors.light;
     final table = theme.extension<TableColors>() ?? TableColors.light;
     final fraction = contactLabel(l10n, contact);
+    final tip = tipLabel(l10n, tipPoint, tipOffset);
+    final angles = pathAngles(contact);
+    final paths = !showPaths
+        ? null
+        : angles == null
+        ? l10n.contactPathsFullLabel
+        : l10n.contactPathsLabel(angles.colour, angles.cue);
     return Semantics(
-      label: l10n.contactDiagramLabel(fraction, tipLabel(l10n, tipPoint)),
+      label: paths == null
+          ? l10n.contactDiagramLabel(fraction, tip)
+          : l10n.contactDiagramPathsLabel(fraction, tip, paths),
       excludeSemantics: true,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -87,7 +126,13 @@ class BallContactDiagram extends StatelessWidget {
               painter: _ContactPainter(
                 contact: contact,
                 tipPoint: tipPoint,
+                offsetShare: tipOffsetShareOf(tipOffset),
                 showTip: showTip,
+                showPaths: showPaths,
+                degrees: angles == null
+                    ? null
+                    : l10n.contactDegrees(angles.colour),
+                textStyle: theme.textTheme.labelLarge,
                 targetFill: balls.fillOf(target),
                 balls: balls,
                 table: table,
@@ -110,7 +155,11 @@ class _ContactPainter extends CustomPainter {
   const _ContactPainter({
     required this.contact,
     required this.tipPoint,
+    required this.offsetShare,
     required this.showTip,
+    required this.showPaths,
+    required this.degrees,
+    required this.textStyle,
     required this.targetFill,
     required this.balls,
     required this.table,
@@ -118,7 +167,13 @@ class _ContactPainter extends CustomPainter {
 
   final ContactFraction contact;
   final TipPoint tipPoint;
+  final double offsetShare;
   final bool showTip;
+  final bool showPaths;
+
+  /// Texte de l'angle de déviation (« ≈ 31° ») ; `null` en bille pleine.
+  final String? degrees;
+  final TextStyle? textStyle;
   final Color targetFill;
   final BallColors balls;
   final TableColors table;
@@ -171,6 +226,7 @@ class _ContactPainter extends CustomPainter {
       balls: balls,
       table: table,
     );
+    if (showPaths) _paths(canvas, cue, target, r, rc);
     if (!showTip) return;
 
     // Vue de face de la blanche : repère en croix et point bleu du procédé.
@@ -210,17 +266,94 @@ class _ContactPainter extends CustomPainter {
           ..color = balls.onWhite.withValues(alpha: 0.6),
       )
       ..drawCircle(
-        front + tipPoint.direction * (radius * 0.5),
+        front + tipPoint.direction * (radius * offsetShare),
         radius * BlackballDimensions.tipRadiusOnCueBall,
         Paint()..color = table.chalk,
       );
+  }
+
+  /// Trajectoires après le contact : la couleur dans la ligne des centres,
+  /// la blanche (sans rotation) sur la tangente ; arc de l'angle de déviation
+  /// de la couleur par rapport à la ligne de visée, avec sa valeur.
+  void _paths(Canvas canvas, Offset cue, Offset target, double r, double rc) {
+    final ink = Paint()
+      ..color = table.headString
+      ..strokeWidth = 2.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    final centres = target - cue;
+    final n = centres / centres.distance;
+    // Bille de couleur : droit devant dans la ligne des centres.
+    _arrow(canvas, target + n * r, target + n * (r * 2.6), ink);
+    final angles = BallContactDiagram.pathAngles(contact);
+    if (angles == null) {
+      // Carreau : la blanche s'arrête ; un point sur place.
+      canvas.drawCircle(cue, 3, Paint()..color = table.headString);
+      return;
+    }
+    // Blanche : sur la tangente, vers l'avant (angle droit avec la couleur).
+    final t = Offset(-n.dy, n.dx).dx >= 0
+        ? Offset(-n.dy, n.dx)
+        : Offset(n.dy, -n.dx);
+    final dashed = Paint()
+      ..color = table.headString
+      ..strokeWidth = 2.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    final start = cue + t * rc;
+    final end = cue + t * (rc * 2.4);
+    final length = (end - start).distance;
+    for (var d = 0.0; d < length; d += 10) {
+      final a = start + t * d;
+      final b = start + t * math.min(d + 5, length);
+      canvas.drawLine(a, b, dashed);
+    }
+    _arrowHead(canvas, end, t, dashed);
+    // Arc de la déviation de la couleur, entre la ligne de visée (horizontale)
+    // et la ligne des centres, au centre de la bille de couleur.
+    final theta = math.atan2(n.dy, n.dx);
+    final arcRadius = r * 1.9;
+    canvas.drawArc(
+      Rect.fromCircle(center: target, radius: arcRadius),
+      math.min(0, theta),
+      theta.abs(),
+      false,
+      ink,
+    );
+    final text = degrees;
+    if (text == null) return;
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: textStyle),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    final at =
+        target +
+        Offset(arcRadius + 4, -painter.height / 2 + theta * arcRadius / 2);
+    painter.paint(canvas, at);
+  }
+
+  void _arrow(Canvas canvas, Offset from, Offset to, Paint paint) {
+    canvas.drawLine(from, to, paint);
+    final d = to - from;
+    _arrowHead(canvas, to, d / d.distance, paint);
+  }
+
+  void _arrowHead(Canvas canvas, Offset tip, Offset dir, Paint paint) {
+    const size = 7.0;
+    final left = Offset(-dir.dy, dir.dx);
+    canvas
+      ..drawLine(tip, tip - dir * size + left * (size / 2), paint)
+      ..drawLine(tip, tip - dir * size - left * (size / 2), paint);
   }
 
   @override
   bool shouldRepaint(_ContactPainter old) =>
       old.contact != contact ||
       old.tipPoint != tipPoint ||
+      old.offsetShare != offsetShare ||
       old.showTip != showTip ||
+      old.showPaths != showPaths ||
+      old.degrees != degrees ||
       old.targetFill != targetFill ||
       old.balls != balls ||
       old.table != table;

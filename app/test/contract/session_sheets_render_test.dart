@@ -18,7 +18,7 @@ import 'package:billard_cfa/shared/ui/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-// Contrat de rendu sur les 29 vraies séances de `assets/fiches/` : aucune
+// Contrat de rendu sur les 28 vraies séances de `assets/fiches/` : aucune
 // erreur de rendu (débordement compris) pour chaque séance et chaque
 // illustration, en français et en anglais, pour les deux publics, texte
 // agrandi à 200 % sur téléphone et tablette en paysage.
@@ -77,7 +77,7 @@ void main() {
     }
   });
 
-  test('the catalogue holds 29 sessions of 14 techniques', () async {
+  test('the catalogue holds 28 sessions of 14 techniques', () async {
     final catalogue = switch (await ListSheets(
       AssetSessionSheetRepository.fromBundle(),
     )()) {
@@ -85,7 +85,7 @@ void main() {
       Err(:final failure) => throw StateError('$failure'),
     };
 
-    expect(catalogue.sheetCount, 29);
+    expect(catalogue.sheetCount, 28);
     expect(catalogue.techniqueCount, 14);
   });
 
@@ -148,7 +148,7 @@ void main() {
     }
   }
 
-  // Les 29 séances, un test par séance : un échec nomme la séance.
+  // Les 28 séances, un test par séance : un échec nomme la séance.
   for (final id in _frozenSheetIds) {
     testWidgets('$id renders without error in both languages, both audiences, '
         'large text and tablet', (tester) async {
@@ -225,7 +225,7 @@ void main() {
   }
 }
 
-/// Identifiants des 29 séances (FORMAT § 1.3), figés par
+/// Identifiants des 28 séances (FORMAT § 1.3), figés par
 /// `session_sheets_contract_test.dart`.
 const _frozenSheetIds = [
   'posture-1',
@@ -233,7 +233,6 @@ const _frozenSheetIds = [
   'puissance-1',
   'puissance-2',
   'bille-fantome-1',
-  'bille-fantome-2',
   'bille-pleine-1',
   'bille-pleine-2',
   'demi-bille-1',

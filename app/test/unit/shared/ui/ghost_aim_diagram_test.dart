@@ -121,7 +121,9 @@ void main() {
         find.bySemanticsLabel(
           'Bille fantôme, Demi-bille : la blanche vise le point où elle '
           'touche la bille de couleur pour l’envoyer dans la poche en haut à '
-          'droite.',
+          'droite. Loupe sur le contact : la bille fantôme, de la taille de '
+          'la blanche, est collée à la bille de couleur ; le point marque le '
+          'contact.',
         ),
         findsOneWidget,
       );
@@ -143,7 +145,9 @@ void main() {
       expect(
         find.bySemanticsLabel(
           'Ghost ball, Quarter ball: the cue ball aims at the point where it '
-          'touches the object ball to send it into the bottom middle pocket.',
+          'touches the object ball to send it into the bottom middle pocket. '
+          'Magnified view of the contact: the ghost ball, the size of the cue '
+          'ball, touches the object ball; the dot marks the contact.',
         ),
         findsOneWidget,
       );

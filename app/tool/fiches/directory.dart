@@ -59,7 +59,7 @@ Json? _parse(String text) {
   }
 }
 
-/// Valide tous les `*.yaml` de [dir]. Avec [complete], exige en plus les 29
+/// Valide tous les `*.yaml` de [dir]. Avec [complete], exige en plus les 28
 /// fichiers et la couverture de la plage d'exercices de chaque technique.
 DirectoryReport validateDirectory(
   String dir,

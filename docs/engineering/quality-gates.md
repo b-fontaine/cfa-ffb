@@ -23,7 +23,7 @@ scripts/sync_fiches.sh [--check]          # copie / vérifie les séances du cat
 | Catalogue : asset identique à la source | `scripts/sync_catalogue.sh --check` | oui | oui | pre-commit | quality |
 | Diagrammes : assets identiques à la source (pages à table uniquement, aucun fichier en trop, chaque dossier déclaré dans `app/pubspec.yaml`) | `scripts/sync_diagrammes.sh --check` | oui | oui | pre-commit | quality |
 | Fiches de séance : assets identiques à la source (fichiers `NN-<id>.yaml` seulement, aucun fichier en trop, dossier déclaré dans `app/pubspec.yaml`) | `scripts/sync_fiches.sh --check` | oui | oui | pre-commit | quality |
-| Fiches de séance : règles V1 à V24 de `FORMAT.md` § 7, structure et parties calculées depuis le catalogue, tableaux du § 1 à jour (lecture seule) | `dart run tool/fiches.dart --complete` (dans `app/` ; exige les 29 séances ; sans l'option, contrôle seulement les fichiers présents ; `--structure` affiche la structure) | oui | oui | pre-commit | quality |
+| Fiches de séance : règles V1 à V24 de `FORMAT.md` § 7, structure et parties calculées depuis le catalogue, tableaux du § 1 à jour (lecture seule) | `dart run tool/fiches.dart --complete` (dans `app/` ; exige les 28 séances ; sans l'option, contrôle seulement les fichiers présents ; `--structure` affiche la structure) | oui | oui | pre-commit | quality |
 | Fichiers web drift : `drift_worker.js` = paquet résolu, `sqlite3.wasm` = version verrouillée | `dart run scripts/sync_web_assets.dart --check` | oui | oui | pre-commit | quality |
 | Formatage | `dart format --output=none --set-exit-if-changed` (lib, test, tool, scripts) | oui | oui | pre-commit | quality |
 | Analyse statique stricte | `flutter analyze --no-pub --fatal-infos` (`very_good_analysis` + strict-casts/inference/raw-types) | oui | oui | pre-commit | quality |
@@ -57,7 +57,7 @@ Hook agent : l'événement `Stop` lance `scripts/check.sh --fast` lorsque `app/`
   recalcule la structure (14 techniques, parties, tranches, séance précédente)
   depuis `catalogue-entrainement.yaml` : aucune constante pour le nombre de
   parties. Par défaut, chaque fichier présent est contrôlé ; `--complete`
-  exige en plus les 29 séances (fin du lot L7) : c'est le mode de `check.sh` et de la CI. V12 (minutage) et V17
+  exige en plus les 28 séances (fin du lot L7) : c'est le mode de `check.sh` et de la CI. V12 (minutage) et V17
   (cohérence géométrique de `ghost_aim`) relèvent du test de contrat Dart.
   Testé par `app/test/tool/fiches_test.dart` (un cas rouge par règle) et
   `app/test/tool/sync_fiches_test.dart`.

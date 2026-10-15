@@ -5,6 +5,7 @@ import 'package:billard_cfa/entities/exercise_diagram/domain/exercise_diagram.da
 import 'package:billard_cfa/entities/session/data/in_memory_session_repository.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/audience_weight.dart';
+import 'package:billard_cfa/features/run_sheet/domain/load_validated_exercises.dart';
 import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
@@ -51,17 +52,30 @@ void main() {
 
   setUp(() => sessions = InMemorySessionRepository());
 
+  LoadValidatedExercises validated(DomainWorld world) => LoadValidatedExercises(
+    world.students,
+    world.groups,
+    world.attempts,
+    world.acquisitions,
+    world.config,
+  );
+
   ResolveRunPlan build({
     List<ExerciseDiagram> diagrams = const [],
     Future<DiagramLibrary> Function()? library,
     RulesConfig? rules,
-  }) => ResolveRunPlan(
-    FixtureSessionSheetRepository(catalogueFixture()),
-    sessions,
-    DomainWorld(catalogue: catalogue).catalogueRepository,
-    _Diagrams(library ?? () async => DiagramLibrary(diagrams)),
-    rules ?? RulesConfig(),
-  );
+    DomainWorld? world,
+  }) {
+    final domain = world ?? DomainWorld(catalogue: catalogue, config: rules);
+    return ResolveRunPlan(
+      FixtureSessionSheetRepository(catalogueFixture()),
+      sessions,
+      domain.catalogueRepository,
+      _Diagrams(library ?? () async => DiagramLibrary(diagrams)),
+      rules ?? RulesConfig(),
+      validated(domain),
+    );
+  }
 
   test('lists the steps in the teaching order for the audience', () async {
     final plan = ok(
@@ -73,12 +87,14 @@ void main() {
       RunStepKind.theory,
       RunStepKind.exercise,
       RunStepKind.exercise,
+      RunStepKind.recallExercise,
       RunStepKind.game,
       RunStepKind.review,
     ]);
     expect(plan.steps.map((s) => s.phase), [
       SessionPhase.welcome,
       SessionPhase.notionAndInitiation,
+      SessionPhase.training,
       SessionPhase.training,
       SessionPhase.training,
       SessionPhase.game,
@@ -101,12 +117,14 @@ void main() {
         else
           s,
     ];
+    final world = DomainWorld(catalogue: catalogue);
     final resolve = ResolveRunPlan(
       FixtureSessionSheetRepository(sheets),
       sessions,
-      DomainWorld(catalogue: catalogue).catalogueRepository,
+      world.catalogueRepository,
       _Diagrams(() async => DiagramLibrary(const [])),
       RulesConfig(),
+      validated(world),
     );
 
     final children = ok(
@@ -275,6 +293,7 @@ void main() {
           ]),
         ),
         RulesConfig(),
+        validated(DomainWorld(catalogue: catalogue)),
       )(SheetId('demi-bille-1')),
     );
 

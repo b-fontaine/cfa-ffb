@@ -32,6 +32,15 @@ Feature: Quantity of ball diagram
       | left  | Tip on the left of the cue ball   |
       | right | Tip on the right of the cue ball  |
 
+  Scenario: The diagram can draw where each ball goes after the contact
+    When I look at the quantity of ball diagram: {'half'} with the paths after the contact
+    Then I see {'Half ball'} text
+    And the diagram is described as {'Half ball; Tip at the centre of the cue ball; After the contact, the colour ball deviates by about 31° and the cue ball by about 59°'}
+
+  Scenario: The full ball diagram sends the colour ball straight ahead
+    When I look at the quantity of ball diagram: {'full'} with the paths after the contact
+    Then the diagram is described as {'Full ball; Tip at the centre of the cue ball; After the contact, the colour ball goes straight ahead and the cue ball stops'}
+
   Scenario: The diagram is read in French on a French device
     Given the device language is {'fr'}
     When I look at the quantity of ball diagram: {'half'} with the tip {'left'}

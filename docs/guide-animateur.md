@@ -71,7 +71,7 @@ enseigné avant le rejet naturel.
 
 Ouvrez **Séances**. Le catalogue regroupe **14 techniques** (posture, puissance,
 bille fantôme, bille pleine, demi-bille, trois-quarts, quart, finesse, rebond sur
-bande, rejet naturel, coulé, carreau, angle droit, rétro) et leurs **29 séances**,
+bande, rejet naturel, coulé, carreau, angle droit, rétro) et leurs **28 séances**,
 dans l'ordre d'enseignement. Une technique compte une à quatre séances, notées
 « séance 2/3 » : la première introduit la notion, les suivantes l'approfondissent.
 
@@ -121,7 +121,10 @@ Depuis le détail d'une séance, ou depuis la liste des séances planifiées, to
 celui que vous avez choisi.
 
 1. La **séance guidée** déroule les étapes dans l'ordre : rappel (avec une
-   question flash), théorie, initiation, exercices, jeu, bilan. **Précédent** et
+   question flash), théorie, initiation, exercices, **exercice de rappel**
+   (dès la deuxième séance : l'application choisit, parmi les exercices des
+   séances précédentes, celui que le plus de vos élèves n'ont pas encore
+   validé, et dit de quelle séance il vient), jeu, bilan. **Précédent** et
    **Suivant** naviguent ; le **Sommaire** permet de sauter directement à une
    étape, par exemple au jeu.
 2. Chaque exercice affiche le schéma de mise en place, la mise en place, la

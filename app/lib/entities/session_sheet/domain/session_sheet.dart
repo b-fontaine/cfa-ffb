@@ -2,6 +2,7 @@ import 'package:billard_cfa/entities/session_sheet/domain/sheet_exercise.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_game.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_initiation.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_recall.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/sheet_recall_slot.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_source.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_theme.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_theory.dart';
@@ -24,6 +25,8 @@ bool _unique(Iterable<String> ids) => ids.toSet().length == ids.length;
 /// Le minutage n'est jamais porté : il est calculé (`sheetTiming`) à partir
 /// des poids par public. `previous` est la séance d'ordre `order - 1`
 /// (`null` pour la première) ; une partie `k > 1` suit la partie `k - 1`.
+/// `recallSlot` (ADR 0011) existe si et seulement si la séance en a une
+/// précédente.
 @freezed
 abstract class SessionSheet with _$SessionSheet {
   factory SessionSheet({
@@ -44,6 +47,7 @@ abstract class SessionSheet with _$SessionSheet {
     required List<String> reviewPrompts,
     required List<SheetSourceRef> sources,
     SheetId? previous,
+    SheetRecallSlot? recallSlot,
     @Default(<SheetInitiation>[]) List<SheetInitiation> initiation,
     @Default(<String>[]) List<String> uncertainties,
   }) = _SessionSheet;
@@ -58,6 +62,9 @@ abstract class SessionSheet with _$SessionSheet {
     }
     if ((previous == null) != (order == 1)) {
       _invalid('previous : nul si et seulement si order vaut 1');
+    }
+    if ((recallSlot == null) != (order == 1)) {
+      _invalid('recallSlot : absent si et seulement si order vaut 1');
     }
     if (theorySections.isEmpty ||
         exercises.isEmpty ||
@@ -109,6 +116,10 @@ abstract class SessionSheet with _$SessionSheet {
     if (numbers.toSet().length != numbers.length) {
       _invalid('exercices : numéros du catalogue en double');
     }
+    final slot = recallSlot;
+    if (slot != null && (slot.passes < 1 || slot.passes > 2)) {
+      _invalid('créneau de rappel : passes doit valoir 1 ou 2');
+    }
     for (final e in exercises) {
       if (e.ref.blockId != catalogueBlock) {
         _invalid('exercice ${e.id} : bloc ${e.ref.blockId} != $catalogueBlock');
@@ -147,6 +158,10 @@ abstract class SessionSheet with _$SessionSheet {
           !exercises.any((e) => e.weight.isShownFor(audience)) ||
           !game.weight.isShownFor(audience)) {
         _invalid('${audience.name} : théorie, exercice et jeu affichés requis');
+      }
+      final slot = recallSlot;
+      if (slot != null && !slot.weight.isShownFor(audience)) {
+        _invalid('${audience.name} : créneau de rappel affiché requis');
       }
     }
   }

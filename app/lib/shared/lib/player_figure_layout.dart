@@ -28,6 +28,11 @@ enum PlayerMark {
 /// Vue présentée : de profil, de dessus, ou les deux.
 enum PlayerView { side, top, both }
 
+/// Latéralité du joueur dessiné : la pose est calculée pour un droitier et
+/// **mise en miroir** pour un gaucher (fiche n° 1 : « tout se lit à
+/// l'envers »).
+enum Handedness { right, left }
+
 /// Place de la tête par rapport à la queue, vue de dessus (fiche n° 1,
 /// étape 2 : selon l'œil directeur).
 enum HeadCase { rightEyeOverCue, cueBetweenEyes, leftEyeOverCue }
@@ -49,15 +54,24 @@ enum CueBridge {
 /// Unité : la taille du joueur `H` (= 1) ; `x` vers la droite (vers la
 /// blanche), `y` **vers le haut**, origine au sol. Proportions `[Prop]` : le
 /// plateau est à 0,48 H (820 à 850 mm pour une table de 1,75 m), la queue
-/// mesure 0,83 H (≈ 1450 mm) et son talon est relevé de 10° (jamais une queue
-/// strictement horizontale : la fiche n° 1 ne dit pas « horizontale »). Les
-/// billes sont **agrandies** (rayon 0,028 H au lieu de 0,014 H).
+/// mesure 0,83 H (≈ 1450 mm) et son talon est relevé de 10° sur la surface,
+/// de 14° sur le cadre (jamais une queue strictement horizontale : la fiche
+/// n° 1 ne dit pas « horizontale »). Les billes sont **agrandies** (rayon
+/// 0,028 H au lieu de 0,014 H).
 ///
-/// La main de chevalet est posée sous la queue : sa position se déduit de la
-/// droite de la queue (la queue repose sur le haut de la main).
+/// Le joueur est **penché** : le buste monte de moins de 0,15 H des hanches
+/// aux épaules et le menton reste à quelques centimètres au-dessus de la
+/// queue (« tête au-dessus de la queue » ; un peu relevée sur le cadre, « au
+/// plus près de la queue » sur la surface, fiche n° 1). Le corps est placé
+/// par rapport à la main arrière : le pied droit sous elle, les hanches
+/// juste derrière, le pied gauche en avant. Sur le cadre, la blanche est
+/// près de la bande (c'est l'usage de ce chevalet) ; la main de chevalet est
+/// posée sous la queue, sa position se déduit de la droite de la queue (la
+/// queue repose sur le haut de la main).
 class SidePose {
   const SidePose._({
     required this.bridge,
+    required this.elevation,
     required this.tip,
     required this.butt,
     required this.ballCenter,
@@ -75,53 +89,88 @@ class SidePose {
 
   /// Pose pour un appui de [bridge].
   factory SidePose.of(CueBridge bridge) {
-    const ballCenter = math.Point<double>(1.22, tableTop + drawnBallRadius);
+    final elevation = elevationOf(bridge);
+    final ballCenter = math.Point<double>(
+      ballXOf(bridge),
+      tableTop + drawnBallRadius,
+    );
     // La pointe touche la blanche : à un rayon du centre, sur la droite de la
     // queue (qui passe par le centre).
     final tip = math.Point<double>(
-      ballCenter.x - drawnBallRadius * math.cos(_elevation),
-      ballCenter.y + drawnBallRadius * math.sin(_elevation),
+      ballCenter.x - drawnBallRadius * math.cos(elevation),
+      ballCenter.y + drawnBallRadius * math.sin(elevation),
     );
     final butt = math.Point<double>(
-      tip.x - cueLength * math.cos(_elevation),
-      tip.y + cueLength * math.sin(_elevation),
+      tip.x - cueLength * math.cos(elevation),
+      tip.y + cueLength * math.sin(elevation),
     );
     const gripDistance = 0.66;
     final backHand = math.Point<double>(
-      tip.x - gripDistance * math.cos(_elevation),
-      tip.y + gripDistance * math.sin(_elevation),
+      tip.x - gripDistance * math.cos(elevation),
+      tip.y + gripDistance * math.sin(elevation),
     );
     final handBottom = bridge == CueBridge.frame ? railTop : tableTop;
     final handCentreY = handBottom + handRadius;
     // La queue passe au sommet de la main : y_queue(x) = y_main + r.
     final bridgeX =
-        tip.x - (handCentreY + handRadius - tip.y) / math.tan(_elevation);
+        tip.x - (handCentreY + handRadius - tip.y) / math.tan(elevation);
+    // Le corps se place par rapport à la main arrière.
+    final x0 = backHand.x;
+    final headX = tip.x - headBack;
+    final cueAtHead = tip.y + (tip.x - headX) * math.tan(elevation);
     return SidePose._(
       bridge: bridge,
+      elevation: elevation,
       tip: tip,
       butt: butt,
       ballCenter: ballCenter,
       backHand: backHand,
       elbow: math.Point<double>(backHand.x, backHand.y + forearmLength),
-      shoulder: const math.Point<double>(0.66, 0.77),
-      leftShoulder: const math.Point<double>(0.70, 0.76),
-      hip: const math.Point<double>(0.46, 0.57),
+      shoulder: math.Point<double>(x0 + 0.16, 0.68),
+      leftShoulder: math.Point<double>(x0 + 0.20, 0.67),
+      hip: math.Point<double>(x0 - 0.06, 0.56),
       head: math.Point<double>(
-        0.82,
-        tip.y + (tip.x - 0.82) * math.tan(_elevation) + 0.15,
+        headX,
+        cueAtHead + chinClearanceOf(bridge) + headRadius,
       ),
       bridgeHand: math.Point<double>(bridgeX, handCentreY),
-      rightFoot: math.Point<double>(backHand.x, footHeight),
-      leftFoot: const math.Point<double>(0.76, footHeight),
-      leftKnee: const math.Point<double>(0.74, 0.32),
+      rightFoot: math.Point<double>(x0, footHeight),
+      leftFoot: math.Point<double>(x0 + 0.24, footHeight),
+      leftKnee: math.Point<double>(x0 + 0.20, 0.30),
     );
   }
+
+  /// Inclinaison de la queue (talon relevé) selon l'appui : 10° sur la
+  /// surface, 14° sur le cadre (la main y est plus haute, la queue descend
+  /// vers la blanche).
+  static double elevationOf(CueBridge bridge) => switch (bridge) {
+    CueBridge.surface => _elevation,
+    CueBridge.frame => 14 * math.pi / 180,
+  };
+
+  /// Abscisse de la blanche : près de la bande sur le cadre (0,10 H du bord
+  /// du rail, qui s'arrête à 0,95), loin d'elle sur la surface.
+  static double ballXOf(CueBridge bridge) => switch (bridge) {
+    CueBridge.surface => 1.22,
+    CueBridge.frame => 1.05,
+  };
+
+  /// Espace entre le bas de la tête (menton) et l'axe de la queue : au plus
+  /// près sur la surface, un peu relevée sur le cadre (fiche n° 1).
+  static double chinClearanceOf(CueBridge bridge) => switch (bridge) {
+    CueBridge.surface => 0.035,
+    CueBridge.frame => 0.06,
+  };
+
+  /// Recul de la tête par rapport à la pointe de la queue.
+  static const double headBack = 0.30;
 
   /// Hauteur du plateau (tapis) : 0,48 H.
   static const double tableTop = 0.48;
 
-  /// Hauteur du haut du rail sur lequel s'appuie un chevalet sur cadre.
-  static const double railTop = 0.51;
+  /// Hauteur du haut du rail sur lequel s'appuie un chevalet sur cadre
+  /// (bande d'environ 36 mm au-dessus du tapis).
+  static const double railTop = 0.50;
 
   /// Rayon de la blanche dessinée (agrandie).
   static const double drawnBallRadius = 0.028;
@@ -153,6 +202,9 @@ class SidePose {
 
   final CueBridge bridge;
 
+  /// Inclinaison de la queue (radians, talon relevé).
+  final double elevation;
+
   /// Pointe de la queue, au contact de la blanche.
   final math.Point<double> tip;
 
@@ -179,7 +231,7 @@ class SidePose {
   final math.Point<double> leftKnee;
 
   /// Hauteur de l'axe de la queue à l'abscisse [x].
-  double cueHeightAt(double x) => tip.y + (tip.x - x) * math.tan(_elevation);
+  double cueHeightAt(double x) => tip.y + (tip.x - x) * math.tan(elevation);
 
   /// Centre de la pastille de [mark], dans le cadre.
   math.Point<double> badgeOf(PlayerMark mark) => switch (mark) {

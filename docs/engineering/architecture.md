@@ -301,7 +301,7 @@ ADR 0004, lot L4. Lecture seule de bout en bout :
   `AppRoutes.recordFromGuide(sheet:)`). Les blocs dérivés d'une séance
   (`SheetBlocks.resolve`) ne remplacent jamais des blocs donnés. Schéma drift
   v4 (ADR 0001).
-- Garde-fous : `test/contract/session_sheets_render_test.dart` rend les 29
+- Garde-fous : `test/contract/session_sheets_render_test.dart` rend les 28
   séances (fr et en, deux publics, texte à 200 % sur téléphone, tablette en
   paysage) et chaque illustration, sans erreur de rendu.
 
@@ -361,7 +361,7 @@ jamais modifier le contenu du catalogue :
   est ignoré. `RecordResultsEvent.started` présélectionne l'exercice du bloc
   principal ; le retour ramène au guide à la même étape.
 - Garde-fous : `test/contract/session_sheets_guide_test.dart` rend le guide et
-  la présentation sur les 29 séances, à chaque étape (fr et en, deux publics,
+  la présentation sur les 28 séances, à chaque étape (fr et en, deux publics,
   texte à 200 % sur téléphone, tablette en paysage).
 
 ## Suggestion ↔ catalogue (lot 8)

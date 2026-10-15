@@ -1,0 +1,221 @@
+# Séance du catalogue : « Finesse », partie 1/1.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: finesse-1
+order: 13
+technique: finesse
+part: 1
+title: Finesse
+technical_sheets: [8]
+previous: quart-1
+catalogue_block: quart-finesses
+notion: Viser en dehors de la bille de couleur pour l'effleurer par le bord et l'empocher en finesse.
+theme:
+  name: L'art de frôler
+  pitch: >-
+    Une finesse, c'est encore plus fin qu'un quart : on ne voit presque plus
+    de recouvrement, seulement le bord de la bille. Chaque finesse réussie
+    fait avancer le frôleur d'une case sur la piste.
+recall:
+  points:
+    - Au quart de bille, on vise en dehors de la bille de couleur, à un demi-rayon au-delà, compté avec la blanche, qui est plus petite.
+    - Les deux billes se touchent bien, même si la visée passe à côté.
+    - La blanche garde une grande part de son énergie et dévie peu.
+    - La blanche parcourt plus de chemin que la bille de couleur.
+  question:
+    ask: Au quart de bille, où vise-t-on, et quelle bille parcourt le plus de chemin ?
+    answer: En dehors de la bille de couleur, à un demi-rayon au-delà ; c'est la blanche qui parcourt le plus.
+  # Illustration `visee-quart` de la séance précédente (quart-1) : la visée passe à côté de la bille.
+  reuse: {sheet: quart-1, illustration: visee-quart}
+  src: S
+theory:
+  sections:
+    - id: viser-dehors
+      title: Viser à côté de la bille
+      weight: {children: 3, adults: 3}
+      body:
+        - Au-delà du quart de bille, la disposition des billes demande une visée en finesse.
+        - La visée passe à côté de la bille de couleur sans la couper.
+        - La blanche ne touche la bille de couleur que sur son bord.
+        - On vise un peu plus loin de la bille que pour le quart.
+      adult_extra:
+        - "La blanche est un peu plus petite que la bille de couleur : au Blackball, la mesure du quart se prend par rapport à la blanche, et la finesse commence au-delà de ce quart."
+        - "Il n'existe pas une seule finesse : le joueur apprécie la quantité selon la trajectoire que doit suivre la bille de couleur."
+      key_point: En finesse, on vise un peu plus loin qu'au quart ; seul le bord de la bille est touché.
+      demo: "Poser la blanche au contact du bord de la bille de couleur (bille fantôme), montrer le point de contact, retirer la blanche, puis jouer sans empocher."
+      illustrations: [contact-fin, visee-finesse, quantites]
+      src: S
+    - id: deux-faits
+      title: Deux choses à observer
+      weight: {children: 2, adults: 2}
+      body:
+        - Le transfert d'énergie est très faible ; la blanche garde presque toute son énergie.
+        - La blanche parcourt un trajet bien plus long que la bille de couleur.
+        - La blanche dévie à peine de sa trajectoire de départ.
+      key_point: Très peu de transfert, très peu de déviation de la blanche.
+      demo: "Jouer une finesse sans empocher et montrer où s'arrêtent la blanche, puis la bille de couleur."
+      illustrations: [trajectoires-finesse, quantites]
+      src: S
+    - id: mot-bord
+      title: Effleurer
+      weight: {children: 1}
+      body:
+        - "Au quart, on voit encore la blanche recouvrir un peu la bille de couleur. En finesse, on ne voit presque plus de recouvrement : la blanche effleure le bord, comme une plume."
+      key_point: "Quart : un peu de recouvrement. Finesse : presque plus, juste le bord."
+      demo: null
+      illustrations: [contact-fin, quantites]
+      src: Prop
+    - id: puissance
+      title: Régler la puissance
+      weight: {children: 1, adults: 1}
+      body:
+        - "Peu d'énergie passe à la couleur : on règle la puissance pour qu'elle arrive à la poche."
+        - La visée ne change pas.
+      key_point: La visée ne change pas ; on règle la puissance pour que la couleur arrive à la poche.
+      demo: null
+      illustrations: [trajectoires-finesse]
+      src: Prop
+    - id: lire-blanche
+      title: Lire la blanche
+      weight: {adults: 2}
+      body:
+        - Après chaque tir, repérer où s'arrête la blanche par rapport à sa trajectoire de départ.
+        - Plus la blanche dévie, plus le contact était épais ; elle part du côté opposé à la direction prise par la bille de couleur, et la visée était trop proche de la bille.
+        - "Correction : blanche qui dévie fort, viser plus à l'extérieur de la bille ; la poser en bille fantôme, puis la retirer, pour repérer le bon point."
+      key_point: La déviation de la blanche dit quelle quantité a vraiment été jouée.
+      demo: null
+      illustrations: [trajectoires-finesse]
+      src: Prop
+initiation:
+  - id: ini-9
+    initiation_sheet: 9
+    title: Un quart, une finesse
+    weight: {children: 3, adults: 3}
+    setup: "Une jaune sous la poche d'angle du haut à gauche et une autre sous celle du haut à droite ; une blanche devant chacune, un peu décalée sur le côté (le schéma)."
+    goal: "Empocher 2 billes : l'une en quart de bille, l'autre en finesse."
+    expected: "La visée passe en dehors de la bille de couleur, près de la tangente au quart, un peu plus loin en finesse ; la blanche parcourt plus de chemin que la bille de couleur."
+    scoring: {mode: counter, of: 2}
+    illustration: schema-initiation
+    src: S
+illustrations:
+  - {id: contact-fin, type: contact, fraction: thin, tip_point: center,
+     caption: "Finesse : vue de dessus, la blanche, un peu plus petite, ne touche la bille de couleur que par le bord ; à droite, la blanche de face avec le procédé au centre.",
+     alt: "À gauche, vue de dessus : la blanche, un peu plus petite que la bille de couleur, arrive par la gauche sur la ligne de visée en pointillés et ne touche la bille de couleur, placée bien plus haut, que par son bord, avec un très faible recouvrement ; à droite, la blanche vue de face avec une croix et un anneau à mi-rayon, le point du procédé au centre."}
+  - {id: visee-finesse, type: ghost_aim, cue: [1.03, 3.45], object: [1.5, 1.0], pocket: tl, fraction: thin,
+     caption: "La bille fantôme, de la taille de la blanche, est collée à la bille de couleur, côté opposé à la poche : la visée passe à côté de la bille de couleur.",
+     alt: "Table vue de dessus : la blanche en bas à gauche, la bille de couleur près de la poche du haut à gauche ; la bille fantôme, de la taille de la blanche (un peu plus petite que la bille de couleur), est collée à la bille de couleur sur son côté bas droit, avec le point de contact marqué ; la ligne de visée monte presque droit, un peu vers la droite, de la blanche à la bille fantôme et passe à côté de la bille de couleur."}
+  - {id: quantites, type: contact_strip, fractions: [quarter, thin], highlight: thin,
+     caption: "Quart de bille, puis finesse : le recouvrement devient de plus en plus faible ; la blanche est dessinée un peu plus petite que la bille de couleur.",
+     alt: "Deux schémas de contact côte à côte, vus de dessus : le quart de bille, puis la finesse mise en évidence ; dans chacun, la blanche est un peu plus petite que la bille de couleur, et une note donne les diamètres de la blanche (48,0 mm) et des billes de but (50,8 mm)."}
+  - {id: trajectoires-finesse, type: table,
+     balls: [{id: r, color: red, at: [1.5, 1.0]}, {id: w, color: white, at: [1.03, 3.45], role: cue}],
+     ghosts: [{id: g-impact, at: [1.68, 1.12], role: impact, for: w}],
+     arrows: [{id: a1, ball: w, kind: cue, path: [[1.03, 3.45], [1.68, 1.12], [2.14, 0.4]], bounces: []},
+              {id: a2, ball: r, kind: object, path: [[1.5, 1.0], [0.2, 0.2]], bounces: [], to: tl}],
+     zones: [],
+     caption: "En finesse, la blanche dévie peu et continue vers la droite ; la bille de couleur part vers la poche.",
+     alt: "Table vue de dessus : la blanche monte presque droit, effleure la bille de couleur par le bord et continue sa route en s'écartant un peu vers la droite ; la bille de couleur part vers la poche d'angle du haut à gauche."}
+  - {id: schema-initiation, type: diagram_ref, diagram: initiation-p09-e1,
+     caption: "Initiation 9 : une jaune jouée en quart de bille à gauche, une autre en finesse à droite.",
+     alt: "Table vue de dessus : deux billes jaunes près des poches d'angle du haut, chacune avec sa blanche devant ; la blanche de gauche touche la jaune en quart de bille, celle de droite seulement par le bord."}
+  - id: schema-jeu
+    type: table
+    balls:
+      - {id: y1, color: yellow, at: [3.63, 1.0]}
+      - {id: y2, color: yellow, at: [4.37, 1.0]}
+      - {id: r1, color: red, at: [3.55, 3.0]}
+      - {id: r2, color: red, at: [4.45, 3.0]}
+      - {id: w, color: white, at: [4.0, 2.0], role: cue}
+    ghosts:
+      - {id: g1, at: [3.56, 1.2], role: impact, for: w}
+      - {id: g2, at: [4.44, 1.2], role: impact, for: w}
+      - {id: g3, at: [3.46, 2.81], role: impact, for: w}
+      - {id: g4, at: [4.54, 2.81], role: impact, for: w}
+    arrows:
+      - {id: a1, ball: y1, kind: object, path: [[3.63, 1.0], [4.0, 0.2]], bounces: [], to: tm}
+      - {id: a2, ball: y2, kind: object, path: [[4.37, 1.0], [4.0, 0.2]], bounces: [], to: tm}
+      - {id: a3, ball: r1, kind: object, path: [[3.55, 3.0], [4.0, 3.8]], bounces: [], to: bm}
+      - {id: a4, ball: r2, kind: object, path: [[4.45, 3.0], [4.0, 3.8]], bounces: [], to: bm}
+    zones: []
+    caption: "Les frôleurs : deux billes en haut jouées en quart, deux billes en bas jouées en finesse, la blanche au centre."
+    alt: "Table vue de dessus : la blanche au centre ; deux billes jaunes en haut, de part et d'autre de l'axe de la poche du milieu du haut, à environ 0,4 case de l'axe, et deux billes rouges en bas, de part et d'autre de l'axe de la poche du milieu du bas, à environ une demi-case de l'axe, donc un peu plus écartées ; une bille fantôme au bord de chaque bille, côté opposé à la poche."
+training:
+  recall_slot: {weight: {children: 1, adults: 1}, passes: 1}   # exercice choisi à l'exécution parmi les séances précédentes (ADR 0011, [U] 2026-10-15)
+  exercises:
+    - id: e3
+      ref: {block: quart-finesses, n: 3}
+      diagram: entrainement-p10-e3
+      title: Deux finesses dans les coins
+      weight: {children: 1, adults: 1}
+      setup: Les jaunes du schéma près des poches d'angle du haut, une à gauche et une à droite ; deux repères de blanche à la même hauteur, plus bas sur la table, l'un sous chaque jaune, presque dans son axe vertical ; la blanche se pose sur un repère à la fois.
+      instruction: Empocher la jaune de gauche dans la poche d'angle du haut à gauche, puis celle de droite dans la poche d'angle du haut à droite, toujours en finesse ; quatre tirs par jaune.
+      expected: La blanche ne touche la jaune que par le bord, du côté opposé à la poche (côté droit de la jaune de gauche, côté gauche de la jaune de droite), et dévie à peine ; chaque jaune part vers sa poche d'angle.
+      mistakes:
+        - {symptom: La jaune est touchée trop pleine et la blanche dévie nettement, fix: Viser plus à l'extérieur de la jaune ; faire montrer le point visé sur la bille avant le tir.}
+        - {symptom: La blanche frôle la jaune sans la pousser vers la poche, fix: Garder la visée et régler le coup pour que la jaune arrive jusqu'à la poche.}
+        - {symptom: La visée passe du côté de la poche et la blanche manque la jaune, fix: "Le contact se fait sur le côté de la jaune opposé à la poche ; poser la bille fantôme de ce côté, puis la retirer avant le tir."}
+      playful:
+        hook: Chaque jaune empochée en finesse fait avancer le frôleur d'une case sur une piste dessinée au tableau.
+        challenge: Amener le frôleur à l'arrivée, à deux, en jouant à tour de rôle.
+      passes: 2
+      src: S
+    - id: e4
+      ref: {block: quart-finesses, n: 4}
+      diagram: entrainement-p10-e4
+      title: Deux finesses au milieu
+      weight: {children: 1, adults: 1}
+      setup: Les rouges du schéma juste à droite de l'axe des poches du milieu, l'une près de la bande du haut et l'autre près de la bande du bas ; un seul repère de blanche, à droite, à mi-hauteur de la table.
+      instruction: Depuis le même repère, empocher la rouge du haut dans la poche du milieu du haut, puis celle du bas dans la poche du milieu du bas, en finesse ; quatre tirs par rouge.
+      expected: Même position de blanche pour tous les tirs ; la blanche ne frôle que le bord de la rouge, et chaque rouge part vers sa poche du milieu.
+      mistakes:
+        - {symptom: La blanche manque la rouge, fix: "En finesse, les billes se touchent bien ; reprendre la visée plus près du bord de la rouge, côté du contact."}
+        - {symptom: Les deux rouges ne sont pas jouées avec la même visée, fix: Revenir au repère et faire dire à l'élève de quel côté de chaque rouge passe la ligne de visée.}
+      playful:
+        hook: Le binôme annonce « frôle » avant chaque tir, puis dit où s'est arrêtée la blanche.
+        challenge: Réussir deux tirs de suite sur la même rouge sans déplacer la blanche.
+      passes: 1
+      src: S
+game:
+  title: Les frôleurs, quart en haut et finesse en bas
+  source_game: 10
+  adapted: true
+  players: Défi seul
+  materials: "Une blanche, deux billes jaunes et deux billes rouges. Pour la variante ludique : des jetons et un tableau."
+  setup_illustration: schema-jeu
+  rules:
+    - "Mise en place : la blanche sur le point d'origine du jeu 10, au centre de la table ; les deux jaunes sur la rangée du haut, de part et d'autre de l'axe de la poche du milieu du haut, à environ 0,4 case de cet axe ; les deux rouges sur la rangée du bas, de part et d'autre de l'axe de la poche du milieu du bas, à environ une demi-case de cet axe."
+    - "Empocher chaque bille dans la poche du milieu voisine, une bille par tir : les jaunes du haut en quart de bille, les rouges du bas en finesse."
+    - La blanche est replacée sur son point d'origine après chaque tir ; les billes empochées ne sont pas replacées, toute bille non empochée est replacée sur son point d'origine.
+    - Un coup n'est pas valable si le joueur commet une faute.
+  scoring: Compter les billes empochées, une par tir.
+  end: Le défi est réalisé complètement quand le joueur a utilisé un tir pour chaque bille ; refaire une manche pour améliorer son score, sans limite de temps.
+  playful_variant: "Un joueur tire, un autre contrôle, puis on échange. Avant chaque tir, le tireur annonce « quart » ou « finesse » et montre sur la bille le point qu'il vise ; le contrôleur pose une blanche au contact de ce point (bille fantôme) puis la retire. Si le contact est juste et que la bille est empochée, le tireur gagne un jeton « frôleur » ; celui qui a le plus de jetons après deux manches gagne."
+  link_previous:
+    notion_of: quart-1
+    rule: "Exception aux règles du jeu 10 : les deux billes du haut sont jouées en quart de bille, comme à la séance précédente, avant celles du bas jouées en finesse ; le tireur annonce la quantité avant chaque tir."
+    note: "Le jeu 10 tel quel (quatorze billes sur la grille, blanche au centre) ne donne aucun tir en quart ni en finesse ; cette mise en place, calculée (quart ≈ 49° en haut, finesse ≈ 58° en bas, proche des finesses des exercices 3 et 4), rejoue le quart de bille puis la finesse. Règle facultative : le jeu 10 reste jouable sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Un binôme : un tireur, un contrôleur qui pose la bille fantôme. Commencer par les deux billes du haut, puis celles du bas. Défi sans limite de temps."
+    adults: "Après le défi, noter pour chaque bille manquée la quantité visée et la comparer au taux des exercices. Variante plus difficile : réussir les quatre billes en une seule manche, sans bille fantôme."
+  src: Prop   # jeu adapté du jeu 10 (FORMAT § 5.1) : titre, mise en place et règles sont des propositions
+review:
+  prompts:
+    - Qu'est-ce qui change entre le quart de bille et la finesse ?
+    - Où la blanche s'arrête-t-elle quand tu joues en finesse, par rapport à la bille de couleur ?
+    - Que dirais-tu à un copain pour réussir à frôler la bille sans la manquer ? Pense à la bille fantôme.
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 18, note: "Fiche technique n° 8 (finesses : visée à côté de la bille, très faible transfert, faible déviation de la blanche)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 17, note: "Fiche technique n° 7 (quart de bille, pour le rappel)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 13, note: "Fiche technique n° 3 (bille fantôme : poser la blanche au contact, puis la retirer)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 9, note: "Initiation 9 (quart de bille et finesses)"}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 10, note: "Entraînement « Quart de bille et finesses », exercices 3 et 4"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 10, note: "Jeu 10 (14 billes depuis une seule position de la blanche) : dont le jeu de la séance est adapté"}
+uncertainties:
+  - "Sections « Effleurer » et « Régler la puissance », « Lire la blanche », thème et défis : [Prop], à valider par un animateur dans l'application. Les gloses de la visée avec bille fantôme (poser puis retirer) reprennent la fiche technique n° 3."
+  - "Jeu : le jeu 10 [S] (14 billes sur la grille, blanche au centre) ne permet aucun quart ni finesse : le meilleur angle de coupe est 0° (plein) ou environ 30° (demi). Le jeu de la séance est donc un jeu adapté [Prop], inspiré de ses règles (un tir par bille, blanche replacée sur son origine, billes non empochées replacées) avec quatre billes posées pour donner un quart (angle de coupe d'environ 49°, soit 49,3°, billes à 0,37 case de l'axe) et une finesse (environ 58°, billes à 0,45 case de l'axe, une coupe proche de celle des finesses [S] des exercices 3 et 4) vers les poches du milieu, prises en (4 ; 0) et (4 ; 4) avec la blanche en (4 ; 2). Formule : fantôme G = O − s·unit(P − O) avec s = r_c + r_o (la blanche, de 48,0 mm, est plus petite que la bille de but de 50,8 mm), angle de coupe θ entre G − C et P − O (FORMAT § 6). La finesse du jeu (d ≈ 0,18 case) est au-delà du quart (0,162 case) mais en deçà de la finesse nominale du schéma de visée (0,203 case). Toutes les cotes utilisent les rayons réels (blanche 24,0 mm, bille de but 25,4 mm, s = 49,4 mm) ; la blanche est dessinée plus petite, écart à peine visible à l'échelle d'une table, d'où les légendes qui le disent. Positions calculées, non lues sur un PDF ; à valider sur une table."
+  - "Les schémas des exercices 3 et 4 sont lus approximativement : le type de chevalet n'est pas commenté sur le schéma, la séance ne l'impose pas ; la blanche n'est pas dessinée sur la table (repères)."
+  - "Initiation 9 : le schéma [S] n'est pas légendé ; l'association gauche = quart de bille et droite = finesse est déduite des deux schémas de quantité (voir la transcription du diagramme). La formule « un peu plus loin qu'au quart » vient de la fiche d'initiation n° 9."
+  - "La bille fantôme du schéma de visée est calculée pour une finesse nominale (coupe d'environ 72°, distance de visée 0,95 · s [Prop], s = r_c + r_o) ; elle ne reprend pas la position du schéma du PDF. Les finesses des exercices 3 et 4 [S] se jouent avec une coupe d'environ 55 à 60° : l'étiquette `thin` du contrôle V17 correspond à une coupe d'environ 72° (tolérance 0,07 · s), d'où un écart résiduel de plusieurs degrés avec ces finesses [S], assumé. La blanche dévie d'environ 18° dans « trajectoires-finesse » (trajet perpendiculaire à celui de la bille de couleur, sans effet, billes supposées de même masse) : tracé indicatif."
+  - "Le rappel reprend ce que quart-1 a enseigné (visée à un demi-rayon au-delà, billes qui se touchent, grande part d'énergie conservée, blanche qui va plus loin) et réutilise son illustration `visee-quart` : quart-1 doit la conserver."
