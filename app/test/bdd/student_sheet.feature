@@ -9,7 +9,7 @@ Feature: Student sheet
     When I open the sheet of {'Léa'}
     Then I see {'La puissance · exercise 2'} text
     And I see {'25 % validated'} text
-    And I see {'5 of 72 exercises validated'} text
+    And I see {'5 of 70 exercises validated'} text
 
   Scenario: The performance curve shows each attempt with a text alternative
     Given the club has the student {'Léa'} in the {'children'} audience

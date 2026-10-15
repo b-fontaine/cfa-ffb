@@ -16,6 +16,11 @@ Feature: Target on the cue ball
       | left   | Tip on the left of the cue ball     |
       | right  | Tip on the right of the cue ball    |
 
+  Scenario: The target can show a tip slightly above the centre
+    When I look at the cue ball target with the tip {'top'} slightly off centre
+    Then I see {'Tip slightly above the centre of the cue ball'} text
+    And the diagram is described as {'Target on the cue ball seen from the front: Tip slightly above the centre of the cue ball.'}
+
   Scenario: The target names the four sides of the cue ball
     When I look at the cue ball target with the tip {'center'}
     Then I see {'Top'} text

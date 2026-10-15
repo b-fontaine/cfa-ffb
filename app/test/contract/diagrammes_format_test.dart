@@ -210,11 +210,11 @@ diagrams:
     uncertainties: []
 ''';
 
-// 92 pages transcrites des PDF [S] + 2 pages proposées [Prop] (8 diagrammes).
+// 92 pages transcrites des PDF [S] + 2 pages proposées [Prop] (6 diagrammes).
 // Totaux exacts : ajouter ou retirer une page impose de mettre ces nombres à
 // jour dans le même changement.
 const _expectedFiles = 94;
-const _expectedTables = 111;
+const _expectedTables = 109;
 
 void main() {
   group('contrat FORMAT -> TableDiagramSpec', () {

@@ -1,6 +1,7 @@
 import 'package:billard_cfa/entities/session_sheet/domain/audience_weight.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_game.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_recall.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/sheet_recall_slot.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
@@ -277,6 +278,50 @@ void main() {
               rule: 'Règle.',
               note: 'Note.',
             ),
+          ),
+        ),
+        violation(InvariantCode.invalidSheet),
+      );
+    });
+
+    test('requires a recall slot from order 2 and refuses one on order 1', () {
+      expect(
+        () => buildSheet().copyWith(recallSlot: null),
+        violation(InvariantCode.invalidSheet),
+      );
+      expect(
+        () =>
+            buildSheet(
+              technique: 'posture',
+              order: 1,
+              previous: null,
+              block: 'posture',
+              exercises: [sheetExercise('e1', 1, block: 'posture')],
+            ).copyWith(
+              recallSlot: SheetRecallSlot(
+                weight: AudienceWeight(children: 1, adults: 1),
+                passes: 1,
+              ),
+            ),
+        violation(InvariantCode.invalidSheet),
+      );
+    });
+
+    test('refuses a recall slot hidden for an audience or over two passes', () {
+      expect(
+        () => buildSheet(
+          recallSlot: SheetRecallSlot(
+            weight: AudienceWeight(children: 1),
+            passes: 1,
+          ),
+        ),
+        violation(InvariantCode.invalidSheet),
+      );
+      expect(
+        () => buildSheet(
+          recallSlot: SheetRecallSlot(
+            weight: AudienceWeight(children: 1, adults: 1),
+            passes: 3,
           ),
         ),
         violation(InvariantCode.invalidSheet),

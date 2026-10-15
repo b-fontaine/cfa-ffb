@@ -6,6 +6,7 @@ import 'package:billard_cfa/entities/session_sheet/domain/sheet_exercise.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_game.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_initiation.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_recall.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/sheet_recall_slot.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_source.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_theme.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_theory.dart';
@@ -101,6 +102,7 @@ SessionSheet buildSheet({
   List<SheetExercise>? exercises,
   SheetGame? game,
   List<String> review = const ['Question ?'],
+  SheetRecallSlot? recallSlot,
 }) {
   final prev = previous == null ? null : SheetId(previous as String);
   return SessionSheet(
@@ -111,6 +113,14 @@ SessionSheet buildSheet({
     title: 'Quantité $technique',
     technicalSheets: const [5],
     previous: prev,
+    recallSlot:
+        recallSlot ??
+        (prev == null
+            ? null
+            : SheetRecallSlot(
+                weight: AudienceWeight(children: 1, adults: 1),
+                passes: 1,
+              )),
     catalogueBlock: block,
     notion: 'Viser la tangente.',
     theme: const SheetTheme(name: 'Le partage', pitch: 'Un gâteau.'),

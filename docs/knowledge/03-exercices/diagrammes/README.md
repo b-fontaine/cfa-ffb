@@ -134,12 +134,10 @@ Pas de pastille « Billard de bronze » : mention fédérale, absente des propos
 |------|----------|------|-----------------|------|----------|
 | Posture, visée et coup de queue | E1 | 1 | `proposition-p01-e1` | 3/4 | cadre |
 | Posture, visée et coup de queue | E2 | 1 | `proposition-p01-e2` | 3/4 | surface |
-| Posture, visée et coup de queue | E3 | 1 | `proposition-p01-e3` | 6/8 | surface |
+| Posture, visée et coup de queue | E3 | 1 | `proposition-p01-e3` | 4/8 | cadre près de la bande, surface ailleurs |
 | Posture, visée et coup de queue | E4 | 1 | `proposition-p01-e4` | 4/6 | non précisé (au choix) |
 | Viser pour empocher (bille fantôme) | E1 | 2 | `proposition-p02-e1` | 3/4 | cadre |
 | Viser pour empocher (bille fantôme) | E2 | 2 | `proposition-p02-e2` | 3/4 | cadre |
-| Viser pour empocher (bille fantôme) | E3 | 2 | `proposition-p02-e3` | 4/6 | surface |
-| Viser pour empocher (bille fantôme) | E4 | 2 | `proposition-p02-e4` | 4/6 | surface |
 
 #### Initiation (`initiation/`)
 

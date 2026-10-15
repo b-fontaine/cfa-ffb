@@ -1,5 +1,7 @@
 # ADR 0004 — Catalogue de séances (14 techniques, 29 séances), consultation, planification et lancement guidé
 
+> Amendement du 2026-10-15 `[U]` : la technique `bille-fantome` ne compte plus qu'une séance (exercices 1 et 2, en plein) ; le catalogue compte **28 séances**. Le reste de l'ADR est inchangé.
+
 - Statut : **accepté et implémenté** (conception 2026-10-13, lots LB à L8 livrés (L8 : docs et garde-fou rapide en `--complete`) ; le lot L9 « lien `SessionRecord` ↔ `Session` » est livré par l'[ADR 0007](0007-lien-seance-planifiee-saisie-catalogue.md)). Les décisions ci-dessous reprennent celles de l'utilisateur (plan § 9) et sont **tranchées** ; les points encore discutables sont en section 10 du plan (`../catalogue-seances-plan.md`). Une revue indépendante du code (architecture, tests, accessibilité) a été menée sur les lots livrés ; ses constats sont corrigés et les écarts à la conception d'origine sont consignés dans les décisions 7 et 13 ci-dessous. La relecture du **contenu** `[Prop]` par l'animateur se fait dans l'application (décision 7) : elle n'est pas close.
 - Numéro : 0004, car `0003-suivi-des-eleves.md` existe déjà.
 - Documents liés : format des séances `docs/knowledge/05-seances/catalogue/FORMAT.md` ; plan d'exécution `docs/engineering/catalogue-seances-plan.md`.

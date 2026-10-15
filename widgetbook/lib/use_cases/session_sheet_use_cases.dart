@@ -28,7 +28,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/preview_world.dart';
 
 // Catalogue de séances (ADR 0004, lot L4) : vues, pages et petits composants,
-// sur les 29 vraies séances de l'application.
+// sur les 28 vraies séances de l'application.
 
 const _features = '[Features]';
 const _pages = '[Pages]';

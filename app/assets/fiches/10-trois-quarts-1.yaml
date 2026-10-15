@@ -1,0 +1,239 @@
+# Séance du catalogue : « Quantité trois-quarts », partie 1/2.
+# Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
+# Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
+version: 1
+id: trois-quarts-1
+order: 10
+technique: trois-quarts
+part: 1
+title: Quantité trois-quarts
+technical_sheets: [6]
+previous: demi-bille-2
+catalogue_block: trois-quarts
+notion: Viser à mi-chemin entre le centre et la tangente de la bille de couleur pour empocher en trois-quarts.
+theme:
+  name: Le chemin du milieu
+  pitch: >-
+    Entre le centre de la bille de couleur et son bord, il y a un chemin : son
+    rayon. En trois-quarts, on le prend à mi-parcours. Au tableau, le jeton de
+    l'équipe avance d'une case à chaque bille empochée en exercice, et à chaque
+    contact jugé bon au jeu.
+recall:
+  points:
+    - En demi-bille, la blanche couvre la moitié de la bille de couleur.
+    - On vise la tangente de la bille de couleur avec le centre de la blanche, quelle que soit la poche.
+    - La bille fantôme se place collée à la bille de couleur, du côté opposé à la poche.
+    - La bille de couleur part à environ 30° de l'axe de visée.
+  question:
+    ask: En demi-bille, où vise-t-on et de combien la bille de couleur est-elle déviée ?
+    answer: On vise la tangente ; la couleur est déviée d'environ 30° par rapport à l'axe de visée.
+  # Illustration `visee-autre-cote` de la séance précédente (demi-bille-2) : la visée en demi
+  # avec bille fantôme, à comparer à `visee-trois-quarts` de cette séance.
+  reuse: {sheet: demi-bille-2, illustration: visee-autre-cote}
+  src: S
+theory:
+  sections:
+    - id: visee
+      title: Viser entre le centre et la tangente
+      weight: {children: 3, adults: 3}
+      body:
+        - Le trois-quarts est la dernière quantité de référence qui se vise sur la bille de couleur.
+        - Le point de visée est environ à égale distance du centre de la bille de couleur et de sa tangente.
+        - Le point où l'on vise et le point où les billes se touchent sont très proches.
+        - Ce point est moins précis que le centre (plein) ou la tangente (demi) ; l'expérience du plein et du demi aide à le voir.
+      adult_extra:
+        - La visée est plus aisée pour le débutant que pour les quantités plus faibles (quart, finesse), car le point de visée et le point de contact sont très proches.
+        - "Au Blackball, la blanche est un peu plus petite que la bille de couleur (fiche technique n° 4) : le trois-quarts se repère sur la bille de couleur (à mi-chemin entre son centre et sa tangente), et la bille fantôme est une blanche, dessinée à la taille de la blanche."
+        - "Lecture géométrique : la bille fantôme est la même qu'en demi (collée à la bille de couleur, côté opposé à la poche) ; c'est la ligne de tir de la blanche qui passe à mi-rayon du centre, au lieu de la tangente."
+      key_point: On vise à mi-chemin entre le centre et le bord de la bille de couleur.
+      demo: "Poser la bille fantôme (une blanche collée à la bille de couleur, côté opposé à la poche, dans l'axe de la poche), puis montrer sur la bille de couleur le point à mi-chemin du centre et du bord par lequel passe la ligne de visée de la blanche ; retirer la bille fantôme avant le tir."
+      illustrations: [contact-trois-quarts, visee-trois-quarts]
+      src: S
+    - id: mot-chemin
+      title: Le milieu du chemin
+      weight: {children: 1}
+      body:
+        - "Le chemin, c'est le rayon de la bille de couleur : la ligne qui va de son centre jusqu'à son bord."
+        - En trois-quarts, on vise le milieu du chemin. Ce chemin est dans la bille ; ce n'est pas la trajectoire de la bille.
+        - "La blanche est un peu plus petite que la bille de couleur : le chemin se mesure sur la bille de couleur, pas sur la blanche."
+      key_point: "Ni le centre, ni le bord de la bille : le milieu du rayon."
+      demo: null
+      illustrations: [visee-trois-quarts]
+      src: Prop
+    - id: energie
+      title: La couleur va plus loin
+      weight: {adults: 2}
+      body:
+        - "À l'impact, la blanche confère « les trois quarts » de son énergie à la bille de couleur (fiche technique n° 6)."
+        - La bille de couleur parcourt plus de distance que la blanche.
+        - La bille de couleur est déviée d'environ 15° par rapport à l'axe de visée.
+      adult_extra:
+        - La fiche donne environ 15° lorsque les billes sont identiques.
+      key_point: Au trois-quarts, la couleur parcourt plus que la blanche.
+      demo: "Tirer à courte distance, sans empocher : la bille de couleur va plus loin que la blanche."
+      illustrations: [deviations]
+      src: S
+    - id: comparer
+      title: Plein, demi, trois-quarts
+      weight: {children: 2, adults: 2}
+      body:
+        - "Plein : on vise le centre ; la couleur part droit, dans l'axe."
+        - "Trois-quarts : on vise à mi-chemin ; la couleur part à environ 15° et parcourt plus que la blanche."
+        - "Demi : on vise la tangente ; la couleur part à environ 30°."
+      adult_extra:
+        - "Plus la couleur part de côté, moins la blanche lui transmet d'énergie, donc moins elle va loin."
+      key_point: Plus on s'éloigne du centre, plus la couleur part de côté.
+      demo: "Tirer à courte distance, sans empocher, en trois-quarts : la bille de couleur va plus loin que la blanche."
+      illustrations: [quantites]
+      src: S
+    - id: attaque
+      title: Où frappe le procédé ?
+      weight: {adults: 1}
+      body:
+        - "Le procédé frappe la blanche en son centre, comme pour le plein et le demi-bille ; la queue reste presque à l'horizontale."
+      key_point: Procédé au centre de la blanche, comme pour le plein et le demi-bille.
+      demo: null
+      illustrations: [attaque-queue]
+      src: Prop
+    - id: fantome
+      title: "Rappel : la bille fantôme"
+      weight: {adults: 2}
+      body:
+        - L'animateur pose une blanche au contact de la bille à empocher, sur la ligne de la poche, puis la retire avant le tir.
+        - Le joueur vise le centre de la bille fantôme en plaçant le procédé au centre de la blanche.
+      key_point: Le trois-quarts se repère en regardant où la blanche touche la bille de couleur.
+      demo: null
+      illustrations: [visee-trois-quarts]
+      src: S
+initiation:
+  - id: ini-8
+    initiation_sheet: 8
+    title: Deux billes en trois-quarts
+    weight: {children: 3, adults: 3}
+    setup: La rouge dans la moitié haute à gauche, la jaune à mi-largeur à droite, chacune avec une position de blanche à courte distance, comme sur le schéma.
+    goal: "Empocher 2 billes en trois-quarts, une rouge et une jaune, en utilisant un chevalet sur la surface de jeu et un chevalet sur cadre."
+    expected: Le point de visée est entre le centre et la tangente ; la bille de couleur part vers la poche et parcourt plus que la blanche.
+    scoring: {mode: counter, of: 2}
+    illustration: schema-initiation
+    src: S
+illustrations:
+  - {id: contact-trois-quarts, type: contact, fraction: three_quarter, tip_point: center,
+     caption: "Trois-quarts : la blanche, un peu plus petite, recouvre les trois quarts de la bille de couleur ; le procédé est au centre de la blanche.",
+     alt: "Vue de dessus : la blanche arrive par la gauche et touche la bille de couleur, un peu plus grosse, qui est décalée vers le haut d'un demi-rayon par rapport à la ligne de visée ; à droite, la blanche vue de face avec le procédé au centre."}
+  - {id: visee-trois-quarts, type: ghost_aim, cue: [4.51, 3.64], object: [4.0, 1.5], pocket: tm, fraction: three_quarter,
+     caption: "La bille fantôme, de la taille de la blanche (un peu plus petite que la bille de couleur), est collée à la bille de couleur, côté opposé à la poche ; la blanche vise son centre et ne couvre que les trois quarts de la bille.",
+     alt: "Table vue de dessus : la blanche en bas à droite, la bille de couleur au centre, la poche du milieu en haut ; la bille fantôme, un cercle creux de la taille de la blanche donc un peu plus petit que la bille de couleur, est collée à celle-ci, dans l'axe de la poche, côté opposé à la poche ; une ligne de visée relie la blanche au centre de la bille fantôme, qui ne recouvre que les trois quarts de la bille de couleur ; le point de contact est marqué."}
+  - {id: quantites, type: contact_strip, fractions: [full, three_quarter, half], highlight: three_quarter,
+     caption: "Plein, trois-quarts et demi, côte à côte ; la blanche y est un peu plus petite que la bille de couleur.",
+     alt: "Trois schémas de contact alignés, vus de dessus : bille pleine, trois-quarts mis en évidence, puis demi-bille ; dans chacun la blanche, un peu plus petite, touche la bille de couleur ; une ligne sous la bande donne les diamètres de la blanche et d'une bille de but."}
+  - id: deviations
+    type: table
+    balls:
+      - {id: w-plein, color: white, at: [6.5, 3.5], role: cue}
+      - {id: r-plein, color: red, at: [6.5, 2.5]}
+      - {id: w-tq, color: white, at: [4.55, 3.5], role: cue}
+      - {id: r-tq, color: red, at: [4.5, 2.5]}
+      - {id: w-demi, color: white, at: [2.61, 3.5], role: cue}
+      - {id: r-demi, color: red, at: [2.5, 2.5]}
+    arrows:
+      - {id: a-axe-plein, ball: w-plein, kind: cue, path: [[6.5, 3.5], [6.5, 2.71]], bounces: [], label: "plein : l'axe passe par le centre"}
+      - {id: a-plein, ball: r-plein, kind: object, path: [[6.5, 2.5], [6.5, 0.0]], label: "0°"}
+      - {id: a-axe-tq, ball: w-tq, kind: cue, path: [[4.55, 3.5], [4.55, 2.71]], bounces: [], label: "trois-quarts : l'axe passe à mi-rayon du centre"}
+      - {id: a-trois-quarts, ball: r-tq, kind: object, path: [[4.5, 2.5], [3.84, 0.0]], label: "environ 15°"}
+      - {id: a-axe-demi, ball: w-demi, kind: cue, path: [[2.61, 3.5], [2.61, 2.68]], bounces: [], label: "demi : l'axe passe à un rayon du centre"}
+      - {id: a-demi, ball: r-demi, kind: object, path: [[2.5, 2.5], [1.01, 0.0]], label: "environ 30°"}
+    caption: "Trois tirs distincts, la blanche (un peu plus petite que la rouge) toujours lancée vers le haut : l'axe de visée passe par le centre de la couleur en plein (0°), à mi-rayon de la couleur en trois-quarts (environ 15°), à un rayon en demi (environ 30°). Billes et décalages sont à l'échelle de la table ; les trajectoires sont schématiques."
+    alt: "Table vue de dessus : trois tirs côte à côte, chacun avec une blanche en bas (un peu plus petite que la rouge) et une bille rouge au-dessus, la blanche allant vers le haut. À droite, la blanche est alignée sur le centre de la rouge et la rouge part droit. Au milieu, la blanche est un peu décalée à droite et la rouge part vers la gauche, inclinée d'environ 15°. À gauche, la blanche est plus décalée à droite et la rouge part vers la gauche, inclinée d'environ 30°."
+  - {id: attaque-queue, type: cue_ball_target, tip_point: center, cue_height: level,
+     caption: "Le procédé au centre de la blanche.",
+     alt: "Cible sur la blanche vue de face : deux anneaux (mi-rayon et bord) et une croix aux côtés nommés haut, bas, gauche, droite ; le procédé, dessiné à l'échelle de la blanche, touche le centre ; un petit profil montre la queue à hauteur moyenne, dont la hauteur est schématique."}
+  - {id: schema-initiation, type: diagram_ref, diagram: initiation-p08-e1,
+     caption: "Initiation 8 : une rouge et une jaune jouées en trois-quarts.",
+     alt: "Table vue de dessus : une rouge dans la moitié haute à gauche, une jaune à mi-largeur à droite, chacune avec un emplacement de blanche à courte distance ; la blanche touche chaque bille en trois-quarts."}
+  - {id: schema-jeu, type: diagram_ref, diagram: jeux-p08-g1,
+     caption: "Jeu 8 : les billes alignées, rouges et jaunes en alternance, la noire au bout ; deux tirs d'exemple, au-dessus et au-dessous de la ligne.",
+     alt: "Table vue de dessus : une ligne de billes rouges et jaunes alternées, à mi-largeur de la table, avec la noire au bout ; une blanche au-dessus de la ligne vise la première jaune vers la poche bas gauche, une blanche au-dessous vise la première rouge vers la poche haut gauche."}
+training:
+  recall_slot: {weight: {children: 1, adults: 1}, passes: 1}   # exercice choisi à l'exécution parmi les séances précédentes (ADR 0011, [U] 2026-10-15)
+  exercises:
+    - id: e1
+      ref: {block: trois-quarts, n: 1}
+      diagram: entrainement-p07-e1
+      title: Quatre billes, deux tirs chacune
+      weight: {children: 2, adults: 1}
+      setup: Les jaunes du schéma côte à côte sous la poche du milieu du haut, les rouges du schéma plus bas à droite, vers la poche haut droite ; la blanche toujours posée sur le même repère, en bas à droite.
+      instruction: Empocher chaque jaune puis chaque rouge du schéma en trois-quarts ; chaque bille est jouée deux fois.
+      expected: Chaque bille part vers sa poche ; la blanche reste sur le même repère et la visée reste à mi-chemin entre le centre et la tangente.
+      mistakes:
+        - {symptom: La bille part trop pleine, fix: "Rappeler le point de visée : un peu plus vers le bord, à mi-chemin du centre et de la tangente."}
+        - {symptom: La bille part trop mince et manque la poche, fix: "Revenir un peu vers le centre ; faire montrer le point visé sur la bille avant de tirer."}
+      playful:
+        hook: "Chaque bille empochée fait avancer le jeton de l'équipe d'une case sur le tableau (huit cases : quatre billes, deux tirs chacune)."
+        challenge: "Amener le jeton le plus loin possible au premier passage ; l'animateur fixe la case d'arrivée d'après le taux affiché de l'exercice (il n'est pas nécessaire d'atteindre la dernière case)."
+      passes: 2
+      src: S
+    - id: e2
+      ref: {block: trois-quarts, n: 2}
+      diagram: entrainement-p07-e2
+      title: Près, loin, toujours à mi-chemin
+      weight: {children: 1, adults: 1}
+      setup: La jaune de gauche et la jaune de droite du schéma sous les poches du haut ; la blanche posée tour à tour sur les repères numérotés, du plus proche au plus éloigné.
+      instruction: "Poser la blanche sur chaque repère numéroté, du 1 au 8, et empocher en trois-quarts la jaune de gauche depuis les repères impairs, celle de droite depuis les repères pairs (alternance lue sur le schéma ; les repères 7 et 8 sont au même endroit)."
+      expected: Le contact reste en trois-quarts à toute distance ; chaque jaune part vers sa poche.
+      mistakes:
+        - {symptom: La jaune manque la poche quand la blanche est loin, fix: "Garder le même point de visée, accompagner le geste sans forcer et vérifier l'alignement de la queue."}
+      playful:
+        hook: Les repères s'éloignent de la jaune ; chaque bille empochée fait avancer le jeton d'un repère, du 1 vers le 8.
+        challenge: "En binôme : le tireur annonce « trois-quarts » et montre le point visé sur la jaune ; l'observateur dit « bon » ou « à revoir » avant le tir ; on échange les rôles après chaque tir."
+      passes: 1
+      src: S
+game:
+  title: 8 billes en ligne
+  source_game: 8
+  adapted: false
+  players: Partie à 2
+  materials: "Billes du jeu complet, alignées sur une ligne (le schéma [S] la place sur l'axe de la table, à mi-largeur ; le conseil de la fiche écrit « à distance d'une mouche le long de la grande bande » sans définir la mouche : voir la mise en place proposée). Pour le défi ludique (proposition) : un tableau et des jetons."
+  setup_illustration: schema-jeu
+  rules:
+    - Vider son groupe de billes puis la noire, d'un seul côté du billard.
+    - Les joueurs tirent à tour de rôle ; la blanche est repositionnée après chaque tir pour viser en trois-quarts.
+    - Quand une bille de couleur est empochée, le joueur passe à la bille suivante ; toute bille non empochée est replacée sur son point d'origine.
+    - Un coup n'est pas valable si le joueur commet une faute.
+  scoring: Le premier qui a empoché son groupe puis la noire gagne.
+  end: "Fin quand un joueur a vidé son groupe puis empoché la noire ; en cas d'égalité, rejouer une série entière."
+  playful_variant: "Avant chaque tir, le tireur annonce « trois-quarts » et montre le point visé sur la bille ; l'adversaire dit « bon » ou « à revoir » ; si le contact est jugé bon, le tireur avance son jeton d'une case sur le tableau de six cases, sinon son jeton reste en place. Arrivé à la sixième case, le joueur peut rejouer une fois dans la partie un de ses tirs manqués."
+  link_previous:
+    notion_of: demi-bille-2
+    rule: "Exception à la règle du trois-quarts : à chaque tour de table (un tir de chaque joueur), un seul des deux tirs est joué en demi-bille, et le joueur concerné change d'un tour à l'autre (premier joueur au tour 1, second joueur au tour 2, et ainsi de suite). Pour ce tir, la blanche est posée pour une demi-bille ; le joueur annonce « demi » et son adversaire contrôle que la blanche vise bien la tangente avant le tir."
+    note: "Réactive la demi-bille de la séance précédente (jouée près et loin, des deux côtés) et permet de comparer les deux quantités ; règle facultative, le jeu 8 se joue tel quel sans elle."
+  weight: {children: 1, adults: 1}
+  adaptation:
+    children: "Version réduite proposée (la fiche ne la précise pas) : une ligne plus courte, trois rouges et trois jaunes en alternance, la noire au bout, ordre fixé de la gauche vers la droite ; un joueur les rouges, l'autre les jaunes, chacun prend ses billes dans l'ordre de la gauche vers la droite ; l'adversaire pose la blanche ; tirage au sort pour commencer ; partie limitée à 15 minutes, au-delà gagne qui a le moins de billes restantes."
+    adults: "Mise en place proposée (la fiche ne la précise pas) : ligne sur l'axe de la table comme sur le schéma, rouges et jaunes en alternance de la gauche vers la droite, la noire au bout, environ une bille d'écart entre deux billes ; un joueur les rouges, l'autre les jaunes, chacun prend ses billes dans l'ordre de la gauche vers la droite ; un tir par joueur et par tour ; l'adversaire pose la blanche, au-dessus ou au-dessous de la ligne comme les deux tirs du schéma, pour un contact en trois-quarts (environ 15° entre l'axe de visée et la direction de la bille, voir la section « La couleur va plus loin » de la théorie) ; une bille empochée ne fait pas rejouer : le joueur passe à la bille suivante de son groupe à son tour suivant. Après la partie, comparer avec le taux de l'exercice : sur quelle distance et de quel côté le trois-quarts échoue-t-il ? Variante plus difficile : jouer aussi la noire en trois-quarts."
+  src: S   # titre, règles, score et fin du jeu 8 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
+review:
+  prompts:
+    - Où vise-t-on en trois-quarts, par rapport au demi et au plein ?
+    - Quelle bille était la plus difficile en trois-quarts, et pourquoi ?
+    - Que dirais-tu à un copain pour trouver le milieu du chemin ?
+sources:
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 16, note: "Fiche technique n° 6 (trois-quarts : point de visée à égale distance du centre et de la tangente, déviation d'environ 15°)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 15, note: "Fiche technique n° 5 (demi-bille, tangente, déviation de 30°, pour le rappel)"}
+  - {rank: S, file: Fiches techniques CFA BàP.pdf, page: 13, note: "Fiche technique n° 3 (bille fantôme)"}
+  - {rank: S, file: Fiches Initiation CFA blackball.pdf, page: 8, note: Initiation 8}
+  - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 7, note: "Entraînement « La quantité trois-quarts », exercices 1 et 2"}
+  - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 8, note: Jeu 8}
+uncertainties:
+  - "Notes animateur sorties du texte élève (2026-10-15) : la fiche technique n° 6 ne parle pas de l'attaque ; les 15° sont donnés pour des billes identiques ; la fiche technique dit « les trois quarts » de l'énergie et la fiche d'initiation « deux fois plus » qu'elle n'en conserve (00-provenance : citer la fiche utilisée, ici la fiche technique) ; « plus la couleur part de côté, moins elle va loin » est une conséquence déduite, non écrite dans les fiches."
+  - "Note animateur : sur les schémas des fiches, le procédé est tantôt au centre de la blanche, tantôt un peu au-dessus (entraînement 1, un des deux encarts de l'initiation 8) ; la séance enseigne le centre, attaque de référence du niveau 1 (décision [U] du 2026-10-15), sans le dire aux élèves."
+  - "Mises en place en texte, défis ludiques, variante de jeu (jetons compris), règle de lien et adaptation du jeu : [Prop], à valider par un animateur dans l'application. La différenciation enfants / adultes (poids, compléments, adaptation du jeu) est aussi une proposition."
+  - "Le rappel porte sur la demi-bille telle que demi-bille-2 l'a enseignée dans ses sections [S] (tangente, bille fantôme côté opposé à la poche, environ 30°) et reprend son illustration `visee-autre-cote` ; ce que demi-bille-2 a ajouté en [Prop] (même visée à distance, chevalet sur cadre, lecture des erreurs) n'est volontairement pas rappelé sous une provenance [S]."
+  - "Écart entre les sources sur l'énergie transférée en trois-quarts (« les trois quarts » en fiche technique, « deux fois plus qu'elle n'en conserve » en initiation) : non harmonisé, voir la section « La couleur va plus loin » (adultes)."
+  - "L'illustration `deviations` est générée (`[Prop]`, non validée par un animateur) : trois tirs distincts, blanche décalée de 0, d'un demi-rayon et d'un rayon de la bille de couleur ; positions calculées avec les rayons réels (blanche 0.1038, bille de but 0.1098 case ; distance des centres au contact s = r_c + r_o = 0.2136), soit sin θ = d / s et des déviations de 14,9° et 30,9° ; les décalages sont petits à l'échelle de la table, les trajectoires restent schématiques."
+  - "Le chiffre d'environ 15° est donné par la fiche technique pour des billes identiques ; la blanche du Blackball est plus petite, la fiche ne le chiffre pas autrement. Avec les dimensions retenues (48,0 et 50,8 mm, `[FFB]`), le calcul `[Prop]` donne 14,9° : l'écart avec 15° est négligeable et la séance garde « environ 15° »."
+  - "Exercice 2 : le PDF ne précise pas le type de chevalet ; l'alternance gauche (repères impairs) / droite (repères pairs) est lue sur la position des numéros du schéma, l'ordre de tir n'étant pas explicite. Les repères 7 et 8 sont au même endroit : huit tirs, sept distances différentes."
+  - "Le schéma du jeu 8 [S] montre quinze billes alignées (rouges et jaunes alternées, la noire au bout, à y ≈ 2,1 donc sur l'axe de la table) et deux tirs d'exemple sans blanche pleine, sens d'exécution non précisé. Composition des groupes, ordre des billes, qui pose la blanche, un tir par tour, absence de rejeu après une bille empochée (lecture proposée de « passe à la bille suivante »), tirage au sort et limite de temps sont des propositions (adaptation)."
+  - "Le conseil de la fiche écrit « à distance d'une mouche le long de la grande bande » : « mouche » n'est défini ni par la fiche ni par le glossaire du dépôt, et le schéma place la ligne sur l'axe de la table, pas le long de la bande ; la mise en place proposée ne s'en sert pas."
+  - "La séance ne lit des fiches que le fait que les schémas montrent le procédé au centre ou un peu au-dessus de la blanche ; la fiche technique n° 6 ne traite pas de l'attaque, la section « Où frappe le procédé ? » (adultes) est une lecture de schémas [Prop]."
+  - "Initiation 8 : la fiche cite deux chevalets (surface, cadre) sans dire lequel va avec quel tir ; la séance ne l'impose pas. Les positions de la rouge (moitié haute gauche) et de la jaune (à mi-largeur, à droite) sont lues sur le schéma ; l'ordre rouge puis jaune est aussi une lecture du schéma, pas du texte de la fiche."
+  - "La section « Le milieu du chemin » (enfants) est une glose [Prop] ; l'illustration « Où frappe le procédé ? » (cible sur la blanche et profil de la queue à hauteur moyenne) est générée, non sourcée pour la hauteur de la queue : seule la position d'impact au centre est lue sur un schéma de la fiche ; le procédé y est dessiné à l'échelle de la blanche. Dans la section « Comparer », « moins elle va loin » est une conséquence déduite, présentée comme telle."

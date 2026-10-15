@@ -21,7 +21,7 @@ import '../../tool/fiches/session_rules.dart';
 
 const _assetsDir = 'assets/fiches';
 
-/// Identifiants figés des 29 séances, dans l'ordre du catalogue (FORMAT § 1.3).
+/// Identifiants figés des 28 séances, dans l'ordre du catalogue (FORMAT § 1.3).
 /// Une séance planifiée peut les référencer : ils ne changent jamais.
 const _frozenIds = [
   'posture-1',
@@ -29,7 +29,6 @@ const _frozenIds = [
   'puissance-1',
   'puissance-2',
   'bille-fantome-1',
-  'bille-fantome-2',
   'bille-pleine-1',
   'bille-pleine-2',
   'demi-bille-1',
@@ -55,7 +54,7 @@ const _frozenIds = [
   'retro-4',
 ];
 
-/// `true` depuis la fin du lot L7 (les 29 séances écrites) : la liste des
+/// `true` depuis la fin du lot L7 (les 28 séances écrites) : la liste des
 /// fichiers est exactement celle des identifiants figés.
 const _catalogueComplete = true;
 
@@ -83,7 +82,7 @@ void main() {
 
     setUpAll(() {
       pilot = parseSessionSheet(
-        File('$_assetsDir/09-demi-bille-1.yaml').readAsStringSync(),
+        File('$_assetsDir/08-demi-bille-1.yaml').readAsStringSync(),
       );
     });
 
@@ -98,7 +97,8 @@ void main() {
       expect(timing.recall, 10);
       expect(timing.theory, {'tangente': 7, 'mot-tangente': 2, 'comparer': 4});
       expect(timing.initiation, {'ini-7': 7});
-      expect(timing.exercises, {'e1': 23, 'e2': 12});
+      expect(timing.exercises, {'e1': 17, 'e2': 9});
+      expect(timing.recallExercise, 9);
       expect(timing.game, 20);
       expect(timing.review, 5);
     });
@@ -113,7 +113,8 @@ void main() {
       expect(timing.recall, 10);
       expect(timing.theory, {'tangente': 8, 'comparer': 5, 'fantome': 5});
       expect(timing.initiation, {'ini-7': 7});
-      expect(timing.exercises, {'e1': 25, 'e2': 25});
+      expect(timing.exercises, {'e1': 17, 'e2': 17});
+      expect(timing.recallExercise, 16);
       expect(timing.game, 25);
       expect(timing.review, 10);
     });
@@ -123,7 +124,7 @@ void main() {
     test('contains at least the pilot sheet', () {
       expect(
         files.map((f) => f.path.split('/').last),
-        contains('09-demi-bille-1.yaml'),
+        contains('08-demi-bille-1.yaml'),
       );
     });
 
@@ -145,7 +146,7 @@ void main() {
       expect(sheets.map((s) => s.id).toSet(), hasLength(sheets.length));
     });
 
-    test('has the 29 sheets once the writing is complete', () {
+    test('has the 28 sheets once the writing is complete', () {
       final ids = [
         for (final f in files) parseSessionSheet(f.readAsStringSync()).id.value,
       ];
@@ -154,7 +155,7 @@ void main() {
         expect(ids, _frozenIds);
       } else {
         expect(ids.length, lessThanOrEqualTo(_frozenIds.length));
-        expect(_frozenIds, hasLength(29));
+        expect(_frozenIds, hasLength(28));
       }
     });
   });

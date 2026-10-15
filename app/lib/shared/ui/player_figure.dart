@@ -9,7 +9,7 @@ import 'package:billard_cfa/shared/ui/theme/table_colors.dart';
 import 'package:flutter/material.dart';
 
 export 'package:billard_cfa/shared/lib/player_figure_layout.dart'
-    show CueBridge, HeadCase, LeadEye, PlayerMark, PlayerView;
+    show CueBridge, Handedness, HeadCase, LeadEye, PlayerMark, PlayerView;
 
 /// Joueur schématique, droitier : un pictogramme neutre (pas de visage, de
 /// sexe ni d'âge) de profil, de dessus ou des deux, avec des repères
@@ -18,7 +18,9 @@ export 'package:billard_cfa/shared/lib/player_figure_layout.dart'
 /// Les billes sont **agrandies** et non à l'échelle (la description parlée le
 /// dit). La légende est une liste hors du dessin, lisible en projection ; un
 /// repère hors de [focus] est estompé et sans ligne de légende. La
-/// géométrie est dans `PlayerFigureLayout` (`SidePose`, `TopPose`).
+/// géométrie est dans `PlayerFigureLayout` (`SidePose`, `TopPose`) ; pour un
+/// gaucher ([handedness]), le dessin est mis en miroir et la légende
+/// inverse les côtés.
 class PlayerFigure extends StatelessWidget {
   const PlayerFigure({
     this.view = PlayerView.side,
@@ -26,10 +28,14 @@ class PlayerFigure extends StatelessWidget {
     this.leadEye,
     this.headCase,
     this.bridge = CueBridge.frame,
+    this.handedness = Handedness.right,
     super.key,
   });
 
   final PlayerView view;
+
+  /// Droitier (pose calculée) ou gaucher (pose en miroir).
+  final Handedness handedness;
 
   /// Repères présentés ; les autres sont estompés et sans légende.
   final List<PlayerMark> focus;
@@ -60,14 +66,22 @@ class PlayerFigure extends StatelessWidget {
   /// Côté d'une pastille, en pixels.
   static const double badgeSize = 28;
 
-  /// Texte de légende de [mark] pour un appui de [bridge].
+  /// Texte de légende de [mark] pour un appui de [bridge] et une
+  /// latéralité [handedness] (les côtés s'inversent pour un gaucher).
   static String markText(
     AppLocalizations l10n,
     PlayerMark mark,
-    CueBridge bridge,
-  ) => switch (mark) {
-    PlayerMark.feet => l10n.playerMarkFeet,
-    PlayerMark.legsAndHips => l10n.playerMarkLegs,
+    CueBridge bridge, [
+    Handedness handedness = Handedness.right,
+  ]) => switch (mark) {
+    PlayerMark.feet => switch (handedness) {
+      Handedness.right => l10n.playerMarkFeet,
+      Handedness.left => l10n.playerMarkFeetLeft,
+    },
+    PlayerMark.legsAndHips => switch (handedness) {
+      Handedness.right => l10n.playerMarkLegs,
+      Handedness.left => l10n.playerMarkLegsLeft,
+    },
     PlayerMark.head => l10n.playerMarkHead,
     PlayerMark.backForearm => l10n.playerMarkForearm,
     PlayerMark.bridgeHand => l10n.playerMarkBridge(switch (bridge) {
@@ -101,6 +115,7 @@ class PlayerFigure extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final textStyle = theme.textTheme.bodyMedium;
     final legended = _legended;
+    final mirrored = handedness == Handedness.left;
     final viewName = switch (view) {
       PlayerView.side => l10n.playerViewSide,
       PlayerView.top => l10n.playerViewTop,
@@ -108,7 +123,7 @@ class PlayerFigure extends StatelessWidget {
     };
     final marks = [
       for (final mark in legended)
-        '${mark.number}. ${markText(l10n, mark, bridge)}',
+        '${mark.number}. ${markText(l10n, mark, bridge, handedness)}',
     ];
     final eye = markedEye;
     final leadEyeShown =
@@ -124,9 +139,16 @@ class PlayerFigure extends StatelessWidget {
           _SidePainter(bridge: bridge, focus: focus, colors: colors),
       badges: [
         for (final mark in PlayerMark.values)
-          (mark: mark, at: _toUnit(SidePose.of(bridge).badgeOf(mark))),
+          (
+            mark: mark,
+            at: _mirror(
+              _toUnit(SidePose.of(bridge).badgeOf(mark)),
+              x: mirrored,
+            ),
+          ),
       ],
       focus: focus,
+      flipX: mirrored,
     );
     Widget top() => _Figure(
       key: const ValueKey('player-figure-top'),
@@ -142,14 +164,20 @@ class PlayerFigure extends StatelessWidget {
         for (final mark in TopPose.visibleMarks)
           (
             mark: mark,
-            at: Offset(TopPose.badgeOf(mark).x, TopPose.badgeOf(mark).y),
+            at: _mirror(
+              Offset(TopPose.badgeOf(mark).x, TopPose.badgeOf(mark).y),
+              y: mirrored,
+            ),
           ),
       ],
       focus: focus,
+      flipY: mirrored,
     );
 
     return Semantics(
-      label: l10n.playerFigureLabel(viewName, marks.join('. ')),
+      label: mirrored
+          ? l10n.playerFigureLeftLabel(viewName, marks.join('. '))
+          : l10n.playerFigureLabel(viewName, marks.join('. ')),
       container: true,
       excludeSemantics: true,
       child: Column(
@@ -184,7 +212,7 @@ class PlayerFigure extends StatelessWidget {
             _LegendRow(
               key: ValueKey('player-legend-${mark.number}'),
               number: mark.number,
-              text: markText(l10n, mark, bridge),
+              text: markText(l10n, mark, bridge, handedness),
             ),
           if (_hasTop && headCase != null)
             Padding(
@@ -205,6 +233,12 @@ class PlayerFigure extends StatelessWidget {
       ),
     );
   }
+
+  /// Miroir d'une position en fractions du cadre : `x` pour la vue de
+  /// profil (le gaucher regarde vers la gauche), `y` pour la vue de dessus
+  /// (sa droite est en haut).
+  static Offset _mirror(Offset at, {bool x = false, bool y = false}) =>
+      Offset(x ? 1 - at.dx : at.dx, y ? 1 - at.dy : at.dy);
 
   /// Position d'un point en unités de H dans le cadre de la vue de profil
   /// (fractions de la largeur et de la hauteur, `y` vers le bas).
@@ -260,8 +294,15 @@ class _Figure extends StatelessWidget {
     required this.painter,
     required this.badges,
     required this.focus,
+    this.flipX = false,
+    this.flipY = false,
     super.key,
   });
+
+  /// Miroir du dessin (gaucher) ; les pastilles sont placées en miroir par
+  /// l'appelant, leur chiffre reste lisible.
+  final bool flipX;
+  final bool flipY;
 
   final double aspect;
   final CustomPainter Function(_FigureColors colors) painter;
@@ -282,7 +323,13 @@ class _Figure extends StatelessWidget {
             return Stack(
               clipBehavior: Clip.none,
               children: [
-                Positioned.fill(child: CustomPaint(painter: painter(colors))),
+                Positioned.fill(
+                  child: Transform.flip(
+                    flipX: flipX,
+                    flipY: flipY,
+                    child: CustomPaint(painter: painter(colors)),
+                  ),
+                ),
                 for (final badge in badges)
                   Positioned(
                     left: badge.at.dx * w - PlayerFigure.badgeSize / 2,
@@ -413,9 +460,10 @@ class _SidePainter extends CustomPainter {
     canvas
       ..drawRect(slab, Paint()..color = colors.table.rail)
       ..drawRect(slab, stroke(colors.stroke, line));
-    // Le rail va jusqu'au bord de la main de chevalet (qui s'y appuie).
+    // Le rail va jusqu'au bord de la main de chevalet (qui s'y appuie) ; sur
+    // le cadre, la blanche est à 0,10 H de son bord.
     final railRight = bridge == CueBridge.frame
-        ? math.max(0.92, pose.bridgeHand.x + SidePose.handRadius)
+        ? math.max(0.95, pose.bridgeHand.x + SidePose.handRadius)
         : 0.92;
     final cloth = Rect.fromPoints(xy(railRight, 0.48), xy(f.right, 0.465));
     canvas.drawRect(cloth, Paint()..color = colors.balls.cloth);

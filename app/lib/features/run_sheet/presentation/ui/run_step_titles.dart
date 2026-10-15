@@ -25,6 +25,10 @@ String runStepTitle(AppLocalizations l10n, RunPlan plan, RunStep step) {
       plan.exerciseOf(step)?.ref.number ?? 0,
       plan.exerciseOf(step)?.title ?? '',
     ),
+    RunStepKind.recallExercise => l10n.guideRecallExerciseHeading(
+      plan.exerciseOf(step)?.ref.number ?? 0,
+      plan.exerciseOf(step)?.title ?? '',
+    ),
     RunStepKind.game => sheet.game.title,
     RunStepKind.review => l10n.suggestPhaseReview,
   };

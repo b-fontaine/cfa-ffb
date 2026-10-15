@@ -127,6 +127,44 @@
   "tipPointTopRight": "Tip at the top right of the cue ball",
   "tipPointBottomLeft": "Tip at the bottom left of the cue ball",
   "tipPointBottomRight": "Tip at the bottom right of the cue ball",
+  "tipPointTopSlight": "Tip slightly above the centre of the cue ball",
+  "tipPointBottomSlight": "Tip slightly below the centre of the cue ball",
+  "tipPointLeftSlight": "Tip slightly left of the centre of the cue ball",
+  "tipPointRightSlight": "Tip slightly right of the centre of the cue ball",
+  "contactPathsLabel": "After the contact, the colour ball deviates by about {colour}° and the cue ball by about {cue}°",
+  "@contactPathsLabel": {
+    "placeholders": {
+      "colour": {
+        "type": "int"
+      },
+      "cue": {
+        "type": "int"
+      }
+    }
+  },
+  "contactPathsFullLabel": "After the contact, the colour ball goes straight ahead and the cue ball stops",
+  "contactDiagramPathsLabel": "{contact}; {tip}; {paths}",
+  "@contactDiagramPathsLabel": {
+    "placeholders": {
+      "contact": {
+        "type": "String"
+      },
+      "tip": {
+        "type": "String"
+      },
+      "paths": {
+        "type": "String"
+      }
+    }
+  },
+  "contactDegrees": "≈ {deg}°",
+  "@contactDegrees": {
+    "placeholders": {
+      "deg": {
+        "type": "int"
+      }
+    }
+  },
   "contactDiagramLabel": "{contact}; {tip}",
   "@contactDiagramLabel": {
     "placeholders": {
@@ -1252,6 +1290,15 @@
     }
   },
   "ghostBallName": "Ghost ball",
+  "ghostAimInsetLabel": "Magnified view of the contact: the ghost ball, the size of the cue ball, touches the object ball; the dot marks the contact.",
+  "ghostAimInsetCaption": "Magnified ×{zoom}: the contact",
+  "@ghostAimInsetCaption": {
+    "placeholders": {
+      "zoom": {
+        "type": "int"
+      }
+    }
+  },
   "ghostAimLabel": "Ghost ball, {fraction}: the cue ball aims at the point where it touches the object ball to send it into the {pocket}.",
   "@ghostAimLabel": {
     "placeholders": {
@@ -1338,6 +1385,19 @@
   "playerViewSide": "side view",
   "playerViewTop": "view from above",
   "playerViewBoth": "side view and view from above",
+  "playerMarkFeetLeft": "Feet: neither too close nor too far apart; the left foot under the hand that holds the cue (left-handed)",
+  "playerMarkLegsLeft": "Legs and hips: hips turned slightly to the right; left leg straight and right leg bent, or right leg forward with both bent (left-handed)",
+  "playerFigureLeftLabel": "Schematic figure of a left-handed player (a right-handed one mirrored), {view}, balls not to scale. Marks: {marks}",
+  "@playerFigureLeftLabel": {
+    "placeholders": {
+      "view": {
+        "type": "String"
+      },
+      "marks": {
+        "type": "String"
+      }
+    }
+  },
   "playerMarkFeet": "Feet: neither too close nor too far apart; the right foot under the hand that holds the cue",
   "playerMarkLegs": "Legs and hips: hips turned slightly to the left; right leg straight and left leg bent, or left leg forward with both bent",
   "playerMarkHead": "Head: in line with the cue, the lead eye above it",
@@ -1962,6 +2022,37 @@
       }
     }
   },
+  "guideRecallExerciseHeading": "Recall · Exercise {number} · {title}",
+  "@guideRecallExerciseHeading": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "guideRecallFrom": "From {sheet}",
+  "@guideRecallFrom": {
+    "placeholders": {
+      "sheet": {
+        "type": "String"
+      }
+    }
+  },
+  "guideRecallPending": "{pending, plural, =0{All {students} followed students have already validated it: revision.} =1{1 student of {students} has not validated it yet.} other{{pending} students of {students} have not validated it yet.}}",
+  "@guideRecallPending": {
+    "placeholders": {
+      "pending": {
+        "type": "int"
+      },
+      "students": {
+        "type": "int"
+      }
+    }
+  },
+  "guideRecallNoStudents": "No student followed: the last exercise of the previous session is proposed.",
   "guideBackToGuide": "Back to the guided session",
   "guideCount": "{count} of {total} successes",
   "@guideCount": {

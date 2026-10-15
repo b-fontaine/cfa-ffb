@@ -222,6 +222,7 @@ class _StepContent extends StatelessWidget {
                 specs: specs,
               );
       case RunStepKind.exercise:
+      case RunStepKind.recallExercise:
         final exercise = plan.exerciseOf(step);
         return exercise == null
             ? const SizedBox.shrink()
@@ -492,23 +493,57 @@ class _ExerciseStep extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final spec = plan.exerciseSpecs[exercise.id];
+    final spec = plan.specOf(step);
     final diagram = specs[exercise.diagramId];
-    final blockTitle = plan.blockTitle;
+    final recall = step.kind == RunStepKind.recallExercise
+        ? plan.recallExercise
+        : null;
+    final blockTitle = recall == null ? plan.blockTitle : plan.recallBlockTitle;
     return _StepLayout(
-      title: l10n.sheetExerciseHeading(exercise.ref.number, exercise.title),
+      title: recall == null
+          ? l10n.sheetExerciseHeading(exercise.ref.number, exercise.title)
+          : l10n.guideRecallExerciseHeading(
+              exercise.ref.number,
+              exercise.title,
+            ),
       minutes: step.minutes,
       badges: [
-        Text(
-          l10n.guideExerciseOf(
-            plan.exerciseIndexOf(step) ?? 1,
-            plan.exerciseCount,
-          ),
-          style: theme.textTheme.labelLarge,
+        if (recall == null)
+          Text(
+            l10n.guideExerciseOf(
+              plan.exerciseIndexOf(step) ?? 1,
+              plan.exerciseCount,
+            ),
+            style: theme.textTheme.labelLarge,
+          )
+        else
+          Text(l10n.sheetPhaseRecall, style: theme.textTheme.labelLarge),
+        _Source(
+          element: recall == null
+              ? 'exercise:${exercise.id}'
+              : 'recall-exercise:${exercise.ref.blockId}-'
+                    '${exercise.ref.number}',
+          provenance: exercise.src,
         ),
-        _Source(element: 'exercise:${exercise.id}', provenance: exercise.src),
       ],
       lead: [
+        if (recall != null) ...[
+          _Line(
+            l10n.guideRecallFrom(
+              l10n.sheetFullTitle(
+                recall.origin.title,
+                recall.origin.part,
+                plan.recallOriginPartCount ?? recall.origin.part,
+              ),
+            ),
+            style: theme.textTheme.titleMedium,
+          ),
+          _Line(
+            recall.students == 0
+                ? l10n.guideRecallNoStudents
+                : l10n.guideRecallPending(recall.pending, recall.students),
+          ),
+        ],
         if (spec != null) ...[
           _Line(
             l10n.sheetRequired(spec.rate.successes, spec.rate.attempts),

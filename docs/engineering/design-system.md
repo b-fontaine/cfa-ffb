@@ -550,7 +550,7 @@ l'identifiant est bien formé mais inconnu.
 
 Use case **« Galerie des illustrations »** (`[Design system]/Illustrations`) :
 les 12 types côte à côte, chacun avec sa légende. Les illustrations du pilote
-`09-demi-bille-1.yaml` sont lues par le vrai parseur (`parseSessionSheet`) et
+`08-demi-bille-1.yaml` sont lues par le vrai parseur (`parseSessionSheet`) et
 résolues dans la vraie bibliothèque de schémas ; les types que le pilote
 n'utilise pas (`table`, `cue_ball_target`, `player_figure`, `contact_height`,
 `power_ratio`,

@@ -243,6 +243,23 @@ void main() {
     );
 
     blocTest<RecordResultsBloc, RecordResultsState>(
+      'preselects an exercise of another block when it is named (recall)',
+      build: () {
+        when(() => overview(sessionId))
+            .thenAnswer((_) async => Ok(overviewOf(main: 'b')));
+        return build();
+      },
+      act: (bloc) => bloc.add(
+        const RecordResultsEvent.started(
+          sessionId: sessionId,
+          initialExercise: 1,
+          initialBlock: 'a',
+        ),
+      ),
+      verify: (bloc) => expect(bloc.state.exercise, ref('a', 1)),
+    );
+
+    blocTest<RecordResultsBloc, RecordResultsState>(
       'ignores an exercise number without a main block',
       build: () {
         when(() => overview(sessionId))

@@ -21,7 +21,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/preview_world.dart';
 
 // Séance guidée (ADR 0004, lot L6) : la vue d'étape, la présentation aux
-// élèves et leurs pages, sur les 29 vraies séances de l'application.
+// élèves et leurs pages, sur les 28 vraies séances de l'application.
 
 const _features = '[Features]';
 const _pages = '[Pages]';
@@ -138,7 +138,7 @@ Widget buildSheetGuidePageUseCase(BuildContext context) {
           onBack: () {},
           onHome: () {},
           onShow: (_) {},
-          onRecord: (_, _, _) {},
+          onRecord: (_, _, _, _) {},
           onFinish: () {},
           onStepChanged: (_) {},
         ),

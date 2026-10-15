@@ -12,12 +12,13 @@ void main() {
   group('with the real asset', () {
     final repository = AssetCatalogueRepository.fromBundle();
 
-    test('loads 15 blocks and 72 exercises', () async {
+    test('loads 15 blocks and 70 exercises', () async {
       final catalogue = await repository.load();
 
-      // 13 blocs [S] (64 exercices) + 2 blocs [Prop] de 4 exercices.
+      // 13 blocs [S] (64 exercices) + 2 blocs [Prop] : posture (4 exercices)
+      // et bille fantôme (2 exercices depuis la décision [U] du 2026-10-15).
       expect(catalogue.blocks, hasLength(15));
-      expect(catalogue.exercises, hasLength(72));
+      expect(catalogue.exercises, hasLength(70));
     });
 
     test('proposes exactly the posture and ghost ball blocks [Prop]', () async {
@@ -26,7 +27,11 @@ void main() {
 
       expect(proposals.map((b) => b.id), ['posture', 'bille-fantome']);
       for (final block in proposals) {
-        expect(block.exercises, hasLength(4), reason: block.id);
+        expect(
+          block.exercises,
+          hasLength(block.id == 'posture' ? 4 : 2),
+          reason: block.id,
+        );
         expect(
           block.exercises.map((e) => e.source),
           everyElement(Provenance.prop),

@@ -1,8 +1,8 @@
 # Format des séances du catalogue
 
-Statut : **proposé (2026-10-13), révisé après les décisions de l'utilisateur** (voir `docs/engineering/adr/0004-catalogue-fiches-seances.md`). **29 séances rédigées** (lot L7), `fiches.dart --complete` vert ; le pilote `09-demi-bille-1.yaml` (section 9) reste le modèle normatif. Les éléments `[Prop]` restent à valider par l'animateur.
+Statut : **proposé (2026-10-13), révisé après les décisions de l'utilisateur** (voir `docs/engineering/adr/0004-catalogue-fiches-seances.md`). **28 séances rédigées** (lot L7, puis retrait de `bille-fantome-2` le 2026-10-15, décision `[U]`), `fiches.dart --complete` vert ; le pilote `08-demi-bille-1.yaml` (section 9) reste le modèle normatif. Les éléments `[Prop]` restent à valider par l'animateur.
 
-Le catalogue compte **14 techniques**. Chaque technique est enseignée en **une ou plusieurs séances** (ses « parties »), soit **29 séances** au total. Une séance décrit **une partie d'une technique** pour **les deux publics** ; elle est lue par l'application en lecture seule (asset copié par `scripts/sync_fiches.sh`), contrôlée par `app/tool/fiches.dart` (`cd app && dart run tool/fiches.dart [--complete]`, paquet `yaml` de l'application, comme `tool/diagrammes.dart` ; `scripts/` n'a pas de `pubspec.yaml` et n'est que `dart:io`) et par un test de contrat Dart sur les vrais fichiers (V12 n'y est vérifiée que par ce test, car elle lit du code de `app/lib` ; V17 l'est aussi par l'outil, qui importe la géométrie pure de `app/lib/shared/lib`).
+Le catalogue compte **14 techniques**. Chaque technique est enseignée en **une ou plusieurs séances** (ses « parties »), soit **28 séances** au total. Une séance décrit **une partie d'une technique** pour **les deux publics** ; elle est lue par l'application en lecture seule (asset copié par `scripts/sync_fiches.sh`), contrôlée par `app/tool/fiches.dart` (`cd app && dart run tool/fiches.dart [--complete]`, paquet `yaml` de l'application, comme `tool/diagrammes.dart` ; `scripts/` n'a pas de `pubspec.yaml` et n'est que `dart:io`) et par un test de contrat Dart sur les vrais fichiers (V12 n'y est vérifiée que par ce test, car elle lit du code de `app/lib` ; V17 l'est aussi par l'outil, qui importe la géométrie pure de `app/lib/shared/lib`).
 
 Règle d'or : **ne rien inventer qui se présente comme officiel**. Le contenu sourcé est repris des sources (`[S]` PDF, `[FFB]`, `[Web]`). Le ludique, le minutage, les jeux adaptés et les blocs d'entraînement ajoutés (posture, bille fantôme) sont `[Prop]`, déclarés comme tels et **affichés comme tels, élément par élément, dans l'application** (section 5).
 
@@ -27,7 +27,7 @@ Tableau **calculé depuis `catalogue-entrainement.yaml` après ajout des deux bl
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1 | `posture` | Posture, visée et coup de queue | 1 | `posture` `[Prop]` | 1-4 (4) | 1-2 | **2** | 1-2 / 3-4 | 1-4 | 1 (variante 2) `[S]` |
 | 2 | `puissance` | La puissance | 2 | `puissance` | 1-4 (4) | 1-2 | **2** | 1-2 / 3-4 | 5 | 3 (ou 4, 5) `[S]` |
-| 3 | `bille-fantome` | Viser pour empocher (bille fantôme) | 3 | `bille-fantome` `[Prop]` | 1-4 (4) | 1-2 | **2** | 1-2 / 3-4 | aucune | `[Prop]` d'après jeu 1 |
+| 3 | `bille-fantome` | Viser pour empocher (bille fantôme) | 3 | `bille-fantome` `[Prop]` | 1-2 (2) | 1-1 | **1** | 1-2 | aucune | `[Prop]` d'après jeu 1 |
 | 4 | `bille-pleine` | Quantité de bille pleine | 4 | `bille-pleine` | 1-4 (4) | 2-3 | **2** | 1-2 / 3-4 | 6 | 6 `[S]` |
 | 5 | `demi-bille` | Quantité demi-bille | 5 | `demi-bille` | 1-4 (4) | 2-3 | **2** | 1-2 / 3-4 | 7 | 7 `[S]` |
 | 6 | `trois-quarts` | Quantité trois-quarts de bille | 6 | `trois-quarts` | 1-4 (4) | 1-2 | **2** | 1-2 / 3-4 | 8 | 8 `[S]` |
@@ -40,13 +40,13 @@ Tableau **calculé depuis `catalogue-entrainement.yaml` après ajout des deux bl
 | 13 | `angle-droit` | Le coup à angle droit | 13 | `angle-droit` | 1-4 (4) | 2-3 | **2** | 1-2 / 3-4 | 16 | `[Prop]` d'après jeu 14 |
 | 14 | `retro` | Le rétro | 14 | `retro` | 1-10 (10) | 3-4 | **4** | 1-3 / 4-6 / 7-8 / 9-10 | 17-19 | `[Prop]` d'après jeu 14 |
 
-Total : **29 séances**. Les blocs `posture` et `bille-fantome` **existent** dans `catalogue-entrainement.yaml` (lot LB, `source: Prop`, 4 exercices chacun, `sessions: {min: 1, max: 2}`) ; le tableau a été **recalculé depuis le fichier du catalogue le 2026-10-13** (15 blocs, 72 exercices : 29 parties, résultat identique). Si le catalogue change, ce tableau est recalculé. `quart` et `finesse` ont une partie chacune : leur somme (2) respecte le maximum du bloc partagé (2). Les blocs `quantites-de-billes` et `trajectoires-blanche` ne sont pas des techniques : ils peuvent servir de rappel transversal ou d'exercice de synthèse, jamais de séance propre.
+Total : **28 séances**. Les blocs `posture` et `bille-fantome` **existent** dans `catalogue-entrainement.yaml` (lot LB, `source: Prop` ; posture : 4 exercices, `sessions: {min: 1, max: 2}` ; bille fantôme : 2 exercices, `sessions: {min: 1, max: 1}` depuis la décision `[U]` du 2026-10-15) ; le tableau a été **recalculé depuis le fichier du catalogue le 2026-10-15** (15 blocs, 70 exercices : 28 parties). Si le catalogue change, ce tableau est recalculé. `quart` et `finesse` ont une partie chacune : leur somme (2) respecte le maximum du bloc partagé (2). Les blocs `quantites-de-billes` et `trajectoires-blanche` ne sont pas des techniques : ils peuvent servir de rappel transversal ou d'exercice de synthèse, jamais de séance propre.
 
 Jeux : une séance d'une technique à plusieurs parties reprend le jeu source de la technique **avec une autre variante** (`playful_variant`, V23), ou un jeu voisin `[S]` ; le choix est fait à la rédaction.
 
-### 1.3 Séances (29) et fichiers
+### 1.3 Séances (28) et fichiers
 
-Un fichier par séance : `docs/knowledge/05-seances/catalogue/NN-<technique>-<k>.yaml`, `NN` = `order` sur 2 chiffres, de 01 à 29, sans trou.
+Un fichier par séance : `docs/knowledge/05-seances/catalogue/NN-<technique>-<k>.yaml`, `NN` = `order` sur 2 chiffres, de 01 à 28, sans trou.
 
 | order | `id` | Exercices (`ref.n`) | `previous` |
 |---|---|---|---|
@@ -55,34 +55,33 @@ Un fichier par séance : `docs/knowledge/05-seances/catalogue/NN-<technique>-<k>
 | 3 | `puissance-1` | 1-2 | `posture-2` |
 | 4 | `puissance-2` | 3-4 | `puissance-1` |
 | 5 | `bille-fantome-1` | 1-2 | `puissance-2` |
-| 6 | `bille-fantome-2` | 3-4 | `bille-fantome-1` |
-| 7 | `bille-pleine-1` | 1-2 | `bille-fantome-2` |
-| 8 | `bille-pleine-2` | 3-4 | `bille-pleine-1` |
-| 9 | `demi-bille-1` | 1-2 | `bille-pleine-2` |
-| 10 | `demi-bille-2` | 3-4 | `demi-bille-1` |
-| 11 | `trois-quarts-1` | 1-2 | `demi-bille-2` |
-| 12 | `trois-quarts-2` | 3-4 | `trois-quarts-1` |
-| 13 | `quart-1` | 1-2 | `trois-quarts-2` |
-| 14 | `finesse-1` | 3-4 | `quart-1` |
-| 15 | `rebond-bande-1` | 1-2 | `finesse-1` |
-| 16 | `rebond-bande-2` | 3-4 | `rebond-bande-1` |
-| 17 | `rejet-naturel-1` | 1-2 | `rebond-bande-2` |
-| 18 | `rejet-naturel-2` | 3-4 | `rejet-naturel-1` |
-| 19 | `coule-1` | 1-3 | `rejet-naturel-2` |
-| 20 | `coule-2` | 4-6 | `coule-1` |
-| 21 | `coule-3` | 7-8 | `coule-2` |
-| 22 | `carreau-1` | 1-2 | `coule-3` |
-| 23 | `carreau-2` | 3-4 | `carreau-1` |
-| 24 | `angle-droit-1` | 1-2 | `carreau-2` |
-| 25 | `angle-droit-2` | 3-4 | `angle-droit-1` |
-| 26 | `retro-1` | 1-3 | `angle-droit-2` |
-| 27 | `retro-2` | 4-6 | `retro-1` |
-| 28 | `retro-3` | 7-8 | `retro-2` |
-| 29 | `retro-4` | 9-10 | `retro-3` |
+| 6 | `bille-pleine-1` | 1-2 | `bille-fantome-1` |
+| 7 | `bille-pleine-2` | 3-4 | `bille-pleine-1` |
+| 8 | `demi-bille-1` | 1-2 | `bille-pleine-2` |
+| 9 | `demi-bille-2` | 3-4 | `demi-bille-1` |
+| 10 | `trois-quarts-1` | 1-2 | `demi-bille-2` |
+| 11 | `trois-quarts-2` | 3-4 | `trois-quarts-1` |
+| 12 | `quart-1` | 1-2 | `trois-quarts-2` |
+| 13 | `finesse-1` | 3-4 | `quart-1` |
+| 14 | `rebond-bande-1` | 1-2 | `finesse-1` |
+| 15 | `rebond-bande-2` | 3-4 | `rebond-bande-1` |
+| 16 | `rejet-naturel-1` | 1-2 | `rebond-bande-2` |
+| 17 | `rejet-naturel-2` | 3-4 | `rejet-naturel-1` |
+| 18 | `coule-1` | 1-3 | `rejet-naturel-2` |
+| 19 | `coule-2` | 4-6 | `coule-1` |
+| 20 | `coule-3` | 7-8 | `coule-2` |
+| 21 | `carreau-1` | 1-2 | `coule-3` |
+| 22 | `carreau-2` | 3-4 | `carreau-1` |
+| 23 | `angle-droit-1` | 1-2 | `carreau-2` |
+| 24 | `angle-droit-2` | 3-4 | `angle-droit-1` |
+| 25 | `retro-1` | 1-3 | `angle-droit-2` |
+| 26 | `retro-2` | 4-6 | `retro-1` |
+| 27 | `retro-3` | 7-8 | `retro-2` |
+| 28 | `retro-4` | 9-10 | `retro-3` |
 
 La séance précédente d'une séance de partie `k > 1` est la partie `k - 1` ; celle d'une partie 1 est **la dernière partie de la technique précédente**.
 
-Cette structure (techniques, bloc, plage d'exercices pour `quart`/`finesse`, fiches techniques, fiches d'initiation) est **aussi codée dans `app/tool/fiches.dart`** ; le nombre de parties et la répartition sont **calculés** depuis le catalogue. C'est ce qui permet de valider une séance isolée tant que les 29 ne sont pas écrites (V2, V3 et mode `--complete`). Les `id` ne sont jamais renommés ni supprimés (une séance planifiée les référence) ; si le catalogue change et modifie le nombre de parties, le tableau et les fichiers sont mis à jour dans le même changement.
+Cette structure (techniques, bloc, plage d'exercices pour `quart`/`finesse`, fiches techniques, fiches d'initiation) est **aussi codée dans `app/tool/fiches.dart`** ; le nombre de parties et la répartition sont **calculés** depuis le catalogue. C'est ce qui permet de valider une séance isolée tant que les 28 ne sont pas écrites (V2, V3 et mode `--complete`). Les `id` ne sont jamais renommés ni supprimés (une séance planifiée les référence ; seule exception : `bille-fantome-2`, retirée le 2026-10-15 avant toute donnée de production) ; si le catalogue change et modifie le nombre de parties, le tableau et les fichiers sont mis à jour dans le même changement.
 
 ## 2. Convention générale
 
@@ -97,7 +96,7 @@ Cette structure (techniques, bloc, plage d'exercices pour `quart`/`finesse`, fic
 ```yaml
 version: 1
 id: <technique>-<k>               # a-z, 0-9, tiret ; stable à vie ; unique
-order: 1..29                      # rang global dans le catalogue (section 1.3)
+order: 1..28                      # rang global dans le catalogue (section 1.3)
 technique: <slug>                 # une des 14 techniques de la section 1.2
 part: <k>                         # 1..parties de la technique
 title: <titre de la technique>    # identique pour toutes les parties ; « séance k/n » ajouté à l'affichage
@@ -138,6 +137,7 @@ initiation:                       # phase notionAndInitiation (2e partie, facult
 illustrations:                    # liste fermée de types, voir section 6
   - {id: <slug local>, type: <type>, ...params, caption: <légende affichée>, alt: <texte alternatif>}
 training:                         # phase training
+  recall_slot: {weight: {children: <n>, adults: <n>}, passes: 1|2}   # créneau d'exercice de rappel, obligatoire pour order > 1, interdit pour order 1 (V28, ADR 0011) ; l'exercice est choisi à l'exécution parmi les séances précédentes d'après le suivi des élèves
   exercises:
     - id: <slug local>
       ref: {block: <blockId>, n: <n>}           # ExerciseRef du catalogue ; obligatoire ; n dans la tranche de la séance (section 1.3)
@@ -182,7 +182,7 @@ Un exercice d'entraînement a **toujours** un `ref` (tous les blocs existent, y 
 | `counter` | `of: <n>` | « réussis sur n essais » compté pendant la séance | non, éphémère |
 | `checklist` | `criteria: [<critères observables>]` | cases « acquis / à retravailler » | non, éphémère |
 
-Les exercices du catalogue sont notés par `RecordAttempt` : taux, chevalet, mention bronze, plafond (2 passages par élève, exercice et séance) et validation (5 passages réussis par défaut) y sont lus ou appliqués ; la séance ne les redéclare jamais.
+Les exercices du catalogue sont notés par `RecordAttempt` : taux, chevalet, mention bronze, plafond (2 passages par élève, exercice et séance) et validation (5 passages réussis par défaut) y sont lus ou appliqués ; la séance ne les redéclare jamais. Les passages se **cumulent sur la saison** grâce au créneau de rappel (`recall_slot`, ADR 0011) : chaque séance dès la 2e rejoue un exercice des séances précédentes que le plus d'élèves n'ont pas encore validé.
 
 ## 4. Phases et minutage (calculé, jamais écrit)
 
@@ -190,7 +190,7 @@ Les exercices du catalogue sont notés par `RecordAttempt` : taux, chevalet, men
 |---|---|---|
 | `welcome` | `recall` (le rappel occupe toute la phase) | 10 / 10 |
 | `notionAndInitiation` | `theory.sections` puis `initiation` | 20 / 25 |
-| `training` | `training.exercises` | 35 / 50 |
+| `training` | `training.exercises` puis `training.recall_slot` (dernière étape de la phase, ADR 0011) | 35 / 50 |
 | `game` | `game` | 20 / 25 |
 | `review` | `review` | 5 / 10 |
 
@@ -237,7 +237,7 @@ L'application calcule, pour chaque séance, des **motifs** `[Prop]` (fonction pu
 
 Les éléments `[Prop]` par définition (thème, défis, variante, poids, minutes) sont badgés en contexte mais ne sont pas des motifs. Une **glose** (section de théorie `[Prop]` réservée aux enfants, c'est-à-dire sans poids adulte) n'en est pas un non plus.
 
-*Mesure sur les 29 séances* (2026-10-13) : en comptant toute la théorie `[Prop]`, **29 séances sur 29** étaient « à valider » (24 avec une théorie adulte `[Prop]`, 16 avec une règle de lien sur un jeu sourcé) : l'indicateur et le filtre ne discriminaient rien. Avec la règle ci-dessus : **18 séances « à valider »**, dont **12 pour le jeu** (filtre « Jeux à valider »). Le décompte est vérifié par le scénario du catalogue réel (`session_catalogue.feature`).
+*Mesure sur les 29 séances* (2026-10-13) : en comptant toute la théorie `[Prop]`, **29 séances sur 29** étaient « à valider » (24 avec une théorie adulte `[Prop]`, 16 avec une règle de lien sur un jeu sourcé) : l'indicateur et le filtre ne discriminaient rien. Avec la règle ci-dessus : **18 séances « à valider »**, dont **12 pour le jeu** (filtre « Jeux à valider »). Le décompte est vérifié par le scénario du catalogue réel (`session_catalogue.feature`). *Recompte du 2026-10-15*, après le retrait de `bille-fantome-2` : **17 séances « à valider »**, dont **11 pour le jeu** ; 18 depuis que le rappel de `puissance-1` est `[Prop]`.
 
 ## 6. Illustrations : types autorisés (liste fermée)
 
@@ -247,11 +247,11 @@ Repère de table : celui de `docs/knowledge/03-exercices/diagrammes/FORMAT.md` (
 |---|---|---|---|
 | `diagram_ref` | `diagram` : identifiant d'un diagramme transcrit (ex. `initiation-p07-e1`, `jeux-p07-g1`, `proposition-p01-e1`) ; la clé `id` reste l'identifiant local de l'illustration | `TableDiagramPlayer`, résolu par `DiagramLibrary.byId` dans la feature (`GetSheet`, `ResolveRunPlan`) | existant |
 | `table` | `balls[]`, `ghosts[]`, `arrows[]`, `zones[]`, `sequence[]` (mêmes clés et même forme que `diagrammes/FORMAT.md`) | `TableDiagram(Player)` | existant ; le mapper de `entities/exercise_diagram` n'est pas importable (même couche) : `session_sheet` construit lui-même le `TableDiagramSpec` de `shared/ui` |
-| `contact` | `fraction`: `full\|three_quarter\|half\|quarter\|thin`, `tip_point` | `BallContactDiagram` | existant ; `tip_point` à étendre (voir ci-dessous) |
+| `contact` | `fraction`: `full\|three_quarter\|half\|quarter\|thin`, `tip_point` ; facultatifs : `offset`: `slight\|half` (« un peu au-dessus » : quart de rayon ; défaut mi-rayon ; sans objet au centre), `paths`: `true` (trajectoires après le contact : la couleur dans la ligne des centres, déviation `θ` écrite ; la blanche sans rotation sur la tangente, à angle droit ; en plein la blanche s'arrête) | `BallContactDiagram` | existant, étendu le 2026-10-15 |
 | `contact_strip` | `fractions[]`, `highlight` | rangée de `BallContactDiagram` | nouveau `ContactStrip` |
-| `ghost_aim` | `cue: [x,y]`, `object: [x,y]`, `pocket`, `fraction` | table + bille fantôme + ligne de visée | nouveau : flèche `aim`, bille fantôme calculée |
-| `cue_ball_target` | `tip_point` ; facultatifs : `compare[]` (points de comparaison, sans doublon ni `tip_point`), `cue_height`: `high\|level\|low` | la blanche vue de face avec une **cible** (anneaux à mi-rayon et au bord, croix nommée) et le point d'impact du procédé **à l'échelle** (8,5 mm sur 48,0 mm, § 6.1) ; avec `cue_height`, un petit profil de la queue | nouveau `CueBallTarget` (V25) |
-| `player_figure` | `view`: `side\|top\|both` ; facultatifs : `focus[]` (`feet legs_and_hips head back_forearm bridge_hand cue`, non vide, sans doublon ; défaut : les six), `lead_eye`: `left\|right`, `head_case`: `right_eye_over_cue\|cue_between_eyes\|left_eye_over_cue` (seulement si la vue contient `top`), `bridge`: `frame\|surface` | joueur droitier schématique (pictogramme neutre : ni visage, ni sexe, ni âge) de profil et / ou de dessus, repères numérotés légendés ; billes agrandies, non à l'échelle | nouveau `PlayerFigure` (V26) |
+| `ghost_aim` | `cue: [x,y]`, `object: [x,y]`, `pocket`, `fraction` | table + bille fantôme + ligne de visée, et sous la table une **loupe** sur le contact (bille de couleur, bille fantôme au rayon de la blanche, point de contact, ligne de visée, départ vers la poche) avec son grossissement écrit (« Loupe ×n »), car à l'échelle de la table le recouvrement ne se lit pas | nouveau : flèche `aim`, bille fantôme calculée ; loupe ajoutée le 2026-10-15 |
+| `cue_ball_target` | `tip_point` ; facultatifs : `compare[]` (points de comparaison, sans doublon ni `tip_point`), `cue_height`: `high\|level\|low`, `offset`: `slight\|half` (écart du procédé au centre : quart de rayon pour « un peu au-dessus », mi-rayon par défaut) | la blanche vue de face avec une **cible** (anneaux à mi-rayon et au bord, croix nommée) et le point d'impact du procédé **à l'échelle** (8,5 mm sur 48,0 mm, § 6.1) ; avec `cue_height`, un petit profil de la queue | nouveau `CueBallTarget` (V25) |
+| `player_figure` | `view`: `side\|top\|both` ; facultatifs : `focus[]` (`feet legs_and_hips head back_forearm bridge_hand cue`, non vide, sans doublon ; défaut : les six), `lead_eye`: `left\|right`, `head_case`: `right_eye_over_cue\|cue_between_eyes\|left_eye_over_cue` (seulement si la vue contient `top`), `bridge`: `frame\|surface`, `handedness`: `right\|left` (gaucher : figure en miroir, légende inversée) | joueur schématique (pictogramme neutre : ni visage, ni sexe, ni âge) de profil et / ou de dessus, repères numérotés légendés ; billes agrandies, non à l'échelle | nouveau `PlayerFigure` (V26) |
 | `ball_size` | aucun paramètre | la blanche (48,0 mm) et une bille de but (50,8 mm) **côte à côte, à l'échelle** (rapport 0,945 `[FFB]`), les deux diamètres écrits sous les billes : la seule figure où la différence se voit à l'écran | nouveau `BallSizeComparison` |
 | `contact_height` | aucun paramètre (l'exagération est interne, jamais une clé) | contact de **deux billes inégales vues de côté**, posées sur le tapis : le contact est **légèrement au-dessus de l'équateur de la blanche** (fiche n° 4 `[S]` : « légèrement au-dessus de l'axe horizontal ») ; en réalité 1,62° et 0,68 mm `[FFB]` (dérivés des diamètres 48,0 / 50,8 mm), donc invisibles : l'inclinaison est **exagérée ×10 (16,24°)** et la légende comme la description parlée le disent (« inclinaison exagérée ×10 ; ce n'est pas une mesure ») | nouveau `ContactHeightView` (remplace `CueSideView.showContact`) |
 | `power_ratio` | facultatifs : `points[]` (au plus 2 : `amplitude`: `short\|medium\|long`, `speed`: `slow\|medium\|fast`, `label`), `highlight` (indice de `points`, à partir de 0), `distance_label` | plan **amplitude × vitesse** à trois zones (doux, moyen, puissant) ; les exemples sont placés et leur zone est écrite sous le plan | nouveau `PowerRatio` (V27) |
@@ -268,7 +268,7 @@ Géométrie de `cue_ball_target` (`CueBallTargetGeometry`, rayon `R` de la blanc
 
 Géométrie de `power_ratio` (`PowerPlaneGeometry`) : l'amplitude (recul de la main) en abscisse, la vitesse en ordonnée, valeurs relatives `[Prop]` `short` = `slow` = 0,3, `medium` = 0,6, `long` = `fast` = 1 ; zone = produit `amplitude × vitesse` : `< 0,2` doux, `< 0,5` moyen, sinon puissant (limites hyperboliques, donc un **rapport**). Seuls les deux extrêmes (peu de recul et peu de vitesse = doux ; grand recul et grande vitesse = puissant) viennent de la fiche n° 2 `[S]` ; la grille intermédiaire est `[Prop]` et ne s'écrit jamais « officielle » (V19). Au plus deux exemples par illustration (charge pour des débutants).
 
-Géométrie de `player_figure` (`SidePose`, `TopPose` en `shared/lib`) : joueur droitier de taille `H` ; plateau à `0,48 H`, queue de `0,83 H` au talon relevé de 10° (jamais strictement horizontale), pied droit sous la main arrière, avant-bras vertical, tête au-dessus de la queue ; la main de chevalet repose sur le tapis (`surface`) ou sur le rail (`frame`) et la queue repose sur le haut de la main. Au plus trois repères par illustration pour des enfants (`focus`) ; les six pour les adultes et le rappel.
+Géométrie de `player_figure` (`SidePose`, `TopPose` en `shared/lib`) : joueur droitier de taille `H` (gaucher : miroir) ; plateau à `0,48 H`, queue de `0,83 H` au talon relevé de 10° sur la surface et 14° sur le cadre (jamais strictement horizontale), pied droit sous la main arrière, hanches juste derrière elle, buste penché (moins de 0,15 H de montée des hanches aux épaules), avant-bras vertical, menton à quelques centimètres au-dessus de la queue (un peu plus haut sur le cadre) ; sur le cadre, la blanche est près de la bande ; la main de chevalet repose sur le tapis (`surface`) ou sur le rail (`frame`) et la queue repose sur le haut de la main (révision de l'audit du 2026-10-15). Au plus trois repères par illustration pour des enfants (`focus`) ; les six pour les adultes et le rappel.
 
 Géométrie de `ghost_aim` (fonction pure en `shared/lib`, testée par valeurs indépendantes) :
 
@@ -283,12 +283,12 @@ Interdits : toute clé `photo`, `image`, `path`, `url`, `asset` **au niveau de l
 
 ## 7. Règles de validation (vérifiables par outil)
 
-Chaque règle est numérotée ; `app/tool/fiches.dart` et le test de contrat citent le numéro dans leur message. Le validateur a deux modes : par défaut il contrôle chaque fichier présent (contre la structure du § 1, calculée depuis le catalogue, pour les séances absentes) ; avec `--complete` il exige en plus les 29 fichiers (fin du lot L7). Une illustration `pdf_ref` seule ne se présente pas aux élèves (texte pour l'animateur) : une étape qui n'a qu'un renvoi est lisible dans le guide mais n'est pas « présentable ». La règle V12 n'est vérifiée que par le test de contrat Dart (V17 l'est par l'outil et par le test de contrat). Le validateur contrôle en plus (règle `T1`) que les tableaux des § 1.2 et § 1.3 sont égaux à la structure calculée depuis le catalogue, et `dart run tool/fiches.dart --structure` affiche cette structure.
+Chaque règle est numérotée ; `app/tool/fiches.dart` et le test de contrat citent le numéro dans leur message. Le validateur a deux modes : par défaut il contrôle chaque fichier présent (contre la structure du § 1, calculée depuis le catalogue, pour les séances absentes) ; avec `--complete` il exige en plus les 28 fichiers. Une illustration `pdf_ref` seule ne se présente pas aux élèves (texte pour l'animateur) : une étape qui n'a qu'un renvoi est lisible dans le guide mais n'est pas « présentable ». La règle V12 n'est vérifiée que par le test de contrat Dart (V17 l'est par l'outil et par le test de contrat). Le validateur contrôle en plus (règle `T1`) que les tableaux des § 1.2 et § 1.3 sont égaux à la structure calculée depuis le catalogue, et `dart run tool/fiches.dart --structure` affiche cette structure.
 
 | N° | Règle |
 |---|---|
 | V1 | `version == 1` ; clés obligatoires présentes ; aucune clé inconnue |
-| V2 | `id` = `<technique>-<part>`, unique, slug valide, égal au nom de fichier sans `NN-` ; `technique`, `part` et `order` conformes à la structure du § 1, **recalculée depuis `catalogue-entrainement.yaml`** (nombre de parties, répartition ; `parties > N` est une erreur) ; nom de fichier préfixé de `NN` = `order` ; `--complete` : les 29 `order` présents, sans trou |
+| V2 | `id` = `<technique>-<part>`, unique, slug valide, égal au nom de fichier sans `NN-` ; `technique`, `part` et `order` conformes à la structure du § 1, **recalculée depuis `catalogue-entrainement.yaml`** (nombre de parties, répartition ; `parties > N` est une erreur) ; nom de fichier préfixé de `NN` = `order` ; `--complete` : les 28 `order` présents, sans trou |
 | V3 | `previous` = `id` de la séance d'`order - 1` dans la structure du § 1 (fichier présent ou non) ; `null` si et seulement si `order == 1` |
 | V4 | `catalogue_block` non nul, égal au bloc de la technique ; chaque exercice d'entraînement a un `ref` ; `ref.block == catalogue_block` ; `ref.n` existe dans ce bloc |
 | V5 | Les `ref.n` de la séance appartiennent à la tranche attribuée par le § 1 (parties, `quart` = 1-2, `finesse` = 3-4), sans doublon ; `--complete` : l'union des séances d'une technique couvre toute sa plage |
@@ -311,9 +311,10 @@ Chaque règle est numérotée ; `app/tool/fiches.dart` et le test de contrat cit
 | V22 | `order == 1` : `recall.reuse` absent, `previous` nul et `link_previous` absent ; `order > 1` : `recall.points` porte sur `previous` (relecture indépendante) et `recall.reuse.sheet == previous` quand présent ; pour `part > 1`, `previous` est la partie `part - 1` de la même technique |
 | V23 | Cohérence des parties d'une technique : mêmes `technique`, `title`, `notion`, `theme.name`, `catalogue_block` et `technical_sheets` ; `part` de 1 à n sans trou (`--complete`) ; `game.playful_variant` différente de celle de la partie précédente |
 | V24 | Toute illustration est citée par une section de théorie, une initiation ou le jeu (`setup_illustration`), ou reprise en rappel (`recall.reuse`) par la séance suivante : une illustration jamais citée n'est jamais visible. Contrôlée quand la séance suivante est présente |
-| V25 | `cue_ball_target` : `tip_point` ∈ 9 valeurs ; `compare` sans doublon ni `tip_point` ; `cue_height` ∈ {`high`, `level`, `low`} |
-| V26 | `player_figure` : `view` ∈ {`side`, `top`, `both`} ; `focus` non vide, sans doublon, repères connus ; `lead_eye`, `head_case`, `bridge` dans leurs listes ; `head_case` seulement si la vue contient `top` ; aucune clé `annotations` |
+| V25 | `cue_ball_target` : `tip_point` ∈ 9 valeurs ; `compare` sans doublon ni `tip_point` ; `cue_height` ∈ {`high`, `level`, `low`} ; `offset` ∈ {`slight`, `half`} sur `cue_ball_target` et `contact`, interdit avec `tip_point: center` ; `paths` booléen |
+| V26 | `player_figure` : `view` ∈ {`side`, `top`, `both`} ; `focus` non vide, sans doublon, repères connus ; `lead_eye`, `head_case`, `bridge`, `handedness` dans leurs listes ; `head_case` seulement si la vue contient `top` ; aucune clé `annotations` |
 | V27 | `power_ratio` : `amplitude` et `speed` dans leurs listes, au plus 2 `points`, `highlight` indice d'un exemple (0 à `points` − 1), aucune clé `levels` ni `cran` |
+| V28 | `training.recall_slot` présent si et seulement si `order > 1` ; `weight` entier ≥ 1 pour les deux publics ; `passes ∈ {1, 2}` ; aucune autre clé (l'exercice n'est jamais nommé dans la séance : il est choisi à l'exécution, ADR 0011) |
 
 Hors outil (relecture indépendante par `relecteur-pedagogique`) : une seule notion, charge cognitive enfants, ton ludique, exactitude face aux sources, pertinence des blocs `[Prop]` (voir aussi la validation par l'utilisateur dans l'application, section 5).
 
@@ -321,13 +322,13 @@ Hors outil (relecture indépendante par `relecteur-pedagogique`) : une seule not
 
 - Lecture seule : le port `SessionSheetRepository` n'expose que `getAll` et `getById`. Pas de réflexion (`dart:mirrors` est absent de Flutter) : le test déclare une classe `implements SessionSheetRepository` qui ne définit que ces deux méthodes, ce qui ne compile plus si le port gagne une méthode abstraite (écriture comprise).
 - Aucun écran de formulaire sur les séances (test de widget : aucun `TextField`, `Checkbox` ni bouton de modification/suppression sur catalogue et détail ; la notation locale n'existe que dans le guidage). Le titre d'une séance planifiée reste modifiable : c'est la séance planifiée, pas le contenu du catalogue.
-- `previous` forme une chaîne sans cycle de 29 séances (tests de contrat sur les vrais assets, mêmes règles V2-V3).
-- Les ids sont stables : un test de contrat fige la liste des 29 ids (une séance planifiée peut les référencer).
-- `reviewReasonsOf` (motifs « à valider », § 5.3) : fonction pure testée sur fixtures et mesurée sur les 29 séances réelles ; le badge « Proposition » est testé sur détail, guide et présentation.
+- `previous` forme une chaîne sans cycle de 28 séances (tests de contrat sur les vrais assets, mêmes règles V2-V3).
+- Les ids sont stables : un test de contrat fige la liste des 28 ids (une séance planifiée peut les référencer).
+- `reviewReasonsOf` (motifs « à valider », § 5.3) : fonction pure testée sur fixtures et mesurée sur les 28 séances réelles ; le badge « Proposition » est testé sur détail, guide et présentation.
 
-## 9. Exemple normatif : `09-demi-bille-1.yaml`
+## 9. Exemple normatif : `08-demi-bille-1.yaml`
 
-Le fichier `09-demi-bille-1.yaml` de ce dossier est l'exemple complet et normatif : première des deux séances de la technique `demi-bille` (exercices 1-2 du bloc). Il est validé par `app/tool/fiches.dart` (vert) et sert de modèle aux séances suivantes ; il n'est pas recopié ici pour n'avoir qu'une seule source. Ses contenus reprennent `jeux.md` (jeu n° 7), `initiation.md` (fiche 7), `02-techniques/03-viser-et-quantites-de-bille.md` (fiches n° 4 et 5, pages 14 et 15 du PDF) et le bloc `demi-bille` du catalogue ; les identifiants de diagramme et les pages PDF ont été relevés dans `diagrammes/` (entraînement pages 5-6, initiation et jeux page 7). La séance `demi-bille-2` (exercices 3-4, `order` 10) approfondit : rappel de la partie 1, chevalet sur surface, distances ; elle n'est pas encore écrite.
+Le fichier `08-demi-bille-1.yaml` de ce dossier est l'exemple complet et normatif : première des deux séances de la technique `demi-bille` (exercices 1-2 du bloc). Il est validé par `app/tool/fiches.dart` (vert) et sert de modèle aux séances suivantes ; il n'est pas recopié ici pour n'avoir qu'une seule source. Ses contenus reprennent `jeux.md` (jeu n° 7), `initiation.md` (fiche 7), `02-techniques/03-viser-et-quantites-de-bille.md` (fiches n° 4 et 5, pages 14 et 15 du PDF) et le bloc `demi-bille` du catalogue ; les identifiants de diagramme et les pages PDF ont été relevés dans `diagrammes/` (entraînement pages 5-6, initiation et jeux page 7). La séance `demi-bille-2` (exercices 3-4, `order` 10) approfondit : rappel de la partie 1, chevalet sur surface, distances ; elle n'est pas encore écrite.
 
 Points que le modèle fixe pour les séances suivantes :
 
@@ -347,8 +348,8 @@ Minutage calculé de cet exemple (le fichier ne les contient pas) :
 | welcome | enfants / adultes | rappel | 10 / 10 |
 | notionAndInitiation | enfants (20) | tangente 3, mot-tangente 1 `[Prop]`, comparer 2, ini-7 3 | 7 / 2 / 4 / 7 |
 | notionAndInitiation | adultes (25) | tangente 3, comparer 2, fantome 2, ini-7 3 | 8 / 5 / 5 / 7 |
-| training | enfants (35) | e1 2, e2 1 | 23 / 12 |
-| training | adultes (50) | e1 1, e2 1 | 25 / 25 |
+| training | enfants (35) | e1 2, e2 1, créneau de rappel 1 | 17 / 9 / 9 |
+| training | adultes (50) | e1 1, e2 1, créneau de rappel 1 | 17 / 17 / 16 |
 | game | enfants / adultes | jeu | 20 / 25 |
 | review | enfants / adultes | bilan | 5 / 10 |
 

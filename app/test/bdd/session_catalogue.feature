@@ -3,20 +3,20 @@
 Feature: Session catalogue
 
   The instructor opens the catalogue from the menu, browses the 14 techniques
-  and their 29 sessions, reads a session without being able to change it, and
+  and their 28 sessions, reads a session without being able to change it, and
   reviews the unsourced proposals in their context.
 
-  Scenario: The menu leads to the 14 techniques and their 29 sessions
+  Scenario: The menu leads to the 14 techniques and their 28 sessions
     Given the app is running
     When I tap {'Sessions'} text
     Then I see {'Session catalogue'} text
     And the catalogue lists {14} techniques
-    And the catalogue lists {29} sessions
+    And the catalogue lists {28} sessions
     And the technique {'rebond-bande'} comes before the technique {'rejet-naturel'}
     And the technique {'demi-bille'} lists {2} sessions
     And the technique {'quart'} lists {1} sessions
     And the technique {'retro'} lists {4} sessions
-    And I see {'14 techniques · 29 sessions · read-only'} text
+    And I see {'14 techniques · 28 sessions · read-only'} text
 
   Scenario: The group suggestion stays one tap away from the catalogue
     Given the club has the student {'Léa'} in the {'children'} audience
@@ -72,7 +72,7 @@ Feature: Session catalogue
     When I tap {'Séances'} text
     Then I see {'Catalogue de séances'} text
     And I do not see text containing {'seule l’interface est traduite'}
-    And I see {'14 techniques · 29 séances · lecture seule'} text
+    And I see {'14 techniques · 28 séances · lecture seule'} text
 
   Scenario: A proposed exercise block is badged in the session
     Given the app is running
@@ -125,9 +125,9 @@ Feature: Session catalogue
   Scenario: On the real catalogue the filters tell the games from the rest
     Given the app is running
     When I go to the address {'/catalogue'}
-    Then the catalogue lists {29} sessions
+    Then the catalogue lists {28} sessions
     When I tap {'Games to validate'} text
-    Then the catalogue lists {12} sessions
+    Then the catalogue lists {11} sessions
     When I tap {'Games to validate'} text
     And I tap {'To validate only'} text
     Then the catalogue lists {18} sessions
@@ -146,7 +146,7 @@ Feature: Session catalogue
     Then I see {'Quantité demi-bille, session 2/2'} text
     And I see {'Previous session: Quantité demi-bille, session 1/2'} text
     When I tap {'Session catalogue'} text
-    Then the catalogue lists {29} sessions
+    Then the catalogue lists {28} sessions
 
   Scenario: The address preselects the audience
     Given the app is running

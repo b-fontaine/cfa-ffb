@@ -7,10 +7,12 @@ import 'package:billard_cfa/entities/session_sheet/domain/sheet_exercise.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_game.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_initiation.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_recall.dart';
+import 'package:billard_cfa/entities/session_sheet/domain/sheet_recall_slot.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_source.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_theme.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_theory.dart';
 import 'package:billard_cfa/shared/lib/contact_fraction.dart';
+import 'package:billard_cfa/shared/lib/cue_side_geometry.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
@@ -236,6 +238,7 @@ Point<double> _point(Object? raw, String where) {
 SessionSheet _sheet(_Obj o) {
   if (o.raw('version') != 1) o.fail('version', 'doit valoir 1');
   try {
+    final training = _training(o.obj('training'));
     final sheet = SessionSheet(
       id: _sheetId(o.str('id'), o.at('id')),
       order: o.integer('order'),
@@ -258,7 +261,8 @@ SessionSheet _sheet(_Obj o) {
       illustrations: [
         for (final i in o.objects('illustrations')) _illustration(i),
       ],
-      exercises: _exercises(o.obj('training')),
+      exercises: training.exercises,
+      recallSlot: training.slot,
       game: _game(o.obj('game')),
       reviewPrompts: _review(o.obj('review')),
       sources: [for (final s in o.objects('sources')) _sourceRef(s)],
@@ -406,10 +410,21 @@ Scoring _scoring(_Obj o) {
   return scoring;
 }
 
-List<SheetExercise> _exercises(_Obj o) {
+({List<SheetExercise> exercises, SheetRecallSlot? slot}) _training(_Obj o) {
+  final slotObj = o.optionalObj('recall_slot');
+  final SheetRecallSlot? slot;
+  if (slotObj == null) {
+    slot = null;
+  } else {
+    slot = SheetRecallSlot(
+      weight: _weight(slotObj),
+      passes: slotObj.integer('passes'),
+    );
+    slotObj.done();
+  }
   final exercises = [for (final e in o.objects('exercises')) _exercise(e)];
   o.done();
-  return exercises;
+  return (exercises: exercises, slot: slot);
 }
 
 SheetExercise _exercise(_Obj o) {
@@ -539,6 +554,8 @@ Illustration _illustration(_Obj o) {
       alt: alt,
       fraction: o.enumOf(ContactFraction.values, 'fraction'),
       tipPoint: o.enumOf(TipPoint.values, 'tip_point'),
+      offset: o.optionalEnum(TipOffset.values, 'offset') ?? TipOffset.half,
+      paths: o.has('paths') && o.boolean('paths'),
     ),
     'contact_strip' => Illustration.contactStrip(
       id: id,
@@ -569,6 +586,7 @@ Illustration _illustration(_Obj o) {
           _enum(TipPoint.values, v, '${o.at('compare')}[$i]'),
       ],
       cueHeight: o.optionalEnum(CueHeight.values, 'cue_height'),
+      offset: o.optionalEnum(TipOffset.values, 'offset') ?? TipOffset.half,
     ),
     'ball_size' => Illustration.ballSize(id: id, caption: caption, alt: alt),
     'contact_height' => Illustration.contactHeight(
@@ -624,6 +642,8 @@ Illustration _playerFigure(_Obj o, String id, String caption, String alt) {
     leadEye: o.optionalEnum(LeadEye.values, 'lead_eye'),
     headCase: headCase,
     bridge: o.optionalEnum(CueBridge.values, 'bridge') ?? CueBridge.frame,
+    handedness:
+        o.optionalEnum(Handedness.values, 'handedness') ?? Handedness.right,
   );
 }
 

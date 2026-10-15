@@ -6,6 +6,7 @@ import 'package:billard_cfa/entities/session_sheet/domain/sheet_exercise.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_initiation.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_theory.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_timing.dart';
+import 'package:billard_cfa/features/run_sheet/domain/recall_exercise.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
@@ -47,6 +48,19 @@ abstract class RunPlan with _$RunPlan {
     /// Titre du bloc d'entraînement de la séance.
     String? blockTitle,
 
+    /// Exercice du créneau de rappel (ADR 0011) ; `null` sans créneau ou
+    /// sans séance précédente.
+    RecallExercise? recallExercise,
+
+    /// Exercice du catalogue (taux, chevalet, bronze) du créneau de rappel.
+    ExerciseSpec? recallSpec,
+
+    /// Nombre de séances de la technique d'où vient l'exercice de rappel.
+    int? recallOriginPartCount,
+
+    /// Titre du bloc d'entraînement de l'exercice de rappel.
+    String? recallBlockTitle,
+
     /// Séance planifiée d'où le guide a été lancé (`?session=`), si elle
     /// existe encore : son groupe et sa date pré-remplissent la saisie des
     /// résultats (ADR 0007).
@@ -82,8 +96,20 @@ abstract class RunPlan with _$RunPlan {
   SheetInitiation? initiationOf(RunStep step) =>
       sheet.initiation.where((i) => i.id == step.elementId).firstOrNull;
 
-  SheetExercise? exerciseOf(RunStep step) =>
-      sheet.exercises.where((e) => e.id == step.elementId).firstOrNull;
+  /// Exercice d'une étape d'exercice, ou celui du créneau de rappel.
+  SheetExercise? exerciseOf(RunStep step) => switch (step.kind) {
+    RunStepKind.exercise =>
+      sheet.exercises.where((e) => e.id == step.elementId).firstOrNull,
+    RunStepKind.recallExercise => recallExercise?.exercise,
+    _ => null,
+  };
+
+  /// Exercice du catalogue de l'exercice de [step] (taux, chevalet, bronze).
+  ExerciseSpec? specOf(RunStep step) => switch (step.kind) {
+    RunStepKind.exercise => exerciseSpecs[step.elementId],
+    RunStepKind.recallExercise => recallSpec,
+    _ => null,
+  };
 
   /// Rang (à partir de 1) de l'exercice de [step] parmi les exercices
   /// affichés, ou `null` si l'étape n'est pas un exercice.
@@ -126,6 +152,7 @@ abstract class RunPlan with _$RunPlan {
         final id = sheet.game.setupIllustrationId;
         return [if (id != null) ?illustration(id)];
       case RunStepKind.exercise:
+      case RunStepKind.recallExercise:
       case RunStepKind.review:
         return const [];
     }
@@ -138,7 +165,8 @@ abstract class RunPlan with _$RunPlan {
   /// n'est qu'une pastille de texte pour l'animateur, déjà affichée dans le
   /// guide ; il n'y a rien d'illustré à montrer.
   bool isPresentable(RunStep step) {
-    if (step.kind == RunStepKind.exercise) {
+    if (step.kind == RunStepKind.exercise ||
+        step.kind == RunStepKind.recallExercise) {
       final exercise = exerciseOf(step);
       return exercise != null && diagrams.containsKey(exercise.diagramId);
     }
@@ -178,7 +206,8 @@ abstract class RunPlan with _$RunPlan {
     RunStepKind.recall => sheet.recall.src.isProposal,
     RunStepKind.theory => theoryOf(step)?.src.isProposal ?? false,
     RunStepKind.initiation => initiationOf(step)?.src.isProposal ?? false,
-    RunStepKind.exercise => exerciseOf(step)?.src.isProposal ?? false,
+    RunStepKind.exercise ||
+    RunStepKind.recallExercise => exerciseOf(step)?.src.isProposal ?? false,
     RunStepKind.game => sheet.game.src.isProposal,
     RunStepKind.review => false,
   };

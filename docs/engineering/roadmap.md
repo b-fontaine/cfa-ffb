@@ -10,7 +10,7 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
 
 - Connaissances : 5 PDF `[S]`, 14 fiches techniques, catalogue d'entraînement
   15 blocs / 72 exercices (dont 2 blocs `[Prop]`), 94 pages de diagrammes YAML,
-  29 séances du catalogue (`fiches.dart --complete` vert), 244 points
+  28 séances du catalogue (`fiches.dart --complete` vert, 29 avant le retrait de `bille-fantome-2` le 2026-10-15), environ 245 points
   `uncertainties`.
 - Application : 9 entités, 10 features, 15 pages, 5 ADR, 197 scénarios BDD,
   drift v3, sauvegarde JSON, Widgetbook séparé ; `scripts/check.sh --fast`
@@ -53,6 +53,17 @@ revues séparées, `check.sh --full`).
 | **U7** Accueil « Aujourd'hui » et bilan de fin de séance | séance en cours à reprendre, prochaine séance planifiée (Préparer / Lancer), alertes, semaine, sauvegarde ; à « Terminer », bilan des passages et proposition de la séance suivante | accueil statique |
 | **U8** Catalogue et détail en mode « Préparer » | nom évocateur en titre, badge unique « n points à valider », marqueur de parcours par groupe, frise des phases dans le détail, deux colonnes | : |
 | **U9** Fiche élève, vue élève et vue de groupe | parcours en cases (technique × exercice), en-tête en cours / prochain / alerte, courbes repliées, vue « à montrer à l'élève », heat-map technique × élève et assiduité du groupe | « 0 sur 72 », lot 10 (vues) |
+
+## Audit des séances du 2026-10-15 (worktree `audit-seances`)
+
+Décisions `[U]` 7 à 9 (`docs/knowledge/08-lacunes-et-questions-ouvertes.md`).
+Lots : **1** structure du catalogue (bille fantôme en une séance, 28 séances,
+livré) ; **2** créneau d'exercice de rappel (ADR 0011, livré) ; **3** contenu
+(attaque au centre, allègement de posture-1 et puissance-1, exercice 3 du
+bloc posture, reformulations, gloses et notes animateur, une mécanique par
+jeu) ; **4** schémas (personnage de posture, cran « légèrement au-dessus »,
+loupe de la bille fantôme, fantôme sur les flèches, flèches de départ du
+contact).
 
 ## H0 — Clore ce qui est ouvert
 

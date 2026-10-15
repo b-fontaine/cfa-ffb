@@ -18,7 +18,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// Callbacks de navigation, composés par la couche `app` : [onBack] revient à
 /// la séance du catalogue, [onHome] est proposé quand elle n'existe pas,
 /// [onShow] ouvre la présentation à l'étape donnée, [onRecord] ouvre la saisie
-/// des résultats de l'exercice (avec le bloc du rappel de résultats et
+/// des résultats de l'exercice (avec le bloc principal de la séance, le bloc
+/// du rappel de résultats, celui de l'exercice de rappel quand il diffère, et
 /// l'étape à retrouver), [onFinish] ferme la séance et [onStepChanged] reporte
 /// dans l'adresse l'étape que l'animateur vient de choisir. [fromPlanner] dit
 /// que le guide a été lancé depuis une séance planifiée : « Retour » mène
@@ -40,7 +41,12 @@ class SheetGuidePage extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onHome;
   final ValueChanged<int> onShow;
-  final void Function(ExerciseRef exercise, String? recallBlockId, int step)
+  final void Function(
+    ExerciseRef exercise,
+    String mainBlockId,
+    String? recallBlockId,
+    int step,
+  )
   onRecord;
   final VoidCallback onFinish;
   final ValueChanged<int> onStepChanged;
@@ -101,8 +107,14 @@ class SheetGuidePage extends StatelessWidget {
                         },
                         onRestart: () =>
                             unawaited(context.read<RunSheetCubit>().restart()),
-                        onRecord: (exercise) =>
-                            onRecord(exercise, plan!.recallBlockId, state.step),
+                        onRecord: (exercise) => onRecord(
+                          exercise,
+                          plan!.sheet.catalogueBlock,
+                          exercise.blockId != plan.sheet.catalogueBlock
+                              ? exercise.blockId
+                              : plan.recallBlockId,
+                          state.step,
+                        ),
                       ),
                     ),
                   ],

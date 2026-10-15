@@ -7,6 +7,7 @@ import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_table.dart'
 import 'package:billard_cfa/entities/exercise_diagram/domain/exercise_diagram.dart';
 import 'package:billard_cfa/entities/session/data/in_memory_session_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
+import 'package:billard_cfa/features/run_sheet/domain/load_validated_exercises.dart';
 import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit.dart';
@@ -63,22 +64,35 @@ class RunSheetWorld {
     List<ExerciseDiagram> diagrams = const [],
     RulesConfig? rules,
   }) : sessions = InMemorySessionRepository() {
+    final config = rules ?? RulesConfig();
+    domain = DomainWorld(
+      catalogue:
+          catalogue ??
+          buildCatalogue([
+            block('posture', 1),
+            block('demi-bille', 2, exercises: 4),
+            block('quart-finesses', 3),
+          ]),
+      config: config,
+    );
     resolve = ResolveRunPlan(
       FixtureSessionSheetRepository(sheets ?? catalogueFixture()),
       sessions,
-      DomainWorld(
-        catalogue:
-            catalogue ??
-            buildCatalogue([
-              block('posture', 1),
-              block('demi-bille', 2, exercises: 4),
-              block('quart-finesses', 3),
-            ]),
-      ).catalogueRepository,
+      domain.catalogueRepository,
       _Diagrams(DiagramLibrary(diagrams)),
-      rules ?? RulesConfig(),
+      config,
+      LoadValidatedExercises(
+        domain.students,
+        domain.groups,
+        domain.attempts,
+        domain.acquisitions,
+        config,
+      ),
     );
   }
+
+  /// Dépôts en mémoire du suivi (élèves, groupes, passages).
+  late final DomainWorld domain;
 
   final InMemorySessionRepository sessions;
   final ticker = ManualTicker();

@@ -10,7 +10,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/illustration_gallery.dart';
 import 'package:widgetbook_workspace/support/preview_world.dart';
 
-const _pilotAsset = 'packages/billard_cfa/assets/fiches/09-demi-bille-1.yaml';
+const _pilotAsset = 'packages/billard_cfa/assets/fiches/08-demi-bille-1.yaml';
 
 Future<(List<Illustration>, DiagramLibrary)> _load() async {
   final text = await rootBundle.loadString(_pilotAsset);

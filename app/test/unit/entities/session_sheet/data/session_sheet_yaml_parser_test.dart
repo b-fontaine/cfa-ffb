@@ -17,7 +17,7 @@ import 'package:billard_cfa/shared/lib/table_pocket.dart';
 import 'package:billard_cfa/shared/lib/tip_point.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-final String _pilot = File('assets/fiches/09-demi-bille-1.yaml')
+final String _pilot = File('assets/fiches/08-demi-bille-1.yaml')
     .readAsStringSync();
 
 /// Remplace [from] par [to] dans la séance pilote (échoue si absent).
@@ -52,7 +52,7 @@ void main() {
   group('the pilot sheet', () {
     test('reads the identity', () {
       expect(sheet.id, SheetId('demi-bille-1'));
-      expect(sheet.order, 9);
+      expect(sheet.order, 8);
       expect(sheet.technique, 'demi-bille');
       expect(sheet.part, 1);
       expect(sheet.previous, SheetId('bille-pleine-2'));
@@ -60,6 +60,31 @@ void main() {
       expect(sheet.technicalSheets, [5]);
       expect(sheet.title, 'Quantité demi-bille');
       expect(sheet.theme.name, 'Le partage du gâteau');
+    });
+
+    test('reads the handedness of a player figure, right by default', () {
+      // posture-1 porte les figures de joueur ; le pilote n'en a pas.
+      final posture = File('assets/fiches/01-posture-1.yaml')
+          .readAsStringSync();
+      final figures = parseSessionSheet(posture).illustrations
+          .whereType<PlayerFigureIllustration>()
+          .toList();
+
+      expect(figures, isNotEmpty);
+      expect(figures.first.handedness, Handedness.right);
+      expect(
+        figures.where((f) => f.handedness == Handedness.left),
+        isNotEmpty,
+        reason: 'la section gauchers montre un gaucher',
+      );
+    });
+
+    test('reads the recall slot of the training (ADR 0011)', () {
+      final slot = sheet.recallSlot!;
+
+      expect(slot.weight.children, 1);
+      expect(slot.weight.adults, 1);
+      expect(slot.passes, 1);
     });
 
     test('reads the recall with its reused illustration', () {
@@ -113,13 +138,17 @@ void main() {
           caption:
               'Demi-bille : la blanche, un peu plus petite, couvre la moitié '
               'de la bille de couleur ; le procédé vise le centre de la '
-              'blanche.',
+              'blanche. Après '
+              'le contact, la couleur part à environ 30° de la ligne de '
+              'visée ; la blanche, jouée sans rotation, part à angle droit de '
+              'la couleur.',
           alt:
               'Vue de dessus : la blanche, un peu plus petite que la bille '
               'de couleur, recouvre la moitié de celle-ci ; à droite, la '
               'blanche vue de face avec le point du procédé au centre.',
           fraction: ContactFraction.half,
           tipPoint: TipPoint.center,
+          paths: true,
         ),
       );
       expect(byId['taille-billes'], isA<BallSizeIllustration>());
@@ -652,7 +681,7 @@ void main() {
     });
 
     test('refuses a sheet that breaks a domain invariant', () {
-      _refuses(_edit('order: 9', 'order: 1'));
+      _refuses(_edit('order: 8', 'order: 1'));
     });
 
     test('refuses a proposal as a cited source rank', () {
@@ -677,9 +706,9 @@ void main() {
       });
 
       test('an integer that is not an integer', () {
-        _refuses(_edit('order: 9', 'order: neuf'), mentioning: 'order');
-        _refuses(_edit('order: 9', 'order: 9.5'), mentioning: 'order');
-        _refuses(_edit('order: 9', 'order: true'), mentioning: 'order');
+        _refuses(_edit('order: 8', 'order: neuf'), mentioning: 'order');
+        _refuses(_edit('order: 8', 'order: 9.5'), mentioning: 'order');
+        _refuses(_edit('order: 8', 'order: true'), mentioning: 'order');
       });
 
       test('an optional integer that is not an integer', () {

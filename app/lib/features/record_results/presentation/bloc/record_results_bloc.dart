@@ -48,9 +48,12 @@ class RecordResultsBloc extends Bloc<RecordResultsEvent, RecordResultsState> {
             : value.catalogue.blockById(blockId);
         final exercises = block?.exercises ?? value.catalogue.exercises;
         final wanted = event.initialExercise;
-        final preselected = block == null || wanted == null
+        final wantedBlock = event.initialBlock == null
+            ? block
+            : value.catalogue.blockById(event.initialBlock!);
+        final preselected = wantedBlock == null || wanted == null
             ? null
-            : block.exercises
+            : wantedBlock.exercises
                   .where((spec) => spec.ref.number == wanted)
                   .firstOrNull;
         emit(

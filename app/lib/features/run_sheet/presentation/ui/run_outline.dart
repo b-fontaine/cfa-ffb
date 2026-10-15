@@ -28,27 +28,31 @@ Future<void> _showOutline(
               ),
             ),
           ),
+          // Une douzaine de lignes au plus : toutes construites, pour que la
+          // dernière (le bilan) se laisse faire défiler jusqu'à elle.
           Flexible(
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                for (final (index, step) in plan.steps.indexed)
-                  ListTile(
-                    selected: index == current,
-                    leading: ExcludeSemantics(child: Text('${index + 1}')),
-                    title: Text(runStepTitle(l10n, plan, step)),
-                    subtitle: Text(
-                      l10n.guideOutlineRow(
-                        runPhaseTitle(l10n, step.phase),
-                        step.minutes,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final (index, step) in plan.steps.indexed)
+                    ListTile(
+                      selected: index == current,
+                      leading: ExcludeSemantics(child: Text('${index + 1}')),
+                      title: Text(runStepTitle(l10n, plan, step)),
+                      subtitle: Text(
+                        l10n.guideOutlineRow(
+                          runPhaseTitle(l10n, step.phase),
+                          step.minutes,
+                        ),
                       ),
+                      onTap: () {
+                        Navigator.of(sheetContext).pop();
+                        onStep(index);
+                      },
                     ),
-                    onTap: () {
-                      Navigator.of(sheetContext).pop();
-                      onStep(index);
-                    },
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

@@ -20,7 +20,7 @@ Feature: Leaving a screen
     Then I see text containing {'Oct 5'}
     And I see {'Back to the guided session'} text
     When I tap {'Back to the guided session'} text
-    Then I see {'Step 6 of 9'} text
+    Then I see {'Step 6 of 10'} text
 
   Scenario: A record without a way back offers none and an unreadable date is ignored
     Given the club has the student {'Léa'} in the {'children'} audience

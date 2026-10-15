@@ -6,7 +6,7 @@
   Prolonge les [ADR 0007](0007-lien-seance-planifiee-saisie-catalogue.md)
   (séance planifiée / saisie / séance du catalogue) et
   [0008](0008-positionnement-initial-bloc-acquis.md) (bloc acquis), et
-  s'appuie sur l'[ADR 0004](0004-catalogue-fiches-seances.md) (29 séances).
+  s'appuie sur l'[ADR 0004](0004-catalogue-fiches-seances.md) (28 séances).
 - Contexte de livraison : application V1 non livrée, aucune compatibilité de
   données à préserver.
 
@@ -28,7 +28,7 @@ exercices voisins de l'exercice de tête et un rappel. Elle ne sait rien des
 - le lien bloc → séance n'existe que dans le sens inverse
   (`ResolveSheetBlocks`, `resultsRecallBlock`).
 
-Faits du catalogue (contrôlés sur les 29 fichiers) : toute séance est mono-bloc
+Faits du catalogue (contrôlés sur les 28 fichiers) : toute séance est mono-bloc
 (`catalogue_block`, et `ref.block` de chaque exercice égal à ce bloc) ; aucune
 séance n'est propre à un public (chaque YAML décrit enfants 90 min et adultes
 120 min, le public ne change que le rendu) ; `order` 1..29 sans trou ; les

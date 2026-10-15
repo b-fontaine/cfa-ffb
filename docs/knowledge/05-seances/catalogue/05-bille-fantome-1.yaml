@@ -1,4 +1,4 @@
-# Séance du catalogue : « Viser pour empocher (bille fantôme) », partie 1/2.
+# Séance du catalogue : « Viser pour empocher (bille fantôme) », partie 1/1 (séance unique, décision [U] du 2026-10-15).
 # Format : FORMAT.md de ce dossier. Validée par `cd app && dart run tool/fiches.dart`.
 # Copiée vers app/assets/fiches/ par scripts/sync_fiches.sh (ne pas éditer la copie).
 # Bloc d'entraînement [Prop] : exercices, taux et jeu adaptés de fiches [S], non fédéraux.
@@ -26,7 +26,7 @@ recall:
   question:
     ask: De quoi dépend la puissance d'un coup de queue ?
     answer: De la vitesse de la queue et de son amplitude, le recul de la main jusqu'à la fin de la pénétration dans la blanche.
-  reuse: {sheet: puissance-2, illustration: plan-puissance}
+  reuse: {sheet: puissance-2, illustration: zones-distances}
   src: S
 theory:
   sections:
@@ -70,15 +70,13 @@ theory:
       weight: {children: 2, adults: 2}
       body:
         - "Bille alignée avec sa poche : la blanche arrive de face, centre sur centre, c'est le plein."
-      adult_extra:
-        - Au Blackball, la blanche est plus petite que les billes de couleur ; le contact se fait légèrement au-dessus de son équateur.
       key_point: Bille alignée sur la poche, la blanche la touche de face, en plein.
       demo: null
       illustrations: [contact-plein]
       src: S
 illustrations:
   - {id: taille-billes, type: ball_size,
-     caption: "La bille fantôme a la taille de la blanche (48,0 mm), un peu plus petite que la bille de couleur (50,8 mm).",
+     caption: "La bille fantôme a la taille de la blanche (48,0 mm), un peu plus petite que la bille de couleur (50,8 mm) ; diamètres du code d'arbitrage FFB, les fiches disent seulement « plus petite ».",
      alt: "Deux billes côte à côte, à l'échelle : à gauche la blanche, 48,0 mm, à droite une bille de couleur, 50,8 mm ; la blanche est un peu plus petite."}
   - {id: ligne-poche, type: table,
      balls: [{id: o, color: red, at: [2.0, 1.0]},
@@ -99,13 +97,14 @@ illustrations:
      caption: "Billes en bord de poche, comme au jeu 1 ; la blanche se place librement.",
      alt: "Table vue de dessus : six billes rouges posées chacune au bord d'une poche, quatre coins et deux poches du milieu ; la blanche n'est pas dessinée."}
 training:
+  recall_slot: {weight: {children: 1, adults: 1}, passes: 1}   # exercice choisi à l'exécution parmi les séances précédentes (ADR 0011, [U] 2026-10-15)
   exercises:
     - id: e1
       ref: {block: bille-fantome, n: 1}
       diagram: proposition-p02-e1
       title: La fantôme posée
       weight: {children: 3, adults: 1}
-      setup: Les billes du schéma sont posées devant leurs poches ; la blanche part de chaque emplacement numéroté du schéma, et chaque emplacement va avec la bille de même numéro. Pour chaque tir, l'animateur pose une blanche au contact de la bille, sur la ligne de la poche.
+      setup: Les billes du schéma sont posées devant leurs poches ; la blanche part de chaque emplacement numéroté du schéma, près de la bande, et chaque emplacement va avec la bille de même numéro. Pour chaque tir, l'animateur pose une blanche au contact de la bille, sur la ligne de la poche.
       instruction: Aligner la queue entre le centre de sa blanche et le centre de la fantôme, procédé au centre de la blanche ; l'animateur retire la fantôme, puis l'élève tire. Un tir par emplacement, quatre tirs en tout.
       expected: La blanche touche la bille de face ; la bille de couleur part droit vers sa poche.
       mistakes:
@@ -125,7 +124,7 @@ training:
       instruction: Avant chaque tir, montrer du doigt, sur la bille, le point qui fera face à la blanche, sur la ligne de la poche, puis aligner la queue sur la fantôme imaginée et tirer. Un tir par emplacement.
       expected: Le point montré est celui qui fait face à la blanche, sur la ligne de la poche, et correspond au contact réel ; la bille de couleur part droit vers sa poche.
       mistakes:
-        - {symptom: "Le doigt n'est pas sur la ligne blanche-bille-poche", fix: "Poser une blanche au contact pour vérifier la place de la fantôme avant de retirer."}
+        - {symptom: "Le doigt n'est pas sur la ligne blanche-bille-poche", fix: "Poser une blanche au contact pour vérifier la place de la fantôme, puis la retirer avant le tir."}
         - {symptom: L'élève tire sans avoir montré la place, fix: "Lui demander de la désigner du doigt avant de se pencher sur la queue."}
       playful:
         hook: La fantôme est invisible ; seul le chasseur la voit.
@@ -140,9 +139,9 @@ game:
   materials: "Billes du jeu 1 en bord de poche, une blanche supplémentaire ou un repère pour la fantôme. Des jetons pour la règle de lien ; pour le défi ludique : un tableau et des vignettes."
   setup_illustration: schema-jeu
   rules:
-    - Les billes sont posées en bord de poche, comme au jeu 1 ; au premier tir de la série, la blanche est placée librement par le tireur, de préférence en face de la bille, dans l'axe de la poche ; ensuite il joue la blanche d'où elle s'est arrêtée.
+    - "Les billes sont posées en bord de poche, comme au jeu 1 ; avant chaque tir, le tireur place la blanche à la main en face de la bille, dans l'axe de la poche, comme aux exercices de la séance : tous les tirs du duel sont en bille pleine."
     - "Pour chaque tir, un 3e joueur ou l'animateur pose une blanche au contact de la bille, sur la ligne de la poche, puis la retire avant le tir ; l'animateur arbitre la pose."
-    - "Le tireur aligne la queue entre sa blanche et la fantôme, procédé au centre de sa blanche. Si la blanche est placée de côté, le contact n'est plus de face : la quantité n'est pas encore nommée."
+    - "Le tireur aligne la queue entre sa blanche et la fantôme, procédé au centre de sa blanche."
     - Après une faute ou un tir manqué, on replace les billes et la main passe, comme au jeu 1.
   scoring: La série compte les billes réussies d'affilée ; un tir manqué la remet à zéro.
   end: Le premier qui réussit une série de quatre billes d'affilée gagne (six au jeu 1 ; la série est réduite).
@@ -150,11 +149,11 @@ game:
   link_previous:
     notion_of: puissance-2
     rule: "Exception aux règles du duel : avant chaque tir de la série, le tireur place la blanche à la main, à une distance de son choix, au lieu de la jouer d'où elle s'est arrêtée ; avant de tirer, il annonce « petit », « moyen » ou « grand » recul de la main selon la distance qu'elle doit parcourir ; l'animateur contrôle le recul et accorde un jeton si l'annonce correspond ; un jeton permet de rejouer, une fois, un tir manqué."
-    note: "Réactive le dosage de l'amplitude de la séance précédente, avec les mêmes mots que son jeu ; règle facultative, le duel se joue tel quel sans elle."
+    note: "Réactive le dosage de l'amplitude de la séance précédente, avec les mêmes mots que son jeu ; règle facultative, réservée aux adultes (les enfants jouent le duel tel quel, sans jeton), le duel se joue tel quel sans elle."
   weight: {children: 1, adults: 1}
   adaptation:
     children: "Rapprocher la blanche des billes ; faire tourner les rôles tireur et animateur après chaque tir ; série réduite à trois billes d'affilée si le groupe débute."
-    adults: "Après le duel, chaque joueur dit si l'échec venait de l'alignement sur la fantôme, de la puissance ou du geste. Variante plus difficile : poser la fantôme à la main seulement au premier tir de la série."
+    adults: "Après le duel, chaque joueur dit si l'échec venait de l'alignement sur la fantôme, de la puissance ou du geste. Variante plus difficile : la fantôme n'est posée qu'au premier tir de la série, puis imaginée."
   src: Prop
 review:
   prompts:
@@ -172,7 +171,7 @@ uncertainties:
   - "Exercices 1 et 2, taux et mise en place : [Prop] (bloc bille-fantome, hors des PDF d'entraînement), adaptés de la fiche technique n° 3 et de l'initiation 6 ; à valider par un animateur dans l'application."
   - "Duel des fantômes : [Prop], adapté du jeu 1 ; la série réduite, la pose de la fantôme par l'adversaire, la règle de lien avec la puissance, les vignettes et l'adaptation sont des propositions. Les thèmes, défis et minutes le sont aussi."
   - "La section « Le mot fantôme » (enfants) est une glose [Prop] : la fiche n° 3 n'emploie le mot qu'en le glosant pour l'animateur."
-  - "Le rappel [S] se limite à la fiche n° 2 (vitesse et amplitude) et reprend l'illustration plan-puissance de puissance-2 (V7) ; la distance, le recul et l'annonce « petit, moyen, grand » sont des propositions [Prop] de puissance-2, reprises seulement dans la règle de lien du jeu."
-  - "Jeu 1 : la fiche dit seulement « blanche placée librement ». Lecture retenue ici [Prop] : placement libre au premier tir, puis blanche jouée d'où elle s'arrête ; la règle de lien (facultative) impose, en exception explicite, le placement à la main avant chaque tir."
+  - "Le rappel [S] se limite à la fiche n° 2 (vitesse et amplitude) et reprend l'illustration zones-distances de puissance-2 (V7 ; le plan recul et vitesse est réservé aux adultes depuis le 2026-10-15) ; la distance, le recul et l'annonce « petit, moyen, grand » sont des propositions [Prop] de puissance-2, reprises seulement dans la règle de lien du jeu."
+  - "Jeu 1 : la fiche dit seulement « blanche placée librement ». Lecture retenue ici [Prop] : la blanche est placée à la main avant chaque tir, en face de la bille, pour que tous les tirs restent en bille pleine (décision [U] du 2026-10-15 : la séance ne traite que le plein) ; la règle de lien (facultative) ne change que la distance choisie et l'annonce du recul."
   - "La bille fantôme est dessinée avec le rayon de la blanche (48,0 mm, [FFB]) et posée à la somme des rayons de la bille de couleur (50,8 mm) et de la blanche ; la fiche n° 4 [S] dit seulement que la blanche est plus petite et ne chiffre rien. Les dimensions viennent de 06-dimensions-du-materiel.md ; à l'échelle d'un schéma de table l'écart reste à peine visible."
   - "Le sens de la ligne « blanche vers fantôme » et la hauteur « level » de la queue (profil de la cible) sont des schématisations ; la fiche ne précise que le procédé au centre de la blanche."

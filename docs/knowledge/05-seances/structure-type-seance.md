@@ -8,7 +8,7 @@ Légende : `[S]` sourcé (mémento 2023) ; `[Prop]` proposition de ce projet, à
 |-------|---------|-------------------------|--------------------------|
 | 0. Accueil | Mise en place, règles de sécurité et de matériel, rappel de la séance précédente | 10 min | 10 min |
 | 1. Notion + initiation `[S]` | Fiche technique résumée, démonstration, fiches initiation **en groupe** | 20 min | 25 min |
-| 2. Entraînement `[S]` | 2 exercices différents (≤ 2 passages chacun), résultats notés | 35 min | 50 min |
+| 2. Entraînement `[S]` | 2 exercices différents (≤ 2 passages chacun), résultats notés ; puis, dès la 2e séance, un **exercice de rappel** `[U]` choisi parmi les séances précédentes d'après le suivi (ADR 0011) | 35 min | 50 min |
 | 3. Jeu `[S]` | Jeu lié à la notion ; partie à difficulté réduite après les quantités | 20 min | 25 min |
 | 4. Bilan | Retour oral, lecture de la courbe de résultats, annonce de la suite, rangement | 5 min | 10 min |
 | **Total** | | **90 min** | **120 min** |

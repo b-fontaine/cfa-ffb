@@ -27,7 +27,7 @@ recall:
     answer: Seul l'avant-bras de queue, autour du coude ; le reste du corps ne bouge pas.
   # Illustration `posture-surface` de la séance précédente (posture-2) : main d'appui à plat.
   reuse: {sheet: posture-2, illustration: posture-surface}
-  src: S
+  src: Prop   # le point 3 (immobilité jusqu'à la fin du tir) est un contenu [Prop] de posture-2
 theory:
   sections:
     - id: deux-criteres
@@ -46,7 +46,7 @@ theory:
       src: S
     - id: curseur
       title: "Deux curseurs : le recul et la vitesse"
-      weight: {children: 1, adults: 1}
+      weight: {adults: 1}
       body:
         - "Pour s'entraîner, on imagine deux curseurs : le recul de la main, court ou long, et la vitesse du coup, lente ou rapide."
         - "Le plan recul et vitesse est une image de la séance : le doux est en bas à gauche, le puissant en haut à droite ; ce n'est pas une graduation fédérale."
@@ -76,16 +76,6 @@ theory:
       demo: null
       illustrations: [fleche-courte-longue]
       src: S
-    - id: ressort
-      title: Le ressort
-      weight: {children: 1}
-      body:
-        - Armer son tir, c'est comme tendre un ressort. Plus on le tend, plus il part loin.
-        - "Mais la blanche part aussi avec la vitesse du geste : plus on accélère, plus elle part loin."
-      key_point: Plus on arme et plus on accélère, plus la blanche part loin.
-      demo: "Montrer deux armés, un petit puis un grand, sans toucher la blanche."
-      illustrations: [plan-puissant]
-      src: Prop
     - id: mesure
       title: À la mesure de la distance
       weight: {children: 2, adults: 2}
@@ -103,7 +93,7 @@ initiation:
     weight: {children: 4, adults: 4}
     setup: Une rouge près de la poche d'angle du haut à gauche et une jaune sous la poche du milieu du haut, chacune dans sa zone grise ; deux positions pour la blanche, à droite et en bas à gauche (le schéma). Replacer la blanche après chaque tir.
     goal: "Empocher 4 billes à la mesure : la rouge et la jaune, depuis chaque position, deux billes avec un chevalet sur cadre puis deux avec un chevalet sur la surface de jeu ; la blanche reste dans la zone grise après l'impact."
-    expected: "La blanche s'arrête dans la zone grise ; le recul de la main change entre le tir proche et le tir lointain ; attaque au centre de la blanche depuis la position droite, un peu au-dessus du centre depuis la position gauche, comme sur les deux encarts du schéma. Conseil à l'animateur (fiche) : faire se questionner l'élève sur le placement de son corps selon la place de la blanche, et regarder la rectitude du geste et l'amplitude."
+    expected: "La blanche s'arrête dans la zone grise ; le recul de la main change entre le tir proche et le tir lointain ; attaque au centre de la blanche à tous les tirs (consigne du projet). Conseil à l'animateur (fiche) : faire se questionner l'élève sur le placement de son corps selon la place de la blanche, et regarder la rectitude du geste et l'amplitude."
     scoring: {mode: counter, of: 4}
     illustration: schema-initiation
     src: S
@@ -126,6 +116,7 @@ illustrations:
       - {id: w, color: white, at: [4.4, 1.7], role: cue}
     ghosts:
       - {id: g1, at: [4.86, 3.2], role: cue_start, for: w, label: "tir lointain"}
+      - {id: g-impact, at: [4.0, 0.414], role: impact, for: w}
     arrows:
       - {id: a1, kind: cue, ball: w, path: [[4.4, 1.7], [4.0, 0.414]], label: "tir doux"}
       - {id: a2, kind: cue, ball: w, path: [[4.86, 3.2], [4.0, 0.414]], label: "tir puissant"}
@@ -140,6 +131,7 @@ illustrations:
      caption: "Jeu 3 : placer la blanche dans la zone grise du camp adverse.",
      alt: "Table vue de dessus : deux camps de quatre billes aux deux extrémités, chacun autour d'une zone grise ; une longue flèche part du camp de gauche vers le camp de droite."}
 training:
+  recall_slot: {weight: {children: 1, adults: 1}, passes: 1}   # exercice choisi à l'exécution parmi les séances précédentes (ADR 0011, [U] 2026-10-15)
   exercises:
     - id: e1
       ref: {block: puissance, n: 1}
@@ -148,7 +140,7 @@ training:
       weight: {children: 3, adults: 1}
       setup: "Les trois rouges du schéma au ras des poches du haut, chacune dans sa zone grise ; les jaunes du schéma en paires au milieu de la table ; la blanche en bas, devant les paires. Ordre conseillé (proposition, le schéma ne le donne pas) : la rouge du milieu, la plus proche, puis celle de gauche, puis celle de droite."
       instruction: Empocher chaque rouge trois fois, soit neuf tirs, en passant entre les deux jaunes d'une paire ; la blanche doit rester dans la zone grise après l'impact.
-      expected: La blanche s'arrête dans la zone grise ; le recul de la main est plus court pour la rouge proche et plus long pour la rouge lointaine ; attaque un peu au-dessus du centre de la blanche, la même à tous les tirs.
+      expected: La blanche s'arrête dans la zone grise ; le recul de la main est plus court pour la rouge proche et plus long pour la rouge lointaine ; attaque au centre de la blanche, la même à tous les tirs (consigne du projet).
       mistakes:
         - {symptom: La blanche sort de la zone grise, fix: "Raccourcir le recul de la main plutôt que seulement ralentir le coup."}
         - {symptom: La queue dévie en armant ou en frappant, fix: "Ne bouger que l'avant-bras autour du coude et garder la queue sur sa trajectoire."}
@@ -211,10 +203,10 @@ sources:
 uncertainties:
   - "Mises en place en texte, défis ludiques, variante de jeu (jetons compris), règle de lien et adaptation du jeu : [Prop], à valider par un animateur dans l'application. La différenciation enfants / adultes (poids, compléments, adaptation du jeu) est aussi une proposition."
   - "Entraînement 1 et 2 : le schéma ne dit pas si les billes de couleur d'appoint (jaunes de l'exercice 1, rouges de l'exercice 2) sont des obstacles ou des repères ; la séance les lit comme des paires entre lesquelles passe la blanche (flèches du schéma)."
-  - "Les sections « Le ressort » et « Les mots de la queue » (enfants) et « Deux curseurs : le recul et la vitesse » sont des images ou des gloses [Prop] absentes de la fiche n° 2 ; la définition de la flèche vient du glossaire de la base, le talon et le centre de gravité sont glosés par la séance."
+  - "La section « Les mots de la queue » (enfants) et la section « Deux curseurs : le recul et la vitesse » (adultes : le plan recul et vitesse est une image abstraite, retirée du public enfants le 2026-10-15) sont des gloses [Prop] absentes de la fiche n° 2 ; la définition de la flèche vient du glossaire de la base, le talon et le centre de gravité sont glosés par la séance. La section « Le ressort » a été retirée le 2026-10-15 (audit) : l'amplitude n'est pas de l'énergie stockée, la métaphore contredisait la phrase sur la vitesse."
   - "Initiation 5 : la fiche ne dit pas quelles positions vont avec le chevalet sur cadre ou sur surface ; la séance ne l'impose pas. Les positions de la blanche et les flèches de l'illustration « court-long » sont indicatives, non à l'échelle ; les deux tirs visent la même bille fantôme avec une coupe voisine (environ trois-quarts de bille) pour n'isoler que la distance. Tailles : les billes sont dessinées à l'échelle réelle (blanche plus petite, rayon 0,1038 case contre 0,1098) ; la bille fantôme est une blanche posée au contact de la jaune, à s = r_c + r_o = 0,2136 case de son centre, d'où l'arrivée des flèches en (4,0 ; 0,414). La séance ne traite pas le quart de bille ni le rétro : aucune mention de la taille de la blanche n'est ajoutée au texte."
   - "Le recul et la vitesse ne sont pas chiffrés par la source : le plan recul et vitesse et ses trois zones (doux, moyen, puissant) sont une image [Prop], isolée dans la section « Deux curseurs : le recul et la vitesse » ; seuls les deux extrêmes (peu de recul et peu de vitesse : doux ; grand recul et grande vitesse : puissant) viennent de la fiche n° 2 (pas une graduation fédérale)."
   - "Le rappel porte sur ce que posture-2 enseigne et réutilise son illustration `posture-surface` (V7), qui n'appuie que le premier point (main d'appui à plat). Le point 2 vient de la fiche technique n° 1 ; le point 3 reprend un contrôle de la fiche d'initiation (p. 3-4) et un contenu [Prop] de posture-2 (immobilité jusqu'à la fin du tir)."
   - "Jeu 3 : la fiche dit à la fois « 5 tirs à tour de rôle » et « le premier à placer 5 fois la blanche gagne » ; les deux sont repris tels quels, la condition de fin est ambiguë (un 5 sur 5 seul rend la partie gagnable à la lettre). La fin proposée (nombre de tirs, plus de placements gagne, égalité départagée par un tir de plus chacun) remplace la fin de la fiche : c'est une proposition (adaptation), comme qui commence et la taille de la zone. Le schéma place la blanche au bord de la zone grise du camp du tireur."
-  - "Entraînement 1 : le schéma ne donne pas l'ordre des tirs (milieu, gauche, droite est une proposition) ; le « x3 » vaut trois tirs par rouge, soit neuf tirs. La correspondance doux / moyen / fort avec les trois rouges est une proposition. L'encart du schéma (attaque un peu au-dessus du centre) est approximatif ; l'initiation 5 montre le centre ou un peu au-dessus."
+  - "Entraînement 1 : le schéma ne donne pas l'ordre des tirs (milieu, gauche, droite est une proposition) ; le « x3 » vaut trois tirs par rouge, soit neuf tirs. La correspondance doux / moyen / fort avec les trois rouges est une proposition. Note animateur : l'encart du schéma dessine le procédé un peu au-dessus du centre et l'initiation 5 montre le centre ou un peu au-dessus ; la séance enseigne le centre (décision [U] du 2026-10-15, attaque de référence du niveau 1) et ne le dit pas aux élèves."
   - "Entraînement 2 : la blanche est près de la petite bande et le chevalet est sur cadre, donc près de la blanche ; l'exercice travaille la vitesse maîtrisée et le geste fluide, pas un grand recul (repris en puissance-2, chevalet sur surface)."

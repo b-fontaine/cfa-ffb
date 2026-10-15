@@ -7,7 +7,7 @@ import '../support/ui_world.dart';
 
 /// Usage: the session catalogue holds the fixture sessions
 ///
-/// Remplace le catalogue réel (29 séances) par 4 séances de test à la
+/// Remplace le catalogue réel (28 séances) par 4 séances de test à la
 /// frontière (le port de lecture) ; le reste de l'application est réel.
 Future<void> theSessionCatalogueHoldsTheFixtureSessions(
   WidgetTester tester,

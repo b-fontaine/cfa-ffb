@@ -29,7 +29,7 @@ blocks:
     exercises:  # adaptés des fiches d'initiation 1 à 4 et du jeu 1 [S] ; taux [Prop]
       - {n: 1, source: Prop, rate: [3, 4], bridge: cadre, note: "4 tirs (3 billes, la jaune deux fois), 4 emplacements de la blanche (initiation 1)"}
       - {n: 2, source: Prop, rate: [3, 4], bridge: surface, note: "4 billes depuis la même position, blanche replacée (initiation 2)"}
-      - {n: 3, source: Prop, rate: [6, 8], bridge: surface, note: "8 billes, 2 cibles depuis 4 emplacements (initiation 3)"}
+      - {n: 3, source: Prop, rate: [4, 8], note: "8 billes, 2 cibles depuis 4 emplacements (initiation 3) ; appui sur le cadre près de la bande, à plat ailleurs ; taux ramené de 6/8 à 4/8 le 2026-10-15 (audit)"}
       - {n: 4, source: Prop, rate: [4, 6], note: "6 billes en bord de poche, blanche et chevalet au choix, jeu 1 réduit de 6 sur 6 d'affilée à 4 sur 6 [Prop] (jeu 1, initiation 4)"}
   - id: puissance
     teaching_order: 2
@@ -46,13 +46,11 @@ blocks:
     source: Prop
     teaching_order: 3  # [Prop] après la puissance, avant la bille pleine. La fiche technique n° 3 [S] dit qu'on découvre d'abord les quantités de billes entre le plein et le demi-bille (visée « en dehors » ensuite) ; placer ce bloc d'introduction à la visée avant le bloc bille pleine est un choix [Prop], non une règle de la source
     title: Viser pour empocher (bille fantôme)
-    sessions: {min: 1, max: 2}
+    sessions: {min: 1, max: 1}  # [U] 2026-10-15 : une seule séance, en plein
     technical_sheet: 3
-    exercises:  # adaptés de la fiche technique n° 3, de l'initiation 6 et du jeu 10 [S] ; taux [Prop]
+    exercises:  # adaptés de la fiche technique n° 3 et de l'initiation 6 [S] ; taux [Prop] ; exercices 3 et 4 (demi-bille, coupes) retirés le 2026-10-15 [U]
       - {n: 1, source: Prop, rate: [3, 4], bridge: cadre, note: "4 billes en plein, bille fantôme posée puis retirée par l'animateur"}
       - {n: 2, source: Prop, rate: [3, 4], bridge: cadre, note: "4 billes en plein, bille fantôme imaginée par l'élève"}
-      - {n: 3, source: Prop, rate: [4, 6], bridge: surface, note: "6 billes en deux séries : 3 en plein depuis A puis 3 en demi-bille depuis B, bille fantôme imaginée"}
-      - {n: 4, source: Prop, rate: [4, 6], bridge: surface, note: "6 billes depuis une seule position de la blanche, coupes entre le plein et le demi (jeu 10 réduit)"}
   - id: bille-pleine
     teaching_order: 4
     title: La quantité de bille pleine

@@ -63,7 +63,7 @@ dart run tool/check_architecture.dart
 step "Séances (front matter, durées, déroulé)"
 (cd "$ROOT" && dart run scripts/validate_seances.dart seances)
 
-step "Fiches de séance (FORMAT.md § 7, 29 séances, lecture seule)"
+step "Fiches de séance (FORMAT.md § 7, 28 séances, lecture seule)"
 dart run tool/fiches.dart --complete
 
 if [[ "$MODE" == "--fast" ]]; then

@@ -61,6 +61,8 @@ const _headCases = {
   'left_eye_over_cue',
 };
 const _bridges = {'frame', 'surface'};
+const _handedness = {'right', 'left'};
+const _tipOffsets = {'slight', 'half'};
 const _amplitudes = {'short', 'medium', 'long'};
 const _speeds = {'slow', 'medium', 'fast'};
 const _powerPointKeys = {'amplitude', 'speed', 'label'};
@@ -141,7 +143,8 @@ const _initiationKeys = _Keys({
   'illustration',
   'src',
 });
-const _trainingKeys = _Keys({'exercises'});
+const _trainingKeys = _Keys({'exercises'}, {'recall_slot'});
+const _recallSlotKeys = _Keys({'weight', 'passes'});
 const _exerciseKeys = _Keys(
   {
     'id',
@@ -187,13 +190,13 @@ const _sourceKeys = _Keys({'rank', 'file', 'note'}, {'page'});
 const _illustrationParams = <String, _Keys>{
   'diagram_ref': _Keys({'diagram'}),
   'table': _Keys({'balls'}, {'ghosts', 'arrows', 'zones', 'sequence'}),
-  'contact': _Keys({'fraction', 'tip_point'}),
+  'contact': _Keys({'fraction', 'tip_point'}, {'offset', 'paths'}),
   'contact_strip': _Keys({'fractions'}, {'highlight'}),
   'ghost_aim': _Keys({'cue', 'object', 'pocket', 'fraction'}),
-  'cue_ball_target': _Keys({'tip_point'}, {'compare', 'cue_height'}),
+  'cue_ball_target': _Keys({'tip_point'}, {'compare', 'cue_height', 'offset'}),
   'player_figure': _Keys(
     {'view'},
-    {'focus', 'lead_eye', 'head_case', 'bridge'},
+    {'focus', 'lead_eye', 'head_case', 'bridge', 'handedness'},
   ),
   'ball_size': _Keys({}),
   'contact_height': _Keys({}),
@@ -742,6 +745,7 @@ class _Session {
       case 'table':
         _tableIllustration(ill, path);
       case 'contact':
+        _tipOffset(ill, path);
         _enum(ill['fraction'], _fractions, '$path.fraction');
         _enum(ill['tip_point'], _tipPoints, '$path.tip_point');
       case 'contact_strip':
@@ -850,6 +854,20 @@ class _Session {
     if (ill.containsKey('cue_height')) {
       _enum(ill['cue_height'], _cueHeights, '$path.cue_height', rule: 'V25');
     }
+    _tipOffset(ill, path);
+  }
+
+  /// V25 : écart du procédé (`contact` et `cue_ball_target`).
+  void _tipOffset(Json ill, String path) {
+    if (ill.containsKey('offset')) {
+      _enum(ill['offset'], _tipOffsets, '$path.offset', rule: 'V25');
+      if (ill['tip_point'] == 'center') {
+        _e('V25', '$path.offset', 'sans objet pour un procédé au centre');
+      }
+    }
+    if (ill.containsKey('paths') && ill['paths'] is! bool) {
+      _e('V25', '$path.paths', 'booléen attendu');
+    }
   }
 
   /// V26 : joueur schématique.
@@ -880,6 +898,9 @@ class _Session {
     }
     if (ill.containsKey('bridge')) {
       _enum(ill['bridge'], _bridges, '$path.bridge', rule: 'V26');
+    }
+    if (ill.containsKey('handedness')) {
+      _enum(ill['handedness'], _handedness, '$path.handedness', rule: 'V26');
     }
   }
 
@@ -1049,6 +1070,7 @@ class _Session {
     final training = _map(doc['training'], 'training');
     if (training == null) return;
     _keys(training, 'training', _trainingKeys);
+    _recallSlot(training['recall_slot']);
     final list = _list(training['exercises'], 'training.exercises');
     if (list == null) return;
     final ids = <String>{};
@@ -1058,6 +1080,35 @@ class _Session {
       final ex = _map(list[i], path);
       if (ex == null) continue;
       _exercise(ex, path, ids, used);
+    }
+  }
+
+  // --- créneau de rappel (V28, ADR 0011) ---------------------------------
+
+  void _recallSlot(Object? raw) {
+    const path = 'training.recall_slot';
+    final order = doc['order'];
+    if (raw == null) {
+      if (order is int && order > 1) {
+        _e('V28', path, 'créneau de rappel obligatoire dès order 2');
+      }
+      return;
+    }
+    if (order == 1) {
+      _e('V28', path, 'interdit à la première séance (order 1)');
+    }
+    final slot = _map(raw, path);
+    if (slot == null) return;
+    _keys(slot, path, _recallSlotKeys);
+    final weights = _weights(slot['weight'], '$path.weight');
+    for (final a in const ['children', 'adults']) {
+      if (!weights.containsKey(a)) {
+        _e('V28', '$path.weight', 'poids $a obligatoire (créneau affiché)');
+      }
+    }
+    final passes = slot['passes'];
+    if (passes is! int || passes < 1 || passes > 2) {
+      _e('V28', '$path.passes', 'passes doit valoir 1 ou 2 : $passes');
     }
   }
 
