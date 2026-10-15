@@ -67,6 +67,7 @@ app/lib/shared/ui/
 │   ├── app_spacing.dart         # AppSpacing (4/8/16/24/32, cible 48) et AppRadii (8/12/16)
 │   └── app_theme.dart           # AppTheme.light() / AppTheme.dark()
 ├── nav_icon.dart                # NavIcon : cinq glyphes de navigation (plein / contour)
+├── app_tabs.dart                # AppTabs : onglets de premier niveau (Séances), cible ≥ 48 dp
 ├── score_indicator.dart         # score x/n : pastilles pleines/creuses + texte
 ├── student_chip.dart            # StudentChip : prénom + pastille d'état (à faire, manqué, réussi), cible ≥ 48 dp
 ├── pass_dots.dart               # PassDots : n pastilles tapables (pleine = empochée, creuse = manquée) + « x/n »
@@ -218,6 +219,11 @@ Pas de téléchargement à l'exécution (Linux, Windows, web hors ligne).
   tentatives et « Saisir » sur une ligne de 48 dp ; dix élèves tiennent sur
   390 x 844. Le libellé complet est porté par la sémantique.
 - **Refus d'un passage** : `AppAlert` niveau attention, jamais de rouge seul.
+- **Rappel de sauvegarde** (`BackupReminderBanner`, bandeau de l'accueil) :
+  `AppAlert` niveau attention (jamais le rouge d'état, ADR 0010) et une action
+  tonale « Sauvegarder » de 48 dp qui ouvre `/backup` ; non bloquant, absent
+  tant que la règle ne dit rien. Trois messages : jamais sauvegardé, sauvegarde
+  ancienne (jours), passages saisis depuis.
 - **Tentatives** : le changement est rare, relégué sous la ligne
   (« Tentatives : n (fiche) » + « Changer pour ce passage » qui déplie le
   `CounterField`).
@@ -666,3 +672,15 @@ démonstration (une élève enfants avec passages réussis et manqués, un élè
 adulte). Les use cases des pages et des vues du suivi
 (`app_pages_use_cases.dart`, `feature_use_cases.dart`, `shared_ui_use_cases.dart`)
 s'appuient sur ce monde via `WorldScope` / `LoadedScope`, avec les vrais Bloc.
+
+### AppTabs (lot U6, R6/R12)
+
+- `shared/ui/app_tabs.dart` : `AppTabs(labels, selectedIndex, onSelected,
+  semanticLabel)`, au moins deux onglets, rangée de libellés répartis.
+- Accessibilité : chaque onglet fait 48 dp minimum, annoncé bouton
+  `selected` et `inMutuallyExclusiveGroup` ; le groupe porte `semanticLabel`.
+- Couleurs : onglet sélectionné et soulignement au rôle `primary`, onglets non
+  sélectionnés en `onSurfaceVariant`.
+- Usage : rendu par `AppShell` au-dessus de `/planner`, `/catalogue` et
+  `/session` uniquement (destination « Séances »). Use case Widgetbook :
+  `app_tabs_use_cases.dart`.

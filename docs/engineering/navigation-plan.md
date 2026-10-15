@@ -1,0 +1,76 @@
+# Plan d'exécution : navigation recentrée (lot U6, volet 1)
+
+Statut : **lot U6 livré le 2026-10-15** (volet navigation, puis rappel de
+sauvegarde). Source : [ux/plan-ux-proposition.md](ux/plan-ux-proposition.md)
+(lot U6, § 4) et [ux/recommandations-design.md](ux/recommandations-design.md) R6
+et R12. Pas d'ADR : les cinq destinations restent celles de l'ADR 0004 ; seul le
+contenu de deux d'entre elles change.
+
+## Décisions
+
+1. **Cinq destinations** : Aujourd'hui · Élèves · Résultats · Séances · Plus
+   (en : Today · Students · Results · Sessions · More). « Plus » remplace
+   « Sauvegarde » ; « Accueil » devient « Aujourd'hui » (libellé seul, l'écran
+   est celui de U7).
+2. **« Séances » à onglets** : Planifiées (`/planner`) · Catalogue
+   (`/catalogue`) · Suggestion (`/session`). Les onglets sont rendus par
+   `AppShell` au-dessus des seuls trois écrans de premier niveau ; les pages
+   ouvertes depuis un onglet (séance du catalogue, fiche d'exercice) ne les
+   affichent pas et restent sous la destination « Séances ». Les écrans, leurs
+   adresses et leurs liens profonds sont inchangés.
+3. **Atterrissage** : la destination « Séances » ouvre toujours le Catalogue
+   (comportement existant, parcours et scénarios conservés). Le choix d'un
+   atterrissage sur « Planifiées » relève de U7/U8.
+4. **« Plus »** : écran de liste (`/more`) qui mène à Sauvegarde (`/backup`,
+   écran existant, avec retour à « Plus »). `/backup` sélectionne « Plus ».
+5. **Composant** : `AppTabs` (`shared/ui/app_tabs.dart`), sans dépendance
+   métier : boutons de 48 dp minimum, sémantique « sélectionné » dans un groupe
+   exclusif, étiquette de groupe.
+
+## Reports (documentés, rien de stubbé)
+
+- **Réglages** : l'entrée vit avec le lot 9 (l'écran n'existe pas) ; aucune
+  entrée sans écran n'est créée sous « Plus ».
+- **À propos et sources** : aucun contenu à y mettre aujourd'hui ; reporté.
+- **Bouton « Suggestion par groupe »** du catalogue : conservé, redondant avec
+  l'onglet ; son retrait relève de U8.
+
+## Rappel de sauvegarde (volet 2)
+
+- **Persistance** : la date de dernière sauvegarde n'existait pas. Ajout du
+  port `BackupMarkerRepository` (date de l'export + nombre de passages du club
+  à cet instant), table drift `backup_exports` (schéma v6, migration
+  `from5To6`), contrat commun in-memory et drift. Le marqueur est écrit par
+  `BackupBloc` quand le fichier est réellement enregistré (export annulé :
+  rien). Donnée locale à l'appareil, hors fichier de sauvegarde ; un import ne
+  la modifie pas.
+- **Règle** (`BackupReminder.evaluate`, domain pur) : aucun rappel tant qu'aucun
+  passage n'est saisi ; sinon, par priorité, sauvegarde de 30 jours révolus ou
+  plus, puis passages saisis depuis la dernière sauvegarde (compte actuel moins
+  compte à l'export, jamais négatif), puis « jamais sauvegardé ».
+- **Passages « depuis »** : comparés par nombre et non par date, car la date
+  d'un passage est celle de la séance, pas celle de la saisie. Limite assumée :
+  supprimer N passages puis en saisir N après une sauvegarde ne déclenche aucun
+  rappel (différence de comptes).
+- **Retour depuis Sauvegarde** : le bouton « Retour à Plus » ramène toujours à
+  `/more`, y compris quand la sauvegarde est ouverte depuis le bandeau de
+  « Aujourd'hui » (choix simple, un paramètre d'origine serait un ajout U7).
+- **Interface** : `BackupReminderBanner` (`AppAlert` attention + action
+  « Sauvegarder » vers `/backup`), posé sur l'accueil par le routeur via le
+  paramètre `banner` de `HomePage` : l'accueil n'est pas refondu (U7). Évalué à
+  chaque ouverture de « Aujourd'hui ».
+- **Reporté** : rappel natif (notification) en H4, désactivable (Q7) ; seuil
+  de 30 jours non réglable avant le lot 9.
+
+## Fichiers par couche
+
+| Couche | Fichiers |
+|--------|----------|
+| shared | `shared/ui/app_tabs.dart`, ARB fr/en (`navMore`, `navHome`, `sessionsTab*`, `more*`, `backupBackToMore`) |
+| pages | `pages/more/presentation/more_page.dart` ; `pages/backup` (retour à « Plus ») |
+| app | `app/shell.dart` (`indexOf`, `sessionsTabOf`, onglets), `app/router.dart` (`AppRoutes.more`, route `/more`) |
+| tests | `test/bdd/navigation.feature`, `backup_screen.feature`, `test/unit/app/shell_routes_test.dart`, `shared/ui/app_tabs_test.dart`, `pages/more_page_test.dart`, steps `the_navigation_destinations_are`, `the_destination_is_selected`, `the_sessions_tab(s)_*`, `i_do_not_see_the_sessions_tabs` |
+| backup_data | `domain/backup_marker*.dart`, `backup_reminder.dart`, `check_backup_reminder.dart`, `record_backup_done.dart` ; `data/drift_` et `in_memory_backup_marker_repository.dart` ; `presentation/bloc/backup_reminder_cubit.dart`, `ui/backup_reminder_banner.dart` |
+| persistance | `shared/persistence/tables.dart` (`BackupExports`), `app_database.dart` (v6), `drift_schemas/…/drift_schema_v6.json` |
+| tests | `test/bdd/backup_reminder.feature` (7 scénarios), `unit/features/backup_data/domain/backup_reminder_test.dart`, `presentation/backup_reminder_*_test.dart`, `contract/backup_marker_contract.dart`, migration v6 |
+| widgetbook | `app_tabs_use_cases.dart`, use case « Plus » |

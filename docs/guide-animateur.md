@@ -6,8 +6,9 @@ l'animateur : discipline Blackball uniquement, public enfants (séance de 90 min
 ou adultes (120 min), passage d'un public à l'autre toujours manuel.
 
 L'application fonctionne sur smartphone, tablette et navigateur. La navigation
-est en bas de l'écran sur smartphone, à gauche sur grand écran : **Accueil**,
-**Élèves**, **Résultats**, **Séances**, **Sauvegarde**.
+est en bas de l'écran sur smartphone, à gauche sur grand écran : **Aujourd'hui**,
+**Élèves**, **Résultats**, **Séances** (onglets Planifiées, Catalogue,
+Suggestion) et **Plus** (qui mène à la sauvegarde).
 
 ## 1. Constituer le groupe
 
@@ -260,7 +261,14 @@ suffisamment mature.
 
 ## Sauvegarder vos données
 
-Ouvrez **Sauvegarde**.
+Ouvrez **Plus**, puis **Sauvegarde**.
+
+Sur **Aujourd'hui**, un bandeau vous rappelle de sauvegarder dès que des
+passages sont saisis et que vous n'avez jamais sauvegardé, qu'il y en a de
+nouveaux depuis la dernière sauvegarde, ou que celle-ci date de 30 jours ou
+plus. Il n'apparaît pas tant qu'aucun passage n'est saisi, ne bloque rien, et
+son bouton **Sauvegarder** ouvre directement l'écran de sauvegarde. Il
+disparaît dès qu'un export a été enregistré (un export annulé ne compte pas).
 
 - **Exporter** produit un fichier JSON (téléchargement dans le navigateur,
   partage de fichier sur mobile). Faites-le régulièrement, en fin de séance ou

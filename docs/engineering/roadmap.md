@@ -141,6 +141,12 @@ Lots UX en H0 :
      [plan](saisie-grille-plan.md). Une ligne par élève avec `PassDots`,
      sélecteur d'exercice nommé et non tronqué, liste compacte sous 600 dp,
      historique groupé par élève, saisie en feuille basse depuis le guide.
+   - ~~**U6** Navigation recentrée~~ : **livré le 2026-10-15**,
+     [plan](navigation-plan.md) (cinq destinations, « Séances » à onglets,
+     « Plus » → Sauvegarde, rappel de sauvegarde sur « Aujourd'hui » après 30
+     jours ou des passages saisis ; schéma drift v6). L'entrée « Réglages »
+     arrive avec le lot 9 et « À propos et sources » faute de contenu
+     (reports, aucune entrée sans écran).
 7. ~~Positionnement initial / bloc acquis~~ : marquer un bloc comme acquis sans
    passage (élèves non débutants, rentrée) ; sinon la suggestion repart de
    « posture » et la fiche affiche « 0 / 70 » toute la saison. **Livré le
@@ -161,9 +167,8 @@ Lots UX en H0 :
    résultats » pré-rempli et « Planifier » (ouvre le planificateur ; la
    création directe d'une séance planifiée datée pour le groupe revient à U7,
    bilan de fin de séance).
-   - **U6** Navigation recentrée, ensuite : « Aujourd'hui / Élèves /
-     Résultats / Séances / Plus » ; à livrer avant le lot 9, qui prend place
-     sous « Plus ». Dépend de U1.
+   - ~~**U6** Navigation recentrée~~ : livré (voir plus haut) ; le lot 9
+     prend place sous « Plus».
 9. **Réglages** (F8) : écran persisté (drift + sauvegarde) pour
    `passesRequired`, seuil d'alerte, `recallStaleSessions`, part d'échec du
    groupe ; sous la destination « Plus » (U6), pas de sixième onglet.
@@ -228,7 +233,7 @@ Lots UX en H0 :
 
 ```
 H0 : ~~F7~~ → ~~revue T8~~ (faite, constats ouverts ci-dessus) → ~~réaliser D5~~ réalisé (les questions ouvertes sont tranchées ; U2 livré)
-H1 : ~~U5~~ → U6 → 9 → U7 → 10 + U9 + U8 → 11   (5 à 8 livrés)
+H1 : ~~U5~~ → ~~U6~~ → 9 → U7 → 10 + U9 + U8 → 11   (5 à 8 livrés)
 H2 : U4 → U3 → 14 → 15
 H3 : 16 (avec le mode Relecture de U4) → 17 → 18 → 19 → 20
 H4 : 21 → 22 (+ rappels) → 23

@@ -11,7 +11,7 @@ Les règles ci-dessous sont vérifiées par `app/tool/check_architecture.dart`
 | Couche | Rôle | Exemple dans le projet |
 |---|---|---|
 | `app` | Câblage : `App`, routeur go_router, DI get_it/injectable | `app/app.dart`, `app/router.dart`, `app/di/injection.dart` |
-| `pages` | Écrans routables, composent widgets et features | `pages/home`, `pages/session_planner` |
+| `pages` | Écrans routables, composent widgets et features | `pages/home`, `pages/session_planner`, `pages/more` |
 | `widgets` | Blocs d'interface réutilisables et autonomes, sans logique métier | `widgets/session_list` |
 | `features` | Actions utilisateur ayant une valeur métier (cas d'usage + Bloc + UI) | `features/plan_session` |
 | `entities` | Concepts métier (modèle, port de repository, implémentation de données) | `entities/session` |
@@ -89,7 +89,9 @@ app/
 │   ├── entities/student/              # Student, AudienceChange (historique)
 │   ├── entities/season/  entities/group/  entities/session_record/
 │   ├── entities/maturity_assessment/  # chacun : domain/ (+ port) et data/ (en mémoire + drift)
-│   ├── features/backup_data/          # ExportBackup, ImportBackup, BackupCodec ; BackupBloc, BackupView
+│   ├── features/backup_data/          # ExportBackup, ImportBackup, BackupCodec, BackupMarkerRepository,
+│   │                                  # CheckBackupReminder, RecordBackupDone ; BackupBloc, BackupView,
+│   │                                  # BackupReminderCubit, BackupReminderBanner
 │   └── shared/
 │       ├── lib/                       # noyau Dart pur : Audience, identifiants typés,
 │       │                              # ExerciseRef, SuccessRate, RulesConfig,
@@ -174,6 +176,15 @@ widgetbook/                            # projet séparé : catalogue du design s
   `file_picker` (téléchargement web / partage fichier) et variante en mémoire pour
   les tests. Un avertissement est affiché si `StorageStatus` signale une
   persistance volatile.
+- **Rappel de sauvegarde** (lot U6) : `BackupMarkerRepository` (port,
+  `features/backup_data/domain`, implémentations drift et en mémoire) retient
+  la date et le nombre de passages à chaque export enregistré (table
+  `backup_exports`, schéma v6 ; donnée locale, absente du fichier de
+  sauvegarde). `BackupReminder.evaluate` (règle pure, seuil de 30 jours
+  révolus, horloge injectée via `CheckBackupReminder`) ; `RecordBackupDone`
+  est appelé par `BackupBloc` quand le fichier est enregistré ;
+  `BackupReminderCubit` + `BackupReminderBanner`, composés dans `HomePage`
+  par le routeur.
 
 ## Noyau partagé (`shared/lib`) et slices d'entités
 
