@@ -6,7 +6,7 @@ Ordre des notions et nombre de séances conseillé : `[S]` (fiches entraînement
 |----------------|--------|---------------------------|-------------------|----------|
 | A. Fondamentaux | Visée, posture, chevalets, coup de queue | non précisé dans le PDF d'entraînement ; **1 à 2 `[Prop]`** (bloc `posture` proposé) | n° 1 | Première séance courte sur la posture (risque de rejet) |
 | A | Puissance | 1 à 2 | n° 2 | Amplitude + vitesse |
-| B. Quantités | Viser pour empocher (bille fantôme) | — dans le PDF ; **1 à 2 `[Prop]`** (bloc `bille-fantome` proposé) | n° 3 | Technique propre, avant la bille pleine ; l'aide visuelle reste utile aux séances plein/demi |
+| B. Quantités | Viser pour empocher (bille fantôme) | — dans le PDF ; **1 à 2 `[Prop]`** (bloc `bille-fantome` proposé) | n° 3 | Technique propre, avant la bille pleine ; dans le catalogue, elle a ses propres séances (`bille-fantome-1`, `bille-fantome-2`) |
 | B | Bille pleine | 2 à 3 | n° 4 | |
 | B | Demi-bille | 2 à 3 | n° 5 | |
 | B | Trois-quarts | 1 à 2 | n° 6 | |
@@ -24,6 +24,18 @@ Ordre des notions et nombre de séances conseillé : `[S]` (fiches entraînement
 > `[Prop]` (2026-10-13) : les blocs d'entraînement `posture` et `bille-fantome` n'existent pas dans le PDF ; ils sont proposés pour que ces notions aient des exercices notés. Voir `../03-exercices/entrainement.md` (« Blocs proposés »).
 
 > `[U]` (2026-10-11) : l'ordre **rebond sur bande → rejet naturel** est confirmé par l'animateur ; le PDF d'entraînement présente le rejet naturel avant le rebond. Un exercice est **validé après plusieurs passages réussis (5 le plus souvent)** ; le taux de réussite de la fiche s'applique à chaque passage.
+
+## Correspondance avec le catalogue de séances
+
+Le catalogue de l'application (`catalogue/FORMAT.md` § 1.2) compte **14 techniques et 29 séances**, dans l'ordre d'enseignement ci-dessus. Le nombre de séances par technique est calculé par le validateur à partir du nombre d'exercices du bloc ; il reste dans la fourchette conseillée `[S]` du tableau. Le regroupement en cycles A à D reste `[Prop]`.
+
+| Cycle `[Prop]` | Techniques du catalogue (séances) |
+|----------------|-----------------------------------|
+| A | `posture` (2), `puissance` (2) |
+| B | `bille-fantome` (2), `bille-pleine` (2), `demi-bille` (2), `trois-quarts` (2), `quart` (1), `finesse` (1) |
+| C | `rebond-bande` (2), `rejet-naturel` (2), `coule` (3), `carreau` (2), `angle-droit` (2), `retro` (4) |
+
+Pas de séance au catalogue pour la synthèse des quantités de billes, la synthèse des trajectoires de blanche (cycle D) ni la casse : ces notions ne sont pas transcrites en séances `[Prop]`. Dans le catalogue, la séance 1 d'une technique **introduit** la notion ; les suivantes l'**approfondissent** avec un rappel de la séance précédente. Les contenus `[Prop]` des 29 séances restent à valider par l'animateur (`README.md`).
 
 ## Règles de séquencement
 
