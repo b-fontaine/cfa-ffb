@@ -1,5 +1,7 @@
 # ADR 0005 : illustrations du joueur, de la cible sur la blanche et du dosage
 
+> Amendement du 2026-10-15 `[U]` : la décision D5 du plan, restée ouverte ci-dessous, est **tranchée et réalisée** (2026-10-14) : la vue de côté avec contact est le type `contact_height`, rendu par `ContactHeightView` (`shared/ui`). `CueSideView` n'affiche plus de contact (`showContact` est supprimé). Le reste de l'ADR est inchangé.
+
 - Statut : **accepté et implémenté** (2026-10-13). Remplace en partie les décisions 6 et les « limites assumées » de l'ADR 0004 pour trois types d'illustration. Plan : `../tailles-et-illustrations-plan.md` (§ 3).
 - Contexte de livraison : application V1 non livrée, aucune compatibilité de données à préserver.
 
