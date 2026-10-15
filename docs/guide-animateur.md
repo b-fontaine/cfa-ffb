@@ -156,8 +156,12 @@ exercices suivants.
    Sinon, ouvrez **Résultats**, puis **Nouvelle séance** (ou le bouton depuis
    la séance suggérée) et ouvrez la séance. La saisie et l'historique nomment
    la séance du catalogue notée (« Séance du catalogue : … »).
-2. Choisissez l'exercice, puis, pour chaque élève, indiquez les **billes
-   empochées** sur le **nombre de tentatives** de chaque passage.
+2. Choisissez l'exercice (le menu porte son nom, par exemple « Les six parts
+   de gâteau »). Chaque élève présent a une ligne : touchez les **pastilles**
+   des billes empochées (une par essai), puis **Saisir**. La ligne dit tout de
+   suite « réussi » ou « manqué » et le nombre de passages réussis sur 5. Le
+   nombre de tentatives de la fiche s'affiche sous la ligne ; **Changer pour ce
+   passage** permet de l'ajuster (rare).
 3. L'application applique les règles :
    - **deux passages au maximum** par exercice et par séance ;
    - un passage est **réussi** quand le taux demandé par la fiche est atteint ;
@@ -168,8 +172,9 @@ exercices suivants.
 Si une saisie est refusée (par exemple un troisième passage), un message
 explique pourquoi et rien n'est enregistré.
 
-Depuis la séance guidée, **Retour à la séance guidée** ramène à la même étape,
-compteurs intacts.
+Depuis la séance guidée, la saisie s'ouvre dans une **feuille** par-dessus le
+guide, sur l'exercice en cours : **Retour à la séance guidée** (ou la fermer)
+ramène à la même étape, compteurs intacts.
 
 ### Relire, corriger ou supprimer un passage
 

@@ -51,6 +51,8 @@ app/
 │   ├── app/                           # couche app
 │   │   ├── app.dart                   # MaterialApp.router + l10n
 │   │   ├── router.dart                # GoRouter (AppRoutes)
+│   │   ├── record_sheet.dart          # showRecordSheet : feuille basse de saisie depuis le guide
+│   │   ├── record_screens.dart        # buildRecordSetup / buildRecordSession : câblage unique (route et feuille)
 │   │   ├── firebase_options.dart      # généré par `flutterfire configure` (chemin fixé dans app/firebase.json)
 │   │   └── di/injection.dart          # @InjectableInit → injection.config.dart (généré)
 │   ├── pages/                         # une page par parcours, Bloc fourni par le routeur
@@ -231,9 +233,10 @@ pages à table (`kind` `exercise`, `game`, `initiation`) vers
 - **Correspondance avec le catalogue** : par les données, `TrainingBlock.title`
   = `sheet` et `ExerciseSpec.ref.number` = `exercise`
   (`DiagramKey.training(...)`) ; aucune table écrite à la main. Vérifiée par
-  `test/contract/catalogue_diagrammes_test.dart` (72 exercices, tous illustrés : 64 par
-  les pages transcrites `[S]`, 8 par `diagrammes/proposition/` `[Prop]` pour les blocs
-  proposés `posture` et `bille-fantome`, dont `Provenance.prop` porte la mention).
+  `test/contract/catalogue_diagrammes_test.dart` (70 exercices, tous illustrés : 64 par les pages
+  transcrites `[S]`, 6 par `diagrammes/proposition/` `[Prop]` pour les blocs
+  proposés `posture` et `bille-fantome`, dont `Provenance.prop` porte la
+  mention ; décompte tenu à jour dans `FORMAT.md` § 1.2).
 - **Non représenté** : l'encart `inset` (quantité de bille, point du procédé)
   n'est pas encore lu ; ses valeurs `tip_point` dépassent `TipPoint`.
 
@@ -297,8 +300,7 @@ ADR 0004, lot L4. Lecture seule de bout en bout :
   séances planifiées (`AppRoutes.recordFromPlan`) ; le guide lancé depuis une
   séance planifiée (`RunPlan.planned`) pré-remplit groupe et date
   (`RunSheetState.recordDefaults` : le choix d'une saisie précédente prime sur
-  la séance planifiée ; le routeur ne fait que le lire, puis
-  `AppRoutes.recordFromGuide(sheet:)`). Les blocs dérivés d'une séance
+  la séance planifiée ; le routeur ne fait que le lire). Les blocs dérivés d'une séance
   (`SheetBlocks.resolve`) ne remplacent jamais des blocs donnés. Schéma drift
   v4 (ADR 0001).
 - Garde-fous : `test/contract/session_sheets_render_test.dart` rend les 28
@@ -312,18 +314,46 @@ jamais modifier le contenu du catalogue :
 
 - `features/run_sheet` : `ResolveRunPlan(sheetId, audience?, sessionId?)` donne
   le déroulé (`RunPlan` : accueil ou rappel, théorie, initiation, exercices,
-  jeu, bilan ; minutes calculées ; taux du catalogue d'entraînement ; schémas
+  créneau d'exercice de rappel, jeu, bilan ; minutes calculées ; taux du catalogue d'entraînement ; schémas
   par identifiant ; bloc du rappel de **résultats**, calculé par
   `resultsRecallBlock` : le bloc de la plus récente séance précédente dont le
   bloc diffère du bloc principal). Sans public demandé, celui de la séance
   planifiée, sinon les enfants.
+- Créneau d'exercice de rappel ([ADR 0011](adr/0011-creneau-exercice-de-rappel.md)) :
+  - Le modèle : `SessionSheet.recallSlot` (`{weight, passes}`, présent si et
+    seulement si la séance a une `previous`, donc à partir de la 2e) ;
+    `RunStepKind.recallExercise` est la **dernière** étape de la phase
+    d'entraînement, après les exercices de la séance, et ses minutes viennent
+    du budget de cette phase.
+  - Le choix : `chooseRecallExercise` est une fonction **pure**
+    (`features/run_sheet/domain/recall_exercise.dart`) qui rend un
+    `RecallExercise` (séance d'origine, exercice, élèves en attente, élèves
+    suivis). Elle retient l'exercice des séances précédentes que le plus
+    d'élèves n'ont pas validé (à égalité le plus récent ; sans élève ou tout
+    validé, le dernier exercice de la séance précédente).
+  - Les données : `LoadValidatedExercises` (`@injectable`, domaine de
+    `features/run_sheet`) lit les élèves suivis (membres du groupe de la
+    séance planifiée à sa date, sinon élèves du public) et leurs exercices
+    validés ou acquis au positionnement (ADR 0008) ; `ResolveRunPlan` les
+    passe à `chooseRecallExercise`.
+  - Le plan : `RunPlan.recallExercise` porte le choix ; `recallSpec` (la
+    spécification d'entraînement : consigne, mise en place, taux, lue dans le
+    catalogue d'entraînement) et `recallBlockTitle` (titre du bloc d'origine)
+    permettent d'afficher l'étape comme un exercice ordinaire ; le schéma est
+    celui de l'exercice choisi, donc montrable en présentation.
+  - La saisie : « Noter les résultats » depuis le créneau ouvre la saisie sur
+    l'exercice choisi, dont le bloc devient le bloc de rappel de la saisie s'il
+    diffère du bloc principal. Cette dérivation est aujourd'hui écrite dans
+    `pages/sheet_guide` ; la revue l'a relevée comme règle métier à
+    déplacer vers `features/run_sheet/domain` (roadmap, audit des séances).
+    Rien n'est enregistré sans saisie.
 - `RunSheetCubit` porte l'étape courante, les compteurs d'initiation, la grille
   « acquis », le score du jeu et le minuteur indicatif (source `RunTicker`
   injectable, jamais bloquant). Tout est local et jamais enregistré ; toutes
   les étapes sont atteignables librement (relecture sans élèves). Les cubits
   vivent dans `RunSheetSessions` (singleton, clé `RunKey` = séance, public
-  demandé, séance planifiée, groupe), au-dessus du routeur : `context.go` retire la page du
-  guide, mais les compteurs survivent à un aller-retour par la saisie.
+  demandé, séance planifiée, groupe), au-dessus du routeur : les compteurs
+  survivent à la sortie du guide (changement d'étape, lien profond).
   « Terminer la séance » (après confirmation) réinitialise l'état puis
   **libère** le cubit (`release`) ; au plus `maxRunning` séances restent en
   cours, la moins récemment utilisée étant évincée ; le minuteur s'arrête quand
@@ -336,9 +366,22 @@ jamais modifier le contenu du catalogue :
   « Retour » et « Terminer » reviennent au planificateur quand le guide a été
   lancé depuis une séance planifiée (`?session=`), sinon à la séance du
   catalogue.
-- Saisie depuis le guide : le groupe, la date et les absents de la première
-  saisie sont retenus (`RunSheetState.recordChoice`) et passés en
-  `/record?group=&absent=&date=` pour les exercices suivants.
+- Saisie depuis le guide (lot U5) : le groupe, la date et les absents de la
+  première saisie sont retenus (`RunSheetState.recordChoice`, écrit par
+  `RunSheetSessions.recordChosen`) et réutilisés pour les exercices suivants.
+  « Noter les résultats » appelle `showRecordSheet` (couche `app`,
+  `app/record_sheet.dart`) : une feuille basse qui réutilise `RecordSetupPage`
+  puis `RecordSessionPage`, sur l'exercice courant. Le guide n'est pas démonté
+  et reste à la même étape ; fermer la feuille ne perd rien (tout est
+  persisté à « Saisir »). `_RecordSheet` est un `StatefulWidget` qui garde
+  l'étape (ouverture ou saisie) : état de présentation, permis dans la
+  couche `app`. Le câblage des écrans (blocs, groupe, présents, date) est écrit
+  une seule fois dans `app/record_screens.dart` (`buildRecordSetup`,
+  `buildRecordSession`), partagé par les routes `/record/new`,
+  `/record/:sessionId` et la feuille. Le retour système ferme la feuille et
+  ramène le guide à la même étape (scénario BDD). Il n'existe plus de
+  constructeur d'adresse `recordFromGuide` : seules les routes subsistent
+  (liens profonds, ADR 0007).
 - `RunPresentationCubit` : mode présentation, qui résout son propre déroulé
   (route de premier niveau, hors du shell) et parcourt les étapes qui ont
   quelque chose à montrer ; son étape est locale à la présentation.
@@ -353,13 +396,17 @@ jamais modifier le contenu du catalogue :
   (hors du shell). Le guide est lancé depuis le détail d'une séance, depuis la
   liste des séances planifiées ou depuis la séance suggérée (qui transmet le
   groupe).
-- Notation : « Noter les résultats » ouvre `/record/new?main=<bloc>&recall=<bloc
-  de rappel>&exercise=<n>&sheet=<séance>&from=<adresse du guide>` (le groupe
-  et la date viennent du choix précédent ou de la séance planifiée ; sans eux,
-  le groupe se choisit à la saisie), puis `/record/:sessionId?exercise=<n>&from=…`. `from` n'est
-  suivi que s'il est intérieur à l'application et sous `/catalogue/` ; sinon il
-  est ignoré. `RecordResultsEvent.started` présélectionne l'exercice du bloc
-  principal ; le retour ramène au guide à la même étape.
+- Notation : `/record/new?main=<bloc>&recall=<bloc de rappel>&exercise=<n>&sheet=<séance>&from=<adresse>`
+  puis `/record/:sessionId?exercise=<n>&from=…` ne servent plus qu'aux liens
+  profonds (ADR 0007) et à la saisie hors guide. `from` n'est suivi que
+  s'il est intérieur à l'application et sous `/catalogue/` ; sinon il est
+  ignoré. `RecordResultsEvent.started` présélectionne l'exercice du bloc
+  principal. `SessionOverview` porte `history` (passages de tous les élèves
+  présents), `progress` (`StudentProgress.derive` de chaque élève, acquis au
+  positionnement compris, ADR 0008), `passedCount(élève, exercice)` (le
+  « n sur 5 » de la grille, lu dans `progress`) et `exerciseName`,
+  lu dans `SheetOption.exerciseTitles` (titres des exercices de la séance du
+  catalogue).
 - Garde-fous : `test/contract/session_sheets_guide_test.dart` rend le guide et
   la présentation sur les 28 séances, à chaque étape (fr et en, deux publics,
   texte à 200 % sur téléphone, tablette en paysage).

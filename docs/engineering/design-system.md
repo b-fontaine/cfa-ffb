@@ -68,6 +68,7 @@ app/lib/shared/ui/
 │   └── app_theme.dart           # AppTheme.light() / AppTheme.dark()
 ├── nav_icon.dart                # NavIcon : cinq glyphes de navigation (plein / contour)
 ├── score_indicator.dart         # score x/n : pastilles pleines/creuses + texte
+├── student_chip.dart            # StudentChip : prénom + pastille d'état (à faire, manqué, réussi), cible ≥ 48 dp
 ├── pass_dots.dart               # PassDots : n pastilles tapables (pleine = empochée, creuse = manquée) + « x/n »
 ├── timer_chip.dart              # TimerChip : minuteur compact, ton neutre / attention / dépassé, lecture-pause
 ├── phase_timeline.dart          # PhaseTimeline : frise proportionnelle des phases (minutes), phase courante, tapable
@@ -192,6 +193,46 @@ Pas de téléchargement à l'exécution (Linux, Windows, web hors ligne).
 - Use cases Widgetbook : `phase_timeline_use_cases.dart` (interactif adultes,
   enfants, phases courtes et libellés longs) et `step_app_bar_use_cases.dart`
   (interactif, bouton fermer sans menu, titre long).
+
+
+### Saisie rapide en grille (lot U5, R11, corrige F4)
+
+- **`StudentChip`** (`shared/ui`, R4) : `name`, `status`
+  (`StudentChipStatus` : `todo`, `missed`, `reached`), `statusLabel`, `detail`
+  optionnel (« 2/5 »), `maxWidth` et `semanticsLabel`. Aucune dépendance aux
+  entités. Hauteur d'au moins 48 dp, prénom sur deux lignes au plus, une icône
+  par état (jamais la couleur seule), bleu-tapis (`secondary`) pour « réussi »,
+  aucun rouge d'état. `SectionCard.header` accepte un composant à la place du
+  titre texte (le titre reste le libellé sémantique). Use cases :
+  `student_chip_use_cases.dart` (interactif, trois états, prénom long).
+
+- **`StudentPassRow`** (`features/record_results/presentation/ui/`) : une ligne
+  par élève présent, des `PassDots` (une pastille par essai), le bouton
+  « Saisir », l'état de validation à droite (« n sur 5 passages réussis ») et
+  un résultat par passage en toutes lettres (« Passage 1 : 4 sur 6, réussi » ou
+  « manqué »). La ligne passe en emphase bleu-tapis (`SectionEmphasis.high`)
+  quand le dernier passage atteint le taux ; aucun rouge d'état ; jamais la
+  couleur seule.
+- **Compacte sous 600 dp** (`StudentPassRow.compactBreakpoint`) : prénom et
+  cumul, pastilles sans score (`PassDots.showScore: false`), réglage des
+  tentatives et « Saisir » sur une ligne de 48 dp ; dix élèves tiennent sur
+  390 x 844. Le libellé complet est porté par la sémantique.
+- **Refus d'un passage** : `AppAlert` niveau attention, jamais de rouge seul.
+- **Tentatives** : le changement est rare, relégué sous la ligne
+  (« Tentatives : n (fiche) » + « Changer pour ce passage » qui déplie le
+  `CounterField`).
+- **Sélecteur d'exercice** : `DropdownMenu` nommé (sémantique), libellé = nom
+  de l'exercice de la séance du catalogue (`SessionOverview.exerciseName`,
+  fourni par `SheetOption.exerciseTitles`), sinon « bloc · n° » ; bloc et taux
+  en sous-titre ; `expandedInsets: zero`, `maxLines: 2`, sans troncature.
+- **Historique** groupé par élève puis par exercice ; modifier et supprimer
+  inchangés (ADR 0006).
+- **Feuille basse depuis le guide** (`app/record_sheet.dart`, clé
+  `record-sheet`) : « Noter les résultats » ouvre la saisie en feuille sur
+  l'exercice courant ; le guide reste monté à la même étape ; la route plein
+  écran et les liens profonds (ADR 0007) restent valides.
+- Widgetbook : use cases `StudentPassRow` (dont « Liste compacte
+  (téléphone) ») dans `feature_use_cases.dart`.
 
 ## Règles d'usage
 
