@@ -93,7 +93,7 @@ initiation:
     weight: {children: 4, adults: 4}
     setup: Une rouge près de la poche d'angle du haut à gauche et une jaune sous la poche du milieu du haut, chacune dans sa zone grise ; deux positions pour la blanche, à droite et en bas à gauche (le schéma). Replacer la blanche après chaque tir.
     goal: "Empocher 4 billes à la mesure : la rouge et la jaune, depuis chaque position, deux billes avec un chevalet sur cadre puis deux avec un chevalet sur la surface de jeu ; la blanche reste dans la zone grise après l'impact."
-    expected: "La blanche s'arrête dans la zone grise ; le recul de la main change entre le tir proche et le tir lointain ; attaque au centre de la blanche à tous les tirs (consigne du projet). Conseil à l'animateur (fiche) : faire se questionner l'élève sur le placement de son corps selon la place de la blanche, et regarder la rectitude du geste et l'amplitude."
+    expected: "La blanche s'arrête dans la zone grise ; le recul de la main change entre le tir proche et le tir lointain ; attaque au centre de la blanche à tous les tirs. Pour l'animateur : faire se questionner l'élève sur le placement de son corps selon la place de la blanche, et regarder la rectitude du geste et l'amplitude."
     scoring: {mode: counter, of: 4}
     illustration: schema-initiation
     src: S
@@ -140,7 +140,7 @@ training:
       weight: {children: 3, adults: 1}
       setup: "Les trois rouges du schéma au ras des poches du haut, chacune dans sa zone grise ; les jaunes du schéma en paires au milieu de la table ; la blanche en bas, devant les paires. Ordre conseillé (proposition, le schéma ne le donne pas) : la rouge du milieu, la plus proche, puis celle de gauche, puis celle de droite."
       instruction: Empocher chaque rouge trois fois, soit neuf tirs, en passant entre les deux jaunes d'une paire ; la blanche doit rester dans la zone grise après l'impact.
-      expected: La blanche s'arrête dans la zone grise ; le recul de la main est plus court pour la rouge proche et plus long pour la rouge lointaine ; attaque au centre de la blanche, la même à tous les tirs (consigne du projet).
+      expected: La blanche s'arrête dans la zone grise ; le recul de la main est plus court pour la rouge proche et plus long pour la rouge lointaine ; attaque au centre de la blanche, la même à tous les tirs.
       mistakes:
         - {symptom: La blanche sort de la zone grise, fix: "Raccourcir le recul de la main plutôt que seulement ralentir le coup."}
         - {symptom: La queue dévie en armant ou en frappant, fix: "Ne bouger que l'avant-bras autour du coude et garder la queue sur sa trajectoire."}
@@ -179,10 +179,10 @@ game:
     - Le coup n'est pas valable si le joueur commet une faute ou si la blanche touche une bille.
   scoring: Le premier joueur qui place cinq fois la blanche dans le camp adverse gagne.
   end: Fin quand un joueur a placé cinq fois la blanche dans le camp adverse.
-  playful_variant: "Variante facultative, à jouer sans la règle de lien : un tir valide dont la blanche s'arrête au centre de la zone grise, loin des quatre billes, rapporte un jeton (l'adversaire juge). Deux jetons permettent de rejouer, une fois, un tir invalide ; les jetons servent de la même façon dans les deux règles facultatives."
+  playful_variant: "Variante facultative, à jouer sans la règle de lien : un tir valide dont la blanche s'arrête au centre de la zone grise, loin des quatre billes, rapporte un jeton (l'adversaire juge). Deux jetons permettent de rejouer, une fois, un tir invalide."
   link_previous:
     notion_of: posture-2
-    rule: "Règle facultative, à jouer sans la variante ludique, en exception aux règles du jeu 3 : avant chaque tir, le tireur annonce « je reste immobile » ; son adversaire vérifie qu'il ne se relève pas avant l'arrêt de la blanche. Si le contrôle est bon, le tireur gagne un jeton ; deux jetons permettent de rejouer, une fois, un tir invalide (mêmes jetons que la variante ludique)."
+    rule: "Règle facultative, adultes seulement (les enfants jouent la variante), à jouer sans la variante ludique, en exception aux règles du jeu 3 : avant chaque tir, le tireur annonce « je reste immobile » ; son adversaire vérifie qu'il ne se relève pas avant l'arrêt de la blanche. Si le contrôle est bon, le tireur gagne un jeton ; deux jetons permettent de rejouer, une fois, un tir invalide (jetons comptés comme dans la variante ludique, qui reste autonome)."
     note: "Réactive la posture de la séance précédente (corps immobile jusqu'à la fin du tir, ne pas se relever trop tôt), qui reste la même quand on dose la puissance ; le jeu 3 se joue tel quel sans elle. Une seule règle facultative par partie."
   weight: {children: 1, adults: 1}
   adaptation:

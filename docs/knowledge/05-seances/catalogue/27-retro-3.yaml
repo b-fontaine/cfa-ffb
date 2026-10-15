@@ -149,22 +149,22 @@ game:
   source_game: 14
   adapted: true
   players: Partie à 2, ou à 4 en binômes pour la variante ludique
-  materials: "Billes du jeu complet, quatre par groupe plus la noire. Pour la règle de lien et la variante ludique (propositions) : des jetons ou un tableau."
+  materials: "Billes du jeu complet, quatre par groupe plus la noire. Pour la règle de lien (adultes, proposition) : des jetons ou un tableau."
   setup_illustration: schema-jeu
   rules:
     - Jouer une partie avec les règles classiques, avec seulement quatre billes de chaque groupe de couleur et la noire.
     - Le joueur qui casse est désigné par le tirage à la bande.
   scoring: Comme dans une partie classique, le premier qui empoche son groupe de billes puis la noire gagne.
   end: Fin quand un joueur a vidé son groupe puis empoché la noire.
-  playful_variant: "Les binômes du boomerang, à 4 joueurs en deux équipes de deux : les partenaires jouent à tour de rôle, et celui qui ne tire pas est « l'œil du boomerang » : il aide à voir si la blanche est bien arrivée dans la zone annoncée, mais c'est l'adversaire qui tranche, comme dans la règle de lien. Les jetons sont ceux de la règle de lien (un seul décompte) ; ils n'ajoutent rien à la victoire. L'équipe qui atteint trois jetons gagne un tampon sur sa carte, sans effet sur la partie."
+  playful_variant: "Variante facultative des enfants, autonome, à jouer sans la règle de lien : les binômes du boomerang, à 4 joueurs en deux équipes de deux. Les partenaires jouent à tour de rôle ; celui qui ne tire pas est « l'œil du boomerang » : avant le tir, le tireur dit où il veut envoyer la blanche en reculant, et l'œil observe puis dit si elle est bien arrivée, mais c'est l'adversaire qui tranche. Pas de jeton ni de tampon : les règles de la partie ne changent pas."
   link_previous:
     notion_of: retro-2
-    rule: "Exception facultative aux règles classiques : le joueur qui vient d'empocher une bille peut annoncer un rétro, avec sa bille, sa poche et la zone ou le trait imaginaire que la blanche doit atteindre en reculant, comme aux exercices 7 et 8 ; c'est lui qui désigne la zone, et son adversaire juge l'arrivée. S'il empoche la bille et que la blanche atteint la zone ou passe le trait annoncé, il marque un jeton. Ce jeton est le seul décompte ; il n'ajoute rien à la victoire de la partie."
-    note: "Rejoue le rétro de la séance précédente (attaque basse, puissance réglée pour le recul) et y ajoute l'annonce d'une destination ; la quantité de bille vient de la position de la bille, elle ne se choisit pas : on tente de préférence un rétro quand elle est proche du trois-quarts ou du demi-bille, comme aux exercices 7 et 8. Règle facultative, la partie se joue telle quelle sans elle."
+    rule: "Règle facultative, adultes seulement (les enfants jouent la variante), à jouer sans la variante ludique, en exception aux règles classiques : le joueur qui vient d'empocher une bille peut annoncer un rétro, avec sa bille, sa poche et la zone ou le trait imaginaire que la blanche doit atteindre en reculant, comme aux exercices 7 et 8 ; c'est lui qui désigne la zone, et son adversaire juge l'arrivée. S'il empoche la bille et que la blanche atteint la zone ou passe le trait annoncé, il marque un jeton. Ce jeton est le seul décompte ; il n'ajoute rien à la victoire de la partie (la variante ludique n'utilise aucun jeton)."
+    note: "Rejoue le rétro de la séance précédente (attaque basse, puissance réglée pour le recul) et y ajoute l'annonce d'une destination ; la quantité de bille vient de la position de la bille, elle ne se choisit pas : on tente de préférence un rétro quand elle est proche du trois-quarts ou du demi-bille, comme aux exercices 7 et 8. Règle facultative, la partie se joue telle quelle sans elle. Une seule règle facultative par partie."
   weight: {children: 1, adults: 1}
   adaptation:
-    children: "Rapprocher la blanche et les billes des poches. Mise en place proposée : un joueur les rouges et l'autre les jaunes, partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes. Pour les enfants, un tirage au sort (pile ou face) remplace le tirage à la bande."
-    adults: "Après la partie, compter les rétros annoncés et ceux où la blanche a atteint la zone annoncée. Variante plus difficile : annoncer aussi la quantité de bille (trois-quarts ou proche du demi) avant le tir."
+    children: "Rapprocher la blanche et les billes des poches. Mise en place proposée : un joueur les rouges et l'autre les jaunes, partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes. Pour les enfants, un tirage au sort (pile ou face) remplace le tirage à la bande. Version enfants : la variante ludique seule, sans la règle de lien."
+    adults: "Version adultes : la règle de lien seule, sans la variante ludique. Après la partie, compter les rétros annoncés et ceux où la blanche a atteint la zone annoncée. Variante plus difficile : annoncer aussi la quantité de bille (trois-quarts ou proche du demi) avant le tir."
   src: Prop
 review:
   prompts:
@@ -177,8 +177,8 @@ sources:
   - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 30, note: "Entraînement « Le rétro », exercices 7 et 8"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite : quatre billes par groupe et la noire)"}
 uncertainties:
-  - "Jeu : la source ne propose aucun jeu spécifique au rétro ; le jeu 14 est repris et adapté (annonce de la zone, jetons, règle de lien) : [Prop], à valider par un animateur dans l'application."
-  - "Thème, défis ludiques, variante de jeu (binômes, œil du boomerang, décalage de la blanche), règle de lien, adaptations, poids et minutes : [Prop]. `theme.name` et `notion` sont ceux de retro-1 et retro-2 ; la variante de jeu diffère de celle de retro-2 (V23). L'annonce de la zone n'est que dans `link_previous` (facultative) : `rules`, `scoring` et `end` sont ceux du jeu 14."
+  - "Jeu : la source ne propose aucun jeu spécifique au rétro ; le jeu 14 est repris et adapté (annonce de la zone, jetons de la règle de lien) : [Prop], à valider par un animateur dans l'application."
+  - "Thème, défis ludiques, variante de jeu enfants (binômes, œil du boomerang, sans jeton ni tampon), règle de lien adultes, adaptations, poids et minutes : [Prop]. `theme.name` et `notion` sont ceux de retro-1 et retro-2 ; la variante de jeu diffère de celle de retro-2 (V23). Une seule règle facultative par partie : variante enfants, règle de lien adultes (V14 et V20 satisfaits, décision actée). L'annonce de la zone n'est dans les `rules` que via `link_previous` (facultative) : `rules`, `scoring` et `end` sont ceux du jeu 14."
   - "Théorie : les deux sections sont [Prop] (badge « Proposition »). L'idée de décider la zone avant le tir est tirée des énoncés des exercices 7 et 8 ; la source ne la formule pas telle quelle. Cette séance garde la section (exercices 7 et 8) ; la section voisine de retro-4 (« Choisir la zone avant de tirer », actuellement S) devrait passer en [Prop] ou être retirée. Rappel : la quantité est donnée par la place des billes ; la puissance est le levier principal pour changer de zone (lecture du schéma, [Prop])."
   - "Exercice 7 : le schéma [S] ne trace pas les zones (deux étiquettes seulement : zone 1 vers x ≈ 3,0 et zone 2 vers x ≈ 1,6, à gauche du trait) et la flèche de la blanche s'arrête à x ≈ 2,1, à droite du trait. La mise en place (zone 1 proche de la rouge, zone 2 plus reculée près du trait) est une proposition de l'animateur, [Prop]. Le trait est lu vers x ≈ 1,8 ; le type de chevalet n'est pas précisé. La rouge est replacée sous la poche après chaque tir (une seule rouge sur le schéma pour six tirs)."
   - "Exercice 8 : la quantité de bille de l'encart (demi-bille environ) est estimée d'après le recouvrement, non légendée ; la fin de la flèche de la blanche est approximative."

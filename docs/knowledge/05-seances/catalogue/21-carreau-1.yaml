@@ -176,15 +176,15 @@ game:
     - Le joueur qui casse est désigné par le tirage à la bande.
   scoring: Le premier qui empoche son groupe puis la noire gagne.
   end: Fin quand un joueur a empoché son groupe puis la noire.
-  playful_variant: "Conseil de la séance : quand la bille de couleur est proche de la blanche (50 cm au plus), chercher le carreau. Avant un tel tir, annoncer « carreau » : si la bille est empochée et que la blanche s'arrête sur place (elle ne dépasse pas environ une largeur de bille), l'adversaire constate l'arrêt et le joueur gagne un jeton. Un jeton permet de rejouer, une fois, un tir manqué : billes et blanche sont replacées avant ce nouveau tir."
+  playful_variant: "Variante facultative réservée aux enfants, autonome : quand la bille de couleur est proche de la blanche (50 cm au plus), chercher le carreau. Avant un tel tir, annoncer « carreau » : si la bille est empochée et que la blanche s'arrête sur place (elle ne dépasse pas environ une largeur de bille), l'adversaire constate l'arrêt et le joueur gagne un jeton. Un jeton permet de rejouer, une fois, un tir manqué : billes et blanche sont replacées avant ce nouveau tir."
   link_previous:
     notion_of: coule-3
-    rule: "Exception à la partie à difficulté réduite, réservée aux adultes : une fois par joueur et par partie, un tir annoncé « coulé » est joué avec une attaque haute, en plein ou un peu moins plein, vers une zone d'arrivée choisie avant le tir (un repère sur le tapis ou sur le cadre) ; si la bille est empochée et que la blanche, sans être empochée, s'arrête dans la zone, l'adversaire le constate et le joueur gagne un jeton. Les enfants ne jouent que le carreau annoncé."
-    note: "Fait rejouer le coulé de la séance précédente (attaque haute, zone d'arrivée choisie d'avance) à côté du carreau, pour sentir la différence d'attaque ; règle facultative, la partie se joue telle quelle sans elle."
+    rule: "Règle facultative, adultes seulement (les enfants jouent la variante), à jouer sans la variante ludique, en exception aux règles du jeu 14 : une fois par joueur et par partie, un tir annoncé « coulé » est joué avec une attaque haute, en plein ou un peu moins plein, vers une zone d'arrivée choisie avant le tir (un repère sur le tapis ou sur le cadre) ; si la bille est empochée et que la blanche, sans être empochée, s'arrête dans la zone, l'adversaire le constate et le joueur gagne un jeton. Un jeton permet de rejouer, une fois, un tir manqué : billes et blanche sont replacées avant ce nouveau tir. Aucun « carreau » n'est annoncé avec cette règle : chaque public a sa mécanique (enfants : carreau annoncé ; adultes : coulé annoncé), jamais les deux."
+    note: "Fait rejouer le coulé de la séance précédente (attaque haute, zone d'arrivée choisie d'avance) pour sentir la différence d'attaque avec le carreau ; le jeu 14 se joue tel quel sans elle. Une seule règle facultative par partie ; le jeton et son rejeu forment une seule règle, le rejeu n'existe que par le jeton gagné."
   weight: {children: 1, adults: 1}
   adaptation:
-    children: "Proposition : rapprocher les billes des poches ; un joueur les rouges, l'autre les jaunes ; limite de 15 minutes, au-delà gagne qui a le moins de billes restantes."
-    adults: "Proposition : après la partie, noter les carreaux annoncés et réussis, et chercher pourquoi les ratés (vitesse, hauteur d'attaque, alignement)."
+    children: "Version enfants : la variante ludique (carreau annoncé) seule, sans la règle de lien. Proposition : rapprocher les billes des poches ; un joueur les rouges, l'autre les jaunes ; limite de 15 minutes, au-delà gagne qui a le moins de billes restantes."
+    adults: "Version adultes : la règle de lien (coulé annoncé) seule, sans la variante ludique. Proposition : après la partie, noter les tirs annoncés (coulés) et réussis, et chercher pourquoi les ratés (vitesse, hauteur d'attaque, alignement)."
   src: S   # titre, règles, score et fin du jeu 14 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
 review:
   prompts:
@@ -198,7 +198,7 @@ sources:
   - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 23, note: "Entraînement « Le carreau », exercices 1 et 2"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite)"}
 uncertainties:
-  - "Thème, défis, sections « La blanche se gare » (enfants) et « Quel chevalet ? », variante de jeu (conseil, jetons, annonce), règle de lien (adultes) et adaptations : [Prop], à valider par un animateur dans l'application. Le minutage et la différenciation enfants / adultes sont aussi des propositions."
+  - "Thème, défis, sections « La blanche se gare » (enfants) et « Quel chevalet ? », variante de jeu (conseil, jetons, annonce), règle de lien (adultes seulement : coulé annoncé ; les enfants jouent la variante carreau ; une seule règle facultative par partie, le jeton et son rejeu en faisant partie) et adaptations : [Prop], à valider par un animateur dans l'application. Le minutage et la différenciation enfants / adultes sont aussi des propositions."
   - "Le jeu est le jeu 14 [S] repris tel quel : la fiche ne propose aucun jeu dédié au carreau et ne mentionne pas le carreau ; le conseil de le chercher à courte distance est une proposition (playful_variant)."
   - "Le rappel porte sur la séance coule-3 (fiche technique n° 11 : attaque haute, du plein au trois-quarts, amplitude, zone d'arrivée) ; `recall.reuse` reprend son illustration `coule-plein`."
   - "Initiation 15 : la fiche cite un chevalet sur surface et un chevalet sur cadre sans dire lequel va avec quel tir ; la section « Quel chevalet ? » propose cadre pour la blanche proche de la bande (seconde position du schéma), surface pour l'autre : [Prop]."

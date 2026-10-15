@@ -181,7 +181,7 @@ game:
   source_game: 10
   adapted: true
   players: Défi seul
-  materials: "Une blanche, deux billes jaunes et deux billes rouges. Pour la variante ludique : des jetons et un tableau."
+  materials: "Une blanche, deux billes jaunes et deux billes rouges. Pour la variante ludique (enfants) : des jetons et un tableau."
   setup_illustration: schema-jeu
   rules:
     - "Mise en place : la blanche sur le point d'origine du jeu 10, au centre de la table ; les deux jaunes sur la rangée du haut, de part et d'autre de l'axe de la poche du milieu du haut, à environ 0,4 case de cet axe ; les deux rouges sur la rangée du bas, de part et d'autre de l'axe de la poche du milieu du bas, à environ une demi-case de cet axe."
@@ -190,15 +190,15 @@ game:
     - Un coup n'est pas valable si le joueur commet une faute.
   scoring: Compter les billes empochées, une par tir.
   end: Le défi est réalisé complètement quand le joueur a utilisé un tir pour chaque bille ; refaire une manche pour améliorer son score, sans limite de temps.
-  playful_variant: "Un joueur tire, un autre contrôle, puis on échange. Avant chaque tir, le tireur annonce « quart » ou « finesse » et montre sur la bille le point qu'il vise ; le contrôleur pose une blanche au contact de ce point (bille fantôme) puis la retire. Si le contact est juste et que la bille est empochée, le tireur gagne un jeton « frôleur » ; celui qui a le plus de jetons après deux manches gagne."
+  playful_variant: "Variante facultative, autonome, à jouer sans la règle de lien : un joueur tire, un autre contrôle, puis on échange. Avant chaque tir, le tireur annonce « quart » ou « finesse » et montre sur la bille le point qu'il vise ; le contrôleur pose une blanche au contact de ce point (bille fantôme) puis la retire. Si le contact est juste et que la bille est empochée, le tireur gagne un jeton « frôleur » ; celui qui a le plus de jetons après deux manches gagne."
   link_previous:
     notion_of: quart-1
-    rule: "Exception aux règles du jeu 10 : les deux billes du haut sont jouées en quart de bille, comme à la séance précédente, avant celles du bas jouées en finesse ; le tireur annonce la quantité avant chaque tir."
-    note: "Le jeu 10 tel quel (quatorze billes sur la grille, blanche au centre) ne donne aucun tir en quart ni en finesse ; cette mise en place, calculée (quart ≈ 49° en haut, finesse ≈ 58° en bas, proche des finesses des exercices 3 et 4), rejoue le quart de bille puis la finesse. Règle facultative : le jeu 10 reste jouable sans elle."
+    rule: "Règle facultative, adultes seulement (les enfants jouent la variante), à jouer sans la variante ludique, en exception aux règles du jeu 10 : les billes du haut sont jouées avant celles du bas, et avant chaque tir le tireur annonce la quantité (« quart » en haut, « finesse » en bas), comme à la séance précédente ; la blanche est posée sans bille fantôme ni jeton."
+    note: "Le jeu 10 tel quel (quatorze billes sur la grille, blanche au centre) ne donne aucun tir en quart ni en finesse ; la mise en place des règles, calculée (quart ≈ 49° en haut, finesse ≈ 58° en bas, proche des finesses des exercices 3 et 4), rejoue le quart de bille puis la finesse et s'impose dans les deux versions. Seule l'annonce de la quantité est facultative : le jeu 10 reste jouable sans elle. Une seule règle facultative par partie."
   weight: {children: 1, adults: 1}
   adaptation:
-    children: "Un binôme : un tireur, un contrôleur qui pose la bille fantôme. Commencer par les deux billes du haut, puis celles du bas. Défi sans limite de temps."
-    adults: "Après le défi, noter pour chaque bille manquée la quantité visée et la comparer au taux des exercices. Variante plus difficile : réussir les quatre billes en une seule manche, sans bille fantôme."
+    children: "Version enfants : la variante ludique seule, sans la règle de lien ; un binôme, un tireur et un contrôleur qui pose la bille fantôme. Commencer par les deux billes du haut, puis celles du bas. Défi sans limite de temps."
+    adults: "Version adultes : la règle de lien seule, sans la variante ludique ni bille fantôme ; une seule règle facultative par partie, l'annonce de la quantité. Bilan à la fin du défi (consigne de séance, non facultative) : relever les billes manquées et la quantité annoncée pour chacune."
   src: Prop   # jeu adapté du jeu 10 (FORMAT § 5.1) : titre, mise en place et règles sont des propositions
 review:
   prompts:

@@ -172,15 +172,15 @@ game:
     - Le joueur qui casse est désigné par le tirage à la bande.
   scoring: Comme dans une partie classique, selon le règlement FFB.
   end: Comme dans une partie classique, selon le règlement FFB.
-  playful_variant: "Les tours d'équerre, proposition facultative en tournante par équipes de deux : le tireur annonce « équerre » quand il joue un coup à courte distance, hors du plein, avec attaque au centre ; son partenaire vérifie ces trois conditions avant le tir. Équerre réussie = bille empochée. Chaque équerre réussie compte un point d'équerre ; les rôles s'échangent à chaque tour. La partie se joue telle quelle sans cette variante."
+  playful_variant: "Version enfants, facultative (les adultes jouent la règle du carreau, pas cette variante) : le tireur annonce « équerre » quand il joue un coup à courte distance, hors du plein, avec attaque au centre ; son adversaire vérifie ces trois conditions avant le tir. Équerre réussie = bille empochée. Chaque équerre réussie compte un point d'équerre. La partie se joue telle quelle sans cette variante."
   link_previous:
     notion_of: carreau-2
-    rule: "Exception facultative aux règles classiques, plutôt pour les adultes ou, pour les enfants, en fin de partie : sur une bille en plein et à courte distance (50 cm au plus), le joueur peut annoncer « carreau » à la place de « équerre » ; si la blanche s'arrête à l'impact, le coup compte comme un carreau réussi."
-    note: "Fait rejouer dans la même partie le carreau de la séance précédente (bille pleine, attaque au centre, blanche arrêtée) à côté de l'angle droit, qui garde la même attaque au centre et ne change que la quantité ; règle facultative, la partie se joue telle quelle sans elle."
+    rule: "Règle facultative, adultes seulement (les enfants jouent la variante), à jouer sans la variante ludique, en exception aux règles classiques : sur une bille en plein et à courte distance (50 cm au plus), le joueur peut annoncer « carreau » ; si la blanche s'arrête à l'impact, le coup compte comme un carreau réussi."
+    note: "Fait rejouer dans la même partie le carreau de la séance précédente (bille pleine, attaque au centre, blanche arrêtée) à côté de l'angle droit, qui garde la même attaque au centre et ne change que la quantité ; règle facultative, la partie se joue telle quelle sans elle. Une seule règle facultative par partie."
   weight: {children: 1, adults: 1}
   adaptation:
     children: "Rapprocher la blanche et les billes des poches. Mise en place proposée : un joueur les rouges et l'autre les jaunes, tirage au sort pour commencer, partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes. Une seule mécanique ludique : l'annonce « équerre »."
-    adults: "Après la partie, noter, pour chaque équerre ratée, si l'erreur vient de la quantité, de la puissance ou de l'attaque. Variantes plus difficiles : annoncer aussi la quantité de bille avant le tir, ou exiger que la blanche reparte sur le côté de l'équerre, vérifié par l'adversaire avec une queue posée au sol."
+    adults: "Après la partie, noter, pour chaque équerre ratée, si l'erreur vient de la quantité, de la puissance ou de l'attaque. Conseil d'animateur : inviter chacun à dire la quantité choisie avant le tir, sans en faire une règle de la partie."
   src: S   # titre et règles du jeu 14 ; scoring et end renvoient à la partie classique (règlement FFB, non transcrit : lacune) sans réécrire la condition de victoire ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
 review:
   prompts:
@@ -195,7 +195,8 @@ sources:
   - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 25, note: "Entraînement « Le coup en angle droit », exercices 1 et 2"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite), dont la partie est adaptée"}
 uncertainties:
-  - "Section « Le mot équerre » (enfants), thème, défis, variante de jeu « tours d'équerre » (annonce, point d'équerre, tournante), règle de lien, adaptations et minutes : [Prop], à valider par un animateur dans l'application."
+  - "Section « Le mot équerre » (enfants), thème, défis, variante de jeu « tours d'équerre » (annonce, point d'équerre), règle de lien du carreau, adaptations et minutes : [Prop], à valider par un animateur dans l'application."
+  - "Répartition [Prop] : enfants = variante « équerre » (playful_variant), adultes = règle facultative du carreau (link_previous.rule) ; une seule mécanique facultative par public et par partie, choix à valider par un animateur."
   - "Le jeu reprend le jeu 14 [S] tel quel (4 billes par groupe, la noire, tirage à la bande) ; l'annonce « équerre », sa définition (bille empochée) et le rappel du carreau sont des propositions [Prop] facultatives, hors règles."
   - "Les règles de la partie classique ne sont transcrites ni dans docs/knowledge ni dans la fiche du jeu 14 (choix du groupe, fautes, rôle de la noire) : l'animateur s'en tient au règlement FFB, y compris pour le score et la fin de partie (la fiche du jeu 14 n'en donne aucun) ; lacune à signaler dans docs/knowledge/08-lacunes-et-questions-ouvertes.md."
   - "Initiation 16 : la rouge est dessinée face à la poche du milieu du haut (x = 4,0) ; la description de diagrammes/initiation/p16.yaml dit « un peu à gauche », ce qui diffère du schéma ; correction du YAML source à faire dans un lot séparé. La notation compte un essai par repère (3 sur 3), lecture du schéma : la fiche dit « empocher 1 bille »."

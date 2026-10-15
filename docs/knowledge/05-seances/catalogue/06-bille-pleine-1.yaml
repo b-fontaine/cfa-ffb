@@ -39,7 +39,7 @@ theory:
         - "Au Blackball, la blanche est plus petite que les autres billes : le contact se fait légèrement au-dessus de l'équateur de la blanche, ce qui donne des rejets différents des autres disciplines."
       key_point: "Bille pleine : je vise le centre de la bille, elle part droit."
       demo: Poser la queue sur la trajectoire qui passe par le centre de la blanche et le centre de la bille de couleur.
-      illustrations: [contact-plein, visee-plein, hauteur-contact, schema-aligne]
+      illustrations: [contact-plein, visee-plein, schema-aligne]
       src: S
     - id: energie
       title: Toute l'énergie passe
@@ -61,10 +61,10 @@ theory:
         - Le centre de la blanche doit être sur cette ligne au moment du choc.
         - La bille fantôme aide à voir où la blanche doit toucher.
       adult_extra:
-        - Pendant le limage, vérifier que la queue reste sur l'axe qui vise le centre de la bille de couleur.
+        - Pendant le limage (le va-et-vient d'ajustement de la queue avant le tir), vérifier que la queue reste sur l'axe qui vise le centre de la bille de couleur.
       key_point: "Poche, bille, blanche : trois centres sur une même ligne."
       demo: Poser une blanche au contact de la bille, sur la ligne de la poche, puis la retirer avant le tir.
-      illustrations: [visee-plein, schema-aligne]
+      illustrations: [visee-plein, hauteur-contact, schema-aligne]
       src: S
     - id: attaque
       title: Où frapper la blanche ?
@@ -152,7 +152,7 @@ game:
   source_game: 6
   adapted: false
   players: Partie à 2
-  materials: "Billes du jeu complet, noire et blanche. Pour le défi ludique (proposition) : un tableau et des jetons."
+  materials: "Billes du jeu complet, noire et blanche. Pour le défi ludique : un tableau."
   setup_illustration: schema-jeu
   rules:
     - Placer la noire dans le camp adverse, en un tir, en la visant en bille pleine avec un chevalet sur cadre.
@@ -161,14 +161,14 @@ game:
     - Faire aussi jouer avec un chevalet sur la surface de jeu, en espaçant davantage la blanche et la noire de la bande.
   scoring: Chaque noire placée dans le camp adverse compte un point.
   end: Fin quand un joueur a placé 5 fois la noire dans le camp adverse.
-  playful_variant: "Tournante : à la fin de chaque manche, chacun change d'adversaire (le jeu reste à 2). Le joueur qui annonce « plein cœur » avant son tir et réussit gagne un jeton ; deux jetons donnent un tir de rattrapage. Une seule annonce par tir pour les enfants : « plein cœur »."
+  playful_variant: "Plein cœur (version enfants, autonome : jouable sans la règle de lien, que les adultes jouent à la place) : avant son tir, le joueur annonce « plein cœur » à voix haute ; l'adversaire vérifie que la blanche, la noire et le centre du camp visé sont sur une même ligne. Le score et la fin du jeu 6 ne changent pas (aucun jeton)."
   link_previous:
     notion_of: bille-fantome-1
-    rule: "Exception aux règles du jeu 6, avant chaque tir : le joueur désigne du doigt, sur la noire, l'endroit où sa blanche doit la toucher (la place de la bille fantôme, comme à l'exercice « La fantôme imaginée » de la séance précédente) ; l'adversaire contrôle que cet endroit est aligné avec le centre du camp visé."
-    note: "Rejoue la désignation du doigt de la fantôme imaginée (exercice 2 de la séance précédente) au service de la bille pleine ; règle facultative, réservée aux adultes (les enfants n'annoncent que « plein cœur ») ; le jeu 6 se joue tel quel sans elle."
+    rule: "Adultes seulement (les enfants jouent la variante). Exception aux règles du jeu 6, avant chaque tir : le joueur montre du doigt, sur la noire, l'endroit où sa blanche doit la toucher (la place de la bille fantôme, comme à l'exercice « La fantôme imaginée » de la séance précédente) ; l'adversaire contrôle que cet endroit est aligné avec le centre du camp visé."
+    note: "Rejoue la désignation du doigt de la fantôme imaginée (exercice 2 de la séance précédente) au service de la bille pleine ; règle facultative, réservée aux adultes ; une seule règle facultative par partie (variante pour les enfants, règle de lien pour les adultes) ; le jeu 6 se joue tel quel sans elle."
   weight: {children: 1, adults: 1}
   adaptation:
-    children: "Agrandir le camp visé pour faciliter le tir (la fiche conseille de modifier la zone ; c'est le seul conseil de la fiche). Mise en place proposée (la fiche ne la précise pas), symétrique : chaque joueur tire depuis sa petite bande, vers le camp de l'autre ; la noire est posée sur l'axe de la table, à la même distance de la petite bande que sur le schéma (environ un quart de la longueur de la table), la blanche juste derrière elle, entre la noire et la petite bande, et c'est la blanche qui frappe la noire ; noire et blanche sont replacées après chaque tir. Le camp est la zone entourée des quatre billes. Le tir n'est pas valable si la noire est empochée, si elle touche une des quatre billes ou si elle s'arrête sur le bord du camp, à cheval sur la ligne qui joint deux billes. Pour raccourcir le tir (proposition) : poser la noire plus près du camp visé. Manches courtes, premier à 3 ; en salle, tournante d'adversaires pour que chacun joue vite. Pour doser l'arrêt de la noire, rappeler la puissance travaillée aux séances de puissance."
+    children: "Agrandir le camp visé pour faciliter le tir (la fiche conseille de modifier la zone ; c'est le seul conseil de la fiche). Mise en place proposée (la fiche ne la précise pas), symétrique : chaque joueur tire depuis sa petite bande, vers le camp de l'autre ; la noire est posée sur l'axe de la table, à la même distance de la petite bande que sur le schéma (environ un quart de la longueur de la table), la blanche juste derrière elle, entre la noire et la petite bande, et c'est la blanche qui frappe la noire ; noire et blanche sont replacées après chaque tir. Le camp est la zone entourée des quatre billes. Le tir n'est pas valable si la noire est empochée, si elle touche une des quatre billes ou si elle s'arrête sur le bord du camp, à cheval sur la ligne qui joint deux billes. Pour raccourcir le tir (proposition) : poser la noire plus près du camp visé. Fin proposée [Prop], qui remplace celle de la fiche pour les enfants : premier à 3 noires placées. Conseil d'organisation hors jeu (pas une règle du jeu) : en salle, faire tourner les adversaires entre deux parties pour que chacun joue vite. Pour doser l'arrêt de la noire, rappeler la puissance travaillée aux séances de puissance."
     adults: "Rétrécir le camp visé (la fiche conseille de modifier la zone). Mise en place proposée comme pour les enfants : chaque joueur tire depuis sa petite bande vers le camp de l'autre, noire sur l'axe de la table à la même distance de la petite bande que sur le schéma et blanche juste derrière elle, replacées après chaque tir ; le camp est la zone entourée des quatre billes ; noire empochée, noire qui touche une des quatre billes ou noire arrêtée sur le bord du camp = tir non valable. Après la partie, chercher ensemble ce qui a écarté la noire : alignement, point d'impact ou puissance."
   src: S   # titre, règles, score et fin du jeu 6 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
 review:
@@ -184,9 +184,9 @@ sources:
   - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 3, note: "Entraînement « La quantité de bille pleine », exercices 1 et 2"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 6, note: Jeu 6}
 uncertainties:
-  - "Mises en place en texte, défis ludiques, variante de jeu (jetons compris), règle de lien et adaptation du jeu : [Prop], à valider par un animateur dans l'application. La différenciation enfants / adultes (poids, compléments, adaptation du jeu) est aussi une proposition."
+  - "Mises en place en texte, défis ludiques, variante de jeu (annonce « plein cœur » sans jeton ; l'application l'affiche aux deux publics, le libellé précise qu'elle est réservée aux enfants), règle de lien (montrer du doigt, adultes seulement) et adaptation du jeu (fin à 3 pour les enfants comprise ; le conseil de tournante d'adversaires est une organisation, pas une règle) : [Prop], à valider par un animateur dans l'application. La différenciation enfants / adultes (poids, compléments, adaptation du jeu) est aussi une proposition."
   - "La section « Où frapper la blanche ? » est [Prop] : le dessin de la fiche n° 4 n'est pas légendé et le point d'impact du procédé au centre de la blanche est une interprétation (transcription techniques p14) ; l'initiation 6 montre un point légèrement au-dessus du centre sur un des deux schémas. Note animateur : le centre est l'attaque de référence du niveau 1 (décision [U] du 2026-10-15) ; l'écart des encarts ne se dit pas aux élèves."
-  - "Le schéma « hauteur-contact » (vue de côté, inclinaison exagérée ×10) est dans la section « Où frapper la blanche ? », donc vu par les deux publics, alors que le texte sur l'équateur est réservé aux adultes : le format ne permet pas d'illustration réservée à un public. [Prop], à faire trancher par la relecture pédagogique (règle enfants « 1 notion, explications courtes »)."
+  - "Le schéma « hauteur-contact » (vue de côté, inclinaison exagérée ×10) est placé dans la section « Aligner poche, bille, blanche », réservée aux adultes, avec le texte sur l'équateur (adult_extra de « Viser le centre de la bille ») : le format ne filtre pas une illustration par public, il filtre une section. [Prop]."
   - "Initiation 6 : la fiche cite un chevalet sur la surface de jeu et un chevalet sur cadre sans dire lequel va avec quel schéma ; la séance ne l'impose pas."
   - "Entraînement 2 : sur le schéma, les billes 1 à 4 sont alignées derrière les billes 5 et 6 ; l'ordre « la plus proche de la blanche d'abord » est une lecture [Prop] pour dégager la ligne."
   - "Entraînement 1 : le schéma note « x 4 » à côté de chaque jaune ; la consigne « quatre tirs par jaune » en est la lecture, sans ordre précisé entre les deux jaunes."

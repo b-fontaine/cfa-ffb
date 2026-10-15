@@ -191,7 +191,7 @@ game:
   source_game: 14
   adapted: true
   players: Partie à 2
-  materials: "Quatre billes de chaque groupe de couleur et la noire (jeu 14) ; pour la variante (proposition) : des jetons et un tableau."
+  materials: "Quatre billes de chaque groupe de couleur et la noire (jeu 14) ; variante enfants (proposition) : jetons et tableau ; règle de lien adultes : aucun matériel."
   setup_illustration: schema-jeu
   rules:
     - Partie à deux, avec les règles d'une partie classique.
@@ -199,15 +199,15 @@ game:
     - Le joueur qui casse est désigné par le tirage à la bande.
   scoring: Le premier qui empoche son groupe puis la noire gagne, comme dans la partie classique.
   end: Fin quand un joueur a empoché son groupe puis la noire.
-  playful_variant: "Le coulé à jetons : avant de jouer une bille du plein au trois-quarts, le joueur annonce « coulé » et montre avec la main où la blanche doit s'arrêter (une zone de la largeur d'une main). L'adversaire valide l'annonce avant le tir, puis valide le résultat : la bille est empochée et la blanche s'arrête dans la zone. Un coulé validé donne un jeton ; trois jetons donnent une mini-récompense (une marque au tableau) ; les jetons n'ajoutent rien à la victoire de la partie. Tournante : après chaque partie, le gagnant change de table et affronte un nouvel adversaire. Pour le reste, on joue avec les règles de la partie classique du club ; on continue tant qu'on empoche une bille et on évite d'empocher la blanche (jeu 14)."
+  playful_variant: "Variante facultative pour les enfants, à jouer sans la règle de lien. Le coulé à jetons : avant de jouer une bille du plein au trois-quarts, le joueur annonce « coulé » et montre avec la main où la blanche doit s'arrêter (une zone de la largeur d'une main). L'adversaire valide l'annonce avant le tir, puis valide le résultat : la bille est empochée et la blanche s'arrête dans la zone. Un coulé validé donne un jeton ; trois jetons donnent une mini-récompense (une marque au tableau) ; les jetons n'ajoutent rien à la victoire de la partie. Pour le reste, on joue avec les règles de la partie classique du club ; on continue tant qu'on empoche une bille et on évite d'empocher la blanche (jeu 14)."
   link_previous:
     notion_of: coule-1
-    rule: "Exception facultative aux règles de la partie : si la bille annoncée « coulé » est alignée avec la poche et la blanche (bille pleine), la zone d'arrêt est le prolongement de la ligne ; l'adversaire valide si la blanche n'est pas empochée et s'arrête sur ce prolongement, dans une largeur de main."
-    note: "Rejoue le coulé en bille pleine de la séance précédente (la blanche suit la couleur) avec la même annonce « coulé » et les mêmes jetons ; règle facultative, la partie réduite se joue telle quelle sans elle."
+    rule: "Règle facultative, adultes seulement (les enfants jouent la variante), à jouer sans la variante ludique, en exception aux règles de la partie : avant de jouer une bille en bille pleine, le joueur annonce « coulé » ; la bille est alignée avec la poche et la blanche, et la zone d'arrêt se réduit au prolongement de la ligne. L'adversaire valide si la bille est empochée, si la blanche n'est pas empochée et si elle s'arrête sur ce prolongement, dans une largeur de main."
+    note: "Rejoue le coulé en bille pleine de la séance précédente (la blanche suit la couleur) avec la même annonce « coulé », mais une zone d'arrêt réduite au prolongement de la ligne ; la partie réduite se joue telle quelle sans elle. Une seule règle facultative par partie."
   weight: {children: 1, adults: 1}
   adaptation:
     children: "Rapprocher les billes des poches ; mise en place proposée (la fiche ne la précise pas) : un joueur les rouges, l'autre les jaunes, partie limitée à 15 minutes, au-delà gagne qui a le moins de billes restantes."
-    adults: "Après la partie, comparer les arrêts de la blanche aux zones annoncées : sur quels coulés l'écart est-il le plus grand (plein, trois-quarts, distance) ? Variante plus difficile : annoncer aussi la poche visée et réduire la zone d'arrêt à la largeur de deux billes."
+    adults: "Version adultes : la règle de lien seule, sans la variante à jetons. Après la partie, comparer les arrêts de la blanche au prolongement de ligne annoncé sur les coulés en plein : sur quels coulés l'écart est-il le plus grand (distance parcourue, côté de l'arrêt) ?"
   src: Prop
 review:
   prompts:
@@ -223,7 +223,7 @@ sources:
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite, quatre billes par groupe et la noire)"}
 uncertainties:
   - "Le rappel reprend ce que coule-1 a enseigné (attaque en haut, la blanche suit la couleur en plein, amplitude plutôt que vitesse) et réutilise son illustration `trajectoire-plein` ; titre, notion et nom du thème sont alignés sur coule-1 (V23), `coule-3` devra faire de même."
-  - "Thème, défis, mot « coulé » pour les enfants, lecture de l'arrêt (adultes), variante à jetons, zone d'arrêt (largeur d'une main), tournante, règle de lien et adaptations : [Prop], à valider par un animateur dans l'application. La différenciation enfants / adultes (poids, compléments, adaptation du jeu) est aussi une proposition."
+  - "Thème, défis, mot « coulé » pour les enfants, lecture de l'arrêt (adultes), variante à jetons (enfants), zone d'arrêt (largeur d'une main), règle de lien (adultes, zone réduite au prolongement de ligne) et adaptations : [Prop], à valider par un animateur dans l'application. La différenciation enfants / adultes (poids, compléments, adaptation du jeu) est aussi une proposition."
   - "La variante à jetons ne réénonce pas les règles de la partie classique (faute, placement de la blanche, visites de l'adversaire) : elle renvoie aux règles du club ; seule la continuité du tour tant qu'on empoche vient de la fiche du jeu 14."
   - "Exercice 6, erreur « la blanche monte trop loin » : [Prop], déduite du schéma (la blanche monte vers la noire) ; la fiche n'énonce pas d'erreur typique pour cet exercice."
   - "La hauteur de la queue n'est pas précisée par les fiches n° 11 et initiation 13-14 : la séance n'illustre pas le profil de la queue et ne donne pas de hauteur de queue ; l'attaque en haut n'est rappelée que par le point d'impact sur la blanche."

@@ -75,8 +75,6 @@ theory:
         - "Proche du demi-bille, le recul de la blanche donne une déviation de 90° par rapport à sa trajectoire d'arrivée : elle repart parallèlement à la grande bande, c'est la limite du rétro."
         - Sous la demi-bille, la blanche ne recule plus, ce n'est plus un rétro.
         - Au Blackball, la blanche étant petite, il faut viser un peu plus à l'intérieur de la bille de couleur pour obtenir 90°.
-      adult_extra:
-        - "Ici, les 90° mesurent le virage de la blanche par rapport à sa trajectoire d'arrivée, et non l'écart entre les deux billes comme au coup à angle droit."
       key_point: "Plein : 180°. Proche du demi-bille, un peu plus plein : 90°, c'est la limite."
       demo: null
       illustrations: [quantites, schema-retro-demi]
@@ -227,8 +225,8 @@ game:
   title: Partie à difficulté réduite, avec rétro
   source_game: 14
   adapted: true
-  players: "Partie à 2 ; variante ludique à 4, en 2 équipes de deux"
-  materials: "Billes du jeu complet, quatre par groupe plus la noire. Pour la variante ludique (proposition) : une feuille ou un tableau pour les jetons."
+  players: "Adultes : partie à 2, avec la règle de lien (équerre) ; enfants : variante ludique à 4, en 2 équipes de deux (jetons boomerang)"
+  materials: "Billes du jeu complet, quatre par groupe plus la noire. Pour la variante ludique enfants (proposition) : une feuille ou un tableau pour les jetons boomerang."
   setup_illustration: schema-jeu
   rules:
     - Jouer une partie avec les règles classiques.
@@ -236,15 +234,15 @@ game:
     - Le joueur qui casse est désigné par le tirage à la bande.
   scoring: Comme dans une partie classique, le premier qui empoche son groupe de billes puis la noire gagne.
   end: Fin quand un joueur a vidé son groupe puis empoché la noire.
-  playful_variant: "Les jetons boomerang, en 2 équipes de deux : chaque équipe garde la main comme dans la partie classique (on continue tant qu'on empoche), l'autre partenaire jouant à la visite suivante. Un rétro annoncé avant le tir, dont la bille est empochée et dont la blanche s'immobilise plus près du tireur que du point de contact, donne un jeton boomerang ; l'équipe adverse juge. Avec trois jetons, l'équipe choisit une seule fois, pour un tir, la place de la blanche ; ses jetons sont alors remis à zéro. Les jetons ne comptent pas comme des billes : le seul avantage qu'ils donnent est cette place de la blanche, une exception facultative aux règles classiques."
+  playful_variant: "Variante enfants, autonome, jouée sans la règle de lien : les jetons boomerang, en 2 équipes de deux ; chaque équipe garde la main comme dans la partie classique (on continue tant qu'on empoche), l'autre partenaire jouant à la visite suivante. Un rétro annoncé avant le tir, dont la bille est empochée et dont la blanche s'immobilise plus près du tireur que du point de contact, donne un jeton boomerang ; l'équipe adverse juge. Avec trois jetons, l'équipe choisit une seule fois, pour un tir, la place de la blanche ; ses jetons sont alors remis à zéro. Les jetons ne comptent pas comme des billes : le seul avantage qu'ils donnent est cette place de la blanche, une exception facultative aux règles classiques."
   link_previous:
     notion_of: angle-droit-2
-    rule: "Exception facultative aux règles classiques : une fois par joueur et par partie, avant son tir, on annonce « équerre » (bille à courte distance, attaque au centre, bille non pleine, les deux billes doivent partir à 90° l'une de l'autre) ; l'adversaire juge les 90° à l'œil. Si le joueur y parvient, il marque un jeton équerre, compté à part des jetons boomerang et sans effet sur la victoire."
-    note: "Fait rejouer le coup à angle droit de la séance précédente à côté du rétro et oblige à choisir l'attaque (centre ou basse) ; règle facultative, indépendante de la variante : la partie se joue telle quelle sans elle."
+    rule: "Règle facultative, adultes seulement (les enfants jouent la variante), à jouer sans jeton boomerang, en exception aux règles classiques : une fois par joueur et par partie, avant son tir, on annonce « équerre » (bille à courte distance, attaque au centre, bille non pleine, les deux billes doivent partir à 90° l'une de l'autre) ; l'adversaire juge les 90° à l'œil. La réussite est simplement notée, sans effet sur la victoire."
+    note: "Fait rejouer le coup à angle droit de la séance précédente à côté du rétro et oblige à choisir l'attaque (centre ou basse) ; règle facultative, réservée aux adultes et exclusive des jetons boomerang de la variante enfants : la partie se joue telle quelle sans elle. Une seule règle facultative par partie."
   weight: {children: 1, adults: 1}
   adaptation:
-    children: "Mise en place proposée (la fiche ne la précise pas) : un joueur les rouges et l'autre les jaunes, la noire sur son point de départ comme sur le schéma, le tirage à la bande pour commencer comme dans la partie classique, partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes."
-    adults: "Après la partie, compter les rétros annoncés et réussis, et les comparer au taux de l'exercice 1. Variante plus difficile : annoncer aussi la zone d'arrivée de la blanche."
+    children: "Version enfants : la variante ludique seule (jetons boomerang), sans la règle de lien. Mise en place proposée (la fiche ne la précise pas) : une équipe les rouges et l'autre les jaunes (chaque équipe tient le rôle d'un joueur de la partie à 2, ses deux partenaires jouant à tour de rôle), la noire sur son point de départ comme sur le schéma, le tirage à la bande pour commencer comme dans la partie classique, partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes."
+    adults: "Version adultes : la règle de lien seule (équerre), sans jetons boomerang. Après la partie, compter les rétros annoncés et réussis, et les comparer au taux de l'exercice 1."
   src: Prop
 review:
   prompts:
@@ -261,7 +259,7 @@ sources:
   - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 28, note: "Entraînement « Le rétro », exercice 3"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite : quatre billes par groupe et la noire)"}
 uncertainties:
-  - "Jeu : la source ne propose aucun jeu spécifique au rétro ; le jeu 14 est repris et adapté (règle du rétro, points boomerang, règle de lien, scoring « comme une partie classique ») : [Prop], à valider par un animateur dans l'application."
+  - "Jeu : la source ne propose aucun jeu spécifique au rétro ; le jeu 14 est repris et adapté (règle du rétro, jetons boomerang pour les enfants, règle de lien pour les adultes, scoring « comme une partie classique ») : [Prop], à valider par un animateur dans l'application."
   - "Thème « Le boomerang », défis ludiques, variante de jeu, règle de lien, adaptations, poids et minutes : [Prop]. Le nom du thème devra être repris par retro-2 à retro-4 (V23) et la variante de jeu y être différente."
   - "Rappel : repris de la fiche technique n° 13 et de angle-droit-2 (attaque au centre, toute quantité sauf le plein, 90°, angle ouvert si trop puissant) ; `recall.reuse` vise l'illustration `angle-90-bande` de angle-droit-2 et `link_previous` rejoue ce coup (V7, V14)."
   - "Exercice 3 : les zones 1 et 2 ne sont pas délimitées sur le schéma [S], seuls les libellés « Zone 1 x3 » et « Zone 2 x3 » figurent (vers 1,3 ; 1,8 et vers 2,7 ; 3,3) ; leur taille (carré d'une case), leur position sur la ligne de retour et le fait qu'on les règle par la vitesse sont des lectures [Prop] du schéma et de la fiche n° 14 (déviations selon la quantité et la puissance), non formulées telles quelles ; l'ordre « zone 1 puis zone 2 » n'est pas imposé."
@@ -271,5 +269,5 @@ uncertainties:
   - "Section « Le boomerang » (enfants) : glose [Prop], absente des fiches."
   - "Illustration `talon-leve` : la fiche n° 14 et l'initiation 17 donnent le conseil (lever légèrement le talon sur cadre), mais pas d'angle ; l'inclinaison du schéma est indicative."
   - "Section « En plein, la blanche revient » : « certaine vitesse » et « billes pas trop éloignées » viennent de l'initiation 17 ; la source ne donne ni vitesse ni distance chiffrée. La section adultes « Régler le retour » est une lecture [Prop]."
-  - "Jeu : `rules` reprend les trois règles du jeu 14 ; le critère du jeton boomerang (la blanche s'immobilise plus près du tireur que du point de contact, jugé par l'adversaire), le jeton équerre, le placement de la blanche à trois jetons et le jeu en équipes sont [Prop], facultatifs, et la partie se joue sans eux."
+  - "Jeu : `rules` reprend les trois règles du jeu 14 ; le critère du jeton boomerang (la blanche s'immobilise plus près du tireur que du point de contact, jugé par l'adversaire), l'équerre annoncée (adultes), le placement de la blanche à trois jetons (enfants) et le jeu en équipes sont [Prop], facultatifs, exclusifs l'un de l'autre (une seule règle facultative par partie), et la partie se joue sans eux."
   - "Notion : la formulation « attaquer la blanche sous son centre » est commune aux quatre séances du rétro ; retro-2 doit être alignée (V23)."

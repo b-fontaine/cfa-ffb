@@ -186,22 +186,22 @@ game:
   source_game: 14
   adapted: true
   players: Partie à 2, ou équipes de deux en tournante
-  materials: "Billes du jeu complet (4 par groupe et la noire) ; des jetons pour la variante."
+  materials: "Billes du jeu complet (4 par groupe et la noire) ; des jetons pour la règle de lien (adultes)."
   setup_illustration: schema-jeu
   rules:
     - Partie à 2 ; les règles sont celles d'une partie classique, avec seulement 4 billes de chaque groupe et la noire.
     - Le joueur qui casse est désigné par le tirage à la bande.
   scoring: Comme dans une partie classique ; le premier qui empoche son groupe puis la noire gagne.
   end: Fin quand un joueur a empoché son groupe puis la noire.
-  playful_variant: "Tournante par équipes de deux, avec les jetons de la règle de lien (ils ne s'ajoutent à aucun autre) : à chaque tour de son équipe, un seul partenaire tire, en alternant (A, B, A, B...) ; l'autre contrôle l'attaque basse et regarde si la blanche recule. Les jetons se comptent à la fin de la partie : l'équipe qui en a le plus gagne la manche des boomerangs, en égalité la manche est partagée. La manche des boomerangs est un bonus : le vainqueur de la partie reste celui de la règle classique."
+  playful_variant: "Variante facultative des enfants, à jouer sans la règle de lien : tournante par équipes de deux ; à chaque tour de son équipe, un seul partenaire tire, en alternant (A, B, A, B...) ; l'autre regarde si la blanche recule après le contact et si l'attaque était basse, puis le dit à voix haute. Pas de score ajouté : le vainqueur de la partie reste celui de la règle classique."
   link_previous:
     notion_of: retro-1
-    rule: "Exception facultative aux règles classiques : avant un tir, le tireur annonce « boomerang » et la quantité, « plein » ou « trois-quarts », selon ce que sa bille permet ; il la joue en attaque basse et gagne un jeton si la blanche recule après le contact. Si la blanche ne recule pas, il n'y a ni jeton ni faute. Un tir non annoncé se joue librement, sans jeton."
-    note: "Rejoue le rétro de la séance précédente (plein) et y ajoute le trois-quarts ; règle facultative, la partie se joue telle quelle sans elle."
+    rule: "Règle facultative, adultes seulement (les enfants jouent la variante), en exception aux règles classiques : avant un tir, le tireur annonce « boomerang » et la quantité, « plein » ou « trois-quarts », selon ce que sa bille permet ; il la joue en attaque basse et gagne un jeton si la blanche recule après le contact. Si la blanche ne recule pas, il n'y a ni jeton ni faute. Un tir non annoncé se joue librement, sans jeton. Les jetons se comptent à la fin de la partie ; ils ne changent pas le vainqueur, qui reste celui de la règle classique."
+    note: "Rejoue le rétro de la séance précédente (plein) et y ajoute le trois-quarts ; règle facultative, la partie se joue telle quelle sans elle. Une seule règle facultative par partie."
   weight: {children: 1, adults: 1}
   adaptation:
-    children: "Rapprocher les billes des poches. Mise en place proposée : un joueur les rouges, l'autre les jaunes, tirage au sort pour commencer, partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes. Repère de recul : la blanche s'arrête au-delà de l'endroit où elle a touché la bille, vers le trait de départ ; l'animateur tranche en cas de doute."
-    adults: "Après la partie, noter pour chaque boomerang la quantité jouée et où la blanche s'est arrêtée, puis comparer au taux de l'exercice. Variante plus difficile : annoncer la zone où la blanche doit revenir."
+    children: "Rapprocher les billes des poches. Version enfants : la variante ludique seule, sans la règle de lien ni jeton. Mise en place proposée : un joueur les rouges, l'autre les jaunes, tirage au sort pour commencer, partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes. Repère de recul : la blanche s'arrête au-delà de l'endroit où elle a touché la bille, vers le trait de départ ; l'animateur tranche en cas de doute."
+    adults: "Version adultes : la règle de lien seule, sans la variante ludique. Après la partie, noter pour chaque boomerang la quantité jouée et où la blanche s'est arrêtée, puis comparer au taux de l'exercice."
   src: Prop
 review:
   prompts:
@@ -216,8 +216,8 @@ sources:
   - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 29, note: "Entraînement « Le rétro », exercices 5 et 6"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite), dont la partie est adaptée"}
 uncertainties:
-  - "Section « Le boomerang » (enfants), thème, défis, variante de jeu (tournante, jetons), règle de lien, adaptations et minutes : [Prop], à valider par un animateur dans l'application."
-  - "Le jeu est une adaptation [Prop] du jeu 14 [S] ; seuls les 4 billes par groupe, la noire et le tirage à la bande viennent de la fiche. L'annonce « boomerang », le jeton, le choix plein / trois-quarts, la tournante et la manche bonus n'y figurent pas et sont facultatifs."
+  - "Section « Le boomerang » (enfants), thème, défis, variante de jeu (tournante, observateur), règle de lien, adaptations et minutes : [Prop], à valider par un animateur dans l'application."
+  - "Le jeu est une adaptation [Prop] du jeu 14 [S] ; seuls les 4 billes par groupe, la noire et le tirage à la bande viennent de la fiche. L'annonce « boomerang », le jeton, le choix plein / trois-quarts, et la tournante n'y figurent pas et sont facultatifs."
   - "Exercice 4 : les positions des zones 1 et 2 de la mise en place sont lues d'après les libellés du schéma (vers (5,4 ; 1,4) et (6,5 ; 2,6)), non formulées par la fiche. Le schéma [S] ne délimite pas les zones 1 et 2 et ne dit pas quelle bille correspond à quelle zone ; l'énoncé parle de six billes à empocher alors que le schéma dessine une rouge, trois jaunes et la noire. La consigne impose seulement six tirs avec replacement de la rouge et de la blanche à chaque tir (lecture de la répétition du schéma, comme dans retro-1) ; le rebond sur la bande du bas n'est que la lecture du trajet dessiné vers la zone 2, il n'est pas exigé pour la zone 1, dont le libellé est hors de ce trajet."
   - "Exercice 5 : que les jaunes soient des obstacles est une lecture du schéma, pas de l'énoncé : le critère de réussite est seulement « blanche au-delà du trait » ; « sans toucher les jaunes » n'est qu'un défi ajouté [Prop]."
   - "Ordre des exercices : l'ordre du catalogue (4, 5, 6) est conservé, mais l'exercice 5 (trois-quarts direct) est plus simple que le 4 (plein, rebond sur bande, zones) ; l'animateur peut jouer le 5 avant le 4."

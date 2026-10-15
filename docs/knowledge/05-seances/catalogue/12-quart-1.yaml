@@ -184,7 +184,7 @@ game:
   source_game: 9
   adapted: false
   players: Partie à 2
-  materials: "Billes du jeu complet. Pour le défi ludique (proposition) : un tableau et des jetons."
+  materials: "Billes du jeu complet. Pour la variante ludique des enfants (proposition) : un tableau."
   setup_illustration: schema-jeu
   rules:
     - Vider son groupe de billes puis la noire dans une poche du milieu, en quart de bille.
@@ -195,15 +195,15 @@ game:
     - Adapter la puissance du coup pour empocher la bille (objectif du jeu 9).
   scoring: Le premier qui a empoché toutes les billes de son groupe puis la noire gagne.
   end: "Fin quand un joueur a vidé son groupe puis empoché la noire ; en cas d'égalité, jouer la noire jusqu'à ce que l'un manque."
-  playful_variant: "Avant chaque tir, annoncer « quart » en montrant où passe la visée ; si l'adversaire contrôle et confirme que la visée est bien en quart, le funambule du tireur avance d'un pas sur un fil de 8 pas dessiné au tableau. Quand son funambule est au bout du fil, un joueur peut, une seule fois dans la partie, rejouer un tir manqué."
+  playful_variant: "Enfants : avant chaque tir, annoncer « quart » en montrant où passe la visée ; si l'adversaire contrôle et confirme que la visée est bien en quart, le funambule du tireur avance d'un pas sur un fil de 8 pas dessiné au tableau."
   link_previous:
     notion_of: trois-quarts-2
-    rule: "Échauffement avant la partie, hors règles du jeu 9 : chaque joueur tire la rouge du schéma deux fois, d'abord en trois-quarts depuis un point que son adversaire pose plus près de la ligne rouge-poche, puis en quart depuis un point plus bas de la ligne de départ que le point d'origine (environ y = 2,9, au choix de l'animateur : depuis le point d'origine, l'angle de coupe est trop fin pour un vrai quart) ; il annonce « trois-quarts » ou « quart » et son adversaire contrôle que la visée est entre le centre et la tangente, ou en dehors de la bille, avant le tir. Ces tirs ne comptent pas dans la partie."
-    note: "Réactive le trois-quarts de la séance précédente et fait comparer les deux quantités sur la même bille ; échauffement facultatif : la partie se joue ensuite telle quelle, sans exception aux règles du jeu 9."
+    rule: "[Prop] Règle facultative, adultes seulement (les enfants jouent la variante) ; échauffement avant la partie, hors règles du jeu 9. Chaque joueur tire la rouge du schéma deux fois, d'abord en trois-quarts depuis un point que son adversaire pose plus près de la ligne rouge-poche, puis en quart depuis un point plus bas de la ligne de départ que le point d'origine (environ y = 2,9, au choix de l'animateur : depuis le point d'origine, l'angle de coupe est trop fin pour un vrai quart) ; il annonce « trois-quarts » ou « quart » et son adversaire contrôle que la visée est entre le centre et la tangente, ou en dehors de la bille, avant le tir. Ces tirs ne comptent pas dans la partie."
+    note: "Réactive le trois-quarts de la séance précédente et fait comparer les deux quantités sur la même bille ; échauffement facultatif : la partie se joue ensuite telle quelle, sans exception aux règles du jeu 9. Une seule règle facultative par partie."
   weight: {children: 1, adults: 1}
   adaptation:
     children: "Rapprocher la blanche et les billes de la poche du milieu. Mise en place proposée (la fiche ne la précise pas) : un joueur les rouges, l'autre les jaunes, chacun un groupe de 7 billes ; les rouges se replacent sur le point de la rouge du schéma (près de la poche du milieu du haut), les jaunes sur celui de la jaune (près de la poche du milieu du bas) ; la noire se joue depuis l'un de ces deux points, au choix du tireur ; tirage au sort pour commencer, partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes."
-    adults: "Même mise en place proposée (la fiche ne la précise pas) : un joueur les rouges, l'autre les jaunes, chacun un groupe de 7 billes plus la noire ; rouges sur le point de la rouge du schéma, jaunes sur celui de la jaune, noire jouée depuis l'un des deux points au choix du tireur. Après la partie, comparer avec le taux de l'exercice : sur quelle distance et de quel côté le quart échoue-t-il ? Variante plus difficile : jouer aussi la noire en quart de bille."
+    adults: "Même mise en place proposée (la fiche ne la précise pas) : un joueur les rouges, l'autre les jaunes, chacun un groupe de 7 billes plus la noire ; rouges sur le point de la rouge du schéma, jaunes sur celui de la jaune, noire jouée depuis l'un des deux points au choix du tireur. Après la partie, comparer avec le taux de l'exercice : sur quelle distance et de quel côté le quart échoue-t-il ?"
   src: S   # titre, règles, score et fin du jeu 9 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
 review:
   prompts:
@@ -219,7 +219,7 @@ sources:
   - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 9, note: "Entraînement « Quart de bille et finesses », exercices 1 et 2"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 9, note: Jeu 9}
 uncertainties:
-  - "Mises en place en texte, défis ludiques, variante de jeu (jetons compris), règle de lien et adaptation du jeu : [Prop], à valider par un animateur dans l'application. La différenciation enfants / adultes (poids, compléments, adaptation du jeu) est aussi une proposition."
+  - "Mises en place en texte, défis ludiques, variante de jeu, règle de lien et adaptation du jeu : [Prop], à valider par un animateur dans l'application. La différenciation enfants / adultes (poids, compléments, adaptation du jeu) est aussi une proposition."
   - "Le rappel porte sur le trois-quarts, tel que l'enseigne trois-quarts-2 (point de visée à égale distance du centre et de la tangente, déviation d'environ 15°, la bille de couleur parcourt plus que la blanche) ; il reprend l'illustration `demi-et-trois-quarts` de trois-quarts-2 (recall.reuse). Les sections [Prop] de trois-quarts-2 (chevalet, distance) ne sont pas rappelées : le rappel reste [S]."
   - "Initiation 9 : la fiche demande 2 billes, une en quart et une en finesse ; la finesse relevant de la séance finesse-1, cette séance joue deux tirs en quart sur la jaune de gauche. L'adaptation est une proposition (src Prop). Le PDF ne précise pas le type de chevalet."
   - "Le schéma de l'initiation 9 n'est pas légendé : l'association gauche = quart, droite = finesse est déduite des schémas de quantité (voir la transcription) ; le décalage mesuré à gauche est plus épais que le quart dessiné."

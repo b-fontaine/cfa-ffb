@@ -154,15 +154,15 @@ game:
     - "Égalité : jouer la noire jusqu'à ce que l'un manque."
   scoring: Le premier qui vide son groupe puis la noire gagne.
   end: Fin quand un joueur a vidé son groupe puis empoché la noire.
-  playful_variant: "Avant chaque tir, annoncer « demi » ; l'adversaire contrôle et, s'il a raison, gagne un jeton. Un jeton permet de rejouer, une fois, un tir manqué."
+  playful_variant: "Variante enfants, facultative, autonome (jouable sans la règle de lien) : avant chaque tir, annoncer « demi » ; l'adversaire contrôle et, s'il a raison, gagne un jeton. Un jeton permet de rejouer, une fois, un tir manqué."
   link_previous:
     notion_of: bille-pleine-2
-    rule: "Exception à la règle de la demi-bille et du replacement de la blanche, à chaque tour de table (un tir de chaque joueur) : le joueur qui ouvre le tour suivant joue sa première bille en plein, depuis une blanche que son adversaire pose alignée avec la bille et la poche."
-    note: "Réactive la bille pleine de la séance précédente ; règle facultative, le jeu 7 se joue tel quel sans elle."
+    rule: "Adultes seulement (les enfants jouent la variante). Règle facultative, sans jeton, en exception à la règle de la demi-bille et du replacement de la blanche, à chaque tour de table (un tir de chaque joueur) : le joueur qui ouvre le tour suivant joue sa première bille en plein, depuis une blanche que son adversaire pose alignée avec la bille et la poche."
+    note: "Réactive la bille pleine de la séance précédente ; le jeu 7 se joue tel quel sans elle. Une seule règle facultative par partie : les adultes jouent la règle de lien, les enfants la variante ludique."
   weight: {children: 1, adults: 1}
   adaptation:
     children: "Rapprocher la blanche et les billes des poches. Mise en place proposée (la fiche ne la précise pas) : un joueur les rouges, l'autre les jaunes ; deux points de départ, comme sur le schéma (les rouges vers la poche du haut à gauche, les jaunes vers la poche du bas à gauche), les billes d'un groupe posées une à une sur leur point ; la blanche sur son point d'origine, au centre gauche de la table ; la noire sur un point choisi par les joueurs avant la partie ; tirage au sort pour commencer, partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes."
-    adults: "Après la partie, comparer avec le taux de l'exercice : où la demi-bille échoue-t-elle (distance, côté) ? Variante plus difficile : jouer aussi la noire en demi-bille."
+    adults: "Après la partie, comparer avec le taux de l'exercice : où la demi-bille échoue-t-elle (distance, côté) ?"
   src: S   # titre, règles, score et fin du jeu 7 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
 review:
   prompts:

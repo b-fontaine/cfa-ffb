@@ -83,6 +83,7 @@ theory:
         - "Pour les premiers tirs, la main s'appuie sur le cadre : il sert de support naturel."
         - "Pouce et majeur le long de la flèche (la partie de la queue entre le bout et le chevalet), index par-dessus."
         - Peu de flèche, tête un peu relevée.
+        - "Quand la blanche est loin de la bande, la main se pose à plat sur la surface de jeu, doigts écartés ; l'animateur le montre au moment de l'exercice 2."
       adult_extra:
         - "Quand la blanche est loin de la bande, chevalet main à plat : toute la main sur la surface de jeu, doigts écartés, pouce relevé et collé à l'index, intérieur de la main légèrement relevé, tête au plus près de la queue."
       key_point: "Premiers tirs : la main s'appuie sur le cadre."
@@ -203,7 +204,7 @@ training:
         - {symptom: La queue n'est pas alignée avec la trajectoire de la blanche, fix: "Contrôler la ligne queue-blanche-bille visée en se plaçant derrière l'élève, sans le toucher."}
       playful:
         hook: "Une étoile par tir : la bille empochée et le corps immobile jusqu'à la fin du geste ; l'animateur passe de table en table pour valider."
-        challenge: "Réussir les quatre cibles de la croix en gardant exactement la même position ; échanger les rôles après chaque cible, le binôme observe sans corriger."
+        challenge: "Réussir les quatre cibles de la croix en gardant exactement la même position, soit quatre étoiles : l'étoile compte pour le score du binôme ; échanger les rôles après chaque cible, le binôme observe sans corriger."
       passes: 1
       src: Prop
 game:
@@ -211,7 +212,7 @@ game:
   source_game: 1
   adapted: false
   players: Défi à 2
-  materials: "Billes de couleur du jeu. Pour le défi ludique (proposition) : un tableau ou des jetons pour les étoiles."
+  materials: "Billes de couleur du jeu. Pour le défi ludique (proposition) : un tableau pour noter les séries."
   setup_illustration: schema-jeu
   rules:
     - Les billes de couleur sont placées près des poches, une devant chacune des six poches.
@@ -221,19 +222,20 @@ game:
   scoring: "On compte les billes empochées d'affilée à chaque tentative ; la série est réussie à 6 billes. La fiche ne précise pas de décompte entre les deux joueurs : convenir avant de jouer."
   end: "Fin quand la série de 6 billes est réalisée ; la fiche ne fixe pas de nombre de manches."
   playful_variant: >-
-    Proposition : chaque joueur a trois tentatives et sa plus longue série est
-    retenue ; la partie s'arrête après les trois tentatives de chacun, ou à la
-    fin du temps de jeu, même si personne n'a réalisé les six billes. Avant
-    chaque tir, le tireur annonce « aligné ! » ; l'animateur, qui passe de table
-    en table, donne une étoile quand la bille est empochée et que le corps est
-    resté immobile jusqu'à la fin du tir. Il y a égalité quand les deux plus
-    longues séries comptent le même nombre de billes : gagne alors le joueur qui
-    a le plus d'étoiles ; si les étoiles sont aussi à égalité, chacun rejoue une
-    tentative.
+    Proposition, version enfants, jouable seule (sans règle de lien : la
+    séance 1 n'en a pas) : on vise une série de N billes d'affilée, N étant le
+    nombre annoncé avant de jouer (trois pour commencer, voir l'adaptation).
+    Une seule mécanique : chaque joueur a trois tentatives et sa plus longue
+    série est retenue ; la plus longue série gagne, et une égalité est
+    acceptée. La partie s'arrête après les trois tentatives de chacun, ou à la
+    fin du temps de jeu, même si personne n'a réalisé N billes. Facultatifs
+    pour les enfants : allonger N, le relais et la rotation des tables (voir
+    l'adaptation) ; il n'y a ni étoile ni annonce dans ce jeu. Une seule règle
+    facultative par partie.
   weight: {children: 1, adults: 1}
   adaptation:
     children: "Proposition : viser une série de trois billes au lieu de six, puis l'allonger d'une bille dès que tous la réussissent ; la fiche ne dit pas si la blanche est posée une seule fois pour la série ou avant chaque tir : annoncer avant de jouer que, pour ce jeu, elle est posée librement avant chaque tir. Rappeler les fautes courantes : blanche empochée, blanche qui ne touche aucune bille de couleur, bille sortie de la table. Jouer en relais, un joueur à la table et les autres qui regardent ; changer de table ou de binôme toutes les cinq minutes pour que chacun tire souvent."
-    adults: "Proposition : mêmes réglages que pour les enfants (série de trois billes, blanche posée avant chaque tir, fautes rappelées), car le public adulte est aussi débutant ; ne durcir qu'après un résultat observé, par exemple une série de trois réussie facilement, avec le jeu 2 de la fiche [S] (billes à un espace de bille des poches). Après la série, chaque joueur nomme le point de posture qui lui a fait manquer."
+    adults: "Proposition : mêmes réglages que pour les enfants (série de trois billes, blanche posée avant chaque tir, fautes rappelées), sans la variante ludique des enfants (aucune règle facultative pour les adultes), car le public adulte est aussi débutant ; ne durcir qu'après un résultat observé, par exemple une série de trois réussie facilement, avec le jeu 2 de la fiche [S] (billes à un espace de bille des poches). Après la série, chaque joueur nomme le point de posture qui lui a fait manquer."
   src: S   # titre, règles, score et fin du jeu 1 ; playful_variant et adaptation restent [Prop] (FORMAT § 5)
 review:
   prompts:
@@ -253,10 +255,10 @@ sources:
 uncertainties:
   - "Les exercices 1 et 2 appartiennent au bloc `posture` [Prop] : taux, consignes et mise en place sont des propositions adaptées des initiations 1 et 2 [S], à valider par un animateur dans l'application."
   - "L'initiation 1 et l'exercice 1 reprennent la même mise en place : l'initiation sert à laisser essayer sans corriger (conseil de la fiche), l'exercice est noté et porte les points de contrôle. Le bloc [Prop] ne remplace pas l'initiation."
-  - "Le jeu 1 [S] ne fixe pas le décompte entre les deux joueurs, le nombre de manches ni si la blanche est posée une fois ou avant chaque tir : tentatives, départage, pose de la blanche, liste de fautes, étoiles, binômes, relais et rotations sont des propositions (playful_variant, adaptation). La fiche ne définit pas non plus la « faute »."
+  - "Le jeu 1 [S] ne fixe pas le décompte entre les deux joueurs, le nombre de manches ni si la blanche est posée une fois ou avant chaque tir : tentatives, égalité acceptée, pose de la blanche, liste de fautes, binômes, relais et rotations sont des propositions (playful_variant, adaptation) ; la variante enfants ne garde qu'une mécanique (trois tentatives, plus longue série) et les étoiles ne servent que dans les exercices 1 et 2. La fiche ne définit pas non plus la « faute »."
   - "Accueil (règles de conduite, matériel), section gauchers et section « Où la queue touche la blanche » (adultes) : propositions, la fiche ne les traite pas. La notion de point de contact (côté de la bille opposé à la poche) a été retirée de la séance 1 le 2026-10-15 : elle relève de la fiche n° 3 (bille fantôme) et alourdissait la première séance (audit)."
   - "La séance n'enseigne pas la différence de taille des billes (quart de bille, rétro 90°, contact au-dessus de l'équateur : séances ultérieures, où elle est sourcée [S], voir 06-dimensions-du-materiel.md § 1)."
-  - "La fiche technique n° 1 conseille une première séance courte sur la posture (risque de rejet) : la durée de 90 ou 120 min est une contrainte de projet ; le poids de l'initiation et du jeu est relevé pour limiter l'explication. Pour les enfants, le chevalet main à plat (page 9) est réservé aux adultes en théorie et annoncé au moment de l'exercice 2."
+  - "La fiche technique n° 1 conseille une première séance courte sur la posture (risque de rejet) : la durée de 90 ou 120 min est une contrainte de projet ; le poids de l'initiation et du jeu est relevé pour limiter l'explication. Pour les enfants, le chevalet main à plat (page 9) n'est qu'une phrase de la section « Premier chevalet » (loin de la bande, main à plat), montrée au moment de l'exercice 2 ; cet ajout enfants (ligne de la section « Premier chevalet », `src: S`) est [Prop] : seule la phrase de la fiche p. 9 est [S] ; le détail du geste reste réservé aux adultes."
   - "Le joueur est un pictogramme neutre généré (type `player_figure`) : les proportions sont des propositions [Prop] (révisées le 2026-10-15 : buste penché, menton près de la queue, blanche près de la bande sur le cadre) et les billes y sont agrandies, la fiche n° 1 ne donne que des photos. L'avant-bras vertical se lit de profil (`posture-personnage`), que la vue de dessus ne montre pas ; le renvoi à la page 6 de la fiche reste proposé. Les trois places de la tête (`tete-cas-1` à `tete-cas-3`) sont trois illustrations, une par cas ; `posture-gaucher` est la figure droitière en miroir [Prop]."
   - "Initiation 1 : le PDF dit « 4 billes » alors que trois billes sont dessinées (la jaune du milieu est jouée deux fois) ; lecture du schéma reprise dans le diagramme transcrit, la consigne de replacer la jaune avant le troisième tir, comme celles de poser la blanche sur l'emplacement suivant et de replacer une bille non empochée, n'est pas dans la fiche : elle figure seulement dans l'exercice 1 [Prop] (le diagramme de proposition l'indique), pas dans le texte [S] de l'initiation."
   - "Exercice 1 : avec les billes au ras de la bande devant leur poche, une bille visée en son centre entre dans la poche (coupes théoriques de 16° à 37°) ; la séance 1 ne demande que l'alignement queue, blanche, bille visée."

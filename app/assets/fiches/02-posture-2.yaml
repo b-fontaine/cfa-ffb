@@ -156,7 +156,7 @@ game:
   source_game: 2
   adapted: false
   players: Défi à 2
-  materials: "Six billes de couleur et la blanche. Pour la variante (proposition) : des jetons et une tirelire."
+  materials: "Six billes de couleur et la blanche. Pour la variante enfants (proposition) : des jetons et une tirelire, réservés aux enfants."
   setup_illustration: schema-jeu
   rules:
     - Les billes de couleur sont placées près des poches, en laissant l'espace d'une bille.
@@ -164,14 +164,14 @@ game:
     - S'il manque ou commet une faute, on replace toutes les billes et la main passe à l'adversaire, qui doit réaliser l'enchaînement à son tour.
   scoring: Réaliser une série de 6 billes d'affilée.
   end: Le défi est relevé quand un joueur réalise la série de 6 billes ; la fiche ne précise pas de décompte entre les deux joueurs.
-  playful_variant: "Tirelire du groupe (exception coopérative aux règles du jeu, durée 15 minutes) : la tirelire se remplit de 5 jetons ; chaque série de 6 réussie ajoute un jeton, puis la partie continue sans s'arrêter : on replace toutes les billes et la main passe à l'autre joueur. Le groupe gagne si la tirelire est pleine avant la fin des 15 minutes. Tournante : à chaque main perdue, le joueur qui a manqué laisse sa place à un joueur du groupe en attente. Convenir avant de jouer que chaque bille doit entrer dans la poche devant laquelle elle est posée (la fiche ne le précise pas)."
+  playful_variant: "Enfants : tirelire ; adultes : règle de lien, sans tirelire. Version enfants, autonome (tirelire du groupe, exception coopérative aux règles du jeu, durée 15 minutes) : les six billes sont posées chacune devant une poche, à un peu moins d'un espace de bille ; la série est de 4 billes, empochées chacune dans la poche devant laquelle elle est posée (la fiche ne le précise pas, à convenir avant de jouer). La tirelire se remplit de 5 jetons ; chaque série de 4 billes réussie ajoute un jeton, puis la partie continue : on replace toutes les billes et la main passe à l'autre joueur. Le groupe gagne si la tirelire est pleine avant la fin des 15 minutes. Tournante : à chaque main perdue, le joueur qui a manqué laisse sa place à un joueur du groupe en attente."
   link_previous:
     notion_of: posture-1
-    rule: "Exception aux règles du jeu : avant chaque tir, le joueur annonce sa ligne de visée en posant la queue sur l'alignement queue-blanche-cible, puis se place ; l'adversaire contrôle que l'ordre viser puis se placer est respecté. Si l'ordre n'est pas respecté, le tir est traité comme une faute : on replace toutes les billes et la main passe, comme pour une faute du jeu."
-    note: "Rejoue l'alignement puis la posture de la séance précédente, tout en gardant l'appui adapté à la place de la blanche ; règle facultative, le jeu 2 se joue tel quel sans elle."
+    rule: "Adultes seulement (les enfants jouent la variante) ; exception aux règles du jeu : avant chaque tir, le joueur annonce sa ligne de visée en posant la queue sur l'alignement queue-blanche-cible, puis se place ; l'adversaire contrôle que l'ordre viser puis se placer est respecté. Si l'ordre n'est pas respecté, le tir est traité comme une faute : on replace toutes les billes et la main passe, comme pour une faute du jeu."
+    note: "Rejoue l'alignement puis la posture de la séance précédente, tout en gardant l'appui adapté à la place de la blanche ; règle facultative, le jeu 2 se joue tel quel sans elle. Une seule règle facultative par partie."
   weight: {children: 1, adults: 1}
   adaptation:
-    children: "Série ramenée à 4 billes, billes un peu plus près des poches ; le premier à réussir sa série gagne la manche (la fiche ne fixe pas de décompte) ; partie limitée à 15 minutes."
+    children: "Version enfants : la variante (tirelire du groupe, série de 4 billes, billes un peu plus près des poches, 15 minutes), sans règle de lien ; pas de gagnant de manche, c'est le groupe qui gagne."
     adults: "Série de 6 en alternant l'appui cadre ou surface selon la blanche ; l'adversaire note où la queue finit à chaque série manquée (lecture des défauts)."
   src: S
 review:
@@ -193,7 +193,7 @@ uncertainties:
   - "Tailles : la séance ne mesure aucune quantité de bille ; la blanche plus petite (48,0 contre 50,8 mm, 06-dimensions-du-materiel.md) n'est donc pas dite dans les textes, seulement respectée dans le schéma `distances` (blanche au rayon r_c, flèches arrêtées au contact à s = r_c + r_o = 0,2136 case de la rouge, soit y = 0,364). La posture et la puissance n'utilisent plus aucun « cran »."
   - "Les exercices 3 et 4 du bloc posture, leurs taux et leurs mises en place sont [Prop], adaptés des fiches d'initiation 3 et 4 et du jeu 1 [S] ; à valider par un animateur dans l'application."
   - "Thème, défis, tirelire, tournante, règle de lien et adaptations du jeu : [Prop]. Titre, thème « Le tireur d'élite », notion, bloc et fiches techniques sont identiques à ceux de posture-1 (V23) ; la notion reprend la phrase de posture-1. Fil de la séance : rester stable autour de la ligne de visée (chevalet à plat, coup de queue droit, même geste de près et de loin) ; reformuler `notion` pour y nommer le coup de queue suppose de modifier posture-1 dans le même changement."
-  - "La fiche du jeu 2 ne dit pas comment on désigne le gagnant ; le décompte proposé (adaptation.children) est une proposition."
+  - "La fiche du jeu 2 ne dit pas comment on désigne le gagnant entre les deux joueurs. Pour les adultes, la fin de la fiche est conservée telle quelle. Pour les enfants, la proposition [Prop] remplace le gagnant par la tirelire du groupe (série de 4 billes, 5 jetons, 15 minutes, tournante), sans gagnant de manche. La règle « une seule règle facultative par partie » est aussi [Prop] : enfants, la variante tirelire seule ; adultes, la règle de lien seule, sans tirelire."
   - "Le rappel ne porte que sur ce que posture-1 a enseigné (alignement, posture, appui sur le cadre, main à plat) ; il réutilise l'illustration `posture-personnage` de posture-1. Le coup de queue (seul l'avant-bras bouge) est nouveau et n'est pas rappelé."
   - "Pas de section d'initiation : les fiches d'initiation 3 et 4 sont déjà la base des exercices 3 et 4 ; les ajouter ferait doublon ; les deux sections nouvelles ont une démonstration que les élèves reproduisent aussitôt (chevalet à plat, trois balanciers à vide)."
   - "La section « Près ou loin, le même geste » est une glose [Prop] : la fiche technique n° 1 ne traite pas de la distance de la blanche ; son schéma aligne les trois emplacements avec la bille et la poche pour que seule la distance change."

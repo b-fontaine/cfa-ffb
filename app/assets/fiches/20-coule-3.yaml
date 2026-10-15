@@ -190,22 +190,22 @@ game:
   source_game: 14
   adapted: true
   players: Partie à 2
-  materials: "Billes du jeu complet, quatre par groupe plus la noire. Pour la règle de lien et la variante (proposition) : de la craie pour marquer deux zones, un carnet ou un tableau pour les tampons."
+  materials: "Billes du jeu complet, quatre par groupe plus la noire. Pour la variante enfants ou la règle de lien (proposition) : de la craie pour marquer une zone (variante enfants) ou deux zones (règle de lien adultes), un carnet ou un tableau pour les tampons."
   setup_illustration: schema-jeu
   rules:
     - Jouer une partie avec les règles classiques, avec seulement quatre billes de chaque groupe de couleur et la noire.
     - Le joueur qui casse est désigné par le tirage à la bande.
   scoring: Comme dans une partie classique, le premier qui empoche son groupe de billes puis la noire gagne.
   end: Fin quand un joueur a vidé son groupe puis empoché la noire.
-  playful_variant: "Le carnet de voyage, en tournante par équipes de deux : les partenaires se relaient tir après tir et les tampons de la règle de lien se comptent par équipe. À trois tampons, l'équipe gagne une marque au tableau et le titre de voyageur confirmé (récompense symbolique, sans effet sur la partie)."
+  playful_variant: "Le carnet de voyage (version enfants, autonome, sans la règle de lien) : une zone est marquée à la craie avant la partie, d'une taille convenue entre les joueurs. Avant de jouer une bille en coulé (attaque en haut, plein ou trois-quarts, geste ample), le joueur annonce le coulé et la zone unique où la blanche doit s'arrêter ; si la bille est empochée et que la blanche s'arrête dans cette zone, son adversaire, qui juge, lui accorde un tampon. À trois tampons, le joueur gagne une marque au tableau et le titre de voyageur confirmé (récompense symbolique, sans effet sur la partie)."
   link_previous:
     notion_of: coule-2
-    rule: "Exception facultative aux règles classiques : deux zones sont marquées à la craie avant la partie, d'une taille convenue entre les joueurs. Avant de jouer une bille en coulé (attaque en haut, plein ou trois-quarts, geste ample), le joueur annonce l'une des deux zones ; si la bille est empochée et que la blanche s'arrête dans la zone annoncée, son adversaire, qui juge, lui accorde un tampon."
-    note: "Rejoue le coulé de la séance précédente (attaque en haut, amplitude, plein et trois-quarts) en y ajoutant le choix d'une destination. Conseil facultatif : quand la bille s'y prête, jouer en coulé en choisissant d'abord où la blanche doit s'arrêter. Règle facultative, la partie se joue telle quelle sans elle."
+    rule: "Règle facultative, adultes seulement (les enfants jouent la variante), à jouer sans la variante ludique, en exception aux règles classiques : deux zones sont marquées à la craie avant la partie, d'une taille convenue entre les joueurs. Avant de jouer une bille en coulé (attaque en haut, plein ou trois-quarts, geste ample), le joueur annonce l'une des deux zones ; si la bille est empochée et que la blanche s'arrête dans la zone annoncée, son adversaire, qui juge, lui accorde un tampon (un seul décompte, les tampons)."
+    note: "Rejoue le coulé de la séance précédente (attaque en haut, amplitude, plein et trois-quarts) en y ajoutant le choix d'une destination. Règle facultative, la partie se joue telle quelle sans elle. Une seule règle facultative par partie."
   weight: {children: 1, adults: 1}
   adaptation:
-    children: "Rapprocher la blanche et les billes des poches. Mise en place proposée : un joueur les rouges et l'autre les jaunes, partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes, et à égalité la partie est nulle."
-    adults: "Après la partie, compter les coulés annoncés et réussis, et les comparer au taux de l'exercice 7. Variante plus difficile : annoncer aussi la quantité de bille (plein ou trois-quarts) avant le tir."
+    children: "Rapprocher la blanche et les billes des poches. Version enfants : la variante ludique seule, sans la règle de lien ; partie à deux, chaque joueur compte ses tampons et son adversaire juge (une marque au tableau à trois tampons). Mise en place proposée : un joueur les rouges et l'autre les jaunes, partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes, et à égalité la partie est nulle."
+    adults: "Version adultes : la règle de lien seule, sans la variante ludique."
   src: Prop
 review:
   prompts:
@@ -218,7 +218,7 @@ sources:
   - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 22, note: "Entraînement « Le coulé », exercices 7 et 8"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite : quatre billes par groupe et la noire)"}
 uncertainties:
-  - "Jeu : la source ne propose aucun jeu spécifique au coulé ; le jeu 14 est repris et adapté (règle de lien à zones marquées et tampons, variante, adaptations, conseil de jouer en coulé) : [Prop], à valider par un animateur dans l'application."
+  - "Jeu : la source ne propose aucun jeu spécifique au coulé ; le jeu 14 est repris et adapté (règle de lien adultes à deux zones marquées et tampons, variante enfants autonome à une zone, adaptations « version enfants / version adultes », une seule règle facultative par public) : [Prop], à valider par un animateur dans l'application."
   - "Thème (nom et notion alignés sur coule-1 et coule-2, V23), défis ludiques, variante de jeu, règle de lien, adaptations, poids, minutes et variation du repère de la blanche à l'exercice 8 : [Prop]."
   - "Le rappel reprend ce que coule-2 a enseigné (attaque en haut, blanche sur la même ligne en plein, déviation selon la quantité, amplitude plutôt que vitesse) ; `recall.reuse` réutilise son illustration `visee-trois-quarts`. L'illustration `coule-plein` est conservée dans cette séance car la séance carreau-1 la réutilise (recall.reuse) ; elle est distincte de celle de coule-2 (même id, schéma propre)."
   - "Exercice 7 : le schéma [S] ne montre qu'une rouge, trois jaunes et la noire alors que l'énoncé parle de six billes empochées, et ne dit pas lesquelles sont tirées ; la séance retient, en [Prop], de rejouer six fois la même situation avec la rouge du schéma. Les zones ne sont pas délimitées sur le schéma : elles sont lues au bout des flèches (zone 1 tout droit, zone 2 par la bande du haut)."

@@ -62,8 +62,8 @@ theory:
       weight: {children: 2, adults: 2}
       body:
         - Le but du rétro est de replacer la blanche pour jouer ensuite la noire.
-        - À l'exercice 9, la blanche repart tout droit et s'arrête au-delà d'un trait.
-        - À l'exercice 10, elle passe par la bande du haut avant d'arriver dans la zone 1 puis dans la zone 2.
+        - Au premier défi (exercice 9), la blanche repart sur le côté, parallèlement à la grande bande, et passe un trait.
+        - Au deuxième défi (exercice 10), elle passe par la bande du haut avant d'arriver dans la zone 1 puis dans la zone 2.
       key_point: Deux retours à connaître, au-delà d'un trait ou par la bande.
       demo: null
       illustrations: [schema-e9, schema-e10, zones-rebond]
@@ -233,7 +233,7 @@ game:
   source_game: 14
   adapted: true
   players: "Partie à 2 ; en variante ludique, 2 équipes de 2 qui se relaient tir après tir."
-  materials: "Billes du jeu complet, quatre par groupe plus la noire. Pour la variante ludique (proposition) : un tableau ou un carnet, des jetons, de la craie ou du ruban pour matérialiser un trait ou une zone."
+  materials: "Billes du jeu complet, quatre par groupe plus la noire. Pour la variante ludique (proposition) : rien de plus. Pour la règle de lien, adultes seulement (proposition) : un tableau ou un carnet, des jetons, de la craie ou du ruban pour matérialiser un trait ou une zone."
   setup_illustration: schema-jeu
   rules:
     - Jouer une partie avec les règles classiques, avec seulement quatre billes de chaque groupe de couleur et la noire.
@@ -241,15 +241,15 @@ game:
     - "Rappel des règles classiques : un joueur qui empoche une bille continue jusqu'à ce qu'il manque ou commette une faute ; chacun vide son groupe de couleur puis empoche la noire."
   scoring: Comme dans une partie classique, le premier qui empoche son groupe de billes puis la noire gagne.
   end: Fin quand un joueur a vidé son groupe puis empoché la noire.
-  playful_variant: "Le retour du boomerang, joué avec la règle de lien, en tournante par équipes de deux : les partenaires se relaient tir après tir et notent leurs jetons au tableau. À trois jetons, l'équipe peut rejouer une fois un tir manqué, billes replacées comme avant ce tir ; les jetons ne comptent pas pour la victoire, qui reste celle de la partie classique."
+  playful_variant: "Version enfants, autonome (proposition) : le boomerang en équipes. Deux équipes de deux se relaient tir après tir, et cherchent à jouer des rétros comme à la séance précédente ; la victoire reste celle de la partie classique, sans annonce ni jeton."
   link_previous:
     notion_of: retro-3
-    rule: "Exception facultative aux règles classiques : le joueur qui vient d'empocher une bille et rejoue annonce, avant son tir suivant, un rétro et la destination de la blanche, zone ou trait matérialisé à la craie ou au ruban avant le tir, directement ou par une bande, comme aux exercices 7 et 8 de la séance précédente. Il marque un jeton si la bille est empochée et si la blanche s'arrête dans la zone annoncée ou au-delà du trait."
-    note: "Reprend le choix d'une destination pour la blanche (zone ou trait) et le réglage de la quantité et de la puissance travaillés à la séance précédente, et y ajoute le passage par la bande ; règle facultative, la partie se joue telle quelle sans elle."
+    rule: "Adultes seulement (les enfants jouent la variante). Exception facultative aux règles classiques : le joueur qui vient d'empocher une bille et rejoue annonce, avant son tir suivant, un rétro et la destination de la blanche, zone ou trait matérialisé à la craie ou au ruban avant le tir, comme aux exercices 7 et 8 (trait ou zone), éventuellement par une bande. Il marque un jeton si la bille est empochée et si la blanche s'arrête dans la zone annoncée ou au-delà du trait."
+    note: "Reprend le choix d'une destination pour la blanche (zone ou trait) et le réglage de la quantité et de la puissance travaillés à la séance précédente, et y ajoute le passage par la bande ; règle facultative, la partie se joue telle quelle sans elle. Une seule règle facultative par partie."
   weight: {children: 1, adults: 1}
   adaptation:
-    children: "Rapprocher la blanche et les billes des poches. Mise en place proposée : partie limitée à 15 minutes ; au-delà, gagne qui a le moins de billes restantes. Le tirage à la bande reste la façon de désigner celui qui casse ; l'animateur peut, s'il préfère, le remplacer par un tirage au sort (alternative proposée)."
-    adults: "Après la partie, compter les rétros annoncés et réussis, et les comparer au taux de l'exercice 10. Variante plus difficile : annoncer aussi la quantité de bille avant le tir."
+    children: "Version enfants : la variante en équipes seule, sans la règle de lien ; le tirage à la bande désigne celui qui casse et la partie se termine comme une partie classique."
+    adults: "Version adultes : la règle de lien seule, sans la variante ludique. Après la partie, compter les rétros annoncés et réussis, à titre indicatif (aucun taux de référence : la source n'en donne pas pour ce jeu)."
   src: Prop
 review:
   prompts:
@@ -264,8 +264,8 @@ sources:
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 12, note: "Jeu 12 (rappel des règles de la partie classique : on continue tant qu'on empoche, jusqu'au manque ou à la faute)"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite : quatre billes par groupe et la noire)"}
 uncertainties:
-  - "Jeu : la source ne propose aucun jeu spécifique au rétro ; le jeu 14 est repris et adapté (règle de lien, jetons) : [Prop], à valider par un animateur dans l'application. Le rappel des règles classiques est repris du jeu 12 ; les jetons n'ont aucun effet sur la victoire."
-  - "Thème (Le boomerang), notion et titre alignés sur retro-1, retro-2 et retro-3 (V23) ; défis ludiques, variante de jeu, règle de lien, adaptations, poids et minutes : [Prop]."
+  - "Jeu : la source ne propose aucun jeu spécifique au rétro ; le jeu 14 est repris et adapté (règle de lien pour les adultes, variante en équipes pour les enfants) : [Prop], à valider par un animateur dans l'application. Le rappel des règles classiques est repris du jeu 12 ; les jetons de la règle de lien (adultes) n'ont aucun effet sur la victoire."
+  - "Thème (Le boomerang), notion et titre alignés sur retro-1, retro-2 et retro-3 (V23) ; défis ludiques, variante de jeu (enfants, sans règle de lien), règle de lien (adultes), adaptations, poids et minutes : [Prop]."
   - "Le rappel porte sur retro-3 (quantité et puissance, trois-quarts plus ou moins ouvert, proche du demi-bille un peu plus plein à peu près à angle droit, exercices 7 et 8 ; la limite du rétro et le cas du Blackball sont enseignés dans retro-4, pas rappelés) : recall.reuse cite son illustration schema-e8 et link_previous reprend ses exercices 7 et 8."
   - "Initiation 19 : rétro en demi-bille, alors que l'exercice 8 de retro-3 faisait déjà jouer le rétro en demi-bille ; l'ordre des fiches 17 à 19 par séance suit la répartition des parties du FORMAT et n'a pas été modifié (une initiation après l'entraînement est une conséquence de ce découpage)."
   - "Exercices 9 et 10 : la source ne précise pas le type de chevalet ; la quantité de bille est lue sur l'encart (environ demi-bille), non légendée ; les limites des zones 1 et 2 ne sont pas tracées sur le schéma, et la blanche n'y est pas dessinée (position déduite du cercle pointillé). La matérialisation des zones à la craie ou au ruban, leur position et leur taille sont une proposition."

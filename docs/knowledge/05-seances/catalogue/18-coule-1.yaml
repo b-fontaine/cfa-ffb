@@ -40,7 +40,7 @@ theory:
         - Au Blackball, l'adaptation de la puissance est plus prononcée, la blanche étant plus légère et plus petite (fiche technique n° 11).
       key_point: Attaque en haut, geste ample plutôt que rapide.
       demo: Montrer sur la blanche le point d'impact, au-dessus du centre, puis le geste ample.
-      illustrations: [attaque-haute, amplitude-vitesse]
+      illustrations: [attaque-haute]
       src: S
     - id: plein-suit
       title: En plein, la blanche suit la couleur
@@ -108,12 +108,9 @@ initiation:
     illustration: schema-initiation-13
     src: S
 illustrations:
-  - {id: attaque-haute, type: cue_ball_target, tip_point: top, cue_height: level,
-     caption: "Coulé : le procédé frappe la blanche au-dessus de son centre (cible vue de face, indicative : le point d'impact est à mi-chemin entre le centre et le haut, pas tout au sommet ; le procédé est dessiné à l'échelle de la blanche, qui est plus petite que les autres billes).",
-     alt: "Cible sur la blanche vue de face : le procédé touche la moitié haute, à mi-rayon au-dessus du centre ; le profil montre la queue à hauteur moyenne."}
-  - {id: amplitude-vitesse, type: power_ratio, points: [{amplitude: long, speed: slow, label: "Coulé"}], highlight: 0,
-     caption: "Coulé : on privilégie le geste ample au geste rapide, avec une grande amplitude et une vitesse faible (le plan est une image proposée, pas une graduation fédérale).",
-     alt: "Plan amplitude (recul de la main, en abscisse) et vitesse du coup (en ordonnée), à trois zones doux, moyen, puissant : un exemple placé loin à droite et bas, grande amplitude et vitesse lente, dans la zone moyenne."}
+  - {id: attaque-haute, type: cue_ball_target, tip_point: top, offset: slight, cue_height: level,
+     caption: "Coulé : le procédé frappe la blanche un peu au-dessus de son centre, pas au bord, comme au rejet naturel (cible vue de face, indicative ; le procédé est dessiné à l'échelle de la blanche, qui est plus petite que les autres billes).",
+     alt: "Cible sur la blanche vue de face : le procédé touche la moitié haute, un peu au-dessus du centre et non au bord ; le profil montre la queue à hauteur moyenne."}
   - {id: chevalet-cadre, type: player_figure, view: side, bridge: frame, focus: [bridge_hand, cue],
      caption: "Début du coulé, chevalet sur cadre : le joueur de profil, la main de chevalet sur le rail et la queue dans l'axe de la blanche (billes agrandies, non à l'échelle).",
      alt: "Un joueur schématique de profil, billes agrandies et non à l'échelle, la main de chevalet posée sur le cadre de la table et la queue qui vise la blanche ; deux repères numérotés, la main de chevalet et la queue."}
@@ -232,15 +229,15 @@ game:
     - "L'adversaire contrôle l'annonce : la bille de couleur est empochée, la blanche avance après le choc (elle ne recule pas, ne s'arrête pas net) et n'est pas empochée. En plein, elle suit en plus la bille de couleur."
   scoring: "Chaque coulé validé par l'adversaire donne un jeton ; trois jetons amènent la barque au port, ce qu'on marque au tableau. Les jetons n'influent pas sur la victoire : la partie se gagne comme une partie classique."
   end: Fin quand un joueur a vidé son groupe puis empoché la noire.
-  playful_variant: "Équipes de deux, en tournante : les partenaires se relaient tir après tir ; leurs jetons s'additionnent ; trois jetons amènent la barque de l'équipe au port, dessiné au tableau. La première barque au port gagne la manche des barques, en plus de la partie, sans changer qui gagne la partie."
+  playful_variant: "Variante facultative, pour les enfants seulement (les adultes jouent la règle de lien), autonome : équipes de deux, en tournante, les partenaires se relaient tir après tir. Chaque coulé annoncé et validé par l'adversaire (règles ci-dessus) donne un jeton à l'équipe ; les jetons des deux partenaires s'additionnent ; trois jetons amènent la barque de l'équipe au port, dessiné au tableau. La première barque au port gagne la manche des barques, en plus de la partie, sans changer qui gagne la partie."
   link_previous:
     notion_of: rejet-naturel-2
-    rule: "Exception facultative aux règles de la partie : sur une bille jouée proche du demi-bille, le joueur peut annoncer « rejet » à la place de « coulé » et montrer du doigt la zone où il veut replacer la blanche ; il joue en attaque en haut et l'adversaire vérifie que la blanche s'écarte, d'environ 45°, vers cette zone. Si c'est le cas, le joueur gagne un jeton, comme pour un coulé validé."
-    note: "Rejoue le rejet naturel de la séance précédente (attaque en haut, demi-bille, déviation d'environ 45°, zone montrée du doigt) et le fait distinguer du coulé, où la blanche suit la couleur ; règle facultative, la partie se joue telle quelle sans elle."
+    rule: "Règle facultative, adultes seulement (les enfants jouent la variante), à jouer sans la variante ludique (ni équipes, ni barque), en exception aux règles de la partie : sur une bille jouée proche du demi-bille, le joueur peut annoncer « rejet » à la place de « coulé » et montrer du doigt la zone où il veut replacer la blanche ; il joue en attaque en haut et l'adversaire vérifie que la blanche s'écarte, d'environ 45°, vers cette zone. Si c'est le cas, le joueur gagne un jeton, compté comme pour un coulé validé."
+    note: "Rejoue le rejet naturel de la séance précédente (attaque en haut, demi-bille, déviation d'environ 45°, zone montrée du doigt) et le fait distinguer du coulé, où la blanche suit la couleur ; la partie se joue telle quelle sans elle. Une seule règle facultative par partie."
   weight: {children: 1, adults: 1}
   adaptation:
     children: "Rapprocher la blanche et les billes des poches. Mise en place proposée : un joueur les rouges, l'autre les jaunes, la noire sur son point de départ ; partie limitée à 15 minutes, au-delà gagne qui a le moins de billes restantes."
-    adults: "Après la partie, chaque joueur compte ses coulés annoncés et ceux où la blanche a bien avancé sans être empochée, puis les compare au taux des exercices. Variante plus difficile : annoncer aussi où la blanche doit s'arrêter."
+    adults: "Après la partie, chaque joueur compte ses coulés annoncés et ceux où la blanche a bien avancé sans être empochée, puis les compare au taux des exercices."
   src: Prop
 review:
   prompts:
@@ -256,15 +253,15 @@ sources:
   - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 20, note: "Entraînement « Le coulé », exercice 3"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 14, note: "Jeu 14 (partie à difficulté réduite), dont la version coulé est adaptée"}
 uncertainties:
+  - "Jeu : une seule règle facultative par partie (décision [Prop] du 2026-10-15). Enfants : la variante « barque » (équipes, jetons), autonome. Adultes : la règle « rejet » de `link_previous` la remplace, sans cumul de jetons ; l'ancienne variante adulte « annoncer où la blanche doit s'arrêter » est retirée pour ne pas ajouter une troisième mécanique."
   - "Aucun jeu [S] n'existe pour le coulé : la partie à difficulté réduite du jeu 14 est reprise et adaptée (annonce « coulé », jetons, équipes, règle de lien, adaptations) ; tout cela est [Prop] et à valider par un animateur dans l'application. Thème, défis et minutes le sont aussi."
   - "Quantité de bille des exercices 1 à 3 : « en plein » est lu sur l'encart des schémas [S], non légendé ; le plein est estimé."
   - "Le trois-quarts n'est enseigné qu'aux adultes dans cette séance (théorie et schémas indicatifs) ; l'initiation 14 n'est jouée qu'en coule-2, pour ne pas la rejouer."
   - "La section « Rejet naturel ou coulé ? » est un contraste [Prop] : la fiche n° 11 ne l'énonce pas."
-  - "Le schéma « attaque en haut » est une cible sur la blanche (valeur `top` : point à mi-rayon au-dessus du centre) ; la fiche dit seulement « au-dessus du centre »."
+  - "Le schéma « attaque en haut » est une cible sur la blanche (point un peu au-dessus du centre, quart de rayon, comme en rejet-naturel-1 et 2) ; la fiche dit seulement « au-dessus du centre » : la hauteur exacte est [Prop]."
   - "Tailles : la blanche (48,0 mm) plus petite que la bille de but (50,8 mm) vient de [FFB] ; [S] dit seulement qu'elle est plus petite et plus légère. Les schémas de table et de contact sont calculés avec ces rayons (fantôme à 0,2136 case du centre de la bille de couleur) ; les billes du schéma de posture sont agrandies, non à l'échelle."
-  - "Le plan amplitude × vitesse est [Prop] ; seule l'idée « amplitude plutôt que vitesse » vient de la fiche n° 11 [S]. L'exemple placé (amplitude longue, vitesse lente) est une image proposée, non une graduation."
   - "La section « Le sillage » (enfants) est une glose [Prop] : la fiche n° 11 ne donne pas cette image."
   - "Le rappel est écrit d'après la fiche technique n° 10 et ce que rejet-naturel-2 a enseigné (attaque en haut, demi-bille, 45°, bille repère) ; recall.reuse reprend l'illustration angle-45 de cette séance."
   - "Exercice 3 : le schéma [S] n'indique pas quelle bille appartient à quelle zone ; la séance ne l'impose pas. Exercices 1 et 2 : le schéma ne dit pas le type de chevalet."
   - "Les schémas de trajectoire (plein, trois-quarts) sont calculés et indicatifs : l'angle de sortie de la blanche en trois-quarts n'est pas mesuré par la fiche, qui dit seulement qu'il dépend de la quantité de bille."
-  - "L'illustration « attaque en haut » est une cible sur la blanche indicative (le point est à mi-rayon au-dessus du centre) : la hauteur de la queue n'est pas précisée par la fiche."
+  - "L'illustration « attaque en haut » est indicative : la hauteur de la queue n'est pas précisée par la fiche ; la phrase « amplitude plutôt que vitesse » vient de la fiche n° 11 [S], sans plan ni graduation."

@@ -173,7 +173,7 @@ game:
   source_game: 14
   adapted: false
   players: Partie à 2
-  materials: "Billes du jeu complet. Pour le défi ludique (proposition) : des jetons."
+  materials: "Billes du jeu complet. Pour la variante ou la règle facultative (proposition) : des jetons."
   setup_illustration: schema-jeu
   rules:
     - Partie à 2 ; les règles sont celles d'une partie classique, excepté que l'on utilise uniquement 4 billes de chaque groupe de couleur et la bille noire.
@@ -183,12 +183,12 @@ game:
   playful_variant: "Avant un tir en demi-bille, annoncer « rejet » et montrer du doigt où la blanche doit s'arrêter ; si la bille est empochée et que la blanche s'arrête à moins de deux largeurs de main du point montré, le joueur gagne un jeton. Un jeton donne un tir de plus : le joueur rejoue après un tir manqué, depuis l'endroit où la blanche s'est arrêtée, sans remettre les billes en place."
   link_previous:
     notion_of: rebond-bande-2
-    rule: "Pour les adultes seulement (les enfants jouent sans). Exception facultative à la partie : une fois par joueur et par partie, quand la bille à jouer est atteignable par la bande, le joueur peut annoncer « bande » et toucher une bande (ou deux) avant la bille ; sans effet, la blanche repart avec l'angle d'arrivée. S'il empoche la bille, il gagne un jeton."
-    note: "Fait rejouer le rebond sur bande sans effet de la séance précédente (angle égal, jusqu'à deux bandes) dans une partie où le rejet est déjà recherché ; règle facultative, réservée aux adultes, la partie se joue telle quelle sans elle."
+    rule: "Adultes seulement (les enfants jouent la variante). À la place de l'annonce « rejet » : exception facultative à la partie, une fois par joueur et par partie, quand la bille à jouer est atteignable par la bande, le joueur peut annoncer « bande » et toucher une bande (ou deux) avant la bille ; sans effet, la blanche repart avec l'angle d'arrivée. S'il empoche la bille, il gagne un jeton, qui donne un tir de plus (rejouer après un tir manqué, depuis l'endroit où la blanche s'est arrêtée)."
+    note: "Fait rejouer le rebond sur bande sans effet de la séance précédente (angle égal, jusqu'à deux bandes) dans une partie où le rejet est déjà recherché ; règle facultative, réservée aux adultes, qui remplace la variante ; une seule règle facultative par partie ; la partie se joue telle quelle sans elle."
   weight: {children: 1, adults: 1}
   adaptation:
     children: "Proposition : rappel de la partie classique, absent de la fiche, à valider (chaque joueur a son groupe de couleur ; on rejoue tant qu'on empoche une bille de son groupe ; la noire s'empoche en dernier ; pour les fautes, règlement fédéral). Conseil de la séance : chaque fois que c'est possible, chercher à replacer la blanche par un rejet naturel pour préparer le tir suivant. Un joueur les rouges, l'autre les jaunes ; limite de 15 minutes, au-delà gagne qui a le moins de billes restantes ; garder une seule mécanique ludique (l'annonce « rejet » et le jeton)."
-    adults: "Proposition : conseil de la séance, chercher à replacer la blanche par un rejet naturel pour préparer le tir suivant (pour les fautes, règlement fédéral). Après la partie, noter les rejets annoncés et réussis, et chercher pourquoi les ratés (vitesse, hauteur d'attaque, quantité)."
+    adults: "Proposition : conseil de la séance, chercher à replacer la blanche par un rejet naturel pour préparer le tir suivant (pour les fautes, règlement fédéral). Une seule règle facultative par partie : la règle « bande » remplace l'annonce « rejet » (pas de cumul des jetons). Après la partie, noter les rejets réussis, et chercher pourquoi les ratés (vitesse, hauteur d'attaque, quantité)."
   src: S   # titre, règles, score et fin du jeu 14 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
 review:
   prompts:
@@ -212,3 +212,4 @@ uncertainties:
   - "Exercices : la fiche dit « replacer cinq fois la blanche afin de jouer la noire » ; la séance garde cette consigne (cinq tirs, jaune et blanche replacées à chaque fois). La noire dégagée est une lecture [Prop] de « pour jouer la noire » (géométrie du schéma), à valider ; elle ne change pas le taux 3/5 repris de la source."
   - "Le bloc « Le rejet naturel » figure deux fois dans le PDF d'entraînement (pp. 13-14 puis 17-18, schémas avec bandes) ; la séance utilise les exercices de la 1re occurrence (p. 13) ; la 2e (pp. 17-18, avec rebond) n'est pas utilisée."
   - "L'illustration `chemin-blanche` et la marque d'angle sont indicatives (non à l'échelle). `chemin-blanche` reprend la disposition du schéma d'initiation 12 [S], avec des positions recalculées [Prop] à la géométrie réelle (bille fantôme à r_c + r_o = 0,2136 case de la jaune, blanche plus petite, départ de la blanche à environ 31° pour la demi-bille ; le schéma transcrit `initiation-p12-e1` garde les cotes lues sur le PDF) ; s'ajoute une bille de repère rouge, qui est le conseil de vérification de la fiche (bille posée sur la trajectoire estimée) : c'est une bille de repère, pas la rouge d'un exercice."
+  - "Jeu : une seule règle facultative par partie (décision [Prop] du 2026-10-15). Enfants : la variante « rejet » + jeton, autonome. Adultes : la règle « bande » de `link_previous` la remplace, sans cumul de jetons. Audit : la hauteur de l'attaque haute (`offset: slight`) est la même que dans rejet-naturel-2 ; l'écart relevé concerne coule-1, hors de cette fiche."

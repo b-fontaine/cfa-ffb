@@ -153,7 +153,7 @@ game:
   source_game: 6
   adapted: false
   players: Partie à 2
-  materials: "Noire, blanche, quatre rouges et quatre jaunes pour matérialiser les camps. Pour la variante (proposition) : un tableau pour les étoiles."
+  materials: "Noire, blanche, quatre rouges et quatre jaunes pour matérialiser les camps."
   setup_illustration: schema-jeu
   rules:
     - Chaque joueur tire 5 fois, à tour de rôle.
@@ -162,15 +162,15 @@ game:
     - Faire aussi jouer avec un chevalet sur la surface de jeu, en éloignant davantage la blanche et la noire de la bande.
   scoring: Le premier joueur qui place 5 fois la noire dans le camp adverse gagne.
   end: Fin dès qu'un joueur a placé 5 fois la noire dans le camp adverse.
-  playful_variant: "Deux équipes de deux, un tir chacun à tour de rôle ; le partenaire qui ne tire pas regarde où s'arrête la noire et le dit à voix haute. Une étoile au tableau pour chaque placement réussi ; à la fin de la manche, les équipes changent de côté."
+  playful_variant: "Variante facultative des enfants, autonome (à jouer sans la règle de lien), partie à 2 comme le jeu : avant chaque tir, l'adversaire annonce à voix haute où il pense que la noire va s'arrêter (dans le camp, trop courte ou trop longue) ; le tireur tire, puis on regarde si l'annonce était juste. Même fin et même score que l'adaptation enfants : cinq tirs chacun, gagne qui a placé le plus de fois la noire, tir de barrage chacun en cas d'égalité ; l'annonce n'est qu'un jeu, elle ne rapporte aucun point."
   link_previous:
     notion_of: bille-pleine-1
-    rule: "Exception aux règles du jeu 6, avant chaque tir : le tireur annonce « plein cœur » ; les adultes montrent en plus du doigt, sur la noire, le centre qu'ils vont viser, comme le geste de la séance précédente, ici sur le centre. L'adversaire vérifie que ce centre, la blanche et le camp visé sont alignés."
-    note: "Rejoue l'annonce « plein cœur » de bille-pleine-1 ; le geste du doigt reste réservé aux adultes, comme à la séance précédente ; règle facultative, le jeu 6 se joue tel quel sans elle."
+    rule: "Règle facultative, adultes seulement (les enfants jouent la variante), en exception aux règles du jeu 6 : avant chaque tir, le tireur annonce « plein cœur » et montre du doigt, sur la noire, le centre qu'il va viser, comme le geste de la séance précédente, ici sur le centre. L'adversaire vérifie que ce centre, la blanche et le camp visé sont alignés."
+    note: "Rejoue l'annonce « plein cœur » et le geste du doigt de bille-pleine-1 ; les enfants jouent la variante ludique, les adultes cette règle de lien, sans annonce de l'adversaire ; une seule règle facultative par partie ; le jeu 6 se joue tel quel sans elle."
   weight: {children: 1, adults: 1}
   adaptation:
     children: "Agrandir la zone ou rapprocher le camp adverse de la noire (la fiche conseille de modifier la zone). Mise en place proposée, la fiche ne la précisant pas : chaque joueur tire depuis son côté, vers le camp de l'autre ; noire et blanche sont replacées sur leurs repères avant chaque tir, et la blanche est tirée sur la noire. Pour finir : après cinq tirs chacun, gagne qui a placé le plus de fois la noire ; en cas d'égalité, un tir de barrage chacun, à répéter. Tirage au sort pour commencer."
-    adults: "Réduire la zone pour augmenter la difficulté (la fiche conseille de modifier la zone). Mise en place proposée, comme pour les enfants : chaque joueur tire depuis son côté vers le camp de l'autre ; noire et blanche replacées sur leurs repères avant chaque tir, la blanche tirée sur la noire ; départage en cas d'égalité après cinq tirs chacun par un tir de barrage. Après la partie, noter où la noire s'arrête par rapport au camp (trop courte, trop longue, de côté) pour relier le résultat à la puissance et à l'alignement."
+    adults: "Réduire la zone pour augmenter la difficulté (la fiche conseille de modifier la zone). Mise en place proposée, comme pour les enfants : chaque joueur tire depuis son côté vers le camp de l'autre ; noire et blanche replacées sur leurs repères avant chaque tir, la blanche tirée sur la noire ; départage en cas d'égalité après cinq tirs chacun par un tir de barrage."
   src: S   # titre, règles, score et fin du jeu 6 ; link_previous, playful_variant et adaptation restent [Prop] (FORMAT § 5)
 review:
   prompts:
@@ -184,7 +184,7 @@ sources:
   - {rank: S, file: Fiches Entrainement CFA blackball.pdf, page: 4, note: "Entraînement « La quantité de bille pleine », exercices 3 et 4"}
   - {rank: S, file: Fiches Jeux CFA blackball.pdf, page: 6, note: Jeu 6}
 uncertainties:
-  - "Section « Deux chevalets, le même alignement » [Prop], défis ludiques, variante de jeu, règle de lien et adaptation du jeu : à valider par un animateur dans l'application. La différenciation enfants / adultes est aussi une proposition."
+  - "Section « Deux chevalets, le même alignement » [Prop], défis ludiques, variante de jeu (annonce de l'adversaire), règle de lien et adaptation du jeu : à valider par un animateur dans l'application. La différenciation enfants / adultes est aussi une proposition."
   - "Le rappel reprend ce que bille-pleine-1 enseigne (centre visé, alignement poche-bille-blanche, énergie transmise) et réutilise son illustration `visee-plein` ; la mention des deux chevalets n'y est pas reprise, la fiche n° 4 ne les distinguant pas."
   - "Initiation 6 : la fiche cite deux chevalets sans dire lequel va avec quel tir ; les deux schémas de la fiche (p06-e1 puis p06-e2) sont rejoués comme en partie 1, un tir chacun, en changeant de chevalet ; l'ordre des chevalets n'est pas imposé. L'illustration montre p06-e2 ; p06-e1 est montré à la séance précédente."
   - "Exercice 3 : l'ordre des tirs n'est pas indiqué sur le schéma. Exercice 4 : le point d'impact du petit schéma (légèrement au-dessus du centre, lecture approximative), pour le chevalet sur cadre comme pour celui de l'initiation, diffère de l'attaque au centre enseignée à la séance précédente (section « Où frapper la blanche ? » [Prop]) ; à vérifier avec un animateur."
