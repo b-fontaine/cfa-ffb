@@ -36,7 +36,10 @@ rappel de résultats** (`resultsRecallBlock`, ADR 0007) et suggérer une notion
    par une fonction pure `chooseRecallExercise` (`features/run_sheet/domain`) :
    - candidats : les exercices des séances d'`order` inférieur, de la plus
      récente à la plus ancienne, et dans chaque séance du dernier exercice au
-     premier ;
+     premier, **limités à ceux affichés pour le public du guide**
+     (`weight.isShownFor`, filtre ajouté après la revue T8 : le rappel ne
+     propose jamais un exercice absent du guide de ce public, même si
+     aujourd'hui les 28 fiches pèsent les deux publics) ;
    - élèves considérés : les membres du groupe de la séance planifiée
      (`?session=`) à sa date ; sans séance planifiée, les élèves du public du
      guide ; sans élève, personne ;

@@ -154,8 +154,8 @@ Scénarios BDD (anglais Gherkin, libellés `en`, « aujourd'hui » = lundi 12 oc
 9. *Two sessions recorded the same day for a group are both listed with their catalogue session*.
 
 `data_backup.feature`
-10. *Restoring two records of the same group on the same day keeps both* (aller-retour).
-11. *A backup of format 3 restores planned sessions linked to their record by catalogue session* (fixture existante rejouée).
+10. *Restoring two records of the same group on the same day keeps both* (aller-retour) : **écrit** (`data_backup.feature`, « Restaurer deux saisies d'un même groupe le même jour » ; mutation temporaire de l'encodeur constatée rouge puis restaurée).
+11. ~~*A backup of format 3 restores planned sessions linked to their record by catalogue session*~~ : **retiré le 2026-10-16**. Le format 3 est le format courant (`BackupCodec.currentVersion`) : le scénario existant « Conserver la date, le groupe et la séance du catalogue des séances » est déjà l'aller-retour d'une sauvegarde de format 3 avec séance planifiée et saisie liées par la séance du catalogue ; aucun fichier de format 3 figé n'existe dans les tests, et la règle A+ ne stocke aucun lien : un second scénario testerait la même chose.
 
 Tests unitaires (TDD, rouge puis vert) :
 

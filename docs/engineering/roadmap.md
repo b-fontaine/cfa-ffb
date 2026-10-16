@@ -79,10 +79,9 @@ Reste ouvert :
 - fusion de `mot-fantome` (décision à prendre) ;
 - figure du gaucher en séance 1 ;
 - périmètre « fantôme sur les flèches » : séances 02 à 04 seulement ;
-- règle d'enregistrement du bloc de rappel (bloc principal et bloc de rappel
-  de la saisie), écrite dans `pages/sheet_guide`, à déplacer vers
-  `features/run_sheet/domain` (par exemple un getter pur testé en TDD) ; en
-  attente de la fin du lot U5, qui touche la même page.
+- ~~règle d'enregistrement du bloc de rappel~~ : **déplacée le 2026-10-16**
+  dans `features/run_sheet/domain` (`RunPlan.recordBlocksFor`, testée en
+  unitaire) ; `pages/sheet_guide` ne fait plus qu'appeler la règle.
 
 ## H0 — Clore ce qui est ouvert
 
@@ -95,13 +94,15 @@ Reste ouvert :
    bloquant. Constats corrigés : ADR 0005 amendé (D5 réalisée),
    `architecture.md` (ADR 0011, 70 exercices), README du catalogue (18
    séances « à valider » sur 28). Constats **ouverts** :
-   - architecture : règle du bloc de rappel de la saisie dans
-     `pages/sheet_guide` (voir l'audit des séances) ; `chooseRecallExercise`
-     ne filtre pas sur le public (sans effet aujourd'hui : les 28 fiches
-     pèsent les deux publics ; à trancher dans l'ADR 0011 ou à filtrer) ;
-   - tests : V28 (poids 0, bornes de `passes`, `order` 1 et 2 en positif),
-     rejets du parseur de `recall_slot`, `student_pass_row.dart` (11 lignes
-     non couvertes) ;
+   - ~~architecture : règle du bloc de rappel de la saisie dans
+     `pages/sheet_guide`~~ → `RunPlan.recordBlocksFor` (2026-10-16) ;
+     ~~`chooseRecallExercise` ne filtre pas sur le public~~ → filtre
+     `weight.isShownFor(audience)` ajouté (commit 3508d2e), décision consignée
+     dans l'ADR 0011 ;
+   - ~~tests : V28 (poids 0, bornes de `passes`, `order` 1 et 2 en positif),
+     rejets du parseur de `recall_slot`, `student_pass_row.dart`~~ : faits
+     (V28 et parseur en 3508d2e, complétés le 2026-10-16 ; `student_pass_row`
+     : ligne compacte avec passages saisis, limite atteinte, exercice suivant) ;
    - contenu `[Prop]` : `amplitude-vitesse` sous une section `[S]` en
      `coule-1`, `hauteur-contact` vu des enfants en `bille-pleine-1`, règles
      facultatives empilées en `retro-1` et `retro-4`, `taille-billes` montré

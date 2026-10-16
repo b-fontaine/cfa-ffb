@@ -24,6 +24,31 @@ saisie en **réécrivant sa séance du catalogue** (défaut D1, reproduit par
    catalogue.
 3. **Aucun lien stocké, aucune migration, format de sauvegarde inchangé (3).**
 
+## Transfert silencieux d'une saisie sans séance du catalogue
+
+Cas à connaître, **assumé** (point U-1 du plan) : quand `OpenOrResumeSession`
+reprend une saisie dont `sheetId` est `null` et que la séance demandée en porte
+une, la saisie **reçoit** cette séance du catalogue (`copyWith(sheetId:)`),
+sans message ni confirmation. La saisie libre du jour (formulaire manuel,
+suggestion sans séance, ancienne saisie) devient alors celle de la première
+séance planifiée qui la réclame ; une seconde planifiée du même jour, d'une
+autre séance du catalogue, ouvre ensuite sa propre saisie (la première a
+désormais une séance). Conséquences :
+
+- le choix de la séance qui « absorbe » la saisie libre dépend de l'ordre dans
+  lequel l'animateur appuie sur « Noter » ; ce n'est pas l'ordre de la
+  planification ;
+- tant que la saisie reste sans séance, `ListSessions` la rattache à **toutes**
+  les planifiées du jour du groupe (« Résultats saisis » sur chacune) : défaut
+  D1 résiduel, couvert par `list_sessions_test` et
+  `open_or_resume_session_test` ;
+- l'inverse n'existe pas : une saisie qui a une séance ne la perd jamais, et la
+  reprise sans séance demandée (formulaire manuel) la conserve.
+
+Le corriger (saisie libre jamais rattachée) casserait la reprise depuis le
+formulaire manuel et créerait des doublons : écarté tant que l'option B du plan
+(lien explicite) n'est pas retenue.
+
 ## Alternatives rejetées
 
 - Filtre d'affichage seul : « Noter » réécrirait la saisie de l'autre séance.
