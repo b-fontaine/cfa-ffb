@@ -29,6 +29,17 @@ contenu de deux d'entre elles change.
    métier : boutons de 48 dp minimum, sémantique « sélectionné » dans un groupe
    exclusif, étiquette de groupe.
 
+## Routes ajoutées par U9 (2026-10-16)
+
+- `/students/groups/:groupId` : grille du groupe, **dans** le cadre de
+  navigation (destination « Élèves » active) ; ouverte par « Grille du groupe »
+  sur chaque carte de groupe de « Élèves » et par une alerte de groupe de
+  « Aujourd'hui » ; retour vers `/students`.
+- `/students/:studentId/show` : vue « à montrer à l'élève », **hors** du cadre
+  (comme la présentation plein écran) : aucune barre ni rail, donc aucun chemin
+  vers les autres élèves ; « Terminer » et le retour système reviennent à la
+  fiche. Voir l'[ADR 0014](adr/0014-fiche-en-parcours-vue-eleve-et-vue-de-groupe.md).
+
 ## Reports (documentés, rien de stubbé)
 
 - ~~**Réglages**~~ : **livré avec le lot 9** (2026-10-15, [plan](reglages-plan.md)) :

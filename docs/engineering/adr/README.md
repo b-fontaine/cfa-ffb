@@ -14,5 +14,7 @@
 | 0010 | Rôles de couleur : bleu-tapis pour les états (`secondary`), rouge FFB en accent (`BrandColors`), `SectionCard.emphasis`, logo FFB derrière un drapeau de thème, icônes de navigation dédiées ; amende l'ADR 0002 décision 2 |
 | 0011 | Créneau d'exercice de rappel : à partir de la 2e séance, un emplacement d'entraînement dont l'exercice est choisi à l'exécution parmi les séances précédentes d'après le suivi des élèves (décision 7 `[U]` du 2026-10-15) |
 | 0012 | Réglages du club : `RulesConfig` lu à la valeur courante (fabrique + `RulesStore`), table `app_settings` (schéma v7), réglages dans la sauvegarde (format v2) ; accepté |
+| 0013 | Acquittement d'une alerte (« Vu ») : entité liée au dernier passage de l'exercice, table `alert_acknowledgements` (schéma v8), sauvegarde v3 ; masque la surveillance, pas le rappel ; accepté (domaine, persistance et interface livrés) |
+| 0014 | Fiche en parcours (cases, en-tête, courbes repliées, menu de positionnement), vue « à montrer à l'élève » hors du cadre de navigation (garantie de type), vue de groupe (carte de chaleur doublée d'alternatives textuelles, assiduité, alertes de groupe) ; accepté et livré |
 
 Recherches sources : `../research/`.

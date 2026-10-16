@@ -58,7 +58,7 @@ app/
 │   ├── pages/                         # une page par parcours, Bloc fourni par le routeur
 │   │   ├── home/  session_planner/
 │   │   ├── students/  student_form/   # (a) liste des élèves, ajout / édition
-│   │   ├── student_sheet/             # (b) fiche : progression, courbes, rappel
+│   │   ├── student_sheet/  student_showcase/  group_overview/   # (b) fiche en parcours, vue élève, vue de groupe
 │   │   ├── record_setup/  record_session/   # (c) saisie des résultats d'une séance
 │   │   ├── suggested_session/  exercise_sheet/   # (d) séance suggérée, fiche source
 │   │   ├── assessment/                # (e) bilan de maturité, changement de public manuel
@@ -74,7 +74,10 @@ app/
 │   ├── features/place_student/            # MarkBlockAcquired, RevokeBlockAcquired ; PlacementBloc, boîte de dialogue
 │   ├── features/assess_maturity/          # RecordAssessment (aide, jamais un déclencheur)
 │   ├── features/change_audience/          # ChangeAudience (R7, manuel, confirmation)
-│   ├── features/track_progress/           # ExerciseCurve, BlockProgress (R3), StudentSheet ; courbes
+│   ├── features/track_progress/           # ExerciseCurve, BlockProgress (R3), StudentSheet, SheetHeader, PathRow ; PathList, SheetHeaderCard
+│   ├── features/acknowledge_alert/        # AcknowledgeAlert, RestoreAlert (ADR 0013) ; AcknowledgementBloc
+│   ├── features/student_showcase/         # GetStudentShowcase (prénom et parcours seulement) ; ShowcaseCubit, ShowcaseView
+│   ├── features/track_group/              # groupAttendance, groupFailureAlerts, GetGroupOverview ; GroupHeatMap, GroupAlertsCard
 │   ├── entities/session/
 │   │   ├── domain/                    # Session (freezed), SessionRepository
 │   │   └── data/in_memory_session_repository.dart
@@ -130,6 +133,9 @@ widgetbook/                            # projet séparé : catalogue du design s
 - **Routage** : `go_router` (`app/router.dart`, `AppRoutes`). Chaque élève a une
   adresse (`/students/:studentId`, `…/edit`, `…/assessment`), de même qu'une séance
   saisie (`/record/:sessionId`) et une fiche source (`/exercises/:blockId/:number`).
+  Un groupe a sa grille (`/students/groups/:groupId`, dans le cadre de
+  navigation) et un élève sa vue « à montrer » (`/students/:studentId/show`,
+  hors du cadre : lot U9).
   `/record` est l'**historique** des séances saisies (ADR 0006) ; l'ouverture
   d'une nouvelle saisie est `/record/new` (déclarée avant `/record/:sessionId`,
   comme `/students/new`), avec les paramètres des liens profonds (`main`,
@@ -142,7 +148,8 @@ widgetbook/                            # projet séparé : catalogue du design s
   `DeleteAttempt` le supprime puis renumérote les `passIndex` restants du même
   élève, exercice et séance dans une `UnitOfWork`. Aucune méthode ajoutée aux
   ports. L'assiduité (`attendanceOf`, `features/track_progress/domain`) est une
-  fonction pure sur les séances et les appartenances aux groupes.
+  fonction pure sur les séances et les appartenances aux groupes ; sa valeur
+  `Attendance` vit dans `shared/lib` et sert aussi à la grille du groupe.
 - **Positionnement initial** (ADR 0008) : `BlockAcquisition` (marqueur élève ×
   bloc, date, source `placement`), `AcquisitionSource` et le port
   `AcquisitionRepository` vivent dans `entities/exercise_result` (même slice que
@@ -154,8 +161,8 @@ widgetbook/                            # projet séparé : catalogue du design s
   `GetClubOverview`, `SuggestSession`, `SuggestRecall`, `RecordAttempt`)
   lisent `AcquisitionRepository.forStudent`. `features/place_student` porte
   `MarkBlockAcquired`, `RevokeBlockAcquired` et `PlacementBloc` ; la page
-  `student_sheet` compose le bloc et transmet des callbacks à
-  `BlockProgressList`.
+  `student_sheet` compose le bloc et transmet des callbacks à `PathList` (menu
+  ⋮ de chaque technique ; `BlockProgressList` a disparu avec le lot U9).
 - **Pages** (couche `pages`) : composent des Bloc fournis par le routeur et des vues
   de `features/*/presentation/ui` ; elles ne contiennent aucune règle métier ni
   `StatefulWidget` : la sélection du groupe et des présents vit dans
@@ -539,6 +546,46 @@ aucune dépendance, pas d'ADR.
   statut `[Prop]`), portés par `WatchList` et `SessionReview`.
 - **Limite connue** : le registre des séances guidées (`RunSheetSessions`) est
   en mémoire ; « En cours » ne survit pas à un rechargement (plan U-5).
+
+## Fiche en parcours, vue élève et vue de groupe (lot U9)
+
+Plan : [fiche-eleve-plan.md](fiche-eleve-plan.md) ; décisions : [ADR
+0013](adr/0013-acquittement-des-alertes.md) (acquittement, schéma v8, sauvegarde
+v3) et [ADR 0014](adr/0014-fiche-en-parcours-vue-eleve-et-vue-de-groupe.md)
+(écrans).
+
+- **Slices** : `entities/exercise_result` (cases `exerciseCells`,
+  `techniqueSummary`, `AlertAcknowledgement` et `AcknowledgementRepository`,
+  `blockFailedStudents`, `StudentProgress.derive(acknowledgements:)`) ;
+  `features/track_progress` (`SheetHeader`, `PathRow`, `StudentSheet.path` et
+  `.header`, `SheetHeaderCard`, `PathList`, `ExerciseCurveSheet`) ;
+  `features/acknowledge_alert` (`AcknowledgeAlert`, `RestoreAlert`,
+  `AcknowledgementBloc`) ; `features/student_showcase` (`StudentShowcase`,
+  `GetStudentShowcase`, `ShowcaseCubit`, `ShowcaseView`) ; `features/track_group`
+  (`groupAttendance`, `groupFailureAlerts`, `GetGroupOverview`,
+  `ListGroupAlerts`, `GroupOverviewCubit`, `GroupAlertsCubit`, les cinq
+  sections `Group*`). Aucune de ces features n'en importe une autre : elles
+  partagent leurs règles par `entities` et leurs composants par `shared/ui`
+  (`PathCell`, `HeatCell`, `CellGrid`, qui ne connaissent aucune entité).
+- **Pages qui composent** : `pages/student_sheet` (fiche, rappel, effacement,
+  positionnement **et acquittement** : `MultiBlocListener`, `SnackBar`,
+  rechargement de la fiche), `pages/student_showcase` (`PopScope` : le retour
+  système ramène à la fiche), `pages/group_overview`, et les pages `students`
+  (callback `onOpenGroup`) et `home` (`GroupAlertsCubit`, carte
+  `GroupAlertsCard`).
+- **Routes** : `/students/groups/:groupId` (`AppRoutes.studentGroup`) **dans**
+  le cadre de navigation (destination « Élèves » active), déclarée avant
+  `/students/:studentId` ; `/students/:studentId/show` (`AppRoutes.showcase`)
+  **hors** du cadre, à côté de la présentation plein écran : ni barre ni rail.
+  La route de la fiche fournit en plus `AcknowledgementBloc`, celle de l'accueil
+  `GroupAlertsCubit`.
+- **Garantie de confidentialité de la vue élève** : le modèle `StudentShowcase`
+  n'a aucun champ sensible et `GetStudentShowcase` ne lit ni les bilans, ni les
+  séances, ni les acquittements ; un test interdit à la slice d'importer les
+  slices correspondantes.
+- **Règles de calcul** : toute la dérivation (`derive`, cases, technique, alerte
+  de groupe) reste en Dart pur avec l'horloge en paramètre (`asOf`) ; les
+  cubits lisent `Clock.today()`.
 
 ## États et modèles
 

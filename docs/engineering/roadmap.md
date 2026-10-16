@@ -51,7 +51,7 @@ revues séparées, `check.sh --full`).
 | **U6** Navigation recentrée | destinations « Aujourd'hui / Élèves / Résultats / Séances (Planifiées · Catalogue · Suggestion) / Plus (Sauvegarde, Réglages) » ; rappel de sauvegarde | F8 (emplacement du lot 9) |
 | ~~**U7**~~ Accueil « Aujourd'hui » et bilan de fin de séance : **livré le 2026-10-15** ([plan](aujourdhui-plan.md)) | séance en cours à reprendre, prochaine séance planifiée (Préparer / Lancer), alertes, semaine, sauvegarde ; à « Terminer », bilan des passages et proposition de la séance suivante | accueil statique |
 | **U8** Catalogue et détail en mode « Préparer » | nom évocateur en titre, badge unique « n points à valider », marqueur de parcours par groupe, frise des phases dans le détail, deux colonnes | : |
-| **U9** Fiche élève, vue élève et vue de groupe | parcours en cases (technique × exercice), en-tête en cours / prochain / alerte, courbes repliées, vue « à montrer à l'élève », heat-map technique × élève et assiduité du groupe | « 0 sur 70 », lot 10 (vues) |
+| ~~**U9**~~ Fiche élève, vue élève et vue de groupe : **livré le 2026-10-16** ([plan](fiche-eleve-plan.md), [ADR 0013](adr/0013-acquittement-des-alertes.md), [ADR 0014](adr/0014-fiche-en-parcours-vue-eleve-et-vue-de-groupe.md)) | parcours en cases (technique × exercice), en-tête en cours / prochain / alerte, courbes repliées, vue « à montrer à l'élève », carte de chaleur technique × élève, assiduité et alertes de groupe, acquittement d'une alerte ; le lot **10b est reporté** (voir le point 10) | « 0 sur 70 », lot 10a (vues) |
 
 ## Audit des séances du 2026-10-15
 
@@ -123,14 +123,15 @@ Lots UX en H0 :
   Reporté hors U1 : ~~bille n° 8 et motif de tapis (U7)~~ et ~~`NowCard`
   (U7)~~ livrés avec U7 (le motif de tapis sera réutilisé par U3),
   `DiagramStage` (U3) ; `StudentChip` a été livré avec U5.
-  Les écrans touchés par les lots 7 et 8 (fiche élève, séance suggérée) seront
-  repris par U9 et U8.
+  Les écrans touchés par les lots 7 et 8 : fiche élève reprise par U9
+  (**livré**), séance suggérée par U8.
 
 ## H1 — La boucle de saison complète (priorité)
 
 5. ~~Historique des séances saisies~~ (F5) : **livré le 2026-10-14** —
    [ADR 0006](adr/0006-historique-et-correction-des-passages.md),
-   [plan](historique-seances-plan.md). Reste l'assiduité **du groupe** (lot 10).
+   [plan](historique-seances-plan.md). ~~Reste l'assiduité **du groupe**~~ :
+   **soldée avec U9** (vue de groupe).
 6. ~~Lier séance planifiée ↔ saisie ↔ séance du catalogue~~ (F6, lot L9 de
    l'ADR 0004) : **livré le 2026-10-14** —
    [ADR 0007](adr/0007-lien-seance-planifiee-saisie-catalogue.md),
@@ -185,13 +186,26 @@ Lots UX en H0 :
      (passages, validations du jour, présents sans passage, élèves à
      surveiller, séance suivante du catalogue avec « Planifier » daté). Aucune
      migration, aucune dépendance, pas d'ADR. Restent `[U]` : plan § 11.
-10. Reste de l'ADR 0003 : acquittement d'une alerte, note de jeu de la séance,
-    vues de groupe (carte de chaleur bloc × élève, assiduité), compteurs
-    d'initiation et de jeu persistés. **Livré avec U9** (fiche élève en
-    parcours, vue « à montrer à l'élève », vue de groupe) ; les cases
-    « acquis » s'appuient sur le lot 7 (livré, ADR 0008).
-    - **U8** Catalogue et détail en mode « Préparer », avec U9 : le lot 8 est
-      livré, le marqueur de parcours par groupe a ses données.
+     ~~Alertes de groupe~~ : report **soldé avec U9** (carte « Alertes de
+     groupe » sur « Aujourd'hui »).
+10. Reste de l'ADR 0003, découpé :
+    - ~~**10a**~~ : acquittement d'une alerte, vue de groupe (carte de chaleur
+      technique × élève, assiduité du groupe) et alertes de groupe
+      (`groupFailureSharePercent`) : **livré avec U9 le 2026-10-16** (fiche en
+      parcours, vue « à montrer à l'élève », vue de groupe ;
+      [ADR 0013](adr/0013-acquittement-des-alertes.md), schéma v8, sauvegarde
+      v3, et [ADR 0014](adr/0014-fiche-en-parcours-vue-eleve-et-vue-de-groupe.md)).
+      Les cases « acquis » s'appuient sur le lot 7 (ADR 0008).
+    - **10b** (reste, **non livré, reporté** par décision de l'animateur du 2026-10-16) : *note de jeu* de la séance (à définir :
+      texte libre, score A / B ou champ du `SessionRecord` ; un texte libre sur
+      des mineurs est une donnée personnelle qui demande son ADR), *compteurs
+      d'initiation, grille acquis et score du jeu persistés* (aujourd'hui en
+      mémoire dans `RunSheetCubit`) et *étape de la séance en cours persistée*
+      (décision U-5 de [aujourdhui-plan.md](aujourdhui-plan.md)) ; schéma v9.
+      Aucun écran d'U9 ne les lit.
+    - **U8** Catalogue et détail en mode « Préparer » : le lot 8 est livré, le
+      marqueur de parcours par groupe a ses données (U9 est livré).
+    - Restent `[U]` d'U9 : voir [fiche-eleve-plan.md](fiche-eleve-plan.md) § 6.
 11. **Saisons et groupes** : clôture de saison (archiver, effacer les mineurs en
     lot), plusieurs groupes par public, déplacer un élève de groupe.
 
@@ -243,7 +257,7 @@ Lots UX en H0 :
 
 ```
 H0 : ~~F7~~ → ~~revue T8~~ (faite, constats ouverts ci-dessus) → ~~réaliser D5~~ réalisé (les questions ouvertes sont tranchées ; U2 livré)
-H1 : ~~U5~~ → ~~U6~~ → ~~9~~ → ~~U7~~ → 10 + U9 + U8 → 11   (5 à 9 et U7 livrés)
+H1 : ~~U5~~ → ~~U6~~ → ~~9~~ → ~~U7~~ → ~~10a + U9~~ → 10b + U8 → 11   (5 à 9, U7, U9 et 10a livrés)
 H2 : U4 → U3 → 14 → 15
 H3 : 16 (avec le mode Relecture de U4) → 17 → 18 → 19 → 20
 H4 : 21 → 22 (+ rappels) → 23

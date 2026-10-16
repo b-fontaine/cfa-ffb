@@ -154,7 +154,7 @@ séance guidée mémorisée) : aucun écran ne les compose. Un animateur n'a
 aucune raison d'ouvrir l'application entre deux séances, et pendant la séance
 il doit retrouver son chemin par le planificateur.
 
-### T7 — Tout commence à « 0 sur 72 » (S2, motivation)
+### T7 — Tout commence à « 0 sur 72 » (S2, motivation) — **soldé par U9 (2026-10-16)** : « Parcours à commencer », puis des faits (« n techniques terminées sur 15 »)
 
 Liste des élèves, fiche élève : « 0 sur 72 exercices validés » pour chacun,
 « Exercice suivant : Posture, visée et coup de queue · exercice 1 ». Pour des
@@ -240,11 +240,11 @@ exercice : 360 passages réussis pour « finir »).
 
 | # | Constat | Sév. |
 |---|---|---|
-| E1 | Liste : prénom, badge public, « 0 sur 72 exercices validés » (T7). Aucune indication de la dernière présence, ni de l'alerte sous forme visible quand il n'y en a pas (bien), mais rien non plus pour l'exercice en cours. | S2 |
-| E2 | Fiche : deux boutons d'action, badge, « 0 sur 72 », puis cinq cartes de même poids (Exercice suivant, Notion à rappeler, Assiduité, Progression par bloc, Courbes). La **progression par bloc** (15 blocs × 4 lignes) fait ~1 500 dp ; les courbes suivent. Rien n'est repliable. | S2 |
-| E3 | Les courbes sont fidèles à la fiche fédérale (bon) mais arrivent après 2 000 dp de défilement ; aucune vue « saison » (pastilles des 5 passages par exercice) n'est offerte, alors que c'est ce que l'élève veut voir. | S2 |
-| E4 | « Modifier le prénom » et « Bilan de maturité » en tête de fiche : actions rares, position premium. « Effacer » en bas, bien. | S3 |
-| E5 | Aucune vue de groupe (qui a validé quoi, heat-map bloc × élève, assiduité du groupe), pourtant prévue par l'ADR 0003 et la roadmap (lot 10). | S2 |
+| E1 | ~~Liste : prénom, badge public, « 0 sur 72 exercices validés » (T7). Aucune indication de la dernière présence, ni de l'alerte sous forme visible quand il n'y en a pas (bien), mais rien non plus pour l'exercice en cours.~~ **Soldé par U9** pour le compteur : la liste écrit « Parcours à commencer » ou « n exercices validés » (jamais « n sur 70 ») ; un bouton « Grille du groupe » ouvre la vue de groupe. **Reste ouvert** : la dernière présence n'est pas affichée dans la liste. | S2 |
+| E2 | ~~Fiche : deux boutons d'action, badge, « 0 sur 72 », puis cinq cartes de même poids (Exercice suivant, Notion à rappeler, Assiduité, Progression par bloc, Courbes). La **progression par bloc** (15 blocs × 4 lignes) fait ~1 500 dp ; les courbes suivent. Rien n'est repliable.~~ **Soldé par U9** : en-tête (en cours, prochain, alerte), parcours en cases (≈ 1 770 dp mesurés), courbes repliées. | S2 |
+| E3 | ~~Les courbes sont fidèles à la fiche fédérale (bon) mais arrivent après 2 000 dp de défilement ; aucune vue « saison » (pastilles des 5 passages par exercice) n'est offerte, alors que c'est ce que l'élève veut voir.~~ **Soldé par U9** : courbes repliées et courbe de l'exercice au toucher d'une case ; les pastilles de réussites sont dans l'en-tête et dans la vue « à montrer à l'élève ». | S2 |
+| E4 | ~~« Modifier le prénom » et « Bilan de maturité » en tête de fiche : actions rares, position premium. « Effacer » en bas, bien.~~ **Soldé par U9** : modifier, bilan de maturité et effacer sont en bas de la fiche. | S3 |
+| E5 | ~~Aucune vue de groupe (qui a validé quoi, heat-map bloc × élève, assiduité du groupe), pourtant prévue par l'ADR 0003 et la roadmap (lot 10).~~ **Soldé par U9** : vue de groupe (carte de chaleur technique × élève, assiduité, alertes de groupe). | S2 |
 
 ### 4.9 Suggestion par groupe (`pages/suggested_session`, `session_plan_view`)
 

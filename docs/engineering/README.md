@@ -15,6 +15,7 @@ règles sont **vérifiées automatiquement** (voir [quality-gates.md](quality-ga
 | [ux/audit-ux-ui.md](ux/audit-ux-ui.md) | Audit UX / UI des écrans (2026-10-14) : constats par écran et transversaux, sévérités |
 | [ux/recommandations-design.md](ux/recommandations-design.md) | Recommandations : rôles de couleur, composants, modes Préparer / Mener / Montrer, écrans cibles |
 | [aujourdhui-plan.md](aujourdhui-plan.md) | Lot U7 (livré) : accueil « Aujourd'hui » et bilan de fin de séance, décisions, écarts, points `[U]` restants |
+| [fiche-eleve-plan.md](fiche-eleve-plan.md) | Lot U9 (livré) : fiche en parcours, vue « à montrer à l'élève », vue de groupe, acquittement ; décisions, écarts de livraison, points `[U]` ([ADR 0013](adr/0013-acquittement-des-alertes.md), [ADR 0014](adr/0014-fiche-en-parcours-vue-eleve-et-vue-de-groupe.md)) |
 | [ux/plan-ux-proposition.md](ux/plan-ux-proposition.md) | Détail des lots UX U1 à U9 (intégrés à la roadmap), scénarios BDD à écrire d'abord, décisions Q1 à Q8 tranchées `[U]` |
 
 ## Démarrage rapide

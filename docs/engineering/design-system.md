@@ -275,6 +275,51 @@ Pas de téléchargement à l'exécution (Linux, Windows, web hors ligne).
 - Widgetbook : use cases `StudentPassRow` (dont « Liste compacte
   (téléphone) ») dans `feature_use_cases.dart`.
 
+### Fiche en parcours, vue élève et vue de groupe (lot U9, R14, R15)
+
+Décisions : [ADR 0014](adr/0014-fiche-en-parcours-vue-eleve-et-vue-de-groupe.md),
+plan : [fiche-eleve-plan.md](fiche-eleve-plan.md). Aucun composant n'importe
+une entité : ils prennent des énumérations d'interface et des textes.
+
+- **`PathCell`** et **`PathLegend`** (`shared/ui/path_cell.dart`) : une case du
+  parcours de 48 × 48 dp au moins, quatre états (`PathCellState` : `todo`
+  contour vide, `started` hachuré avec les réussites, `validated` plein avec une
+  coche, `acquired` plein clair avec un drapeau), `alerted` (icône d'attention
+  `StatusColors.attention`, jamais rouge), `current` (anneau `primary`), `label`
+  (nom accessible complet, jamais la couleur seule), `onTap` facultatif (sans
+  lui la case n'est pas un bouton : vue élève). `pathCellLabel`
+  (`path_cell_label.dart`) compose le nom : « exercice : état, alerte en cours,
+  exercice en cours ». `PathLegend` écrit les quatre états et le total
+  d'exercices ; ses libellés passent à la ligne (texte à 200 %).
+- **`HeatCell`** (`shared/ui/heat_cell.dart`) : cellule de 56 dp de la carte de
+  chaleur, `HeatLevel` à quatre paliers de bleu-tapis (aucun, moins de la
+  moitié, au moins la moitié, tout), fraction **toujours écrite**, coche
+  (tout), drapeau (`acquired`), icône d'attention (`alerted`), `label`
+  accessible complet, aucun rouge d'état.
+- **`CellGrid`** (`shared/ui/cell_grid.dart`) : tableau à colonne d'en-têtes
+  **fixe** et élèves qui défilent à l'horizontale (`<préfixe>-scroll`), colonnes
+  `CellGridColumn` (prénom, cible de 48 dp si `onTap`), lignes `CellGridRow`
+  (en-tête sur trois lignes au plus, résumé lu à la place, cellules), dernière
+  ligne `footer` (assiduité). La hauteur d'une ligne suit la taille de texte
+  de l'utilisateur. Clés : `<préfixe>-row-<id>`, `-technique-<id>`, `-column-<id>`.
+- **Sections** (dans leur slice, `presentation/ui`) : `SheetHeaderCard`,
+  `PathList`, `ExerciseCurveSheet` (feuille basse de la courbe d'une case),
+  `StudentSheetView` (`track_progress`) ; `ShowcaseView` (`student_showcase`) ;
+  `GroupHeatMap`, `GroupTextSummary`, `GroupAttendanceCard`, `GroupAlertsList`,
+  `GroupAlertsCard` (`track_group`). `ClubList` gagne le bouton « Grille du
+  groupe » (`onOpenGroup`).
+- **Règles** : un statut de ligne n'est écrit que s'il dit plus que « commencé
+  ou non » ; le menu ⋮ de positionnement prend la place restante après les
+  cases ; les courbes sont repliées (`ExpansionTile` de 48 dp) ; la grille est
+  exposée par le nom complet de chaque cellule, un résumé par ligne, un
+  « Résumé en texte » repliable et une légende (pas de rôles `table` de
+  Flutter : voir l'ADR). Use cases Widgetbook : `shared_ui_use_cases.dart`
+  (`PathCell` états et marqueurs, `PathLegend`, `HeatCell` paliers et marqueurs,
+  `CellGrid`), `feature_use_cases.dart` (sections) et `app_pages_use_cases.dart`
+  (`StudentShowcasePage`, `GroupOverviewPage`) ; thème clair / sombre, fr / en
+  et texte 200 % viennent des addons. `PreviewWorld` compte un camarade (Hugo)
+  pour que la grille montre une alerte de groupe.
+
 ## Règles d'usage
 
 0. **Une seule action principale par page** : `FilledButton` ; les autres

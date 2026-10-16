@@ -45,6 +45,12 @@ et les dépôts en mémoire, sans widget. Les steps partagent un monde
   `configureDependencies(environment: Environment.test)` (dépôts en mémoire).
 - Les tests unitaires du domaine utilisent `test/support/domain_world.dart` (dépôts
   en mémoire + catalogue de test, aucun mock) et `test/support/fixtures.dart`.
+- Les tests de widget des écrans du suivi partent d'un **modèle réel** :
+  `test/support/sheet_world.dart` (`SheetWorld`) construit la fiche, la vue
+  élève et la grille d'un groupe par les vrais cas d'usage sur le catalogue de
+  test (3 blocs de 3 exercices), puis le widget est posé avec `pumpUi`.
+  `narrow_layout_test.dart` pose les écrans du lot U9 sur 320 dp avec un texte
+  à 100 % et 200 % (aucun débordement).
 
 ## Scénarios BDD de l'interface
 
@@ -56,7 +62,16 @@ l'application complète (`App`, routeur, get_it en environnement `test`) via
 `test/support/ui_world.dart`, qui amorce le club par les vrais cas d'usage et fige
 l'horloge au 12/10/2026. Les scénarios d'interface couvrent aussi :
 
-- les liens profonds (`I go to the address of the sheet of {..}`) ;
+- les liens profonds (`I go to the address of the sheet of {..}`, `…of the showcase of {..}`,
+  `…of the grid of the group {..}`) ;
+- le parcours et la carte de chaleur (lot U9) : les cases, lignes et cellules
+  se retrouvent par la **clé** que leur donne l'interface
+  (`test/support/key_finders.dart` : `path-cell-<bloc>-<n>`, `path-row-<bloc>`,
+  `showcase-cell-<i>-<n>`, `heat-cell-<bloc>-<élève>`, `heat-column-<élève>`,
+  `group-alert-<i>`) et leur état se lit dans leur **nom accessible**
+  (`the cell {..} is {..}`, `I see the grid described as {..}`), jamais dans la
+  couleur ; les menus ⋮ se trouvent par leur infobulle
+  (`I open the placement menu of {..}`) ;
 - la courbe avec son alternative textuelle (`I see the curve of {..} with {n}
   attempts`) ;
 - le thème clair/sombre et la langue de l'appareil (fr / en) ;

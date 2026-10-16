@@ -28,7 +28,11 @@ Suggestion) et **Plus** (qui mène à la sauvegarde et aux réglages).
   résultats ne sont pas saisis, avec **Noter les résultats**.
 - **À surveiller** : un élève par ligne, avec l'exercice le plus alarmant, les
   échecs de suite et le niveau écrit en toutes lettres ; cinq au plus, puis
-  **Voir tous les élèves**. Un exercice validé ne donne plus d'alerte.
+  **Voir tous les élèves**. Un exercice validé ne donne plus d'alerte, et une
+  alerte que vous avez marquée **Vu** n'y figure plus.
+- **Alertes de groupe** : trois au plus, par exemple « 4 élèves sur 8 ont manqué
+  « Demi-bille » à leur dernier passage » ; une ligne ouvre la grille du groupe.
+  La carte n'existe pas sans alerte de groupe.
 - **7 derniers jours** : passages saisis, exercices validés, séances données.
 - **Planifier une séance** en bas ouvre le planificateur ; sans séance prévue,
   **Voir la suggestion** mène à la séance suggérée.
@@ -46,7 +50,8 @@ Le bandeau de sauvegarde reste au-dessus de ces cartes.
 
 La liste affiche chaque élève avec un badge **Enfants** ou **Adultes** et, le
 cas échéant, une alerte (par exemple après trois échecs consécutifs sur un
-exercice). Le prénom peut être corrigé depuis la fiche de l'élève.
+exercice). Le prénom peut être corrigé depuis la fiche de l'élève. Chaque
+groupe a un bouton **Grille du groupe** (voir « La vue de groupe »).
 
 ## 2. Préparer la séance
 
@@ -234,37 +239,106 @@ avec le même groupe et la même date : la séance existante est reprise.
 
 ## 5. Lire la fiche d'un élève
 
-Depuis **Élèves**, touchez un élève :
+Depuis **Élèves**, touchez un élève. La fiche se lit de haut en bas :
 
-- la **progression par bloc** (pourcentage validé, exercice suivant
-  recommandé) ;
+- **Montrer à l'élève** (bouton en haut) : voir plus bas ;
+- la **synthèse** : « n techniques terminées sur 15 » et « n exercices
+  validés » (un élève qui n'a encore rien fait voit « Parcours à commencer »,
+  jamais un zéro présenté comme un score), puis l'**exercice en cours** (le
+  premier non validé, le même que celui de la séance suggérée) avec ses
+  pastilles de réussites, et l'**exercice suivant** ;
+- l'**alerte** la plus grave, avec le bouton **Vu** (voir plus bas) ;
 - la **notion à rappeler** quand le dernier passage a été manqué ;
 - l'**assiduité** : séances où l'élève était présent, sur les séances de son
   groupe depuis son arrivée ;
-- la **courbe de performance** de chaque exercice : les essais en abscisse, les
-  billes empochées en ordonnée, comme sur la fiche résultats fédérale. Un essai
-  réussi est un disque plein, un essai manqué un anneau creux ; la liste des
-  essais est aussi donnée en texte.
+- le **parcours** : une ligne par technique, une case par exercice. Chaque case
+  a une forme **et** un nom lu par la voix : contour vide = à faire, hachuré
+  (avec le nombre de réussites) = commencé, plein avec une coche = validé, plein
+  clair avec un drapeau = issu du positionnement. Une icône d'attention marque
+  un exercice en alerte, un anneau l'exercice en cours. Touchez une case pour
+  voir la courbe de l'exercice ; la fraction « 3/4 » de la ligne dit combien
+  d'exercices sont validés. Un statut n'est écrit que s'il dit plus que
+  « commencé » (maîtrisé, acquis au positionnement, à revoir, plus de séances
+  que conseillé) ;
+- les **courbes de performance**, repliées : touchez le titre pour les ouvrir.
+  Les essais sont en abscisse, les billes empochées en ordonnée, comme sur la
+  fiche résultats fédérale ; un essai réussi est un disque plein, un essai
+  manqué un anneau creux, et la liste des essais est aussi donnée en texte.
+
+En bas de la fiche : **Modifier le prénom**, **Bilan de maturité** et
+**Effacer** (actions rares).
+
+### Acquitter une alerte (« Vu »)
+
+Quand vous avez vu une alerte et décidé quoi faire, **Vu** la retire de la
+fiche, de « À surveiller » sur « Aujourd'hui », du bilan de séance et du badge
+d'alertes de la liste : l'élève disparaît de « À surveiller » s'il n'a pas
+d'autre alerte. La fiche garde une ligne calme « Alerte vue le … » avec
+**Rétablir**.
+
+- L'alerte **réapparaît** si l'élève échoue encore sur cet exercice (avec le
+  nouveau nombre d'échecs) ou si vous corrigez ou supprimez son dernier passage ;
+  une réussite la résout.
+- « Vu » ne change **ni la notion à rappeler ni la séance suggérée** : le
+  jugement pédagogique ne dépend pas du fait que vous ayez vu.
+- Les acquittements sont dans la sauvegarde (format 3) et s'effacent avec
+  l'élève.
+
+### Montrer le parcours à l'élève
+
+**Montrer à l'élève** ouvre un écran sans barre de navigation qui n'affiche que
+son **prénom**, son **exercice en cours** (avec ses seules réussites) et son
+**parcours**. Rien d'autre : ni alerte, ni note, ni bilan de maturité, ni
+assiduité, ni autre élève (c'est le modèle de l'écran qui n'a pas ces données,
+pas un simple masquage). Une technique « à revoir » s'y montre « en cours ».
+**Terminer** (ou le retour de l'appareil) revient à la fiche.
 
 ### Marquer un bloc acquis (positionnement)
 
-Pour un élève qui n'est pas débutant ou qui arrive en cours de saison, la
-carte **Progression par bloc** propose **Marquer le bloc acquis** sur chaque
-bloc non acquis.
+Pour un élève qui n'est pas débutant ou qui arrive en cours de saison, le menu
+⋮ de chaque technique du **parcours** propose **Marquer le bloc acquis** (sauf
+pour une technique déjà maîtrisée par les passages).
 
 - Choisissez la **date du positionnement** (aujourd'hui par défaut, jamais dans
   le futur) puis **Marquer acquis**. Les exercices du bloc comptent comme
-  validés dans « n / 72 », sans passage enregistré ; le bloc s'affiche
-  **Acquis au positionnement** avec sa date, et la suggestion saute ce bloc.
+  validés dans la synthèse, sans passage enregistré ; la ligne s'affiche
+  **Acquis au positionnement** avec sa date, ses cases portent un drapeau, et
+  la suggestion saute ce bloc.
 - Un passage saisi **le jour du positionnement ou après** reprend la main sur
   son exercice seulement : le reste du bloc reste acquis et la fiche indique
   « N exercices repris par les passages saisis depuis ».
-- **Retirer l'acquis** (avec confirmation) rend les exercices à valider selon
-  les passages saisis.
+- **Retirer l'acquis** (même menu, avec confirmation) rend les exercices à
+  valider selon les passages saisis.
 - Un bloc acquis n'est jamais rappelé ni signalé en retard.
 
 Chaque fiche a une adresse propre : vous pouvez l'ajouter aux favoris du
 navigateur.
+
+### La vue de groupe
+
+Sur **Élèves**, **Grille du groupe** (sur la carte de chaque groupe) ouvre la
+vue du groupe :
+
+- les **alertes de groupe** : « 4 élèves sur 8 ont manqué « Demi-bille » à leur
+  dernier passage ». Une alerte demande au moins 2 élèves, au moins la part
+  réglée dans **Réglages** (« part d'échec du groupe », 50 % par défaut), et un
+  échec dans les dernières séances du groupe (nombre réglable aussi). Elles
+  n'ont pas de « Vu » : elles se recalculent à chaque séance. Trois au plus
+  figurent aussi sur « Aujourd'hui », avec un lien vers la grille ;
+- l'**assiduité du groupe** : présences sur présences possibles (« 41 présences
+  sur 48 possibles (85 %) »), nombre de séances et dernières séances. Un élève
+  arrivé en cours de saison n'est pas pénalisé. Sans séance saisie, l'écran le
+  dit au lieu d'afficher 0 % ;
+- la **carte de chaleur** : une ligne par technique, une colonne par élève du
+  groupe, une dernière ligne d'assiduité. Chaque cellule écrit sa fraction
+  d'exercices validés (« 3/4 »), avec une coche (technique terminée), un
+  drapeau (acquise au positionnement) ou une icône d'attention (alerte) : la
+  couleur n'est jamais seule. Sur un téléphone, les techniques restent à gauche
+  et les élèves défilent. Touchez une cellule ou un prénom pour ouvrir la
+  fiche ;
+- le **résumé en texte** (replié, à ouvrir) : pour chaque technique, qui l'a
+  terminée, qui est en cours, qui doit la commencer. Chaque cellule et chaque
+  ligne ont aussi un nom lu par la voix.
 
 ## 6. Valider les propositions du catalogue
 
@@ -315,7 +389,10 @@ disparaît dès qu'un export a été enregistré (un export annulé ne compte pa
   de mois.
 - **Importer** lit un fichier et affiche d'abord une **prévisualisation**
   (nombre d'élèves, de séances, de passages, de blocs acquis) ; rien n'est écrit tant que vous
-  n'avez pas confirmé. Un fichier invalide est refusé en entier.
+  n'avez pas confirmé. Un fichier invalide est refusé en entier. Le fichier
+  contient aussi les alertes marquées **Vu** ; importer un fichier produit par
+  une version plus ancienne de l'application (qui n'en contient pas) efface
+  celles qui sont en place.
 - Si l'application vous avertit que les données ne sont conservées **qu'en
   mémoire** (navigateur sans stockage durable), exportez une sauvegarde avant
   de fermer l'onglet : sinon elles seraient perdues.
@@ -349,7 +426,7 @@ Les élèves sont souvent mineurs : l'application ne garde que le **prénom** et
 le **public**, sur votre appareil, et ne les envoie nulle part.
 
 - Sur la fiche de l'élève, **Effacer** supprime définitivement l'élève, ses
-  résultats, ses blocs acquis, ses bilans et ses appartenances à un groupe. Une confirmation est
+  résultats, ses blocs acquis, ses alertes vues, ses bilans et ses appartenances à un groupe. Une confirmation est
   demandée ; l'action ne peut pas être annulée.
 - Effacez les élèves **à la fin de la saison**, ou à la demande de l'élève ou de
   ses parents. Exportez d'abord une sauvegarde si vous voulez garder une copie.
@@ -365,7 +442,7 @@ le **public**, sur votre appareil, et ne les envoie nulle part.
 | Pendant la séance | Lancer la séance planifiée, montrer les schémas, noter les résultats (groupe et date déjà renseignés) |
 | Après chaque séance | Saisir les passages de chaque élève (si pas déjà fait) ; corriger une erreur de saisie depuis l'historique |
 | Une fois | Relire les propositions « à valider » du catalogue |
-| Régulièrement | Lire les fiches, rappeler les notions signalées |
+| Régulièrement | Lire les fiches et la grille du groupe, marquer les alertes « Vu », rappeler les notions signalées |
 | Vers 16-17 ans | Faire un bilan de maturité, décider du passage à la main |
 | Fin de mois / de saison | Exporter une sauvegarde |
 | Fin de saison | Effacer les élèves qui ne reviennent pas |

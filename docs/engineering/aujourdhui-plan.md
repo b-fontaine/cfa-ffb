@@ -166,8 +166,8 @@ injectée `Clock.today()`), comme la planification.
   (N) » vers `/students`. Ligne = `StudentChip` + exercice + « n échecs de
   suite » + niveau en texte (jamais la couleur seule, jamais de rouge d'état :
   `AppAlert` attention, ADR 0010) ; tape → fiche élève. Les alertes de **groupe**
-  (R8 : « 4 élèves sur 8 ») sont reportées : elles dépendent de la vue de groupe
-  (lot 10 / U9).
+  (R8 : « 4 élèves sur 8 ») étaient reportées : **livrées avec U9** (carte
+  « Alertes de groupe », trois au plus, [plan U9](fiche-eleve-plan.md)).
 - **États vides** : (a) ni séance ni élève : bille n° 8, message d'accueil,
   « Planifier la prochaine séance », « Voir la suggestion pour un groupe » et
   « Ajouter des élèves » ; (b) élèves mais aucune séance à venir : carte
@@ -292,7 +292,7 @@ sans effet sur le reste. Aucune dépendance.
 
 ## 4. Reportés (documentés, rien de stubbé)
 
-- Alertes de **groupe** (« 4 élèves sur 8 ») : lot 10 / U9 (vue de groupe).
+- ~~Alertes de **groupe** (« 4 élèves sur 8 »)~~ : **soldé avec U9** (carte « Alertes de groupe » sur « Aujourd'hui », grille du groupe ; seuil `groupFailureSharePercent`).
 - Origine « Aujourd'hui » du détail d'une séance (retour direct) : U8.
 - Rappels natifs (veille de séance, sauvegarde) : H4, lot 22.
 - Persistance de la séance en cours au rechargement : non faite (U-5).
