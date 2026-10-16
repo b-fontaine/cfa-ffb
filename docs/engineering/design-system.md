@@ -196,6 +196,31 @@ Pas de téléchargement à l'exécution (Linux, Windows, web hors ligne).
   (interactif, bouton fermer sans menu, titre long).
 
 
+### Accueil « Aujourd'hui » et bilan (lot U7, R8)
+
+- **`NowCard`** (`shared/ui`) : étiquette d'état (icône et texte), titre, lignes
+  de méta, action principale (`FilledButton`) et secondaire (`OutlinedButton`),
+  `emphasis` repris de `SectionEmphasis` (`high` : bord bleu-tapis de 2 dp pour
+  la séance en cours). Aucune entité importée ; groupe sémantique (état, titre,
+  méta) ; actions de 48 dp au moins ; aucun rouge d'état. Use case :
+  `aujourdhui_use_cases.dart` (états).
+- **`WatchRow`** (`shared/ui`) : élève à surveiller, détail et niveau d'alerte
+  en toutes lettres (« Avertissement » / « Action nécessaire »), pastille
+  `StatusColors.attention` (jamais le rouge d'état, ADR 0010), cible de 48 dp.
+- **`ClothPattern`** (`shared/ui`) : motif de tapis (grille de losanges 8 × 4,
+  `BallColors.cloth` à 6 %), décoratif, exclu de la sémantique, sans dépendance ;
+  sert d'arrière-plan à l'en-tête de l'accueil (réutilisable par U3). La bille
+  n° 8 (`BilliardBall(kind: black, label: '8')`) accompagne le titre.
+- **Sections de l'accueil** (dans leur slice, `presentation/ui`) :
+  `RunningSessionCard` et `RunningSessionRow` (`run_sheet`), `NextSessionCard`,
+  `EmptyNextSessionCard` et `ToRecordList` (`plan_session`),
+  `WatchedStudentsCard` et `WeekSummaryCard` (`track_progress`),
+  `NextSheetCard` (`suggest_session`), `SessionReviewView` (`review_session`).
+  Chacune prend des données déjà calculées et des callbacks : la page compose.
+  Une section en échec montre un message calme et « Réessayer ».
+- `HomePage` passe en deux colonnes à partir de 840 dp (cartes à gauche, suivi à
+  droite).
+
 ### Saisie rapide en grille (lot U5, R11, corrige F4)
 
 - **`StudentChip`** (`shared/ui`, R4) : `name`, `status`

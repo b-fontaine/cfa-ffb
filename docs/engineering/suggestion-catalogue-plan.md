@@ -308,3 +308,13 @@ du bloc.
 - Widgetbook : deux cas de `SessionPlanView` (avec et sans séance du
   catalogue).
 
+
+## Report soldé par U7
+
+La création directe d'une séance planifiée datée pour le groupe, reportée du
+lot 8 vers U7, est faite : « Planifier » du **bilan de fin de séance** appelle
+`PlanSession` avec le groupe, la fiche et la date proposée (même jour de la
+semaine, semaine suivante), après la règle du lot 8 inchangée
+(`SuggestNextSheet`). Voir [aujourdhui-plan.md](aujourdhui-plan.md) § 2.6. Le
+bouton « Planifier » de la séance suggérée (`/session`) continue d'ouvrir le
+planificateur.

@@ -10,6 +10,31 @@ est en bas de l'écran sur smartphone, à gauche sur grand écran : **Aujourd'hu
 **Élèves**, **Résultats**, **Séances** (onglets Planifiées, Catalogue,
 Suggestion) et **Plus** (qui mène à la sauvegarde et aux réglages).
 
+## Aujourd'hui : l'écran d'ouverture
+
+**Aujourd'hui** rassemble ce qu'il faut savoir en ouvrant l'application :
+
+- **En cours** : la séance guidée commencée (étape en cours, séance planifiée
+  d'origine). **Reprendre à l'étape n** rouvre le guide où vous l'avez laissé
+  avec ses compteurs ; **Abandonner** l'efface après confirmation. D'autres
+  séances commencées sont listées en dessous. Attention : cet état n'est gardé
+  que tant que l'application reste ouverte.
+- **Prochaine** : la première séance planifiée, à partir d'aujourd'hui, qui n'a
+  pas encore de résultats saisis (date, groupe, public). **Préparer** ouvre la
+  séance du catalogue ; **Lancer** démarre le guide avec ses réglages. Les
+  autres séances du même jour sont comptées. Sans séance du catalogue, seul
+  **Ouvrir dans Planifiées** est proposé.
+- **À noter** : les séances passées (7 derniers jours) d'un groupe dont les
+  résultats ne sont pas saisis, avec **Noter les résultats**.
+- **À surveiller** : un élève par ligne, avec l'exercice le plus alarmant, les
+  échecs de suite et le niveau écrit en toutes lettres ; cinq au plus, puis
+  **Voir tous les élèves**. Un exercice validé ne donne plus d'alerte.
+- **7 derniers jours** : passages saisis, exercices validés, séances données.
+- **Planifier une séance** en bas ouvre le planificateur ; sans séance prévue,
+  **Voir la suggestion** mène à la séance suggérée.
+
+Le bandeau de sauvegarde reste au-dessus de ces cartes.
+
 ## 1. Constituer le groupe
 
 1. Ouvrez **Élèves**, puis **Ajouter un élève**.
@@ -136,7 +161,21 @@ celui que vous avez choisi.
    l'étape ; **Fermer** revient à la même étape du guide.
 5. Les compteurs de réussites d'une initiation et le score du jeu sont gardés
    **sur cet écran seulement**, avec la mention « non enregistré dans le suivi ».
-   **Terminer la séance** les efface après confirmation.
+   **Terminer la séance** les efface après confirmation. Si vous avez noté des
+   résultats depuis ce guide, **Terminer** ouvre ensuite le **bilan de la
+   séance** (voir plus bas).
+
+### Le bilan de fin de séance
+
+Après **Terminer**, le bilan récapitule la séance donnée : les passages saisis
+par exercice, les exercices **validés ce jour-là** (par élève), les élèves
+présents **sans passage**, les élèves **à surveiller**, puis la **séance
+suivante** du catalogue pour le groupe, avec une date proposée (même jour de la
+semaine, la semaine suivante). **Planifier** crée directement la séance
+planifiée pour le groupe à cette date ; **Modifier la date** permet d'en
+choisir une autre. Si cette séance est déjà planifiée, le bilan le dit au lieu
+de proposer le bouton. Le bilan se relit depuis l'adresse de la saisie. Une
+saisie sans aucun passage le dit et propose **Saisir les résultats**.
 
 Pour relire une séance sans élèves, lancez-la depuis le détail : aucune saisie
 n'est obligatoire et toutes les étapes sont accessibles.

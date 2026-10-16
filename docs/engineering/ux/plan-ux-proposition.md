@@ -35,12 +35,12 @@ lots fonctionnels. Trois besoins restent sans lot :
 | **U4** Guide en mode « Mener » | route hors shell, `StepAppBar` + `PhaseTimeline`, schéma en premier, sections repliées, badges masqués sauf « Relecture », minuteur en en-tête, barre basse à trois actions ; corrige F3 et le lot 12 | R7, R9 | L | U1 |
 | **U5** Saisie rapide en grille | grille élève × passage avec `PassDots` et `StudentChip`, sélecteur d'exercice nommé et non tronqué, liste compacte sur téléphone, historique groupé, feuille basse depuis le guide ; corrige F4 | R11 | L | U1 |
 | **U6** Navigation recentrée | destinations « Aujourd'hui / Élèves / Résultats / Séances (onglets) / Plus » ; réglages (F8) sous « Plus » ; rappel de sauvegarde | R6, R12 (onglets) | M | U1 |
-| **U7** Accueil « Aujourd'hui » et bilan de fin de séance | `NowCard`, séance en cours, prochaine séance, alertes, semaine, sauvegarde ; écran de bilan à « Terminer » avec proposition de la séance suivante | R8, § 4.4 | L | U6, lots 6 et 8 (livrés : date, groupe, « Résultats saisis », séance suivante) |
+| ~~**U7**~~ **livré le 2026-10-15** ([aujourdhui-plan](../aujourdhui-plan.md)) Accueil « Aujourd'hui » et bilan de fin de séance | `NowCard`, séance en cours, prochaine séance, alertes, semaine, sauvegarde ; écran de bilan à « Terminer » avec proposition de la séance suivante | R8, § 4.4 | L | U6, lots 6 et 8 (livrés : date, groupe, « Résultats saisis », séance suivante) |
 | **U8** Catalogue et détail en mode « Préparer » | hiérarchie des lignes, badge unique de relecture, marqueur de parcours par groupe, `PhaseTimeline` dans le détail, deux colonnes | R12, R13 | M | U1, lot 8 (livré : marqueur) |
 | **U9** Fiche élève, vue élève et vue de groupe | parcours en cases, en-tête « en cours / prochain / alerte », courbes repliées, vue « à montrer à l'élève », heat-map de groupe et assiduité | R14, R15 | M | U1, lot 7 (livré), lot 10 |
 
-Reporté depuis U1 : bille n° 8 et motif de tapis (U7, U3), `StudentChip` (U5),
-`NowCard` (U7), `DiagramStage` (U3).
+Reporté depuis U1 : bille n° 8, motif de tapis et `NowCard` (livrés avec U7),
+`StudentChip` (U5), `DiagramStage` (U3).
 
 Chaque lot suit `dev-feature` : scénarios `.feature` d'abord (voir § 4),
 puis TDD, revue `architecte-fsd` + `testeur-bdd` dans un contexte séparé,

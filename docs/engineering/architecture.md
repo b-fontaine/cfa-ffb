@@ -510,6 +510,36 @@ Les ports de repository sont dans `domain` ; leurs implémentations vivent dans
 port `UnitOfWork` (transaction SQLite ; journal d'annulation en mémoire). Les
 ports portent aussi l'effacement physique d'un élève (`erase`, `eraseStudent`). Décision et schéma : ADR 0001.
 
+## Accueil « Aujourd'hui » et bilan de séance (lot U7)
+
+Plan et décisions : [aujourdhui-plan.md](aujourdhui-plan.md). Aucune migration,
+aucune dépendance, pas d'ADR.
+
+- **Slices** : `entities/exercise_result/domain/watch_list.dart` (règle
+  d'alerte partagée, `watchedStudents`) ; `features/plan_session`
+  (`GetUpcomingSessions`, `upcomingOf`, `UpcomingSessionsCubit`,
+  `PlanNextSessionCubit`) ; `features/track_progress` (`ListWatchedStudents`,
+  `weekSummary`, `GetWeekSummary`, leurs cubits) ; `features/run_sheet`
+  (`RunSheetSessions.snapshot()` en lecture seule, `RunningSessionsCubit` avec
+  `abandon`, `RunRecordChoice.recordId`) ; `features/suggest_session`
+  (`SuggestNextSheet`, `NextSheetCubit`, règle du lot 8 inchangée) ; nouvelle
+  slice `features/review_session` (`GetSessionReview`, `reviewSession` pure,
+  `nextSameWeekday`, `SessionReviewBloc`, `SessionReviewView`).
+- **Pages qui composent** : `pages/home` (quatre cubits indépendants + le
+  `banner` du routeur) et `pages/session_review` (bilan + séance suivante +
+  planification). Aucune feature n'importe une autre : la jointure « groupe
+  de la séance en cours » et « déjà planifiée » est faite par la page.
+- **Route** : `/record/:sessionId/review` (`AppRoutes.review`), dans le shell,
+  sous « Résultats » ; adresse déclarée avant `/record/:sessionId`. « Terminer »
+  (`SheetGuidePage.onFinish`, `ValueChanged<SessionId?>`) lit
+  `recordChoice?.recordId` **avant** `finish()` ; le routeur mène au bilan puis
+  libère le guide. Sans saisie ouverte : retour inchangé.
+- **Données du bilan** : relues des dépôts (le bilan survit à un rechargement) ;
+  les titres de blocs viennent de `ExerciseCatalogue.blockLabels` (titre et
+  statut `[Prop]`), portés par `WatchList` et `SessionReview`.
+- **Limite connue** : le registre des séances guidées (`RunSheetSessions`) est
+  en mémoire ; « En cours » ne survit pas à un rechargement (plan U-5).
+
 ## États et modèles
 
 - Modèles et états immuables : `freezed` (`@freezed abstract class …` ou `sealed class`

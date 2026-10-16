@@ -49,7 +49,7 @@ revues séparées, `check.sh --full`).
 | **U3** Présentation plein écran | `DiagramStage` (table sur la plus grande dimension, légende réservée, contrôles en barre basse), plein écran natif, « tournez l'appareil » | F1, lot 13 |
 | **U4** Guide en mode « Mener » | route hors shell, en-tête compact + frise des phases, schéma en premier, sections repliées, badges de provenance masqués sauf mode « Relecture », minuteur en en-tête, barre basse Précédent / Noter / Suivant | F3, lot 12 |
 | **U6** Navigation recentrée | destinations « Aujourd'hui / Élèves / Résultats / Séances (Planifiées · Catalogue · Suggestion) / Plus (Sauvegarde, Réglages) » ; rappel de sauvegarde | F8 (emplacement du lot 9) |
-| **U7** Accueil « Aujourd'hui » et bilan de fin de séance | séance en cours à reprendre, prochaine séance planifiée (Préparer / Lancer), alertes, semaine, sauvegarde ; à « Terminer », bilan des passages et proposition de la séance suivante | accueil statique |
+| ~~**U7**~~ Accueil « Aujourd'hui » et bilan de fin de séance : **livré le 2026-10-15** ([plan](aujourdhui-plan.md)) | séance en cours à reprendre, prochaine séance planifiée (Préparer / Lancer), alertes, semaine, sauvegarde ; à « Terminer », bilan des passages et proposition de la séance suivante | accueil statique |
 | **U8** Catalogue et détail en mode « Préparer » | nom évocateur en titre, badge unique « n points à valider », marqueur de parcours par groupe, frise des phases dans le détail, deux colonnes | : |
 | **U9** Fiche élève, vue élève et vue de groupe | parcours en cases (technique × exercice), en-tête en cours / prochain / alerte, courbes repliées, vue « à montrer à l'élève », heat-map technique × élève et assiduité du groupe | « 0 sur 70 », lot 10 (vues) |
 
@@ -120,7 +120,8 @@ Lots UX en H0 :
   en `secondary`, `BrandColors`, `SectionCard.emphasis`, logo derrière
   `showFfbLogo`, icônes de navigation, `PassDots`, `TimerChip`,
   `PhaseTimeline`, `StepAppBar`, feuille Widgetbook « Rôles de couleur »).
-  Reporté hors U1 : bille n° 8 et motif de tapis (U7, U3), `NowCard` (U7),
+  Reporté hors U1 : ~~bille n° 8 et motif de tapis (U7)~~ et ~~`NowCard`
+  (U7)~~ livrés avec U7 (le motif de tapis sera réutilisé par U3),
   `DiagramStage` (U3) ; `StudentChip` a été livré avec U5.
   Les écrans touchés par les lots 7 et 8 (fiche élève, séance suggérée) seront
   repris par U9 et U8.
@@ -164,9 +165,10 @@ Lots UX en H0 :
    (S1), « faite » = saisie avec séance et passage (S2, S7), notion sans séance
    = repli explicite (S8), guide lancé avec le groupe (S6) ; aucune migration.
    Actions livrées : « Ouvrir », « Lancer la séance guidée », « Saisir les
-   résultats » pré-rempli et « Planifier » (ouvre le planificateur ; la
-   création directe d'une séance planifiée datée pour le groupe revient à U7,
-   bilan de fin de séance).
+   résultats » pré-rempli et « Planifier » (ouvre le planificateur).
+   ~~La création directe d'une séance planifiée datée pour le groupe revient
+   à U7, bilan de fin de séance.~~ **Soldé avec U7** : « Planifier » du bilan
+   crée la séance planifiée datée et liée au groupe.
    - ~~**U6** Navigation recentrée~~ : livré (voir plus haut) ; le lot 9
      a pris place sous « Plus ».
 9. ~~**Réglages** (F8)~~ : **livré le 2026-10-15** — [ADR 0012](adr/0012-reglages-du-club.md),
@@ -175,9 +177,14 @@ Lots UX en H0 :
    du groupe et délai du rappel de sauvegarde ; sous « Plus » (`/settings`),
    pas de sixième onglet ; « Rétablir les valeurs par défaut » avec
    confirmation ; les règles lisent la valeur courante (`RulesStore`).
-   - **U7** Accueil « Aujourd'hui » et bilan de fin de séance, ensuite.
-     Dépend de U6 ; les lots 6 et 8 dont il affiche les données sont livrés
-     (séance datée, séance suivante proposée dans le bilan).
+   - ~~**U7** Accueil « Aujourd'hui » et bilan de fin de séance~~ : **livré le
+     2026-10-15**, [plan](aujourdhui-plan.md). Accueil `NowCard` (séance en
+     cours à reprendre, prochaine séance Préparer / Lancer, séances à noter,
+     élèves à surveiller, 7 derniers jours, rappel de sauvegarde conservé,
+     bille n° 8 et motif de tapis) ; à « Terminer », bilan `/record/:id/review`
+     (passages, validations du jour, présents sans passage, élèves à
+     surveiller, séance suivante du catalogue avec « Planifier » daté). Aucune
+     migration, aucune dépendance, pas d'ADR. Restent `[U]` : plan § 11.
 10. Reste de l'ADR 0003 : acquittement d'une alerte, note de jeu de la séance,
     vues de groupe (carte de chaleur bloc × élève, assiduité), compteurs
     d'initiation et de jeu persistés. **Livré avec U9** (fiche élève en
@@ -236,7 +243,7 @@ Lots UX en H0 :
 
 ```
 H0 : ~~F7~~ → ~~revue T8~~ (faite, constats ouverts ci-dessus) → ~~réaliser D5~~ réalisé (les questions ouvertes sont tranchées ; U2 livré)
-H1 : ~~U5~~ → ~~U6~~ → 9 → U7 → 10 + U9 + U8 → 11   (5 à 8 livrés)
+H1 : ~~U5~~ → ~~U6~~ → ~~9~~ → ~~U7~~ → 10 + U9 + U8 → 11   (5 à 9 et U7 livrés)
 H2 : U4 → U3 → 14 → 15
 H3 : 16 (avec le mode Relecture de U4) → 17 → 18 → 19 → 20
 H4 : 21 → 22 (+ rappels) → 23

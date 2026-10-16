@@ -20,7 +20,9 @@ contenu de deux d'entre elles change.
    adresses et leurs liens profonds sont inchangés.
 3. **Atterrissage** : la destination « Séances » ouvre toujours le Catalogue
    (comportement existant, parcours et scénarios conservés). Le choix d'un
-   atterrissage sur « Planifiées » relève de U7/U8.
+   atterrissage sur « Planifiées » relève de U8 ; U7 n'y touche pas (« Préparer »
+   et « Ouvrir dans Planifiées » de l'accueil mènent à `/planner` ou au détail
+   avec retour vers « Planifiées »).
 4. **« Plus »** : écran de liste (`/more`) qui mène à Sauvegarde (`/backup`,
    écran existant, avec retour à « Plus »). `/backup` sélectionne « Plus ».
 5. **Composant** : `AppTabs` (`shared/ui/app_tabs.dart`), sans dépendance
@@ -58,8 +60,9 @@ contenu de deux d'entre elles change.
   « Aujourd'hui » (choix simple, un paramètre d'origine serait un ajout U7).
 - **Interface** : `BackupReminderBanner` (`AppAlert` attention + action
   « Sauvegarder » vers `/backup`), posé sur l'accueil par le routeur via le
-  paramètre `banner` de `HomePage` : l'accueil n'est pas refondu (U7). Évalué à
-  chaque ouverture de « Aujourd'hui ».
+  paramètre `banner` de `HomePage` ; U7 a refondu l'accueil et conservé le
+  bandeau au-dessus des cartes (scénario « The backup reminder is kept above the
+  cards »). Évalué à chaque ouverture de « Aujourd'hui ».
 - **Reporté** : rappel natif (notification) en H4, désactivable (Q7). Le seuil
   de 30 jours est réglable depuis le lot 9 (« Réglages », 7 à 90 jours).
 
@@ -75,3 +78,13 @@ contenu de deux d'entre elles change.
 | persistance | `shared/persistence/tables.dart` (`BackupExports`), `app_database.dart` (v6), `drift_schemas/…/drift_schema_v6.json` |
 | tests | `test/bdd/backup_reminder.feature` (7 scénarios), `unit/features/backup_data/domain/backup_reminder_test.dart`, `presentation/backup_reminder_*_test.dart`, `contract/backup_marker_contract.dart`, migration v6 |
 | widgetbook | `app_tabs_use_cases.dart`, use case « Plus » |
+
+## Reports réalisés par U7
+
+- **Accueil « Aujourd'hui »** : composition de quatre sections indépendantes
+  (en cours, prochaine séance et à noter, à surveiller, 7 derniers jours) ;
+  adresses inchangées.
+- **Bilan** : nouvelle route `/record/:sessionId/review` (`AppRoutes.review`),
+  dans le shell, sélectionne « Résultats ». « Terminer » mène au bilan quand une
+  saisie a été ouverte depuis le guide, sinon retour inchangé.
+- **« Retour à Plus » depuis la sauvegarde** : inchangé (non demandé).
