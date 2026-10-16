@@ -1,11 +1,18 @@
 import 'package:billard_cfa/entities/session_sheet/domain/scoring.dart';
+import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/ui/run_sheet_view.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/provenance.dart';
+import 'package:billard_cfa/shared/lib/timer_tone.dart';
+import 'package:billard_cfa/shared/ui/phase_timeline.dart';
 import 'package:billard_cfa/shared/ui/proposal_badge.dart';
+import 'package:billard_cfa/shared/ui/provenance_badge.dart';
+import 'package:billard_cfa/shared/ui/step_app_bar.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_player.dart';
+import 'package:billard_cfa/shared/ui/timer_chip.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -22,9 +29,27 @@ Future<void> tapVisible(WidgetTester tester, Finder finder) async {
 
 class _Calls {
   final steps = <int>[];
+  final modes = <RunMode>[];
   int shown = 0;
   int finished = 0;
+  int backs = 0;
   final recorded = <ExerciseRef>[];
+}
+
+/// Ouvre le menu ⋮ de l'en-tête.
+Future<void> openMenu(WidgetTester tester) async {
+  await tester.tap(find.byKey(const ValueKey('step-app-bar-menu')));
+  await tester.pumpAndSettle();
+}
+
+/// Bouton de la barre basse trouvé par son texte ou, sur téléphone, par son
+/// infobulle.
+Finder barButton(String label) {
+  final bar = find.byKey(const ValueKey('guide-bottom-bar'));
+  final byText = find.descendant(of: bar, matching: find.text(label));
+  return byText.evaluate().isNotEmpty
+      ? byText
+      : find.descendant(of: bar, matching: find.byTooltip(label));
 }
 
 void main() {
@@ -36,10 +61,10 @@ void main() {
     bool tablet = false,
     double textScale = 1,
     bool applyStep = true,
+    Size? size,
   }) async {
-    tester.view.physicalSize = tablet
-        ? const Size(1280, 800)
-        : const Size(400, 800);
+    tester.view.physicalSize =
+        size ?? (tablet ? const Size(1280, 800) : const Size(400, 800));
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     final cubit = (await tester.runAsync(
@@ -66,6 +91,11 @@ void main() {
               onShow: () => calls.shown++,
               onFinish: () => calls.finished++,
               onRecord: calls.recorded.add,
+              onBack: () => calls.backs++,
+              onModeChanged: (mode) {
+                calls.modes.add(mode);
+                cubit.modeChanged(mode);
+              },
             ),
           ),
         ),
@@ -142,6 +172,8 @@ void main() {
             onShow: () {},
             onFinish: () {},
             onRecord: (_) {},
+            onBack: () {},
+            onModeChanged: (_) {},
           ),
         ),
       );
@@ -268,14 +300,33 @@ void main() {
   });
 
   group('header', () {
-    testWidgets('shows the title, the audience and the step counter', (
+    testWidgets('shows the step title once, the position and the phase', (
+      tester,
+    ) async {
+      await pump(tester, world(), 'demi-bille-1', step: 3);
+
+      expect(
+        find.descendant(
+          of: find.byType(StepAppBar),
+          matching: find.text('Exercise 1 · Exercice e1'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Exercise 1 · Exercice e1'), findsOneWidget);
+      expect(find.text('4/8'), findsOneWidget);
+      expect(find.text('Training · 35 min'), findsOneWidget);
+      expect(find.byType(PhaseTimeline), findsOneWidget);
+    });
+
+    testWidgets('no longer repeats the title and the audience of the sheet', (
       tester,
     ) async {
       await pump(tester, world(), 'demi-bille-1');
 
-      expect(find.text('Quantité demi-bille, session 1/2'), findsOneWidget);
-      expect(find.text('Children · 90 min'), findsOneWidget);
-      expect(find.text('Step 1 of 8'), findsOneWidget);
+      expect(find.text('Quantité demi-bille, session 1/2'), findsNothing);
+      expect(find.text('Children · 90 min'), findsNothing);
+      expect(find.text('Step 1 of 8'), findsNothing);
+      expect(find.byType(LinearProgressIndicator), findsNothing);
       expect(find.text('Welcome · 10 min'), findsOneWidget);
     });
 
@@ -291,6 +342,20 @@ void main() {
       );
     });
 
+    testWidgets('takes at most a quarter of a phone screen', (tester) async {
+      await pump(
+        tester,
+        world(),
+        'demi-bille-1',
+        step: 3,
+        size: const Size(390, 844),
+      );
+
+      final header = tester.getRect(find.byKey(const ValueKey('guide-header')));
+      expect(header.top, 0);
+      expect(header.bottom, lessThanOrEqualTo(844 / 4));
+    });
+
     testWidgets('asks to show the step that has something to show', (
       tester,
     ) async {
@@ -301,23 +366,28 @@ void main() {
       expect(calls.shown, 1);
     });
 
-    testWidgets('disables Show on a step with nothing to show', (tester) async {
+    testWidgets('hides Show on a step with nothing to show', (tester) async {
       final (_, calls) = await pump(tester, world(), 'demi-bille-1');
 
-      final show = tester.widget<OutlinedButton>(
-        find.ancestor(
-          of: find.text('Show'),
-          matching: find.bySubtype<OutlinedButton>(),
-        ),
-      );
-      expect(show.onPressed, isNull);
+      expect(find.text('Show'), findsNothing);
       expect(calls.shown, 0);
     });
 
-    testWidgets('asks to confirm before ending the session', (tester) async {
+    testWidgets('goes back with the arrow of the header', (tester) async {
       final (_, calls) = await pump(tester, world(), 'demi-bille-1');
 
-      await tapVisible(tester, find.text('End session'));
+      await tester.tap(find.byTooltip('Back'));
+
+      expect(calls.backs, 1);
+    });
+
+    testWidgets('asks to confirm before ending the session from the menu', (
+      tester,
+    ) async {
+      final (_, calls) = await pump(tester, world(), 'demi-bille-1');
+
+      await openMenu(tester);
+      await tester.tap(find.text('End session'));
       await tester.pumpAndSettle();
       expect(find.text('End the guided session?'), findsOneWidget);
       expect(calls.finished, 0);
@@ -326,11 +396,59 @@ void main() {
       await tester.pumpAndSettle();
       expect(calls.finished, 0);
 
-      await tapVisible(tester, find.text('End session'));
+      await openMenu(tester);
+      await tester.tap(find.text('End session'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Confirm'));
       await tester.pumpAndSettle();
       expect(calls.finished, 1);
+    });
+
+    testWidgets('asks to confirm before finishing from the last step', (
+      tester,
+    ) async {
+      final (_, calls) = await pump(tester, world(), 'demi-bille-1', step: 7);
+
+      await tester.tap(barButton('Finish'));
+      await tester.pumpAndSettle();
+      expect(find.text('End the guided session?'), findsOneWidget);
+      expect(calls.finished, 0);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(calls.finished, 0);
+
+      await tester.tap(barButton('Finish'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Confirm'));
+      await tester.pumpAndSettle();
+      expect(calls.finished, 1);
+    });
+  });
+
+  group('phase timeline', () {
+    testWidgets('has one entry per phase with the current one marked', (
+      tester,
+    ) async {
+      await pump(tester, world(), 'demi-bille-1', step: 3);
+
+      final timeline = tester.widget<PhaseTimeline>(find.byType(PhaseTimeline));
+      expect(
+        [for (final phase in timeline.phases) phase.label],
+        ['Welcome', 'Notion', 'Training', 'Game', 'Review'],
+      );
+      expect(timeline.currentIndex, 2);
+    });
+
+    testWidgets('jumps to the first step of the tapped phase', (tester) async {
+      final (_, calls) = await pump(tester, world(), 'demi-bille-1');
+
+      await tester.tap(find.byKey(const ValueKey('phase-3')));
+      await tester.pump();
+      expect(calls.steps, [3]);
+      await tester.tap(find.byKey(const ValueKey('phase-4')));
+      await tester.pump();
+
+      expect(calls.steps, [3, 6]);
     });
   });
 
@@ -340,7 +458,7 @@ void main() {
 
       await tapVisible(tester, find.text('Next'));
       await tester.pump();
-      expect(find.text('Step 2 of 8'), findsOneWidget);
+      expect(find.text('2/8'), findsOneWidget);
       await tapVisible(tester, find.text('Previous'));
       await tester.pump();
 
@@ -360,23 +478,21 @@ void main() {
       expect(previous.onPressed, isNull);
     });
 
-    testWidgets('disables next on the last step', (tester) async {
+    testWidgets('offers Finish instead of Next on the last step', (
+      tester,
+    ) async {
       await pump(tester, world(), 'demi-bille-1', step: 7);
 
-      final next = tester.widget<FilledButton>(
-        find.ancestor(
-          of: find.text('Next'),
-          matching: find.bySubtype<FilledButton>(),
-        ),
-      );
-      expect(next.onPressed, isNull);
-      expect(find.text('Step 8 of 8'), findsOneWidget);
+      expect(find.text('Next'), findsNothing);
+      expect(find.text('Finish'), findsOneWidget);
+      expect(find.text('8/8'), findsOneWidget);
     });
 
     testWidgets('jumps from the outline and lists every step', (tester) async {
       final (_, calls) = await pump(tester, world(), 'demi-bille-1');
 
-      await tapVisible(tester, find.text('Outline'));
+      await openMenu(tester);
+      await tester.tap(find.text('Outline'));
       await tester.pumpAndSettle();
       expect(find.text('Steps of the session'), findsOneWidget);
       expect(find.text('Section t1'), findsOneWidget);
@@ -386,7 +502,7 @@ void main() {
 
       expect(calls.steps, [6]);
       expect(find.text('Steps of the session'), findsNothing);
-      expect(find.text('Step 7 of 8'), findsOneWidget);
+      expect(find.text('7/8'), findsOneWidget);
     });
   });
 
@@ -638,13 +754,21 @@ void main() {
   });
 
   group('timer', () {
-    testWidgets('starts and pauses from its buttons', (tester) async {
+    testWidgets('shows the time remaining in the header and toggles', (
+      tester,
+    ) async {
       final (cubit, _) = await pump(tester, world(), 'demi-bille-1');
 
+      final chip = find.byType(TimerChip);
+      expect(chip, findsOneWidget);
       expect(
-        find.text('Timer of the phase · 00:00 of about 10 min'),
-        findsOneWidget,
+        tester.getRect(chip).bottom,
+        lessThanOrEqualTo(
+          tester.getRect(find.byKey(const ValueKey('guide-header'))).bottom,
+        ),
       );
+      expect(find.text('10:00'), findsOneWidget);
+      expect(find.textContaining('Timer of the phase'), findsNothing);
       await tapVisible(tester, find.byTooltip('Start the timer'));
       await tester.pump();
       expect(cubit.state.timerRunning, isTrue);
@@ -655,38 +779,99 @@ void main() {
       expect(cubit.state.timerRunning, isFalse);
     });
 
-    testWidgets('warns softly under one minute and when over time', (
+    testWidgets('changes tone under one minute and when over time', (
       tester,
     ) async {
       final w = world();
       final (cubit, _) = await pump(tester, w, 'demi-bille-1');
+      TimerTone tone() => timerToneFor(
+        tester.widget<TimerChip>(find.byType(TimerChip)).remaining,
+      );
       cubit.timerToggled();
       await tester.pump();
-      expect(find.textContaining('Less than a minute'), findsNothing);
+      expect(tone(), TimerTone.neutral);
 
-      w.ticker.tick(541);
+      w.ticker.tick(540);
       await tester.pumpAndSettle();
-      expect(
-        find.text('Less than a minute left for this phase.'),
-        findsOneWidget,
-      );
+      expect(find.text('01:00'), findsOneWidget);
+      expect(tone(), TimerTone.neutral, reason: 'une minute pile : encore bon');
+      w.ticker.tick();
+      await tester.pumpAndSettle();
+      expect(find.text('00:59'), findsOneWidget);
+      expect(tone(), TimerTone.attention);
 
-      w.ticker.tick(109);
+      w.ticker.tick(60);
       await tester.pumpAndSettle();
-      expect(find.text('Over the planned time by 00:50.'), findsOneWidget);
+      expect(find.text('+00:01'), findsOneWidget);
+      expect(tone(), TimerTone.overdue);
     });
 
-    testWidgets('resets the timer', (tester) async {
+    testWidgets('vibrates once at each threshold, not every second', (
+      tester,
+    ) async {
+      final haptics = <String>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'HapticFeedback.vibrate') {
+            haptics.add(call.arguments as String);
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+      final w = world();
+      final (cubit, _) = await pump(tester, w, 'demi-bille-1');
+      cubit.timerToggled();
+      await tester.pump();
+      w.ticker.tick(500);
+      await tester.pumpAndSettle();
+      expect(haptics, isEmpty);
+
+      w.ticker.tick(40);
+      await tester.pumpAndSettle();
+      expect(haptics, isEmpty, reason: '60 s restantes : pas encore');
+
+      w.ticker.tick();
+      await tester.pumpAndSettle();
+      expect(haptics, hasLength(1), reason: 'seuil de la dernière minute');
+      w.ticker.tick(10);
+      await tester.pumpAndSettle();
+      expect(haptics, hasLength(1), reason: 'pas à chaque seconde');
+
+      w.ticker.tick(49);
+      await tester.pumpAndSettle();
+      expect(haptics, hasLength(1), reason: '0 s restante : pas dépassé');
+
+      w.ticker.tick();
+      await tester.pumpAndSettle();
+      expect(haptics, hasLength(2), reason: 'dépassement');
+    });
+
+    testWidgets('resets the timer from the menu', (tester) async {
       final w = world();
       final (cubit, _) = await pump(tester, w, 'demi-bille-1');
       cubit.timerToggled();
       w.ticker.tick(30);
       await tester.pump();
 
-      await tapVisible(tester, find.byTooltip('Reset the timer'));
-      await tester.pump();
+      await openMenu(tester);
+      await tester.tap(find.text('Reset the timer'));
+      await tester.pumpAndSettle();
 
       expect(cubit.state.timerSeconds, 0);
+      expect(find.text('10:00'), findsOneWidget);
+    });
+
+    testWidgets('has no reset button of its own any more', (tester) async {
+      await pump(tester, world(), 'demi-bille-1');
+
+      expect(find.byIcon(Icons.restart_alt), findsNothing);
     });
   });
 
@@ -698,7 +883,7 @@ void main() {
 
       final diagram = tester.getTopLeft(find.byType(TableDiagramPlayer));
       final setup = tester.getTopLeft(find.text('Set-up: Mise en place.'));
-      expect(diagram.dx, greaterThan(setup.dx));
+      expect(diagram.dx, lessThan(setup.dx), reason: 'schéma à gauche');
       expect(diagram.dy, lessThanOrEqualTo(setup.dy));
     });
 
@@ -712,23 +897,18 @@ void main() {
     });
 
     testWidgets('has touch targets of at least 48 dp', (tester) async {
-      await pump(tester, world(initiation: true), 'demi-bille-1', step: 3);
+      await pump(tester, world(), 'demi-bille-1', step: 3);
 
-      for (final label in [
-        'Previous',
-        'Next',
-        'Outline',
-        'Show',
-        'End session',
-      ]) {
-        final button = find.ancestor(
-          of: find.text(label),
-          matching: find.bySubtype<ButtonStyleButton>(),
+      for (final label in ['Previous', 'Note the results', 'Next']) {
+        final size = tester.getSize(
+          find.ancestor(
+            of: barButton(label),
+            matching: find.bySubtype<ButtonStyleButton>(),
+          ),
         );
-        final size = tester.getSize(button);
-        expect(size.height, greaterThanOrEqualTo(48), reason: label);
+        expect(size.shortestSide, greaterThanOrEqualTo(48), reason: label);
       }
-      for (final tooltip in ['Add a success', 'Start the timer']) {
+      for (final tooltip in ['Back', 'Start the timer', 'More actions']) {
         final size = tester.getSize(find.byTooltip(tooltip));
         expect(size.shortestSide, greaterThanOrEqualTo(48), reason: tooltip);
       }
@@ -742,6 +922,69 @@ void main() {
       }
     });
 
+    testWidgets('keeps header and bottom bar on a 320 dp screen at 200 %', (
+      tester,
+    ) async {
+      final w = world(initiation: true);
+      for (final step in [0, 3, 7]) {
+        await pump(
+          tester,
+          w,
+          'demi-bille-1',
+          step: step,
+          textScale: 2,
+          size: const Size(320, 640),
+        );
+        expect(tester.takeException(), isNull, reason: 'étape $step');
+        for (final key in const ['guide-header', 'guide-bottom-bar']) {
+          final rect = tester.getRect(find.byKey(ValueKey(key)));
+          expect(rect.left, greaterThanOrEqualTo(0), reason: '$key $step');
+          expect(rect.right, lessThanOrEqualTo(320), reason: '$key $step');
+          expect(rect.bottom, lessThanOrEqualTo(640), reason: '$key $step');
+        }
+      }
+    });
+
+    testWidgets('puts the diagram before the notes and the set-up', (
+      tester,
+    ) async {
+      await pump(tester, world(), 'demi-bille-1', step: 3);
+
+      final media = tester.getRect(find.byKey(const ValueKey('step-media')));
+      expect(
+        media.bottom,
+        lessThanOrEqualTo(
+          tester.getTopLeft(find.text('Set-up: Mise en place.')).dy,
+        ),
+      );
+      expect(
+        media.bottom,
+        lessThanOrEqualTo(
+          tester.getTopLeft(find.text('Target: 3 out of 5')).dy,
+        ),
+      );
+    });
+
+    testWidgets('shows the diagram without scrolling on a phone', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        world(),
+        'demi-bille-1',
+        step: 3,
+        size: const Size(390, 844),
+      );
+
+      final media = tester.getRect(find.byKey(const ValueKey('step-media')));
+      final header = tester.getRect(find.byKey(const ValueKey('guide-header')));
+      final bar = tester.getRect(
+        find.byKey(const ValueKey('guide-bottom-bar')),
+      );
+      expect(media.top, greaterThanOrEqualTo(header.bottom));
+      expect(media.bottom, lessThanOrEqualTo(bar.top));
+    });
+
     testWidgets('gives an illustration a non-empty semantic label', (
       tester,
     ) async {
@@ -753,6 +996,272 @@ void main() {
         findsWidgets,
       );
       handle.dispose();
+    });
+  });
+
+  group('bottom bar', () {
+    List<String> labels(WidgetTester tester) {
+      final bar = find.byKey(const ValueKey('guide-bottom-bar'));
+      final entries = <(double, double, String)>[];
+      for (final element
+          in find
+              .descendant(
+                of: bar,
+                matching: find.bySubtype<ButtonStyleButton>(),
+              )
+              .evaluate()) {
+        final finder = find.byElementPredicate((e) => e == element);
+        final rect = tester.getRect(finder);
+        final text = find.descendant(of: finder, matching: find.byType(Text));
+        final tip = find.descendant(of: finder, matching: find.byType(Tooltip));
+        entries.add((
+          (rect.center.dy / 30).floorToDouble(),
+          rect.left,
+          text.evaluate().isNotEmpty
+              ? tester.widget<Text>(text.first).data!
+              : tester.widget<Tooltip>(tip.first).message!,
+        ));
+      }
+      entries.sort((a, b) {
+        final byRow = a.$1.compareTo(b.$1);
+        return byRow != 0 ? byRow : a.$2.compareTo(b.$2);
+      });
+      return [for (final entry in entries) entry.$3];
+    }
+
+    testWidgets('offers Previous, Note the results and Next on an exercise', (
+      tester,
+    ) async {
+      await pump(tester, world(), 'demi-bille-1', step: 3, tablet: true);
+
+      expect(labels(tester), ['Previous', 'Note the results', 'Next']);
+      expect(find.text('Previous'), findsOneWidget);
+      expect(find.text('Next'), findsOneWidget);
+    });
+
+    testWidgets('puts arrows around Note the results on a phone', (
+      tester,
+    ) async {
+      final (_, calls) = await pump(tester, world(), 'demi-bille-1', step: 3);
+
+      expect(labels(tester), ['Previous', 'Note the results', 'Next']);
+      expect(find.text('Previous'), findsNothing);
+      expect(find.text('Next'), findsNothing);
+      expect(find.byTooltip('Next'), findsOneWidget);
+      await tester.tap(find.byTooltip('Next'));
+      await tester.pump();
+      expect(calls.steps, [4]);
+    });
+
+    testWidgets('offers only Previous and Next on a step without notes', (
+      tester,
+    ) async {
+      await pump(tester, world(), 'demi-bille-1', step: 1);
+
+      expect(labels(tester), ['Previous', 'Next']);
+      expect(find.text('Note the results'), findsNothing);
+    });
+
+    testWidgets('stacks full-width buttons at large text on a phone', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        world(),
+        'demi-bille-1',
+        step: 3,
+        textScale: 2,
+        size: const Size(320, 640),
+      );
+
+      expect(labels(tester), ['Note the results', 'Previous', 'Next']);
+      expect(find.text('Previous'), findsOneWidget);
+    });
+
+    testWidgets('announces its buttons to screen readers', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pump(tester, world(), 'demi-bille-1', step: 3);
+
+      // Les flèches sont nommées par leur infobulle (nom accessible).
+      for (final name in ['Previous', 'Next']) {
+        expect(
+          tester.getSemantics(find.byTooltip(name)),
+          isSemantics(tooltip: name, isButton: true),
+          reason: name,
+        );
+      }
+      expect(find.bySemanticsLabel('Note the results'), findsOneWidget);
+      handle.dispose();
+    });
+  });
+
+  group('modes', () {
+    testWidgets('review mode shows the badges and opens the sections', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester, world(), 'demi-bille-1', step: 3);
+
+      expect(cubit.state.mode, RunMode.review);
+      expect(find.byType(ProvenanceBadge), findsWidgets);
+      expect(find.text('Hook: Accroche.'), findsOneWidget);
+      expect(find.text('Hook and challenge'), findsOneWidget);
+    });
+
+    testWidgets('lead mode hides every badge and folds the extra sections', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(
+        tester,
+        world(exercise: Provenance.prop),
+        'demi-bille-1',
+        step: 3,
+      );
+      cubit.modeChanged(RunMode.lead);
+      await tester.pump();
+
+      expect(find.byType(ProvenanceBadge), findsNothing);
+      expect(find.byType(ProposalBadge), findsNothing);
+      expect(
+        find.text('This target is a proposal, not a federal figure.'),
+        findsNothing,
+      );
+      // Les sections repliées gardent leur titre, pas leur contenu.
+      expect(find.text('Hook and challenge'), findsOneWidget);
+      expect(find.text('Hook: Accroche.'), findsNothing);
+      expect(find.text('Set-up: Mise en place.'), findsOneWidget);
+      expect(find.text('Instruction: Consigne.'), findsOneWidget);
+      expect(find.text('Expected: Attendu.'), findsOneWidget);
+    });
+
+    testWidgets('lead mode still announces a proposal to screen readers', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      final (cubit, _) = await pump(
+        tester,
+        world(exercise: Provenance.prop),
+        'demi-bille-1',
+        step: 3,
+      );
+      cubit.modeChanged(RunMode.lead);
+      await tester.pump();
+
+      expect(find.bySemanticsLabel('Proposal'), findsWidgets);
+      handle.dispose();
+    });
+
+    testWidgets('lead mode folds the variant, the link and the open points', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester, world(), 'demi-bille-1', step: 6);
+      expect(find.textContaining('Playful variant:'), findsOneWidget);
+      cubit.modeChanged(RunMode.lead);
+      await tester.pump();
+
+      expect(find.text('Playful variant'), findsOneWidget);
+      expect(find.textContaining('Playful variant:'), findsNothing);
+      expect(find.text('Link with the previous session'), findsOneWidget);
+      expect(find.textContaining('Recall rule'), findsNothing);
+    });
+
+    testWidgets('toggles the mode from the menu', (tester) async {
+      final (cubit, calls) = await pump(tester, world(), 'demi-bille-1');
+
+      await openMenu(tester);
+      final entry = find.ancestor(
+        of: find.text('Review mode'),
+        matching: find.byType(CheckedPopupMenuItem<int>),
+      );
+      expect(tester.widget<CheckedPopupMenuItem<int>>(entry).checked, isTrue);
+      await tester.tap(
+        find.ancestor(
+          of: find.text('Review mode'),
+          matching: find.byType(CheckedPopupMenuItem<int>),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(calls.modes, [RunMode.lead]);
+      expect(cubit.state.mode, RunMode.lead);
+      await openMenu(tester);
+      expect(
+        tester
+            .widget<CheckedPopupMenuItem<int>>(
+              find.ancestor(
+                of: find.text('Review mode'),
+                matching: find.byType(CheckedPopupMenuItem<int>),
+              ),
+            )
+            .checked,
+        isFalse,
+      );
+      await tester.tap(
+        find.ancestor(
+          of: find.text('Review mode'),
+          matching: find.byType(CheckedPopupMenuItem<int>),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(calls.modes, [RunMode.lead, RunMode.review]);
+    });
+
+    testWidgets('renders the theme at the end of the step in review only', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester, world(), 'demi-bille-1', step: 3);
+      final theme = find.text('Theme: Le partage');
+      expect(theme, findsOneWidget);
+      expect(
+        tester.getTopLeft(theme).dy,
+        greaterThan(tester.getTopLeft(find.byType(TableDiagramPlayer)).dy),
+      );
+
+      cubit.modeChanged(RunMode.lead);
+      await tester.pump();
+
+      expect(theme, findsNothing);
+    });
+  });
+
+  group('session sheet', () {
+    testWidgets('gives the title, the audience, the theme and the notion', (
+      tester,
+    ) async {
+      await pump(tester, world(), 'demi-bille-1', step: 3);
+
+      await openMenu(tester);
+      await tester.tap(find.text('The session'));
+      await tester.pumpAndSettle();
+
+      final sheet = find.byKey(const ValueKey('session-info'));
+      expect(sheet, findsOneWidget);
+      for (final text in [
+        'Quantité demi-bille, session 1/2',
+        'Children · 90 min',
+        'Theme: Le partage',
+        'Notion: Viser la tangente.',
+      ]) {
+        expect(
+          find.descendant(of: sheet, matching: find.text(text)),
+          findsOneWidget,
+          reason: text,
+        );
+      }
+    });
+
+    testWidgets('counts the proposals of the step', (tester) async {
+      await pump(
+        tester,
+        world(exercise: Provenance.prop),
+        'demi-bille-1',
+        step: 3,
+      );
+
+      await openMenu(tester);
+      await tester.tap(find.text('The session'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('3 proposals on this step.'), findsOneWidget);
     });
   });
 }

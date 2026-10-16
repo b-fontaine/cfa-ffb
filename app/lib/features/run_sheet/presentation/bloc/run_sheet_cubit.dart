@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:billard_cfa/entities/session_sheet/domain/scoring.dart';
 import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
+import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
+import 'package:billard_cfa/features/run_sheet/domain/run_timer.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_ticker.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/timer_tone.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -25,7 +28,11 @@ part 'run_sheet_state.dart';
 /// le libère.
 class RunSheetCubit extends Cubit<RunSheetState> {
   RunSheetCubit(this._resolve, this._ticker, this.key)
-    : super(const RunSheetState());
+    : super(RunSheetState(mode: _defaultMode(key)));
+
+  /// Mode d'ouverture de [key] : « Mener » pour une séance planifiée.
+  static RunMode _defaultMode(RunKey key) =>
+      RunMode.defaultFor(planned: key.sessionId != null);
 
   final ResolveRunPlan _resolve;
   final RunTicker _ticker;
@@ -35,14 +42,27 @@ class RunSheetCubit extends Cubit<RunSheetState> {
   bool _loadStarted = false;
   int? _requestedStep;
 
+  /// Mode à reporter dans l'adresse (`?mode=`) : `null` tant qu'il est celui
+  /// d'ouverture de la clé (l'adresse reste courte et le défaut s'applique à
+  /// la relecture du lien).
+  RunMode? get routeMode => state.mode == _defaultMode(key) ? null : state.mode;
+
+  /// Change le mode du guide ; sans effet s'il est déjà celui-là.
+  void modeChanged(RunMode mode) {
+    if (mode == state.mode) return;
+    emit(state.copyWith(mode: mode));
+  }
+
   /// Synchronise le cubit avec l'adresse de la séance guidée : [step] est
-  /// l'étape demandée (`?step=`), `null` quand la séance vient d'être lancée.
+  /// l'étape demandée (`?step=`), `null` quand la séance vient d'être lancée ;
+  /// [mode] est le mode demandé (`?mode=`), `null` pour garder celui du guide.
   ///
   /// Sans étape et avec de la progression conservée, la reprise est proposée
   /// ([RunSheetState.resumeOffered]) au lieu de repartir silencieusement de
   /// l'ancienne étape. Idempotent : appelé à chaque reconstruction de la
   /// route, il ne change rien de plus la deuxième fois.
-  Future<void> syncFromRoute({int? step}) async {
+  Future<void> syncFromRoute({int? step, RunMode? mode}) async {
+    if (mode != null) modeChanged(mode);
     if (step != null) {
       showStep(step);
       if (state.resumeOffered) emit(state.copyWith(resumeOffered: false));
@@ -186,11 +206,17 @@ class RunSheetCubit extends Cubit<RunSheetState> {
     emit(state.copyWith(timerRunning: false));
   }
 
-  /// Fin de séance : remet à zéro étape, compteurs, score et minuteur ; le
-  /// déroulé reste chargé. Rien n'est écrit.
+  /// Fin de séance : remet à zéro étape, compteurs, score, minuteur et mode ;
+  /// le déroulé reste chargé. Rien n'est écrit.
   Future<void> finish() async {
     _requestedStep = null;
-    emit(RunSheetState(status: state.status, plan: state.plan));
+    emit(
+      RunSheetState(
+        status: state.status,
+        plan: state.plan,
+        mode: _defaultMode(key),
+      ),
+    );
     await _stopTicks();
   }
 

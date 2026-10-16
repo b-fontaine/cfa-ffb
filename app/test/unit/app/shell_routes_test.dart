@@ -1,9 +1,11 @@
 import 'package:billard_cfa/app/router.dart';
 import 'package:billard_cfa/app/shell.dart';
+import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 void main() {
   group('AppShell.indexOf', () {
@@ -276,6 +278,182 @@ void main() {
         'group': 'g1',
         'main': 'quantites-de-billes',
       });
+    });
+  });
+
+  group('SheetOrigin.suggestion', () {
+    test('is read from the address and marked in the detail address', () {
+      expect(SheetOrigin.parse('suggestion'), SheetOrigin.suggestion);
+      expect(
+        AppRoutes.sheet(
+          SheetId('demi-bille-2'),
+          origin: SheetOrigin.suggestion,
+        ),
+        '/catalogue/demi-bille-2?from=suggestion',
+      );
+    });
+
+    test('tryParse tells an unknown value from the catalogue', () {
+      expect(SheetOrigin.tryParse('today'), SheetOrigin.today);
+      expect(SheetOrigin.tryParse('catalogue'), SheetOrigin.catalogue);
+      expect(SheetOrigin.tryParse(null), isNull);
+      expect(SheetOrigin.tryParse('evil'), isNull);
+      expect(SheetOrigin.tryParse('https://evil.example'), isNull);
+    });
+  });
+
+  group('AppRoutes.guide origin and mode', () {
+    final id = SheetId('demi-bille-2');
+
+    test(
+      'carries the direct origin, the origin of the detail and the mode',
+      () {
+        expect(
+          AppRoutes.guide(
+            id,
+            audience: Audience.adults,
+            step: 3,
+            group: const GroupId('g1'),
+            from: SheetOrigin.suggestion,
+            via: SheetOrigin.today,
+            mode: RunMode.lead,
+          ),
+          '/catalogue/demi-bille-2/guide'
+          '?audience=adults&step=3&group=g1&from=suggestion&via=today'
+          '&mode=lead',
+        );
+      },
+    );
+
+    test('leaves out the catalogue origin, which is the default', () {
+      expect(
+        AppRoutes.guide(
+          id,
+          from: SheetOrigin.catalogue,
+          via: SheetOrigin.catalogue,
+        ),
+        '/catalogue/demi-bille-2/guide',
+      );
+    });
+
+    test('writes no mode when the guide is in its default mode', () {
+      final address = AppRoutes.guide(id, step: 4);
+
+      expect(address, '/catalogue/demi-bille-2/guide?step=4');
+      expect(address, isNot(contains('mode=')));
+    });
+
+    test('carries the group the detail was opened with', () {
+      expect(
+        AppRoutes.guide(
+          id,
+          group: const GroupId('g1'),
+          via: SheetOrigin.catalogue,
+        ),
+        '/catalogue/demi-bille-2/guide?group=g1',
+      );
+    });
+
+    test('is kept through the presentation round trip', () {
+      expect(
+        AppRoutes.presentation(
+          id,
+          session: 'p1',
+          step: 6,
+          group: const GroupId('g1'),
+          from: SheetOrigin.planner,
+          via: SheetOrigin.today,
+          mode: RunMode.review,
+        ),
+        '/catalogue/demi-bille-2/presentation'
+        '?session=p1&step=6&group=g1&from=planner&via=today&mode=review',
+      );
+    });
+  });
+
+  group('AppRoutes.plan with a group', () {
+    test('carries the group chosen in the catalogue', () {
+      expect(
+        AppRoutes.plan(
+          SheetId('puissance-1'),
+          audience: Audience.adults,
+          group: const GroupId('g1'),
+        ),
+        '/planner?sheet=puissance-1&audience=adults&group=g1',
+      );
+      expect(
+        AppRoutes.plan(null, group: const GroupId('g1')),
+        '/planner?group=g1',
+      );
+    });
+  });
+
+  group('guideBackTarget', () {
+    final id = SheetId('demi-bille-2');
+    const g1 = GroupId('g1');
+
+    test('leads a planned session back to Planned without a launch origin', () {
+      expect(
+        guideBackTarget(sheet: id, session: 'p1', from: SheetOrigin.planner),
+        AppRoutes.planner,
+      );
+      expect(guideBackTarget(sheet: id, session: 'p1'), AppRoutes.planner);
+    });
+
+    test('leads back to Today when launched from Today', () {
+      expect(
+        guideBackTarget(sheet: id, session: 'p1', from: SheetOrigin.today),
+        AppRoutes.home,
+      );
+      expect(
+        guideBackTarget(sheet: id, from: SheetOrigin.today),
+        AppRoutes.home,
+      );
+    });
+
+    test('leads back to the suggestion when launched from it', () {
+      expect(
+        guideBackTarget(sheet: id, group: g1, from: SheetOrigin.suggestion),
+        AppRoutes.session,
+      );
+    });
+
+    test('leads a guide launched from a detail back to that detail', () {
+      expect(
+        guideBackTarget(
+          sheet: id,
+          audience: Audience.adults,
+          group: g1,
+          via: SheetOrigin.catalogue,
+        ),
+        AppRoutes.sheet(id, audience: Audience.adults, group: g1),
+      );
+      expect(
+        guideBackTarget(sheet: id, group: g1, via: SheetOrigin.today),
+        '/catalogue/demi-bille-2?from=today&group=g1',
+      );
+    });
+
+    test('falls back to the detail without origin when there is none', () {
+      expect(guideBackTarget(sheet: id), '/catalogue/demi-bille-2');
+      expect(
+        guideBackTarget(sheet: id, audience: Audience.adults),
+        '/catalogue/demi-bille-2?audience=adults',
+      );
+    });
+  });
+
+  group('guide route', () {
+    test('is a top-level route, outside the navigation shell', () {
+      final routes = buildRouter().configuration.routes;
+      const guide = '/catalogue/:sheetId/guide';
+
+      bool isGuide(RouteBase r) => r is GoRoute && r.path == guide;
+
+      expect(routes.any(isGuide), isTrue);
+      for (final route in routes.whereType<ShellRoute>()) {
+        expect(route.routes.any(isGuide), isFalse);
+      }
     });
   });
 }

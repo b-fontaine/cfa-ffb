@@ -6,10 +6,12 @@ sealed class SessionPlannerEvent with _$SessionPlannerEvent {
   /// des groupes de la saison en cours. [sheetId] présélectionne une séance
   /// du catalogue (lien profond depuis le détail d'une séance) ; ignorée si
   /// le catalogue ne la connaît pas. [audience] reprend le public choisi dans
-  /// ce détail.
+  /// ce détail. [groupId] présélectionne le groupe choisi dans le catalogue
+  /// (son public l'emporte sur [audience]) ; ignoré s'il n'est pas planifiable.
   const factory SessionPlannerEvent.started({
     required DateTime today,
     SheetId? sheetId,
+    GroupId? groupId,
     @Default(Audience.children) Audience audience,
   }) = SessionPlannerStarted;
 

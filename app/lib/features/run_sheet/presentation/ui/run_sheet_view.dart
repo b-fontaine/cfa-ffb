@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart';
 import 'package:billard_cfa/entities/exercise_diagram/presentation/table_diagram_mapper.dart';
@@ -8,6 +9,7 @@ import 'package:billard_cfa/entities/session_sheet/domain/sheet_exercise.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_initiation.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_theory.dart';
 import 'package:billard_cfa/entities/session_sheet/presentation/sheet_illustration_view.dart';
+import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit.dart';
@@ -16,44 +18,95 @@ import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/provenance.dart';
+import 'package:billard_cfa/shared/lib/session_shape.dart';
+import 'package:billard_cfa/shared/lib/timer_tone.dart';
 import 'package:billard_cfa/shared/ui/audience_labels.dart';
 import 'package:billard_cfa/shared/ui/confirm_dialog.dart';
+import 'package:billard_cfa/shared/ui/phase_timeline.dart';
 import 'package:billard_cfa/shared/ui/provenance_badge.dart';
+import 'package:billard_cfa/shared/ui/step_app_bar.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_player.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_spec.dart'
     as ui;
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
+import 'package:billard_cfa/shared/ui/timer_chip.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+part 'run_bottom_bar.dart';
+part 'run_guide_header.dart';
 part 'run_outline.dart';
+part 'run_session_info.dart';
 part 'run_step_views.dart';
-part 'run_timer_bar.dart';
 
 /// Largeur à partir de laquelle une étape passe sur deux colonnes (tablette
-/// en paysage) : texte à gauche, schéma à droite.
+/// en paysage) : schéma à gauche, texte à droite.
 const double _wideStepWidth = 720;
 
-/// Hauteur (à texte normal) à partir de laquelle la barre d'actions est
+/// Largeur sous laquelle la barre basse passe en version téléphone (flèches de
+/// part et d'autre de « Noter les résultats »).
+const double _compactWidth = 600;
+
+/// Hauteur (à texte normal) à partir de laquelle la frise des phases est
 /// épinglée hors du défilement ; elle est multipliée par le facteur de texte.
 const double _pinnedMinHeight = 600;
 
-/// La séance guidée : où on en est, l'étape courante (théorie, exercice,
-/// jeu…) avec ses badges « Proposition » en contexte, le minuteur indicatif
-/// et la navigation libre entre les étapes.
+/// Hauteur fixe de l'écran hors schéma : en-tête compact (48), barre basse
+/// (72) et marges (16) ; s'y ajoutent trois rangées qui grandissent avec le
+/// texte (frise, ligne de phase, bouton « Montrer »).
+const double _chromeHeight = 48 + 72 + 16;
+const double _chromeRowHeight = 56;
+
+/// Facteur de texte à partir duquel la barre basse empile ses boutons.
+const double _largeTextScale = 1.3;
+
+/// Ce que les éléments d'une étape doivent savoir du guide : son mode
+/// (« Mener » ou « Relecture ») et l'action « Montrer » de l'étape courante,
+/// absente quand l'étape n'a rien à montrer.
+class _GuideScope extends InheritedWidget {
+  const _GuideScope({
+    required this.mode,
+    required this.onShow,
+    required this.mediaMaxHeight,
+    required super.child,
+  });
+
+  final RunMode mode;
+  final VoidCallback? onShow;
+
+  /// Hauteur que le schéma et ses commandes ne dépassent pas pour rester
+  /// visibles sans défiler ; `null` quand l'écran est trop bas pour l'épingler
+  /// (le contenu défile alors).
+  final double? mediaMaxHeight;
+
+  static _GuideScope of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_GuideScope>()!;
+
+  @override
+  bool updateShouldNotify(_GuideScope oldWidget) =>
+      mode != oldWidget.mode ||
+      (onShow == null) != (oldWidget.onShow == null) ||
+      mediaMaxHeight != oldWidget.mediaMaxHeight;
+}
+
+/// La séance guidée : un en-tête compact (retour, titre de l'étape, position,
+/// menu, frise des phases, phase et minuteur), l'étape courante (schéma en
+/// premier) et une barre basse « Précédent / Noter les résultats / Suivant ».
 ///
 /// [state] est un état prêt (déroulé chargé). Les compteurs, le score et le
 /// minuteur passent par le [RunSheetCubit] du contexte ; [onStep] demande une
-/// étape (précédent, suivant, sommaire : l'appelant la montre et la reporte
-/// dans l'adresse), [onShow] ouvre la présentation, [onFinish] termine la
-/// séance (après confirmation), [onRecord] ouvre la saisie des résultats de
-/// l'exercice courant, [onResume] et [onRestart] répondent à la proposition de
-/// reprise d'une séance déjà commencée.
+/// étape (précédent, suivant, sommaire, frise : l'appelant la montre et la
+/// reporte dans l'adresse), [onShow] ouvre la présentation, [onFinish] termine
+/// la séance (après confirmation, par le menu ou par la dernière étape),
+/// [onRecord] ouvre la saisie des résultats de l'exercice courant, [onBack]
+/// quitte le guide sans le terminer, [onModeChanged] bascule entre « Mener » et
+/// « Relecture » (l'appelant l'applique au cubit et le reporte dans l'adresse),
+/// [onResume] et [onRestart] répondent à la proposition de reprise d'une
+/// séance déjà commencée.
 ///
-/// La barre d'actions (sommaire, montrer, minuteur, terminer) est épinglée
-/// hors du défilement : sur une étape longue, le schéma se montre et le
-/// minuteur se lance sans remonter. À placer dans un parent à hauteur
-/// bornée : le contenu défile et la navigation reste en bas.
+/// À placer dans un parent à hauteur bornée : le contenu défile, l'en-tête et
+/// la barre basse restent en place.
 class RunSheetView extends StatelessWidget {
   const RunSheetView({
     required this.state,
@@ -61,6 +114,8 @@ class RunSheetView extends StatelessWidget {
     required this.onShow,
     required this.onFinish,
     required this.onRecord,
+    required this.onBack,
+    required this.onModeChanged,
     this.onResume,
     this.onRestart,
     super.key,
@@ -71,6 +126,8 @@ class RunSheetView extends StatelessWidget {
   final VoidCallback onShow;
   final VoidCallback onFinish;
   final ValueChanged<ExerciseRef> onRecord;
+  final VoidCallback onBack;
+  final ValueChanged<RunMode> onModeChanged;
   final VoidCallback? onResume;
   final VoidCallback? onRestart;
 
@@ -79,131 +136,163 @@ class RunSheetView extends StatelessWidget {
     final plan = state.plan!;
     final step = plan.steps[state.step];
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final cubit = context.read<RunSheetCubit>();
+    final mode = state.mode;
     final specs = {
       for (final entry in plan.diagrams.entries)
         entry.key: tableDiagramSpecOf(entry.value),
     };
-    final isLast = state.step == plan.stepCount - 1;
     final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final exercise =
+        step.kind == RunStepKind.exercise ||
+            step.kind == RunStepKind.recallExercise
+        ? plan.exerciseOf(step)
+        : null;
     return _TimerGuard(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          // Épinglée si la hauteur le permet ; en très grand texte ou sur
-          // un écran bas, la barre défile avec le contenu plutôt que de
-          // le manger.
-          final pinned = constraints.maxHeight >= _pinnedMinHeight * textScale;
-          final resume = state.resumeOffered
-              ? _ResumeOffer(
-                  step: state.step + 1,
-                  total: plan.stepCount,
-                  onResume: onResume,
-                  onRestart: onRestart,
-                )
-              : null;
-          final bar = _ActionBar(
-            plan: plan,
-            state: state,
-            onStep: onStep,
-            onShow: onShow,
-            onFinish: onFinish,
-            presentable: plan.isPresentable(step),
-          );
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (pinned) ...[
-                ?resume,
-                bar,
-                const SizedBox(height: AppSpacing.sm),
-              ],
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
+      child: _TimerHaptics(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Frise épinglée si la hauteur le permet ; en très grand texte
+            // ou sur un écran bas, elle défile avec le contenu plutôt que
+            // de le manger.
+            final pinned =
+                constraints.maxHeight >= _pinnedMinHeight * textScale;
+            // Ce qui reste pour le schéma entre l'en-tête et la barre basse
+            // (frise, ligne de phase, bouton « Montrer » et marges
+            // comptés) : il se montre en entier sans défiler.
+            final scale = math.max(1, textScale);
+            final mediaMaxHeight = pinned
+                ? constraints.maxHeight -
+                      (_chromeHeight + 3 * _chromeRowHeight * scale)
+                : null;
+            final timeline = _Timeline(
+              plan: plan,
+              step: state.step,
+              onStep: onStep,
+            );
+            final resume = state.resumeOffered
+                ? _ResumeOffer(
+                    step: state.step + 1,
+                    total: plan.stepCount,
+                    onResume: onResume,
+                    onRestart: onRestart,
+                  )
+                : null;
+            return _GuideScope(
+              mode: mode,
+              onShow: plan.isPresentable(step) ? onShow : null,
+              mediaMaxHeight: mediaMaxHeight,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Column(
+                    key: const ValueKey('guide-header'),
                     crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (!pinned) ...[
-                        ?resume,
-                        bar,
-                        const SizedBox(height: AppSpacing.sm),
-                      ],
-                      Semantics(
-                        header: true,
-                        child: Text(
-                          l10n.sheetFullTitle(
-                            plan.sheet.title,
-                            plan.sheet.part,
-                            plan.partCount,
+                      StepAppBar(
+                        title: runStepTitle(l10n, plan, step),
+                        position: state.step + 1,
+                        total: plan.stepCount,
+                        onBack: onBack,
+                        actions: [
+                          StepAppBarAction(
+                            label: l10n.guideOutline,
+                            icon: Icons.list_alt_outlined,
+                            onSelected: () => unawaited(
+                              _showOutline(context, plan, state.step, onStep),
+                            ),
                           ),
-                          style: theme.textTheme.headlineSmall,
-                        ),
+                          StepAppBarAction(
+                            label: l10n.guideModeReview,
+                            checked: mode == RunMode.review,
+                            onSelected: () => onModeChanged(
+                              mode == RunMode.review
+                                  ? RunMode.lead
+                                  : RunMode.review,
+                            ),
+                          ),
+                          StepAppBarAction(
+                            label: l10n.guideSessionInfo,
+                            icon: Icons.info_outline,
+                            onSelected: () => unawaited(
+                              _showSessionInfo(context, plan, step),
+                            ),
+                          ),
+                          StepAppBarAction(
+                            label: l10n.guideTimerReset,
+                            icon: Icons.restart_alt,
+                            enabled: state.timerSeconds > 0,
+                            onSelected: cubit.timerReset,
+                          ),
+                          StepAppBarAction(
+                            label: l10n.guideFinish,
+                            icon: Icons.stop_circle_outlined,
+                            onSelected: () =>
+                                unawaited(_confirmFinish(context, onFinish)),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        l10n.sheetAudienceOption(
-                          plan.audience.label(l10n),
-                          plan.audience.sessionDuration.inMinutes,
-                        ),
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      _ThemeTile(sheet: plan.sheet),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        l10n.guideStepCounter(state.step + 1, plan.stepCount),
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      LinearProgressIndicator(
-                        value: (state.step + 1) / plan.stepCount,
-                        semanticsLabel: l10n.guideStepCounter(
-                          state.step + 1,
-                          plan.stepCount,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      _PhaseLine(plan: plan, step: step),
-                      const SizedBox(height: AppSpacing.md),
-                      _StepContent(
-                        plan: plan,
-                        step: step,
-                        state: state,
-                        specs: specs,
-                        onRecord: onRecord,
-                      ),
-                      const SizedBox(height: AppSpacing.md),
+                      if (pinned) timeline,
+                      _PhaseTimerRow(plan: plan, state: state),
                     ],
                   ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Row(
-                children: [
                   Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: state.step == 0
-                          ? null
-                          : () => onStep(state.step - 1),
-                      icon: const Icon(Icons.arrow_back),
-                      label: Text(l10n.guidePrevious),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (!pinned) timeline,
+                          ?resume,
+                          const SizedBox(height: AppSpacing.sm),
+                          _StepContent(
+                            plan: plan,
+                            step: step,
+                            state: state,
+                            specs: specs,
+                          ),
+                          if (mode.showsProvenance) ...[
+                            const SizedBox(height: AppSpacing.sm),
+                            _ThemeTile(sheet: plan.sheet),
+                          ],
+                          const SizedBox(height: AppSpacing.md),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: isLast ? null : () => onStep(state.step + 1),
-                      icon: const Icon(Icons.arrow_forward),
-                      label: Text(l10n.guideNext),
-                    ),
+                  _BottomBar(
+                    step: state.step,
+                    stepCount: plan.stepCount,
+                    onStep: onStep,
+                    onRecord: exercise == null
+                        ? null
+                        : () => onRecord(exercise.ref),
+                    onFinish: () =>
+                        unawaited(_confirmFinish(context, onFinish)),
                   ),
                 ],
               ),
-            ],
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
+}
+
+/// Demande confirmation avant de terminer la séance guidée ; rien n'est écrit,
+/// annuler ne change rien.
+Future<void> _confirmFinish(BuildContext context, VoidCallback onFinish) async {
+  final l10n = AppLocalizations.of(context);
+  final confirmed = await showConfirmDialog(
+    context,
+    title: l10n.guideFinishTitle,
+    message: l10n.guideFinishBody,
+  );
+  if (confirmed) onFinish();
 }
 
 /// Arrête le minuteur quand le guide quitte l'écran : il est indicatif, il ne
@@ -234,6 +323,26 @@ class _TimerGuardState extends State<_TimerGuard> {
 
   @override
   Widget build(BuildContext context) => widget.child;
+}
+
+/// Vibre une fois quand le minuteur passe à « attention » (moins d'une
+/// minute) puis une fois au dépassement : pas à chaque seconde. Sans effet
+/// sur un appareil qui ne vibre pas (web, ordinateur).
+class _TimerHaptics extends StatelessWidget {
+  const _TimerHaptics({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocListener<RunSheetCubit, RunSheetState>(
+        listenWhen: (previous, current) =>
+            previous.timerTone != current.timerTone &&
+            (current.timerTone == TimerTone.attention ||
+                current.timerTone == TimerTone.overdue),
+        listener: (context, state) => unawaited(HapticFeedback.mediumImpact()),
+        child: child,
+      );
 }
 
 /// Proposition de reprise : la séance a déjà de la progression.
@@ -292,72 +401,8 @@ class _ResumeOffer extends StatelessWidget {
   }
 }
 
-/// Barre épinglée : sommaire, montrer, terminer, puis le minuteur.
-class _ActionBar extends StatelessWidget {
-  const _ActionBar({
-    required this.plan,
-    required this.state,
-    required this.onStep,
-    required this.onShow,
-    required this.onFinish,
-    required this.presentable,
-  });
-
-  final RunPlan plan;
-  final RunSheetState state;
-  final ValueChanged<int> onStep;
-  final VoidCallback onShow;
-  final VoidCallback onFinish;
-
-  /// Vrai quand l'étape courante a quelque chose à montrer aux élèves.
-  final bool presentable;
-
-  Future<void> _confirmFinish(BuildContext context) async {
-    final l10n = AppLocalizations.of(context);
-    final confirmed = await showConfirmDialog(
-      context,
-      title: l10n.guideFinishTitle,
-      message: l10n.guideFinishBody,
-    );
-    if (confirmed) onFinish();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Wrap(
-          spacing: AppSpacing.sm,
-          runSpacing: AppSpacing.sm,
-          children: [
-            OutlinedButton.icon(
-              onPressed: () => _showOutline(context, plan, state.step, onStep),
-              icon: const Icon(Icons.list_alt_outlined),
-              label: Text(l10n.guideOutline),
-            ),
-            OutlinedButton.icon(
-              onPressed: presentable ? onShow : null,
-              icon: const Icon(Icons.slideshow_outlined),
-              label: Text(l10n.guideShow),
-            ),
-            TextButton.icon(
-              onPressed: () => unawaited(_confirmFinish(context)),
-              icon: const Icon(Icons.stop_circle_outlined),
-              label: Text(l10n.guideFinish),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        _TimerBar(plan: plan, state: state),
-      ],
-    );
-  }
-}
-
 /// Thème ludique et notion de la séance, repliables : le thème `[Prop]` est
-/// jugeable en contexte sans quitter le guide.
+/// jugeable en contexte sans quitter le guide (mode « Relecture »).
 class _ThemeTile extends StatelessWidget {
   const _ThemeTile({required this.sheet});
 

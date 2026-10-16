@@ -58,6 +58,7 @@ class SessionPlannerBloc
       Err() => const <SheetOption>[],
     };
     final preselected = event.sheetId;
+    final group = groups.where((g) => g.id == event.groupId).firstOrNull;
     emit(
       state.copyWith(
         sessions: sessions,
@@ -65,7 +66,8 @@ class SessionPlannerBloc
         sheetsUnavailable: options is Err,
         groups: groups,
         date: event.today,
-        audience: event.audience,
+        audience: group?.audience ?? event.audience,
+        selectedGroup: group?.id,
         selectedSheet:
             preselected != null && loaded.any((o) => o.id == preselected)
             ? preselected

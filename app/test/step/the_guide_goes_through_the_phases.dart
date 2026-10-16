@@ -5,7 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// {'welcome,notionAndInitiation,training,game,review'}
 ///
 /// Parcourt la séance guidée avec « Suivant » jusqu'à la dernière étape et
-/// relève, dans l'ordre, les phases affichées.
+/// relève, dans l'ordre, les phases affichées (la dernière étape propose
+/// « Finish » à la place de « Next »).
 Future<void> theGuideGoesThroughThePhases(
   WidgetTester tester,
   String phases,
@@ -22,13 +23,13 @@ Future<void> theGuideGoesThroughThePhases(
         .value
         .substring('phase:'.length);
     if (seen.isEmpty || seen.last != phase) seen.add(phase);
+    // Sur la dernière étape, « Suivant » devient « Finish ».
+    if (find.text('Finish').evaluate().isNotEmpty) break;
     final next = find.ancestor(
       of: find.text('Next'),
       matching: find.bySubtype<ButtonStyleButton>(),
     );
     expect(next, findsOneWidget);
-    final button = tester.widget<ButtonStyleButton>(next);
-    if (button.onPressed == null) break;
     await tester.ensureVisible(next);
     await tester.tap(next);
     await tester.pumpAndSettle();

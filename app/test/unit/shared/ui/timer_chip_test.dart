@@ -6,29 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'pump_ui.dart';
 
 void main() {
-  group('timerToneFor', () {
-    test('is neutral from one minute up', () {
-      expect(timerToneFor(const Duration(minutes: 1)), TimerTone.neutral);
-      expect(timerToneFor(const Duration(minutes: 30)), TimerTone.neutral);
-    });
-
-    test('is attention just under one minute', () {
-      expect(
-        timerToneFor(const Duration(seconds: 59, milliseconds: 999)),
-        TimerTone.attention,
-      );
-    });
-
-    test('is attention at exactly zero', () {
-      expect(timerToneFor(Duration.zero), TimerTone.attention);
-    });
-
-    test('is overdue as soon as the time is negative', () {
-      expect(timerToneFor(const Duration(milliseconds: -1)), TimerTone.overdue);
-      expect(timerToneFor(const Duration(minutes: -3)), TimerTone.overdue);
-    });
-  });
-
   group('formatTimer', () {
     test('formats mm:ss with zero padding', () {
       expect(formatTimer(const Duration(minutes: 7, seconds: 5)), '07:05');
@@ -302,5 +279,23 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('announces the same overrun as the one it displays', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpUi(
+      tester,
+      TimerChip(
+        remaining: const Duration(seconds: -22),
+        running: true,
+        onToggle: () {},
+      ),
+    );
+
+    expect(find.text('+00:22'), findsOneWidget);
+    expect(find.bySemanticsLabel('Over time by 00:22'), findsOneWidget);
+    handle.dispose();
   });
 }

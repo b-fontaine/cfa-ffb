@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:billard_cfa/entities/session_sheet/domain/scoring.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_timing.dart';
 import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
+import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
@@ -13,6 +14,7 @@ import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:billard_cfa/shared/lib/session_shape.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
+import 'package:billard_cfa/shared/lib/timer_tone.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -555,5 +557,119 @@ void main() {
     await loading;
 
     expect(cubit.isClosed, isTrue);
+  });
+
+  group('mode', () {
+    RunSheetCubit planned() => RunSheetCubit(
+      resolve,
+      ticker,
+      RunKey(sheetId: SheetId('demi-bille-1'), sessionId: 'p1'),
+    );
+
+    test('starts in review mode without planned session', () {
+      expect(build().state.mode, RunMode.review);
+    });
+
+    test('starts in lead mode with a planned session', () {
+      expect(planned().state.mode, RunMode.lead);
+    });
+
+    test('is changed by modeChanged, once', () async {
+      final cubit = build();
+      final modes = <RunMode>[];
+      final sub = cubit.stream.map((s) => s.mode).listen(modes.add);
+
+      cubit
+        ..modeChanged(RunMode.lead)
+        ..modeChanged(RunMode.lead);
+      await Future<void>.delayed(Duration.zero);
+      await sub.cancel();
+
+      expect(cubit.state.mode, RunMode.lead);
+      expect(modes, [RunMode.lead]);
+    });
+
+    test('is applied by syncFromRoute when the address carries it', () async {
+      final cubit = build();
+
+      await cubit.syncFromRoute(step: 1, mode: RunMode.lead);
+
+      expect(cubit.state.mode, RunMode.lead);
+    });
+
+    test('is kept by syncFromRoute when the address has none', () async {
+      final cubit = build()..modeChanged(RunMode.lead);
+
+      await cubit.syncFromRoute(step: 1);
+      await cubit.syncFromRoute(step: 2);
+
+      expect(cubit.state.mode, RunMode.lead);
+    });
+
+    test('does not count as progress', () {
+      final cubit = build()..modeChanged(RunMode.lead);
+
+      expect(cubit.state.hasProgress, isFalse);
+    });
+
+    test('goes back to the default mode when the session ends', () async {
+      final cubit = await ready();
+      cubit.modeChanged(RunMode.lead);
+
+      await cubit.finish();
+
+      expect(cubit.state.mode, RunMode.review);
+    });
+
+    test(
+      'is reflected in the address only when it differs from the default',
+      () {
+        final cubit = build();
+        expect(cubit.routeMode, isNull);
+
+        cubit.modeChanged(RunMode.lead);
+        expect(cubit.routeMode, RunMode.lead);
+
+        final leading = planned();
+        expect(leading.routeMode, isNull);
+        leading.modeChanged(RunMode.review);
+        expect(leading.routeMode, RunMode.review);
+      },
+    );
+  });
+
+  group('timer stage', () {
+    test('counts down the budget of the phase of the current step', () async {
+      final cubit = await ready();
+
+      // Accueil : 10 min prévues par le minutage du public enfants.
+      final budget = cubit
+          .state
+          .plan!
+          .timing
+          .phaseMinutes[cubit.state.currentStep!.phase]!;
+      expect(cubit.state.timerRemaining, Duration(minutes: budget));
+      expect(cubit.state.timerTone, TimerTone.neutral);
+
+      cubit.timerToggled();
+      ticker.tick(budget * 60 - 59);
+      expect(cubit.state.timerTone, TimerTone.attention);
+
+      ticker.tick(59);
+      expect(cubit.state.timerRemaining, Duration.zero);
+      expect(cubit.state.timerTone, TimerTone.attention);
+
+      ticker.tick();
+      expect(cubit.state.timerRemaining, const Duration(seconds: -1));
+      expect(cubit.state.timerTone, TimerTone.overdue);
+      await cubit.close();
+    });
+
+    test('is unknown before the plan is loaded', () {
+      final cubit = build();
+
+      expect(cubit.state.timerRemaining, isNull);
+      expect(cubit.state.timerTone, isNull);
+    });
   });
 }

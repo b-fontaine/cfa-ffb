@@ -7,9 +7,11 @@ const _path = '[Design system]/Composants';
 
 final _actions = [
   StepAppBarAction(label: 'Sommaire', icon: Icons.list, onSelected: () {}),
+  StepAppBarAction(label: 'Mode relecture', checked: true, onSelected: () {}),
   StepAppBarAction(
-    label: 'Relecture',
-    icon: Icons.fact_check,
+    label: 'Minuteur à zéro',
+    icon: Icons.restart_alt,
+    enabled: false,
     onSelected: () {},
   ),
   StepAppBarAction(

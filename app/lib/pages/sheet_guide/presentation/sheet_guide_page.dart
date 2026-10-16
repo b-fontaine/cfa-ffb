@@ -9,7 +9,6 @@ import 'package:billard_cfa/shared/ui/error_view.dart';
 import 'package:billard_cfa/shared/ui/failure_message.dart';
 import 'package:billard_cfa/shared/ui/loading_view.dart';
 import 'package:billard_cfa/shared/ui/missing_page_view.dart';
-import 'package:billard_cfa/shared/ui/responsive_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,16 +16,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// le garde au-dessus du routeur : les compteurs survivent à la saisie).
 ///
 /// Callbacks de navigation, composés par la couche `app` : [onBack] revient à
-/// la séance du catalogue, [onHome] est proposé quand elle n'existe pas,
+/// l'écran d'où le guide a été lancé (Aujourd'hui, Planifiées, Suggestion ou
+/// le détail de la séance) sans terminer la séance, [onHome] est proposé quand
+/// elle n'existe pas,
 /// [onShow] ouvre la présentation à l'étape donnée, [onRecord] ouvre la saisie
 /// des résultats de l'exercice (avec le bloc principal de la séance, le bloc
 /// du rappel de résultats, celui de l'exercice de rappel quand il diffère ;
 /// le guide reste monté : pas d'étape à retrouver), [onFinish] ferme la
 /// séance (avec l'identifiant de la saisie ouverte depuis ce guide, s'il y en
 /// a une : le routeur mène alors au bilan) et [onStepChanged] reporte dans
-/// l'adresse l'étape que l'animateur vient de choisir. [fromPlanner] dit
-/// que le guide a été lancé depuis une séance planifiée : « Retour » mène
-/// alors au planificateur, et le libellé le dit.
+/// l'adresse l'étape (et le mode) que l'animateur vient de choisir.
+///
+/// L'écran est de premier niveau (ni rail ni barre de navigation) : son
+/// en-tête compact porte la flèche de retour.
 class SheetGuidePage extends StatelessWidget {
   const SheetGuidePage({
     required this.onBack,
@@ -35,11 +37,8 @@ class SheetGuidePage extends StatelessWidget {
     required this.onRecord,
     required this.onFinish,
     required this.onStepChanged,
-    this.fromPlanner = false,
     super.key,
   });
-
-  final bool fromPlanner;
 
   final VoidCallback onBack;
   final VoidCallback onHome;
@@ -69,60 +68,51 @@ class SheetGuidePage extends StatelessWidget {
             ),
           ),
           RunStatus.ready => Scaffold(
+            // Pas de `ResponsiveBody` : l'en-tête compact va jusqu'au bord ;
+            // la vue pose elle-même ses marges.
             body: SafeArea(
-              child: ResponsiveBody(
-                maxWidth: 1100,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: TextButton.icon(
-                        onPressed: onBack,
-                        icon: const Icon(Icons.arrow_back),
-                        label: Text(
-                          fromPlanner
-                              ? l10n.plannerTitle
-                              : l10n.sheetFullTitle(
-                                  plan!.sheet.title,
-                                  plan.sheet.part,
-                                  plan.partCount,
-                                ),
-                        ),
-                      ),
+              top: false,
+              bottom: false,
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1100),
+                  child: RunSheetView(
+                    state: state,
+                    onBack: onBack,
+                    onStep: (step) {
+                      context.read<RunSheetCubit>().showStep(step);
+                      onStepChanged(step);
+                    },
+                    onModeChanged: (mode) {
+                      final cubit = context.read<RunSheetCubit>()
+                        ..modeChanged(mode);
+                      // Le mode fait partie de l'adresse (lien, reprise).
+                      onStepChanged(cubit.state.step);
+                    },
+                    onShow: () => onShow(state.step),
+                    onFinish: () {
+                      final cubit = context.read<RunSheetCubit>();
+                      // Lue avant `finish()`, qui remet l'état à zéro :
+                      // mène au bilan quand une saisie a été ouverte.
+                      final record = cubit.state.recordChoice?.recordId;
+                      unawaited(cubit.finish());
+                      onFinish(record);
+                    },
+                    onResume: () {
+                      context.read<RunSheetCubit>().resume();
+                      onStepChanged(state.step);
+                    },
+                    onRestart: () =>
+                        unawaited(context.read<RunSheetCubit>().restart()),
+                    onRecord: (exercise) => onRecord(
+                      exercise,
+                      plan!.sheet.catalogueBlock,
+                      exercise.blockId != plan.sheet.catalogueBlock
+                          ? exercise.blockId
+                          : plan.recallBlockId,
                     ),
-                    Expanded(
-                      child: RunSheetView(
-                        state: state,
-                        onStep: (step) {
-                          context.read<RunSheetCubit>().showStep(step);
-                          onStepChanged(step);
-                        },
-                        onShow: () => onShow(state.step),
-                        onFinish: () {
-                          final cubit = context.read<RunSheetCubit>();
-                          // Lue avant `finish()`, qui remet l'état à zéro :
-                          // mène au bilan quand une saisie a été ouverte.
-                          final record = cubit.state.recordChoice?.recordId;
-                          unawaited(cubit.finish());
-                          onFinish(record);
-                        },
-                        onResume: () {
-                          context.read<RunSheetCubit>().resume();
-                          onStepChanged(state.step);
-                        },
-                        onRestart: () =>
-                            unawaited(context.read<RunSheetCubit>().restart()),
-                        onRecord: (exercise) => onRecord(
-                          exercise,
-                          plan!.sheet.catalogueBlock,
-                          exercise.blockId != plan.sheet.catalogueBlock
-                              ? exercise.blockId
-                              : plan.recallBlockId,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

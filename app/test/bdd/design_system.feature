@@ -3,9 +3,9 @@ Feature: Design system
   Scenario: The audience badges name the audience and its duration
     Given the app is running
     When I go to the address {'/catalogue/posture-1/guide?audience=children'}
-    Then I see {'Children · 90 min'} text
+    Then I see the session audience {'Children · 90 min'}
     When I go to the address {'/catalogue/posture-1/guide?audience=adults'}
-    Then I see {'Adults · 120 min'} text
+    Then I see the session audience {'Adults · 120 min'}
 
   Scenario: The app uses the light theme on a light device
     Given the device theme is {'light'}

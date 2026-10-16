@@ -1,21 +1,8 @@
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/timer_tone.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:billard_cfa/shared/ui/theme/status_colors.dart';
 import 'package:flutter/material.dart';
-
-/// Ton d'un minuteur : neutre, attention sous une minute, dépassé sous zéro.
-enum TimerTone { neutral, attention, overdue }
-
-/// Durée sous laquelle le minuteur passe à `attention`.
-const Duration timerAttentionThreshold = Duration(minutes: 1);
-
-/// Ton du minuteur pour le temps [remaining] (fonction pure, seuils bornés :
-/// `attention` de 0 inclus à 1 min exclue, `overdue` strictement sous 0).
-TimerTone timerToneFor(Duration remaining) {
-  if (remaining.isNegative) return TimerTone.overdue;
-  if (remaining < timerAttentionThreshold) return TimerTone.attention;
-  return TimerTone.neutral;
-}
 
 /// Affiche [remaining] en `mm:ss`, ou `+mm:ss` au dépassement.
 String formatTimer(Duration remaining) {

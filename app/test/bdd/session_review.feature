@@ -12,7 +12,7 @@ Feature: Session summary
     And I add {4} balls potted for {'Léa'}
     And I record the pass of {'Léa'}
     And I tap {'Back to the guided session'} text
-    And I tap {'End session'} text
+    And I end the guided session
     And I tap {'Confirm'} text
     Then I see {'Session summary'} text
     And I see {'1 pass entered, 1 successful'} text
@@ -21,7 +21,7 @@ Feature: Session summary
   Scenario: Finishing a guided session without recorded results returns where it came from
     Given the app is running
     When I go to the address {'/catalogue/demi-bille-1/guide?audience=children&step=5'}
-    And I tap {'End session'} text
+    And I end the guided session
     And I tap {'Confirm'} text
     Then I do not see {'Session summary'} text
     And I see text containing {'Quantité demi-bille, session 1/2'}
@@ -35,7 +35,7 @@ Feature: Session summary
     And I add {4} balls potted for {'Léa'}
     And I record the pass of {'Léa'}
     And I tap {'Back to the guided session'} text
-    And I tap {'End session'} text
+    And I end the guided session
     And I tap {'Confirm'} text
     And I tap {'Back to Today'} text
     Then I do not see {'In progress'} text

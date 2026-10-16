@@ -3,17 +3,25 @@ import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
 /// Une action du menu ⋮ de [StepAppBar] : libellé et rappel injectés.
+///
+/// [checked] fait de l'action une case à cocher (état annoncé « coché » aux
+/// lecteurs d'écran) ; absent, c'est une action simple. [enabled] faux la
+/// grise : elle ne peut pas être choisie.
 @immutable
 class StepAppBarAction {
   const StepAppBarAction({
     required this.label,
     required this.onSelected,
     this.icon,
+    this.checked,
+    this.enabled = true,
   });
 
   final String label;
   final VoidCallback onSelected;
   final IconData? icon;
+  final bool? checked;
+  final bool enabled;
 }
 
 /// En-tête compact d'une étape : bouton retour ou fermer optionnel, titre de
@@ -59,6 +67,10 @@ class StepAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               if (leadingTap != null)
                 IconButton(
+                  constraints: const BoxConstraints(
+                    minWidth: AppSpacing.minTouchTarget,
+                    minHeight: AppSpacing.minTouchTarget,
+                  ),
                   tooltip: onBack != null
                       ? l10n.commonBack
                       : l10n.stepAppBarClose,
@@ -94,22 +106,34 @@ class StepAppBar extends StatelessWidget implements PreferredSizeWidget {
               if (actions.isNotEmpty)
                 PopupMenuButton<int>(
                   key: const ValueKey('step-app-bar-menu'),
+                  style: IconButton.styleFrom(
+                    minimumSize: const Size.square(AppSpacing.minTouchTarget),
+                  ),
                   tooltip: l10n.stepAppBarMenu,
                   onSelected: (index) => actions[index].onSelected(),
                   itemBuilder: (context) => [
                     for (var i = 0; i < actions.length; i++)
-                      PopupMenuItem<int>(
-                        value: i,
-                        child: Row(
-                          children: [
-                            if (actions[i].icon != null) ...[
-                              Icon(actions[i].icon),
-                              const SizedBox(width: AppSpacing.sm),
+                      if (actions[i].checked case final checked?)
+                        CheckedPopupMenuItem<int>(
+                          value: i,
+                          checked: checked,
+                          enabled: actions[i].enabled,
+                          child: Text(actions[i].label),
+                        )
+                      else
+                        PopupMenuItem<int>(
+                          value: i,
+                          enabled: actions[i].enabled,
+                          child: Row(
+                            children: [
+                              if (actions[i].icon != null) ...[
+                                Icon(actions[i].icon),
+                                const SizedBox(width: AppSpacing.sm),
+                              ],
+                              Flexible(child: Text(actions[i].label)),
                             ],
-                            Flexible(child: Text(actions[i].label)),
-                          ],
+                          ),
                         ),
-                      ),
                   ],
                 )
               else

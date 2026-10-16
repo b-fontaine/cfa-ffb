@@ -90,6 +90,42 @@ abstract class RunPlan with _$RunPlan {
     return index < 0 ? null : index;
   }
 
+  /// Les phases de la séance, dans l'ordre de `SessionPhase`, sans doublon.
+  List<SessionPhase> get phases => [
+    for (final phase in SessionPhase.values)
+      if (steps.any((s) => s.phase == phase)) phase,
+  ];
+
+  /// Rang (à partir de 0) dans [phases] de la phase de l'étape [step] (ramenée
+  /// dans la plage) ; 0 sans étape.
+  int phaseIndexOf(int step) {
+    if (steps.isEmpty) return 0;
+    return phases.indexOf(steps[clamp(step)].phase);
+  }
+
+  /// Nombre de propositions `[Prop]` que porte [step], telles qu'on les voit
+  /// en mode Relecture : les minutes de la phase (toujours une proposition),
+  /// la source de l'élément, et pour un exercice son accroche ludique, pour un
+  /// jeu sa variante, son lien et son adaptation au public.
+  int proposalCountOf(RunStep step) {
+    final element = switch (step.kind) {
+      RunStepKind.exercise ||
+      RunStepKind.recallExercise => (isProposal(step) ? 1 : 0) + 1,
+      RunStepKind.game =>
+        (sheet.game.src.isProposal ? 1 : 0) +
+            1 +
+            (sheet.game.link != null ? 1 : 0) +
+            ((audience == Audience.children
+                        ? sheet.game.adaptation.children
+                        : sheet.game.adaptation.adults) !=
+                    null
+                ? 1
+                : 0),
+      _ => isProposal(step) ? 1 : 0,
+    };
+    return 1 + element;
+  }
+
   SheetTheorySection? theoryOf(RunStep step) =>
       sheet.theorySections.where((s) => s.id == step.elementId).firstOrNull;
 

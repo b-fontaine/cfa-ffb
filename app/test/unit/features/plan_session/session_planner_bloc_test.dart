@@ -123,6 +123,25 @@ void main() {
   );
 
   blocTest<SessionPlannerBloc, SessionPlannerState>(
+    'preselects a plannable group, whose audience wins, and ignores an '
+    'unknown one',
+    setUp: () => when(listSessions.call).thenAnswer((_) async => const []),
+    build: build,
+    act: (bloc) => bloc
+      ..add(SessionPlannerEvent.started(today: today, groupId: adults.id))
+      ..add(
+        SessionPlannerEvent.started(
+          today: today,
+          groupId: const GroupId('inconnu'),
+        ),
+      ),
+    expect: () => [
+      started(audience: Audience.adults).copyWith(selectedGroup: adults.id),
+      started(),
+    ],
+  );
+
+  blocTest<SessionPlannerBloc, SessionPlannerState>(
     'plans without a catalogue session when the catalogue is unreadable',
     setUp: () {
       when(listSessions.call).thenAnswer((_) async => const []);

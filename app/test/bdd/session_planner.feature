@@ -80,6 +80,18 @@ Feature: Session planner
     Then I see {'Catalogue session: Quantité demi-bille, session 2/2'} text
     And I see {'Mon, Oct 12 · Adults · 120 min'} text
 
+  # U4 (lot 2, U-9) : « Planifier cette séance » emporte le groupe du catalogue.
+  Scenario: Plan this session from the detail keeps the group chosen in the catalogue
+    Given the club has the student {'Hugo'} in the {'adults'} audience
+    And the app is running
+    When I go to the address {'/catalogue'}
+    And I pick the group {'Adults group'} in the catalogue
+    And I open the session {'demi-bille-2'} of the catalogue
+    And I tap {'Plan this session'} text
+    Then the session title is {'Quantité demi-bille, session 2/2'}
+    When I tap {'Add session'} text
+    Then I see {'Mon, Oct 12 · Adults group · Adults · 120 min'} text
+
   Scenario: An unknown catalogue session is shown as unavailable without error
     Given a session {'Old plan'} is planned with the catalogue session {'inconnue-9'}
     And the app is running

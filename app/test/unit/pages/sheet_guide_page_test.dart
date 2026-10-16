@@ -1,3 +1,4 @@
+import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit.dart';
 import 'package:billard_cfa/pages/sheet_guide/presentation/sheet_guide_page.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
@@ -25,11 +26,7 @@ class _Calls {
 }
 
 void main() {
-  Future<_Calls> pump(
-    WidgetTester tester,
-    RunSheetCubit cubit, {
-    bool fromPlanner = false,
-  }) async {
+  Future<_Calls> pump(WidgetTester tester, RunSheetCubit cubit) async {
     tester.view.physicalSize = const Size(800, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -39,7 +36,6 @@ void main() {
       BlocProvider<RunSheetCubit>.value(
         value: cubit,
         child: SheetGuidePage(
-          fromPlanner: fromPlanner,
           onBack: () => calls.back++,
           onHome: () => calls.home++,
           onShow: calls.shown.add,
@@ -116,23 +112,42 @@ void main() {
     verify(cubit.load).called(1);
   });
 
-  testWidgets('goes back to the catalogue session', (tester) async {
+  testWidgets('goes back with the arrow of the compact header', (tester) async {
     final calls = await pump(tester, await real(tester));
 
-    await tester.tap(find.text('Quantité demi-bille, session 2/2').first);
+    await tester.tap(find.byTooltip('Back'));
 
     expect(calls.back, 1);
+    expect(find.bySubtype<TextButton>(), findsNothing);
   });
 
-  testWidgets('names the planner when the guide was launched from it', (
+  testWidgets('is a full screen without the title bar of the sheet', (
     tester,
   ) async {
-    final calls = await pump(tester, await real(tester), fromPlanner: true);
+    await pump(tester, await real(tester));
 
-    await tester.tap(find.text('Planning'));
+    expect(find.text('Quantité demi-bille, session 2/2'), findsNothing);
+    expect(find.text('1/7'), findsOneWidget);
+  });
 
-    expect(calls.back, 1);
-    expect(find.text('Quantité demi-bille, session 2/2'), findsOneWidget);
+  testWidgets('reports the mode chosen from the menu with the current step', (
+    tester,
+  ) async {
+    final cubit = await real(tester, step: 2);
+    final calls = await pump(tester, cubit);
+
+    await tester.tap(find.byKey(const ValueKey('step-app-bar-menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.ancestor(
+        of: find.text('Review mode'),
+        matching: find.byType(CheckedPopupMenuItem<int>),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(cubit.state.mode, RunMode.lead);
+    expect(calls.steps, [2], reason: 'l’adresse reprend étape et mode');
   });
 
   testWidgets('offers to resume or start over and applies the choice', (
@@ -165,7 +180,7 @@ void main() {
 
     expect(cubit.state.step, 0);
     expect(cubit.state.resumeOffered, isFalse);
-    expect(find.text('Step 1 of 7'), findsOneWidget);
+    expect(find.text('1/7'), findsOneWidget);
   });
 
   testWidgets('reports the step the instructor chose', (tester) async {
@@ -177,7 +192,7 @@ void main() {
 
     expect(calls.steps, [1]);
     expect(cubit.state.step, 1);
-    expect(find.text('Step 2 of 7'), findsOneWidget);
+    expect(find.text('2/7'), findsOneWidget);
   });
 
   testWidgets('shows from the current step', (tester) async {
@@ -198,6 +213,8 @@ void main() {
     final cubit = await real(tester, step: 2);
     final calls = await pump(tester, cubit);
 
+    await tester.tap(find.byKey(const ValueKey('step-app-bar-menu')));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('End session'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Confirm'));
@@ -213,6 +230,8 @@ void main() {
     final cubit = await real(tester, step: 2);
     final calls = await pump(tester, cubit);
 
+    await tester.tap(find.byKey(const ValueKey('step-app-bar-menu')));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('End session'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Confirm'));
@@ -233,6 +252,8 @@ void main() {
     );
     final calls = await pump(tester, cubit);
 
+    await tester.tap(find.byKey(const ValueKey('step-app-bar-menu')));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('End session'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Confirm'));

@@ -23,6 +23,7 @@ import 'package:billard_cfa/features/plan_session/presentation/bloc/session_plan
 import 'package:billard_cfa/features/plan_session/presentation/bloc/upcoming_sessions_cubit.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/recorded_sessions_bloc.dart';
 import 'package:billard_cfa/features/review_session/presentation/bloc/session_review_bloc.dart';
+import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_presentation_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_sessions.dart';
@@ -108,8 +109,11 @@ abstract final class AppRoutes {
   /// Planificateur, séance du catalogue (et public) présélectionnés.
   /// Sans [id] (notion sans séance du catalogue), le planificateur s'ouvre
   /// sans séance présélectionnée.
-  static String plan(SheetId? id, {Audience? audience}) =>
-      _url(planner, {'sheet': ?id?.value, 'audience': ?audience?.name});
+  /// [group] présélectionne le groupe choisi dans le catalogue.
+  static String plan(SheetId? id, {Audience? audience, GroupId? group}) => _url(
+    planner,
+    {'sheet': ?id?.value, 'audience': ?audience?.name, 'group': ?group?.value},
+  );
 
   static String student(StudentId id) => '$students/${id.value}';
 
@@ -168,33 +172,52 @@ abstract final class AppRoutes {
 
   /// Séance guidée d'une séance du catalogue. [audience] absent : public de
   /// la séance planifiée [session], sinon les enfants ; [step] : étape à
-  /// partir de 0 ; [group] : groupe du guide lancé depuis la séance
-  /// suggérée, proposé à la saisie des résultats.
+  /// partir de 0 ; [group] : groupe pour lequel on mène, choisi dans le
+  /// catalogue ou pour la séance suggérée, proposé à la saisie des résultats.
+  /// [from] est l'origine directe du lancement (Aujourd'hui, Planifiées,
+  /// Suggestion), [via] l'origine du détail quand le guide est lancé depuis lui
+  /// : le retour y mène (voir [guideBackTarget]). [mode] impose le mode du
+  /// guide (absent : celui que la clé de la séance détermine).
   static String guide(
     SheetId id, {
     Audience? audience,
     String? session,
     int? step,
     GroupId? group,
+    SheetOrigin? from,
+    SheetOrigin? via,
+    RunMode? mode,
   }) => _url('$catalogue/${id.value}/$guideSegment', {
     'audience': ?audience?.name,
     'session': ?session,
     'step': ?step?.toString(),
     'group': ?group?.value,
+    if (from != null && from != SheetOrigin.catalogue) 'from': from.name,
+    if (via != null && via != SheetOrigin.catalogue) 'via': via.name,
+    'mode': ?mode?.name,
   });
 
   /// Présentation plein écran d'une étape de la séance guidée.
+  ///
+  /// Porte les mêmes paramètres que [guide] ([group], [from], [via], [mode]) :
+  /// sa fermeture retrouve le guide tel qu'il était.
   static String presentation(
     SheetId id, {
     Audience? audience,
     String? session,
     int? step,
     GroupId? group,
+    SheetOrigin? from,
+    SheetOrigin? via,
+    RunMode? mode,
   }) => _url('$catalogue/${id.value}/$presentationSegment', {
     'audience': ?audience?.name,
     'session': ?session,
     'step': ?step?.toString(),
     'group': ?group?.value,
+    if (from != null && from != SheetOrigin.catalogue) 'from': from.name,
+    if (via != null && via != SheetOrigin.catalogue) 'via': via.name,
+    'mode': ?mode?.name,
   });
 
   static String exercise(ExerciseRef ref) =>
@@ -239,7 +262,10 @@ enum SheetOrigin {
   planner,
 
   /// L'accueil « Aujourd'hui » (`from=today`).
-  today;
+  today,
+
+  /// La séance suggérée (`from=suggestion`).
+  suggestion;
 
   /// L'origine d'une valeur d'adresse ; toute valeur absente ou inconnue
   /// retombe sur [catalogue] (jamais une adresse libre).
@@ -247,6 +273,44 @@ enum SheetOrigin {
     (origin) => origin.name == raw,
     orElse: () => SheetOrigin.catalogue,
   );
+
+  /// L'origine d'une valeur d'adresse, `null` si elle est absente ou inconnue
+  /// (le guide distingue « pas d'origine » de « le catalogue »).
+  static SheetOrigin? tryParse(String? raw) {
+    for (final origin in values) {
+      if (origin.name == raw) return origin;
+    }
+    return null;
+  }
+}
+
+/// Adresse où mène le retour (et la fin sans bilan) d'une séance guidée.
+///
+/// L'origine directe [from] l'emporte : Planifiées, Aujourd'hui, Suggestion.
+/// Sans [from], une séance planifiée [session] ramène à Planifiées (liens
+/// existants) ; sinon le guide a été lancé depuis le détail, qui retrouve sa
+/// propre origine [via] et le [group] choisi dans le catalogue. Jamais une
+/// adresse libre : seules des valeurs de [SheetOrigin] sont écrites.
+String guideBackTarget({
+  required SheetId sheet,
+  Audience? audience,
+  String? session,
+  SheetOrigin? from,
+  SheetOrigin? via,
+  GroupId? group,
+}) {
+  final direct = from == SheetOrigin.catalogue ? null : from;
+  return switch (direct ?? (session != null ? SheetOrigin.planner : null)) {
+    SheetOrigin.planner => AppRoutes.planner,
+    SheetOrigin.today => AppRoutes.home,
+    SheetOrigin.suggestion => AppRoutes.session,
+    SheetOrigin.catalogue || null => AppRoutes.sheet(
+      sheet,
+      audience: audience,
+      origin: via ?? SheetOrigin.catalogue,
+      group: group,
+    ),
+  };
 }
 
 /// Adresse de retour à une séance guidée : intérieure à l'application et
@@ -260,6 +324,13 @@ String? _guideReturn(String? raw) {
     return null;
   }
   return uri.toString();
+}
+
+/// Origine directe d'un guide (`?from=`) : absente si la valeur est inconnue
+/// ou si c'est le catalogue (qui n'est jamais une origine de lancement).
+SheetOrigin? _guideFrom(String? raw) {
+  final origin = SheetOrigin.tryParse(raw);
+  return origin == SheetOrigin.catalogue ? null : origin;
 }
 
 Audience? _audienceParam(String? raw) => Audience.values.asNameMap()[raw];
@@ -380,6 +451,8 @@ GoRouter buildRouter() => GoRouter(
                   session: key.sessionId,
                   step: step,
                   group: key.group,
+                  from: SheetOrigin.today,
+                  mode: getIt<RunSheetSessions>().of(key).routeMode,
                 ),
               ),
               onPrepare: (sheet, audience) => context.go(
@@ -390,7 +463,12 @@ GoRouter buildRouter() => GoRouter(
                 ),
               ),
               onLaunch: (sheet, audience, sessionId) => context.go(
-                AppRoutes.guide(sheet, audience: audience, session: sessionId),
+                AppRoutes.guide(
+                  sheet,
+                  audience: audience,
+                  session: sessionId,
+                  from: SheetOrigin.today,
+                ),
               ),
               onOpenPlanned: () => context.go(AppRoutes.planner),
               onRecord: (group, date, sheet) => context.go(
@@ -419,6 +497,7 @@ GoRouter buildRouter() => GoRouter(
                   SessionPlannerEvent.started(
                     today: getIt<Clock>().today(),
                     sheetId: SheetId.tryParse(query['sheet']),
+                    groupId: _groupParam(query['group']),
                     audience:
                         _audienceParam(query['audience']) ?? Audience.children,
                   ),
@@ -433,7 +512,12 @@ GoRouter buildRouter() => GoRouter(
                 ),
                 onChooseSheet: () => context.go(AppRoutes.catalogue),
                 onLaunchSheet: (id, audience, sessionId) => context.go(
-                  AppRoutes.guide(id, audience: audience, session: sessionId),
+                  AppRoutes.guide(
+                    id,
+                    audience: audience,
+                    session: sessionId,
+                    from: SheetOrigin.planner,
+                  ),
                 ),
                 onRecord: (group, date, sheet) => context.go(
                   AppRoutes.recordFromPlan(
@@ -677,10 +761,22 @@ GoRouter buildRouter() => GoRouter(
                   sheet: sheet,
                 ),
               ),
-              onOpenSheet: (id, audience) =>
-                  context.go(AppRoutes.sheet(id, audience: audience)),
+              onOpenSheet: (id, audience) => context.go(
+                AppRoutes.sheet(
+                  id,
+                  audience: audience,
+                  origin: SheetOrigin.suggestion,
+                ),
+              ),
+              // Le groupe et les élèves sont déjà choisis : on mène.
               onLaunch: (id, audience, group) => context.go(
-                AppRoutes.guide(id, audience: audience, group: group),
+                AppRoutes.guide(
+                  id,
+                  audience: audience,
+                  group: group,
+                  from: SheetOrigin.suggestion,
+                  mode: RunMode.lead,
+                ),
               ),
               onPlan: (id, audience) =>
                   context.go(AppRoutes.plan(id, audience: audience)),
@@ -747,6 +843,7 @@ GoRouter buildRouter() => GoRouter(
                 _audienceParam(state.uri.queryParameters['audience']) ??
                 Audience.children;
             final origin = SheetOrigin.parse(state.uri.queryParameters['from']);
+            final group = _groupParam(state.uri.queryParameters['group']);
             return BlocProvider(
               create: (_) => getIt<SheetDetailBloc>()
                 ..add(
@@ -758,6 +855,9 @@ GoRouter buildRouter() => GoRouter(
                     context,
                   ).plannerTitle,
                   SheetOrigin.today => AppLocalizations.of(context).navHome,
+                  SheetOrigin.suggestion => AppLocalizations.of(
+                    context,
+                  ).suggestTitle,
                   SheetOrigin.catalogue => AppLocalizations.of(
                     context,
                   ).catalogueTitle,
@@ -765,90 +865,21 @@ GoRouter buildRouter() => GoRouter(
                 onBack: () => context.go(switch (origin) {
                   SheetOrigin.planner => AppRoutes.planner,
                   SheetOrigin.today => AppRoutes.home,
-                  SheetOrigin.catalogue => AppRoutes.catalogueFor(
-                    _groupParam(state.uri.queryParameters['group']),
-                  ),
+                  SheetOrigin.suggestion => AppRoutes.session,
+                  SheetOrigin.catalogue => AppRoutes.catalogueFor(group),
                 }),
                 onHome: () => context.go(AppRoutes.home),
-                onPlan: (audience) =>
-                    context.go(AppRoutes.plan(id, audience: audience)),
-                onLaunch: (audience) =>
-                    context.go(AppRoutes.guide(id, audience: audience)),
-              ),
-            );
-          },
-        ),
-        GoRoute(
-          path: '${AppRoutes.catalogue}/:sheetId/${AppRoutes.guideSegment}',
-          builder: (context, state) {
-            final id = SheetId.tryParse(state.pathParameters['sheetId']);
-            if (id == null) {
-              return NotFoundPage(onHome: () => context.go(AppRoutes.home));
-            }
-            final query = state.uri.queryParameters;
-            final key = _runKey(id, query);
-            final sessions = getIt<RunSheetSessions>();
-            final cubit = sessions.of(key);
-            unawaited(
-              cubit.syncFromRoute(step: int.tryParse(query['step'] ?? '')),
-            );
-            String guide(int? step) => AppRoutes.guide(
-              id,
-              audience: key.audience,
-              session: key.sessionId,
-              step: step,
-              group: key.group,
-            );
-            // Retour et fin : la séance planifiée d'où le guide a été lancé,
-            // sinon la séance du catalogue.
-            final fromPlanner = key.sessionId != null;
-            String origin() => fromPlanner
-                ? AppRoutes.planner
-                : AppRoutes.sheet(id, audience: key.audience);
-            return BlocProvider.value(
-              value: cubit,
-              child: SheetGuidePage(
-                fromPlanner: fromPlanner,
-                onBack: () => context.go(origin()),
-                onHome: () => context.go(AppRoutes.home),
-                onShow: (step) => context.push(
-                  AppRoutes.presentation(
+                onPlan: (audience) => context.go(
+                  AppRoutes.plan(id, audience: audience, group: group),
+                ),
+                onLaunch: (audience) => context.go(
+                  AppRoutes.guide(
                     id,
-                    audience: key.audience,
-                    session: key.sessionId,
-                    step: step,
-                    group: key.group,
+                    audience: audience,
+                    group: group,
+                    via: origin,
                   ),
                 ),
-                // U5 : feuille basse sur l'exercice courant ; le guide reste
-                // monté à la même étape (la route plein écran reste valide).
-                onRecord: (exercise, main, recall) {
-                  final defaults = cubit.state.recordDefaults;
-                  unawaited(
-                    showRecordSheet(
-                      context,
-                      key: key,
-                      sheet: id,
-                      exercise: exercise.number,
-                      exerciseBlock: exercise.blockId,
-                      main: main,
-                      recall: recall,
-                      group: defaults.group ?? key.group,
-                      absent: defaults.absent,
-                      date: defaults.date,
-                      onAddStudents: () => context.go(AppRoutes.newStudent),
-                    ),
-                  );
-                },
-                // Une saisie ouverte depuis ce guide : le bilan (U7) ; sinon,
-                // retour d'où le guide a été lancé.
-                onFinish: (recordId) {
-                  context.go(
-                    recordId == null ? origin() : AppRoutes.review(recordId),
-                  );
-                  unawaited(sessions.release(key));
-                },
-                onStepChanged: (step) => context.go(guide(step)),
               ),
             );
           },
@@ -900,6 +931,100 @@ GoRouter buildRouter() => GoRouter(
         );
       },
     ),
+    // Hors du cadre de navigation, comme la présentation : en séance, ni rail
+    // ni barre. Le cubit vit dans `RunSheetSessions`, pas dans la route :
+    // sortir par la flèche ne termine rien (reprise depuis Aujourd'hui).
+    GoRoute(
+      path: '${AppRoutes.catalogue}/:sheetId/${AppRoutes.guideSegment}',
+      builder: (context, state) {
+        final id = SheetId.tryParse(state.pathParameters['sheetId']);
+        if (id == null) {
+          return NotFoundPage(onHome: () => context.go(AppRoutes.home));
+        }
+        final query = state.uri.queryParameters;
+        final key = _runKey(id, query);
+        final from = _guideFrom(query['from']);
+        final via = SheetOrigin.tryParse(query['via']);
+        final sessions = getIt<RunSheetSessions>();
+        final cubit = sessions.of(key);
+        unawaited(
+          cubit.syncFromRoute(
+            step: int.tryParse(query['step'] ?? ''),
+            mode: RunMode.tryParse(query['mode']),
+          ),
+        );
+        // Les paramètres du guide sont reportés tels quels à chaque adresse
+        // reconstruite (étape suivante, présentation) ; le mode, lui, vient du
+        // cubit, qui fait foi.
+        String guide(int? step) => AppRoutes.guide(
+          id,
+          audience: key.audience,
+          session: key.sessionId,
+          step: step,
+          group: key.group,
+          from: from,
+          via: via,
+          mode: cubit.routeMode,
+        );
+        // Retour et fin sans bilan : l'origine du lancement (U-9).
+        String back() => guideBackTarget(
+          sheet: id,
+          audience: key.audience,
+          session: key.sessionId,
+          from: from,
+          via: via,
+          group: key.group,
+        );
+        return BlocProvider.value(
+          value: cubit,
+          child: SheetGuidePage(
+            onBack: () => context.go(back()),
+            onHome: () => context.go(AppRoutes.home),
+            onShow: (step) => context.push(
+              AppRoutes.presentation(
+                id,
+                audience: key.audience,
+                session: key.sessionId,
+                step: step,
+                group: key.group,
+                from: from,
+                via: via,
+                mode: cubit.routeMode,
+              ),
+            ),
+            // U5 : feuille basse sur l'exercice courant ; le guide reste
+            // monté à la même étape (la route plein écran reste valide).
+            onRecord: (exercise, main, recall) {
+              final defaults = cubit.state.recordDefaults;
+              unawaited(
+                showRecordSheet(
+                  context,
+                  key: key,
+                  sheet: id,
+                  exercise: exercise.number,
+                  exerciseBlock: exercise.blockId,
+                  main: main,
+                  recall: recall,
+                  group: defaults.group ?? key.group,
+                  absent: defaults.absent,
+                  date: defaults.date,
+                  onAddStudents: () => context.go(AppRoutes.newStudent),
+                ),
+              );
+            },
+            // Une saisie ouverte depuis ce guide : le bilan (U7) ; sinon,
+            // retour d'où le guide a été lancé.
+            onFinish: (recordId) {
+              context.go(
+                recordId == null ? back() : AppRoutes.review(recordId),
+              );
+              unawaited(sessions.release(key));
+            },
+            onStepChanged: (step) => context.go(guide(step)),
+          ),
+        );
+      },
+    ),
     GoRoute(
       path: '${AppRoutes.catalogue}/:sheetId/${AppRoutes.presentationSegment}',
       builder: (context, state) {
@@ -911,6 +1036,9 @@ GoRouter buildRouter() => GoRouter(
         final audience = _audienceParam(query['audience']);
         final session = _nonBlank(query['session']);
         final group = _groupParam(query['group']);
+        final from = _guideFrom(query['from']);
+        final via = SheetOrigin.tryParse(query['via']);
+        final mode = RunMode.tryParse(query['mode']);
         return BlocProvider(
           create: (_) {
             final cubit = getIt<RunPresentationCubit>();
@@ -932,6 +1060,9 @@ GoRouter buildRouter() => GoRouter(
                 session: session,
                 step: step,
                 group: group,
+                from: from,
+                via: via,
+                mode: mode,
               ),
             ),
             onHome: () => context.go(AppRoutes.home),

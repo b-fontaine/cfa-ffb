@@ -43,6 +43,10 @@ abstract class RunSheetState with _$RunSheetState {
     /// progression : l'animateur choisit de reprendre ou de recommencer.
     @Default(false) bool resumeOffered,
 
+    /// Mode du guide (Mener / Relecture) : fixé à l'ouverture par la clé,
+    /// puis par l'animateur. Hors progression (comme le minuteur).
+    @Default(RunMode.review) RunMode mode,
+
     /// Choix de la dernière saisie des résultats faite depuis ce guide.
     RunRecordChoice? recordChoice,
   }) = _RunSheetState;
@@ -58,6 +62,24 @@ abstract class RunSheetState with _$RunSheetState {
       this.checked.values.any((criteria) => criteria.isNotEmpty) ||
       scoreA > 0 ||
       scoreB > 0;
+
+  /// Temps restant du minuteur de la phase courante (négatif au dépassement),
+  /// `null` tant que le déroulé n'est pas prêt.
+  Duration? get timerRemaining {
+    final step = currentStep;
+    if (step == null) return null;
+    return runTimerRemaining(
+      plannedMinutes: plan!.timing.phaseMinutes[step.phase] ?? 0,
+      elapsedSeconds: timerSeconds,
+    );
+  }
+
+  /// Étape du minuteur (dans les temps, attention, dépassé) ; `null` tant que
+  /// le déroulé n'est pas prêt.
+  TimerTone? get timerTone {
+    final remaining = timerRemaining;
+    return remaining == null ? null : timerToneFor(remaining);
+  }
 
   /// L'étape courante, une fois le déroulé prêt.
   RunStep? get currentStep => plan?.steps.elementAtOrNull(step);

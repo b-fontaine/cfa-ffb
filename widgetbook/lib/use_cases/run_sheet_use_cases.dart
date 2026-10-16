@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
+import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_presentation_cubit.dart';
@@ -58,10 +59,19 @@ int _chosenStep(BuildContext context, RunPlan plan) => context.knobs.int.slider(
   max: plan.stepCount - 1,
 );
 
-@widgetbook.UseCase(name: 'Séance guidée', type: RunSheetView, path: _features)
-Widget buildRunSheetViewUseCase(BuildContext context) {
+/// La vue d'étape du guide dans le mode donné (celui du menu ⋮ quand [mode]
+/// est absent) : en-tête compact, schéma en premier, barre basse.
+Widget _runSheetView(BuildContext context, {RunMode? mode}) {
   final id = _chosenSheet(context);
   final audience = _chosenAudience(context);
+  final chosen =
+      mode ??
+      context.knobs.object.dropdown<RunMode>(
+        label: 'mode',
+        options: RunMode.values,
+        initialOption: RunMode.review,
+        labelBuilder: (mode) => mode.name,
+      );
   final key = RunKey(sheetId: id, audience: audience);
   return WorldScope(
     builder: (context, world) {
@@ -74,19 +84,20 @@ Widget buildRunSheetViewUseCase(BuildContext context) {
           return plan == null ? throw StateError('séance illisible') : Ok(plan);
         },
         builder: (context, world, plan) {
-          cubit.showStep(_chosenStep(context, plan));
+          cubit
+            ..showStep(_chosenStep(context, plan))
+            ..modeChanged(chosen);
           return BlocProvider.value(
             value: cubit,
             child: BlocBuilder<RunSheetCubit, RunSheetState>(
-              builder: (context, state) => Padding(
-                padding: const EdgeInsets.all(16),
-                child: RunSheetView(
-                  state: state,
-                  onStep: cubit.showStep,
-                  onShow: () {},
-                  onFinish: () {},
-                  onRecord: (_) {},
-                ),
+              builder: (context, state) => RunSheetView(
+                state: state,
+                onStep: cubit.showStep,
+                onShow: () {},
+                onFinish: () {},
+                onRecord: (_) {},
+                onBack: () {},
+                onModeChanged: cubit.modeChanged,
               ),
             ),
           );
@@ -95,6 +106,25 @@ Widget buildRunSheetViewUseCase(BuildContext context) {
     },
   );
 }
+
+@widgetbook.UseCase(name: 'Séance guidée', type: RunSheetView, path: _features)
+Widget buildRunSheetViewUseCase(BuildContext context) => _runSheetView(context);
+
+@widgetbook.UseCase(
+  name: 'Séance guidée, mode Mener',
+  type: RunSheetView,
+  path: _features,
+)
+Widget buildRunSheetViewLeadUseCase(BuildContext context) =>
+    _runSheetView(context, mode: RunMode.lead);
+
+@widgetbook.UseCase(
+  name: 'Séance guidée, mode Relecture',
+  type: RunSheetView,
+  path: _features,
+)
+Widget buildRunSheetViewReviewUseCase(BuildContext context) =>
+    _runSheetView(context, mode: RunMode.review);
 
 @widgetbook.UseCase(
   name: 'Présentation aux élèves',

@@ -8,6 +8,10 @@ const BoxConstraints _touchTarget = BoxConstraints(
 
 /// Marque un élément par sa provenance ; la clé `source:<élément>` permet de
 /// retrouver le badge d'un élément précis.
+///
+/// En mode « Relecture » le badge est affiché. En mode « Mener » il est
+/// masqué, mais une proposition `[Prop]` reste annoncée aux lecteurs d'écran
+/// (un nœud sémantique sans rendu) : l'information n'est jamais perdue.
 class _Source extends StatelessWidget {
   const _Source({required this.element, required this.provenance});
 
@@ -15,10 +19,22 @@ class _Source extends StatelessWidget {
   final Provenance provenance;
 
   @override
-  Widget build(BuildContext context) => KeyedSubtree(
-    key: ValueKey('source:$element'),
-    child: ProvenanceBadge(provenance: provenance),
-  );
+  Widget build(BuildContext context) {
+    final key = ValueKey('source:$element');
+    if (_GuideScope.of(context).mode.showsProvenance) {
+      return KeyedSubtree(
+        key: key,
+        child: ProvenanceBadge(provenance: provenance),
+      );
+    }
+    if (!provenance.isProposal) return SizedBox.shrink(key: key);
+    return Semantics(
+      key: key,
+      container: true,
+      label: AppLocalizations.of(context).proposalBadge,
+      child: const SizedBox(width: 1, height: 1),
+    );
+  }
 }
 
 /// Texte courant d'une étape.
@@ -63,49 +79,69 @@ class _Bullets extends StatelessWidget {
   }
 }
 
-/// Ligne `[Prop]` : le badge « Proposition » précède le texte.
-class _ProposalLine extends StatelessWidget {
-  const _ProposalLine({required this.element, required this.text, this.detail});
+/// Section repliable « pour aller plus loin » : repliée en mode « Mener »,
+/// dépliée en « Relecture ». Le titre reste toujours visible ; [proposal],
+/// s'il est donné, nomme l'élément `[Prop]` dont la provenance est marquée
+/// dans le titre (badge en Relecture, annonce sémantique en Mener).
+class _Fold extends StatelessWidget {
+  const _Fold({
+    required this.id,
+    required this.title,
+    required this.children,
+    this.proposal,
+  });
 
-  final String element;
-  final String text;
-  final String? detail;
+  final String id;
+  final String title;
+  final String? proposal;
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
-    final detail = this.detail;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    final mode = _GuideScope.of(context).mode;
+    return ExpansionTile(
+      // Le mode fait partie de la clé : le basculer redonne à chaque section
+      // son état d'ouverture par défaut.
+      key: ValueKey('fold:$id:${mode.name}'),
+      initiallyExpanded: mode.expandsSections,
+      tilePadding: EdgeInsets.zero,
+      childrenPadding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      expandedCrossAxisAlignment: CrossAxisAlignment.start,
+      title: Wrap(
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.xs,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          _Source(element: element, provenance: Provenance.prop),
-          const SizedBox(height: AppSpacing.xs),
-          _Line(text),
-          if (detail != null) _Line(detail),
+          Text(title, style: Theme.of(context).textTheme.titleSmall),
+          if (proposal != null)
+            _Source(element: proposal!, provenance: Provenance.prop),
         ],
       ),
+      children: children,
     );
   }
 }
 
-/// Mise en page d'une étape : en-tête, puis texte et média (côte à côte sur
-/// tablette en paysage, l'un sous l'autre sur téléphone).
+/// Mise en page d'une étape : le média (schéma ou illustration, avec
+/// « Montrer ») d'abord, puis l'étiquette de l'étape, les lignes de tête et le
+/// texte. Côte à côte sur tablette en paysage (média à gauche), l'un sous
+/// l'autre sur téléphone. Le titre de l'étape est dans l'en-tête de l'écran ;
+/// [heading] ne sert qu'à un intitulé que l'en-tête ne porte pas.
 class _StepLayout extends StatelessWidget {
   const _StepLayout({
-    required this.title,
     required this.text,
+    this.heading,
     this.minutes,
     this.badges = const [],
     this.media = const [],
     this.lead = const [],
   });
 
-  final String title;
+  final String? heading;
   final int? minutes;
   final List<Widget> badges;
 
-  /// Lignes sous l'en-tête, sur toute la largeur.
+  /// Lignes sous l'étiquette de l'étape.
   final List<Widget> lead;
   final List<Widget> text;
   final List<Widget> media;
@@ -114,68 +150,79 @@ class _StepLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final header = [
-      Semantics(
-        header: true,
-        child: Text(title, style: theme.textTheme.titleLarge),
-      ),
-      const SizedBox(height: AppSpacing.xs),
-      Wrap(
-        spacing: AppSpacing.sm,
-        runSpacing: AppSpacing.xs,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          if (minutes != null)
-            Text(
-              l10n.sessionDurationMinutes(minutes!),
-              style: theme.textTheme.labelLarge,
-            ),
-          ...badges,
-        ],
-      ),
-      const SizedBox(height: AppSpacing.sm),
-      ...lead,
-    ];
-    return Card(
-      semanticContainer: false,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final wide =
-                constraints.maxWidth >= _wideStepWidth && media.isNotEmpty;
-            return Column(
+    final onShow = _GuideScope.of(context).onShow;
+    final mediaColumn = media.isEmpty
+        ? null
+        : KeyedSubtree(
+            key: const ValueKey('step-media'),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ...header,
-                if (wide)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: text,
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: media,
-                        ),
-                      ),
-                    ],
-                  )
-                else ...[
-                  ...media,
-                  ...text,
-                ],
+                ...media,
+                if (onShow != null)
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: OutlinedButton.icon(
+                      onPressed: onShow,
+                      icon: const Icon(Icons.slideshow_outlined),
+                      label: Text(l10n.guideShow),
+                    ),
+                  ),
+                const SizedBox(height: AppSpacing.sm),
               ],
-            );
-          },
+            ),
+          );
+    final body = [
+      if (heading != null) ...[
+        Semantics(
+          header: true,
+          child: Text(heading!, style: theme.textTheme.titleMedium),
         ),
-      ),
+        const SizedBox(height: AppSpacing.xs),
+      ],
+      if (minutes != null || badges.isNotEmpty) ...[
+        Wrap(
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.xs,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            if (minutes != null)
+              Text(
+                l10n.sessionDurationMinutes(minutes!),
+                style: theme.textTheme.labelLarge,
+              ),
+            ...badges,
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+      ],
+      ...lead,
+      ...text,
+    ];
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final wide =
+            constraints.maxWidth >= _wideStepWidth && mediaColumn != null;
+        if (wide) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: mediaColumn),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: body,
+                ),
+              ),
+            ],
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [?mediaColumn, ...body],
+        );
+      },
     );
   }
 }
@@ -186,14 +233,12 @@ class _StepContent extends StatelessWidget {
     required this.step,
     required this.state,
     required this.specs,
-    required this.onRecord,
   });
 
   final RunPlan plan;
   final RunStep step;
   final RunSheetState state;
   final Map<String, ui.TableDiagramSpec> specs;
-  final ValueChanged<ExerciseRef> onRecord;
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +276,6 @@ class _StepContent extends StatelessWidget {
                 step: step,
                 exercise: exercise,
                 specs: specs,
-                onRecord: onRecord,
               );
       case RunStepKind.game:
         return _GameStep(plan: plan, step: step, state: state, specs: specs);
@@ -241,21 +285,35 @@ class _StepContent extends StatelessWidget {
   }
 }
 
+/// Illustrations de l'étape. Le badge « Proposition » d'une illustration
+/// `[Prop]` n'est affiché qu'en mode « Relecture » ; en « Mener » il reste
+/// annoncé aux lecteurs d'écran.
 List<Widget> _illustrations(
+  BuildContext context,
   RunPlan plan,
   RunStep step,
   Map<String, ui.TableDiagramSpec> specs,
-) => [
-  for (final illustration in plan.illustrationsOf(step))
-    Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: SheetIllustrationView(
-        illustration: illustration,
-        diagrams: specs,
-        proposal: plan.isProposal(step),
+) {
+  final shows = _GuideScope.of(context).mode.showsProvenance;
+  final proposal = plan.isProposal(step);
+  return [
+    for (final illustration in plan.illustrationsOf(step))
+      Padding(
+        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+        child: Semantics(
+          container: proposal && !shows,
+          label: proposal && !shows
+              ? AppLocalizations.of(context).proposalBadge
+              : null,
+          child: SheetIllustrationView(
+            illustration: illustration,
+            diagrams: specs,
+            proposal: proposal && shows,
+          ),
+        ),
       ),
-    ),
-];
+  ];
+}
 
 class _RecallStep extends StatelessWidget {
   const _RecallStep({
@@ -274,7 +332,7 @@ class _RecallStep extends StatelessWidget {
     final recall = plan.sheet.recall;
     final previous = plan.previous;
     return _StepLayout(
-      title: previous == null
+      heading: previous == null
           ? l10n.sheetFirstSession
           : l10n.sheetPrevious(
               l10n.sheetFullTitle(
@@ -289,7 +347,7 @@ class _RecallStep extends StatelessWidget {
         _Line(l10n.sheetFlashQuestion(recall.ask)),
         _Line(l10n.sheetFlashAnswer(recall.answer)),
       ],
-      media: _illustrations(plan, step, specs),
+      media: _illustrations(context, plan, step, specs),
     );
   }
 }
@@ -312,7 +370,6 @@ class _TheoryStep extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final demo = section.demo;
     return _StepLayout(
-      title: section.title,
       minutes: step.minutes,
       badges: [
         _Source(element: 'theory:${section.id}', provenance: section.src),
@@ -328,7 +385,7 @@ class _TheoryStep extends StatelessWidget {
         ),
         if (demo != null) _Line(l10n.sheetDemo(demo)),
       ],
-      media: _illustrations(plan, step, specs),
+      media: _illustrations(context, plan, step, specs),
     );
   }
 }
@@ -352,7 +409,6 @@ class _InitiationStep extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return _StepLayout(
-      title: item.title,
       minutes: step.minutes,
       badges: [
         Text(
@@ -380,7 +436,7 @@ class _InitiationStep extends StatelessWidget {
         },
         _Line(l10n.sheetNotRecorded),
       ],
-      media: _illustrations(plan, step, specs),
+      media: _illustrations(context, plan, step, specs),
     );
   }
 }
@@ -480,14 +536,12 @@ class _ExerciseStep extends StatelessWidget {
     required this.step,
     required this.exercise,
     required this.specs,
-    required this.onRecord,
   });
 
   final RunPlan plan;
   final RunStep step;
   final SheetExercise exercise;
   final Map<String, ui.TableDiagramSpec> specs;
-  final ValueChanged<ExerciseRef> onRecord;
 
   @override
   Widget build(BuildContext context) {
@@ -499,13 +553,8 @@ class _ExerciseStep extends StatelessWidget {
         ? plan.recallExercise
         : null;
     final blockTitle = recall == null ? plan.blockTitle : plan.recallBlockTitle;
+    final mode = _GuideScope.of(context).mode;
     return _StepLayout(
-      title: recall == null
-          ? l10n.sheetExerciseHeading(exercise.ref.number, exercise.title)
-          : l10n.guideRecallExerciseHeading(
-              exercise.ref.number,
-              exercise.title,
-            ),
       minutes: step.minutes,
       badges: [
         if (recall == null)
@@ -558,7 +607,8 @@ class _ExerciseStep extends StatelessWidget {
             ),
           if (spec.bronze) _Line(l10n.exerciseBronze),
         ],
-        if (exercise.src.isProposal) _Line(l10n.sheetRateProposal),
+        if (exercise.src.isProposal && mode.showsProvenance)
+          _Line(l10n.sheetRateProposal),
         _Line(l10n.sheetPassesPlanned(exercise.passes)),
       ],
       media: [
@@ -571,6 +621,7 @@ class _ExerciseStep extends StatelessWidget {
                   maxWidth: SheetIllustrationView.maxWidth,
                 ),
                 child: TableDiagramPlayer(
+                  maxHeight: _GuideScope.of(context).mediaMaxHeight,
                   spec: diagram,
                   semanticLabel: l10n.exerciseDiagramSemantics(
                     exercise.ref.number,
@@ -591,30 +642,28 @@ class _ExerciseStep extends StatelessWidget {
         _Line(l10n.sheetSetup(exercise.setup)),
         _Line(l10n.sheetGoal(exercise.instruction)),
         _Line(l10n.sheetExpected(exercise.expected)),
-        if (exercise.mistakes.isNotEmpty) ...[
-          const SizedBox(height: AppSpacing.xs),
-          Text(l10n.sheetMistakes, style: theme.textTheme.titleSmall),
-          const SizedBox(height: AppSpacing.xs),
-          _Bullets([
-            for (final m in exercise.mistakes)
-              l10n.sheetMistakeRow(m.symptom, m.fix),
-          ]),
-        ],
-        const SizedBox(height: AppSpacing.xs),
-        _Source(element: 'playful:${exercise.id}', provenance: Provenance.prop),
-        const SizedBox(height: AppSpacing.xs),
-        _Line(l10n.sheetPlayfulHook(exercise.playful.hook)),
-        _Line(l10n.sheetPlayfulChallenge(exercise.playful.challenge)),
-        const SizedBox(height: AppSpacing.md),
-        FilledButton.icon(
-          onPressed: () => onRecord(exercise.ref),
-          icon: const Icon(Icons.edit_note_outlined),
-          label: Text(l10n.guideRecord),
+        if (exercise.mistakes.isNotEmpty)
+          _Fold(
+            id: 'mistakes:${exercise.id}',
+            title: l10n.sheetMistakes,
+            children: [
+              _Bullets([
+                for (final m in exercise.mistakes)
+                  l10n.sheetMistakeRow(m.symptom, m.fix),
+              ]),
+            ],
+          ),
+        _Fold(
+          id: 'playful:${exercise.id}',
+          title: l10n.guideFoldPlayful,
+          proposal: 'playful:${exercise.id}',
+          children: [
+            _Line(l10n.sheetPlayfulHook(exercise.playful.hook)),
+            _Line(l10n.sheetPlayfulChallenge(exercise.playful.challenge)),
+          ],
         ),
-        if (blockTitle != null) ...[
-          const SizedBox(height: AppSpacing.xs),
+        if (blockTitle != null && mode == RunMode.review)
           _Line(l10n.guideRecordHint(blockTitle)),
-        ],
       ],
     );
   }
@@ -644,7 +693,6 @@ class _GameStep extends StatelessWidget {
         : game.adaptation.adults;
     final materials = game.materials;
     return _StepLayout(
-      title: game.title,
       minutes: step.minutes,
       badges: [_Source(element: 'game', provenance: game.src)],
       lead: [
@@ -654,7 +702,7 @@ class _GameStep extends StatelessWidget {
           (_, null) => l10n.sheetGameNoSource,
         }),
       ],
-      media: _illustrations(plan, step, specs),
+      media: _illustrations(context, plan, step, specs),
       text: [
         _Line(l10n.sheetGamePlayers(game.players)),
         if (materials != null) _Line(l10n.sheetGameMaterials(materials)),
@@ -663,23 +711,33 @@ class _GameStep extends StatelessWidget {
         _Bullets(game.rules),
         _Line(l10n.sheetGameScoring(game.scoring)),
         _Line(l10n.sheetGameEnd(game.end)),
-        _ProposalLine(
-          element: 'variant',
-          text: l10n.sheetGameVariant(game.playfulVariant),
+        _Fold(
+          id: 'variant',
+          title: l10n.guideFoldVariant,
+          proposal: 'variant',
+          children: [_Line(l10n.sheetGameVariant(game.playfulVariant))],
         ),
         if (link != null)
-          _ProposalLine(
-            element: 'link',
-            text: l10n.sheetGameLink(
-              plan.previous?.title ?? link.notionOf.value,
-              link.rule,
-            ),
-            detail: l10n.sheetGameLinkNote(link.note),
+          _Fold(
+            id: 'link',
+            title: l10n.guideFoldLink,
+            proposal: 'link',
+            children: [
+              _Line(
+                l10n.sheetGameLink(
+                  plan.previous?.title ?? link.notionOf.value,
+                  link.rule,
+                ),
+              ),
+              _Line(l10n.sheetGameLinkNote(link.note)),
+            ],
           ),
         if (adaptation != null)
-          _ProposalLine(
-            element: 'adaptation',
-            text: l10n.sheetGameAdaptation(adaptation),
+          _Fold(
+            id: 'adaptation',
+            title: l10n.guideFoldAdaptation,
+            proposal: 'adaptation',
+            children: [_Line(l10n.sheetGameAdaptation(adaptation))],
           ),
         const SizedBox(height: AppSpacing.md),
         _ScoreBoard(scoreA: state.scoreA, scoreB: state.scoreB),
@@ -774,7 +832,6 @@ class _ReviewStep extends StatelessWidget {
     final sheet = plan.sheet;
     final recap = _recap(l10n, sheet, state);
     return _StepLayout(
-      title: l10n.suggestPhaseReview,
       minutes: step.minutes,
       text: [
         _Bullets([
@@ -787,12 +844,12 @@ class _ReviewStep extends StatelessWidget {
         if (recap.isEmpty) _Line(l10n.guideRecapNothing) else _Bullets(recap),
         _Line(l10n.sheetNotRecorded),
         _Line(l10n.guideRecapPasses),
-        if (sheet.uncertainties.isNotEmpty) ...[
-          const SizedBox(height: AppSpacing.sm),
-          Text(l10n.sheetUncertainties, style: theme.textTheme.titleSmall),
-          const SizedBox(height: AppSpacing.xs),
-          _Bullets(sheet.uncertainties),
-        ],
+        if (sheet.uncertainties.isNotEmpty)
+          _Fold(
+            id: 'uncertainties',
+            title: l10n.sheetUncertainties,
+            children: [_Bullets(sheet.uncertainties)],
+          ),
       ],
     );
   }

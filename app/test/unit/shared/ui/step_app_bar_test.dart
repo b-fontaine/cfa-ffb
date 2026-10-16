@@ -79,6 +79,156 @@ void main() {
     expect(called, ['f']);
   });
 
+  testWidgets('a checkable action shows its state and toggles', (tester) async {
+    var checked = false;
+    await pumpBar(
+      tester,
+      StepAppBar(
+        title: 'Training',
+        position: 6,
+        total: 9,
+        actions: [
+          StepAppBarAction(
+            label: 'Review mode',
+            checked: checked,
+            onSelected: () => checked = !checked,
+          ),
+          StepAppBarAction(label: 'Summary', onSelected: () {}),
+        ],
+      ),
+    );
+
+    await tester.tap(find.byKey(menu));
+    await tester.pumpAndSettle();
+    final item = find.ancestor(
+      of: find.text('Review mode'),
+      matching: find.byType(CheckedPopupMenuItem<int>),
+    );
+    expect(item, findsOneWidget);
+    expect(tester.widget<CheckedPopupMenuItem<int>>(item).checked, isFalse);
+    expect(
+      find.ancestor(
+        of: find.text('Summary'),
+        matching: find.byType(CheckedPopupMenuItem<int>),
+      ),
+      findsNothing,
+    );
+    await tester.tap(
+      find.ancestor(
+        of: find.text('Review mode'),
+        matching: find.byType(CheckedPopupMenuItem<int>),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(checked, isTrue);
+  });
+
+  testWidgets('a checked action is announced as checked', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpBar(
+      tester,
+      StepAppBar(
+        title: 'Training',
+        position: 6,
+        total: 9,
+        actions: [
+          StepAppBarAction(
+            label: 'Review mode',
+            checked: true,
+            onSelected: () {},
+          ),
+        ],
+      ),
+    );
+
+    await tester.tap(find.byKey(menu));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.getSemantics(find.text('Review mode')),
+      isSemantics(label: 'Review mode', isChecked: true, hasCheckedState: true),
+    );
+    handle.dispose();
+  });
+
+  testWidgets('a disabled action cannot be chosen', (tester) async {
+    var called = 0;
+    await pumpBar(
+      tester,
+      StepAppBar(
+        title: 'Training',
+        position: 6,
+        total: 9,
+        actions: [
+          StepAppBarAction(
+            label: 'Reset the timer',
+            enabled: false,
+            onSelected: () => called++,
+          ),
+        ],
+      ),
+    );
+
+    await tester.tap(find.byKey(menu));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Reset the timer'), warnIfMissed: false);
+    await tester.pumpAndSettle();
+
+    expect(called, 0);
+  });
+
+  testWidgets('a disabled checkable action cannot be chosen', (tester) async {
+    var called = 0;
+    await pumpBar(
+      tester,
+      StepAppBar(
+        title: 'Training',
+        position: 6,
+        total: 9,
+        actions: [
+          StepAppBarAction(
+            label: 'Review mode',
+            checked: true,
+            enabled: false,
+            onSelected: () => called++,
+          ),
+        ],
+      ),
+    );
+
+    await tester.tap(find.byKey(menu));
+    await tester.pumpAndSettle();
+    expect(find.text('Review mode'), findsOneWidget);
+    await tester.tap(find.text('Review mode'), warnIfMissed: false);
+    await tester.pumpAndSettle();
+
+    expect(called, 0);
+    expect(find.text('Review mode'), findsOneWidget);
+  });
+
+  testWidgets('keeps its buttons at 48 dp at least', (tester) async {
+    await pumpBar(
+      tester,
+      StepAppBar(
+        title: 'Training',
+        position: 6,
+        total: 9,
+        onBack: () {},
+        actions: [StepAppBarAction(label: 'Summary', onSelected: () {})],
+      ),
+    );
+
+    for (final finder in [
+      find.byTooltip('Back'),
+      find.byTooltip('More actions'),
+    ]) {
+      final size = tester.getSize(finder);
+      expect(size.width, greaterThanOrEqualTo(48));
+      expect(size.height, greaterThanOrEqualTo(48));
+    }
+  });
+
   testWidgets('shows a back button only when onBack is given', (tester) async {
     var backs = 0;
     await pumpBar(

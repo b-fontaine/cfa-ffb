@@ -176,6 +176,8 @@ void main() {
                           onShow: () {},
                           onFinish: () {},
                           onRecord: (_) {},
+                          onBack: () {},
+                          onModeChanged: (_) {},
                         ),
                       ),
                     ),

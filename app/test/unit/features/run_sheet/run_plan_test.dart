@@ -3,6 +3,7 @@ import 'package:billard_cfa/entities/exercise_diagram/domain/exercise_diagram.da
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_game.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_recall.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_timing.dart';
+import 'package:billard_cfa/features/run_sheet/domain/recall_exercise.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
@@ -137,6 +138,166 @@ void main() {
     expect(plan.firstStepOf(SessionPhase.welcome), 0);
     expect(plan.firstStepOf(SessionPhase.training), 4);
     expect(plan.firstStepOf(SessionPhase.review), 7);
+  });
+
+  test('lists the phases of the session in the order of its steps', () {
+    expect(_plan().phases, [
+      SessionPhase.welcome,
+      SessionPhase.notionAndInitiation,
+      SessionPhase.training,
+      SessionPhase.game,
+      SessionPhase.review,
+    ]);
+    expect(_plan().copyWith(steps: const []).phases, isEmpty);
+  });
+
+  test('gives the position of the phase of a step', () {
+    final plan = _plan();
+
+    expect(plan.phaseIndexOf(0), 0);
+    expect(plan.phaseIndexOf(2), 1);
+    expect(plan.phaseIndexOf(5), 2);
+    expect(plan.phaseIndexOf(7), 4);
+    expect(plan.phaseIndexOf(99), 4, reason: 'ramené dans la plage');
+  });
+
+  test('counts the proposals a step carries, minutes included', () {
+    final plan = _plan(exercise: Provenance.prop);
+
+    // Minutes de la phase (toujours une proposition) + la source de l'élément
+    // + l'accroche ludique d'un exercice (toujours une proposition).
+    expect(plan.proposalCountOf(plan.steps[4]), 3, reason: 'exercice [Prop]');
+    expect(plan.proposalCountOf(plan.steps[5]), 2, reason: 'exercice [S]');
+    expect(plan.proposalCountOf(plan.steps[0]), 1, reason: 'rappel [S]');
+    expect(plan.proposalCountOf(plan.steps[1]), 1, reason: 'théorie [S]');
+    // Jeu [S] : minutes + variante ludique + lien (pas d'adaptation).
+    expect(plan.proposalCountOf(plan.steps[6]), 3);
+    expect(plan.proposalCountOf(plan.steps[7]), 1, reason: 'bilan');
+  });
+
+  test('counts the game adaptation of the audience only', () {
+    final base = _plan();
+    final game = base.sheet.game;
+    RunPlan withAdaptation(Audience audience) => base.copyWith(
+      audience: audience,
+      sheet: base.sheet.copyWith(
+        game: game.copyWith(
+          adaptation: const SheetAdaptation(children: 'plus simple'),
+        ),
+      ),
+    );
+
+    expect(
+      withAdaptation(Audience.children).proposalCountOf(base.steps[6]),
+      4,
+      reason: 'minutes + variante + lien + adaptation enfants',
+    );
+    expect(
+      withAdaptation(Audience.adults).proposalCountOf(base.steps[6]),
+      3,
+      reason: 'adaptation enfants ignorée pour des adultes',
+    );
+  });
+
+  group('proposal count of the game step', () {
+    // Le lien avec la séance précédente est obligatoire dès qu'il y en a une
+    // (invariant de SessionSheet) : il compte toujours pour 1.
+    RunPlan withGame({
+      Provenance src = Provenance.s,
+      Audience audience = Audience.children,
+      SheetAdaptation adaptation = const SheetAdaptation(),
+    }) {
+      final base = _plan();
+      return base.copyWith(
+        audience: audience,
+        sheet: base.sheet.copyWith(
+          game: sheetGame(
+            src: src,
+            link: _link,
+          ).copyWith(adaptation: adaptation),
+        ),
+      );
+    }
+
+    test(
+      'is the minutes, the playful variant and the link for a sourced game',
+      () {
+        final plan = withGame();
+
+        expect(plan.proposalCountOf(plan.steps[6]), 3);
+      },
+    );
+
+    test('adds the source when the game itself is a proposal', () {
+      final plan = withGame(src: Provenance.prop);
+
+      expect(plan.proposalCountOf(plan.steps[6]), 4);
+    });
+
+    test('adds the adaptation for adults to an adult audience', () {
+      final plan = withGame(
+        audience: Audience.adults,
+        adaptation: const SheetAdaptation(adults: 'plus fin'),
+      );
+
+      expect(plan.proposalCountOf(plan.steps[6]), 4);
+    });
+
+    test('ignores an adaptation written for the other audience', () {
+      final plan = withGame(
+        adaptation: const SheetAdaptation(adults: 'plus fin'),
+      );
+
+      expect(plan.proposalCountOf(plan.steps[6]), 3);
+    });
+
+    test('adds everything: source, link and adaptation', () {
+      final plan = withGame(
+        src: Provenance.prop,
+        adaptation: const SheetAdaptation(children: 'plus simple'),
+      );
+
+      expect(plan.proposalCountOf(plan.steps[6]), 5);
+    });
+  });
+
+  group('proposal count of the recall exercise step', () {
+    const recallStep = RunStep(
+      kind: RunStepKind.recallExercise,
+      phase: SessionPhase.welcome,
+      minutes: 10,
+    );
+
+    RunPlan withRecall(Provenance? src) {
+      final base = _plan();
+      return base.copyWith(
+        recallExercise: src == null
+            ? null
+            : RecallExercise(
+                origin: base.previous!,
+                exercise: sheetExercise(
+                  'r1',
+                  3,
+                  block: 'bille-pleine',
+                  src: src,
+                ),
+                pending: 2,
+                students: 3,
+              ),
+      );
+    }
+
+    test('is the minutes and the hook for a sourced exercise', () {
+      expect(withRecall(Provenance.s).proposalCountOf(recallStep), 2);
+    });
+
+    test('adds the source of a proposed exercise', () {
+      expect(withRecall(Provenance.prop).proposalCountOf(recallStep), 3);
+    });
+
+    test('has no exercise to count without a recall exercise', () {
+      expect(withRecall(null).proposalCountOf(recallStep), 2);
+    });
   });
 
   test('has no first step for a phase without step', () {

@@ -85,8 +85,28 @@ Feature: Today home
     And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-14'} with the catalogue session {'posture-1'}
     And the app is running
     When I tap {'Launch'} text
-    Then I see {'Step 1 of 10'} text
-    And I see {'Children · 90 min'} text
+    Then I see the guide at step {1} of {10}
+    And I see the session audience {'Children · 90 min'}
+
+  # U4 (lot 2, U-9) : le guide revient à Aujourd'hui, pas aux séances planifiées.
+  Scenario: A planned session launched from the home leads back to the home
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-14'} with the catalogue session {'posture-1'}
+    And the app is running
+    When I tap {'Launch'} text
+    And I tap the back button
+    Then the destination {'Today'} is selected
+    And I see {'Prepare'} text
+
+  Scenario: Resume from the home leads back to the home
+    Given the app is running
+    When I go to the address {'/catalogue/posture-1/guide?audience=children&step=5'}
+    And I count {2} successes on the initiation
+    And I go to the address {'/'}
+    And I tap {'Resume at step 6'} text
+    And I tap the back button
+    Then the destination {'Today'} is selected
+    And I see {'In progress'} text
 
   Scenario: Prepare from the home opens the catalogue session and leads back to Today
     Given the club has the student {'Léa'} in the {'children'} audience
@@ -115,7 +135,7 @@ Feature: Today home
     And I count {2} successes on the initiation
     And I go to the address {'/'}
     And I tap {'Resume at step 6'} text
-    Then I see {'Step 6 of 10'} text
+    Then I see the guide at step {6} of {10}
     And I see {'2 of 4 successes'} text
 
   Scenario: A guide without any progress is not in progress

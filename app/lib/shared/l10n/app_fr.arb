@@ -2198,29 +2198,7 @@
     }
   },
   "guideRecapPasses": "Les passages des exercices ne s’affichent pas ici : ils s’enregistrent avec « Noter les résultats », exercice par exercice, et se retrouvent dans la fiche de chaque élève.",
-  "guideTimerStart": "Démarrer le minuteur",
-  "guideTimerPause": "Mettre le minuteur en pause",
   "guideTimerReset": "Remettre le minuteur à zéro",
-  "guideTimerLine": "Minuteur de la phase · {elapsed} sur environ {minutes} min",
-  "@guideTimerLine": {
-    "placeholders": {
-      "elapsed": {
-        "type": "String"
-      },
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
-  "guideTimerSoon": "Il reste moins d’une minute pour cette phase.",
-  "guideTimerOver": "Temps prévu dépassé de {over}.",
-  "@guideTimerOver": {
-    "placeholders": {
-      "over": {
-        "type": "String"
-      }
-    }
-  },
   "presentationClose": "Fermer",
   "presentationNothing": "Rien à montrer pour cette étape.",
   "presentationPrevious": "Illustration précédente",
@@ -3021,5 +2999,26 @@
         "type": "int"
       }
     }
-  }
+  },
+  "guideModeReview": "Mode relecture",
+  "guideSessionInfo": "La séance",
+  "guideSessionInfoProposals": "{count, plural, =0{Aucune proposition sur cette étape.} =1{1 proposition sur cette étape.} other{{count} propositions sur cette étape.}}",
+  "@guideSessionInfoProposals": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "guideFinishShort": "Terminer",
+  "guidePhaseShortWelcome": "Accueil",
+  "guidePhaseShortNotion": "Notion",
+  "guidePhaseShortTraining": "Entraînement",
+  "guidePhaseShortGame": "Jeu",
+  "guidePhaseShortReview": "Bilan",
+  "guideFoldPlayful": "Accroche et défi",
+  "guideFoldVariant": "Variante ludique",
+  "guideFoldLink": "Lien avec la séance précédente",
+  "guideFoldAdaptation": "Adaptation à ce public",
+  "guideBottomBarLabel": "Se déplacer dans la séance"
 }
