@@ -32,7 +32,8 @@ la séance du catalogue suivie.
    (`GroupId?`). Avec un groupe, le public est celui du groupe et la date doit
    tomber dans sa saison (`seasonOutsidePeriod`, même règle que l'ouverture de
    saisie) ; sans groupe, le public reste choisi à la main (club sans groupe).
-2. Le lien planifiée ↔ saisie est **dérivé** : une séance planifiée est
+2. *(Amendé par l'[ADR 0016](adr/0016-identite-de-la-saisie-par-groupe-jour-et-seance.md) :
+   groupe, jour **et séance du catalogue**.)* Le lien planifiée ↔ saisie est **dérivé** : une séance planifiée est
    « saisie » quand une `SessionRecord` du **même groupe** existe le **même
    jour** (règle déjà appliquée par `OpenOrResumeSession`). Aucune clé
    étrangère, rien à sauvegarder.
@@ -111,7 +112,8 @@ premier choix fait dans la saisie reste repris aux exercices suivants.
 - `PlanSession` : titre non vide ; groupe inconnu → `unknownGroup` ; date hors
   saison du groupe → `seasonOutsidePeriod` ; public = celui du groupe.
 - `ListSessions` : tri par date croissante puis ordre de planification ;
-  `recordId` = séance saisie du même groupe le même jour (première trouvée).
+  `recordId` = saisie du même groupe, du même jour et de la même séance du
+  catalogue (`recordFor`, ADR 0016 ; à l'origine : première saisie du jour).
 - `ResolveSheetBlocks(sheetId)` : `(main: catalogueBlock, recall:
   resultsRecallBlock)` ; inconnu → `unknownSheet`. `OpenSession` ne dérive que
   les blocs **absents** ; un rappel dérivé égal au bloc principal est ignoré.
@@ -151,8 +153,9 @@ Children · 90 min ».
 - Première migration drift qui **recrée** une table (`TableMigration`) : testée
   sur une base v3 avec une séance planifiée (date = création) et une séance
   saisie (séance du catalogue nulle).
-- Lien dérivé : deux séances planifiées le même jour pour un groupe pointent la
-  même saisie ; documenté (ADR 0007, § hors lot).
+- Lien dérivé : deux séances planifiées le même jour pour un groupe pointaient
+  la même saisie (corrigé par l'ADR 0016 sauf si la séance du catalogue est la
+  même).
 - `Session.date` obligatoire change la signature de toutes les fixtures
   (`const Session(...)` devient non constant) ; aucun contournement, les tests
   sont mis à jour.

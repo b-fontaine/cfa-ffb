@@ -53,6 +53,14 @@ revues séparées, `check.sh --full`).
 | ~~**U8**~~ Catalogue et détail en mode « Préparer » : **livré le 2026-10-16** ([plan](catalogue-preparer-plan.md)) | nom évocateur en titre, badge « n points à valider » (motifs majeurs en infobulle et dans le détail) + un badge neutre par proposition mineure (U-1), marqueur de parcours par groupe (✓ / ▶ / ○), frise des phases tapable dans le détail, carte d'exercice à deux colonnes dès 720 dp, menu ⋮ « Signaler une proposition », origine « Aujourd'hui » du détail ; le bouton « Suggestion par groupe » est retiré (audit C1 à C5, D1 à D4) | catalogue d'étiquettes, « Aller à », report U-12 d'U7 |
 | ~~**U9**~~ Fiche élève, vue élève et vue de groupe : **livré le 2026-10-16** ([plan](fiche-eleve-plan.md), [ADR 0013](adr/0013-acquittement-des-alertes.md), [ADR 0014](adr/0014-fiche-en-parcours-vue-eleve-et-vue-de-groupe.md)) | parcours en cases (technique × exercice), en-tête en cours / prochain / alerte, courbes repliées, vue « à montrer à l'élève », carte de chaleur technique × élève, assiduité et alertes de groupe, acquittement d'une alerte ; le lot **10b est reporté** (voir le point 10) | « 0 sur 70 », lot 10a (vues) |
 
+## Correctif D1 : identité d'une saisie (2026-10-16)
+
+**Livré** ([plan](lien-saisie-planifiee-plan.md), [ADR 0016](adr/0016-identite-de-la-saisie-par-groupe-jour-et-seance.md)) :
+une saisie est identifiée par (groupe, jour, séance du catalogue), règle pure
+`recordFor` partagée par `ListSessions` et `OpenOrResumeSession`. Aucune
+migration, sauvegarde inchangée (format 3). Les saisies dont la séance avait
+été réécrite avant le correctif ne sont pas récupérables.
+
 ## Audit des séances du 2026-10-15
 
 Décisions `[U]` 7 à 9 (`docs/knowledge/08-lacunes-et-questions-ouvertes.md`).

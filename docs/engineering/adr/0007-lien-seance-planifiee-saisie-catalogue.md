@@ -26,7 +26,10 @@ coupée en deux endroits.
    saison (`seasonOutsidePeriod`, comme l'ouverture de saisie) ; sans groupe,
    le public reste choisi (club sans groupe, séance à placer). La liste est
    triée par date croissante.
-2. **Lien planifiée ↔ saisie dérivé**, sans clé étrangère : une séance
+2. **Lien planifiée ↔ saisie dérivé**, sans clé étrangère *(amendé par l'[ADR
+   0016](0016-identite-de-la-saisie-par-groupe-jour-et-seance.md) : la saisie
+   se retrouve par groupe, jour **et séance du catalogue**, plus par groupe et
+   jour seuls)* : une séance
    planifiée est « saisie » quand une `SessionRecord` du même groupe existe le
    même jour, règle déjà appliquée par `OpenOrResumeSession` (une seule saisie
    par groupe et par jour). La ligne planifiée propose « Noter les résultats »
@@ -79,8 +82,9 @@ coupée en deux endroits.
   fixtures de `Session` changent (date obligatoire) ; un sélecteur de groupe et
   un champ date dans le formulaire ; libellés fr / en ; adaptation des
   scénarios qui lisaient « Children · 90 min ».
-- Limites : le lien dérivé confond deux séances planifiées le même jour pour
-  un groupe ; une saisie ouverte sans planification n'apparaît pas comme
+- Limites : ~~le lien dérivé confond deux séances planifiées le même jour pour
+  un groupe~~ (dépassé par l'ADR 0016 : seules deux séances **identiques** le
+  même jour restent confondues) ; une saisie ouverte sans planification n'apparaît pas comme
   « séance planifiée » (elle reste dans l'historique).
 
 Voir aussi l'[ADR 0009](0009-suggestion-seance-du-catalogue.md) : la saisie

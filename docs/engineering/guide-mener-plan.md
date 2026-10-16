@@ -590,9 +590,11 @@ bloquant, aucune correction de code nécessaire.
   icône (design-system.md) ; E1 « Noter » aux seules étapes d'exercice (§ 5) ; E2 le
   retour du guide lancé depuis le détail ramène au détail (`guideBackTarget`).
 - **Hors périmètre U4, à traiter ailleurs** :
-  - D1 : une séance planifiée dont la date et le groupe ont déjà une saisie s'affiche
-    « Résultats saisis » dès sa création ; le lien saisie / planification se fait par
-    date et groupe, pas par séance. À reprendre avec les lots Aujourd'hui / saisie.
+  - ~~D1~~ **soldé le 2026-10-16** ([ADR 0016](adr/0016-identite-de-la-saisie-par-groupe-jour-et-seance.md),
+    [plan](lien-saisie-planifiee-plan.md)) : une séance planifiée dont la date et le
+    groupe ont déjà une saisie s'affichait « Résultats saisis » dès sa création (et
+    « Noter » réécrivait la séance de l'autre saisie). Une saisie est désormais
+    identifiée par (groupe, jour, séance du catalogue), règle unique `recordFor`.
   - E3 : titres d'exercice tronqués dans l'en-tête à 390 dp (titre complet dans le
     contenu). E4 : segment « Bilan » de la frise étroit.
   - Rechargement web : minuteur et compteurs repartent de zéro (architecture.md).

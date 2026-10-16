@@ -24,7 +24,7 @@ que le plan suppose.
   du contenu.
 - `ListSessions` (`features/plan_session`) rend déjà les séances planifiées
   triées par date, avec `Group?` et `recordId` (lien dérivé : saisie du même
-  groupe le même jour, ADR 0007). Il ne filtre pas et ne connaît pas l'horloge.
+  groupe, le même jour, pour la même séance du catalogue, ADR 0016). Il ne filtre pas et ne connaît pas l'horloge.
 - `RunSheetSessions` (`@lazySingleton`, **en mémoire**) garde au plus 4
   `RunSheetCubit` par `RunKey` (fiche, public, séance planifiée, groupe) ;
   `RunSheetState.hasProgress` dit s'il y a de la progression ; `plan` porte la
@@ -566,8 +566,12 @@ Le plan suppose la proposition par défaut ; aucune n'est tranchée.
 
 ### Constats du parcours web d'U8 (hors lot, à traiter)
 
-- Une saisie le jour J marque « faites » toutes les séances planifiées ce
+- ~~Une saisie le jour J marque « faites » toutes les séances planifiées ce
   jour-là pour le groupe (ADR 0007) : l'accueil peut annoncer « Aucune séance
-  n'est planifiée » alors qu'une autre séance du même jour reste planifiée.
+  n'est planifiée » alors qu'une autre séance du même jour reste planifiée.~~
+  **Soldé le 2026-10-16 (D1, [ADR 0016](adr/0016-identite-de-la-saisie-par-groupe-jour-et-seance.md)).**
+  « Prochaine séance » = première planifiée sans saisie **de sa séance du
+  catalogue** ; une saisie sans séance du catalogue vaut saisie de la planifiée
+  du jour (compatibilité, voulu).
 - À 320 dp, le libellé « Aujourd'hui » de la barre du bas se coupe en
   « Aujourd'h / ui ».

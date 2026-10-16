@@ -340,8 +340,10 @@ ADR 0004, lot L4. Lecture seule de bout en bout :
   `ListPlannableGroups` (groupes de la saison en cours, règle `currentGroups`
   de `entities/group/domain`, partagée avec `GetClubOverview`) ;
   `ListSessions` rend des `PlannedSessionSummary` (séance, groupe, saisie du
-  même groupe le même jour, `DateOnly.isSameDayAs` de `shared/lib`) triés par
-  date. Le lien planifiée ↔ saisie est **dérivé** (aucune clé étrangère).
+  même groupe, même jour, même séance du catalogue : règle pure `recordFor`
+  de `entities/session_record/domain/record_matching.dart`, partagée avec
+  `OpenOrResumeSession`, ADR 0016) triés par date. Le lien planifiée ↔ saisie
+  est **dérivé** (aucune clé étrangère).
   `SessionRecord.sheetId` note la séance du catalogue ; `ResolveSheetBlocks`
   (`features/record_results/domain`) en dérive la notion principale et le
   rappel de résultats (`resultsRecallBlock`, en `entities/session_sheet/domain`)

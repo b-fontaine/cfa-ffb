@@ -19,8 +19,10 @@ Suggestion) et **Plus** (qui mène à la sauvegarde et aux réglages).
   avec ses compteurs ; **Abandonner** l'efface après confirmation. D'autres
   séances commencées sont listées en dessous. Attention : cet état n'est gardé
   que tant que l'application reste ouverte.
-- **Prochaine** : la première séance planifiée, à partir d'aujourd'hui, qui n'a
-  pas encore de résultats saisis (date, groupe, public). **Préparer** ouvre la
+- **Prochaine** : la première séance planifiée, à partir d'aujourd'hui, dont
+  les résultats ne sont pas encore saisis (date, groupe, public). Les résultats
+  saisis pour une autre séance du catalogue le même jour ne comptent pas : deux
+  séances le même jour ont chacune leur saisie. **Préparer** ouvre la
   séance du catalogue ; **Lancer** démarre le guide avec ses réglages. Les
   autres séances du même jour sont comptées. Sans séance du catalogue, seul
   **Ouvrir dans Planifiées** est proposé.
