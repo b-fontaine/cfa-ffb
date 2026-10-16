@@ -29,12 +29,16 @@
 8. **Bille fantôme : une seule séance**, avant la bille pleine, avec les exercices 1 et 2 du bloc `bille-fantome` (fantôme posée puis imaginée, en plein) ; les exercices 3 et 4 (demi-bille, coupes) sont supprimés. Le catalogue passe à **28 séances**, renumérotées.
 9. **Attaque de référence au niveau 1 : le centre de la blanche.** Les encarts des fiches qui montrent un point « un peu au-dessus » sont mentionnés dans les notes animateur seulement, jamais dans le texte élève.
 
+## Décision de l'utilisateur (2026-10-16) `[U]`
+
+10. **Firebase** : authentification ; plusieurs écoles (une école = un club, groupes illimités) ; profils élève, enseignant, directeur de club et administrateur (tous les droits) ; données dans Firestore avec accès sécurisés ; synchronisation multi-appareils (une modification de l'enseignant se répercute chez ses élèves). Plan : horizon H5 de `docs/engineering/roadmap.md`.
+
 ## Questions encore ouvertes
 
 1. Faut-il valider les positions approchées des diagrammes par un animateur (comparaison au PDF) avant de les afficher dans l'application ?
 2. Quelle valeur de « séance » pour les nombres conseillés (1 séance = 90 min enfant / 120 min adulte) ?
 3. Combien d'élèves par groupe et de groupes par saison (dimensionnement du suivi) ?
-4. Besoin de synchronisation multi-appareils (téléphone + ordinateur) ? Si oui, Firebase devient pertinent.
+4. ~~Besoin de synchronisation multi-appareils (téléphone + ordinateur) ? Si oui, Firebase devient pertinent.~~ Tranchée « oui » le 2026-10-16 (décision 10).
 
 ## Sources web vérifiées (rang 2/3)
 

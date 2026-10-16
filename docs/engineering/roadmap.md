@@ -257,13 +257,122 @@ Lots UX en H0 :
     `main` sur Firebase Hosting, `firebase-hosting-pull-request.yml` ouvre un
     canal de prévisualisation par PR, même recette de build que `ci.yml`) ;
     reste le build Android signé (plateforme prioritaire).
-22. Synchronisation multi-appareils (Firebase derrière les repositories, ADR
-    0001) seulement si la question ouverte n° 4 est tranchée « oui » ; sinon
-    rappel périodique de sauvegarde et export en fin de séance, plus deux
-    rappels natifs sobres et désactivables : veille d'une séance planifiée
-    (« Préparer la séance de demain ») et sauvegarde de plus de 30 jours.
+22. ~~Synchronisation multi-appareils seulement si la question ouverte n° 4
+    est tranchée « oui »~~ : **tranchée « oui » le 2026-10-16** `[U]`, avec un
+    périmètre élargi (comptes, clubs, rôles) ; remplacée par l'horizon **H5**
+    ci-dessous. Restent ici les deux rappels natifs sobres et désactivables :
+    veille d'une séance planifiée (« Préparer la séance de demain ») et
+    sauvegarde de plus de 30 jours (ce dernier devient sans objet pour un
+    compte synchronisé).
 23. Dette : `scripts/` sans `pubspec.yaml`, build `--wasm`, mutation testing
     retiré (à réévaluer).
+
+## H5 — Firebase : comptes, clubs, rôles et synchronisation
+
+Décision `[U]` du 2026-10-16 (répond « oui » à la question ouverte n° 4 de
+`docs/knowledge/08-lacunes-et-questions-ouvertes.md`). Elle change le cadrage
+de l'[ADR 0001](adr/0001-persistance-locale-drift.md) (« un seul animateur »,
+« aucune donnée ne quitte l'appareil ») et la règle « Persistance : local
+d'abord » d'`AGENTS.md` : les deux sont à amender par l'ADR du lot FB0.
+Recherche préalable : [research/firebase.md](research/firebase.md) (versions à
+revalider, Linux non supporté, Auth traité aux États-Unis, région Firestore
+irréversible).
+
+### Besoins `[U]`
+
+1. **Authentification** : chaque utilisateur a un compte.
+2. **Multi-écoles** : une école = un club ; un club a un nombre **illimité**
+   de groupes.
+3. **Profils** : élève, enseignant, directeur de club, administrateur ;
+   l'administrateur a **tous les droits**.
+4. **Firestore** comme stockage, avec des accès sécurisés (règles Firestore).
+5. **Synchronisation multi-appareils** : une modification faite par
+   l'enseignant se répercute sur les appareils de tous ses élèves.
+
+### Matrice des droits (validée le 2026-10-16, décisions 6 et 7)
+
+| Action | Élève ou parent | Enseignant | Directeur | Admin |
+|---|---|---|---|---|
+| Lire sa fiche, son parcours, les séances planifiées de ses groupes | ✓ | ✓ | ✓ | ✓ |
+| Lire les élèves et résultats d'un groupe | — | ses groupes | son club | tous |
+| Saisir des passages, planifier, positionner, acquitter une alerte | — | ses groupes | son club | tous |
+| Créer, renommer, archiver un groupe ; y affecter élèves et enseignants | — | — | son club | tous |
+| Inviter un élève | — | ses groupes | son club | tous |
+| Inviter un enseignant, changer un rôle dans le club | — | — | son club | tous |
+| Réglages du club (`RulesConfig`), clôture de saison | — | — | son club | tous |
+| Créer un club, nommer un directeur, nommer un administrateur | — | — | — | ✓ |
+
+Un utilisateur peut appartenir à plusieurs clubs avec un rôle par club
+(un enseignant qui intervient dans deux écoles) ; l'administrateur est un
+rôle global, hors club.
+
+### Modèle de données (esquisse, tranchée en FB0)
+
+```
+clubs/{clubId}                         nom, saison courante, réglages
+clubs/{clubId}/members/{uid}           rôle (student | teacher | director), groupIds
+clubs/{clubId}/groups/{groupId}        public, nom, teacherUids, studentIds
+clubs/{clubId}/students/{studentId}    prénom + initiale, public, uid lié (nullable)
+clubs/{clubId}/sessions/{id}           séance planifiée (groupe, date, séance du catalogue)
+clubs/{clubId}/records/{id}            saisie (identité ADR 0016)
+clubs/{clubId}/attempts/{id}           passages, un document par passage (ajout seul)
+clubs/{clubId}/acquisitions|assessments|acknowledgements/{id}
+admins/{uid}                           administrateurs globaux
+```
+
+Le catalogue, les fiches et les diagrammes restent des **assets** de
+l'application (ils viennent de `docs/knowledge`, pas de Firestore). Les
+identifiants UUID, `createdAt`, `updatedAt` et `deletedAt` déjà prévus par
+l'ADR 0001 servent tels quels. Un passage par document (ajout seul) évite le
+« dernier qui écrit gagne » sur les données les plus fréquentes.
+
+### Lots
+
+| Lot | Contenu | Dépend de |
+|---|---|---|
+| **FB0** Décisions et conformité | ADR « Firebase source de vérité » (amende ADR 0001 et `AGENTS.md`, ajoute firebase_core / firebase_auth / cloud_firestore à la pile imposée) : modèle de données, matrice des droits, stockage des rôles, sort de drift ; ADR « comptes et données de mineurs » : comptes parents rattachés et comptes élèves de 15 ans et plus, pseudonymisation, information des familles, registre, durée de conservation, AIPD probable (mineurs, plusieurs organismes), DPA Google. **Côté utilisateur** : projet Firebase, base Firestore en `europe-west9` (irréversible), fournisseurs d'Auth, `flutterfire configure`, formule Spark | — |
+| **FB1** Socle | dépendances FlutterFire, environnements (émulateurs en développement, tests et CI ; projet réel en production), initialisation dans `app/di`, Node + Firebase CLI en CI, garde-fou « règles Firestore » : tests des règles contre l'émulateur (`@firebase/rules-unit-testing`) dans `scripts/check.sh --full` | FB0 |
+| **FB2** Authentification | entité `account`, feature `sign_in` (connexion par e-mail et mot de passe, déconnexion, mot de passe oublié), redirection go_router tant que non connecté, sélection du club actif si plusieurs ; pas de Linux (décision 4) | FB1 |
+| **FB3** Clubs, rôles, invitations | entités `club` et `membership`, écrans « Mon club » (directeur : groupes illimités, enseignants, élèves) et « Administration » (admin : clubs, directeurs) ; invitations par lien ou code à usage unique ; lier un compte élève à une fiche `student` existante ; navigation et actions filtrées par rôle ; **règles Firestore** et leurs tests, cas par cas de la matrice | FB2 |
+| **FB4** Repositories Firestore | une implémentation Firestore par interface (14 interfaces aujourd'hui, toutes en `Future`, aucune en `Stream`), portées par club ; la suite de contrat existante (garde-fou de l'ADR 0001) tourne aussi contre l'émulateur ; les implémentations in-memory restent pour les BDD | FB3 |
+| **FB5** Synchronisation temps réel et hors-ligne | méthodes `watch…` (flux) sur les repositories lus par plusieurs appareils, cubits abonnés aux flux, persistance hors-ligne activée sur web (désactivée par défaut), indicateur « synchronisé / en attente / hors-ligne », règle de conflit documentée ; scénario BDD : l'enseignant planifie ou saisit, la fiche de l'élève se met à jour sans rechargement | FB4 |
+| **FB6** Espace élève | accueil élève en lecture seule : sa fiche en parcours et la vue « à montrer à l'élève » (ADR 0014) devenues sa page, prochaines séances planifiées de ses groupes ; aucune donnée d'un autre élève | FB5 |
+| **FB7** Migration des données locales | import d'une sauvegarde JSON (format 3) dans un club par un directeur ou un enseignant ; correspondance des groupes ; contrôle d'intégrité ; le format de sauvegarde reste l'export de portabilité | FB4 |
+| **FB8** Cycle de vie RGPD | suppression d'un compte et de ses données, effacement d'un élève (aujourd'hui local, `UnitOfWork`), clôture de saison par club (rejoint le lot 11), export des données d'un élève (droit d'accès), App Check | FB3, FB4 |
+
+Le lot **11** (saisons et groupes) est à mener **dans** FB3 / FB8 plutôt
+qu'avant : « plusieurs groupes par public » devient « groupes illimités par
+club », et la clôture de saison doit s'appliquer aux données Firestore.
+
+### Décisions `[U]` du 2026-10-16 (questions de FB0)
+
+1. **Source de vérité : Firestore seul**, avec son cache hors-ligne. drift
+   est retiré une fois FB7 (migration) livré ; aucun mode « sans compte ».
+2. **Comptes élèves : compte parent rattaché.** Le parent crée le compte
+   avec son adresse et voit la fiche de son enfant ; un élève de 15 ans ou
+   plus peut avoir son propre compte (âge du consentement numérique à
+   vérifier en FB0).
+3. **Formule Spark (gratuite).** Pas de Cloud Functions : invitations par
+   lien ou code à usage unique, purge de fin de saison lancée depuis
+   l'application, **rôles stockés dans Firestore** (documents `members` lus
+   par `get()` dans les règles ; administrateurs dans `admins/{uid}`, créés à
+   la main dans la console).
+4. **Plateformes : Android, iOS et web.** Linux est abandonné ; Windows reste
+   un poste de développement ; sur ordinateur, on passe par le navigateur.
+5. **Connexion : e-mail et mot de passe**, avec « mot de passe oublié » ; le
+   lien magique pourra s'ajouter plus tard.
+6. **Invitations** : l'enseignant invite dans ses groupes, le directeur dans
+   tout le club, l'administrateur partout.
+7. **Visibilité : l'enseignant ne voit que ses groupes** ; le directeur voit
+   tout son club.
+8. **Conservation : la saison en cours et l'année suivante**, puis
+   effacement ; effacement à la demande à tout moment (remplace la durée
+   `[Prop]` de l'ADR 0001).
+
+Restent pour l'ADR de FB0 : le détail du modèle de données, le parcours
+d'invitation (code ou lien, expiration), le rattachement d'un compte parent à
+plusieurs enfants, et les démarches de conformité (registre, information des
+familles, AIPD, DPA Google), qui relèvent du club ou de la fédération.
 
 ## Ordre recommandé
 
@@ -272,8 +381,12 @@ H0 : ~~F7~~ → ~~revue T8~~ (faite, constats ouverts ci-dessus) → ~~réaliser
 H1 : ~~U5~~ → ~~U6~~ → ~~9~~ → ~~U7~~ → ~~10a + U9~~ → ~~U8~~ → 10b → 11   (5 à 9, U7, U8, U9 et 10a livrés)
 H2 : U4 → U3 → 14 → 15
 H3 : 16 (avec le mode Relecture de U4) → 17 → 18 → 19 → 20
-H4 : 21 → 22 (+ rappels) → 23
+H4 : 21 → 22 (rappels) → 23
+H5 : FB0 → FB1 → FB2 → FB3 (+ lot 11) → FB4 → FB5 → FB6 ; FB7 et FB8 après FB4
 ```
+
+H5 peut démarrer en parallèle de H2 : FB0 est documentaire et demande
+d'abord des actions de l'utilisateur (projet Firebase, conformité).
 
 U1 (livré) a posé les fondations dont tout dépend ; U5 tôt
 parce que la saisie est l'action quotidienne et que le lot 6 (livré) lui
