@@ -63,12 +63,16 @@ app/
 │   │   ├── suggested_session/  exercise_sheet/   # (d) séance suggérée, fiche source
 │   │   ├── assessment/                # (e) bilan de maturité, changement de public manuel
 │   │   ├── backup/                    # (f) export / import JSON
+│   │   ├── season_closure/  season_archive/   # lot 11 : assistant de clôture, « Saisons passées »
 │   │   └── settings/                  # réglages du club (sous « Plus »)
 │   ├── widgets/session_list/  widgets/roster_picker/   # blocs réutilisables entre pages
 │   ├── features/plan_session/
 │   │   ├── domain/                    # PlanSession, ListSessions, InvalidSessionTitle
 │   │   └── presentation/{bloc,ui}/    # SessionPlannerBloc, PlanSessionForm
-│   ├── features/manage_students/          # EnrollStudent, GetClubOverview ; StudentsBloc, ClubList
+│   ├── features/manage_students/          # EnrollStudent, GetClubOverview, ListEnrollmentGroups ; StudentsBloc, ClubList
+│   ├── features/manage_groups/            # CreateGroup, RenameGroup, DeleteGroup, MoveStudent (lot 11a) ; ManageGroupsCubit, MoveStudentCubit
+│   ├── features/close_season/             # PrepareSeasonClosure, CloseSeason, buildArchive, proposeClosure (lot 11b/c) ; SeasonClosureBloc
+│   ├── features/track_seasons/            # ListSeasonArchives ; SeasonArchivesCubit, SeasonArchiveView (« Saisons passées »)
 │   ├── features/record_results/           # OpenSession, RecordAttempt (R1, R2, R4) ; RecordResultsBloc
 │   ├── features/suggest_session/          # planSession (R6), selectRecall (R5), suggestSheet (lot 8) ; SessionPlanView, ExerciseDiagramView
 │   ├── features/place_student/            # MarkBlockAcquired, RevokeBlockAcquired ; PlacementBloc, boîte de dialogue
@@ -91,7 +95,8 @@ app/
 │   ├── entities/exercise_result/      # ExerciseAttempt, ExerciseResult dérivé, StudentProgress,
 │   │                                  # BlockAcquisition + port AcquisitionRepository (ADR 0008)
 │   ├── entities/student/              # Student, AudienceChange (historique)
-│   ├── entities/season/  entities/group/  entities/session_record/
+│   ├── entities/season/               # Season (closedOn, isOpenOn), SeasonArchive, nextSeasonAfter, SeasonArchiveRepository
+│   ├── entities/group/  entities/session_record/   # group : chooseGroup, normalizedGroupName, Group.rename
 │   ├── entities/maturity_assessment/  # chacun : domain/ (+ port) et data/ (en mémoire + drift)
 │   ├── entities/settings/             # ClubSettings, SettingsRepository (drift + en mémoire)
 │   ├── features/manage_settings/      # LoadSettings, SaveSettings, ResetSettings, SettingsField ;
@@ -205,6 +210,47 @@ widgetbook/                            # projet séparé : catalogue du design s
   le pas d'écran, sous-ensemble des bornes de `RulesConfig`. Les réglages
   voyagent dans la sauvegarde JSON (format 2, clé `data.settings` facultative).
   `BackupReminder.evaluate` reçoit `staleAfterDays` (`backupReminderDays`).
+
+## Saisons et groupes (lot 11, ADR 0019)
+
+- **Saison close** : `Season.closedOn` (nul = ouverte). `Season.isOpenOn(date)`
+  (non close **et** dans la période) remplace `contains` aux **sept sites**
+  « saison en cours » (`GetClubOverview`, `ListGroupAlerts`,
+  `ListPlannableGroups`, `ListJourneyGroups`, `EnrollStudent`) et « travail
+  nouveau » (`OpenSession`, `PlanSession` : refus `seasonClosed`) ;
+  `BackupRules` garde `contains` (données historiques), sauf pour les séances
+  planifiées d'une saison close, bornées par le seul début. `currentGroups`
+  prend `closedSeasons` : le repli « aucune saison en cours » n'y puise jamais.
+- **Groupes** : plusieurs par (saison, public) ; l'unicité du nom
+  (`normalizedGroupName`) est une règle de cas d'usage, sans contrainte SQL.
+  `chooseGroup` (pure) choisit le groupe d'une inscription / d'un changement de
+  public (`groupChoiceRequired` s'il y en a plusieurs sans demande). `MoveStudent`
+  clôt l'appartenance la veille de la date d'effet et ouvre l'autre ce jour-là ;
+  rien n'est copié.
+- **Clôture** (`features/close_season`) : `CloseSeason` est **une seule unité de
+  travail** : archive calculée **avant** l'effacement (`buildArchive`, pure),
+  enregistrée, saison close, élèves choisis effacés (mêmes dépôts que
+  `EraseStudent`, parité testée), saison suivante préparée (`nextSeasonAfter`,
+  réutilisée si elle existe), séances planifiées supprimées. L'archive
+  (`SeasonArchive`, `entities/season`) ne porte **aucun** identifiant d'élève,
+  groupe ni date de séance ; une ligne par exercice n'existe qu'à partir de
+  `minCohortForFigures` = 3 élèves distincts (règle, pas réglage).
+  `proposeClosure` (pure) propose, l'animateur décide.
+- **Persistance** : schéma **v9** (`seasons.closed_on`, `season_archive_audiences`,
+  `season_archive_exercises`), migration additive `from8To9` ; sauvegarde **v4**
+  (`seasons[].closedOn` facultatif, `seasonArchives` obligatoire en v4 et refusée
+  en v1 à v3). Importer un fichier qui donne une saison pour ouverte la rouvre et
+  supprime son archive.
+- **Pages qui composent** : `pages/season_closure` assemble l'assistant
+  (`close_season`) et l'export (`backup_data`) ; `pages/students` assemble les
+  menus de groupe (`manage_groups`) ; `pages/student_sheet` « Changer de
+  groupe » ; `home` reçoit la carte `ClosableSeasonSection` par la couche app.
+- **Routes** : `/seasons` (dans le cadre, destination « Plus ») et
+  `/seasons/:seasonId/close` (**hors** du cadre : un geste de navigation ne quitte
+  pas l'assistant à mi-chemin).
+- **Effectif d'une saison pas encore commencée** : `GetClubOverview` et
+  `GetGroupOverview` lisent l'effectif au premier jour de la saison (les élèves
+  reconduits ne sont pas « sans groupe » pendant l'été).
 
 ## Noyau partagé (`shared/lib`) et slices d'entités
 

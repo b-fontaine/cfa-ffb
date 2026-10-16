@@ -86,6 +86,22 @@ cas échéant, une alerte (par exemple après trois échecs consécutifs sur un
 exercice). Le prénom peut être corrigé depuis la fiche de l'élève. Chaque
 groupe a un bouton **Grille du groupe** (voir « La vue de groupe »).
 
+### Plusieurs groupes par public, changer un élève de groupe
+
+- **Nouveau groupe** (à côté de **Ajouter un élève**) crée un groupe : un nom et
+  un public. Le nom doit être unique dans la saison (majuscules et espaces de
+  bord ignorés). Un groupe se **renomme** et se **supprime** depuis son menu ⋮ ;
+  on ne supprime qu'un groupe **vide** et **sans séance saisie**.
+- Avec **un seul** groupe pour le public, rien ne change : l'élève y est inscrit
+  sans question. Avec **plusieurs**, l'inscription (et le passage d'un élève en
+  cours adultes) vous demande dans quel groupe.
+- Sur la fiche, **Changer de groupe** déplace l'élève dans un autre groupe de
+  **même public** : choisissez le groupe et la date d'effet (aujourd'hui par
+  défaut). La date doit tomber **après** sa dernière présence dans l'ancien
+  groupe : on ne réécrit pas une séance déjà saisie. Son parcours (passages,
+  blocs acquis, alertes, bilans) ne bouge pas ; l'assiduité de l'ancien groupe
+  garde ses présences passées. Un élève sans groupe se place de la même façon.
+
 ## 2. Préparer la séance
 
 Deux façons de préparer : choisir une séance du **catalogue** (rubriques
@@ -354,8 +370,8 @@ d'autre alerte. La fiche garde une ligne calme « Alerte vue le … » avec
   une réussite la résout.
 - « Vu » ne change **ni la notion à rappeler ni la séance suggérée** : le
   jugement pédagogique ne dépend pas du fait que vous ayez vu.
-- Les acquittements sont dans la sauvegarde (format 3) et s'effacent avec
-  l'élève.
+- Les acquittements sont dans la sauvegarde (format 3 et suivants) et
+  s'effacent avec l'élève.
 
 ### Montrer le parcours à l'élève
 
@@ -496,6 +512,36 @@ Ouvrez **Plus**, puis **Réglages**. Cinq réglages, chacun avec deux boutons
 - Les réglages sont inclus dans le fichier de sauvegarde ; importer un fichier
   qui n'en contient pas laisse vos réglages en place.
 
+## Clore une saison
+
+À la fin de la saison, **Aujourd'hui** propose la carte **Clôturer la saison**
+(vous pouvez aussi ouvrir l'assistant plus tôt). L'assistant tient sur un seul
+écran :
+
+1. **Récapitulatif** : séances, présences, élèves. Si la saison n'est pas
+   terminée, elle est close dès aujourd'hui et sa fin est ramenée à ce jour.
+2. **Sauvegarde conseillée** : **Exporter une sauvegarde** (non bloquant). Ce
+   fichier contient les prénoms des élèves qui vont être effacés : gardez-le en
+   lieu sûr puis supprimez-le, car l'**importer plus tard rétablirait** ces
+   élèves et rouvrirait la saison.
+3. **Que faire de chaque élève ?** L'application propose **Effacer** pour
+   l'élève absent de toutes les séances de la saison et pour celui inscrit
+   **avant** la saison (conservation : la saison en cours et la suivante), et
+   **Reconduire** pour les autres. Chaque ligne se modifie ; **Tout reconduire**
+   et **Tout effacer** s'appliquent à toute la liste. La règle propose, vous
+   décidez.
+4. **Options** : préparer la saison suivante (groupes de même nom, élèves
+   reconduits replacés) ; supprimer les séances planifiées postérieures à la
+   clôture.
+5. **Confirmer** : le bouton **Effacer N élèves et clore** demande de cocher
+   **J'ai compris**. L'effacement est définitif.
+
+La clôture est **tout ou rien**. L'application garde alors, **sans aucun nom**,
+des chiffres par public (séances, présences, passages) et, par exercice,
+seulement ceux pratiqués par **au moins 3 élèves** : ils se lisent dans
+**Plus**, **Saisons passées**. Elle ne garde ni liste des élèves effacés, ni
+groupe, ni date de séance.
+
 ## Effacer un élève
 
 Les élèves sont souvent mineurs : l'application ne garde que le **prénom** et
@@ -521,4 +567,4 @@ le **public**, sur votre appareil, et ne les envoie nulle part.
 | Régulièrement | Lire les fiches et la grille du groupe, marquer les alertes « Vu », rappeler les notions signalées |
 | Vers 16-17 ans | Faire un bilan de maturité, décider du passage à la main |
 | Fin de mois / de saison | Exporter une sauvegarde |
-| Fin de saison | Effacer les élèves qui ne reviennent pas |
+| Fin de saison | Clore la saison (sauvegarde, élèves à effacer ou à reconduire) ; ou effacer à la main un élève à sa demande |

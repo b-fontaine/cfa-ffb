@@ -20,5 +20,6 @@
 | 0016 | Identité d'une saisie par (groupe, jour, séance du catalogue) : corrige le lien dérivé planifiée ↔ saisie sans migration ; accepté |
 | 0017 | Plein écran : port `FullscreenController` (Dart pur), API Fullscreen web par `dart:js_interop` sans nouvelle dépendance, contrôleur unique partagé entre présentation et guide, `DiagramStage` (légende réservée, schéma sur le reste) à la place de la mesure de texte ; accepté et livré |
 | 0018 | Hors ligne : service worker maison (celui de Flutter est obsolète), précache versionné de tout le build (empreinte écrite par `scripts/pwa.dart`), CanvasKit local, mise à jour jamais appliquée d'office (bannière à la demande), initialisation Firebase non bloquante, manifeste et icônes de l'application ; accepté et livré |
+| 0019 | Clôture de saison : archive agrégée non nominative (seuil de 3 élèves), effacement en lot avec confirmation, reconduction, groupes multiples et déplacement d'élève, schéma v9, sauvegarde v4 ; accepté et livré sur les défauts proposés (points `[U]` du lot 11 à confirmer par l'animateur) |
 
 Recherches sources : `../research/`.

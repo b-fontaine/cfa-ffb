@@ -172,7 +172,9 @@ transitivement ; SQLite vient des build hooks de `sqlite3` 3.x.
   logiquement**. Tout ou rien (`UnitOfWork`). Les groupes et séances restent,
   sans l'élève. La suppression logique (`deletedAt`) reste réservée à la
   synchronisation future ; elle n'est pas un effacement.
-- **Durée de conservation** `[Prop]` (à valider par l'animateur) : les données
+- **Durée de conservation** `[Prop]` (à valider par l'animateur ; **remplacée le
+  2026-10-16** par la décision FB 8 de la roadmap, saison en cours puis
+  suivante, appliquée par la clôture de saison de l'[ADR 0019](0019-cloture-de-saison-archive-agregee-et-effacement-en-lot.md)) : les données
   d'un élève sont conservées pour la saison en cours puis effacées à la fin de
   la saison ou à la demande de l'élève ou de ses parents ; aucune donnée ne
   quitte l'appareil sans export volontaire. Les fichiers de sauvegarde déjà

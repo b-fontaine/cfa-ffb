@@ -210,7 +210,8 @@ Lots UX en H0 :
       des mineurs est une donnée personnelle qui demande son ADR), *compteurs
       d'initiation, grille acquis et score du jeu persistés* (aujourd'hui en
       mémoire dans `RunSheetCubit`) et *étape de la séance en cours persistée*
-      (décision U-5 de [aujourdhui-plan.md](aujourdhui-plan.md)) ; schéma v9.
+      (décision U-5 de [aujourdhui-plan.md](aujourdhui-plan.md)) ; schéma v10
+      (la v9 est prise par le lot 11).
       Aucun écran d'U9 ne les lit.
     - ~~**U8**~~ Catalogue et détail en mode « Préparer » : **livré le
       2026-10-16** ([plan](catalogue-preparer-plan.md)) ; le marqueur de
@@ -218,8 +219,22 @@ Lots UX en H0 :
       pour remplacer la copie de l'identifiant de « Signaler une proposition »
       par le workflow de validation.
     - Restent `[U]` d'U9 : voir [fiche-eleve-plan.md](fiche-eleve-plan.md) § 6.
-11. **Saisons et groupes** : clôture de saison (archiver, effacer les mineurs en
-    lot), plusieurs groupes par public, déplacer un élève de groupe.
+11. ~~**Saisons et groupes**~~ : **livré le 2026-10-16** ([plan](saisons-groupes-plan.md),
+    [ADR 0019](adr/0019-cloture-de-saison-archive-agregee-et-effacement-en-lot.md)),
+    sur les défauts proposés des points `[U]` U11-1 à U11-15 (à confirmer par
+    l'animateur) :
+    - **11a** groupes : plusieurs groupes par public (nom unique dans la
+      saison), créer / renommer / supprimer (vide et sans séance), choix du
+      groupe à l'inscription et au changement de public, « Changer de groupe »
+      (`MoveStudent`, historique conservé) ; aucune migration.
+    - **11b** clôture, domaine : `Season.closedOn` et `isOpenOn`, archive
+      agrégée non nominative (seuil de 3 élèves), `CloseSeason` en une seule
+      unité de travail (archive avant effacement), schéma **v9**, sauvegarde
+      **v4**.
+    - **11c** clôture, écrans : assistant (`/seasons/:id/close`), « Saisons
+      passées » (`/seasons`), carte « Clôturer la saison » sur « Aujourd'hui ».
+    La durée de conservation `[Prop]` de l'[ADR 0001](adr/0001-persistance-locale-drift.md)
+    est remplacée par la décision FB 8 (saison en cours + suivante).
 
 ## H2 — Usage en salle
 

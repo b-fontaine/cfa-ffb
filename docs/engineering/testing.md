@@ -143,6 +143,18 @@ fournissant un `RepositoryHarness` ; aucune règle de repository ne se teste en
 double. Les spécificités drift (horodatages, suppression logique physique,
 rollback, migrations, ouverture fichier) sont dans `test/unit/shared/persistence/`.
 
+Le lot 11 y ajoute `season_archive_contract.dart` (port `SeasonArchiveRepository` :
+remplacement par saison, tri, suppression, archive vide sans ligne), les cas
+`clôture des saisons` de `repository_contract.dart` et, dans
+`backup_contract.dart`, le groupe `clôture de saison (format 4)` (aller-retour,
+remplacement de l'archive, **un fichier antérieur à la clôture rétablit les élèves
+effacés, rouvre la saison et supprime son archive**). La **parité d'effacement**
+(`test/unit/shared/erasure_parity_test.dart`) garantit qu'à données égales
+`EraseStudent` et `CloseSeason` (deux features qui ne s'importent pas) laissent
+le même état dans chaque dépôt nominatif ; `physical_erasure_test.dart` vérifie en
+plus, sur SQLite, qu'**aucune colonne d'aucune table** ne contient plus
+l'identifiant ni le prénom d'un élève effacé par une clôture, archive comprise.
+
 Les diagrammes ont leurs propres contrats sur les **vrais** fichiers
 (`test/contract/`) : `diagrammes_format_test.dart` (chaque transcription passe
 le validateur, le parseur et le mapper de production sans perte, et la timeline
