@@ -72,6 +72,17 @@ l'horloge au 12/10/2026. Les scénarios d'interface couvrent aussi :
   (`the cell {..} is {..}`, `I see the grid described as {..}`), jamais dans la
   couleur ; les menus ⋮ se trouvent par leur infobulle
   (`I open the placement menu of {..}`) ;
+- le catalogue en mode « Préparer » (lot U8, `session_catalogue.feature`) : les
+  lignes se retrouvent par clé (`sheet:<id>`, `sheet-title:<id>`,
+  `sheet-subtitle:<id>`, `review-badge:<id>`, `review:<id>:<motif>` (badge neutre d'une proposition mineure), `mark:<id>`,
+  `catalogue-group:<id|none>`) et se lisent dans leur texte et leur sémantique
+  (`the session {..} has the title {..} and the subtitle {..}`, `the session {..} shows the minor badge {..}`, `the session {..} shows the review reason {..}`, `the review badge
+  of {..} explains {..}`, `the marker of {..} is announced as {..}`) ; la mise en
+  page à deux colonnes se mesure sur la **géométrie** (`the exercise {..} is laid
+  out in {n} columns`, fenêtre 719 puis 720 dp) ; le menu ⋮ et la copie se
+  vérifient avec un presse-papiers simulé sur le canal de plateforme (`the
+  clipboard is available` puis `the clipboard holds {..}`) ; l'origine du retour
+  se lit sur le bouton (`the back button says {..}`) ;
 - la courbe avec son alternative textuelle (`I see the curve of {..} with {n}
   attempts`) ;
 - le thème clair/sombre et la langue de l'appareil (fr / en) ;

@@ -50,7 +50,7 @@ revues séparées, `check.sh --full`).
 | **U4** Guide en mode « Mener » | route hors shell, en-tête compact + frise des phases, schéma en premier, sections repliées, badges de provenance masqués sauf mode « Relecture », minuteur en en-tête, barre basse Précédent / Noter / Suivant | F3, lot 12 |
 | **U6** Navigation recentrée | destinations « Aujourd'hui / Élèves / Résultats / Séances (Planifiées · Catalogue · Suggestion) / Plus (Sauvegarde, Réglages) » ; rappel de sauvegarde | F8 (emplacement du lot 9) |
 | ~~**U7**~~ Accueil « Aujourd'hui » et bilan de fin de séance : **livré le 2026-10-15** ([plan](aujourdhui-plan.md)) | séance en cours à reprendre, prochaine séance planifiée (Préparer / Lancer), alertes, semaine, sauvegarde ; à « Terminer », bilan des passages et proposition de la séance suivante | accueil statique |
-| **U8** Catalogue et détail en mode « Préparer » | nom évocateur en titre, badge unique « n points à valider », marqueur de parcours par groupe, frise des phases dans le détail, deux colonnes | : |
+| ~~**U8**~~ Catalogue et détail en mode « Préparer » : **livré le 2026-10-16** ([plan](catalogue-preparer-plan.md)) | nom évocateur en titre, badge « n points à valider » (motifs majeurs en infobulle et dans le détail) + un badge neutre par proposition mineure (U-1), marqueur de parcours par groupe (✓ / ▶ / ○), frise des phases tapable dans le détail, carte d'exercice à deux colonnes dès 720 dp, menu ⋮ « Signaler une proposition », origine « Aujourd'hui » du détail ; le bouton « Suggestion par groupe » est retiré (audit C1 à C5, D1 à D4) | catalogue d'étiquettes, « Aller à », report U-12 d'U7 |
 | ~~**U9**~~ Fiche élève, vue élève et vue de groupe : **livré le 2026-10-16** ([plan](fiche-eleve-plan.md), [ADR 0013](adr/0013-acquittement-des-alertes.md), [ADR 0014](adr/0014-fiche-en-parcours-vue-eleve-et-vue-de-groupe.md)) | parcours en cases (technique × exercice), en-tête en cours / prochain / alerte, courbes repliées, vue « à montrer à l'élève », carte de chaleur technique × élève, assiduité et alertes de groupe, acquittement d'une alerte ; le lot **10b est reporté** (voir le point 10) | « 0 sur 70 », lot 10a (vues) |
 
 ## Audit des séances du 2026-10-15
@@ -203,8 +203,11 @@ Lots UX en H0 :
       mémoire dans `RunSheetCubit`) et *étape de la séance en cours persistée*
       (décision U-5 de [aujourdhui-plan.md](aujourdhui-plan.md)) ; schéma v9.
       Aucun écran d'U9 ne les lit.
-    - **U8** Catalogue et détail en mode « Préparer » : le lot 8 est livré, le
-      marqueur de parcours par groupe a ses données (U9 est livré).
+    - ~~**U8**~~ Catalogue et détail en mode « Préparer » : **livré le
+      2026-10-16** ([plan](catalogue-preparer-plan.md)) ; le marqueur de
+      parcours par groupe lit les données du lot 8 (ADR 0009). Reste le lot 16
+      pour remplacer la copie de l'identifiant de « Signaler une proposition »
+      par le workflow de validation.
     - Restent `[U]` d'U9 : voir [fiche-eleve-plan.md](fiche-eleve-plan.md) § 6.
 11. **Saisons et groupes** : clôture de saison (archiver, effacer les mineurs en
     lot), plusieurs groupes par public, déplacer un élève de groupe.
@@ -257,7 +260,7 @@ Lots UX en H0 :
 
 ```
 H0 : ~~F7~~ → ~~revue T8~~ (faite, constats ouverts ci-dessus) → ~~réaliser D5~~ réalisé (les questions ouvertes sont tranchées ; U2 livré)
-H1 : ~~U5~~ → ~~U6~~ → ~~9~~ → ~~U7~~ → ~~10a + U9~~ → 10b + U8 → 11   (5 à 9, U7, U9 et 10a livrés)
+H1 : ~~U5~~ → ~~U6~~ → ~~9~~ → ~~U7~~ → ~~10a + U9~~ → ~~U8~~ → 10b → 11   (5 à 9, U7, U8, U9 et 10a livrés)
 H2 : U4 → U3 → 14 → 15
 H3 : 16 (avec le mode Relecture de U4) → 17 → 18 → 19 → 20
 H4 : 21 → 22 (+ rappels) → 23

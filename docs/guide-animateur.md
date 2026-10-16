@@ -60,7 +60,7 @@ suivantes) ou demander à l'application une **séance suggérée** pour un group
 
 ### La séance suggérée par groupe
 
-1. Ouvrez **Séances**, puis le bouton **Suggestion par groupe**, choisissez le groupe et cochez les élèves attendus.
+1. Ouvrez **Séances**, puis l'onglet **Suggestion**, choisissez le groupe et cochez les élèves attendus.
 2. L'application propose une séance de **90 min** (enfants) ou **120 min**
    (adultes) : déroulé minuté, exercices à travailler, rappel d'une notion si
    un élève en a besoin, jeu final. Pour les enfants, la carte « Rappel » reste
@@ -106,9 +106,29 @@ bande, rejet naturel, coulé, carreau, angle droit, rétro) et leurs **28 séanc
 dans l'ordre d'enseignement. Une technique compte une à quatre séances, notées
 « séance 2/3 » : la première introduit la notion, les suivantes l'approfondissent.
 
+- Chaque ligne a pour titre le **nom évocateur** de la séance (« Le partage du
+  gâteau », une proposition de l'application, pas un terme fédéral) et, dessous,
+  « Séance 1/2 · Quantité demi-bille ». Une séance qui contient des propositions
+  à relire porte **un seul badge** « 2 points à valider » : survolez-le (ou
+  appui long) pour voir quoi relire. Sans ce badge, rien ne compte comme à
+  valider. Une proposition mineure (la théorie, la règle de lien du jeu) garde
+  son propre **badge neutre** (« Règle de lien du jeu : proposition ») sur toute
+  séance qui en contient, avec ou sans le badge « à valider » : elle est
+  signalée mais ne compte pas dans les points.
+- Pour suivre un groupe, choisissez-le sous **Suivre le parcours d’un groupe** :
+  chaque séance reçoit une coche (déjà faite par le groupe), un triangle
+  « recommandée ensuite » (la séance de l'onglet Suggestion) ou un cercle
+  « à venir ». Sans groupe choisi, aucun marqueur. Le groupe reste choisi quand
+  vous ouvrez une séance puis revenez par le bouton de retour (pas après « Lancer »).
 - Touchez une séance pour la lire : rappel de la séance précédente, théorie
-  illustrée, exercices, jeu, bilan. Le contenu est en **lecture seule** : rien
-  n'y est modifiable.
+  illustrée, exercices, jeu, bilan. La **frise des phases** sous le choix du
+  public mène directement à la phase touchée. Sur tablette et ordinateur
+  (720 dp et plus), chaque exercice montre son schéma à gauche et sa consigne à
+  droite. Le menu **⋮** propose **Signaler une proposition** : l'identifiant de
+  la séance est copié pour être transmis (le circuit de validation viendra
+  plus tard).
+- Ouverte depuis **Aujourd'hui** (bouton Préparer), la séance ramène à
+  Aujourd'hui ; depuis Planifiées, à Planifiées.
 - Les schémas ont été redessinés pour être lisibles d'un coup d'œil :
   - **Se placer** : un joueur schématique, de profil et de dessus, avec des
     repères numérotés (pieds, jambes et hanches, tête, avant-bras, main
@@ -350,8 +370,11 @@ badge **Proposition** (texte, pas seulement une couleur) dans le détail, le gui
 et la présentation ; elle n'est jamais présentée comme règle fédérale.
 
 1. Dans le catalogue, activez **À valider seulement** (ou **Jeux à valider**) :
-   seules les séances concernées restent, avec le **motif** de la validation (jeu,
-   exercices, initiation, rappel).
+   seules les séances concernées restent, chacune avec son badge « n points à
+   valider » ; le motif (jeu, exercices, initiation, rappel) est dans
+   l'infobulle du badge et dans la note du détail. La théorie et la règle de
+   lien `[Prop]` ont leur propre badge neutre « proposition » dans la liste (et
+   sont listées dans la note du détail) mais ne comptent pas dans « n ».
 2. Ouvrez une séance et lancez-la : parcourez rappel, théorie, exercices, jeu et
    bilan pour juger chaque proposition **en contexte**, sans élèves.
 3. Pour valider ou corriger, modifiez la séance dans `docs/knowledge/05-seances/`

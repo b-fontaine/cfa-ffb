@@ -183,8 +183,10 @@ Pas de téléchargement à l'exécution (Linux, Windows, web hors ligne).
   remplissage `secondaryContainer`, contour de 3 dp et libellé gras (jamais la
   couleur seule). Libellé tronqué à l'écran, entier dans la sémantique
   (« Phase 2 sur 5 : entraînement, 35 min, en cours ») et l'infobulle. Prévue
-  pour 3 à 6 phases et des totaux de 90 ou 120 min. Non branchée avant U4 (guide)
-  et U8 (détail).
+  pour 3 à 6 phases et des totaux de 90 ou 120 min. Branchée par U4 (guide) et
+  U8 (détail d'une séance : sous la bascule de public, `currentIndex` à -1,
+  c'est une table des matières). La hauteur d'un segment suit l'échelle du texte
+  (`56 dp × max(1, échelle)`) : à 200 %, minutes et libellé ne débordent pas.
 - **`StepAppBar`** : `PreferredSizeWidget` de 48 dp. `title` (en-tête
   sémantique, une ligne, ellipse), `position` / `total` affichés « 6/9 » et
   annoncés « Étape 6 sur 9 », menu ⋮ construit depuis `actions`
@@ -764,3 +766,34 @@ s'appuient sur ce monde via `WorldScope` / `LoadedScope`, avec les vrais Bloc.
 - Usage : rendu par `AppShell` au-dessus de `/planner`, `/catalogue` et
   `/session` uniquement (destination « Séances »). Use case Widgetbook :
   `app_tabs_use_cases.dart`.
+
+
+### Catalogue et détail en mode « Préparer » (lot U8, R12, R13)
+
+- **`JourneyMarker`** (`shared/ui`, parcours d'un groupe) : coche pleine
+  (`Icons.check_circle`, « Faite »), lecture (`Icons.play_circle`,
+  « Recommandée ensuite ») ou cercle vide (`Icons.radio_button_unchecked`,
+  « À venir »). Le sens est porté par la forme et par l'étiquette sémantique
+  (`excludeSemantics`), jamais par la couleur seule ; `secondary` (bleu-tapis,
+  ADR 0010) pour fait / recommandé, `onSurfaceVariant` pour à venir, jamais le
+  rouge. Cible de 48 dp. `JourneyMark` et `GroupChoice` vivent dans `shared/lib`.
+  Use cases : `journey_marker_use_cases.dart`.
+- **Ligne du catalogue** : nom évocateur en titre (`[Prop]`, dit **une fois** dans
+  l'en-tête par `catalogueNamesNote` plutôt qu'un badge sur 28 lignes),
+  « Séance k/n · technique » en sous-titre, au plus un `StatusBadge` d'attention
+  « n points à valider » (icône et libellé) dont l'infobulle et la sémantique ne
+  listent que les motifs qui comptent (jeu, exercices, initiation, rappel), plus
+  un `StatusBadge` neutre par proposition mineure (théorie, règle de lien),
+  d'infobulle `catalogueMinorHint` et de sémantique `catalogueMinorSemantics`.
+  Ce badge neutre s'affiche sur toute ligne qui en a, que n vaille 0 ou plus
+  (décision U-1). Plus de pastille « Source fédérale » en liste (elle reste dans
+  le détail) ni de `ProposalBadge` ; sans groupe choisi, pas de colonne de
+  marqueurs.
+- **Détail** : la note « n points à valider » liste un motif par ligne ; la
+  carte d'exercice passe sur deux colonnes dès 720 dp de fenêtre (schéma
+  `flex 5` à gauche, texte `flex 6` à droite) et reste en colonne unique
+  (schéma puis texte) en dessous ; `ScrollPage` gagne `maxWidth` (1100 pour le
+  détail, 720 par défaut) et `actions` (menu ⋮ « Signaler une proposition »).
+- Use cases Widgetbook : `session_sheet_use_cases.dart` (catalogue avec groupe
+  choisi, page du catalogue, page du détail avec l'origine du retour).
+

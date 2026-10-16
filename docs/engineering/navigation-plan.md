@@ -20,9 +20,9 @@ contenu de deux d'entre elles change.
    adresses et leurs liens profonds sont inchangés.
 3. **Atterrissage** : la destination « Séances » ouvre toujours le Catalogue
    (comportement existant, parcours et scénarios conservés). Le choix d'un
-   atterrissage sur « Planifiées » relève de U8 ; U7 n'y touche pas (« Préparer »
-   et « Ouvrir dans Planifiées » de l'accueil mènent à `/planner` ou au détail
-   avec retour vers « Planifiées »).
+   atterrissage sur « Planifiées » relève de U8 ; U7 n'y touche pas (« Ouvrir
+   dans Planifiées » de l'accueil mène à `/planner` ; depuis U8, « Préparer »
+   mène au détail avec retour vers « Aujourd'hui », `?from=today`).
 4. **« Plus »** : écran de liste (`/more`) qui mène à Sauvegarde (`/backup`,
    écran existant, avec retour à « Plus »). `/backup` sélectionne « Plus ».
 5. **Composant** : `AppTabs` (`shared/ui/app_tabs.dart`), sans dépendance
@@ -46,8 +46,17 @@ contenu de deux d'entre elles change.
   l'entrée « Réglages » de « Plus » mène à `/settings` (retour « Retour à
   Plus ») ; « Plus » contient Sauvegarde et Réglages.
 - **À propos et sources** : aucun contenu à y mettre aujourd'hui ; reporté.
-- **Bouton « Suggestion par groupe »** du catalogue : conservé, redondant avec
-  l'onglet ; son retrait relève de U8.
+- ~~**Bouton « Suggestion par groupe »** du catalogue~~ : **retiré par U8**
+  (2026-10-16) ; l'onglet « Suggestion » de « Séances » est l'unique accès, les
+  20 scénarios qui passaient par le bouton tapent désormais l'onglet.
+- **Origine du détail d'une séance** (U8) : `?from=` prend `planner` (retour à
+  « Planifiées »), `today` (retour à « Aujourd'hui ») ou rien (retour au
+  catalogue, avec `?group=` restauré). Le choix d'un atterrissage de « Séances »
+  sur « Planifiées » reste ouvert.
+- **« Lancer » et le guide** (U8, décision U-9 : à traiter avec le guide, hors
+  lot, rien codé) : « Lancer » depuis « Aujourd'hui » revient à « Planifiées »
+  (le guide d'une séance planifiée revient au planificateur) et le guide perd
+  `from` et `group` : le retour du guide mène à la séance sans origine.
 
 ## Rappel de sauvegarde (volet 2)
 

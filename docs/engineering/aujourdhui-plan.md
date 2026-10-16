@@ -177,9 +177,10 @@ injectée `Clock.today()`), comme la planification.
 - **Séance sans fiche du catalogue** : pas de « Préparer » ni « Lancer » ;
   action unique « Ouvrir dans Planifiées ». **Groupe disparu**
   (`groupUnavailable`) : mention d'attention, « Lancer » reste possible.
-- **« Préparer »** = `AppRoutes.sheet(sheetId, audience, fromPlanner: true)` (le
-  retour mène à « Planifiées », comportement de la ligne planifiée). L'origine
-  « Aujourd'hui » est reportée à U8 (détail en mode « Préparer »), voir U-12.
+- **« Préparer »** = `AppRoutes.sheet(sheetId, audience, origin:
+  SheetOrigin.today)` depuis U8 : le retour mène à « Aujourd'hui » (libellé
+  « Aujourd'hui »). En U7 c'était `fromPlanner: true` (retour à « Planifiées »,
+  comportement de la ligne planifiée), voir U-12 ci-dessous : **soldé par U8**.
   **« Lancer »** = `AppRoutes.guide(sheetId, audience, session: <id>)`.
 
 ### 2.4 « Terminer » mène au bilan sans casser reprise ni liens profonds
@@ -293,7 +294,7 @@ sans effet sur le reste. Aucune dépendance.
 ## 4. Reportés (documentés, rien de stubbé)
 
 - ~~Alertes de **groupe** (« 4 élèves sur 8 »)~~ : **soldé avec U9** (carte « Alertes de groupe » sur « Aujourd'hui », grille du groupe ; seuil `groupFailureSharePercent`).
-- Origine « Aujourd'hui » du détail d'une séance (retour direct) : U8.
+- ~~Origine « Aujourd'hui » du détail d'une séance (retour direct) : U8.~~ **Soldé avec U8** (`SheetOrigin.today`, adresse `?from=today`).
 - Rappels natifs (veille de séance, sauvegarde) : H4, lot 22.
 - Persistance de la séance en cours au rechargement : non faite (U-5).
 - Bilan d'une séance **sans** saisie, entrée du bilan depuis l'historique : § 11.
@@ -504,7 +505,11 @@ Le plan suppose la proposition par défaut ; aucune n'est tranchée.
   tous.
 - **U-12 « Préparer »** : retour vers « Planifiées » (proposé, comportement
   actuel) en attendant U8, ou retour direct à « Aujourd'hui » dès U7 (un
-  paramètre d'origine et un libellé de plus dans le détail).
+  paramètre d'origine et un libellé de plus dans le détail). **Soldé par U8
+  (2026-10-16)** : le paramètre d'adresse `from` prend `catalogue`, `planner` ou
+  `today` ; « Préparer » depuis « Aujourd'hui » revient à « Aujourd'hui ». Le
+  retour du guide lancé depuis « Aujourd'hui » reste « Planifiées » (hors U8,
+  `[U-9]` du plan du catalogue).
 
 ## 12. Réalisation (écarts au plan)
 
@@ -554,3 +559,11 @@ Le plan suppose la proposition par défaut ; aucune n'est tranchée.
 | 7 | Assertions faibles | Valeurs exactes (`'a'`, `'Bloc a'`). |
 | 8 | Notion « séance à venir » dupliquée | Non unifiée, volontairement : les deux règles diffèrent. `upcomingOf` (accueil) retient les séances **à partir d'aujourd'hui** (une séance du jour sans saisie reste à donner) ; le bilan retient les séances **strictement après** aujourd'hui (la séance du jour est celle qu'on vient de donner). Une méthode `Session.isUpcoming` unique cacherait cette différence. |
 | 9 | Placement de `RunningSession` | Dette documentée ci-dessus (§ 12). |
+
+### Constats du parcours web d'U8 (hors lot, à traiter)
+
+- Une saisie le jour J marque « faites » toutes les séances planifiées ce
+  jour-là pour le groupe (ADR 0007) : l'accueil peut annoncer « Aucune séance
+  n'est planifiée » alors qu'une autre séance du même jour reste planifiée.
+- À 320 dp, le libellé « Aujourd'hui » de la barre du bas se coupe en
+  « Aujourd'h / ui ».

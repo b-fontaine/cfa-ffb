@@ -296,9 +296,30 @@ ADR 0004, lot L4. Lecture seule de bout en bout :
   d'écran), `SheetDetailBloc` (public affiché, relance après échec). Des schémas illisibles ne font pas échouer la lecture.
 - `pages/sheet_catalogue`, `pages/sheet_detail` : composition par callbacks ;
   un identifiant inconnu ou mal formé mène à `NotFoundPage`.
-- Routes `/catalogue` et `/catalogue/:sheetId` (`?audience=children|adults`),
-  destination 3 du shell (« Séances ») ; la suggestion par groupe `/session`
-  reste accessible par un bouton en tête du catalogue.
+- Routes `/catalogue` (`?group=<id>` : groupe dont le parcours est montré) et
+  `/catalogue/:sheetId` (`?audience=children|adults`, `?from=planner|today`
+  origine du retour, `?group=<id>` groupe du catalogue à restaurer), destination
+  « Séances » du shell. La suggestion par groupe `/session` n'a plus de bouton
+  dans le catalogue : son onglet « Suggestion » est l'unique accès (lot U8).
+- **Catalogue en mode « Préparer » (lot U8, [plan](catalogue-preparer-plan.md))** :
+  - `SheetRow` / `sheetRowOf` (`features/browse_sheets/domain`) : nom évocateur,
+    technique, partie, motifs qui comptent (le « n » du badge unique) et motifs
+    seulement signalés (théorie, règle de lien) ; `reviewPointCount`
+    (`entities/session_sheet`) garantit `n > 0 ⇔ needsReview`, donc badge et
+    filtre « À valider » ne divergent pas.
+  - Parcours d'un groupe (`features/suggest_session`) : `givenSheets` (règle
+    « faite », ADR 0009, extraite de `suggestSheet` et partagée), `GetGroupJourney`
+    (`SuggestNextSheet` tel quel pour la séance recommandée), `ListJourneyGroups`
+    (groupes des saisons en cours, règle du planificateur) et `GroupJourneyCubit`
+    (le dernier choix gagne ; un échec ne donne aucun marqueur). `JourneyMark` et
+    `GroupChoice` (`shared/lib`) sont les seuls types échangés : `browse_sheets`
+    n'importe jamais `suggest_session` ; c'est `pages/sheet_catalogue` qui relie
+    `SheetCatalogueBloc` et `GroupJourneyCubit`.
+  - `SheetOrigin { catalogue, planner, today }` (`app/router.dart`) : origine du
+    détail dans l'adresse (`from`), jamais un état en mémoire ; toute valeur
+    inconnue retombe sur `catalogue`. `AppRoutes.catalogueFor(group)` restaure
+    le groupe au retour. Le détail reçoit seulement `backLabel` (la page ne
+    connaît pas les routes).
 - Lien séance planifiée ↔ séance du catalogue (lot L5) : `Session.sheetId`
   (`SheetId?`, `shared/lib`) ; `features/plan_session` lit le catalogue par
   `ListSheetOptions` (`SheetOption` et `sheetOptionsOf` vivent en
