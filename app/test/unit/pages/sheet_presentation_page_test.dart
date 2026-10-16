@@ -1,4 +1,5 @@
 import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
+import 'package:billard_cfa/features/run_sheet/presentation/bloc/fullscreen_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_presentation_cubit.dart';
 import 'package:billard_cfa/pages/sheet_presentation/presentation/sheet_presentation_page.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../support/fake_fullscreen_controller.dart';
 import '../../support/run_sheet_world.dart';
 import '../../support/session_sheet_fixtures.dart';
 import '../shared/ui/pump_ui.dart';
@@ -21,15 +23,23 @@ void main() {
     WidgetTester tester,
     RunPresentationCubit cubit, {
     VoidCallback? onHome,
+    FakeFullscreenController? fullscreen,
   }) async {
+    final controller = fullscreen ?? FakeFullscreenController();
+    addTearDown(controller.close);
+    final fullscreenCubit = FullscreenCubit(controller);
+    addTearDown(fullscreenCubit.close);
     tester.view.physicalSize = const Size(1000, 800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     final closed = <int>[];
     await pumpUi(
       tester,
-      BlocProvider<RunPresentationCubit>.value(
-        value: cubit,
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<RunPresentationCubit>.value(value: cubit),
+          BlocProvider<FullscreenCubit>.value(value: fullscreenCubit),
+        ],
         child: SheetPresentationPage(
           onClose: closed.add,
           onHome: onHome ?? () {},
@@ -150,5 +160,26 @@ void main() {
 
     expect(attempts, 2);
     expect(closed, [0]);
+  });
+
+  testWidgets('switches the full screen and keeps it when closing', (
+    tester,
+  ) async {
+    final controller = FakeFullscreenController();
+    final closed = await pump(
+      tester,
+      await started(tester),
+      fullscreen: controller,
+    );
+
+    await tester.tap(find.text('Full screen'));
+    await tester.pump();
+    expect(find.text('Exit full screen'), findsOneWidget);
+    await tester.tap(find.text('Close'));
+
+    expect(controller.enterCalls, 1);
+    expect(controller.exitCalls, 0);
+    expect(controller.isActive, isTrue);
+    expect(closed, [1]);
   });
 }

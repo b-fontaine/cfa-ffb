@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:billard_cfa/app/di/injection.dart';
+import 'package:billard_cfa/app/platform/fullscreen_controller_native.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
@@ -9,7 +10,9 @@ import 'package:billard_cfa/features/backup_data/data/file_picker_backup_files.d
 import 'package:billard_cfa/features/backup_data/data/in_memory_backup_files.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_files.dart';
 import 'package:billard_cfa/features/backup_data/domain/export_backup.dart';
+import 'package:billard_cfa/features/run_sheet/presentation/bloc/fullscreen_cubit.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/fullscreen_controller.dart';
 import 'package:billard_cfa/shared/lib/id_generator.dart';
 import 'package:billard_cfa/shared/lib/storage_status.dart';
 import 'package:billard_cfa/shared/lib/unit_of_work.dart';
@@ -71,6 +74,26 @@ void main() {
 
     expect(result, isA<Ok<String>>());
   });
+
+  test(
+    'cubits are per screen, the full screen controller is a singleton',
+    () async {
+      await configureProduction();
+
+      final first = getIt<FullscreenCubit>();
+      final second = getIt<FullscreenCubit>();
+      addTearDown(first.close);
+      addTearDown(second.close);
+
+      expect(identical(first, second), isFalse);
+      expect(
+        identical(getIt<FullscreenController>(), getIt<FullscreenController>()),
+        isTrue,
+      );
+      // Hors navigateur : le contrôleur natif (immersif sur mobile).
+      expect(getIt<FullscreenController>(), isA<NativeFullscreenController>());
+    },
+  );
 
   test('the test environment keeps repositories in memory', () async {
     await configureDependencies(environment: Environment.test);

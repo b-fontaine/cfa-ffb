@@ -14,9 +14,11 @@ import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/fullscreen_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' show Environment;
 
+import 'fake_fullscreen_controller.dart';
 import 'fixed_clock.dart';
 
 /// Monde des scénarios d'interface : graphe get_it réel (dépôts en mémoire,
@@ -33,6 +35,15 @@ class UiWorld {
 
   static late FixedClock _clock;
   static bool _ready = false;
+
+  /// Plein écran de l'appareil simulé : pris en charge par défaut ; un
+  /// `Given` peut en décider avant le lancement ([prepare]).
+  static bool fullscreenSupported = true;
+  static FakeFullscreenController? _fullscreen;
+
+  /// Le double de plein écran du scénario en cours.
+  static FakeFullscreenController get fullscreen =>
+      _fullscreen ?? (throw StateError("l'application n'est pas lancée"));
   static int _seededDays = 0;
 
   static Future<void> prepare(WidgetTester tester) async {
@@ -42,10 +53,19 @@ class UiWorld {
     await getIt.unregister<Clock>();
     _clock = FixedClock(today);
     getIt.registerSingleton<Clock>(_clock);
+    if (getIt.isRegistered<FullscreenController>()) {
+      await getIt.unregister<FullscreenController>();
+    }
+    final fullscreen = FakeFullscreenController(supported: fullscreenSupported);
+    _fullscreen = fullscreen;
+    getIt.registerSingleton<FullscreenController>(fullscreen);
     _ready = true;
     _seededDays = 0;
     addTearDown(() async {
       _ready = false;
+      fullscreenSupported = true;
+      await fullscreen.close();
+      _fullscreen = null;
       await getIt.reset();
     });
     // Le chargement d'asset est de l'E/S réelle : une fois le catalogue et les

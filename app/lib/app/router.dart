@@ -24,6 +24,7 @@ import 'package:billard_cfa/features/plan_session/presentation/bloc/upcoming_ses
 import 'package:billard_cfa/features/record_results/presentation/bloc/recorded_sessions_bloc.dart';
 import 'package:billard_cfa/features/review_session/presentation/bloc/session_review_bloc.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
+import 'package:billard_cfa/features/run_sheet/presentation/bloc/fullscreen_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_presentation_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_sessions.dart';
@@ -975,8 +976,11 @@ GoRouter buildRouter() => GoRouter(
           via: via,
           group: key.group,
         );
-        return BlocProvider.value(
-          value: cubit,
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: cubit),
+            BlocProvider(create: (_) => getIt<FullscreenCubit>()),
+          ],
           child: SheetGuidePage(
             onBack: () => context.go(back()),
             onHome: () => context.go(AppRoutes.home),
@@ -1039,19 +1043,24 @@ GoRouter buildRouter() => GoRouter(
         final from = _guideFrom(query['from']);
         final via = SheetOrigin.tryParse(query['via']);
         final mode = RunMode.tryParse(query['mode']);
-        return BlocProvider(
-          create: (_) {
-            final cubit = getIt<RunPresentationCubit>();
-            unawaited(
-              cubit.started(
-                sheetId: id,
-                audience: audience,
-                sessionId: session,
-                step: int.tryParse(query['step'] ?? '') ?? 0,
-              ),
-            );
-            return cubit;
-          },
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) {
+                final cubit = getIt<RunPresentationCubit>();
+                unawaited(
+                  cubit.started(
+                    sheetId: id,
+                    audience: audience,
+                    sessionId: session,
+                    step: int.tryParse(query['step'] ?? '') ?? 0,
+                  ),
+                );
+                return cubit;
+              },
+            ),
+            BlocProvider(create: (_) => getIt<FullscreenCubit>()),
+          ],
           child: SheetPresentationPage(
             onClose: (step) => context.go(
               AppRoutes.guide(

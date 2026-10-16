@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/session_sheet/domain/scoring.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
+import 'package:billard_cfa/features/run_sheet/presentation/bloc/fullscreen_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/ui/run_sheet_view.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
@@ -33,6 +34,7 @@ class _Calls {
   int shown = 0;
   int finished = 0;
   int backs = 0;
+  int fullscreenToggles = 0;
   final recorded = <ExerciseRef>[];
 }
 
@@ -62,6 +64,7 @@ void main() {
     double textScale = 1,
     bool applyStep = true,
     Size? size,
+    FullscreenState? fullscreen,
   }) async {
     tester.view.physicalSize =
         size ?? (tablet ? const Size(1280, 800) : const Size(400, 800));
@@ -92,6 +95,10 @@ void main() {
               onFinish: () => calls.finished++,
               onRecord: calls.recorded.add,
               onBack: () => calls.backs++,
+              fullscreen: fullscreen,
+              onToggleFullscreen: fullscreen == null
+                  ? null
+                  : () => calls.fullscreenToggles++,
               onModeChanged: (mode) {
                 calls.modes.add(mode);
                 cubit.modeChanged(mode);
@@ -1262,6 +1269,87 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('3 proposals on this step.'), findsOneWidget);
+    });
+  });
+
+  group('full screen entry of the menu', () {
+    Future<List<String>> menuOrder(
+      WidgetTester tester,
+      FullscreenState? fullscreen,
+    ) async {
+      await pump(
+        tester,
+        world(),
+        'demi-bille-1',
+        step: 3,
+        tablet: true,
+        fullscreen: fullscreen,
+      );
+      await openMenu(tester);
+      final labels = [
+        'The session',
+        'Full screen',
+        'Exit full screen',
+        'Reset the timer',
+      ];
+      final found = <String, double>{
+        for (final label in labels)
+          if (find.text(label).evaluate().isNotEmpty)
+            label: tester.getTopLeft(find.text(label)).dy,
+      };
+      return (found.keys.toList()
+        ..sort((a, b) => found[a]!.compareTo(found[b]!)));
+    }
+
+    testWidgets('sits between the session and the timer reset', (tester) async {
+      expect(
+        await menuOrder(
+          tester,
+          const FullscreenState(supported: true, active: false),
+        ),
+        ['The session', 'Full screen', 'Reset the timer'],
+      );
+    });
+
+    testWidgets('offers the way out when active', (tester) async {
+      expect(
+        await menuOrder(
+          tester,
+          const FullscreenState(supported: true, active: true),
+        ),
+        ['The session', 'Exit full screen', 'Reset the timer'],
+      );
+    });
+
+    testWidgets('is left out when the device cannot do it', (tester) async {
+      expect(
+        await menuOrder(
+          tester,
+          const FullscreenState(supported: false, active: false),
+        ),
+        ['The session', 'Reset the timer'],
+      );
+    });
+
+    testWidgets('is left out when it is not wired', (tester) async {
+      expect(await menuOrder(tester, null), ['The session', 'Reset the timer']);
+    });
+
+    testWidgets('switches the full screen on tap', (tester) async {
+      final (_, calls) = await pump(
+        tester,
+        world(),
+        'demi-bille-1',
+        step: 3,
+        tablet: true,
+        fullscreen: const FullscreenState(supported: true, active: false),
+      );
+      await openMenu(tester);
+
+      await tester.tap(find.text('Full screen'));
+      await tester.pumpAndSettle();
+
+      expect(calls.fullscreenToggles, 1);
     });
   });
 }

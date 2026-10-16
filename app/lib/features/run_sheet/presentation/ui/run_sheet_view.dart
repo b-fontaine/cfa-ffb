@@ -12,6 +12,7 @@ import 'package:billard_cfa/entities/session_sheet/presentation/sheet_illustrati
 import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
+import 'package:billard_cfa/features/run_sheet/presentation/bloc/fullscreen_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/ui/run_step_titles.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
@@ -118,8 +119,15 @@ class RunSheetView extends StatelessWidget {
     required this.onModeChanged,
     this.onResume,
     this.onRestart,
+    this.fullscreen,
+    this.onToggleFullscreen,
     super.key,
   });
+
+  /// État du plein écran et sa bascule (menu ⋮) ; absents ou non pris en
+  /// charge, l'entrée du menu est masquée.
+  final FullscreenState? fullscreen;
+  final VoidCallback? onToggleFullscreen;
 
   final RunSheetState state;
   final ValueChanged<int> onStep;
@@ -219,6 +227,17 @@ class RunSheetView extends StatelessWidget {
                               _showSessionInfo(context, plan, step),
                             ),
                           ),
+                          if ((fullscreen?.supported ?? false) &&
+                              onToggleFullscreen != null)
+                            StepAppBarAction(
+                              label: fullscreen!.active
+                                  ? l10n.guideFullscreenExit
+                                  : l10n.guideFullscreen,
+                              icon: fullscreen!.active
+                                  ? Icons.fullscreen_exit
+                                  : Icons.fullscreen,
+                              onSelected: onToggleFullscreen!,
+                            ),
                           StepAppBarAction(
                             label: l10n.guideTimerReset,
                             icon: Icons.restart_alt,

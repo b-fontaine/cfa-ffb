@@ -7,13 +7,17 @@ import 'package:flutter/material.dart';
 class ClothPattern extends StatelessWidget {
   const ClothPattern({super.key});
 
+  /// Opacité des losanges : assez faible pour rester décoratif, le contraste
+  /// du texte posé dessus est vérifié à cette valeur (test de contraste).
+  static const double opacity = 0.06;
+
   @override
   Widget build(BuildContext context) {
     final balls = Theme.of(context).extension<BallColors>() ?? BallColors.light;
     return ExcludeSemantics(
       child: CustomPaint(
         painter: ClothPatternPainter(
-          color: balls.cloth.withValues(alpha: 0.06),
+          color: balls.cloth.withValues(alpha: opacity),
         ),
         size: Size.infinite,
       ),

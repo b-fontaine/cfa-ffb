@@ -1,6 +1,9 @@
 import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
+import 'package:billard_cfa/features/run_sheet/presentation/bloc/fullscreen_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/ui/run_presentation_view.dart';
 import 'package:billard_cfa/shared/lib/provenance.dart';
+import 'package:billard_cfa/shared/ui/cloth_pattern.dart';
+import 'package:billard_cfa/shared/ui/diagram_stage.dart';
 import 'package:billard_cfa/shared/ui/proposal_badge.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_player.dart';
 import 'package:flutter/material.dart';
@@ -50,10 +53,11 @@ void main() {
     RunPlan plan,
     int step, {
     bool tablet = false,
+    Size? size,
+    FullscreenState? fullscreen,
   }) async {
-    tester.view.physicalSize = tablet
-        ? const Size(1280, 800)
-        : const Size(400, 800);
+    tester.view.physicalSize =
+        size ?? (tablet ? const Size(1280, 800) : const Size(400, 800));
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     final calls = <String>[];
@@ -65,6 +69,10 @@ void main() {
         onPrevious: () => calls.add('previous'),
         onNext: () => calls.add('next'),
         onClose: () => calls.add('close'),
+        fullscreen: fullscreen,
+        onToggleFullscreen: fullscreen == null
+            ? null
+            : () => calls.add('fullscreen'),
       ),
     );
     return calls;
@@ -202,5 +210,205 @@ void main() {
       await pump(tester, p, step, tablet: true);
       expect(tester.takeException(), isNull, reason: 'étape $step');
     }
+  });
+
+  group('stage', () {
+    testWidgets('puts a single table diagram on the stage', (tester) async {
+      await pump(tester, await plan(tester, world()), 3, tablet: true);
+
+      expect(find.byType(DiagramStage), findsOneWidget);
+      expect(find.byType(TableDiagramPlayer), findsOneWidget);
+    });
+
+    testWidgets('keeps the column for a step with several illustrations', (
+      tester,
+    ) async {
+      await pump(tester, await plan(tester, world()), 1, tablet: true);
+
+      expect(find.byType(DiagramStage), findsNothing);
+      expect(find.text('Légende contact'), findsOneWidget);
+      expect(find.text('Légende autre'), findsOneWidget);
+    });
+
+    testWidgets('keeps the whole caption above the bar on a tablet (F1)', (
+      tester,
+    ) async {
+      await pump(tester, await plan(tester, world()), 3, tablet: true);
+
+      final caption = tester.getRect(
+        find.byKey(const ValueKey('diagram-stage-caption')),
+      );
+      final bar = tester.getRect(
+        find.byKey(const ValueKey('presentation-bottom-bar')),
+      );
+      expect(caption.bottom, lessThanOrEqualTo(bar.top + 0.5));
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('puts the cloth pattern behind both kinds of step', (
+      tester,
+    ) async {
+      final p = await plan(tester, world());
+      for (final step in [1, 3, 4]) {
+        await pump(tester, p, step, tablet: true);
+        expect(find.byType(ClothPattern), findsOneWidget, reason: '$step');
+      }
+    });
+
+    testWidgets('has no height computed from the text any more', (
+      tester,
+    ) async {
+      // La même scène reste correcte quand le texte système grandit : rien
+      // n'est mesuré à la main.
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pump(tester, await plan(tester, world()), 3, tablet: true);
+
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('full screen', () {
+    const supported = FullscreenState(supported: true, active: false);
+
+    testWidgets('offers the button and switches on tap', (tester) async {
+      final calls = await pump(
+        tester,
+        await plan(tester, world()),
+        3,
+        tablet: true,
+        fullscreen: supported,
+      );
+
+      await tester.tap(find.text('Full screen'));
+
+      expect(calls, ['fullscreen']);
+    });
+
+    testWidgets('says how to leave when active, not by color alone', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        await plan(tester, world()),
+        3,
+        tablet: true,
+        fullscreen: const FullscreenState(supported: true, active: true),
+      );
+
+      expect(find.text('Exit full screen'), findsOneWidget);
+      expect(find.byIcon(Icons.fullscreen_exit), findsOneWidget);
+    });
+
+    testWidgets('tints the active button carpet blue, only when active', (
+      tester,
+    ) async {
+      final p = await plan(tester, world());
+      Color? background(Finder inside) => tester
+          .widget<ButtonStyleButton>(
+            find.ancestor(
+              of: inside,
+              matching: find.byWidgetPredicate((w) => w is ButtonStyleButton),
+            ),
+          )
+          .style
+          ?.backgroundColor
+          ?.resolve(<WidgetState>{});
+
+      await pump(
+        tester,
+        p,
+        3,
+        tablet: true,
+        fullscreen: const FullscreenState(supported: true, active: true),
+      );
+      final scheme = Theme.of(tester.element(find.byType(RunPresentationView)))
+          .colorScheme;
+      expect(background(find.text('Exit full screen')), scheme.primary);
+
+      await pump(tester, p, 3, tablet: true, fullscreen: supported);
+      expect(background(find.text('Full screen')), isNull);
+
+      await pump(
+        tester,
+        p,
+        3,
+        size: const Size(320, 640),
+        fullscreen: const FullscreenState(supported: true, active: true),
+      );
+      final iconButton = tester.widget<IconButton>(
+        find.widgetWithIcon(IconButton, Icons.fullscreen_exit),
+      );
+      expect(
+        iconButton.style?.backgroundColor?.resolve(<WidgetState>{}),
+        scheme.primary,
+      );
+    });
+
+    testWidgets('is hidden when not supported or not wired', (tester) async {
+      final p = await plan(tester, world());
+      await pump(
+        tester,
+        p,
+        3,
+        tablet: true,
+        fullscreen: const FullscreenState(supported: false, active: false),
+      );
+      expect(find.text('Full screen'), findsNothing);
+
+      await pump(tester, p, 3, tablet: true);
+      expect(find.text('Full screen'), findsNothing);
+    });
+
+    testWidgets('switches with the F key', (tester) async {
+      final calls = await pump(
+        tester,
+        await plan(tester, world()),
+        3,
+        tablet: true,
+        fullscreen: supported,
+      );
+
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.keyF);
+
+      expect(calls, ['fullscreen']);
+    });
+
+    testWidgets('ignores the F key where the full screen is unavailable', (
+      tester,
+    ) async {
+      final calls = await pump(
+        tester,
+        await plan(tester, world()),
+        3,
+        tablet: true,
+        fullscreen: const FullscreenState(supported: false, active: false),
+      );
+
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.keyF);
+
+      expect(calls, isEmpty);
+    });
+
+    testWidgets('shrinks to an icon with a 48 dp target on a phone', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        await plan(tester, world()),
+        3,
+        size: const Size(320, 640),
+        fullscreen: supported,
+      );
+
+      expect(find.text('Full screen'), findsNothing);
+      final button = find.byTooltip('Full screen');
+      expect(button, findsOneWidget);
+      expect(tester.getSize(button).width, greaterThanOrEqualTo(48));
+      expect(tester.getSize(button).height, greaterThanOrEqualTo(48));
+      expect(tester.takeException(), isNull);
+    });
   });
 }

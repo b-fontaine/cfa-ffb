@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:billard_cfa/features/run_sheet/presentation/bloc/fullscreen_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/ui/run_sheet_view.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
@@ -26,6 +27,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// séance (avec l'identifiant de la saisie ouverte depuis ce guide, s'il y en
 /// a une : le routeur mène alors au bilan) et [onStepChanged] reporte dans
 /// l'adresse l'étape (et le mode) que l'animateur vient de choisir.
+///
+/// Le plein écran (menu ⋮) vient d'un `FullscreenCubit` fourni par l'appelant.
 ///
 /// L'écran est de premier niveau (ni rail ni barre de navigation) : son
 /// en-tête compact porte la flèche de retour.
@@ -79,6 +82,9 @@ class SheetGuidePage extends StatelessWidget {
                   constraints: const BoxConstraints(maxWidth: 1100),
                   child: RunSheetView(
                     state: state,
+                    fullscreen: context.watch<FullscreenCubit>().state,
+                    onToggleFullscreen: () =>
+                        unawaited(context.read<FullscreenCubit>().toggle()),
                     onBack: onBack,
                     onStep: (step) {
                       context.read<RunSheetCubit>().showStep(step);

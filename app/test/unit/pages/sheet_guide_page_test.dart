@@ -1,4 +1,5 @@
 import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
+import 'package:billard_cfa/features/run_sheet/presentation/bloc/fullscreen_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit.dart';
 import 'package:billard_cfa/pages/sheet_guide/presentation/sheet_guide_page.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../support/fake_fullscreen_controller.dart';
 import '../../support/run_sheet_world.dart';
 import '../shared/ui/pump_ui.dart';
 
@@ -26,15 +28,26 @@ class _Calls {
 }
 
 void main() {
-  Future<_Calls> pump(WidgetTester tester, RunSheetCubit cubit) async {
+  Future<_Calls> pump(
+    WidgetTester tester,
+    RunSheetCubit cubit, {
+    FakeFullscreenController? fullscreen,
+  }) async {
+    final controller = fullscreen ?? FakeFullscreenController();
+    addTearDown(controller.close);
+    final fullscreenCubit = FullscreenCubit(controller);
+    addTearDown(fullscreenCubit.close);
     tester.view.physicalSize = const Size(800, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     final calls = _Calls();
     await pumpUi(
       tester,
-      BlocProvider<RunSheetCubit>.value(
-        value: cubit,
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<RunSheetCubit>.value(value: cubit),
+          BlocProvider<FullscreenCubit>.value(value: fullscreenCubit),
+        ],
         child: SheetGuidePage(
           onBack: () => calls.back++,
           onHome: () => calls.home++,
@@ -291,5 +304,37 @@ void main() {
     expect(calls.recorded, [
       (ExerciseRef(blockId: 'demi-bille', number: 2), 'demi-bille', 'posture'),
     ]);
+  });
+
+  testWidgets('offers the full screen in the menu and switches it', (
+    tester,
+  ) async {
+    final controller = FakeFullscreenController();
+    await pump(tester, await real(tester), fullscreen: controller);
+
+    await tester.tap(find.byKey(const ValueKey('step-app-bar-menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Full screen'));
+    await tester.pumpAndSettle();
+
+    expect(controller.enterCalls, 1);
+    await tester.tap(find.byKey(const ValueKey('step-app-bar-menu')));
+    await tester.pumpAndSettle();
+    expect(find.text('Exit full screen'), findsOneWidget);
+  });
+
+  testWidgets('hides the full screen entry when it is not supported', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      await real(tester),
+      fullscreen: FakeFullscreenController(supported: false),
+    );
+
+    await tester.tap(find.byKey(const ValueKey('step-app-bar-menu')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Full screen'), findsNothing);
   });
 }
