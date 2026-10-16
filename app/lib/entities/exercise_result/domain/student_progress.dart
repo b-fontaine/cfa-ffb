@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart';
@@ -30,6 +31,12 @@ abstract class StudentProgress with _$StudentProgress {
 
     /// Exercices d'un bloc marqué repris par des passages.
     @Default(<ExerciseRef>{}) Set<ExerciseRef> resumedExercises,
+
+    /// Alertes actuellement vues par l'animateur (ADR 0013) : un acquittement
+    /// par exercice, seulement tant qu'il masque une alerte (le dernier
+    /// passage de l'exercice est celui du « Vu » et l'alerte serait active).
+    @Default(<ExerciseRef, AlertAcknowledgement>{})
+    Map<ExerciseRef, AlertAcknowledgement> acknowledgedAlerts,
   }) = _StudentProgress;
 
   const StudentProgress._();
@@ -42,12 +49,18 @@ abstract class StudentProgress with _$StudentProgress {
   /// gagne ; un bloc inconnu de [rates] est ignoré. Un exercice d'un bloc
   /// marqué est acquis tant qu'aucun passage sur cet exercice n'est daté du
   /// jour du positionnement ou après (`dateOnly`, `>=`).
+  ///
+  /// [acknowledgements] (ADR 0013) : les « Vu » de l'élève sont filtrés ;
+  /// pour un même exercice, le plus récent gagne. Un « Vu » masque l'alerte
+  /// tant que le dernier passage de l'exercice est celui auquel il est lié ;
+  /// il ne modifie ni les résultats ni les échecs consécutifs.
   factory StudentProgress.derive({
     required StudentId studentId,
     required List<ExerciseAttempt> attempts,
     required List<BlockAcquisition> acquisitions,
     required Map<ExerciseRef, SuccessRate> rates,
     required RulesConfig config,
+    List<AlertAcknowledgement> acknowledgements = const [],
   }) {
     final byExercise = <ExerciseRef, List<ExerciseAttempt>>{};
     for (final attempt in attempts.where((a) => a.studentId == studentId)) {
@@ -93,12 +106,29 @@ abstract class StudentProgress with _$StudentProgress {
         (taken ? resumed : acquired).add(exercise);
       }
     }
+    final latestSeen = <ExerciseRef, AlertAcknowledgement>{};
+    for (final acknowledgement in acknowledgements.where(
+      (a) => a.studentId == studentId,
+    )) {
+      final known = latestSeen[acknowledgement.exercise];
+      if (known == null || !acknowledgement.date.isBefore(known.date)) {
+        latestSeen[acknowledgement.exercise] = acknowledgement;
+      }
+    }
+    final seen = <ExerciseRef, AlertAcknowledgement>{
+      for (final entry in latestSeen.entries)
+        if (results[entry.key] case final result?
+            when result.hasActiveAlert &&
+                result.lastAttempt?.id == entry.value.lastAttemptId)
+          entry.key: entry.value,
+    };
     return StudentProgress(
       studentId: studentId,
       results: Map.unmodifiable(results),
       acquiredBlocks: Map.unmodifiable(marked),
       acquiredExercises: Set.unmodifiable(acquired),
       resumedExercises: Set.unmodifiable(resumed),
+      acknowledgedAlerts: Map.unmodifiable(seen),
     );
   }
 
@@ -110,11 +140,31 @@ abstract class StudentProgress with _$StudentProgress {
     ...acquiredExercises,
   };
 
+  /// Parcours « à commencer » : aucun passage et aucun exercice validé ou
+  /// acquis. Un élève qui a pratiqué sans rien valider n'est pas à commencer.
+  /// Définition unique, partagée par la fiche, la liste et la vue élève.
+  bool get toStart => validated.isEmpty && results.isEmpty;
+
   /// Exercices dont l'alerte d'échecs consécutifs est active (R4) ; celle d'un
-  /// exercice encore acquis est masquée.
+  /// exercice encore acquis est masquée, celle d'un exercice vu par l'animateur
+  /// (« Vu », ADR 0013) aussi.
   List<ExerciseResult> get activeAlerts => [
     for (final result in results.values.where(
-      (r) => r.hasActiveAlert && !acquiredExercises.contains(r.exercise),
+      (r) =>
+          r.hasActiveAlert &&
+          !acquiredExercises.contains(r.exercise) &&
+          !acknowledgedAlerts.containsKey(r.exercise),
+    ))
+      result,
+  ];
+
+  /// Exercices dont l'alerte a été vue par l'animateur : le niveau d'alerte et
+  /// les échecs restent ceux du résultat (le « Vu » ne change que l'affichage).
+  List<ExerciseResult> get acknowledgedAlertResults => [
+    for (final result in results.values.where(
+      (r) =>
+          acknowledgedAlerts.containsKey(r.exercise) &&
+          !acquiredExercises.contains(r.exercise),
     ))
       result,
   ];

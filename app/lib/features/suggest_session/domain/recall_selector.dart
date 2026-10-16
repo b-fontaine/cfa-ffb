@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/block_failures.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
@@ -61,18 +62,13 @@ RecallSuggestion? selectRecall({
   final candidates = <_BlockCandidate>[];
   for (final block in catalogue.blocks.where((b) => b.id != mainBlockId)) {
     final triggered = <ExerciseResult>[];
-    var failedStudents = 0;
     DateTime? oldest;
     for (final entry in progress.entries) {
       // Un exercice acquis au positionnement (marqueur sans passage depuis)
       // n'est pas rappelé : ses anciens passages sont dormants (ADR 0008).
-      final results = [
-        for (final spec in block.exercises)
-          if (!entry.value.acquiredExercises.contains(spec.ref))
-            ?entry.value.results[spec.ref],
-      ];
+      final results = blockResults(block.exerciseRefs, entry.value);
       if (results.isEmpty) continue;
-      final latest = ([...results]..sort(_chronological)).last;
+      final latest = latestBlockResult(block.exerciseRefs, entry.value)!;
       final lastDate = latest.lastAttempt!.date;
       final failed = latest.lastFailed;
       final alert = results.any((r) => r.hasActiveAlert);
@@ -84,16 +80,25 @@ RecallSuggestion? selectRecall({
               )
               .length >=
           config.recallStaleSessions;
-      if (failed) failedStudents++;
       if (failed || alert || stale) {
         triggered.addAll(results);
         if (oldest == null || lastDate.isBefore(oldest)) oldest = lastDate;
       }
     }
     if (triggered.isEmpty) continue;
-    final groupPriority =
-        failedStudents * 100 >=
-        config.groupFailureSharePercent * progress.length;
+    // Même définition de « échouer » que les alertes de groupe.
+    final failedStudents = blockFailedStudents(
+      exercises: block.exerciseRefs,
+      progress: progress,
+    ).length;
+    // Volontairement la part seule, sans `minGroupFailures` : le rappel peut
+    // viser un seul échec dans un petit groupe (ADR 0013, décision verrouillée
+    // par recall_selector_test) ; l'alerte de groupe, elle, exige le minimum.
+    final groupPriority = reachesGroupFailureShare(
+      failed: failedStudents,
+      members: progress.length,
+      sharePercent: config.groupFailureSharePercent,
+    );
     final hasAlert = triggered.any((r) => r.hasActiveAlert);
     final chosen = [...triggered]..sort(_exercisePriority);
     candidates.add(
@@ -123,17 +128,6 @@ RecallSuggestion? selectRecall({
     exercise: best.exercise,
     reason: best.reason,
   );
-}
-
-/// Ordre chronologique des derniers passages : date, puis `passIndex`, puis
-/// numéro d'exercice (dans une séance, on enchaîne les exercices dans l'ordre).
-int _chronological(ExerciseResult a, ExerciseResult b) {
-  final x = a.lastAttempt!;
-  final y = b.lastAttempt!;
-  final byDate = x.date.compareTo(y.date);
-  if (byDate != 0) return byDate;
-  final byPass = x.passIndex.compareTo(y.passIndex);
-  return byPass != 0 ? byPass : a.exercise.number.compareTo(b.exercise.number);
 }
 
 int _exercisePriority(ExerciseResult a, ExerciseResult b) {

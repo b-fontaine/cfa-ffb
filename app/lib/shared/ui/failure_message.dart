@@ -30,6 +30,7 @@ String failureMessage(AppLocalizations l10n, Failure failure) =>
         InvariantCode.backupUnknownSheet => l10n.failBackupUnknownSheet,
         InvariantCode.backupUnknownBlock => l10n.failBackupUnknownBlock,
         InvariantCode.blockAlreadyAcquired => l10n.failBlockAlreadyAcquired,
+        InvariantCode.alertNotActive => l10n.failAlertNotActive,
         InvariantCode.unknownSheet => l10n.failUnknownSheet,
         InvariantCode.invalidRules => l10n.failInvalidRules,
         InvariantCode.invalidPeriod ||

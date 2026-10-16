@@ -1,5 +1,7 @@
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart';
 import 'package:billard_cfa/features/track_progress/domain/list_watched_students.dart';
+import 'package:billard_cfa/shared/lib/exercise_ref.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/domain_world.dart';
@@ -13,6 +15,7 @@ void main() {
     world.students,
     world.attempts,
     world.acquisitions,
+    world.acknowledgements,
     world.catalogueRepository,
     world.config,
   );
@@ -123,5 +126,68 @@ void main() {
 
     expect(list.blockLabels.keys, contains('a'));
     expect(list.blockLabels['a']!.title, isNotEmpty);
+  });
+
+  group('acknowledged alerts', () {
+    /// « Vu » sur le dernier passage de [exercise] saisi pour [student].
+    Future<void> see(String student, ExerciseRef exercise) async {
+      final last = (await world.attempts.forStudent(StudentId(student)))
+          .lastWhere((a) => a.exercise == exercise);
+      await world.acknowledgements.add(
+        acknowledgement(
+          exercise,
+          lastAttempt: last.id.value,
+          student: student,
+          id: 'k-$student-${exercise.number}',
+        ),
+      );
+    }
+
+    test('removes a student whose only alert was seen', () async {
+      world = DomainWorld();
+      await world.seedClub(studentNames: ['Léa', 'Théo']);
+      await fail('Léa', 3);
+      await fail('Théo', 3);
+      await see('Léa', ref('a', 1));
+
+      final list = ok(await build()());
+
+      expect([for (final l in list.lines) l.student.firstName], ['Théo']);
+      expect(list.total, 1);
+    });
+
+    test('keeps a student who has another alert, shown as the worst', () async {
+      world = DomainWorld();
+      await world.seedClub(studentNames: ['Léa']);
+      await fail('Léa', 5);
+      await fail('Léa', 3, block: 2);
+      // Seul l'exercice a 1 (5 échecs) est vu : l'exercice a 2 reste.
+      await see('Léa', ref('a', 1));
+
+      final line = ok(await build()()).lines.single;
+
+      expect(line.watched.exercise, ref('a', 2));
+      expect(line.watched.otherAlerts, 0);
+    });
+
+    test('shows the student again after a new failed pass', () async {
+      world = DomainWorld();
+      await world.seedClub(studentNames: ['Léa']);
+      await fail('Léa', 3);
+      await see('Léa', ref('a', 1));
+      expect(ok(await build()()).lines, isEmpty);
+
+      await world.attempts.add(
+        attempt(
+          ref('a', 1),
+          potted: 2,
+          student: 'Léa',
+          dayOfMonth: 9,
+          id: 'new',
+        ),
+      );
+
+      expect(ok(await build()()).lines.single.watched.consecutiveFailures, 4);
+    });
   });
 }

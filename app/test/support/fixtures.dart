@@ -3,11 +3,13 @@ import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart'
 import 'package:billard_cfa/entities/exercise_catalog/domain/session_range.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/training_block.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/provenance.dart';
 import 'package:billard_cfa/shared/lib/success_rate.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -54,6 +56,22 @@ BlockAcquisition acquisition(
   source: AcquisitionSource.placement,
 );
 
+/// « Vu » de l'animateur sur l'alerte de [exercise], rattaché au passage
+/// [lastAttempt], le [day] octobre 2026.
+AlertAcknowledgement acknowledgement(
+  ExerciseRef exercise, {
+  required String lastAttempt,
+  int day = 5,
+  String student = 's1',
+  String id = 'k1',
+}) => AlertAcknowledgement(
+  id: AcknowledgementId(id),
+  studentId: StudentId(student),
+  exercise: exercise,
+  lastAttemptId: AttemptId(lastAttempt),
+  date: DateTime(2026, 10, day),
+);
+
 TrainingBlock block(
   String id,
   int order, {
@@ -61,15 +79,21 @@ TrainingBlock block(
   SuccessRate? successRate,
   int minSessions = 1,
   int maxSessions = 2,
+  Provenance source = Provenance.s,
 }) => TrainingBlock(
   id: id,
   title: 'Bloc $id',
   teachingOrder: order,
   recommendedSessions: SessionRange(min: minSessions, max: maxSessions),
   technicalSheets: [order],
+  source: source,
   exercises: [
     for (var n = 1; n <= exercises; n++)
-      ExerciseSpec(ref: ref(id, n), rate: successRate ?? rate()),
+      ExerciseSpec(
+        ref: ref(id, n),
+        rate: successRate ?? rate(),
+        source: source,
+      ),
   ],
 );
 

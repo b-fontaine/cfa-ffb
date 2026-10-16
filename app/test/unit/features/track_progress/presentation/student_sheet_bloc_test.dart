@@ -1,9 +1,10 @@
 import 'package:billard_cfa/entities/student/domain/student.dart';
-import 'package:billard_cfa/features/track_progress/domain/attendance.dart';
 import 'package:billard_cfa/features/track_progress/domain/get_student_sheet.dart';
+import 'package:billard_cfa/features/track_progress/domain/sheet_header.dart';
 import 'package:billard_cfa/features/track_progress/domain/student_report.dart';
 import 'package:billard_cfa/features/track_progress/domain/student_sheet.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/student_sheet_bloc.dart';
+import 'package:billard_cfa/shared/lib/attendance.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
@@ -35,6 +36,21 @@ void main() {
     ),
     catalogue: buildCatalogue(),
     series: const [],
+    path: const [],
+    header: const SheetHeader(
+      current: null,
+      currentPassed: 0,
+      passesRequired: 5,
+      next: null,
+      finishedTechniques: 0,
+      techniqueCount: 3,
+      validatedExercises: 0,
+      exerciseCount: 9,
+      toStart: true,
+      levelCompleted: false,
+      alert: null,
+      acknowledged: [],
+    ),
     nextExercise: null,
     passesRequired: 5,
     assessmentCount: 0,

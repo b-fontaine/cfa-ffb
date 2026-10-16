@@ -24,6 +24,8 @@ import 'package:billard_cfa/features/record_results/domain/recorded_attempt.dart
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/ui/record_session_view.dart';
 import 'package:billard_cfa/features/record_results/presentation/ui/student_pass_row.dart';
+import 'package:billard_cfa/features/student_showcase/domain/get_student_showcase.dart';
+import 'package:billard_cfa/features/student_showcase/presentation/ui/showcase_view.dart';
 import 'package:billard_cfa/features/suggest_session/domain/get_exercise_sheet.dart';
 import 'package:billard_cfa/features/suggest_session/domain/suggest_recall.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/suggested_session_bloc.dart';
@@ -31,9 +33,18 @@ import 'package:billard_cfa/features/suggest_session/presentation/ui/exercise_di
 import 'package:billard_cfa/features/suggest_session/presentation/ui/exercise_sheet_view.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/ui/session_plan_view.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/ui/student_recall_card.dart';
+import 'package:billard_cfa/features/track_group/domain/get_group_overview.dart';
+import 'package:billard_cfa/features/track_group/domain/list_group_alerts.dart';
+import 'package:billard_cfa/features/track_group/presentation/ui/group_alerts_card.dart';
+import 'package:billard_cfa/features/track_group/presentation/ui/group_alerts_list.dart';
+import 'package:billard_cfa/features/track_group/presentation/ui/group_attendance_card.dart';
+import 'package:billard_cfa/features/track_group/presentation/ui/group_heat_map.dart';
+import 'package:billard_cfa/features/track_group/presentation/ui/group_text_summary.dart';
 import 'package:billard_cfa/features/track_progress/domain/get_student_sheet.dart';
-import 'package:billard_cfa/features/track_progress/presentation/ui/block_progress_list.dart';
 import 'package:billard_cfa/features/track_progress/presentation/ui/exercise_curve_card.dart';
+import 'package:billard_cfa/features/track_progress/presentation/ui/exercise_curve_sheet.dart';
+import 'package:billard_cfa/features/track_progress/presentation/ui/path_list.dart';
+import 'package:billard_cfa/features/track_progress/presentation/ui/sheet_header_card.dart';
 import 'package:billard_cfa/features/track_progress/presentation/ui/student_sheet_view.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
@@ -112,7 +123,7 @@ Widget buildStudentFormEditUseCase(BuildContext context) => WorldScope(
 Widget buildClubListUseCase(BuildContext context) => LoadedScope(
   load: (world) => getIt<GetClubOverview>()(today: world.today),
   builder: (context, world, club) =>
-      _scroll(ClubList(club: club, onOpenStudent: (_) {})),
+      _scroll(ClubList(club: club, onOpenStudent: (_) {}, onOpenGroup: (_) {})),
 );
 
 @widgetbook.UseCase(name: 'Sans retour', type: StudentPassRow, path: _path)
@@ -379,23 +390,133 @@ Widget buildAudienceChangeCardUseCase(BuildContext context) => WorldScope(
 @widgetbook.UseCase(name: 'Fiche élève', type: StudentSheetView, path: _path)
 Widget buildStudentSheetViewUseCase(BuildContext context) => LoadedScope(
   load: (world) => getIt<GetStudentSheet>()(world.children.id),
-  builder: (context, world, sheet) => _scroll(StudentSheetView(sheet: sheet)),
-);
-
-@widgetbook.UseCase(
-  name: 'Progression par bloc',
-  type: BlockProgressList,
-  path: _path,
-)
-Widget buildBlockProgressListUseCase(BuildContext context) => LoadedScope(
-  load: (world) => getIt<GetStudentSheet>()(world.children.id),
   builder: (context, world, sheet) => _scroll(
-    BlockProgressList(
+    StudentSheetView(
       sheet: sheet,
+      onAcknowledge: (_) {},
+      onRestore: (_) {},
       onMarkAcquired: (_) {},
       onRevokeAcquired: (_) {},
     ),
   ),
+);
+
+@widgetbook.UseCase(name: 'Alerte à voir', type: SheetHeaderCard, path: _path)
+Widget buildSheetHeaderCardUseCase(BuildContext context) => LoadedScope(
+  load: (world) => getIt<GetStudentSheet>()(world.children.id),
+  builder: (context, world, sheet) => _scroll(
+    SheetHeaderCard(
+      header: sheet.header,
+      titleOf: (ref) => StudentSheetView.exerciseTitle(
+        AppLocalizations.of(context),
+        sheet,
+        ref,
+      ),
+      onAcknowledge: (_) {},
+      onRestore: (_) {},
+    ),
+  ),
+);
+
+@widgetbook.UseCase(name: 'Parcours', type: PathList, path: _path)
+Widget buildPathListUseCase(BuildContext context) => LoadedScope(
+  load: (world) => getIt<GetStudentSheet>()(world.children.id),
+  builder: (context, world, sheet) => _scroll(
+    PathList(
+      sheet: sheet,
+      onOpenExercise: (_) {},
+      onMarkAcquired: (_) {},
+      onRevokeAcquired: (_) {},
+    ),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Courbe d’un exercice',
+  type: ExerciseCurveSheet,
+  path: _path,
+)
+Widget buildExerciseCurveSheetUseCase(BuildContext context) => LoadedScope(
+  load: (world) => getIt<GetStudentSheet>()(world.children.id),
+  builder: (context, world, sheet) => ExerciseCurveSheet(
+    sheet: sheet,
+    exercise: PreviewWorld.struggling,
+    title: StudentSheetView.exerciseTitle(
+      AppLocalizations.of(context),
+      sheet,
+      PreviewWorld.struggling,
+    ),
+    onClose: () {},
+  ),
+);
+
+@widgetbook.UseCase(name: 'Vue élève', type: ShowcaseView, path: _path)
+Widget buildShowcaseViewUseCase(BuildContext context) => LoadedScope(
+  load: (world) => getIt<GetStudentShowcase>()(world.children.id),
+  builder: (context, world, showcase) =>
+      _scroll(ShowcaseView(showcase: showcase)),
+);
+
+@widgetbook.UseCase(name: 'Carte de chaleur', type: GroupHeatMap, path: _path)
+Widget buildGroupHeatMapUseCase(BuildContext context) => LoadedScope(
+  load: (world) => getIt<GetGroupOverview>()(
+    groupId: world.childrenGroup,
+    today: world.today,
+  ),
+  builder: (context, world, grid) =>
+      _scroll(GroupHeatMap(grid: grid, onOpenStudent: (_) {})),
+);
+
+@widgetbook.UseCase(
+  name: 'Résumé en texte',
+  type: GroupTextSummary,
+  path: _path,
+)
+Widget buildGroupTextSummaryUseCase(BuildContext context) => LoadedScope(
+  load: (world) => getIt<GetGroupOverview>()(
+    groupId: world.childrenGroup,
+    today: world.today,
+  ),
+  builder: (context, world, grid) => _scroll(GroupTextSummary(grid: grid)),
+);
+
+@widgetbook.UseCase(
+  name: 'Assiduité du groupe',
+  type: GroupAttendanceCard,
+  path: _path,
+)
+Widget buildGroupAttendanceCardUseCase(BuildContext context) => LoadedScope(
+  load: (world) => getIt<GetGroupOverview>()(
+    groupId: world.childrenGroup,
+    today: world.today,
+  ),
+  builder: (context, world, grid) =>
+      _scroll(GroupAttendanceCard(attendance: grid.attendance)),
+);
+
+@widgetbook.UseCase(
+  name: 'Alertes du groupe',
+  type: GroupAlertsList,
+  path: _path,
+)
+Widget buildGroupAlertsListUseCase(BuildContext context) => LoadedScope(
+  load: (world) => getIt<GetGroupOverview>()(
+    groupId: world.childrenGroup,
+    today: world.today,
+  ),
+  builder: (context, world, grid) =>
+      _scroll(GroupAlertsList(alerts: grid.alerts)),
+);
+
+@widgetbook.UseCase(
+  name: 'Alertes de groupe',
+  type: GroupAlertsCard,
+  path: _path,
+)
+Widget buildGroupAlertsCardUseCase(BuildContext context) => LoadedScope(
+  load: (world) => getIt<ListGroupAlerts>()(today: world.today),
+  builder: (context, world, alerts) =>
+      _scroll(GroupAlertsCard(alerts: alerts, onOpenGroup: (_) {})),
 );
 
 @widgetbook.UseCase(

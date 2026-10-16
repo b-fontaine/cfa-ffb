@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/acknowledgement_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
@@ -10,9 +11,9 @@ import 'package:billard_cfa/shared/lib/unit_of_work.dart';
 import 'package:injectable/injectable.dart';
 
 /// Cas d'usage : effacer physiquement un élève et tout ce qui le nomme
-/// (passages, bilans, blocs acquis, présences, appartenances à un groupe,
-/// historique de public). Données d'élèves mineurs : droit à l'effacement,
-/// en fin de saison ou à la demande.
+/// (passages, bilans, blocs acquis, acquittements d'alertes, présences,
+/// appartenances à un groupe, historique de public). Données d'élèves
+/// mineurs : droit à l'effacement, en fin de saison ou à la demande.
 ///
 /// Tout ou rien (unité de travail). Les séances et les groupes restent, sans
 /// l'élève. Les fichiers de sauvegarde déjà exportés ne sont pas touchés :
@@ -26,6 +27,7 @@ class EraseStudent {
     this._attempts,
     this._assessments,
     this._acquisitions,
+    this._acknowledgements,
     this._unitOfWork,
   );
 
@@ -35,6 +37,7 @@ class EraseStudent {
   final AttemptRepository _attempts;
   final AssessmentRepository _assessments;
   final AcquisitionRepository _acquisitions;
+  final AcknowledgementRepository _acknowledgements;
   final UnitOfWork _unitOfWork;
 
   Future<Result<void>> call(StudentId studentId) => runGuarded(() async {
@@ -45,6 +48,7 @@ class EraseStudent {
       await _attempts.eraseStudent(studentId);
       await _assessments.eraseStudent(studentId);
       await _acquisitions.eraseStudent(studentId);
+      await _acknowledgements.eraseStudent(studentId);
       await _sessions.eraseStudent(studentId);
       await _groups.eraseStudent(studentId);
       await _students.erase(studentId);

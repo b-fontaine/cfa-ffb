@@ -8,12 +8,20 @@ import 'package:billard_cfa/shared/ui/status_badge.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
-/// Les groupes de la saison : élèves, public (badge) et alertes.
+/// Les groupes de la saison : élèves, public (badge) et alertes, et pour
+/// chaque groupe qui a des membres un bouton vers sa grille (carte de chaleur
+/// technique × élève).
 class ClubList extends StatelessWidget {
-  const ClubList({required this.club, required this.onOpenStudent, super.key});
+  const ClubList({
+    required this.club,
+    required this.onOpenStudent,
+    required this.onOpenGroup,
+    super.key,
+  });
 
   final ClubOverview club;
   final ValueChanged<StudentId> onOpenStudent;
+  final ValueChanged<GroupId> onOpenGroup;
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +32,28 @@ class ClubList extends StatelessWidget {
         for (final group in club.groups) ...[
           SectionCard(
             title: group.group.name,
-            child: _Members(
-              count: group.members.length,
-              members: group.members,
-              onOpenStudent: onOpenStudent,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _Members(
+                  count: group.members.length,
+                  members: group.members,
+                  onOpenStudent: onOpenStudent,
+                ),
+                if (group.members.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  Semantics(
+                    button: true,
+                    label: l10n.studentsOpenGroupFor(group.group.name),
+                    excludeSemantics: true,
+                    child: OutlinedButton.icon(
+                      onPressed: () => onOpenGroup(group.group.id),
+                      icon: const Icon(Icons.grid_view),
+                      label: Text(l10n.studentsOpenGroup),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
           const SizedBox(height: AppSpacing.md),
@@ -104,10 +130,11 @@ class _Members extends StatelessWidget {
                                   kind: member.student.currentAudience.kind,
                                 ),
                                 Text(
-                                  l10n.studentsValidated(
-                                    member.validatedCount,
-                                    member.exerciseCount,
-                                  ),
+                                  member.toStart
+                                      ? l10n.sheetPathToStart
+                                      : l10n.sheetHeaderExercises(
+                                          member.validatedCount,
+                                        ),
                                   style: theme.textTheme.bodyMedium,
                                 ),
                               ],

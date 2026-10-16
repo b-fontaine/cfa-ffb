@@ -50,6 +50,14 @@ abstract class Group with _$Group {
         (m.to == null || !date.isAfter(m.to!)),
   );
 
+  /// Les élèves membres à la date [date], une fois chacun, dans l'ordre des
+  /// appartenances : la sélection unique des membres d'un groupe (grille et
+  /// alertes de groupe).
+  List<StudentId> membersOn(DateTime date) => [
+    for (final id in {for (final m in memberships) m.studentId})
+      if (isMemberOn(id, date)) id,
+  ];
+
   /// Admet un élève dont le public à la date [from] est [studentAudience].
   ///
   /// Le public de l'élève doit être celui du groupe : passer un jeune en cours

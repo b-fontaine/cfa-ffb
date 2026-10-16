@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:billard_cfa/entities/exercise_result/data/drift_acknowledgement_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/group/data/drift_group_repository.dart';
@@ -120,6 +124,7 @@ void main() {
       DriftSessionRecordRepository(db, clock),
       _FailingSecondAttempt(DriftAttemptRepository(db, clock)),
       DriftAcquisitionRepository(db, clock),
+      DriftAcknowledgementRepository(db, clock),
       DriftAssessmentRepository(db, clock),
       DriftSessionRepository(db, clock),
       BackupCodec(),
@@ -150,6 +155,101 @@ void main() {
     expect(store.current.passesRequired, 5);
   });
 
+  test(
+    'a failing import of an old format keeps the acknowledgements in place',
+    () async {
+      final db = openMemoryDatabase();
+      addTearDown(db.close);
+      final clock = TickingClock();
+      final acknowledgements = DriftAcknowledgementRepository(db, clock);
+      await acknowledgements.add(
+        AlertAcknowledgement(
+          id: const AcknowledgementId('k1'),
+          studentId: const StudentId('s1'),
+          exercise: ref('a', 1),
+          lastAttemptId: const AttemptId('a1'),
+          date: day(4),
+        ),
+      );
+      final student = Student.enroll(
+        id: const StudentId('s1'),
+        firstName: 'Léa',
+        audience: Audience.children,
+        since: day(1),
+      );
+      // Format 2 : la liste des acquittements n'existe pas dans le fichier.
+      final document = jsonDecode(
+        BackupCodec().encode(
+          BackupSnapshot(
+            seasons: [
+              Season(
+                id: const SeasonId('season'),
+                label: '2026-2027',
+                startDate: day(1),
+                endDate: DateTime(2027, 6, 30),
+              ),
+            ],
+            students: [student],
+            groups: [
+              Group(
+                id: const GroupId('g1'),
+                seasonId: const SeasonId('season'),
+                name: 'Jeunes',
+                audience: Audience.children,
+              ),
+            ],
+            sessionRecords: [
+              SessionRecord(
+                id: const SessionId('x1'),
+                groupId: const GroupId('g1'),
+                seasonId: const SeasonId('season'),
+                date: day(3),
+                audience: Audience.children,
+                present: {student.id},
+              ),
+            ],
+            attempts: [
+              attempt(ref('a', 1), potted: 3),
+              attempt(ref('a', 1), potted: 4, id: 'a2', passIndex: 2),
+            ],
+            blockAcquisitions: const [],
+          ),
+          exportedAt: DateTime.utc(2026, 10, 12),
+        ),
+      ) as Map<String, Object?>;
+      document['schemaVersion'] = 2;
+      (document['data']! as Map<String, Object?>).remove(
+        'alertAcknowledgements',
+      );
+      final import = ImportBackup(
+        DriftSeasonRepository(db, clock),
+        DriftStudentRepository(db, clock),
+        DriftGroupRepository(db, clock),
+        DriftSessionRecordRepository(db, clock),
+        _FailingSecondAttempt(DriftAttemptRepository(db, clock)),
+        DriftAcquisitionRepository(db, clock),
+        acknowledgements,
+        DriftAssessmentRepository(db, clock),
+        DriftSessionRepository(db, clock),
+        BackupCodec(),
+        BackupRules(
+          FixedCatalogueRepository(buildCatalogue()),
+          FixtureSessionSheetRepository(catalogueFixture()),
+          RulesConfig(),
+          clock,
+        ),
+        DriftUnitOfWork(db),
+        DriftSettingsRepository(db, clock),
+        RulesStore(RulesConfig()),
+      );
+
+      await expectLater(import(jsonEncode(document)), throwsStateError);
+
+      expect(await acknowledgements.all(), hasLength(1));
+      expect(await DriftStudentRepository(db, clock).all(), isEmpty);
+    },
+  );
+
   test('a refused file is reported as a failure, not thrown', () async {
     final db = openMemoryDatabase();
     addTearDown(db.close);
@@ -161,6 +261,7 @@ void main() {
       DriftSessionRecordRepository(db, clock),
       DriftAttemptRepository(db, clock),
       DriftAcquisitionRepository(db, clock),
+      DriftAcknowledgementRepository(db, clock),
       DriftAssessmentRepository(db, clock),
       DriftSessionRepository(db, clock),
       BackupCodec(),

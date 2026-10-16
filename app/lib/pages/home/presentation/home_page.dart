@@ -6,6 +6,8 @@ import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_session.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_sessions_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/ui/running_session_card.dart';
+import 'package:billard_cfa/features/track_group/presentation/bloc/group_alerts_cubit.dart';
+import 'package:billard_cfa/features/track_group/presentation/ui/group_alerts_card.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/watched_students_cubit.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/week_summary_cubit.dart';
 import 'package:billard_cfa/features/track_progress/presentation/ui/watched_students_card.dart';
@@ -39,6 +41,7 @@ class HomePage extends StatelessWidget {
     required this.onAddStudents,
     required this.onOpenStudents,
     required this.onOpenStudent,
+    required this.onOpenGroup,
     required this.onResume,
     required this.onPrepare,
     required this.onLaunch,
@@ -56,6 +59,9 @@ class HomePage extends StatelessWidget {
   final VoidCallback onAddStudents;
   final VoidCallback onOpenStudents;
   final ValueChanged<StudentId> onOpenStudent;
+
+  /// Ouvre la grille d'un groupe (alertes de groupe).
+  final ValueChanged<GroupId> onOpenGroup;
 
   /// Rouvre le guide de [RunKey] à l'étape donnée.
   final void Function(RunKey key, int step) onResume;
@@ -133,6 +139,7 @@ class HomePage extends StatelessWidget {
     final follow = _Follow(
       onOpenStudent: onOpenStudent,
       onOpenStudents: onOpenStudents,
+      onOpenGroup: onOpenGroup,
     );
     final plan = FilledButton(
       onPressed: onOpenPlanner,
@@ -286,17 +293,23 @@ class _Cards extends StatelessWidget {
   }
 }
 
-/// « À surveiller » et « 7 derniers jours ».
+/// « À surveiller », alertes de groupe et « 7 derniers jours ».
 class _Follow extends StatelessWidget {
-  const _Follow({required this.onOpenStudent, required this.onOpenStudents});
+  const _Follow({
+    required this.onOpenStudent,
+    required this.onOpenStudents,
+    required this.onOpenGroup,
+  });
 
   final ValueChanged<StudentId> onOpenStudent;
   final VoidCallback onOpenStudents;
+  final ValueChanged<GroupId> onOpenGroup;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final watched = context.watch<WatchedStudentsCubit>().state;
+    final groupAlerts = context.watch<GroupAlertsCubit>().state;
     final week = context.watch<WeekSummaryCubit>().state;
     Widget gap(Widget child) => Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -321,6 +334,24 @@ class _Follow extends StatelessWidget {
               onOpenAll: onOpenStudents,
             ),
           ),
+        },
+        switch (groupAlerts.status) {
+          GroupAlertsStatus.loading => const SizedBox.shrink(),
+          GroupAlertsStatus.failure => gap(
+            _SectionFailed(
+              title: l10n.groupAlertsTitle,
+              onRetry: () => unawaited(context.read<GroupAlertsCubit>().load()),
+            ),
+          ),
+          GroupAlertsStatus.ready =>
+            groupAlerts.alerts.lines.isEmpty
+                ? const SizedBox.shrink()
+                : gap(
+                    GroupAlertsCard(
+                      alerts: groupAlerts.alerts,
+                      onOpenGroup: onOpenGroup,
+                    ),
+                  ),
         },
         switch (week.status) {
           WeekStatus.loading => const SizedBox.shrink(),

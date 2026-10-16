@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acknowledgement_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
@@ -22,6 +23,7 @@ class ListWatchedStudents {
     this._students,
     this._attempts,
     this._acquisitions,
+    this._acknowledgements,
     this._catalogue,
     this._config,
   );
@@ -29,6 +31,7 @@ class ListWatchedStudents {
   final StudentRepository _students;
   final AttemptRepository _attempts;
   final AcquisitionRepository _acquisitions;
+  final AcknowledgementRepository _acknowledgements;
   final CatalogueRepository _catalogue;
   final RulesConfig _config;
 
@@ -38,12 +41,14 @@ class ListWatchedStudents {
         final catalogue = await _catalogue.load();
         final attempts = await _attempts.all();
         final acquisitions = await _acquisitions.all();
+        final acknowledgements = await _acknowledgements.all();
         final progress = [
           for (final student in students)
             StudentProgress.derive(
               studentId: student.id,
               attempts: attempts,
               acquisitions: acquisitions,
+              acknowledgements: acknowledgements,
               rates: catalogue.rates,
               config: _config,
             ),

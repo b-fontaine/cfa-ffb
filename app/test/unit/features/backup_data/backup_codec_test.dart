@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
@@ -77,6 +78,14 @@ final _acquisition = BlockAcquisition(
   source: AcquisitionSource.placement,
 );
 
+final _acknowledgement = AlertAcknowledgement(
+  id: const AcknowledgementId('k1'),
+  studentId: const StudentId('s1'),
+  exercise: ref('a', 1),
+  lastAttemptId: const AttemptId('a1'),
+  date: DateTime(2026, 10, 5),
+);
+
 final _snapshot = BackupSnapshot(
   seasons: [_season],
   students: [_student],
@@ -85,6 +94,7 @@ final _snapshot = BackupSnapshot(
   attempts: [attempt(ref('a', 1), potted: 3)],
   plannedSessions: [_planned],
   blockAcquisitions: [_acquisition],
+  alertAcknowledgements: [_acknowledgement],
 );
 
 InvariantCode _codeOf(String content) {
@@ -108,7 +118,7 @@ void main() {
     ) as Map<String, Object?>;
 
     expect(document['format'], BackupCodec.format);
-    expect(document['schemaVersion'], 2);
+    expect(document['schemaVersion'], 3);
     expect(document['exportedAt'], '2026-10-12T08:00:00.000Z');
     expect(document['data'], {
       'seasons': <Object?>[],
@@ -119,6 +129,7 @@ void main() {
       'assessments': <Object?>[],
       'plannedSessions': <Object?>[],
       'blockAcquisitions': <Object?>[],
+      'alertAcknowledgements': <Object?>[],
     });
   });
 
@@ -138,6 +149,7 @@ void main() {
     );
     final document = jsonDecode(content) as Map<String, Object?>
       ..['schemaVersion'] = 1;
+    (document['data']! as Map<String, Object?>).remove('alertAcknowledgements');
     final stored =
         ((document['data']! as Map<String, Object?>)['assessments']!
                     as List<Object?>)
@@ -176,9 +188,56 @@ void main() {
   });
 
   test('exposes the supported versions', () {
-    expect(BackupCodec.currentVersion, 2);
-    expect(BackupCodec.supportedVersions, {1, 2});
+    expect(BackupCodec.currentVersion, 3);
+    expect(BackupCodec.supportedVersions, {1, 2, 3});
   });
+
+  test(
+    'writes the alert acknowledgements with their exercise and last pass',
+    () {
+      final document = jsonDecode(
+        codec.encode(_snapshot, exportedAt: _exportedAt),
+      ) as Map<String, Object?>;
+      final data = document['data']! as Map<String, Object?>;
+
+      expect((data['alertAcknowledgements']! as List<Object?>).single, {
+        'id': 'k1',
+        'studentId': 's1',
+        'blockId': 'a',
+        'exerciseNumber': 1,
+        'lastAttemptId': 'a1',
+        'date': '2026-10-05T00:00:00.000',
+      });
+      expect(
+        codec
+            .decode(codec.encode(_snapshot, exportedAt: _exportedAt))
+            .alertAcknowledgements,
+        [_acknowledgement],
+      );
+    },
+  );
+
+  test('reads a file of format 2 as having no acknowledgement list', () {
+    final document = jsonDecode(
+      codec.encode(_snapshot, exportedAt: _exportedAt),
+    ) as Map<String, Object?>;
+    document['schemaVersion'] = 2;
+    (document['data']! as Map<String, Object?>).remove('alertAcknowledgements');
+
+    expect(codec.decode(jsonEncode(document)).alertAcknowledgements, isNull);
+  });
+
+  test(
+    'a snapshot without acknowledgement list is written as an empty one',
+    () {
+      final content = codec.encode(
+        _snapshot.copyWith(alertAcknowledgements: null),
+        exportedAt: _exportedAt,
+      );
+
+      expect(codec.decode(content).alertAcknowledgements, isEmpty);
+    },
+  );
 
   test('writes the settings only when the snapshot has some', () {
     const settings = ClubSettings(
@@ -226,6 +285,7 @@ void main() {
       ),
     ) as Map<String, Object?>;
     document['schemaVersion'] = 1;
+    (document['data']! as Map<String, Object?>).remove('alertAcknowledgements');
 
     expect(codec.decode(jsonEncode(document)).settings, isNull);
   });
@@ -495,6 +555,63 @@ void main() {
     test('an acquired block of an unknown student', () {
       final d = document();
       first(d, 'blockAcquisitions')['studentId'] = 'ghost';
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInconsistent);
+    });
+
+    test('acknowledgements in a file of format 1 or 2', () {
+      for (final version in [1, 2]) {
+        final d = document()..['schemaVersion'] = version;
+
+        expect(
+          _codeOf(jsonEncode(d)),
+          InvariantCode.backupInvalid,
+          reason: 'format $version ne connaît pas la clé',
+        );
+      }
+    });
+
+    test('a file of format 3 without the alertAcknowledgements key', () {
+      final d = document();
+      data(d).remove('alertAcknowledgements');
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('an acknowledgement with a missing field', () {
+      final d = document();
+      first(d, 'alertAcknowledgements').remove('lastAttemptId');
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('an acknowledgement whose date is not a whole day', () {
+      final d = document();
+      first(d, 'alertAcknowledgements')['date'] = '2026-10-05T10:30:00.000';
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('an acknowledgement with an invalid exercise number', () {
+      final d = document();
+      first(d, 'alertAcknowledgements')['exerciseNumber'] = 0;
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInvalid);
+    });
+
+    test('an acknowledgement of an unknown student', () {
+      final d = document();
+      first(d, 'alertAcknowledgements')['studentId'] = 'ghost';
+
+      expect(_codeOf(jsonEncode(d)), InvariantCode.backupInconsistent);
+    });
+
+    test('two acknowledgements with the same identifier', () {
+      final d = document();
+      (data(d)['alertAcknowledgements']! as List<Object?>).add({
+        ...first(d, 'alertAcknowledgements'),
+        'exerciseNumber': 2,
+      });
 
       expect(_codeOf(jsonEncode(d)), InvariantCode.backupInconsistent);
     });

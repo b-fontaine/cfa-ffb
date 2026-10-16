@@ -4,6 +4,7 @@ import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/app/record_screens.dart';
 import 'package:billard_cfa/app/record_sheet.dart';
 import 'package:billard_cfa/app/shell.dart';
+import 'package:billard_cfa/features/acknowledge_alert/presentation/bloc/acknowledgement_bloc.dart';
 import 'package:billard_cfa/features/assess_maturity/presentation/bloc/assessment_bloc.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_reminder.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_bloc.dart';
@@ -26,16 +27,20 @@ import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_presentation_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_sessions.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_sessions_cubit.dart';
+import 'package:billard_cfa/features/student_showcase/presentation/bloc/showcase_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/exercise_sheet_bloc.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/next_sheet_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/student_recall_bloc.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/suggested_session_bloc.dart';
+import 'package:billard_cfa/features/track_group/presentation/bloc/group_alerts_cubit.dart';
+import 'package:billard_cfa/features/track_group/presentation/bloc/group_overview_cubit.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/student_sheet_bloc.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/watched_students_cubit.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/week_summary_cubit.dart';
 import 'package:billard_cfa/pages/assessment/presentation/assessment_page.dart';
 import 'package:billard_cfa/pages/backup/presentation/backup_page.dart';
 import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_page.dart';
+import 'package:billard_cfa/pages/group_overview/presentation/group_overview_page.dart';
 import 'package:billard_cfa/pages/home/presentation/home_page.dart';
 import 'package:billard_cfa/pages/more/presentation/more_page.dart';
 import 'package:billard_cfa/pages/not_found/presentation/not_found_page.dart';
@@ -49,6 +54,7 @@ import 'package:billard_cfa/pages/sheet_guide/presentation/sheet_guide_page.dart
 import 'package:billard_cfa/pages/sheet_presentation/presentation/sheet_presentation_page.dart';
 import 'package:billard_cfa/pages/student_form/presentation/student_form_page.dart';
 import 'package:billard_cfa/pages/student_sheet/presentation/student_sheet_page.dart';
+import 'package:billard_cfa/pages/student_showcase/presentation/student_showcase_page.dart';
 import 'package:billard_cfa/pages/students/presentation/students_page.dart';
 import 'package:billard_cfa/pages/suggested_session/presentation/suggested_session_page.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
@@ -82,6 +88,11 @@ abstract final class AppRoutes {
   /// Segments des sous-pages d'une séance du catalogue : chemin des routes ET
   /// des constructeurs d'adresse.
   static const guideSegment = 'guide';
+
+  /// Segments des sous-pages d'un élève et d'un groupe : vue « à montrer à
+  /// l'élève » (hors du cadre de navigation) et grille d'un groupe.
+  static const showcaseSegment = 'show';
+  static const groupsSegment = 'groups';
   static const presentationSegment = 'presentation';
 
   /// Adresse de [path] avec ses paramètres non vides (jamais de `?` seul).
@@ -101,6 +112,14 @@ abstract final class AppRoutes {
   static String student(StudentId id) => '$students/${id.value}';
 
   static String editStudent(StudentId id) => '$students/${id.value}/edit';
+
+  /// La vue « à montrer à l'élève » : prénom et parcours seulement.
+  static String showcase(StudentId id) =>
+      '$students/${id.value}/$showcaseSegment';
+
+  /// La grille d'un groupe (carte de chaleur technique × élève).
+  static String studentGroup(GroupId id) =>
+      '$students/$groupsSegment/${id.value}';
 
   static String assessment(StudentId id) => '$students/${id.value}/assessment';
 
@@ -305,6 +324,13 @@ GoRouter buildRouter() => GoRouter(
               ),
               BlocProvider(
                 create: (_) {
+                  final cubit = getIt<GroupAlertsCubit>();
+                  unawaited(cubit.load());
+                  return cubit;
+                },
+              ),
+              BlocProvider(
+                create: (_) {
                   final cubit = getIt<WeekSummaryCubit>();
                   unawaited(cubit.load());
                   return cubit;
@@ -318,6 +344,7 @@ GoRouter buildRouter() => GoRouter(
               onAddStudents: () => context.go(AppRoutes.newStudent),
               onOpenStudents: () => context.go(AppRoutes.students),
               onOpenStudent: (id) => context.go(AppRoutes.student(id)),
+              onOpenGroup: (id) => context.go(AppRoutes.studentGroup(id)),
               onResume: (key, step) => context.go(
                 AppRoutes.guide(
                   key.sheetId,
@@ -391,6 +418,7 @@ GoRouter buildRouter() => GoRouter(
                 getIt<StudentsBloc>()..add(const StudentsEvent.started()),
             child: StudentsPage(
               onOpenStudent: (id) => context.go(AppRoutes.student(id)),
+              onOpenGroup: (id) => context.go(AppRoutes.studentGroup(id)),
               onAddStudent: () => context.go(AppRoutes.newStudent),
             ),
           ),
@@ -405,6 +433,24 @@ GoRouter buildRouter() => GoRouter(
               onBack: () => context.go(AppRoutes.students),
             ),
           ),
+        ),
+        GoRoute(
+          path: '${AppRoutes.students}/${AppRoutes.groupsSegment}/:groupId',
+          builder: (context, state) {
+            final id = GroupId(state.pathParameters['groupId']!);
+            return BlocProvider(
+              create: (_) {
+                final cubit = getIt<GroupOverviewCubit>();
+                unawaited(cubit.load(id));
+                return cubit;
+              },
+              child: GroupOverviewPage(
+                onBack: () => context.go(AppRoutes.students),
+                onOpenStudent: (student) =>
+                    context.go(AppRoutes.student(student)),
+              ),
+            );
+          },
         ),
         GoRoute(
           path: '${AppRoutes.students}/:studentId',
@@ -424,6 +470,7 @@ GoRouter buildRouter() => GoRouter(
                 ),
                 BlocProvider(create: (_) => getIt<StudentErasureBloc>()),
                 BlocProvider(create: (_) => getIt<PlacementBloc>()),
+                BlocProvider(create: (_) => getIt<AcknowledgementBloc>()),
               ],
               child: StudentSheetPage(
                 today: getIt<Clock>().today,
@@ -431,6 +478,7 @@ GoRouter buildRouter() => GoRouter(
                 onEdit: () => context.go(AppRoutes.editStudent(id)),
                 onOpenAssessment: () => context.go(AppRoutes.assessment(id)),
                 onErased: () => context.go(AppRoutes.students),
+                onShow: () => context.go(AppRoutes.showcase(id)),
               ),
             );
           },
@@ -771,6 +819,25 @@ GoRouter buildRouter() => GoRouter(
           ),
         ),
       ],
+    ),
+    // Hors du cadre de navigation : l'écran montré à l'élève n'offre aucun
+    // chemin vers les autres élèves (décision Q6).
+    GoRoute(
+      path: '${AppRoutes.students}/:studentId/${AppRoutes.showcaseSegment}',
+      builder: (context, state) {
+        final id = _studentId(state);
+        return BlocProvider(
+          create: (_) {
+            final cubit = getIt<ShowcaseCubit>();
+            unawaited(cubit.load(id));
+            return cubit;
+          },
+          child: StudentShowcasePage(
+            studentId: id,
+            onDone: () => context.go(AppRoutes.student(id)),
+          ),
+        );
+      },
     ),
     GoRoute(
       path: '${AppRoutes.catalogue}/:sheetId/${AppRoutes.presentationSegment}',

@@ -16,6 +16,7 @@ abstract class ImportSummary with _$ImportSummary {
     required int assessments,
     required int plannedSessions,
     required int blockAcquisitions,
+    @Default(0) int alertAcknowledgements,
     @Default(false) bool settings,
   }) = _ImportSummary;
 
@@ -30,6 +31,7 @@ abstract class ImportSummary with _$ImportSummary {
     assessments: snapshot.assessments.length,
     plannedSessions: snapshot.plannedSessions.length,
     blockAcquisitions: snapshot.blockAcquisitions.length,
+    alertAcknowledgements: snapshot.alertAcknowledgements?.length ?? 0,
     settings: snapshot.settings != null,
   );
 }

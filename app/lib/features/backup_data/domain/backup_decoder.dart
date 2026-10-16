@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
@@ -28,13 +29,28 @@ class BackupDecoder {
 
   /// [withSettings] : le format du fichier connaît la clé `settings` (format 2
   /// et suivants) ; dans un fichier du format 1 elle est refusée.
-  BackupSnapshot decode(Object? data, {bool withSettings = true}) {
+  ///
+  /// [withAcknowledgements] : le format connaît la clé `alertAcknowledgements`
+  /// (format 3 et suivants, ADR 0013) ; elle y est obligatoire, et refusée
+  /// dans un fichier des formats 1 et 2 (la liste décodée est alors `null`).
+  BackupSnapshot decode(
+    Object? data, {
+    bool withSettings = true,
+    bool withAcknowledgements = true,
+  }) {
     try {
       final object = _read.object(data);
       if (!withSettings && object.containsKey('settings')) {
         throw const InvariantViolation(InvariantCode.backupInvalid);
       }
-      final snapshot = _decodeData(object);
+      if (!withAcknowledgements &&
+          object.containsKey('alertAcknowledgements')) {
+        throw const InvariantViolation(InvariantCode.backupInvalid);
+      }
+      final snapshot = _decodeData(
+        object,
+        withAcknowledgements: withAcknowledgements,
+      );
       const BackupConsistency().check(snapshot);
       return snapshot;
     } on InvariantViolation catch (violation) {
@@ -44,7 +60,10 @@ class BackupDecoder {
     }
   }
 
-  BackupSnapshot _decodeData(Map<String, Object?> data) => BackupSnapshot(
+  BackupSnapshot _decodeData(
+    Map<String, Object?> data, {
+    required bool withAcknowledgements,
+  }) => BackupSnapshot(
     seasons: _read.objects(data['seasons']).map(_decodeSeason).toList(),
     students: _read.objects(data['students']).map(_decodeStudent).toList(),
     groups: _read.objects(data['groups']).map(_decodeGroup).toList(),
@@ -67,6 +86,13 @@ class BackupDecoder {
         .map(_decodeAcquisition)
         .toList(),
     settings: _decodeSettings(data['settings']),
+    // Clé obligatoire du format 3 : `objects(null)` lève `backupInvalid`.
+    alertAcknowledgements: withAcknowledgements
+        ? _read
+              .objects(data['alertAcknowledgements'])
+              .map(_decodeAcknowledgement)
+              .toList()
+        : null,
   );
 
   /// Clé facultative ; si elle est présente, les cinq entiers sont exigés et
@@ -171,6 +197,18 @@ class BackupDecoder {
               json['source'],
             )] ??
             (throw const InvariantViolation(InvariantCode.backupInvalid)),
+      );
+
+  AlertAcknowledgement _decodeAcknowledgement(Map<String, Object?> json) =>
+      AlertAcknowledgement(
+        id: AcknowledgementId(_read.string(json['id'])),
+        studentId: StudentId(_read.string(json['studentId'])),
+        exercise: ExerciseRef(
+          blockId: _read.string(json['blockId']),
+          number: _read.integer(json['exerciseNumber']),
+        ),
+        lastAttemptId: AttemptId(_read.string(json['lastAttemptId'])),
+        date: _read.dateTime(json['date']),
       );
 
   Session _decodePlanned(Map<String, Object?> json) => Session(

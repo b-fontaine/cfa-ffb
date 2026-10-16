@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/session_range.dart';
+import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/provenance.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -42,4 +43,10 @@ abstract class TrainingBlock with _$TrainingBlock {
 
   /// Vrai pour un bloc proposé `[Prop]`, non fédéral.
   bool get isProposal => source == Provenance.prop;
+
+  /// Les références des exercices du bloc, dans l'ordre (entrée des règles de
+  /// suivi, qui ne connaissent pas le catalogue).
+  List<ExerciseRef> get exerciseRefs => [
+    for (final spec in exercises) spec.ref,
+  ];
 }

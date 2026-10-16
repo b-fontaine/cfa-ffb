@@ -446,6 +446,7 @@
   "failBackupUnknownSheet": "This file refers to a catalogue session that this version of the app does not know.",
   "failBackupUnknownBlock": "The backup refers to a block unknown to the catalogue.",
   "failBlockAlreadyAcquired": "This block is already marked as acquired for this student.",
+  "failAlertNotActive": "This alert is no longer active: there is nothing to acknowledge.",
   "failUnknownSheet": "This catalogue session is unknown: choose another one.",
   "failGeneric": "Something went wrong. Check the data and try again.",
   "studentsTitle": "Club students",
@@ -465,17 +466,6 @@
   "@studentsAlerts": {
     "placeholders": {
       "count": {
-        "type": "int"
-      }
-    }
-  },
-  "studentsValidated": "{done} of {total} exercises validated",
-  "@studentsValidated": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
         "type": "int"
       }
     }
@@ -552,34 +542,6 @@
       }
     }
   },
-  "sheetBlocks": "Progress by block",
-  "sheetBlockRate": "{percent} % validated",
-  "@sheetBlockRate": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
-  "sheetBlockExercises": "{done} of {total} exercises",
-  "@sheetBlockExercises": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "sheetBlockSessions": "{count, plural, =0{No session} =1{1 session} other{{count} sessions}}",
-  "@sheetBlockSessions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sheetBlockOverdue": "More sessions than recommended",
   "sheetCurves": "Performance curves",
   "sheetCurvesEmpty": "No pass recorded yet.",
@@ -636,17 +598,6 @@
   },
   "sheetPassMet": "target reached",
   "sheetPassMissed": "target missed",
-  "sheetValidatedTotal": "{done} of {total} exercises validated",
-  "@sheetValidatedTotal": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "chartAxisX": "Attempts",
   "chartAxisY": "Balls potted",
   "chartTargetLine": "Target: {potted} balls",
@@ -2360,6 +2311,10 @@
       }
     }
   },
+  "groupGridNoSession": "–",
+  "@groupGridNoSession": {
+    "description": "Tiret de la cellule d'assiduité d'un élève sans séance du groupe."
+  },
   "sheetAttendanceNone": "No group session yet.",
   "recordValidationStateShort": "{done}/{required}",
   "@recordValidationStateShort": {
@@ -2672,6 +2627,333 @@
         "type": "int"
       },
       "others": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetShow": "Show to the student",
+  "sheetOverview": "Overview",
+  "sheetHeaderTechniques": "{done} of {total} techniques completed",
+  "@sheetHeaderTechniques": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetHeaderExercises": "{count, plural, =1{1 exercise validated} other{{count} exercises validated}}",
+  "@sheetHeaderExercises": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetPathToStart": "Path to start",
+  "sheetCurrent": "Current exercise",
+  "sheetCurrentToStart": "Exercise to start",
+  "sheetAlertMore": "{count, plural, =1{+ 1 other alert} other{+ {count} other alerts}}",
+  "@sheetAlertMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetAlertSeen": "Seen",
+  "sheetAlertSeenFor": "Mark the alert as seen: {exercise}",
+  "@sheetAlertSeenFor": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetAlertSeenOn": "Alert seen on {date}: {exercise}",
+  "@sheetAlertSeenOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetAlertRestore": "Restore",
+  "sheetAlertRestoreFor": "Restore the alert: {exercise}",
+  "@sheetAlertRestoreFor": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetAlertMarkedSeen": "Alert marked as seen.",
+  "sheetAlertRestored": "Alert restored.",
+  "sheetPath": "Path",
+  "sheetRowSummary": "{done} of {total} exercises · {sessions, plural, =0{no session} =1{1 session} other{{sessions} sessions}}",
+  "@sheetRowSummary": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "sessions": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetPlacementMenu": "Placement actions: {block}",
+  "@sheetPlacementMenu": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetCellNotPractised": "Not practised yet.",
+  "sheetCurveSheetClose": "Close",
+  "pathLegendTodo": "To do",
+  "pathLegendStarted": "Started",
+  "pathLegendValidated": "Validated",
+  "pathLegendAcquired": "From placement",
+  "pathLegendTotal": "{count} exercises in total",
+  "@pathLegendTotal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pathCellTodo": "{exercise}: to do",
+  "@pathCellTodo": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "pathCellStarted": "{exercise}: started, {passed} of {required} successful passes",
+  "@pathCellStarted": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      },
+      "passed": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "pathCellValidated": "{exercise}: validated",
+  "@pathCellValidated": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "pathCellAcquired": "{exercise}: acquired at placement",
+  "@pathCellAcquired": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "pathCellAlerted": "alert in progress",
+  "pathCellCurrent": "current exercise",
+  "showcaseCurrent": "Your current exercise",
+  "showcaseDone": "Done",
+  "showcaseTitle": "Path of {name}",
+  "@showcaseTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "studentsOpenGroup": "Group grid",
+  "studentsOpenGroupFor": "Open the grid of {name}",
+  "@studentsOpenGroupFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupSubtitle": "Techniques by student",
+  "groupAlertsTitle": "Group alerts",
+  "groupAlertLine": "{failed} students out of {members} missed “{technique}” on their last pass",
+  "@groupAlertLine": {
+    "placeholders": {
+      "failed": {
+        "type": "int"
+      },
+      "members": {
+        "type": "int"
+      },
+      "technique": {
+        "type": "String"
+      }
+    }
+  },
+  "groupAlertOpen": "Open the grid of {group}: {alert}",
+  "@groupAlertOpen": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      },
+      "alert": {
+        "type": "String"
+      }
+    }
+  },
+  "groupAlertsMore": "{count, plural, =1{+ 1 other group alert} other{+ {count} other group alerts}}",
+  "@groupAlertsMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupAttendanceTitle": "Group attendance",
+  "groupAttendanceSummary": "{present, plural, =1{1 attendance} other{{present} attendances}} out of {possible} possible ({percent} %)",
+  "@groupAttendanceSummary": {
+    "placeholders": {
+      "present": {
+        "type": "int"
+      },
+      "possible": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "groupAttendanceSessions": "{count, plural, =1{1 session} other{{count} sessions}}",
+  "@groupAttendanceSessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupAttendanceNone": "No session recorded yet.",
+  "groupAttendanceRecent": "{date}: {present} of {possible} present",
+  "@groupAttendanceRecent": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "present": {
+        "type": "int"
+      },
+      "possible": {
+        "type": "int"
+      }
+    }
+  },
+  "groupGridCell": "{student}, {technique}: {done} of {total} exercises, {status}",
+  "@groupGridCell": {
+    "placeholders": {
+      "student": {
+        "type": "String"
+      },
+      "technique": {
+        "type": "String"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "groupGridFraction": "{done}/{total}",
+  "@groupGridFraction": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "groupGridLegend": "Each cell gives the exercises validated out of the exercises of the technique. A tick means the technique is completed, a flag that it was acquired at placement, a warning that an alert is in progress.",
+  "groupGridRow": "{technique}: {finished} of {members} students completed, {inProgress} in progress, {toStart} to start",
+  "@groupGridRow": {
+    "placeholders": {
+      "technique": {
+        "type": "String"
+      },
+      "finished": {
+        "type": "int"
+      },
+      "members": {
+        "type": "int"
+      },
+      "inProgress": {
+        "type": "int"
+      },
+      "toStart": {
+        "type": "int"
+      }
+    }
+  },
+  "groupGridAttendanceCell": "{student}: {attendance}",
+  "@groupGridAttendanceCell": {
+    "placeholders": {
+      "student": {
+        "type": "String"
+      },
+      "attendance": {
+        "type": "String"
+      }
+    }
+  },
+  "groupGridNoMember": "No student in this group today.",
+  "groupSummaryTitle": "Text summary",
+  "groupSummaryRow": "{technique}. Completed: {completed}. In progress: {inProgress}. To start: {toStart}.",
+  "@groupSummaryRow": {
+    "placeholders": {
+      "technique": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "inProgress": {
+        "type": "String"
+      },
+      "toStart": {
+        "type": "String"
+      }
+    }
+  },
+  "groupSummaryNobody": "nobody",
+  "showcaseLevelDone": "Level 1 completed",
+  "sheetRowFraction": "{done}/{total}",
+  "@sheetRowFraction": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
         "type": "int"
       }
     }

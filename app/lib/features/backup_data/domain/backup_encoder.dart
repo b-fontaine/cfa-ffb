@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
@@ -27,6 +28,11 @@ class BackupEncoder {
     ],
     'blockAcquisitions': [
       for (final a in snapshot.blockAcquisitions) _encodeAcquisition(a),
+    ],
+    'alertAcknowledgements': [
+      for (final a
+          in snapshot.alertAcknowledgements ?? const <AlertAcknowledgement>[])
+        _encodeAcknowledgement(a),
     ],
     if (snapshot.settings case final settings?)
       'settings': _encodeSettings(settings),
@@ -123,6 +129,17 @@ class BackupEncoder {
     'blockId': acquisition.blockId,
     'date': _date(acquisition.date),
     'source': acquisition.source.name,
+  };
+
+  Map<String, Object?> _encodeAcknowledgement(
+    AlertAcknowledgement acknowledgement,
+  ) => {
+    'id': acknowledgement.id.value,
+    'studentId': acknowledgement.studentId.value,
+    'blockId': acknowledgement.exercise.blockId,
+    'exerciseNumber': acknowledgement.exercise.number,
+    'lastAttemptId': acknowledgement.lastAttemptId.value,
+    'date': _date(acknowledgement.date),
   };
 
   String _date(DateTime value) => value.toIso8601String();

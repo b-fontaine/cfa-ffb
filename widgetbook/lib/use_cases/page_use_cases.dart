@@ -13,6 +13,7 @@ import 'package:billard_cfa/features/plan_session/presentation/ui/plan_session_f
 import 'package:billard_cfa/features/review_session/presentation/bloc/session_review_bloc.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_sessions_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/next_sheet_cubit.dart';
+import 'package:billard_cfa/features/track_group/presentation/bloc/group_alerts_cubit.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/watched_students_cubit.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/week_summary_cubit.dart';
 import 'package:billard_cfa/pages/home/presentation/home_page.dart';
@@ -51,6 +52,10 @@ Widget buildHomePageUseCase(BuildContext context) => WorldScope(
       ),
       BlocProvider(
         create: (_) =>
+            _loaded(getIt<GroupAlertsCubit>(), (cubit) => cubit.load()),
+      ),
+      BlocProvider(
+        create: (_) =>
             _loaded(getIt<WeekSummaryCubit>(), (cubit) => cubit.load()),
       ),
     ],
@@ -61,6 +66,7 @@ Widget buildHomePageUseCase(BuildContext context) => WorldScope(
       onAddStudents: () {},
       onOpenStudents: () {},
       onOpenStudent: (_) {},
+      onOpenGroup: (_) {},
       onResume: (_, _) {},
       onPrepare: (_, _) {},
       onLaunch: (_, _, _) {},

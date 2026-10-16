@@ -181,6 +181,26 @@ class BlockAcquisitions extends Table with AuditColumns {
   TextColumn get source => text()();
 }
 
+/// Acquittements d'alertes (« Vu », ADR 0013) : un par couple (élève, exercice)
+/// et par « Vu », lié au dernier passage de l'exercice à ce moment-là.
+/// Pas de clé étrangère : suppression logique, exercices issus d'un asset, et
+/// le passage visé peut avoir été supprimé (acquittement dormant).
+@DataClassName('AlertAcknowledgementRow')
+@TableIndex(name: 'acknowledgements_by_student', columns: {#studentId})
+class AlertAcknowledgements extends Table with AuditColumns {
+  TextColumn get studentId => text()();
+
+  TextColumn get blockId => text()();
+
+  IntColumn get exerciseNumber => integer()();
+
+  /// Identifiant du dernier passage de l'exercice au moment du « Vu ».
+  TextColumn get lastAttemptId => text()();
+
+  /// Jour du « Vu » (normalisé).
+  TextColumn get date => text().map(const IsoDateTimeConverter())();
+}
+
 /// Sauvegardes enregistrées sur l'appareil (rappel de sauvegarde) : une ligne
 /// par export, la plus récente fait foi. Donnée locale, hors fichier de
 /// sauvegarde.

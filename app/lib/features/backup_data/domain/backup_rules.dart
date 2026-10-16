@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
@@ -46,6 +47,7 @@ class BackupRules {
     _checkAttempts(snapshot, catalogue);
     _checkAssessments(snapshot);
     _checkAcquisitions(snapshot, catalogue);
+    _checkAcknowledgements(snapshot, catalogue);
     _checkPlanned(snapshot);
     await _checkSheets(snapshot);
   }
@@ -131,6 +133,24 @@ class BackupRules {
         throw _unknownBlock;
       }
       if (acquisition.date.isAfter(today)) throw _invalid;
+    }
+  }
+
+  /// Un acquittement vise un exercice du catalogue (`backupUnknownBlock` pour
+  /// un bloc inconnu, `backupInconsistent` pour un numéro absent du bloc) et ne
+  /// peut pas être daté dans le futur. Le passage visé peut avoir disparu
+  /// (acquittement dormant) : il n'est pas exigé.
+  void _checkAcknowledgements(
+    BackupSnapshot snapshot,
+    ExerciseCatalogue catalogue,
+  ) {
+    final today = _clock.today();
+    for (final acknowledgement
+        in snapshot.alertAcknowledgements ?? const <AlertAcknowledgement>[]) {
+      final exercise = acknowledgement.exercise;
+      if (catalogue.blockById(exercise.blockId) == null) throw _unknownBlock;
+      if (catalogue.exercise(exercise) == null) throw _inconsistent;
+      if (acknowledgement.date.isAfter(today)) throw _invalid;
     }
   }
 

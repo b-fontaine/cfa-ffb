@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
@@ -22,6 +23,7 @@ SessionOutcome reviewSession({
   required List<BlockAcquisition> acquisitions,
   required ExerciseCatalogue catalogue,
   required RulesConfig config,
+  List<AlertAcknowledgement> acknowledgements = const [],
 }) {
   final order = {
     for (final (index, spec) in catalogue.exercises.indexed) spec.ref: index,
@@ -64,6 +66,7 @@ SessionOutcome reviewSession({
         studentId: student,
         attempts: from,
         acquisitions: acquisitions,
+        acknowledgements: acknowledgements,
         rates: catalogue.rates,
         config: config,
       );

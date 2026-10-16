@@ -21,9 +21,28 @@ void main() {
       world.seasons,
       world.attempts,
       world.acquisitions,
+      world.acknowledgements,
       world.catalogueRepository,
       world.config,
     );
+  });
+
+  test('a student without any pass or acquired block is to start', () async {
+    await world.seedClub(studentNames: ['s1', 's2', 's3']);
+    await world.attempts.add(
+      attempt(ref('a', 1), potted: 0, student: 's2', id: 'f1'),
+    );
+    await world.acquisitions.add(acquisition('b', student: 's3'));
+
+    final club = ok(await overview(today: day(12)));
+    final members = {
+      for (final m in club.groups.single.members) m.student.id.value: m,
+    };
+
+    expect(members['s1']!.toStart, isTrue);
+    expect(members['s2']!.toStart, isFalse, reason: 'a failed pass is a start');
+    expect(members['s3']!.toStart, isFalse, reason: 'an acquired block counts');
+    expect(members['s2']!.validatedCount, 0);
   });
 
   test('is empty for a new club', () async {
@@ -140,5 +159,37 @@ void main() {
     final club = ok(await overview(today: DateTime(2027, 7)));
 
     expect(club.groups.map((g) => g.group.id), [const GroupId('g1')]);
+  });
+
+  test('does not count an alert the instructor has seen', () async {
+    await world.seedClub(studentNames: ['s1']);
+    for (var pass = 0; pass < 3; pass++) {
+      await world.attempts.add(
+        attempt(ref('a', 1), potted: 1, id: 'f$pass', dayOfMonth: 2 + pass),
+      );
+    }
+    expect(
+      ok(await overview(today: day(12)))
+          .groups
+          .single
+          .members
+          .single
+          .alertCount,
+      1,
+    );
+
+    await world.acknowledgements.add(
+      acknowledgement(ref('a', 1), lastAttempt: 'f2'),
+    );
+
+    expect(
+      ok(await overview(today: day(12)))
+          .groups
+          .single
+          .members
+          .single
+          .alertCount,
+      0,
+    );
   });
 }

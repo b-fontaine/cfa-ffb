@@ -2,6 +2,7 @@ import 'package:billard_cfa/entities/exercise_catalog/domain/training_block.dart
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/technique_summary.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/features/track_progress/domain/block_progress.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';

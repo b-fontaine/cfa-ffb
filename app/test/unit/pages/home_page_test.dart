@@ -6,6 +6,9 @@ import 'package:billard_cfa/features/plan_session/presentation/bloc/upcoming_ses
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_session.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_sessions_cubit.dart';
+import 'package:billard_cfa/features/track_group/domain/group_alerts.dart';
+import 'package:billard_cfa/features/track_group/domain/list_group_alerts.dart';
+import 'package:billard_cfa/features/track_group/presentation/bloc/group_alerts_cubit.dart';
 import 'package:billard_cfa/features/track_progress/domain/week_summary.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/watched_students_cubit.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/week_summary_cubit.dart';
@@ -31,6 +34,9 @@ class _MockUpcoming extends MockCubit<UpcomingSessionsState>
 class _MockWatched extends MockCubit<WatchedStudentsState>
     implements WatchedStudentsCubit;
 
+class _MockGroupAlerts extends MockCubit<GroupAlertsState>
+    implements GroupAlertsCubit;
+
 class _MockWeek extends MockCubit<WeekSummaryState> implements WeekSummaryCubit;
 
 void main() {
@@ -38,6 +44,8 @@ void main() {
   late _MockUpcoming upcoming;
   late _MockWatched watched;
   late _MockWeek week;
+  late _MockGroupAlerts groupAlerts;
+  GroupId? openedGroup;
 
   setUpAll(() => registerFallbackValue(RunKey(sheetId: SheetId('x'))));
 
@@ -46,6 +54,9 @@ void main() {
     upcoming = _MockUpcoming();
     watched = _MockWatched();
     week = _MockWeek();
+    groupAlerts = _MockGroupAlerts();
+    openedGroup = null;
+    when(() => groupAlerts.load()).thenAnswer((_) async {});
     when(() => upcoming.load()).thenAnswer((_) async {});
     when(() => watched.load()).thenAnswer((_) async {});
     when(() => week.load()).thenAnswer((_) async {});
@@ -65,6 +76,7 @@ void main() {
     UpcomingSessionsState? upcomingState,
     WatchedStudentsState? watchedState,
     WeekSummaryState? weekState,
+    GroupAlertsState? groupAlertsState,
   }) async {
     whenListen(
       running,
@@ -92,6 +104,13 @@ void main() {
           weekState ??
           WeekSummaryState(status: WeekStatus.ready, summary: summary),
     );
+    whenListen(
+      groupAlerts,
+      const Stream<GroupAlertsState>.empty(),
+      initialState:
+          groupAlertsState ??
+          const GroupAlertsState(status: GroupAlertsStatus.ready),
+    );
     await pumpUi(
       tester,
       MultiBlocProvider(
@@ -100,6 +119,7 @@ void main() {
           BlocProvider<UpcomingSessionsCubit>.value(value: upcoming),
           BlocProvider<WatchedStudentsCubit>.value(value: watched),
           BlocProvider<WeekSummaryCubit>.value(value: week),
+          BlocProvider<GroupAlertsCubit>.value(value: groupAlerts),
         ],
         child: HomePage(
           today: () => DateTime(2026, 10, 12),
@@ -108,6 +128,7 @@ void main() {
           onAddStudents: () {},
           onOpenStudents: () {},
           onOpenStudent: (_) {},
+          onOpenGroup: (id) => openedGroup = id,
           onResume: (_, _) {},
           onPrepare: (_, _) {},
           onLaunch: (_, _, _) {},
@@ -245,5 +266,64 @@ void main() {
     expect(find.text('Cours'), findsOneWidget);
     expect(find.text('Prepare'), findsOneWidget);
     expect(find.text('Plan the next session'), findsNothing);
+  });
+
+  group('group alerts', () {
+    const alert = GroupAlertLine(
+      groupId: GroupId('g1'),
+      groupName: 'Jeunes',
+      alert: GroupAlert(
+        blockId: 'posture',
+        blockTitle: 'Posture',
+        failed: 4,
+        members: 8,
+      ),
+    );
+
+    testWidgets('lists the group alerts and opens the grid of the group', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        groupAlertsState: const GroupAlertsState(
+          status: GroupAlertsStatus.ready,
+          alerts: GroupAlertList(lines: [alert], total: 1),
+        ),
+      );
+
+      expect(find.text('Group alerts'), findsOneWidget);
+      await tester.tap(find.text('Jeunes'));
+      expect(openedGroup, const GroupId('g1'));
+    });
+
+    testWidgets('shows no section without group alert', (tester) async {
+      await pump(tester);
+
+      expect(find.text('Group alerts'), findsNothing);
+    });
+
+    testWidgets('a failing section shows a retry and keeps the others', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        groupAlertsState: const GroupAlertsState(
+          status: GroupAlertsStatus.failure,
+          failure: NotFound('x', 'y'),
+        ),
+      );
+
+      expect(find.text('This section could not be loaded.'), findsOneWidget);
+      expect(find.text('Last 7 days'), findsOneWidget);
+      await tester.tap(find.text('Retry'));
+      verify(() => groupAlerts.load()).called(greaterThanOrEqualTo(1));
+    });
+
+    testWidgets('shows nothing while it loads', (tester) async {
+      await pump(tester, groupAlertsState: const GroupAlertsState());
+
+      expect(find.text('Group alerts'), findsNothing);
+      expect(find.text('This section could not be loaded.'), findsNothing);
+    });
   });
 }

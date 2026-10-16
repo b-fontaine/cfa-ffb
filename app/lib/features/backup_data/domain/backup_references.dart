@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
@@ -32,6 +33,10 @@ class BackupReferences {
     }
     for (final acquisition in snapshot.blockAcquisitions) {
       _require(students.contains(acquisition.studentId));
+    }
+    for (final acknowledgement
+        in snapshot.alertAcknowledgements ?? const <AlertAcknowledgement>[]) {
+      _require(students.contains(acknowledgement.studentId));
     }
     for (final planned in snapshot.plannedSessions) {
       final groupId = planned.groupId;

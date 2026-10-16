@@ -16,11 +16,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class StudentsPage extends StatelessWidget {
   const StudentsPage({
     required this.onOpenStudent,
+    required this.onOpenGroup,
     required this.onAddStudent,
     super.key,
   });
 
   final ValueChanged<StudentId> onOpenStudent;
+  final ValueChanged<GroupId> onOpenGroup;
   final VoidCallback onAddStudent;
 
   @override
@@ -84,6 +86,7 @@ class StudentsPage extends StatelessWidget {
                               ClubList(
                                 club: club,
                                 onOpenStudent: onOpenStudent,
+                                onOpenGroup: onOpenGroup,
                               ),
                             ],
                           ),

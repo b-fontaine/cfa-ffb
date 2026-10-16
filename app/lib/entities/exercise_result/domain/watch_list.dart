@@ -54,6 +54,33 @@ int _compareAlarm(
 
 int _levelRank(AlertLevel level) => level == AlertLevel.persistent ? 0 : 1;
 
+/// Rang d'enseignement de chaque exercice de [catalogueOrder], calculé une
+/// fois pour les tris (entrée de [compareAlertSeverity]).
+Map<ExerciseRef, int> teachingRanks(List<ExerciseRef> catalogueOrder) => {
+  for (final (index, exercise) in catalogueOrder.indexed) exercise: index,
+};
+
+/// Ordre des alertes d'un élève, de la plus alarmante à la moins alarmante :
+/// niveau persistant avant attention, puis plus d'échecs consécutifs, puis
+/// ordre d'enseignement ([ranks], voir [teachingRanks]). Règle unique des
+/// élèves à surveiller et de l'en-tête de la fiche.
+int compareAlertSeverity(
+  ExerciseResult a,
+  ExerciseResult b, {
+  required Map<ExerciseRef, int> ranks,
+}) {
+  final byAlarm = _compareAlarm(
+    a.alert,
+    a.consecutiveFailures,
+    b.alert,
+    b.consecutiveFailures,
+  );
+  if (byAlarm != 0) return byAlarm;
+  int position(ExerciseRef exercise) => ranks[exercise] ?? ranks.length;
+
+  return position(a.exercise).compareTo(position(b.exercise));
+}
+
 /// Les élèves de [progress] ayant au moins une alerte active, un
 /// [WatchedStudent] par élève.
 ///
@@ -66,21 +93,9 @@ List<WatchedStudent> watchedStudents(
   Iterable<StudentProgress> progress, {
   required List<ExerciseRef> catalogueOrder,
 }) {
-  final position = {
-    for (final (index, exercise) in catalogueOrder.indexed) exercise: index,
-  };
-  int byExercise(ExerciseResult a, ExerciseResult b) {
-    final byAlarm = _compareAlarm(
-      a.alert,
-      a.consecutiveFailures,
-      b.alert,
-      b.consecutiveFailures,
-    );
-    if (byAlarm != 0) return byAlarm;
-    return (position[a.exercise] ?? catalogueOrder.length).compareTo(
-      position[b.exercise] ?? catalogueOrder.length,
-    );
-  }
+  final ranks = teachingRanks(catalogueOrder);
+  int byExercise(ExerciseResult a, ExerciseResult b) =>
+      compareAlertSeverity(a, b, ranks: ranks);
 
   final watched = <WatchedStudent>[];
   for (final student in progress) {

@@ -1,6 +1,8 @@
+import 'package:billard_cfa/entities/exercise_result/data/drift_acknowledgement_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/drift_assessment_repository.dart';
 import 'package:billard_cfa/entities/session/data/drift_session_repository.dart';
@@ -9,6 +11,7 @@ import 'package:billard_cfa/entities/settings/data/drift_settings_repository.dar
 import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
 import 'package:billard_cfa/features/backup_data/data/drift_backup_marker_repository.dart';
+import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
 import 'package:drift/native.dart';
@@ -148,6 +151,61 @@ void main() {
       (await DriftAttemptRepository(db, TickingClock()).all()).single.id.value,
       'a1',
     );
+  });
+
+  test('a fresh database matches the committed v8 snapshot', () async {
+    final connection = await verifier.startAt(8);
+    final db = AppDatabase(connection);
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 8);
+  });
+
+  test('upgrading v7 to v8 creates an empty acknowledgements table and keeps '
+      'the data and the settings', () async {
+    final schema = await verifier.schemaAt(7);
+    schema.rawDatabase
+      ..execute(
+        'INSERT INTO attempts (id, created_at, updated_at, student_id, '
+        'session_id, block_id, exercise_number, date, pass_index, potted, '
+        'total) '
+        "VALUES ('a1', '2026-10-01T00:00:00.000Z', "
+        "'2026-10-01T00:00:00.000Z', 's1', 'x1', 'posture', 1, "
+        "'2026-10-01T00:00:00.000', 1, 3, 5)",
+      )
+      ..execute(
+        'INSERT INTO app_settings (id, passes_required, alert_threshold, '
+        'recall_stale_sessions, group_failure_share_percent, '
+        'backup_reminder_days, updated_at) '
+        "VALUES (1, 3, 3, 4, 50, 30, '2026-10-01T00:00:00.000Z')",
+      );
+    final db = AppDatabase(schema.newConnection());
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 8);
+
+    final clock = TickingClock();
+    final acknowledgements = DriftAcknowledgementRepository(db, clock);
+    expect(await acknowledgements.all(), isEmpty);
+    expect(
+      (await DriftAttemptRepository(db, clock).all()).single.id.value,
+      'a1',
+    );
+    expect((await DriftSettingsRepository(db, clock).load()).passesRequired, 3);
+    await acknowledgements.add(
+      AlertAcknowledgement(
+        id: const AcknowledgementId('k1'),
+        studentId: const StudentId('s1'),
+        exercise: ExerciseRef(blockId: 'posture', number: 1),
+        lastAttemptId: const AttemptId('a1'),
+        date: DateTime(2026, 10, 5),
+      ),
+    );
+    final read = (await acknowledgements.forStudent(const StudentId('s1')))
+        .single;
+    expect(read.exercise, ExerciseRef(blockId: 'posture', number: 1));
+    expect(read.lastAttemptId, const AttemptId('a1'));
+    expect(read.date, DateTime(2026, 10, 5));
   });
 
   test('the settings table holds a single row (id = 1)', () async {
@@ -327,7 +385,7 @@ void main() {
   test('refuses to open a database written by a newer version', () async {
     final db = AppDatabase(
       NativeDatabase.memory(
-        setup: (raw) => raw.execute('PRAGMA user_version = 8'),
+        setup: (raw) => raw.execute('PRAGMA user_version = 9'),
       ),
     );
     addTearDown(db.close);
@@ -336,9 +394,9 @@ void main() {
       db.customSelect('SELECT 1').get(),
       throwsA(
         isA<DowngradeNotSupported>()
-            .having((e) => e.from, 'from', 8)
-            .having((e) => e.to, 'to', 7)
-            .having((e) => e.toString(), 'message', contains('version 8')),
+            .having((e) => e.from, 'from', 9)
+            .having((e) => e.to, 'to', 8)
+            .having((e) => e.toString(), 'message', contains('version 9')),
       ),
     );
   });

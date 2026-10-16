@@ -1,3 +1,4 @@
+import 'package:billard_cfa/features/acknowledge_alert/presentation/bloc/acknowledgement_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/ui/erase_student_card.dart';
 import 'package:billard_cfa/features/place_student/presentation/bloc/placement_bloc.dart';
 import 'package:billard_cfa/features/place_student/presentation/ui/acquire_block_dialog.dart';
@@ -7,6 +8,7 @@ import 'package:billard_cfa/features/track_progress/domain/student_sheet.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/student_sheet_bloc.dart';
 import 'package:billard_cfa/features/track_progress/presentation/ui/student_sheet_view.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/ui/confirm_dialog.dart';
 import 'package:billard_cfa/shared/ui/error_view.dart';
 import 'package:billard_cfa/shared/ui/failure_message.dart';
@@ -16,19 +18,24 @@ import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Fiche d'un élève : progression par bloc, courbes de performance, exercice
-/// suivant et notion à rappeler. Les blocs (fiche, rappel, effacement,
-/// positionnement) sont fournis par l'appelant ; [today] est lu à
-/// l'ouverture de la boîte et borne la date du positionnement. La page
-/// compose le positionnement (ADR 0008) : boîte de dialogue, confirmation,
-/// retour par `SnackBar` et rechargement de la fiche et de la notion à
-/// rappeler.
+/// Fiche d'un élève : en-tête (en cours, prochain, alerte), parcours en cases,
+/// notion à rappeler, courbes repliées, et en bas les actions rares (modifier,
+/// bilan, effacer). Les blocs (fiche, rappel, effacement, positionnement,
+/// acquittement) sont fournis par l'appelant ; [today] est lu à l'ouverture de
+/// la boîte et borne la date du positionnement.
+///
+/// La page compose le positionnement (ADR 0008) : boîte de dialogue,
+/// confirmation, retour par `SnackBar` et rechargement de la fiche et de la
+/// notion à rappeler ; et l'acquittement d'une alerte (ADR 0013) : « Vu » et
+/// « Rétablir », retour par `SnackBar` et rechargement de la fiche. [onShow]
+/// ouvre la vue « à montrer à l'élève ».
 class StudentSheetPage extends StatelessWidget {
   const StudentSheetPage({
     required this.onBack,
     required this.onEdit,
     required this.onOpenAssessment,
     required this.onErased,
+    required this.onShow,
     required this.today,
     super.key,
   });
@@ -39,6 +46,9 @@ class StudentSheetPage extends StatelessWidget {
 
   /// Appelé quand l'élève vient d'être effacé (la fiche n'existe plus).
   final VoidCallback onErased;
+
+  /// Ouvre la vue « à montrer à l'élève ».
+  final VoidCallback onShow;
   final DateTime Function() today;
 
   Future<void> _mark(BuildContext context, StudentSheet sheet, String blockId) {
@@ -105,19 +115,63 @@ class StudentSheetPage extends StatelessWidget {
     }
   }
 
+  void _onAcknowledgement(BuildContext context, AcknowledgementState ack) {
+    final l10n = AppLocalizations.of(context);
+    final message = ack.status == AcknowledgementStatus.refused
+        ? failureMessage(l10n, ack.failure!)
+        : ack.action == AcknowledgementAction.restore
+        ? l10n.sheetAlertRestored
+        : l10n.sheetAlertMarkedSeen;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+    // La fiche se relit dans les deux cas : un refus signale une alerte qui
+    // n'est plus active, que l'écran montrait peut-être encore.
+    context.read<StudentSheetBloc>().add(const StudentSheetEvent.refreshed());
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return BlocListener<PlacementBloc, PlacementState>(
-      // Un refus de marquage s'affiche sous la date de la boîte, pas ici.
-      listenWhen: (previous, current) =>
-          current.status == PlacementStatus.done ||
-          (current.status == PlacementStatus.refused &&
-              current.action == PlacementAction.revoke),
-      listener: _onPlacement,
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<PlacementBloc, PlacementState>(
+          // Un refus de marquage s'affiche sous la date de la boîte, pas ici.
+          listenWhen: (previous, current) =>
+              current.status == PlacementStatus.done ||
+              (current.status == PlacementStatus.refused &&
+                  current.action == PlacementAction.revoke),
+          listener: _onPlacement,
+        ),
+        BlocListener<AcknowledgementBloc, AcknowledgementState>(
+          listenWhen: (previous, current) =>
+              current.status == AcknowledgementStatus.done ||
+              current.status == AcknowledgementStatus.refused,
+          listener: _onAcknowledgement,
+        ),
+      ],
       child: _sheet(context, l10n),
     );
   }
+
+  void _acknowledge(
+    BuildContext context,
+    StudentSheet sheet,
+    ExerciseRef ref,
+  ) => context.read<AcknowledgementBloc>().add(
+    AcknowledgementEvent.acknowledgeRequested(
+      studentId: sheet.student.id,
+      exercise: ref,
+    ),
+  );
+
+  void _restore(BuildContext context, StudentSheet sheet, ExerciseRef ref) =>
+      context.read<AcknowledgementBloc>().add(
+        AcknowledgementEvent.restoreRequested(
+          studentId: sheet.student.id,
+          exercise: ref,
+        ),
+      );
 
   Widget _sheet(BuildContext context, AppLocalizations l10n) {
     return BlocBuilder<StudentSheetBloc, StudentSheetState>(
@@ -142,6 +196,27 @@ class StudentSheetPage extends StatelessWidget {
               onBack: onBack,
               backLabel: l10n.navStudents,
               children: [
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: FilledButton.icon(
+                    onPressed: onShow,
+                    icon: const Icon(Icons.slideshow),
+                    label: Text(l10n.sheetShow),
+                  ),
+                ),
+                BlocBuilder<StudentRecallBloc, StudentRecallState>(
+                  builder: (context, recall) => StudentSheetView(
+                    sheet: sheet,
+                    recall: recall.status == RecallStatus.ready
+                        ? StudentRecallCard(advice: recall.advice)
+                        : null,
+                    onAcknowledge: (ref) => _acknowledge(context, sheet, ref),
+                    onRestore: (ref) => _restore(context, sheet, ref),
+                    onMarkAcquired: (blockId) => _mark(context, sheet, blockId),
+                    onRevokeAcquired: (blockId) =>
+                        _revoke(context, sheet, blockId),
+                  ),
+                ),
                 Wrap(
                   spacing: AppSpacing.sm,
                   runSpacing: AppSpacing.sm,
@@ -151,23 +226,12 @@ class StudentSheetPage extends StatelessWidget {
                       icon: const Icon(Icons.edit_outlined),
                       label: Text(l10n.sheetEdit),
                     ),
-                    FilledButton.icon(
+                    OutlinedButton.icon(
                       onPressed: onOpenAssessment,
                       icon: const Icon(Icons.fact_check_outlined),
                       label: Text(l10n.sheetOpenAssessment),
                     ),
                   ],
-                ),
-                BlocBuilder<StudentRecallBloc, StudentRecallState>(
-                  builder: (context, recall) => StudentSheetView(
-                    sheet: sheet,
-                    recall: recall.status == RecallStatus.ready
-                        ? StudentRecallCard(advice: recall.advice)
-                        : null,
-                    onMarkAcquired: (blockId) => _mark(context, sheet, blockId),
-                    onRevokeAcquired: (blockId) =>
-                        _revoke(context, sheet, blockId),
-                  ),
                 ),
                 EraseStudentCard(
                   studentId: sheet.student.id,

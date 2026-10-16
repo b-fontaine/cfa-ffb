@@ -55,6 +55,7 @@ Feature: Recorded sessions history
     Then I see {'Pass corrected: 7 of 9'} text
     And I see {'Pass 1: 7 of 9'} text
     When I open the sheet of {'Léa'}
+    And I tap {'Performance curves'} text
     Then I see {'Attempt 1: 7 of 9'} text
     And I do not see {'Last pass missed'} text
 

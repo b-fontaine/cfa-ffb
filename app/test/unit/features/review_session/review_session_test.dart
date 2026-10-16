@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
@@ -69,12 +70,14 @@ void main() {
     SessionRecord? of,
     RulesConfig? config,
     List<dynamic> acquisitions = const [],
+    List<AlertAcknowledgement> acknowledgements = const [],
   }) => reviewSession(
     record: of ?? record(),
     attempts: attempts,
     acquisitions: [
       for (final block in acquisitions.cast<String>()) acquisition(block),
     ],
+    acknowledgements: acknowledgements,
     catalogue: catalogue,
     config: config ?? RulesConfig(),
   );
@@ -222,6 +225,44 @@ void main() {
         [('s2', a1)],
       );
       expect(outcome.watched.single.alert, AlertLevel.attention);
+    });
+
+    test('does not list a student whose alert was seen', () {
+      final failures = repeat(
+        3,
+        (i) => before('s2', a1, passed: false, dayOfMonth: 2 + i),
+      );
+      final outcome = review(
+        [...failures, today('s1', a1)],
+        acknowledgements: [
+          acknowledgement(
+            a1,
+            lastAttempt: failures.last.id.value,
+            student: 's2',
+          ),
+        ],
+      );
+
+      expect(outcome.watched, isEmpty);
+    });
+
+    test('lists the student again when the record adds a failed pass', () {
+      final failures = repeat(
+        3,
+        (i) => before('s2', a1, passed: false, dayOfMonth: 2 + i),
+      );
+      final outcome = review(
+        [...failures, today('s2', a1, passed: false)],
+        acknowledgements: [
+          acknowledgement(
+            a1,
+            lastAttempt: failures.last.id.value,
+            student: 's2',
+          ),
+        ],
+      );
+
+      expect(outcome.watched.single.consecutiveFailures, 4);
     });
 
     test('does not list an absent student with an active alert', () {

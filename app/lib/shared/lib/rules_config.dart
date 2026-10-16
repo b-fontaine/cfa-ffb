@@ -21,6 +21,11 @@ abstract class RulesConfig with _$RulesConfig {
     @Default(5) int persistentAlertThreshold,
     @Default(4) int recallStaleSessions,
     @Default(50) int groupFailureSharePercent,
+
+    /// Élèves en échec au minimum pour une alerte de groupe (en dessous, c'est
+    /// une alerte individuelle). Non exposé à l'écran Réglages : ni persisté ni
+    /// sauvegardé, il reprend toujours la valeur par défaut (ADR 0013).
+    @Default(2) int minGroupFailures,
     @Default(5) int trendWindow,
     @Default(3) int movingAverageWindow,
     @Default(5) int stagnationPasses,
@@ -38,6 +43,7 @@ abstract class RulesConfig with _$RulesConfig {
     final positives = [
       passesRequired,
       alertThreshold,
+      minGroupFailures,
       recallStaleSessions,
       trendWindow,
       movingAverageWindow,

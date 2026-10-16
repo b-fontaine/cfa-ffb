@@ -1,8 +1,11 @@
 import 'package:billard_cfa/shared/ui/app_navigation.dart';
+import 'package:billard_cfa/shared/ui/cell_grid.dart';
 import 'package:billard_cfa/shared/ui/counter_field.dart';
 import 'package:billard_cfa/shared/ui/error_view.dart';
+import 'package:billard_cfa/shared/ui/heat_cell.dart';
 import 'package:billard_cfa/shared/ui/loading_view.dart';
 import 'package:billard_cfa/shared/ui/nav_icon.dart';
+import 'package:billard_cfa/shared/ui/path_cell.dart';
 import 'package:billard_cfa/shared/ui/progress_chart.dart';
 import 'package:billard_cfa/shared/ui/progress_meter.dart';
 import 'package:billard_cfa/shared/ui/scroll_page.dart';
@@ -215,5 +218,178 @@ class _NavDemoState extends State<_NavDemo> {
     selectedIndex: _index,
     onSelected: (index) => setState(() => _index = index),
     body: Center(child: Text('Onglet ${_index + 1}')),
+  );
+}
+
+@widgetbook.UseCase(name: 'Quatre états', type: PathCell, path: _path)
+Widget buildPathCellStatesUseCase(BuildContext context) => Padding(
+  padding: const EdgeInsets.all(16),
+  child: Wrap(
+    children: [
+      PathCell(
+        state: PathCellState.todo,
+        label: 'Posture · exercice 1 : à faire',
+        onTap: () {},
+      ),
+      PathCell(
+        state: PathCellState.started,
+        passed: 2,
+        label: 'Posture · exercice 2 : commencé, 2 réussites sur 5',
+        onTap: () {},
+      ),
+      PathCell(
+        state: PathCellState.validated,
+        label: 'Posture · exercice 3 : validé',
+        onTap: () {},
+      ),
+      PathCell(
+        state: PathCellState.acquired,
+        label: 'Posture · exercice 4 : acquis au positionnement',
+        onTap: () {},
+      ),
+    ],
+  ),
+);
+
+@widgetbook.UseCase(name: 'Alerte et en cours', type: PathCell, path: _path)
+Widget buildPathCellMarkersUseCase(BuildContext context) => Padding(
+  padding: const EdgeInsets.all(16),
+  child: Wrap(
+    children: [
+      PathCell(
+        state: PathCellState.started,
+        passed: context.knobs.int.slider(
+          label: 'réussites',
+          initialValue: 1,
+          max: 4,
+        ),
+        alerted: context.knobs.boolean(label: 'alerte', initialValue: true),
+        current: context.knobs.boolean(label: 'en cours', initialValue: true),
+        label: 'Posture · exercice 1',
+        onTap: () {},
+      ),
+      const PathCell(
+        state: PathCellState.todo,
+        current: true,
+        label: 'Posture · exercice 2 : à faire, exercice en cours',
+      ),
+    ],
+  ),
+);
+
+@widgetbook.UseCase(name: 'Légende', type: PathLegend, path: _path)
+Widget buildPathLegendUseCase(BuildContext context) => Padding(
+  padding: const EdgeInsets.all(16),
+  child: PathLegend(
+    exerciseCount: context.knobs.int.slider(
+      label: 'exercices',
+      initialValue: 70,
+      min: 1,
+      max: 100,
+    ),
+  ),
+);
+
+@widgetbook.UseCase(name: 'Quatre paliers', type: HeatCell, path: _path)
+Widget buildHeatCellLevelsUseCase(BuildContext context) => Padding(
+  padding: const EdgeInsets.all(16),
+  child: Wrap(
+    children: [
+      HeatCell(
+        fraction: '0/4',
+        level: HeatLevel.none,
+        label: 'Léa, Posture : 0 sur 4 exercices',
+        onTap: () {},
+      ),
+      HeatCell(
+        fraction: '1/4',
+        level: HeatLevel.some,
+        label: 'Léa, Posture : 1 sur 4 exercices',
+        onTap: () {},
+      ),
+      HeatCell(
+        fraction: '3/4',
+        level: HeatLevel.most,
+        label: 'Léa, Posture : 3 sur 4 exercices',
+        onTap: () {},
+      ),
+      HeatCell(
+        fraction: '4/4',
+        level: HeatLevel.all,
+        label: 'Léa, Posture : 4 sur 4 exercices',
+        onTap: () {},
+      ),
+    ],
+  ),
+);
+
+@widgetbook.UseCase(name: 'Acquis et alerte', type: HeatCell, path: _path)
+Widget buildHeatCellMarkersUseCase(BuildContext context) => Padding(
+  padding: const EdgeInsets.all(16),
+  child: Wrap(
+    children: [
+      HeatCell(
+        fraction: '4/4',
+        level: HeatLevel.all,
+        acquired: true,
+        label: 'Léa, Posture : 4 sur 4 exercices, acquis au positionnement',
+        onTap: () {},
+      ),
+      HeatCell(
+        fraction: '1/4',
+        level: HeatLevel.some,
+        alerted: true,
+        label: 'Léa, Posture : 1 sur 4 exercices, alerte en cours',
+        onTap: () {},
+      ),
+    ],
+  ),
+);
+
+@widgetbook.UseCase(name: 'Défilement horizontal', type: CellGrid, path: _path)
+Widget buildCellGridUseCase(BuildContext context) {
+  final students = context.knobs.int.slider(
+    label: 'élèves',
+    initialValue: 8,
+    min: 1,
+    max: 16,
+  );
+  return SingleChildScrollView(
+    padding: const EdgeInsets.all(16),
+    child: CellGrid(
+      keyPrefix: 'demo',
+      semanticLabel: 'Techniques par élève',
+      columns: [
+        for (var s = 1; s <= students; s++)
+          CellGridColumn(id: 's$s', label: 'Élève $s', onTap: () {}),
+      ],
+      rows: [
+        for (final title in const [
+          'Posture, visée et coup de queue',
+          'La puissance',
+          'Demi-bille',
+        ])
+          CellGridRow(
+            id: title,
+            header: title,
+            semanticLabel: '$title : résumé',
+            cells: [
+              for (var s = 1; s <= students; s++)
+                HeatCell(
+                  fraction: '${s % 5}/4',
+                  level: HeatLevel.values[s % 4],
+                  label: 'Élève $s, $title',
+                  onTap: () {},
+                ),
+            ],
+          ),
+      ],
+      footer: CellGridRow(
+        id: 'presences',
+        header: 'Assiduité',
+        semanticLabel: 'Assiduité',
+        cells: [for (var s = 1; s <= students; s++) Text('${s % 6}/6')],
+      ),
+    ),
   );
 }

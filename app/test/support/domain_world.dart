@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.dart';
+import 'package:billard_cfa/entities/exercise_result/data/in_memory_acknowledgement_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/in_memory_acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/in_memory_attempt_repository.dart';
 import 'package:billard_cfa/entities/group/data/in_memory_group_repository.dart';
@@ -64,6 +65,7 @@ class DomainWorld {
   final students = InMemoryStudentRepository();
   final assessments = InMemoryAssessmentRepository();
   final acquisitions = InMemoryAcquisitionRepository();
+  final acknowledgements = InMemoryAcknowledgementRepository();
   final ids = CountingIds();
 
   late final catalogueRepository = FixedCatalogueRepository(catalogue);

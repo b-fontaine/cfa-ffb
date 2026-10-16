@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
@@ -17,6 +18,10 @@ part 'backup_snapshot.freezed.dart';
 /// [blockAcquisitions] est obligatoire (ADR 0008) : un oubli à la
 /// construction ne compile pas. [settings] (ADR 0012) est absent d'un fichier
 /// du format 1 : les réglages en place restent alors inchangés.
+/// [alertAcknowledgements] (ADR 0013) est `null` pour un fichier des formats 1
+/// et 2, qui ne les connaissent pas : l'import efface alors les acquittements
+/// en place ; un fichier du format 3 porte toujours la liste (éventuellement
+/// vide), qui est ajoutée à ceux en place.
 @freezed
 abstract class BackupSnapshot with _$BackupSnapshot {
   const factory BackupSnapshot({
@@ -29,5 +34,6 @@ abstract class BackupSnapshot with _$BackupSnapshot {
     @Default([]) List<MaturityAssessment> assessments,
     @Default([]) List<Session> plannedSessions,
     ClubSettings? settings,
+    List<AlertAcknowledgement>? alertAcknowledgements,
   }) = _BackupSnapshot;
 }

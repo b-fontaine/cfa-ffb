@@ -20,6 +20,7 @@ void main() {
       expect(config.persistentAlertThreshold, 5);
       expect(config.recallStaleSessions, 4);
       expect(config.groupFailureSharePercent, 50);
+      expect(config.minGroupFailures, 2);
       expect(config.trendWindow, 5);
       expect(config.movingAverageWindow, 3);
       expect(config.stagnationPasses, 5);
@@ -65,6 +66,14 @@ void main() {
       );
       expect(
         () => RulesConfig(backupReminderDays: 366),
+        violation(InvariantCode.invalidRules),
+      );
+    });
+
+    test('accepts minGroupFailures 1 and refuses 0', () {
+      expect(RulesConfig(minGroupFailures: 1).minGroupFailures, 1);
+      expect(
+        () => RulesConfig(minGroupFailures: 0),
         violation(InvariantCode.invalidRules),
       );
     });

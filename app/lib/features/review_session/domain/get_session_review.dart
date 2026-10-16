@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acknowledgement_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
@@ -25,6 +26,7 @@ class GetSessionReview {
     this._records,
     this._attempts,
     this._acquisitions,
+    this._acknowledgements,
     this._students,
     this._groups,
     this._planned,
@@ -37,6 +39,7 @@ class GetSessionReview {
   final SessionRecordRepository _records;
   final AttemptRepository _attempts;
   final AcquisitionRepository _acquisitions;
+  final AcknowledgementRepository _acknowledgements;
   final StudentRepository _students;
   final GroupRepository _groups;
   final SessionRepository _planned;
@@ -54,6 +57,7 @@ class GetSessionReview {
           record: record,
           attempts: await _attempts.all(),
           acquisitions: await _acquisitions.all(),
+          acknowledgements: await _acknowledgements.all(),
           catalogue: catalogue,
           config: _config,
         );

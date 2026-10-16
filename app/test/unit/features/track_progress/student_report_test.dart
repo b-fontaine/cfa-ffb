@@ -1,10 +1,10 @@
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/technique_summary.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
-import 'package:billard_cfa/features/track_progress/domain/attendance.dart';
-import 'package:billard_cfa/features/track_progress/domain/block_progress.dart';
 import 'package:billard_cfa/features/track_progress/domain/student_report.dart';
+import 'package:billard_cfa/shared/lib/attendance.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';

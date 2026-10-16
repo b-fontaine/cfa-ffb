@@ -1,4 +1,3 @@
-import 'package:billard_cfa/features/track_progress/presentation/ui/block_progress_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,7 +11,7 @@ Future<void> iSeeTheBadgeInTheBlock(
   String block,
 ) async {
   final title = find.descendant(
-    of: find.byType(BlockProgressList),
+    of: find.byKey(const ValueKey('path-list')),
     matching: find.text(block),
   );
   expect(title, findsOneWidget);

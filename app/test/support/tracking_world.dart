@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acknowledgement_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
@@ -16,12 +18,17 @@ import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_reposito
 import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
+import 'package:billard_cfa/features/acknowledge_alert/domain/acknowledge_alert.dart';
+import 'package:billard_cfa/features/acknowledge_alert/domain/restore_alert.dart';
 import 'package:billard_cfa/features/assess_maturity/domain/assessment_outcome.dart';
 import 'package:billard_cfa/features/backup_data/domain/export_backup.dart';
 import 'package:billard_cfa/features/backup_data/domain/import_backup.dart';
 import 'package:billard_cfa/features/backup_data/domain/import_summary.dart';
 import 'package:billard_cfa/features/change_audience/domain/audience_change_outcome.dart';
 import 'package:billard_cfa/features/manage_settings/domain/save_settings.dart';
+import 'package:billard_cfa/features/manage_students/domain/club_overview.dart';
+import 'package:billard_cfa/features/manage_students/domain/erase_student.dart';
+import 'package:billard_cfa/features/manage_students/domain/get_club_overview.dart';
 import 'package:billard_cfa/features/place_student/domain/mark_block_acquired.dart';
 import 'package:billard_cfa/features/plan_session/domain/upcoming_sessions.dart';
 import 'package:billard_cfa/features/record_results/domain/open_or_resume_session.dart';
@@ -30,9 +37,16 @@ import 'package:billard_cfa/features/record_results/domain/record_attempt.dart';
 import 'package:billard_cfa/features/record_results/domain/recorded_attempt.dart';
 import 'package:billard_cfa/features/review_session/domain/session_review.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_session.dart';
+import 'package:billard_cfa/features/student_showcase/domain/get_student_showcase.dart';
+import 'package:billard_cfa/features/student_showcase/domain/student_showcase.dart';
 import 'package:billard_cfa/features/suggest_session/domain/next_sheet.dart';
 import 'package:billard_cfa/features/suggest_session/domain/session_plan.dart';
+import 'package:billard_cfa/features/track_group/domain/get_group_overview.dart';
+import 'package:billard_cfa/features/track_group/domain/group_grid.dart';
+import 'package:billard_cfa/features/track_group/domain/list_group_alerts.dart';
 import 'package:billard_cfa/features/track_progress/domain/exercise_curve.dart';
+import 'package:billard_cfa/features/track_progress/domain/get_student_sheet.dart';
+import 'package:billard_cfa/features/track_progress/domain/student_sheet.dart';
 import 'package:billard_cfa/features/track_progress/domain/watch_list.dart';
 import 'package:billard_cfa/features/track_progress/domain/week_summary.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
@@ -79,6 +93,23 @@ class TrackingWorld {
   /// Ce que l'accueil « Aujourd'hui » montre (lot U7).
   late UpcomingSessions upcoming;
   late WatchList watchList;
+
+  /// La fiche ouverte (lot U9) : parcours et en-tête.
+  late StudentSheet sheet;
+
+  /// Dernier acquittement demandé (accepté ou refusé).
+  late Result<AlertAcknowledgement> lastAcknowledgement;
+
+  /// La liste des élèves du club (lot U9 : alertes vues).
+  late ClubOverview club;
+
+  /// La vue élève demandée (acceptée ou refusée).
+  late Result<StudentShowcase> showcaseResult;
+
+  /// La grille de groupe demandée (acceptée ou refusée) et les alertes de
+  /// groupe de l'accueil.
+  late Result<GroupGrid> gridResult;
+  late GroupAlertList groupAlerts;
   late WeekSummary week;
   late List<RunningSession> running;
 
@@ -429,6 +460,113 @@ class TrackingWorld {
     );
   }
 
+  Future<void> openSheet(String student) async {
+    sheet = _valueOf(await getIt<GetStudentSheet>()(studentId(student)));
+  }
+
+  Future<void> acknowledge(String student, String exercise) async {
+    lastAcknowledgement = await getIt<AcknowledgeAlert>()(
+      studentId: studentId(student),
+      exercise: TrackingWorld.exercise(exercise),
+      today: today,
+    );
+  }
+
+  Future<void> restore(String student, String exercise) async {
+    _valueOf(
+      await getIt<RestoreAlert>()(
+        studentId: studentId(student),
+        exercise: TrackingWorld.exercise(exercise),
+      ),
+    );
+  }
+
+  Future<int> acknowledgementCount() async =>
+      (await getIt<AcknowledgementRepository>().all()).length;
+
+  Future<void> openClub() async {
+    club = _valueOf(await getIt<GetClubOverview>()(today: today));
+  }
+
+  Future<void> eraseStudent(String student) async {
+    _valueOf(await getIt<EraseStudent>()(studentId(student)));
+  }
+
+  Future<void> openShowcase(String student) async {
+    showcaseResult = await getIt<GetStudentShowcase>()(studentId(student));
+  }
+
+  StudentShowcase get showcase => _valueOf(showcaseResult);
+
+  Future<void> openGrid(String group) async {
+    gridResult = await getIt<GetGroupOverview>()(
+      groupId: groupId(group),
+      today: today,
+    );
+  }
+
+  GroupGrid get grid => _valueOf(gridResult);
+
+  Future<void> openGroupAlerts() async {
+    groupAlerts = _valueOf(await getIt<ListGroupAlerts>()(today: today));
+  }
+
+  /// Admet [student] dans [group] à la date [from] (l'élève est inscrit s'il
+  /// ne l'est pas encore).
+  Future<void> joinGroup(String student, String group, DateTime from) async {
+    final audience = _audienceOfGroup[group]!;
+    final groups = getIt<GroupRepository>();
+    final existing = (await groups.byId(groupId(group)))!;
+    await groups.save(
+      existing.admit(
+        studentId: studentId(student),
+        studentAudience: audience,
+        from: from,
+      ),
+    );
+    final students = getIt<StudentRepository>();
+    if (await students.byId(studentId(student)) == null) {
+      await students.save(
+        Student.enroll(
+          id: studentId(student),
+          firstName: student,
+          audience: audience,
+          since: from,
+        ),
+      );
+    }
+    _groupOfStudent[student] = group;
+  }
+
+  /// Clôt l'appartenance de [student] à [group] au jour [to].
+  Future<void> leaveGroup(String student, String group, DateTime to) async {
+    final groups = getIt<GroupRepository>();
+    final existing = (await groups.byId(groupId(group)))!;
+    await groups.save(existing.release(studentId: studentId(student), to: to));
+    _groupOfStudent.remove(student);
+  }
+
+  /// [count] séances consécutives du groupe à partir du jour [from], tous les
+  /// élèves suivis du groupe présents, sans aucun passage.
+  Future<void> holdSessions(String group, int count, DateTime from) async {
+    for (var i = 0; i < count; i++) {
+      await giveSession(
+        group: group,
+        on: from.add(Duration(days: i)),
+        withPass: false,
+      );
+    }
+  }
+
+  /// Une séance du groupe à la date [on] avec les élèves [present].
+  Future<void> holdSessionWith(
+    String group,
+    DateTime on,
+    List<String> present,
+  ) async {
+    await openSession(group: group, on: on, present: present);
+  }
+
   Future<void> exportBackup() async {
     backup = _valueOf(await getIt<ExportBackup>()());
   }
@@ -463,7 +601,10 @@ class TrackingWorld {
   String backupWithoutSettings(int version) {
     final document = jsonDecode(backup) as Map<String, Object?>;
     document['schemaVersion'] = version;
-    (document['data']! as Map<String, Object?>).remove('settings');
+    (document['data']! as Map<String, Object?>)
+      ..remove('settings')
+      // Les formats 1 et 2 ne connaissent pas les acquittements (ADR 0013).
+      ..remove('alertAcknowledgements');
     return jsonEncode(document);
   }
 
@@ -482,6 +623,17 @@ class TrackingWorld {
     final data = document['data']! as Map<String, Object?>;
     final settings = data['settings']! as Map<String, Object?>;
     return settings[SettingsNames.key(name)]! as int;
+  }
+
+  /// La sauvegarde exportée au format [version] : sans la clé des
+  /// acquittements (formats 1 et 2) ni celle des réglages (format 1).
+  String backupAtFormat(int version) {
+    final document = jsonDecode(backup) as Map<String, Object?>;
+    document['schemaVersion'] = version;
+    final data = document['data']! as Map<String, Object?>
+      ..remove('alertAcknowledgements');
+    if (version < 2) data.remove('settings');
+    return jsonEncode(document);
   }
 
   /// La sauvegarde exportée, avec `schemaVersion` remplacé par [version].

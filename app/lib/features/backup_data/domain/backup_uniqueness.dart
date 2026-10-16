@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 
@@ -15,6 +16,11 @@ class BackupUniqueness {
     _unique(snapshot.assessments.map((a) => a.id.value));
     _unique(snapshot.plannedSessions.map((s) => s.id));
     _unique(snapshot.blockAcquisitions.map((a) => a.id.value));
+    _unique(
+      (snapshot.alertAcknowledgements ?? const <AlertAcknowledgement>[]).map(
+        (a) => a.id.value,
+      ),
+    );
     // Au plus un marqueur par (élève, bloc).
     _unique(
       snapshot.blockAcquisitions.map(

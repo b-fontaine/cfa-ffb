@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/block_failures.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
@@ -423,6 +424,44 @@ void main() {
 
       expect(lowerScore!.exercise, ref('a', 2));
       expect(sameScore!.exercise, ref('a', 1));
+    });
+  });
+
+  group('shared definition of a failed block', () {
+    test(
+      'the group failure priority counts what blockFailedStudents counts',
+      () {
+        // 2 élèves sur 4 ont échoué au dernier passage de « a » : 50 % atteint.
+        final byStudent = {
+          's1': [pass('s1', 'a 1', passed: false, dayOfMonth: 1)],
+          's2': [pass('s2', 'a 1', passed: false, dayOfMonth: 1)],
+          's3': [pass('s3', 'a 1', passed: true, dayOfMonth: 1)],
+          's4': <ExerciseAttempt>[],
+        };
+        final failed = blockFailedStudents(
+          exercises: buildCatalogue().blockById('a')!.exerciseRefs,
+          progress: progress(byStudent),
+        );
+
+        expect(failed, hasLength(2));
+        expect(select(byStudent)!.reason, RecallReason.groupFailure);
+      },
+    );
+
+    test('one student out of four stays under the group priority', () {
+      final byStudent = {
+        's1': [pass('s1', 'a 1', passed: false, dayOfMonth: 1)],
+        's2': [pass('s2', 'a 1', passed: true, dayOfMonth: 1)],
+        's3': [pass('s3', 'a 1', passed: true, dayOfMonth: 1)],
+        's4': <ExerciseAttempt>[],
+      };
+      final failed = blockFailedStudents(
+        exercises: buildCatalogue().blockById('a')!.exerciseRefs,
+        progress: progress(byStudent),
+      );
+
+      expect(failed, hasLength(1));
+      expect(select(byStudent)!.reason, RecallReason.lastFailed);
     });
   });
 }

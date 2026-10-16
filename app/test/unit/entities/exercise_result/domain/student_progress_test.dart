@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart';
@@ -14,10 +15,12 @@ const _student = StudentId('s1');
 StudentProgress derive(
   List<ExerciseAttempt> attempts, {
   List<BlockAcquisition> acquisitions = const [],
+  List<AlertAcknowledgement> acknowledgements = const [],
 }) => StudentProgress.derive(
   studentId: _student,
   attempts: attempts,
   acquisitions: acquisitions,
+  acknowledgements: acknowledgements,
   rates: buildCatalogue().rates,
   config: RulesConfig(passesRequired: 2),
 );
@@ -203,6 +206,138 @@ void main() {
         attempt(ref('a', 1), potted: 0, dayOfMonth: 5, id: 'f4'),
       ], acquisitions: acquisitions);
       expect(taken.activeAlerts.map((r) => r.exercise), [ref('a', 1)]);
+    });
+  });
+
+  group('alert acknowledgements', () {
+    ExerciseAttempt miss(int dayOfMonth) => attempt(
+      ref('a', 1),
+      potted: 0,
+      dayOfMonth: dayOfMonth,
+      id: 'f$dayOfMonth',
+    );
+
+    final three = [miss(1), miss(2), miss(3)];
+
+    test('an acknowledged alert is no longer active', () {
+      final progress = derive(
+        three,
+        acknowledgements: [acknowledgement(ref('a', 1), lastAttempt: 'f3')],
+      );
+
+      expect(progress.activeAlerts, isEmpty);
+      expect(progress.acknowledgedAlerts.keys, [ref('a', 1)]);
+      expect(progress.acknowledgedAlertResults.map((r) => r.exercise), [
+        ref('a', 1),
+      ]);
+    });
+
+    test('the result itself keeps its alert level and failures', () {
+      final progress = derive(
+        three,
+        acknowledgements: [acknowledgement(ref('a', 1), lastAttempt: 'f3')],
+      );
+
+      final result = progress.results[ref('a', 1)]!;
+      expect(result.alert, AlertLevel.attention);
+      expect(result.consecutiveFailures, 3);
+    });
+
+    test('a new failed pass brings the alert back with the new count', () {
+      final progress = derive(
+        [...three, miss(4)],
+        acknowledgements: [acknowledgement(ref('a', 1), lastAttempt: 'f3')],
+      );
+
+      expect(progress.activeAlerts.single.consecutiveFailures, 4);
+      expect(progress.acknowledgedAlerts, isEmpty);
+    });
+
+    test('a passed pass resolves the alert and the acknowledgement sleeps', () {
+      final progress = derive(
+        [...three, attempt(ref('a', 1), potted: 3, dayOfMonth: 4, id: 'p4')],
+        acknowledgements: [acknowledgement(ref('a', 1), lastAttempt: 'f3')],
+      );
+
+      expect(progress.activeAlerts, isEmpty);
+      expect(progress.acknowledgedAlerts, isEmpty);
+    });
+
+    test('deleting the pass that was acknowledged brings the alert back', () {
+      // « Vu » posé quand le dernier passage était f4 ; f4 a été supprimé.
+      final progress = derive(
+        three,
+        acknowledgements: [acknowledgement(ref('a', 1), lastAttempt: 'f4')],
+      );
+
+      expect(progress.activeAlerts.single.consecutiveFailures, 3);
+      expect(progress.acknowledgedAlerts, isEmpty);
+    });
+
+    test('an acknowledgement of the previous last pass does not match', () {
+      final progress = derive(
+        three,
+        acknowledgements: [acknowledgement(ref('a', 1), lastAttempt: 'f2')],
+      );
+
+      expect(progress.activeAlerts.single.exercise, ref('a', 1));
+    });
+
+    test('the most recent acknowledgement of an exercise wins', () {
+      final progress = derive(
+        three,
+        acknowledgements: [
+          acknowledgement(ref('a', 1), lastAttempt: 'f3', day: 6, id: 'k2'),
+          acknowledgement(ref('a', 1), lastAttempt: 'f2', day: 7, id: 'k3'),
+        ],
+      );
+
+      // Le plus récent (k3) vise f2 : l'alerte est active.
+      expect(progress.activeAlerts, hasLength(1));
+    });
+
+    test('ignores the acknowledgements of another student', () {
+      final progress = derive(
+        three,
+        acknowledgements: [
+          acknowledgement(ref('a', 1), lastAttempt: 'f3', student: 's2'),
+        ],
+      );
+
+      expect(progress.activeAlerts, hasLength(1));
+    });
+
+    test('only the acknowledged exercise is masked', () {
+      final progress = derive(
+        [
+          ...three,
+          for (var i = 1; i <= 3; i++)
+            attempt(ref('a', 2), potted: 0, dayOfMonth: i, id: 'g$i'),
+        ],
+        acknowledgements: [acknowledgement(ref('a', 1), lastAttempt: 'f3')],
+      );
+
+      expect(progress.activeAlerts.map((r) => r.exercise), [ref('a', 2)]);
+    });
+  });
+
+  group('toStart', () {
+    test('is true without any attempt nor acquired block', () {
+      expect(derive([]).toStart, isTrue);
+    });
+
+    test('is false after attempts that validate nothing', () {
+      final progress = derive([
+        attempt(ref('a', 1), potted: 0, id: '1'),
+        attempt(ref('a', 1), potted: 0, dayOfMonth: 2, id: '2'),
+      ]);
+
+      expect(progress.validated, isEmpty);
+      expect(progress.toStart, isFalse);
+    });
+
+    test('is false for a block acquired at placement', () {
+      expect(derive([], acquisitions: [acquisition('a')]).toStart, isFalse);
     });
   });
 }

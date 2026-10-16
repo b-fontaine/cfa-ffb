@@ -5,6 +5,7 @@ import 'package:billard_cfa/entities/exercise_catalog/data/catalogue_yaml_parser
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
@@ -53,6 +54,7 @@ ExportBackup _export(RepositoryHarness r) => ExportBackup(
   r.sessionRecords,
   r.attempts,
   r.acquisitions,
+  r.acknowledgements,
   r.assessments,
   r.sessions,
   BackupCodec(),
@@ -67,6 +69,7 @@ ImportBackup _import(RepositoryHarness r) => ImportBackup(
   r.sessionRecords,
   r.attempts,
   r.acquisitions,
+  r.acknowledgements,
   r.assessments,
   r.sessions,
   BackupCodec(),
@@ -187,6 +190,15 @@ Future<void> _seed(RepositoryHarness r) async {
       source: AcquisitionSource.placement,
     ),
   );
+  await r.acknowledgements.add(
+    AlertAcknowledgement(
+      id: const AcknowledgementId('k1'),
+      studentId: const StudentId('s1'),
+      exercise: ExerciseRef(blockId: 'puissance', number: 1),
+      lastAttemptId: const AttemptId('a2'),
+      date: DateTime(2026, 10, 5),
+    ),
+  );
   await r.assessments.add(
     MaturityAssessment(
       id: const AssessmentId('b1'),
@@ -253,6 +265,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
       expect(await r.sessionRecords.all(), isEmpty);
       expect(await r.attempts.all(), isEmpty);
       expect(await r.acquisitions.all(), isEmpty);
+      expect(await r.acknowledgements.all(), isEmpty);
       expect(await r.assessments.all(), isEmpty);
       expect(await r.sessions.getAll(), isEmpty);
     }
@@ -280,6 +293,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
           assessments: 1,
           plannedSessions: 2,
           blockAcquisitions: 1,
+          alertAcknowledgements: 1,
           settings: true,
         ),
       );
@@ -325,7 +339,9 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
         );
         target.rules.current = RulesConfig(passesRequired: 4);
         final document = _parse(backup)..['schemaVersion'] = 1;
-        (document['data']! as Map<String, Object?>).remove(settingsKey);
+        (document['data']! as Map<String, Object?>)
+          ..remove(settingsKey)
+          ..remove('alertAcknowledgements');
 
         await _imported(target, jsonEncode(document));
 
@@ -336,6 +352,9 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
 
       test('refuses a settings key in a file of format 1', () async {
         final document = _parse(backup)..['schemaVersion'] = 1;
+        (document['data']! as Map<String, Object?>).remove(
+          'alertAcknowledgements',
+        );
 
         expect(
           await _refused(target, jsonEncode(document)),
@@ -403,6 +422,133 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
         _first(_parse(backup), 'blockAcquisitions')['source'],
         'placement',
       );
+    });
+
+    test('keeps the alert acknowledgements of a student', () async {
+      await _imported(target, backup);
+
+      final seen = await target.acknowledgements.forStudent(
+        const StudentId('s1'),
+      );
+      expect(
+        seen.single.exercise,
+        ExerciseRef(blockId: 'puissance', number: 1),
+      );
+      expect(seen.single.lastAttemptId, const AttemptId('a2'));
+      expect(seen.single.date, DateTime(2026, 10, 5));
+      expect(
+        _first(_parse(backup), 'alertAcknowledgements')['blockId'],
+        'puissance',
+      );
+    });
+
+    test('exports nothing of a restored alert', () async {
+      await source.acknowledgements.delete(const AcknowledgementId('k1'));
+
+      expect(
+        _list(_parse(await _exported(source)), 'alertAcknowledgements'),
+        isEmpty,
+      );
+    });
+
+    group('acknowledgements across formats', () {
+      Map<String, Object?> asFormat(int version) {
+        final document = _parse(backup)..['schemaVersion'] = version;
+        (document['data']! as Map<String, Object?>).remove(
+          'alertAcknowledgements',
+        );
+        return document;
+      }
+
+      for (final version in [1, 2]) {
+        test('importing a file of format $version erases those in place '
+            'and keeps the data', () async {
+          await target.acknowledgements.add(
+            AlertAcknowledgement(
+              id: const AcknowledgementId('kz'),
+              studentId: const StudentId('other'),
+              exercise: ExerciseRef(blockId: 'posture', number: 1),
+              lastAttemptId: const AttemptId('z1'),
+              date: DateTime(2026, 10, 6),
+            ),
+          );
+          final document = asFormat(version);
+          (document['data']! as Map<String, Object?>).remove('settings');
+
+          await _imported(target, jsonEncode(document));
+
+          expect(await target.acknowledgements.all(), isEmpty);
+          expect(await target.students.all(), hasLength(2));
+          expect(await target.attempts.all(), hasLength(3));
+        });
+      }
+
+      test(
+        'a file of format 3 keeps the others in place and adds its own',
+        () async {
+          await target.acknowledgements.add(
+            AlertAcknowledgement(
+              id: const AcknowledgementId('kz'),
+              studentId: const StudentId('other'),
+              exercise: ExerciseRef(blockId: 'posture', number: 1),
+              lastAttemptId: const AttemptId('z1'),
+              date: DateTime(2026, 10, 6),
+            ),
+          );
+
+          await _imported(target, backup);
+
+          expect(
+            (await target.acknowledgements.all()).map((a) => a.id.value),
+            unorderedEquals(['kz', 'k1']),
+          );
+        },
+      );
+
+      test('a file of format 3 with an empty list leaves those in place, '
+          'unlike the missing list of an old format', () async {
+        await target.acknowledgements.add(
+          AlertAcknowledgement(
+            id: const AcknowledgementId('kz'),
+            studentId: const StudentId('other'),
+            exercise: ExerciseRef(blockId: 'posture', number: 1),
+            lastAttemptId: const AttemptId('z1'),
+            date: DateTime(2026, 10, 6),
+          ),
+        );
+        final document = _parse(backup);
+        (document['data']! as Map<String, Object?>)['alertAcknowledgements'] =
+            <Object?>[];
+
+        await _imported(target, jsonEncode(document));
+
+        expect((await target.acknowledgements.all()).map((a) => a.id.value), [
+          'kz',
+        ]);
+        expect(await target.students.all(), hasLength(2));
+      });
+
+      test('a refused file of an old format erases nothing', () async {
+        await target.acknowledgements.add(
+          AlertAcknowledgement(
+            id: const AcknowledgementId('kz'),
+            studentId: const StudentId('other'),
+            exercise: ExerciseRef(blockId: 'posture', number: 1),
+            lastAttemptId: const AttemptId('z1'),
+            date: DateTime(2026, 10, 6),
+          ),
+        );
+        final document = asFormat(2);
+        _first(document, 'attempts')['potted'] = 9;
+        (document['data']! as Map<String, Object?>).remove('settings');
+
+        expect(
+          await _refused(target, jsonEncode(document)),
+          InvariantCode.backupInvalid,
+        );
+
+        expect(await target.acknowledgements.all(), hasLength(1));
+      });
     });
 
     test('exports nothing of a revoked acquired block', () async {
@@ -486,7 +632,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
         await expectEmpty(target);
       });
 
-      for (final version in <Object?>[0, 3, 99, '1', null]) {
+      for (final version in <Object?>[0, 4, 99, '1', null]) {
         test('an unsupported schemaVersion ($version)', () async {
           final document = _parse(backup)..['schemaVersion'] = version;
 
@@ -529,6 +675,18 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
             _first(d, 'plannedSessions')['sheetId'] = 7,
         'a malformed sheet identifier': (d) =>
             _first(d, 'plannedSessions')['sheetId'] = 'Pas un slug',
+        'a missing alertAcknowledgements section': (d) =>
+            (d['data']! as Map<String, Object?>).remove(
+              'alertAcknowledgements',
+            ),
+        'an acknowledgement dated at an hour of the day': (d) =>
+            _first(d, 'alertAcknowledgements')['date'] =
+                '2026-10-05T10:00:00.000',
+        'an acknowledgement with an invalid exercise number': (d) =>
+            _first(d, 'alertAcknowledgements')['exerciseNumber'] = 0,
+        'an acknowledgement dated in the future': (d) =>
+            _first(d, 'alertAcknowledgements')['date'] =
+                '2027-05-01T00:00:00.000',
         'a missing blockAcquisitions section': (d) =>
             (d['data']! as Map<String, Object?>).remove('blockAcquisitions'),
         'an acquired block with an unknown source': (d) =>

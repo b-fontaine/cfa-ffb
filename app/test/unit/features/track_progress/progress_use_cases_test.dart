@@ -1,5 +1,5 @@
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart';
-import 'package:billard_cfa/features/track_progress/domain/block_progress.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/technique_summary.dart';
 import 'package:billard_cfa/features/track_progress/domain/get_exercise_curve.dart';
 import 'package:billard_cfa/features/track_progress/domain/get_student_report.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
@@ -46,6 +46,7 @@ void main() {
     getReport = GetStudentReport(
       world.attempts,
       world.acquisitions,
+      world.acknowledgements,
       world.sessions,
       world.groups,
       world.catalogueRepository,
@@ -125,6 +126,28 @@ void main() {
       expect(report.activeAlerts.single.exercise, ref('b', 2));
       expect(report.activeAlerts.single.alert, AlertLevel.attention);
     });
+
+    test(
+      'hides an alert the instructor has seen and the review status',
+      () async {
+        for (var d = 4; d <= 6; d++) {
+          await record('b', 2, 0, dayOfMonth: d, session: 's$d');
+        }
+        expect(
+          ok(await getReport(_student)).blocks[1].status,
+          BlockStatus.toReview,
+        );
+        final last = (await world.attempts.forStudent(_student)).last;
+        await world.acknowledgements.add(
+          acknowledgement(ref('b', 2), lastAttempt: last.id.value),
+        );
+
+        final report = ok(await getReport(_student));
+
+        expect(report.activeAlerts, isEmpty);
+        expect(report.blocks[1].status, BlockStatus.inProgress);
+      },
+    );
 
     test(
       'counts the sessions spent on a block from the session list',

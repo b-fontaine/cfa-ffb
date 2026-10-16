@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/acknowledgement_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
@@ -24,6 +25,7 @@ class ExportBackup {
     this._sessionRecords,
     this._attempts,
     this._acquisitions,
+    this._acknowledgements,
     this._assessments,
     this._plannedSessions,
     this._codec,
@@ -37,6 +39,7 @@ class ExportBackup {
   final SessionRecordRepository _sessionRecords;
   final AttemptRepository _attempts;
   final AcquisitionRepository _acquisitions;
+  final AcknowledgementRepository _acknowledgements;
   final AssessmentRepository _assessments;
   final SessionRepository _plannedSessions;
   final BackupCodec _codec;
@@ -52,6 +55,7 @@ class ExportBackup {
       sessionRecords: await _sessionRecords.all(),
       attempts: await _attempts.all(),
       blockAcquisitions: await _acquisitions.all(),
+      alertAcknowledgements: await _acknowledgements.all(),
       assessments: await _assessments.all(),
       plannedSessions: await _plannedSessions.getAll(),
       settings: ClubSettings.fromRules(_rules.current),

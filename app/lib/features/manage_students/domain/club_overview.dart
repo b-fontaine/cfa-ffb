@@ -14,6 +14,10 @@ abstract class StudentSummary with _$StudentSummary {
 
     /// Exercices dont l'alerte d'échecs consécutifs est active (R4).
     required int alertCount,
+
+    /// Aucun passage et rien d'acquis : « Parcours à commencer » plutôt qu'un
+    /// « 0 sur 70 » (T7).
+    @Default(false) bool toStart,
   }) = _StudentSummary;
 }
 

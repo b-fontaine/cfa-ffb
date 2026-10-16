@@ -446,6 +446,7 @@
   "failBackupUnknownSheet": "Ce fichier désigne une séance du catalogue que cette version de l’application ne connaît pas.",
   "failBackupUnknownBlock": "La sauvegarde cite un bloc inconnu du catalogue.",
   "failBlockAlreadyAcquired": "Ce bloc est déjà marqué acquis pour cet élève.",
+  "failAlertNotActive": "Cette alerte n’est plus active : il n’y a rien à acquitter.",
   "failUnknownSheet": "Cette séance du catalogue est inconnue : choisissez-en une autre.",
   "failGeneric": "Une erreur est survenue. Vérifiez les données et réessayez.",
   "studentsTitle": "Les élèves du club",
@@ -465,17 +466,6 @@
   "@studentsAlerts": {
     "placeholders": {
       "count": {
-        "type": "int"
-      }
-    }
-  },
-  "studentsValidated": "{done} sur {total} exercices validés",
-  "@studentsValidated": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
         "type": "int"
       }
     }
@@ -552,34 +542,6 @@
       }
     }
   },
-  "sheetBlocks": "Progression par bloc",
-  "sheetBlockRate": "{percent} % validé",
-  "@sheetBlockRate": {
-    "placeholders": {
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
-  "sheetBlockExercises": "{done} sur {total} exercices",
-  "@sheetBlockExercises": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "sheetBlockSessions": "{count, plural, =0{Aucune séance} =1{1 séance} other{{count} séances}}",
-  "@sheetBlockSessions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sheetBlockOverdue": "Plus de séances que recommandé",
   "sheetCurves": "Courbes de performance",
   "sheetCurvesEmpty": "Aucun passage enregistré pour le moment.",
@@ -636,17 +598,6 @@
   },
   "sheetPassMet": "objectif atteint",
   "sheetPassMissed": "objectif manqué",
-  "sheetValidatedTotal": "{done} sur {total} exercices validés",
-  "@sheetValidatedTotal": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "chartAxisX": "Essais",
   "chartAxisY": "Billes empochées",
   "chartTargetLine": "Objectif : {potted} billes",
@@ -2360,6 +2311,10 @@
       }
     }
   },
+  "groupGridNoSession": "–",
+  "@groupGridNoSession": {
+    "description": "Tiret de la cellule d'assiduité d'un élève sans séance du groupe."
+  },
   "sheetAttendanceNone": "Aucune séance du groupe pour le moment.",
   "recordValidationStateShort": "{done}/{required}",
   "@recordValidationStateShort": {
@@ -2672,6 +2627,333 @@
         "type": "int"
       },
       "others": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetShow": "Montrer à l’élève",
+  "sheetOverview": "Synthèse",
+  "sheetHeaderTechniques": "{done} techniques terminées sur {total}",
+  "@sheetHeaderTechniques": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetHeaderExercises": "{count, plural, =1{1 exercice validé} other{{count} exercices validés}}",
+  "@sheetHeaderExercises": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetPathToStart": "Parcours à commencer",
+  "sheetCurrent": "Exercice en cours",
+  "sheetCurrentToStart": "Exercice à commencer",
+  "sheetAlertMore": "{count, plural, =1{+ 1 autre alerte} other{+ {count} autres alertes}}",
+  "@sheetAlertMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetAlertSeen": "Vu",
+  "sheetAlertSeenFor": "Marquer l’alerte comme vue : {exercise}",
+  "@sheetAlertSeenFor": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetAlertSeenOn": "Alerte vue le {date} : {exercise}",
+  "@sheetAlertSeenOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetAlertRestore": "Rétablir",
+  "sheetAlertRestoreFor": "Rétablir l’alerte : {exercise}",
+  "@sheetAlertRestoreFor": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetAlertMarkedSeen": "Alerte marquée comme vue.",
+  "sheetAlertRestored": "Alerte rétablie.",
+  "sheetPath": "Parcours",
+  "sheetRowSummary": "{done} sur {total} exercices · {sessions, plural, =0{aucune séance} =1{1 séance} other{{sessions} séances}}",
+  "@sheetRowSummary": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "sessions": {
+        "type": "int"
+      }
+    }
+  },
+  "sheetPlacementMenu": "Positionnement : {block}",
+  "@sheetPlacementMenu": {
+    "placeholders": {
+      "block": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetCellNotPractised": "Pas encore pratiqué.",
+  "sheetCurveSheetClose": "Fermer",
+  "pathLegendTodo": "À faire",
+  "pathLegendStarted": "Commencé",
+  "pathLegendValidated": "Validé",
+  "pathLegendAcquired": "Issu du positionnement",
+  "pathLegendTotal": "{count} exercices au total",
+  "@pathLegendTotal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pathCellTodo": "{exercise} : à faire",
+  "@pathCellTodo": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "pathCellStarted": "{exercise} : commencé, {passed} réussites sur {required}",
+  "@pathCellStarted": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      },
+      "passed": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "pathCellValidated": "{exercise} : validé",
+  "@pathCellValidated": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "pathCellAcquired": "{exercise} : acquis au positionnement",
+  "@pathCellAcquired": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "pathCellAlerted": "alerte en cours",
+  "pathCellCurrent": "exercice en cours",
+  "showcaseCurrent": "Ton exercice en cours",
+  "showcaseDone": "Terminer",
+  "showcaseTitle": "Parcours de {name}",
+  "@showcaseTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "studentsOpenGroup": "Grille du groupe",
+  "studentsOpenGroupFor": "Ouvrir la grille de {name}",
+  "@studentsOpenGroupFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupSubtitle": "Techniques par élève",
+  "groupAlertsTitle": "Alertes de groupe",
+  "groupAlertLine": "{failed} élèves sur {members} ont manqué « {technique} » à leur dernier passage",
+  "@groupAlertLine": {
+    "placeholders": {
+      "failed": {
+        "type": "int"
+      },
+      "members": {
+        "type": "int"
+      },
+      "technique": {
+        "type": "String"
+      }
+    }
+  },
+  "groupAlertOpen": "Ouvrir la grille de {group} : {alert}",
+  "@groupAlertOpen": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      },
+      "alert": {
+        "type": "String"
+      }
+    }
+  },
+  "groupAlertsMore": "{count, plural, =1{+ 1 autre alerte de groupe} other{+ {count} autres alertes de groupe}}",
+  "@groupAlertsMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupAttendanceTitle": "Assiduité du groupe",
+  "groupAttendanceSummary": "{present, plural, =1{1 présence} other{{present} présences}} sur {possible} possibles ({percent} %)",
+  "@groupAttendanceSummary": {
+    "placeholders": {
+      "present": {
+        "type": "int"
+      },
+      "possible": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "groupAttendanceSessions": "{count, plural, =1{1 séance} other{{count} séances}}",
+  "@groupAttendanceSessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupAttendanceNone": "Aucune séance saisie pour le moment.",
+  "groupAttendanceRecent": "{date} : {present} présents sur {possible}",
+  "@groupAttendanceRecent": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "present": {
+        "type": "int"
+      },
+      "possible": {
+        "type": "int"
+      }
+    }
+  },
+  "groupGridCell": "{student}, {technique} : {done} sur {total} exercices, {status}",
+  "@groupGridCell": {
+    "placeholders": {
+      "student": {
+        "type": "String"
+      },
+      "technique": {
+        "type": "String"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "groupGridFraction": "{done}/{total}",
+  "@groupGridFraction": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "groupGridLegend": "Chaque cellule donne les exercices validés sur les exercices de la technique. Une coche indique une technique terminée, un drapeau une technique acquise au positionnement, un avertissement une alerte en cours.",
+  "groupGridRow": "{technique} : {finished} élèves sur {members} ont terminé, {inProgress} en cours, {toStart} à commencer",
+  "@groupGridRow": {
+    "placeholders": {
+      "technique": {
+        "type": "String"
+      },
+      "finished": {
+        "type": "int"
+      },
+      "members": {
+        "type": "int"
+      },
+      "inProgress": {
+        "type": "int"
+      },
+      "toStart": {
+        "type": "int"
+      }
+    }
+  },
+  "groupGridAttendanceCell": "{student} : {attendance}",
+  "@groupGridAttendanceCell": {
+    "placeholders": {
+      "student": {
+        "type": "String"
+      },
+      "attendance": {
+        "type": "String"
+      }
+    }
+  },
+  "groupGridNoMember": "Aucun élève dans ce groupe aujourd’hui.",
+  "groupSummaryTitle": "Résumé en texte",
+  "groupSummaryRow": "{technique}. Terminé : {completed}. En cours : {inProgress}. À commencer : {toStart}.",
+  "@groupSummaryRow": {
+    "placeholders": {
+      "technique": {
+        "type": "String"
+      },
+      "completed": {
+        "type": "String"
+      },
+      "inProgress": {
+        "type": "String"
+      },
+      "toStart": {
+        "type": "String"
+      }
+    }
+  },
+  "groupSummaryNobody": "personne",
+  "showcaseLevelDone": "Niveau 1 terminé",
+  "sheetRowFraction": "{done}/{total}",
+  "@sheetRowFraction": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
         "type": "int"
       }
     }

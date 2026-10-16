@@ -1,8 +1,9 @@
+import 'package:billard_cfa/entities/exercise_result/domain/exercise_cell.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/technique_summary.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
-import 'package:billard_cfa/features/track_progress/domain/attendance.dart';
-import 'package:billard_cfa/features/track_progress/domain/block_progress.dart';
 import 'package:billard_cfa/features/track_progress/domain/get_student_sheet.dart';
+import 'package:billard_cfa/shared/lib/attendance.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
@@ -24,6 +25,7 @@ void main() {
       world.students,
       world.attempts,
       world.acquisitions,
+      world.acknowledgements,
       world.sessions,
       world.groups,
       world.assessments,
@@ -104,6 +106,105 @@ void main() {
     expect(result.series.single.alert, AlertLevel.attention);
     expect(result.series.single.consecutiveFailures, 3);
     expect(result.report.activeAlerts, hasLength(1));
+  });
+
+  test(
+    'shows the alert again after a new failure following the seen',
+    () async {
+      for (var i = 0; i < 3; i++) {
+        await pass(ref('a', 1), 0, id: 'f$i', dayOfMonth: 2 + i);
+      }
+      await world.acknowledgements.add(
+        acknowledgement(ref('a', 1), lastAttempt: 'f2'),
+      );
+      await pass(ref('a', 1), 0, id: 'f3', dayOfMonth: 5);
+
+      final result = ok(await sheet(student));
+
+      expect(result.series.single.alert, AlertLevel.attention);
+      expect(result.series.single.consecutiveFailures, 4);
+      expect(result.report.activeAlerts, hasLength(1));
+    },
+  );
+
+  test('hides the alert of an exercise the instructor has seen', () async {
+    for (var i = 0; i < 3; i++) {
+      await pass(ref('a', 1), 0, id: 'f$i', dayOfMonth: 2 + i);
+    }
+    await world.acknowledgements.add(
+      acknowledgement(ref('a', 1), lastAttempt: 'f2'),
+    );
+
+    final result = ok(await sheet(student));
+
+    expect(result.series.single.alert, AlertLevel.none);
+    expect(result.series.single.consecutiveFailures, 3);
+    expect(result.report.activeAlerts, isEmpty);
+    expect(result.report.blocks.first.status, BlockStatus.inProgress);
+  });
+
+  test(
+    'lays the path out with one row per block and one cell per exercise',
+    () async {
+      await pass(ref('a', 2), 3, id: 'p1');
+
+      final result = ok(await sheet(student));
+
+      expect(result.path.map((row) => row.blockId), ['a', 'b', 'c']);
+      expect(result.path.map((row) => row.title), [
+        'Bloc a',
+        'Bloc b',
+        'Bloc c',
+      ]);
+      expect(result.path.first.summary.cells, hasLength(3));
+      expect(result.path.first.summary.cells.map((c) => c.state), [
+        ExerciseCellState.todo,
+        ExerciseCellState.inProgress,
+        ExerciseCellState.todo,
+      ]);
+      expect(result.path.first.summary.status, BlockStatus.inProgress);
+      expect(result.path.last.summary.status, BlockStatus.notStarted);
+    },
+  );
+
+  test('puts the acquired block in the path with its day', () async {
+    await world.acquisitions.add(acquisition('a', day: 4));
+
+    final result = ok(await sheet(student));
+
+    expect(result.path.first.summary.status, BlockStatus.acquiredAtPlacement);
+    expect(result.path.first.acquiredOn, day(4));
+    expect(
+      result.path.first.summary.cells.map((c) => c.state),
+      everyElement(ExerciseCellState.acquired),
+    );
+  });
+
+  test('the header agrees with the next exercise of the sheet', () async {
+    await pass(ref('a', 1), 3, id: 'p1');
+
+    final result = ok(await sheet(student));
+
+    expect(result.header.current, result.nextExercise);
+    expect(result.header.current, ref('a', 1));
+    expect(result.header.next, ref('a', 2));
+    expect(result.header.passesRequired, 5);
+    expect(result.header.currentPassed, 1);
+  });
+
+  test('shows an alert seen by the instructor in the header', () async {
+    for (var i = 0; i < 3; i++) {
+      await pass(ref('a', 1), 0, id: 'f$i', dayOfMonth: 2 + i);
+    }
+    expect(ok(await sheet(student)).header.alert, isNotNull);
+    await world.acknowledgements.add(
+      acknowledgement(ref('a', 1), lastAttempt: 'f2', day: 6),
+    );
+
+    final result = ok(await sheet(student));
+
+    expect(result.header.alert, isNull);
+    expect(result.header.acknowledged.single.date, day(6));
   });
 
   test('skips an acquired block and counts its exercises', () async {

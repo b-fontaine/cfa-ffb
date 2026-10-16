@@ -3,6 +3,8 @@ import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/track_progress/domain/exercise_curve.dart';
+import 'package:billard_cfa/features/track_progress/domain/path_row.dart';
+import 'package:billard_cfa/features/track_progress/domain/sheet_header.dart';
 import 'package:billard_cfa/features/track_progress/domain/student_report.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/success_rate.dart';
@@ -38,6 +40,12 @@ abstract class StudentSheet with _$StudentSheet {
 
     /// Exercices pratiqués, dans l'ordre d'enseignement.
     required List<ExerciseSeries> series,
+
+    /// Le parcours : une ligne par technique, une case par exercice (lot U9).
+    required List<PathRow> path,
+
+    /// En cours, prochain, alerte (lot U9).
+    required SheetHeader header,
 
     /// Exercice suivant recommandé (R2) ; `null` quand le niveau est terminé.
     required ExerciseRef? nextExercise,

@@ -101,6 +101,10 @@ const _expected = <InvariantCode, (String, String)>{
     'This block is already marked as acquired for this student.',
     'Ce bloc est déjà marqué acquis pour cet élève.',
   ),
+  InvariantCode.alertNotActive: (
+    'This alert is no longer active: there is nothing to acknowledge.',
+    'Cette alerte n’est plus active : il n’y a rien à acquitter.',
+  ),
   InvariantCode.backupUnknownBlock: (
     'The backup refers to a block unknown to the catalogue.',
     'La sauvegarde cite un bloc inconnu du catalogue.',

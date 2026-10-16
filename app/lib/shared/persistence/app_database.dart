@@ -22,6 +22,7 @@ part 'app_database.g.dart';
     Assessments,
     PlannedSessions,
     BlockAcquisitions,
+    AlertAcknowledgements,
     BackupExports,
     AppSettings,
   ],
@@ -31,7 +32,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Version du schéma SQL. Elle est indépendante de la version du format de
   /// sauvegarde JSON (`BackupCodec.currentVersion`).
-  static const currentSchemaVersion = 7;
+  static const currentSchemaVersion = 8;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -90,6 +91,11 @@ class AppDatabase extends _$AppDatabase {
         // Version 7 (ADR 0012) : réglages du club (une ligne).
         from6To7: (m, schema) async {
           await m.createTable(schema.appSettings);
+        },
+        // Version 8 (ADR 0013) : acquittements d'alertes (« Vu »).
+        from7To8: (m, schema) async {
+          await m.createTable(schema.alertAcknowledgements);
+          await m.createIndex(schema.acknowledgementsByStudent);
         },
       )(migrator, from, to);
     },

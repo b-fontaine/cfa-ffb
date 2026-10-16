@@ -65,6 +65,7 @@ class PreviewWorld {
   const PreviewWorld({
     required this.children,
     required this.adults,
+    required this.classmate,
     required this.childrenGroup,
     required this.sessionId,
     required this.today,
@@ -73,6 +74,9 @@ class PreviewWorld {
 
   final Student children;
   final Student adults;
+
+  /// Un camarade de Léa dans le même groupe (grille et alertes de groupe).
+  final Student classmate;
   final GroupId childrenGroup;
   final SessionId sessionId;
   final DateTime today;
@@ -114,6 +118,14 @@ class PreviewWorld {
         groupName: 'Adultes',
       ),
     );
+    final hugo = _value(
+      await enroll(
+        firstName: 'Hugo',
+        audience: Audience.children,
+        today: today,
+        groupName: 'Enfants',
+      ),
+    );
     final catalogue = await getIt<CatalogueRepository>().load();
     final open = getIt<OpenSession>();
     final record = getIt<RecordAttempt>();
@@ -152,6 +164,25 @@ class PreviewWorld {
 
     await seed(validated, 5, passed: true);
     final sessionId = await seed(struggling, 3, passed: false);
+    // Hugo a lui aussi manqué la notion à son dernier passage : la grille
+    // montre une alerte de groupe (2 élèves sur 2).
+    final hugoSession = _value(
+      await open(
+        groupId: lea.group.id,
+        date: DateTime(2026, 10, 5),
+        present: {hugo.student.id},
+      ),
+    );
+    final hugoRate = catalogue.exercise(validated)!.rate;
+    _value(
+      await record(
+        sessionId: hugoSession.id,
+        studentId: hugo.student.id,
+        exercise: validated,
+        potted: hugoRate.successes - 1,
+        total: hugoRate.attempts,
+      ),
+    );
     // Positionnement : « Posture » acquis, « La puissance » acquis puis repris
     // par les passages ci-dessus (statuts et lignes distincts de la fiche).
     final mark = getIt<MarkBlockAcquired>();
@@ -168,6 +199,7 @@ class PreviewWorld {
     return PreviewWorld(
       children: lea.student,
       adults: marc.student,
+      classmate: hugo.student,
       childrenGroup: lea.group.id,
       sessionId: sessionId,
       today: today,

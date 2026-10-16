@@ -1,4 +1,6 @@
+import 'package:billard_cfa/entities/exercise_result/domain/acknowledgement_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repository.dart';
@@ -23,7 +25,10 @@ import 'package:injectable/injectable.dart';
 /// qui échoue ne laisse aucune donnée partielle. Les réglages (format 2) sont
 /// écrits dans la même unité de travail ; la valeur courante des règles n'est
 /// remplacée qu'après son succès. Un fichier sans réglages les laisse
-/// inchangés. Importer deux fois la même sauvegarde est sans effet (les
+/// inchangés. Les acquittements d'alertes (format 3, ADR 0013) sont ajoutés à
+/// ceux en place ; un fichier des formats 1 et 2, qui ne les connaît pas, les
+/// efface (dans la même unité de travail, donc annulé si l'import échoue).
+/// Importer deux fois la même sauvegarde est sans effet (les
 /// repositories remplacent par identifiant).
 @injectable
 class ImportBackup {
@@ -34,6 +39,7 @@ class ImportBackup {
     this._sessionRecords,
     this._attempts,
     this._acquisitions,
+    this._acknowledgements,
     this._assessments,
     this._plannedSessions,
     this._codec,
@@ -49,6 +55,7 @@ class ImportBackup {
   final SessionRecordRepository _sessionRecords;
   final AttemptRepository _attempts;
   final AcquisitionRepository _acquisitions;
+  final AcknowledgementRepository _acknowledgements;
   final AssessmentRepository _assessments;
   final SessionRepository _plannedSessions;
   final BackupCodec _codec;
@@ -64,6 +71,8 @@ class ImportBackup {
     final restored = settings?.applyTo(_store.current);
     await _unitOfWork.run(() async {
       if (settings != null) await _settings.save(settings);
+      final acknowledgements = snapshot.alertAcknowledgements;
+      if (acknowledgements == null) await _acknowledgements.eraseAll();
       for (final season in snapshot.seasons) {
         await _seasons.save(season);
       }
@@ -81,6 +90,10 @@ class ImportBackup {
       }
       for (final acquisition in snapshot.blockAcquisitions) {
         await _acquisitions.add(acquisition);
+      }
+      for (final acknowledgement
+          in acknowledgements ?? const <AlertAcknowledgement>[]) {
+        await _acknowledgements.add(acknowledgement);
       }
       for (final assessment in snapshot.assessments) {
         await _assessments.add(assessment);

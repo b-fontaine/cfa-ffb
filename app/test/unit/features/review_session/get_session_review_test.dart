@@ -19,6 +19,7 @@ void main() {
     world.sessions,
     world.attempts,
     world.acquisitions,
+    world.acknowledgements,
     world.students,
     world.groups,
     world.plannedSessions,
@@ -67,6 +68,31 @@ void main() {
     expect(review.sheet?.id, SheetId('posture-1'));
     expect(review.group?.name, 'Groupe');
     expect([for (final s in review.students.values) s.firstName], ['s1', 's2']);
+  });
+
+  test('does not list a student whose alert was seen', () async {
+    for (var i = 0; i < 3; i++) {
+      await world.attempts.add(
+        attempt(
+          ref('a', 1),
+          potted: 0,
+          student: 's2',
+          session: 'x12',
+          dayOfMonth: 9 + i,
+          id: 'f$i',
+        ),
+      );
+    }
+    expect(
+      ok(await build()(todayRecord)).outcome.watched.map((w) => w.studentId),
+      [const StudentId('s2')],
+    );
+
+    await world.acknowledgements.add(
+      acknowledgement(ref('a', 1), lastAttempt: 'f2', student: 's2'),
+    );
+
+    expect(ok(await build()(todayRecord)).outcome.watched, isEmpty);
   });
 
   test('computes the outcome from the stored passes', () async {

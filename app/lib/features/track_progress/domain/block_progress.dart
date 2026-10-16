@@ -1,22 +1,12 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/training_block.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/technique_summary.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'block_progress.freezed.dart';
-
-/// Statut d'un bloc pour un élève. [acquiredAtPlacement] (ADR 0008) : tous
-/// les exercices du bloc sont acquis au positionnement, jamais confondu avec
-/// [mastered] (validé par passages).
-enum BlockStatus {
-  notStarted,
-  inProgress,
-  mastered,
-  acquiredAtPlacement,
-  toReview,
-}
 
 /// Avancement d'un élève sur un bloc d'entraînement (R3).
 @freezed
@@ -50,33 +40,18 @@ abstract class BlockProgress with _$BlockProgress {
     required StudentProgress progress,
     required int sessionsSpent,
   }) {
-    final validatedExercises = progress.validated;
-    final validated = [
-      for (final spec in block.exercises)
-        if (validatedExercises.contains(spec.ref)) spec.ref,
-    ].length;
+    final summary = techniqueSummary(
+      blockId: block.id,
+      exercises: block.exerciseRefs,
+      progress: progress,
+    );
     final acquired = progress.isAcquired(block.id);
-    final mastered = validated == block.exercises.length;
-    final alerted = progress.activeAlerts.any(
-      (r) => r.exercise.blockId == block.id,
-    );
-    final practised = block.exercises.any(
-      (spec) => progress.results.containsKey(spec.ref),
-    );
-    final status = acquired
-        ? BlockStatus.acquiredAtPlacement
-        : !practised
-        ? BlockStatus.notStarted
-        : mastered
-        ? BlockStatus.mastered
-        : alerted
-        ? BlockStatus.toReview
-        : BlockStatus.inProgress;
+    final mastered = summary.doneCount == summary.total;
     return BlockProgress(
       blockId: block.id,
-      validatedCount: validated,
-      exerciseCount: block.exercises.length,
-      status: status,
+      validatedCount: summary.doneCount,
+      exerciseCount: summary.total,
+      status: summary.status,
       sessionsSpent: sessionsSpent,
       overdue:
           !acquired &&

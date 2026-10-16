@@ -2,15 +2,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Usage: I mark the block {'Posture, visée et coup de queue'} as acquired
 ///
-/// Appuie sur le bouton « Mark block as acquired: (titre du bloc) » de la
-/// fiche : le nom accessible porte le titre du bloc (un bouton par bloc).
+/// Ouvre le menu ⋮ de la ligne du bloc (son nom porte le titre du bloc) puis
+/// choisit « Mark block as acquired ».
 Future<void> iMarkTheBlockAsAcquired(WidgetTester tester, String block) async {
-  final semantics = tester.ensureSemantics();
-  final button = find.bySemanticsLabel('Mark block as acquired: $block');
-  expect(button, findsOneWidget);
-  await tester.ensureVisible(button);
+  final menu = find.byTooltip('Placement actions: $block');
+  expect(menu, findsOneWidget);
+  await tester.ensureVisible(menu);
   await tester.pumpAndSettle();
-  await tester.tap(button);
+  await tester.tap(menu);
   await tester.pumpAndSettle();
-  semantics.dispose();
+  await tester.tap(find.text('Mark block as acquired'));
+  await tester.pumpAndSettle();
 }

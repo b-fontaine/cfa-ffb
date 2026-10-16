@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/data/drift_acknowledgement_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
 import 'package:billard_cfa/entities/group/data/drift_group_repository.dart';
@@ -12,6 +13,7 @@ import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/drift_support.dart';
+import 'acknowledgement_contract.dart';
 import 'acquisition_contract.dart';
 import 'backup_contract.dart';
 import 'backup_marker_contract.dart';
@@ -29,6 +31,7 @@ Future<RepositoryHarness> _open() async {
     sessionRecords: DriftSessionRecordRepository(db, clock),
     attempts: DriftAttemptRepository(db, clock),
     acquisitions: DriftAcquisitionRepository(db, clock),
+    acknowledgements: DriftAcknowledgementRepository(db, clock),
     assessments: DriftAssessmentRepository(db, clock),
     sessions: DriftSessionRepository(db, clock),
     settings: DriftSettingsRepository(db, clock),
@@ -44,6 +47,13 @@ void main() {
     final db = openMemoryDatabase();
     return (
       repository: DriftAcquisitionRepository(db, TickingClock()),
+      close: db.close,
+    );
+  });
+  acknowledgementContract('drift (SQLite)', () async {
+    final db = openMemoryDatabase();
+    return (
+      repository: DriftAcknowledgementRepository(db, TickingClock()),
       close: db.close,
     );
   });

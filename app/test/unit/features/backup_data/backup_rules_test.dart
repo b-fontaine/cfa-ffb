@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
@@ -60,6 +61,7 @@ BackupSnapshot _snapshot({
   List<Season>? seasons,
   List<Session> planned = const [],
   List<BlockAcquisition> acquisitions = const [],
+  List<AlertAcknowledgement> acknowledgements = const [],
 }) => BackupSnapshot(
   seasons: seasons ?? [_seasonOf()],
   students: [
@@ -83,6 +85,7 @@ BackupSnapshot _snapshot({
   assessments: assessments,
   plannedSessions: planned,
   blockAcquisitions: acquisitions,
+  alertAcknowledgements: acknowledgements,
 );
 
 Future<InvariantCode?> _codeOf(BackupSnapshot snapshot) async {
@@ -380,6 +383,61 @@ void main() {
     test('refuses a date after today', () async {
       final snapshot = _snapshot(
         acquisitions: [acquiredOn(DateTime(2026, 10, 13))],
+      );
+
+      expect(await _codeOf(snapshot), InvariantCode.backupInvalid);
+    });
+  });
+
+  group('alert acknowledgements', () {
+    AlertAcknowledgement seen(
+      DateTime date, {
+      String block = 'a',
+      int number = 1,
+      String lastAttempt = 'a1',
+    }) => AlertAcknowledgement(
+      id: const AcknowledgementId('k1'),
+      studentId: _student,
+      exercise: ref(block, number),
+      lastAttemptId: AttemptId(lastAttempt),
+      date: date,
+    );
+
+    test('accepts a known exercise, today included', () async {
+      final snapshot = _snapshot(
+        acknowledgements: [seen(DateTime(2026, 10, 12))],
+      );
+
+      expect(await _codeOf(snapshot), isNull);
+    });
+
+    test('tolerates a last pass that no longer exists (dormant)', () async {
+      final snapshot = _snapshot(
+        acknowledgements: [seen(DateTime(2026, 10), lastAttempt: 'gone')],
+      );
+
+      expect(await _codeOf(snapshot), isNull);
+    });
+
+    test('refuses a block the catalogue does not know', () async {
+      final snapshot = _snapshot(
+        acknowledgements: [seen(DateTime(2026, 10), block: 'zzz')],
+      );
+
+      expect(await _codeOf(snapshot), InvariantCode.backupUnknownBlock);
+    });
+
+    test('refuses an exercise number the block does not have', () async {
+      final snapshot = _snapshot(
+        acknowledgements: [seen(DateTime(2026, 10), number: 9)],
+      );
+
+      expect(await _codeOf(snapshot), InvariantCode.backupInconsistent);
+    });
+
+    test('refuses a date after today', () async {
+      final snapshot = _snapshot(
+        acknowledgements: [seen(DateTime(2026, 10, 13))],
       );
 
       expect(await _codeOf(snapshot), InvariantCode.backupInvalid);

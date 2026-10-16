@@ -232,3 +232,41 @@ Feature: Today home
     And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-14'} with the catalogue session {'posture-1'}
     And the app is running
     Then the buttons are at least {48} dp high
+
+  # Lot U9 : alertes de groupe sur « Aujourd'hui » (report d'U7), trois au plus.
+  Scenario: The home lists the group alerts with a link to the grid
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the club has the student {'Hugo'} in the {'children'} audience
+    And {'Léa'} has {1} failed passes on {'posture 1'}
+    And {'Hugo'} has {1} failed passes on {'posture 1'}
+    And the app is running
+    Then I see {'Group alerts'} text
+    And I see {1} group alerts on the home
+    And I see {'2 students out of 2 missed “Posture, visée et coup de queue” on their last pass'} text
+    When I tap {'Children group'} text
+    Then I see {'Techniques by student'} text
+
+  # Chaque groupe a sa fenêtre (ses 4 dernières séances) : deux groupes de deux
+  # élèves, deux techniques manquées par groupe, donnent quatre alertes.
+  Scenario: The home lists at most three group alerts
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the club has the student {'Hugo'} in the {'children'} audience
+    And the club has the student {'Marc'} in the {'adults'} audience
+    And the club has the student {'Sophie'} in the {'adults'} audience
+    And {'Léa'} has {1} failed passes on {'posture 1'}
+    And {'Hugo'} has {1} failed passes on {'posture 1'}
+    And {'Léa'} has {1} failed passes on {'puissance 1'}
+    And {'Hugo'} has {1} failed passes on {'puissance 1'}
+    And {'Marc'} has {1} failed passes on {'posture 1'}
+    And {'Sophie'} has {1} failed passes on {'posture 1'}
+    And {'Marc'} has {1} failed passes on {'puissance 1'}
+    And {'Sophie'} has {1} failed passes on {'puissance 1'}
+    And the app is running
+    Then I see {3} group alerts on the home
+    And I see {'+ 1 other group alert'} text
+
+  Scenario: The home has no group alert section without a group alert
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And {'Léa'} has {1} failed passes on {'posture 1'}
+    And the app is running
+    Then I do not see {'Group alerts'} text

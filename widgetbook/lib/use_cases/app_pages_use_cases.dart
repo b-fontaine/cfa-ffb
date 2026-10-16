@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:billard_cfa/app/di/injection.dart';
+import 'package:billard_cfa/features/acknowledge_alert/presentation/bloc/acknowledgement_bloc.dart';
 import 'package:billard_cfa/features/assess_maturity/presentation/bloc/assessment_bloc.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_bloc.dart';
 import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_change_bloc.dart';
@@ -12,19 +15,23 @@ import 'package:billard_cfa/features/place_student/presentation/bloc/placement_b
 import 'package:billard_cfa/features/record_results/presentation/bloc/open_session_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/session_date_cubit.dart';
+import 'package:billard_cfa/features/student_showcase/presentation/bloc/showcase_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/exercise_sheet_bloc.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/student_recall_bloc.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/suggested_session_bloc.dart';
+import 'package:billard_cfa/features/track_group/presentation/bloc/group_overview_cubit.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/student_sheet_bloc.dart';
 import 'package:billard_cfa/pages/assessment/presentation/assessment_page.dart';
 import 'package:billard_cfa/pages/backup/presentation/backup_page.dart';
 import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_page.dart';
+import 'package:billard_cfa/pages/group_overview/presentation/group_overview_page.dart';
 import 'package:billard_cfa/pages/more/presentation/more_page.dart';
 import 'package:billard_cfa/pages/record_session/presentation/record_session_page.dart';
 import 'package:billard_cfa/pages/record_setup/presentation/record_setup_page.dart';
 import 'package:billard_cfa/pages/settings/presentation/settings_page.dart';
 import 'package:billard_cfa/pages/student_form/presentation/student_form_page.dart';
 import 'package:billard_cfa/pages/student_sheet/presentation/student_sheet_page.dart';
+import 'package:billard_cfa/pages/student_showcase/presentation/student_showcase_page.dart';
 import 'package:billard_cfa/pages/students/presentation/students_page.dart';
 import 'package:billard_cfa/pages/suggested_session/presentation/suggested_session_page.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
@@ -41,7 +48,11 @@ const _path = '[Pages]';
 Widget buildStudentsPageUseCase(BuildContext context) => WorldScope(
   builder: (context, world) => BlocProvider(
     create: (_) => getIt<StudentsBloc>()..add(const StudentsEvent.started()),
-    child: StudentsPage(onOpenStudent: (_) {}, onAddStudent: () {}),
+    child: StudentsPage(
+      onOpenStudent: (_) {},
+      onOpenGroup: (_) {},
+      onAddStudent: () {},
+    ),
   ),
 );
 
@@ -74,6 +85,7 @@ Widget buildStudentSheetPageUseCase(BuildContext context) => WorldScope(
       ),
       BlocProvider(create: (_) => getIt<StudentErasureBloc>()),
       BlocProvider(create: (_) => getIt<PlacementBloc>()),
+      BlocProvider(create: (_) => getIt<AcknowledgementBloc>()),
     ],
     child: StudentSheetPage(
       today: () => world.today,
@@ -81,7 +93,36 @@ Widget buildStudentSheetPageUseCase(BuildContext context) => WorldScope(
       onEdit: () {},
       onOpenAssessment: () {},
       onErased: () {},
+      onShow: () {},
     ),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Vue à montrer à l’élève',
+  type: StudentShowcasePage,
+  path: _path,
+)
+Widget buildStudentShowcasePageUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) => BlocProvider(
+    create: (_) {
+      final cubit = getIt<ShowcaseCubit>();
+      unawaited(cubit.load(world.children.id));
+      return cubit;
+    },
+    child: StudentShowcasePage(studentId: world.children.id, onDone: () {}),
+  ),
+);
+
+@widgetbook.UseCase(name: 'Vue de groupe', type: GroupOverviewPage, path: _path)
+Widget buildGroupOverviewPageUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) => BlocProvider(
+    create: (_) {
+      final cubit = getIt<GroupOverviewCubit>();
+      unawaited(cubit.load(world.childrenGroup));
+      return cubit;
+    },
+    child: GroupOverviewPage(onBack: () {}, onOpenStudent: (_) {}),
   ),
 );
 

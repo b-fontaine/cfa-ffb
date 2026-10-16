@@ -165,4 +165,35 @@ void main() {
       expect(again.isMemberOn(_lea, day(12)), isTrue);
     });
   });
+
+  group('membersOn', () {
+    Group group() => empty()
+        .admit(
+          studentId: _lea,
+          studentAudience: Audience.children,
+          from: day(5),
+        )
+        .admit(
+          studentId: _theo,
+          studentAudience: Audience.children,
+          from: day(5),
+        )
+        .release(studentId: _theo, to: day(9))
+        .admit(
+          studentId: _theo,
+          studentAudience: Audience.children,
+          from: day(12),
+        );
+
+    test('lists each current member once, bounds included', () {
+      expect(group().membersOn(day(5)), [_lea, _theo]);
+      expect(group().membersOn(day(9)), [_lea, _theo]);
+      expect(group().membersOn(day(12)), [_lea, _theo]);
+    });
+
+    test('leaves out a member outside of the membership period', () {
+      expect(group().membersOn(day(4)), isEmpty);
+      expect(group().membersOn(day(10)), [_lea]);
+    });
+  });
 }

@@ -1,6 +1,7 @@
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/features/track_progress/domain/attendance.dart';
+import 'package:billard_cfa/shared/lib/attendance.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:flutter_test/flutter_test.dart';
