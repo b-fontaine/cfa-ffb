@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' show Point;
 
 import 'package:billard_cfa/app/di/injection.dart';
@@ -10,11 +11,15 @@ import 'package:billard_cfa/features/browse_sheets/presentation/bloc/sheet_catal
 import 'package:billard_cfa/features/browse_sheets/presentation/bloc/sheet_detail_bloc.dart';
 import 'package:billard_cfa/features/browse_sheets/presentation/ui/sheet_catalogue_view.dart';
 import 'package:billard_cfa/features/browse_sheets/presentation/ui/sheet_detail_view.dart';
+import 'package:billard_cfa/features/suggest_session/presentation/bloc/group_journey_cubit.dart';
 import 'package:billard_cfa/pages/sheet_catalogue/presentation/sheet_catalogue_page.dart';
 import 'package:billard_cfa/pages/sheet_detail/presentation/sheet_detail_page.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/contact_fraction.dart';
+import 'package:billard_cfa/shared/lib/group_choice.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
+import 'package:billard_cfa/shared/lib/journey_mark.dart';
 import 'package:billard_cfa/shared/lib/provenance.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/lib/table_pocket.dart';
@@ -121,17 +126,45 @@ Widget buildSheetCatalogueViewUseCase(BuildContext context) {
     options: SheetReviewFilter.values,
     labelBuilder: (value) => value.name,
   );
+  final withGroup = context.knobs.boolean(
+    label: 'groupe choisi (marqueurs de parcours)',
+  );
+  const enfants = GroupChoice(GroupId('enfants'), 'Enfants');
+  const adultes = GroupChoice(GroupId('adultes'), 'Adultes');
   return WorldScope(
     builder: (context, world) => LoadedScope<SheetCatalogue>(
       load: (_) => getIt<ListSheets>()(),
-      builder: (context, world, catalogue) => _scroll(
-        SheetCatalogueView(
-          catalogue: catalogue.filtered(filter),
-          filter: filter,
-          onFilter: (_) {},
-          onOpenSheet: (_) {},
-        ),
-      ),
+      builder: (context, world, catalogue) {
+        final shown = catalogue.filtered(filter);
+        final ids = [
+          for (final group in shown.groups)
+            for (final sheet in group.sheets) sheet.id,
+        ];
+        // Démonstration : les trois premières séances sont faites, la
+        // quatrième est recommandée, les autres à venir.
+        final marks = withGroup
+            ? {
+                for (final (index, id) in ids.indexed)
+                  id: index < 3
+                      ? JourneyMark.done
+                      : index == 3
+                      ? JourneyMark.next
+                      : JourneyMark.upcoming,
+              }
+            : const <SheetId, JourneyMark>{};
+        return _scroll(
+          SheetCatalogueView(
+            catalogue: shown,
+            filter: filter,
+            onFilter: (_) {},
+            onOpenSheet: (_) {},
+            groups: const [enfants, adultes],
+            selectedGroup: withGroup ? enfants.id : null,
+            onGroupSelected: (_) {},
+            marks: marks,
+          ),
+        );
+      },
     ),
   );
 }
@@ -166,10 +199,22 @@ Widget buildSheetDetailViewUseCase(BuildContext context) {
   path: _pages,
 )
 Widget buildSheetCataloguePageUseCase(BuildContext context) => WorldScope(
-  builder: (context, world) => BlocProvider(
-    create: (_) =>
-        getIt<SheetCatalogueBloc>()..add(const SheetCatalogueEvent.started()),
-    child: SheetCataloguePage(onOpenSheet: (_) {}, onOpenSuggestion: () {}),
+  builder: (context, world) => MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (_) =>
+            getIt<SheetCatalogueBloc>()
+              ..add(const SheetCatalogueEvent.started()),
+      ),
+      BlocProvider(
+        create: (_) {
+          final cubit = getIt<GroupJourneyCubit>();
+          unawaited(cubit.load());
+          return cubit;
+        },
+      ),
+    ],
+    child: SheetCataloguePage(onOpenSheet: (_, _) {}),
   ),
 );
 
@@ -186,6 +231,10 @@ Widget buildSheetDetailPageUseCase(BuildContext context) {
       create: (_) =>
           getIt<SheetDetailBloc>()..add(SheetDetailEvent.started(sheetId: id)),
       child: SheetDetailPage(
+        backLabel: context.knobs.object.dropdown<String>(
+          label: 'origine (libellé du retour)',
+          options: const ['Catalogue de séances', 'Planning', 'Aujourd’hui'],
+        ),
         onBack: () {},
         onHome: () {},
         onPlan: (_) {},

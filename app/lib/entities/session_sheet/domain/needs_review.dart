@@ -67,3 +67,12 @@ bool needsReview(SessionSheet sheet) =>
 /// Vrai si le jeu de [sheet] est à valider (adapté, sans source ou `[Prop]`).
 bool gameNeedsReview(SessionSheet sheet) =>
     reviewReasonsOf(sheet).contains(ReviewReason.game);
+
+/// Le « n » du badge « n points à valider » : le nombre de motifs qui comptent
+/// (jeu, exercices, initiation, rappel), de 0 à 4. Un point est un **type de
+/// contenu** à relire, pas un bloc ; le détail de la séance liste les
+/// éléments. Les motifs seulement signalés (règle de lien, théorie) n'en font
+/// pas partie. Invariant : `reviewPointCount(s) > 0` ⇔ `needsReview(s)`, donc
+/// le badge et le filtre « À valider » ne peuvent pas diverger.
+int reviewPointCount(SessionSheet sheet) =>
+    reviewReasonsOf(sheet).where((reason) => reason.counts).length;

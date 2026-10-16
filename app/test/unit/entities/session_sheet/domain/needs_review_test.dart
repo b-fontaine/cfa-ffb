@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/session_sheet/data/asset_session_sheet_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/audience_weight.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/needs_review.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_game.dart';
@@ -187,6 +188,83 @@ void main() {
 
       expect(sheet.game.src, Provenance.s);
       expect(needsReview(sheet), isTrue);
+    });
+  });
+
+  group('reviewPointCount', () {
+    test('is zero for a fully sourced sheet', () {
+      expect(reviewPointCount(buildSheet(previous: null, order: 1)), 0);
+    });
+
+    test('counts each content type to review once, not each block', () {
+      final sheet = buildSheet(
+        exercises: [
+          sheetExercise('e1', 1, src: Provenance.prop),
+          sheetExercise('e2', 2, src: Provenance.prop),
+        ],
+        game: sheetGame(adapted: true, src: Provenance.prop, link: _link()),
+      );
+
+      expect(reviewPointCount(sheet), 2);
+    });
+
+    test('is exactly one for one content type and three for three', () {
+      final one = buildSheet(
+        exercises: [sheetExercise('e1', 1, src: Provenance.prop)],
+      );
+      final three = buildSheet(
+        exercises: [sheetExercise('e1', 1, src: Provenance.prop)],
+        initiation: [sheetInitiation('i', src: Provenance.prop)],
+        game: sheetGame(adapted: true, src: Provenance.prop, link: _link()),
+      );
+
+      expect(reviewPointCount(one), 1);
+      expect(reviewPointCount(three), 3);
+    });
+
+    test('counts the four reasons that matter, at most four', () {
+      final sheet = buildSheet(
+        exercises: [sheetExercise('e1', 1, src: Provenance.prop)],
+        initiation: [sheetInitiation('i', src: Provenance.prop)],
+        recall: const SheetRecall(
+          points: ['Un.', 'Deux.'],
+          ask: 'Q ?',
+          answer: 'R.',
+          src: Provenance.prop,
+        ),
+        game: sheetGame(adapted: true, src: Provenance.prop, link: _link()),
+      );
+
+      expect(reviewPointCount(sheet), 4);
+    });
+
+    test('does not count the signalled proposals (link rule, theory)', () {
+      final sheet = buildSheet(
+        game: sheetGame(link: _link()),
+        theory: [theorySection('t1', src: Provenance.prop)],
+      );
+
+      expect(reviewReasonsOf(sheet), {
+        ReviewReason.gameLink,
+        ReviewReason.theory,
+      });
+      expect(reviewPointCount(sheet), 0);
+    });
+
+    test('is positive exactly when the sheet needs review, on the 28 real '
+        'sheets', () async {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      final sheets = await AssetSessionSheetRepository.fromBundle().getAll();
+
+      expect(sheets, hasLength(28));
+      for (final sheet in sheets) {
+        expect(
+          reviewPointCount(sheet) > 0,
+          needsReview(sheet),
+          reason: sheet.id.value,
+        );
+      }
+      expect(sheets.where(needsReview), hasLength(18));
     });
   });
 }

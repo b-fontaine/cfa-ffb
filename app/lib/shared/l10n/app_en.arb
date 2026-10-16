@@ -1535,7 +1535,7 @@
   },
   "presentationScopeLabel": "Enlarged display for students",
   "catalogueTitle": "Session catalogue",
-  "catalogueSummary": "{techniques, plural, =1{1 technique} other{{techniques} techniques}} · {sheets, plural, =1{1 session} other{{sheets} sessions}} · read-only",
+  "catalogueSummary": "{techniques, plural, =1{1 technique} other{{techniques} techniques}} · {sheets, plural, =1{1 session} other{{sheets} sessions}}",
   "@catalogueSummary": {
     "placeholders": {
       "techniques": {
@@ -1546,17 +1546,54 @@
       }
     }
   },
-  "catalogueSuggestion": "Group suggestion",
   "catalogueFilterToReview": "To validate only",
   "catalogueNoneToReview": "No session has content to validate.",
   "catalogueFilterGames": "Games to validate",
   "catalogueNoneGames": "No session has a game to validate.",
   "catalogueEmpty": "The catalogue holds no session.",
+  "catalogueNamesNote": "Evocative names are proposals, not federal wording.",
+  "catalogueRowSubtitle": "Session {part}/{parts} · {technique}",
+  "@catalogueRowSubtitle": {
+    "placeholders": {
+      "part": {
+        "type": "int"
+      },
+      "parts": {
+        "type": "int"
+      },
+      "technique": {
+        "type": "String"
+      }
+    }
+  },
+  "catalogueReviewPoints": "{count, plural, =1{1 point to validate} other{{count} points to validate}}",
+  "@catalogueReviewPoints": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "catalogueMinorTheory": "Theory: proposal",
+  "catalogueMinorGameLink": "Game link rule: proposal",
+  "catalogueMinorHint": "Unsourced proposal: flagged, not counted in the points to validate.",
+  "catalogueMinorSemantics": "{label}. Unsourced proposal: flagged, not counted in the points to validate.",
+  "@catalogueMinorSemantics": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "catalogueGroupLabel": "Follow the journey of a group",
+  "catalogueGroupNone": "No group",
+  "journeyDone": "Done",
+  "journeyNext": "Recommended next",
+  "journeyUpcoming": "Upcoming",
+  "catalogueJourneyNoStudents": "This group has no student: only the sessions already given are marked.",
   "catalogueReasonGame": "Game to validate",
-  "catalogueReasonGameLink": "Game link rule to validate",
   "catalogueReasonExercise": "Exercises to validate",
   "catalogueReasonInitiation": "Initiation to validate",
-  "catalogueReasonTheory": "Theory to validate",
   "catalogueReasonRecall": "Recall to validate",
   "catalogueTechniqueHeading": "{rank}. {title}",
   "@catalogueTechniqueHeading": {
@@ -1595,8 +1632,36 @@
     }
   },
   "contentInFrench": "The session content is written in French; only the interface is translated.",
-  "sheetReadOnly": "Read-only content: nothing can be edited here.",
   "sheetToValidateNote": "This session contains unsourced proposals to validate (marked with the “Proposal” badge).",
+  "sheetMenuTooltip": "More actions",
+  "sheetReport": "Report a proposal",
+  "sheetReportText": "Proposal to review: session {id} ({title})",
+  "@sheetReportText": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetReportCopied": "Session identifier copied: {id}",
+  "@sheetReportCopied": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetReportFailed": "Copy failed. Session identifier: {id}",
+  "@sheetReportFailed": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "sheetAudienceOption": "{audience} · {minutes} min",
   "@sheetAudienceOption": {
     "placeholders": {
@@ -1632,7 +1697,6 @@
       }
     }
   },
-  "sheetOutline": "Jump to",
   "sheetJumpRecall": "Recall",
   "sheetJumpTheory": "Theory",
   "sheetJumpTraining": "Exercises",

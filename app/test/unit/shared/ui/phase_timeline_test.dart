@@ -174,4 +174,31 @@ void main() {
       throwsAssertionError,
     );
   });
+
+  testWidgets('grows with the text so that 200 % text does not overflow', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.view.reset);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+    await pumpUi(tester, timeline());
+
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(phase(1)).height, greaterThan(56));
+  });
+
+  testWidgets('the tooltip of a segment carries the unit', (tester) async {
+    await pumpUi(tester, timeline());
+
+    expect(
+      find.descendant(
+        of: phase(2),
+        matching: find.byTooltip('Notion · 15 min'),
+      ),
+      findsOneWidget,
+    );
+  });
 }

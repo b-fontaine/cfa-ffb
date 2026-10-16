@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -151,16 +153,20 @@ class _Segment extends StatelessWidget {
     final minutes = width >= PhaseTimeline._minutesUnitWidth
         ? l10n.sessionDurationMinutes(entry.minutes)
         : '${entry.minutes}';
+    // La hauteur suit l'échelle du texte : à 200 %, les deux lignes du segment
+    // (minutes et libellé) y tiennent sans débordement.
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
     return SizedBox(
       width: width,
-      height: PhaseTimeline._height,
+      height: PhaseTimeline._height * math.max(1, textScale),
       child: Semantics(
         button: true,
         selected: current,
         label: label,
         excludeSemantics: true,
         child: Tooltip(
-          message: '${entry.label} · ${entry.minutes}',
+          message:
+              '${entry.label} · ${l10n.sessionDurationMinutes(entry.minutes)}',
           child: Material(
             type: MaterialType.transparency,
             child: Ink(

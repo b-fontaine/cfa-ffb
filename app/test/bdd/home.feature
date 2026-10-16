@@ -88,12 +88,16 @@ Feature: Today home
     Then I see {'Step 1 of 10'} text
     And I see {'Children · 90 min'} text
 
-  Scenario: Prepare from the home opens the catalogue session
+  Scenario: Prepare from the home opens the catalogue session and leads back to Today
     Given the club has the student {'Léa'} in the {'children'} audience
     And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-14'} with the catalogue session {'posture-1'}
     And the app is running
     When I tap {'Prepare'} text
     Then I see text containing {'Posture, visée et coup de queue'}
+    And the back button says {'Today'}
+    When I tap the back button
+    Then I see {'Cours'} text
+    And I see {'Prepare'} text
 
   Scenario: A started guided session is shown with its step and Resume
     Given the app is running

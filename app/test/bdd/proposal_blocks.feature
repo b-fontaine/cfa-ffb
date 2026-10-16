@@ -10,7 +10,7 @@ Feature: Proposal blocks
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     And I open the source sheet of exercise {1}
     Then I see {'Proposal'} text
@@ -24,7 +24,7 @@ Feature: Proposal blocks
     And the club has the student {'Léa'} in the {'children'} audience
     And the app is running
     When I tap {'Séances'} text
-    And I tap {'Suggestion par groupe'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggérer une séance'} text
     And I open the source sheet of exercise {1}
     Then I see {'Proposition'} text
@@ -37,7 +37,7 @@ Feature: Proposal blocks
     And {'Léa'} has validated the block {'bille-fantome'}
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     And I open the source sheet of exercise {1}
     Then I do not see {'Proposal'} text
@@ -54,7 +54,7 @@ Feature: Proposal blocks
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     Then I see {'Posture, visée et coup de queue'} text
     And I see text containing {'exercise 1 · Proposal'}

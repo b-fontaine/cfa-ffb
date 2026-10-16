@@ -6,7 +6,7 @@ Feature: Suggested session screen
     And {'Léa'} has validated the block {'posture'}
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     Then I see {'90 min'} text
     And I see {'La puissance'} text
@@ -18,7 +18,7 @@ Feature: Suggested session screen
     Given the club has the student {'Hugo'} in the {'adults'} audience
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     Then I see {'120 min'} text
     And I see {'Training · 50 min'} text
@@ -28,7 +28,7 @@ Feature: Suggested session screen
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     Then I see {'No recall for this group.'} text
     And I see {'Children sessions cover a single notion: no recall is intended.'} text
@@ -37,7 +37,7 @@ Feature: Suggested session screen
     Given the club has the student {'Hugo'} in the {'adults'} audience
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     Then I see {'No recall for this group.'} text
     And I do not see {'Children sessions cover a single notion: no recall is intended.'} text
@@ -47,7 +47,7 @@ Feature: Suggested session screen
     And {'Léa'} has validated the block {'posture'}
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     And I open the source sheet of exercise {1}
     Then I see {'Technical sheet no. 2'} text
@@ -59,7 +59,7 @@ Feature: Suggested session screen
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     Then I see {'Catalogue session'} text
     And I see {'Posture, visée et coup de queue'} text
@@ -71,7 +71,7 @@ Feature: Suggested session screen
     And a session is recorded for the group {'Children group'} on {'2026-10-05'} with the catalogue session {'posture-1'} and a pass
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     Then I see {'A part still to do for this group'} text
     And I see {'Session 2/2'} text
@@ -83,7 +83,7 @@ Feature: Suggested session screen
     And a session is recorded for the group {'Children group'} on {'2026-10-06'} with the catalogue session {'posture-2'} and a pass
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     Then I see {'Session 1/2'} text
     And I see {'Already given on Mon, Oct 5'} text
@@ -92,7 +92,7 @@ Feature: Suggested session screen
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     And I tap {'Open the catalogue session'} text
     Then I see text containing {'Posture, visée et coup de queue'}
@@ -103,7 +103,7 @@ Feature: Suggested session screen
     And the club has the student {'Hugo'} in the {'adults'} audience
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Adults group'} text
     And I tap {'Suggest a session'} text
     And I tap {'Launch the guided session'} text
@@ -117,7 +117,7 @@ Feature: Suggested session screen
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     And I tap {'Plan a session'} text
     Then the session title is {'Posture, visée et coup de queue, session 1/2'}
@@ -126,7 +126,7 @@ Feature: Suggested session screen
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     And I tap {'Record the results of this session'} text
     And I tap {'Open the session'} text
@@ -143,7 +143,7 @@ Feature: Suggested session screen
     And {'Léa'} has validated the block {'quart-finesses'}
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     Then I see {'No catalogue session for this notion: the block exercises are listed below'} text
     And I see {'Record the results of this session'} text
@@ -162,7 +162,7 @@ Feature: Suggested session screen
     And {'Léa'} has validated the block {'quart-finesses'}
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     And I tap {'Plan a session'} text
     Then the session title is {''}

@@ -10,6 +10,8 @@ import 'package:billard_cfa/entities/session_sheet/domain/sheet_theory.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_timing.dart';
 import 'package:billard_cfa/entities/session_sheet/presentation/sheet_illustration_view.dart';
 import 'package:billard_cfa/features/browse_sheets/domain/sheet_detail.dart';
+import 'package:billard_cfa/features/browse_sheets/domain/sheet_row.dart';
+import 'package:billard_cfa/features/browse_sheets/presentation/ui/review_labels.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
@@ -17,6 +19,7 @@ import 'package:billard_cfa/shared/lib/provenance.dart';
 import 'package:billard_cfa/shared/lib/session_shape.dart';
 import 'package:billard_cfa/shared/ui/audience_labels.dart';
 import 'package:billard_cfa/shared/ui/french_content_notice.dart';
+import 'package:billard_cfa/shared/ui/phase_timeline.dart';
 import 'package:billard_cfa/shared/ui/proposal_badge.dart';
 import 'package:billard_cfa/shared/ui/provenance_badge.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_player.dart';
@@ -27,17 +30,20 @@ import 'package:flutter/material.dart';
 
 part 'sheet_detail_sections.dart';
 
-/// Une séance du catalogue, lue en entier et en lecture seule : rappel,
-/// théorie illustrée, exercices (mise en place, schéma, consigne, attendu),
-/// jeu, bilan et sources.
+/// Une séance du catalogue, lue en entier : rappel, théorie illustrée,
+/// exercices (mise en place, schéma, consigne, attendu), jeu, bilan et
+/// sources.
 ///
 /// Le public ([audience]) ne change que les minutes (calculées, `[Prop]`) et
 /// les éléments propres à un public. Chaque élément non sourcé porte le badge
 /// « Proposition » en contexte ; les éléments sourcés portent leur source.
-/// Aucun champ de saisie : seule la bascule de public et le sommaire agissent.
+/// Aucun champ de saisie : seule la bascule de public et la frise des phases
+/// agissent.
 ///
-/// Les en-têtes de phase sont fournis dans la page défilante parente : le
-/// sommaire fait défiler jusqu'à la phase choisie.
+/// La frise des phases, sous la bascule de public, est le sommaire : taper un
+/// segment fait défiler la page parente jusqu'à la phase choisie. Dès 720 dp
+/// de fenêtre, la carte d'un exercice passe sur deux colonnes (schéma à
+/// gauche).
 class SheetDetailView extends StatefulWidget {
   const SheetDetailView({
     required this.detail,
@@ -73,7 +79,6 @@ class _SheetDetailViewState extends State<SheetDetailView> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     final detail = widget.detail;
     final sheet = detail.sheet;
     final audience = widget.audience;
@@ -90,23 +95,39 @@ class _SheetDetailViewState extends State<SheetDetailView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const FrenchContentNotice(),
-        const SizedBox(height: AppSpacing.sm),
-        Text(l10n.sheetReadOnly, style: theme.textTheme.bodyMedium),
+        const _Readable(child: FrenchContentNotice()),
         const SizedBox(height: AppSpacing.md),
-        _ThemeBlock(sheet: sheet),
+        _Readable(child: _ThemeBlock(sheet: sheet)),
         const SizedBox(height: AppSpacing.md),
         if (needsReview(sheet)) ...[
-          _ToValidateNote(),
+          _Readable(
+            child: _ToValidateNote(
+              row: sheetRowOf(sheet, partCount: detail.partCount),
+            ),
+          ),
           const SizedBox(height: AppSpacing.md),
         ],
-        _AudienceBar(
-          audience: audience,
-          total: timing.total,
-          onChanged: widget.onAudienceChanged,
+        _Readable(
+          child: _AudienceBar(
+            audience: audience,
+            total: timing.total,
+            onChanged: widget.onAudienceChanged,
+          ),
         ),
         const SizedBox(height: AppSpacing.md),
-        _Outline(firstSession: sheet.previous == null, onJump: _jumpTo),
+        _Readable(
+          child: PhaseTimeline(
+            phases: [
+              for (final phase in SessionPhase.values)
+                PhaseTimelineEntry(
+                  label: _timelineLabel(l10n, phase, sheet.previous == null),
+                  minutes: timing.phaseMinutes[phase]!,
+                ),
+            ],
+            currentIndex: -1,
+            onSelected: (index) => _jumpTo(SessionPhase.values[index]),
+          ),
+        ),
         const SizedBox(height: AppSpacing.lg),
         _PhaseSection(
           sectionKey: _phaseKeys[SessionPhase.welcome]!,
@@ -156,7 +177,7 @@ class _SheetDetailViewState extends State<SheetDetailView> {
           title: l10n.suggestPhaseReview,
           children: [_ReviewContent(sheet: sheet)],
         ),
-        _SourcesSection(sheet: sheet),
+        _Readable(child: _SourcesSection(sheet: sheet)),
       ],
     );
   }

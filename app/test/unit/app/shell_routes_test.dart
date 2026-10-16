@@ -81,19 +81,61 @@ void main() {
     });
   });
 
-  group('AppRoutes.sheet from the planner', () {
-    test('marks the origin so that the back button returns to it', () {
+  group('AppRoutes.sheet origin', () {
+    final id = SheetId('demi-bille-2');
+
+    test('the planner origin keeps its address', () {
       expect(
         AppRoutes.sheet(
-          SheetId('demi-bille-2'),
+          id,
           audience: Audience.adults,
-          fromPlanner: true,
+          origin: SheetOrigin.planner,
         ),
         '/catalogue/demi-bille-2?audience=adults&from=planner',
       );
       expect(
-        AppRoutes.sheet(SheetId('demi-bille-2'), fromPlanner: true),
+        AppRoutes.sheet(id, origin: SheetOrigin.planner),
         '/catalogue/demi-bille-2?from=planner',
+      );
+    });
+
+    test('the today origin is marked, the catalogue origin is not', () {
+      expect(
+        AppRoutes.sheet(id, origin: SheetOrigin.today),
+        '/catalogue/demi-bille-2?from=today',
+      );
+      expect(AppRoutes.sheet(id), '/catalogue/demi-bille-2');
+    });
+
+    test('carries the chosen group of the catalogue', () {
+      expect(
+        AppRoutes.sheet(id, group: const GroupId('g1')),
+        '/catalogue/demi-bille-2?group=g1',
+      );
+    });
+  });
+
+  group('SheetOrigin.parse', () {
+    test('reads the three known values', () {
+      expect(SheetOrigin.parse('planner'), SheetOrigin.planner);
+      expect(SheetOrigin.parse('today'), SheetOrigin.today);
+      expect(SheetOrigin.parse('catalogue'), SheetOrigin.catalogue);
+    });
+
+    test('falls back to the catalogue on an absent or unknown value', () {
+      expect(SheetOrigin.parse(null), SheetOrigin.catalogue);
+      expect(SheetOrigin.parse(''), SheetOrigin.catalogue);
+      expect(SheetOrigin.parse('evil'), SheetOrigin.catalogue);
+      expect(SheetOrigin.parse('https://evil.example'), SheetOrigin.catalogue);
+    });
+  });
+
+  group('AppRoutes.catalogueFor', () {
+    test('addresses the catalogue, with the group when chosen', () {
+      expect(AppRoutes.catalogueFor(null), '/catalogue');
+      expect(
+        AppRoutes.catalogueFor(const GroupId('g1')),
+        '/catalogue?group=g1',
       );
     });
   });

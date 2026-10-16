@@ -2,11 +2,10 @@ import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dar
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_option.dart';
+import 'package:billard_cfa/features/suggest_session/domain/given_sheets.dart';
 import 'package:billard_cfa/features/suggest_session/domain/sheet_suggestion.dart';
-import 'package:billard_cfa/shared/lib/date_only.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
-import 'package:billard_cfa/shared/lib/sheet_id.dart';
 
 /// Exercices validés (ou acquis, lot 7) par **chaque** élève attendu ; vide
 /// pour zéro élève (jamais « tout »).
@@ -46,17 +45,11 @@ SheetSuggestion? suggestSheet({
   ]..sort((a, b) => a.order.compareTo(b.order));
   if (candidates.isEmpty) return null;
 
-  final limit = today.dateOnly;
-  final lastGiven = <SheetId, DateTime>{};
-  for (final session in groupSessions) {
-    final sheetId = session.sheetId;
-    if (sheetId == null) continue;
-    if ((attemptCountBySession[session.id] ?? 0) == 0) continue;
-    final given = session.date.dateOnly;
-    if (given.isAfter(limit)) continue;
-    final known = lastGiven[sheetId];
-    if (known == null || given.isAfter(known)) lastGiven[sheetId] = given;
-  }
+  final lastGiven = givenSheets(
+    groupSessions: groupSessions,
+    attemptCountBySession: attemptCountBySession,
+    today: today,
+  );
 
   bool holdsHead(SessionSheet sheet) =>
       sheet.exercises.any((exercise) => exercise.ref == head);

@@ -7,6 +7,7 @@ import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -33,7 +34,7 @@ void main() {
     VoidCallback? onHome,
     ValueChanged<Audience>? onPlan,
     ValueChanged<Audience>? onLaunch,
-    bool fromPlanner = false,
+    String backLabel = 'Session catalogue',
   }) async {
     tester.view.physicalSize = const Size(800, 1600);
     tester.view.devicePixelRatio = 1;
@@ -43,7 +44,7 @@ void main() {
       BlocProvider<SheetDetailBloc>.value(
         value: bloc,
         child: SheetDetailPage(
-          fromPlanner: fromPlanner,
+          backLabel: backLabel,
           onBack: onBack ?? () {},
           onHome: onHome ?? () {},
           onPlan: onPlan ?? (_) {},
@@ -102,9 +103,7 @@ void main() {
     expect(find.textContaining('Page not found'), findsNothing);
   });
 
-  testWidgets('names the planner as the way back when opened from it', (
-    tester,
-  ) async {
+  testWidgets('names the way back that the router gives', (tester) async {
     var back = 0;
     final sheet = buildSheet();
     whenListen(
@@ -122,7 +121,7 @@ void main() {
         ),
       ),
     );
-    await pump(tester, onBack: () => back++, fromPlanner: true);
+    await pump(tester, onBack: () => back++, backLabel: 'Planning');
 
     await tester.tap(find.text('Planning'));
 
@@ -202,6 +201,136 @@ void main() {
       await tester.tap(find.text('Session catalogue'));
 
       expect(back, 1);
+    });
+
+    testWidgets('says the way back is Today when the router says so', (
+      tester,
+    ) async {
+      whenListen(
+        bloc,
+        const Stream<SheetDetailState>.empty(),
+        initialState: ready(),
+      );
+
+      await pump(tester, backLabel: 'Today');
+
+      expect(find.text('Today'), findsOneWidget);
+      expect(find.text('Session catalogue'), findsNothing);
+    });
+
+    group('actions menu', () {
+      String? copied;
+      PlatformException? clipboardError;
+
+      setUp(() {
+        copied = null;
+        clipboardError = null;
+      });
+
+      void mockClipboard(WidgetTester tester) {
+        tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          (call) async {
+            if (call.method == 'Clipboard.setData') {
+              if (clipboardError != null) throw clipboardError!;
+              copied =
+                  (call.arguments as Map<Object?, Object?>)['text']! as String;
+            }
+            return null;
+          },
+        );
+        addTearDown(
+          () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+            SystemChannels.platform,
+            null,
+          ),
+        );
+      }
+
+      Future<void> report(WidgetTester tester) async {
+        whenListen(
+          bloc,
+          const Stream<SheetDetailState>.empty(),
+          initialState: ready(),
+        );
+        await pump(tester);
+        await tester.tap(find.byKey(const ValueKey('sheet-menu')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Report a proposal'));
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('is a 48 dp button with a tooltip', (tester) async {
+        whenListen(
+          bloc,
+          const Stream<SheetDetailState>.empty(),
+          initialState: ready(),
+        );
+        await pump(tester);
+
+        final size = tester.getSize(find.byKey(const ValueKey('sheet-menu')));
+        expect(size.width, greaterThanOrEqualTo(48));
+        expect(size.height, greaterThanOrEqualTo(48));
+        expect(find.byTooltip('More actions'), findsOneWidget);
+      });
+
+      testWidgets('offers to report a proposal', (tester) async {
+        whenListen(
+          bloc,
+          const Stream<SheetDetailState>.empty(),
+          initialState: ready(),
+        );
+        await pump(tester);
+
+        await tester.tap(find.byKey(const ValueKey('sheet-menu')));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Report a proposal'), findsOneWidget);
+      });
+
+      testWidgets('copies the identifier of the session and says so', (
+        tester,
+      ) async {
+        mockClipboard(tester);
+
+        await report(tester);
+
+        expect(
+          copied,
+          'Proposal to review: session demi-bille-1 '
+          '(Quantité demi-bille, session 1/2)',
+        );
+        expect(
+          find.text('Session identifier copied: demi-bille-1'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('shows the identifier in clear when the copy fails', (
+        tester,
+      ) async {
+        clipboardError = PlatformException(code: 'denied');
+        mockClipboard(tester);
+
+        await report(tester);
+
+        expect(copied, isNull);
+        expect(
+          find.text('Copy failed. Session identifier: demi-bille-1'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('is absent while the session loads', (tester) async {
+        whenListen(
+          bloc,
+          const Stream<SheetDetailState>.empty(),
+          initialState: state(SheetDetailStatus.loading),
+        );
+        await pump(tester);
+
+        expect(find.byKey(const ValueKey('sheet-menu')), findsNothing);
+      });
     });
 
     testWidgets('plans the session for the audience on screen', (tester) async {

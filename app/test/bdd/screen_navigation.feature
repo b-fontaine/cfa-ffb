@@ -47,7 +47,7 @@ Feature: Leaving a screen
     Given the club has the student {'Léa'} in the {'children'} audience
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     And I tap {'Record the results of this session'} text
     Then I see {'Record the results'} text
@@ -59,7 +59,7 @@ Feature: Leaving a screen
     And {'Léa'} has validated the block {'posture'}
     And the app is running
     When I tap {'Sessions'} text
-    And I tap {'Group suggestion'} text
+    And I tap {'Suggestion'} text
     And I tap {'Suggest a session'} text
     And I open the source sheet of exercise {1}
     And I tap the back button

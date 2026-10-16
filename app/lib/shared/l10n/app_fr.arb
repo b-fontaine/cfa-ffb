@@ -1535,7 +1535,7 @@
   },
   "presentationScopeLabel": "Affichage agrandi pour les élèves",
   "catalogueTitle": "Catalogue de séances",
-  "catalogueSummary": "{techniques, plural, =1{1 technique} other{{techniques} techniques}} · {sheets, plural, =1{1 séance} other{{sheets} séances}} · lecture seule",
+  "catalogueSummary": "{techniques, plural, =1{1 technique} other{{techniques} techniques}} · {sheets, plural, =1{1 séance} other{{sheets} séances}}",
   "@catalogueSummary": {
     "placeholders": {
       "techniques": {
@@ -1546,17 +1546,54 @@
       }
     }
   },
-  "catalogueSuggestion": "Suggestion par groupe",
   "catalogueFilterToReview": "À valider seulement",
   "catalogueNoneToReview": "Aucune séance n’a de contenu à valider.",
   "catalogueFilterGames": "Jeux à valider",
   "catalogueNoneGames": "Aucune séance n’a de jeu à valider.",
   "catalogueEmpty": "Le catalogue ne contient aucune séance.",
+  "catalogueNamesNote": "Les noms évocateurs sont des propositions, non des termes fédéraux.",
+  "catalogueRowSubtitle": "Séance {part}/{parts} · {technique}",
+  "@catalogueRowSubtitle": {
+    "placeholders": {
+      "part": {
+        "type": "int"
+      },
+      "parts": {
+        "type": "int"
+      },
+      "technique": {
+        "type": "String"
+      }
+    }
+  },
+  "catalogueReviewPoints": "{count, plural, =1{1 point à valider} other{{count} points à valider}}",
+  "@catalogueReviewPoints": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "catalogueMinorTheory": "Théorie : proposition",
+  "catalogueMinorGameLink": "Règle de lien du jeu : proposition",
+  "catalogueMinorHint": "Proposition non sourcée : signalée, non comptée dans les points à valider.",
+  "catalogueMinorSemantics": "{label}. Proposition non sourcée : signalée, non comptée dans les points à valider.",
+  "@catalogueMinorSemantics": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "catalogueGroupLabel": "Suivre le parcours d’un groupe",
+  "catalogueGroupNone": "Aucun groupe",
+  "journeyDone": "Faite",
+  "journeyNext": "Recommandée ensuite",
+  "journeyUpcoming": "À venir",
+  "catalogueJourneyNoStudents": "Ce groupe n’a aucun élève : seules les séances déjà données sont marquées.",
   "catalogueReasonGame": "Jeu à valider",
-  "catalogueReasonGameLink": "Règle de lien du jeu à valider",
   "catalogueReasonExercise": "Exercices à valider",
   "catalogueReasonInitiation": "Initiation à valider",
-  "catalogueReasonTheory": "Théorie à valider",
   "catalogueReasonRecall": "Rappel à valider",
   "catalogueTechniqueHeading": "{rank}. {title}",
   "@catalogueTechniqueHeading": {
@@ -1595,8 +1632,36 @@
     }
   },
   "contentInFrench": "Le contenu des séances est rédigé en français ; seule l’interface est traduite.",
-  "sheetReadOnly": "Contenu en lecture seule : rien n’est modifiable ici.",
   "sheetToValidateNote": "Cette séance contient des propositions non sourcées à valider (repérées par le badge « Proposition »).",
+  "sheetMenuTooltip": "Plus d’actions",
+  "sheetReport": "Signaler une proposition",
+  "sheetReportText": "Proposition à relire : séance {id} ({title})",
+  "@sheetReportText": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetReportCopied": "Identifiant de la séance copié : {id}",
+  "@sheetReportCopied": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "sheetReportFailed": "Copie impossible. Identifiant de la séance : {id}",
+  "@sheetReportFailed": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "sheetAudienceOption": "{audience} · {minutes} min",
   "@sheetAudienceOption": {
     "placeholders": {
@@ -1632,7 +1697,6 @@
       }
     }
   },
-  "sheetOutline": "Aller à",
   "sheetJumpRecall": "Rappel",
   "sheetJumpTheory": "Théorie",
   "sheetJumpTraining": "Exercices",

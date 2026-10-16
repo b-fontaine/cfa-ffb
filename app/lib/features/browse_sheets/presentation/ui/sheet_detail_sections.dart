@@ -168,20 +168,54 @@ class _ThemeBlock extends StatelessWidget {
   }
 }
 
+/// La note « n points à valider » : le même compte que le badge du catalogue,
+/// avec une ligne par motif (ceux qui comptent, puis les propositions
+/// mineures qui ne comptent pas).
 class _ToValidateNote extends StatelessWidget {
+  const _ToValidateNote({required this.row});
+
+  final SheetRow row;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Wrap(
-      spacing: AppSpacing.sm,
-      runSpacing: AppSpacing.xs,
-      crossAxisAlignment: WrapCrossAlignment.center,
+    final theme = Theme.of(context);
+    return Column(
+      key: const ValueKey('review-note'),
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const ProposalBadge(),
-        Text(
-          l10n.sheetToValidateNote,
-          style: Theme.of(context).textTheme.bodyLarge,
+        Wrap(
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.xs,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            const ProposalBadge(),
+            Text(
+              l10n.catalogueReviewPoints(row.reviewPoints),
+              style: theme.textTheme.titleMedium,
+            ),
+          ],
         ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(l10n.sheetToValidateNote, style: theme.textTheme.bodyLarge),
+        const SizedBox(height: AppSpacing.xs),
+        for (final reason in [...row.reviewReasons, ...row.minorReasons])
+          Padding(
+            key: ValueKey('review-note:${reason.name}'),
+            padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+            child: Row(
+              children: [
+                const ExcludeSemantics(child: Icon(Icons.circle, size: 6)),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    reviewReasonLabel(l10n, reason),
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
@@ -240,47 +274,45 @@ class _AudienceBar extends StatelessWidget {
   }
 }
 
-class _Outline extends StatelessWidget {
-  const _Outline({required this.firstSession, required this.onJump});
-
-  final bool firstSession;
-  final ValueChanged<SessionPhase> onJump;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final labels = {
-      SessionPhase.welcome: firstSession
-          ? l10n.suggestPhaseWelcome
-          : l10n.sheetJumpRecall,
-      SessionPhase.notionAndInitiation: l10n.sheetJumpTheory,
-      SessionPhase.training: l10n.sheetJumpTraining,
-      SessionPhase.game: l10n.sheetJumpGame,
-      SessionPhase.review: l10n.sheetJumpReview,
-    };
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(l10n.sheetOutline, style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: AppSpacing.xs),
-        Wrap(
-          spacing: AppSpacing.sm,
-          runSpacing: AppSpacing.sm,
-          children: [
-            for (final entry in labels.entries)
-              ActionChip(
-                label: Text(entry.value),
-                onPressed: () => onJump(entry.key),
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-}
+/// Libellé court d'une phase dans la frise (« Accueil » en première séance,
+/// « Rappel » ensuite).
+String _timelineLabel(
+  AppLocalizations l10n,
+  SessionPhase phase,
+  bool firstSession,
+) => switch (phase) {
+  SessionPhase.welcome =>
+    firstSession ? l10n.suggestPhaseWelcome : l10n.sheetJumpRecall,
+  SessionPhase.notionAndInitiation => l10n.sheetJumpTheory,
+  SessionPhase.training => l10n.sheetJumpTraining,
+  SessionPhase.game => l10n.sheetJumpGame,
+  SessionPhase.review => l10n.sheetJumpReview,
+};
 
 /// Une phase de la séance : en-tête « Nom · N min » (minutes `[Prop]`) puis
 /// son contenu.
+/// Plafond de lecture (dp) des blocs de texte : seules les cartes d'exercice
+/// profitent de la largeur de la page.
+const double _readableWidth = 760;
+
+/// Plafonne [child] à [_readableWidth], aligné à gauche.
+class _Readable extends StatelessWidget {
+  const _Readable({required this.child});
+
+  final Widget child;
+
+  // `Align` relâche la contrainte serrée de la colonne : sans lui, la boîte
+  // contrainte ne pourrait pas être plus étroite que la page.
+  @override
+  Widget build(BuildContext context) => Align(
+    alignment: AlignmentDirectional.topStart,
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: _readableWidth),
+      child: child,
+    ),
+  );
+}
+
 class _PhaseSection extends StatelessWidget {
   const _PhaseSection({
     required this.sectionKey,
@@ -323,7 +355,7 @@ class _PhaseSection extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
           for (final child in children) ...[
-            child,
+            if (child is _ExerciseCard) child else _Readable(child: child),
             const SizedBox(height: AppSpacing.md),
           ],
         ],
@@ -477,6 +509,10 @@ class _InitiationCard extends StatelessWidget {
   }
 }
 
+/// Largeur de fenêtre dès laquelle la carte d'un exercice passe sur deux
+/// colonnes : celle où la navigation passe en rail (cohérence des seuils).
+const double _twoColumnsFrom = 720;
+
 class _ExerciseCard extends StatelessWidget {
   const _ExerciseCard({required this.scope, required this.exercise});
 
@@ -490,28 +526,28 @@ class _ExerciseCard extends StatelessWidget {
     final spec = scope.detail.exerciseSpecs[exercise.id];
     final proposal = exercise.src.isProposal;
     final diagramSpec = scope.specs[exercise.diagramId];
-    return _ElementCard(
-      title: l10n.sheetExerciseHeading(exercise.ref.number, exercise.title),
-      minutes: scope.timing.exercises[exercise.id],
-      badges: [
-        _Source(element: 'exercise:${exercise.id}', provenance: exercise.src),
-      ],
+    final wide = MediaQuery.sizeOf(context).width >= _twoColumnsFrom;
+    final visual = KeyedSubtree(
+      key: ValueKey('exercise-visual:${exercise.id}'),
+      child: diagramSpec != null
+          ? _ExerciseDiagram(
+              spec: diagramSpec,
+              number: exercise.ref.number,
+              title: scope.sheet.title,
+            )
+          : _Line(
+              scope.detail.diagramsUnreadable
+                  ? l10n.diagramInvalid
+                  : l10n.exerciseDiagramMissing,
+            ),
+    );
+    final text = Column(
+      key: ValueKey('exercise-text:${exercise.id}'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (spec != null) _CatalogueLine(spec: spec),
         if (proposal) _Line(l10n.sheetRateProposal),
         _Line(l10n.sheetPassesPlanned(exercise.passes)),
-        if (diagramSpec != null)
-          _ExerciseDiagram(
-            spec: diagramSpec,
-            number: exercise.ref.number,
-            title: scope.sheet.title,
-          )
-        else
-          _Line(
-            scope.detail.diagramsUnreadable
-                ? l10n.diagramInvalid
-                : l10n.exerciseDiagramMissing,
-          ),
         _Line(l10n.sheetSetup(exercise.setup)),
         _Line(l10n.sheetGoal(exercise.instruction)),
         _Line(l10n.sheetExpected(exercise.expected)),
@@ -539,6 +575,28 @@ class _ExerciseCard extends StatelessWidget {
         const SizedBox(height: AppSpacing.xs),
         _Line(l10n.sheetPlayfulHook(exercise.playful.hook)),
         _Line(l10n.sheetPlayfulChallenge(exercise.playful.challenge)),
+      ],
+    );
+    return _ElementCard(
+      title: l10n.sheetExerciseHeading(exercise.ref.number, exercise.title),
+      minutes: scope.timing.exercises[exercise.id],
+      badges: [
+        _Source(element: 'exercise:${exercise.id}', provenance: exercise.src),
+      ],
+      children: [
+        if (wide)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(flex: 5, child: visual),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(flex: 6, child: text),
+            ],
+          )
+        else ...[
+          visual,
+          text,
+        ],
       ],
     );
   }

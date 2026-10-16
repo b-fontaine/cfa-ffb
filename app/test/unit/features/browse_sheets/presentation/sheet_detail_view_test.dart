@@ -22,6 +22,7 @@ import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/lib/success_rate.dart';
 import 'package:billard_cfa/shared/lib/tip_point.dart';
+import 'package:billard_cfa/shared/ui/phase_timeline.dart';
 import 'package:billard_cfa/shared/ui/proposal_badge.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_player.dart';
 import 'package:flutter/material.dart';
@@ -87,8 +88,9 @@ void main() {
     Audience audience = Audience.children,
     ValueChanged<Audience>? onAudience,
     Locale locale = const Locale('en'),
+    double width = 800,
   }) async {
-    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.physicalSize = Size(width, 1200);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await pumpUi(
@@ -542,6 +544,7 @@ void main() {
   ) async {
     await pump(tester, _detail(buildSheet()));
     expect(find.textContaining('contains unsourced proposals'), findsNothing);
+    expect(find.byKey(const ValueKey('review-note')), findsNothing);
 
     await pump(
       tester,
@@ -556,6 +559,57 @@ void main() {
       ),
     );
     expect(find.textContaining('contains unsourced proposals'), findsOneWidget);
+  });
+
+  testWidgets('counts the points to validate and lists each reason', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      _detail(
+        buildSheet(
+          exercises: [sheetExercise('e1', 1, src: Provenance.prop)],
+          theory: [theorySection('t1', src: Provenance.prop)],
+          game: sheetGame(
+            adapted: true,
+            src: Provenance.prop,
+            link: _link('bille-pleine-2'),
+          ),
+        ),
+      ),
+    );
+
+    final note = find.byKey(const ValueKey('review-note'));
+    expect(
+      find.descendant(of: note, matching: find.text('2 points to validate')),
+      findsOneWidget,
+    );
+    for (final (reason, label) in [
+      ('game', 'Game to validate'),
+      ('exercise', 'Exercises to validate'),
+      ('theory', 'Theory: proposal'),
+    ]) {
+      expect(
+        find.descendant(
+          of: find.byKey(ValueKey('review-note:$reason')),
+          matching: find.text(label),
+        ),
+        findsOneWidget,
+        reason: reason,
+      );
+    }
+    expect(find.byKey(const ValueKey('review-note:recall')), findsNothing);
+  });
+
+  testWidgets('says 1 point in the singular and in French', (tester) async {
+    final sheet = buildSheet(
+      exercises: [sheetExercise('e1', 1, src: Provenance.prop)],
+    );
+    await pump(tester, _detail(sheet));
+    expect(find.text('1 point to validate'), findsOneWidget);
+
+    await pump(tester, _detail(sheet), locale: const Locale('fr'));
+    expect(find.text('1 point à valider'), findsOneWidget);
   });
 
   testWidgets('badges the theme and every phase as proposals', (tester) async {
@@ -613,48 +667,194 @@ void main() {
     );
   });
 
-  testWidgets('jumps to a phase from the outline', (tester) async {
-    await pump(tester, _detail(buildSheet()));
-    final review = find.byKey(const ValueKey('phase:review'));
-    // La séance est plus haute que l'écran : le bilan est hors écran.
-    expect(tester.getTopLeft(review).dy, greaterThan(1200));
+  group('phase timeline', () {
+    testWidgets('replaces the Jump to chips', (tester) async {
+      await pump(tester, _detail(buildSheet()));
 
-    await tester.tap(find.text('Review'));
-    await tester.pumpAndSettle();
+      expect(find.byType(PhaseTimeline), findsOneWidget);
+      expect(find.text('Jump to'), findsNothing);
+      expect(find.byType(ActionChip), findsNothing);
+    });
 
-    expect(tester.getTopLeft(review).dy, lessThan(1200));
-  });
+    testWidgets('sits under the audience choice and its total', (tester) async {
+      await pump(tester, _detail(buildSheet()));
 
-  testWidgets('jumps without animation when reduced motion is on', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(800, 1200);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
-    await pumpUi(
+      final total = tester.getBottomLeft(
+        find.text('90 min in total (approximate)'),
+      );
+      final timeline = tester.getTopLeft(find.byType(PhaseTimeline));
+      final firstPhase = tester.getTopLeft(
+        find.byKey(const ValueKey('phase:welcome')),
+      );
+      expect(timeline.dy, greaterThanOrEqualTo(total.dy));
+      expect(firstPhase.dy, greaterThan(timeline.dy));
+      expect(
+        tester.getTopLeft(find.text('Adults · 120 min')).dy,
+        lessThan(timeline.dy),
+      );
+    });
+
+    testWidgets('shows the five phases with their minutes for the audience', (
       tester,
-      MediaQuery(
-        data: const MediaQueryData(
-          disableAnimations: true,
-          size: Size(800, 1200),
-        ),
-        child: SingleChildScrollView(
-          child: SheetDetailView(
-            detail: _detail(buildSheet()),
-            audience: Audience.children,
-            onAudienceChanged: (_) {},
+    ) async {
+      await pump(tester, _detail(buildSheet()));
+      PhaseTimeline timeline() =>
+          tester.widget<PhaseTimeline>(find.byType(PhaseTimeline));
+
+      expect(timeline().phases.map((p) => p.label), [
+        'Recall',
+        'Theory',
+        'Exercises',
+        'Game',
+        'Review',
+      ]);
+      expect(timeline().phases.fold<int>(0, (sum, p) => sum + p.minutes), 90);
+      expect(timeline().currentIndex, -1);
+
+      await pump(tester, _detail(buildSheet()), audience: Audience.adults);
+      expect(timeline().phases.fold<int>(0, (sum, p) => sum + p.minutes), 120);
+    });
+
+    testWidgets('starts with Welcome on the first session', (tester) async {
+      await pump(tester, _detail(buildSheet(previous: null, order: 1)));
+
+      final timeline = tester.widget<PhaseTimeline>(find.byType(PhaseTimeline));
+      expect(timeline.phases.first.label, 'Welcome');
+    });
+
+    testWidgets('jumps to a phase when a segment is tapped', (tester) async {
+      await pump(tester, _detail(buildSheet()));
+      final review = find.byKey(const ValueKey('phase:review'));
+      // La séance est plus haute que l'écran : le bilan est hors écran.
+      expect(tester.getTopLeft(review).dy, greaterThan(1200));
+
+      await tester.tap(find.byKey(const ValueKey('phase-5')));
+      await tester.pumpAndSettle();
+
+      expect(tester.getTopLeft(review).dy, lessThan(1200));
+    });
+
+    testWidgets('jumps without animation when reduced motion is on', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await pumpUi(
+        tester,
+        MediaQuery(
+          data: const MediaQueryData(
+            disableAnimations: true,
+            size: Size(800, 1200),
+          ),
+          child: SingleChildScrollView(
+            child: SheetDetailView(
+              detail: _detail(buildSheet()),
+              audience: Audience.children,
+              onAudienceChanged: (_) {},
+            ),
           ),
         ),
-      ),
+      );
+
+      await tester.tap(find.byKey(const ValueKey('phase-4')));
+      await tester.pump();
+
+      expect(
+        tester.getTopLeft(find.byKey(const ValueKey('phase:game'))).dy,
+        lessThan(1200),
+      );
+    });
+
+    testWidgets('keeps its segments at 48 dp on 320 dp with text at 200 %', (
+      tester,
+    ) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pump(tester, _detail(buildSheet()), width: 320);
+
+      expect(tester.takeException(), isNull);
+      for (var i = 1; i <= 5; i++) {
+        final size = tester.getSize(find.byKey(ValueKey('phase-$i')));
+        expect(size.width, greaterThanOrEqualTo(48));
+        expect(size.height, greaterThanOrEqualTo(48));
+      }
+    });
+  });
+
+  group('exercise card layout', () {
+    SheetDetail withDiagram() => _detail(
+      buildSheet(exercises: [sheetExercise('e1', 1), sheetExercise('e2', 2)]),
+      diagrams: {
+        'entrainement-p05-e1': _diagram('entrainement-p05-e1'),
+        'entrainement-p05-e2': _diagram('entrainement-p05-e2'),
+      },
     );
 
-    await tester.tap(find.text('Game'));
-    await tester.pump();
+    Rect box(WidgetTester tester, String key) =>
+        tester.getRect(find.byKey(ValueKey(key)));
 
-    expect(
-      tester.getTopLeft(find.byKey(const ValueKey('phase:game'))).dy,
-      lessThan(1200),
-    );
+    testWidgets('puts the diagram left of the text from 720 dp', (
+      tester,
+    ) async {
+      await pump(tester, withDiagram(), width: 720);
+
+      final visual = box(tester, 'exercise-visual:e1');
+      final text = box(tester, 'exercise-text:e1');
+      expect(visual.right, lessThanOrEqualTo(text.left));
+      expect((visual.top - text.top).abs(), lessThan(1));
+      expect(find.byType(TableDiagramPlayer), findsWidgets);
+    });
+
+    testWidgets('stacks the text under the diagram under 720 dp', (
+      tester,
+    ) async {
+      await pump(tester, withDiagram(), width: 719);
+
+      final visual = box(tester, 'exercise-visual:e1');
+      final text = box(tester, 'exercise-text:e1');
+      expect(text.top, greaterThanOrEqualTo(visual.bottom));
+    });
+
+    testWidgets('keeps the same content in both layouts', (tester) async {
+      await pump(tester, withDiagram(), width: 719);
+      final narrow = find.text('Set-up: Mise en place.').evaluate().length;
+      await pump(tester, withDiagram(), width: 1000);
+      final wide = find.text('Set-up: Mise en place.').evaluate().length;
+
+      expect(narrow, wide);
+      expect(wide, 2);
+    });
+
+    testWidgets('puts the missing-diagram message on the left too', (
+      tester,
+    ) async {
+      await pump(tester, _detail(buildSheet()), width: 900);
+
+      final visual = box(tester, 'exercise-visual:e1');
+      final text = box(tester, 'exercise-text:e1');
+      expect(visual.right, lessThanOrEqualTo(text.left));
+    });
+
+    testWidgets('caps the text blocks at 760 dp and lets only the exercise '
+        'cards use the width on 1280 dp', (tester) async {
+      await pump(tester, withDiagram(), width: 1280);
+
+      expect(tester.getSize(find.byType(PhaseTimeline)).width, 760);
+      final visual = box(tester, 'exercise-visual:e1');
+      final text = box(tester, 'exercise-text:e1');
+      expect(text.right - visual.left, greaterThan(760));
+    });
+
+    testWidgets('does not overflow on 720 dp with text at 200 %', (
+      tester,
+    ) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pump(tester, withDiagram(), width: 720);
+
+      expect(tester.takeException(), isNull);
+    });
   });
 
   testWidgets('has no input field or edit button', (tester) async {
@@ -664,10 +864,7 @@ void main() {
     expect(find.byType(Checkbox), findsNothing);
     expect(find.byType(Switch), findsNothing);
     expect(find.byType(IconButton), findsNothing);
-    expect(
-      find.text('Read-only content: nothing can be edited here.'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('Read-only'), findsNothing);
   });
 
   testWidgets('is written in French under the French interface', (

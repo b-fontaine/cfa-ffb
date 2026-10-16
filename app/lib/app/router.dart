@@ -29,6 +29,7 @@ import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_sessi
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_sessions_cubit.dart';
 import 'package:billard_cfa/features/student_showcase/presentation/bloc/showcase_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/exercise_sheet_bloc.dart';
+import 'package:billard_cfa/features/suggest_session/presentation/bloc/group_journey_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/next_sheet_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/student_recall_bloc.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/suggested_session_bloc.dart';
@@ -57,6 +58,7 @@ import 'package:billard_cfa/pages/student_sheet/presentation/student_sheet_page.
 import 'package:billard_cfa/pages/student_showcase/presentation/student_showcase_page.dart';
 import 'package:billard_cfa/pages/students/presentation/students_page.dart';
 import 'package:billard_cfa/pages/suggested_session/presentation/suggested_session_page.dart';
+import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
@@ -198,16 +200,24 @@ abstract final class AppRoutes {
   static String exercise(ExerciseRef ref) =>
       '$exercises/${ref.blockId}/${ref.number}';
 
-  /// Séance du catalogue ; [audience] présélectionne le public affiché et
-  /// [fromPlanner] fait revenir au planificateur plutôt qu'au catalogue.
+  /// Le catalogue, avec le groupe choisi (marqueurs de parcours) restauré au
+  /// retour d'une séance.
+  static String catalogueFor(GroupId? group) =>
+      _url(catalogue, {'group': ?group?.value});
+
+  /// Séance du catalogue ; [audience] présélectionne le public affiché,
+  /// [origin] dit où le retour mène (le catalogue, absent de l'adresse) et
+  /// [group] est le groupe choisi dans le catalogue, restauré au retour.
   static String sheet(
     SheetId id, {
     Audience? audience,
-    bool fromPlanner = false,
+    SheetOrigin origin = SheetOrigin.catalogue,
+    GroupId? group,
   }) {
     return _url('$catalogue/${id.value}', {
       'audience': ?audience?.name,
-      if (fromPlanner) 'from': plannerOrigin,
+      if (origin != SheetOrigin.catalogue) 'from': origin.name,
+      'group': ?group?.value,
     });
   }
 
@@ -216,9 +226,27 @@ abstract final class AppRoutes {
   static String review(SessionId id) => '$record/${id.value}/$reviewSegment';
 
   static const reviewSegment = 'review';
+}
 
-  /// Valeur de `from` d'une séance ouverte depuis le planificateur.
-  static const plannerOrigin = 'planner';
+/// D'où une séance du catalogue est ouverte (« Préparer ») : le retour y
+/// mène. Paramètre d'adresse `from`, jamais un état en mémoire : il survit à un
+/// rechargement et aux liens profonds.
+enum SheetOrigin {
+  /// Le catalogue (valeur par défaut, absente de l'adresse).
+  catalogue,
+
+  /// Les séances planifiées (`from=planner`).
+  planner,
+
+  /// L'accueil « Aujourd'hui » (`from=today`).
+  today;
+
+  /// L'origine d'une valeur d'adresse ; toute valeur absente ou inconnue
+  /// retombe sur [catalogue] (jamais une adresse libre).
+  static SheetOrigin parse(String? raw) => SheetOrigin.values.firstWhere(
+    (origin) => origin.name == raw,
+    orElse: () => SheetOrigin.catalogue,
+  );
 }
 
 /// Adresse de retour à une séance guidée : intérieure à l'application et
@@ -355,7 +383,11 @@ GoRouter buildRouter() => GoRouter(
                 ),
               ),
               onPrepare: (sheet, audience) => context.go(
-                AppRoutes.sheet(sheet, audience: audience, fromPlanner: true),
+                AppRoutes.sheet(
+                  sheet,
+                  audience: audience,
+                  origin: SheetOrigin.today,
+                ),
               ),
               onLaunch: (sheet, audience, sessionId) => context.go(
                 AppRoutes.guide(sheet, audience: audience, session: sessionId),
@@ -393,7 +425,11 @@ GoRouter buildRouter() => GoRouter(
                 ),
               child: SessionPlannerPage(
                 onOpenSheet: (id, audience) => context.go(
-                  AppRoutes.sheet(id, audience: audience, fromPlanner: true),
+                  AppRoutes.sheet(
+                    id,
+                    audience: audience,
+                    origin: SheetOrigin.planner,
+                  ),
                 ),
                 onChooseSheet: () => context.go(AppRoutes.catalogue),
                 onLaunchSheet: (id, audience, sessionId) => context.go(
@@ -674,15 +710,31 @@ GoRouter buildRouter() => GoRouter(
         ),
         GoRoute(
           path: AppRoutes.catalogue,
-          builder: (context, state) => BlocProvider(
-            create: (_) =>
-                getIt<SheetCatalogueBloc>()
-                  ..add(const SheetCatalogueEvent.started()),
-            child: SheetCataloguePage(
-              onOpenSheet: (id) => context.go(AppRoutes.sheet(id)),
-              onOpenSuggestion: () => context.go(AppRoutes.session),
-            ),
-          ),
+          builder: (context, state) {
+            final initialGroup = _groupParam(
+              state.uri.queryParameters['group'],
+            );
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (_) =>
+                      getIt<SheetCatalogueBloc>()
+                        ..add(const SheetCatalogueEvent.started()),
+                ),
+                BlocProvider(
+                  create: (_) {
+                    final cubit = getIt<GroupJourneyCubit>();
+                    unawaited(cubit.load(initial: initialGroup));
+                    return cubit;
+                  },
+                ),
+              ],
+              child: SheetCataloguePage(
+                onOpenSheet: (id, group) =>
+                    context.go(AppRoutes.sheet(id, group: group)),
+              ),
+            );
+          },
         ),
         GoRoute(
           path: '${AppRoutes.catalogue}/:sheetId',
@@ -694,20 +746,29 @@ GoRouter buildRouter() => GoRouter(
             final audience =
                 _audienceParam(state.uri.queryParameters['audience']) ??
                 Audience.children;
+            final origin = SheetOrigin.parse(state.uri.queryParameters['from']);
             return BlocProvider(
               create: (_) => getIt<SheetDetailBloc>()
                 ..add(
                   SheetDetailEvent.started(sheetId: id, audience: audience),
                 ),
               child: SheetDetailPage(
-                fromPlanner:
-                    state.uri.queryParameters['from'] ==
-                    AppRoutes.plannerOrigin,
-                onBack: () => context.go(
-                  state.uri.queryParameters['from'] == AppRoutes.plannerOrigin
-                      ? AppRoutes.planner
-                      : AppRoutes.catalogue,
-                ),
+                backLabel: switch (origin) {
+                  SheetOrigin.planner => AppLocalizations.of(
+                    context,
+                  ).plannerTitle,
+                  SheetOrigin.today => AppLocalizations.of(context).navHome,
+                  SheetOrigin.catalogue => AppLocalizations.of(
+                    context,
+                  ).catalogueTitle,
+                },
+                onBack: () => context.go(switch (origin) {
+                  SheetOrigin.planner => AppRoutes.planner,
+                  SheetOrigin.today => AppRoutes.home,
+                  SheetOrigin.catalogue => AppRoutes.catalogueFor(
+                    _groupParam(state.uri.queryParameters['group']),
+                  ),
+                }),
                 onHome: () => context.go(AppRoutes.home),
                 onPlan: (audience) =>
                     context.go(AppRoutes.plan(id, audience: audience)),

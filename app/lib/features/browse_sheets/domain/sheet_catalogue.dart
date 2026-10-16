@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/session_sheet/domain/needs_review.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
+import 'package:billard_cfa/features/browse_sheets/domain/sheet_row.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'sheet_catalogue.freezed.dart';
@@ -37,6 +38,13 @@ abstract class TechniqueGroup with _$TechniqueGroup {
     /// Séances listées, par partie croissante.
     required List<SessionSheet> sheets,
   }) = _TechniqueGroup;
+
+  const TechniqueGroup._();
+
+  /// Une ligne de catalogue par séance listée.
+  List<SheetRow> get rows => [
+    for (final sheet in sheets) sheetRowOf(sheet, partCount: partCount),
+  ];
 }
 
 /// Le catalogue de séances regroupé par technique, dans l'ordre

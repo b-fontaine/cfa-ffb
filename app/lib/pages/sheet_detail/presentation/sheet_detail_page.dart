@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
 import 'package:billard_cfa/features/browse_sheets/presentation/bloc/sheet_detail_bloc.dart';
 import 'package:billard_cfa/features/browse_sheets/presentation/ui/sheet_detail_view.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
@@ -9,26 +10,33 @@ import 'package:billard_cfa/shared/ui/missing_page_view.dart';
 import 'package:billard_cfa/shared/ui/scroll_page.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Une séance du catalogue en lecture seule (bloc fourni par l'appelant).
-/// [onBack] revient au catalogue ; [onHome] est proposé quand la séance
+/// Largeur du contenu : assez large pour les cartes d'exercice à deux colonnes.
+const double _maxWidth = 1100;
+
+/// Une séance du catalogue en mode « Préparer » (bloc fourni par l'appelant).
+/// [onBack] revient à l'origine de la page (catalogue, planificateur ou
+/// Aujourd'hui) et [backLabel] la nomme ; [onHome] est proposé quand la séance
 /// n'existe pas ; [onPlan] ouvre le planificateur sur cette séance ;
-/// [onLaunch] lance la séance guidée pour le public affiché. [fromPlanner]
-/// dit que la séance est ouverte depuis le planificateur : [onBack] y revient
-/// et le libellé du retour le dit.
+/// [onLaunch] lance la séance guidée pour le public affiché. Le menu ⋮
+/// « Signaler une proposition » copie l'identifiant de la séance (en attendant
+/// le workflow de validation).
 class SheetDetailPage extends StatelessWidget {
   const SheetDetailPage({
     required this.onBack,
     required this.onHome,
     required this.onPlan,
     required this.onLaunch,
-    this.fromPlanner = false,
+    required this.backLabel,
     super.key,
   });
 
   final VoidCallback onBack;
-  final bool fromPlanner;
+
+  /// Le nom de l'origine, sur le bouton de retour.
+  final String backLabel;
   final VoidCallback onHome;
 
   /// Planifie cette séance du catalogue, pour le public affiché.
@@ -62,7 +70,11 @@ class SheetDetailPage extends StatelessWidget {
               detail.partCount,
             ),
             onBack: onBack,
-            backLabel: fromPlanner ? l10n.plannerTitle : l10n.catalogueTitle,
+            backLabel: backLabel,
+            maxWidth: _maxWidth,
+            actions: [
+              _SheetMenu(sheet: detail.sheet, partCount: detail.partCount),
+            ],
             children: [
               Wrap(
                 spacing: AppSpacing.sm,
@@ -91,6 +103,54 @@ class SheetDetailPage extends StatelessWidget {
           ),
         };
       },
+    );
+  }
+}
+
+enum _SheetAction { report }
+
+/// Menu ⋮ de la séance : « Signaler une proposition » copie l'identifiant de
+/// la séance et le dit ; si la copie échoue, l'identifiant est affiché en
+/// clair (jamais d'échec muet).
+class _SheetMenu extends StatelessWidget {
+  const _SheetMenu({required this.sheet, required this.partCount});
+
+  final SessionSheet sheet;
+  final int partCount;
+
+  Future<void> _report(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final id = sheet.id.value;
+    final text = l10n.sheetReportText(
+      id,
+      l10n.sheetFullTitle(sheet.title, sheet.part, partCount),
+    );
+    String message;
+    try {
+      await Clipboard.setData(ClipboardData(text: text));
+      message = l10n.sheetReportCopied(id);
+    } on Object {
+      message = l10n.sheetReportFailed(id);
+    }
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return PopupMenuButton<_SheetAction>(
+      key: const ValueKey('sheet-menu'),
+      tooltip: l10n.sheetMenuTooltip,
+      onSelected: (_) => _report(context),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: _SheetAction.report,
+          child: Text(l10n.sheetReport),
+        ),
+      ],
     );
   }
 }
