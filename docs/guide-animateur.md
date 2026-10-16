@@ -10,6 +10,37 @@ est en bas de l'écran sur smartphone, à gauche sur grand écran : **Aujourd'hu
 **Élèves**, **Résultats**, **Séances** (onglets Planifiées, Catalogue,
 Suggestion) et **Plus** (qui mène à la sauvegarde et aux réglages).
 
+## Installer l'application et l'utiliser sans réseau (version web)
+
+La version web se prépare une fois, avec du réseau :
+
+1. **Ouvrez l'adresse une première fois en Wi-Fi** et attendez que l'écran
+   d'accueil s'affiche (le premier chargement télécharge toute l'application,
+   environ 6 à 7 Mo compressés ; il n'est refait que lors d'une mise à jour).
+2. **Installez-la** pour la retrouver sur l'écran d'accueil : sur Android et
+   sur ordinateur (Chrome, Edge), menu du navigateur puis **Installer
+   l'application** ; sur iPhone et iPad (Safari), **Partager** puis **Sur
+   l'écran d'accueil**. Ce n'est pas obligatoire : l'application fonctionne aussi
+   dans un onglet.
+3. Ensuite, **elle s'ouvre sans réseau** avec vos élèves, vos résultats, le
+   catalogue, les schémas et la présentation plein écran.
+
+À savoir :
+
+- Vos données (élèves, résultats) sont **dans le navigateur de l'appareil** ;
+  elles ne passent pas par un serveur. Effacer les données du site ou changer
+  d'appareil les perd : exportez une sauvegarde (voir **Sauvegarder vos
+  données**). Sur iPhone, installer l'application sur l'écran d'accueil
+  protège mieux les données qu'un onglet Safari laissé plusieurs jours sans
+  l'ouvrir.
+- Quand une **nouvelle version** est disponible, un bandeau **Une nouvelle
+  version est disponible** apparaît en haut des écrans principaux. **Mettre à
+  jour** recharge l'application ; **Plus tard** le masque. Elle n'est jamais
+  appliquée toute seule, et le bandeau n'apparaît pas pendant le guide ni la
+  présentation. Évitez de mettre à jour au milieu d'une séance guidée : l'étape
+  en cours et les compteurs pas encore enregistrés sont perdus au rechargement.
+- Le plein écran n'est pas proposé sur iPhone (le navigateur ne le permet pas).
+
 ## Aujourd'hui : l'écran d'ouverture
 
 **Aujourd'hui** rassemble ce qu'il faut savoir en ouvrant l'application :

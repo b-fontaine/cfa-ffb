@@ -80,6 +80,7 @@ Interdits : inventer un exercice « officiel », présenter une adaptation non s
 | Installer les hooks git | `scripts/setup.sh` |
 | Vérification rapide (format, analyse, architecture) | `scripts/check.sh --fast` |
 | Vérification complète (tests, couverture, l10n, Widgetbook) | `scripts/check.sh --full` |
+| Build web de production (CanvasKit local, service worker hors ligne, contrôle du résultat) | `scripts/build_web.sh` |
 | Valider les séances | `dart run scripts/validate_seances.dart` |
 | Copier / vérifier le catalogue (asset = `docs/knowledge`) | `scripts/sync_catalogue.sh [--check]` |
 | Copier / vérifier les diagrammes à table (asset = `docs/knowledge`) | `scripts/sync_diagrammes.sh [--check]` |

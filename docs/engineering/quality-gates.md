@@ -25,6 +25,8 @@ scripts/sync_fiches.sh [--check]          # copie / vérifie les séances du cat
 | Fiches de séance : assets identiques à la source (fichiers `NN-<id>.yaml` seulement, aucun fichier en trop, dossier déclaré dans `app/pubspec.yaml`) | `scripts/sync_fiches.sh --check` | oui | oui | pre-commit | quality |
 | Fiches de séance : règles V1 à V24 de `FORMAT.md` § 7, structure et parties calculées depuis le catalogue, tableaux du § 1 à jour (lecture seule) | `dart run tool/fiches.dart --complete` (dans `app/` ; exige les 28 séances ; sans l'option, contrôle seulement les fichiers présents ; `--structure` affiche la structure) | oui | oui | pre-commit | quality |
 | Fichiers web drift : `drift_worker.js` = paquet résolu, `sqlite3.wasm` = version verrouillée | `dart run scripts/sync_web_assets.dart --check` | oui | oui | pre-commit | quality |
+| PWA : manifeste (champs, couleurs = thème, icônes `any`/`maskable` présentes et de la bonne taille, orientation libre), `index.html`, service worker, aucune URL externe ; icônes régénérées à l'identique | `dart run scripts/pwa.dart check` et `dart run scripts/generate_pwa_icons.dart --check` | oui | oui | pre-commit | quality |
+| Comportement du service worker et du pont de mise à jour (précache et reprise, HTML refusé, purge des anciens caches, activation seulement sur demande, autre onglet, `/__/` non intercepté, worker non stampé), contrat Dart/JS du pont | `node --test scripts/pwa_js_test.mjs` (Node requis) | oui | oui | pre-commit | quality |
 | Formatage | `dart format --output=none --set-exit-if-changed` (lib, test, tool, scripts) | oui | oui | pre-commit | quality |
 | Analyse statique stricte | `flutter analyze --no-pub --fatal-infos` (`very_good_analysis` + strict-casts/inference/raw-types) | oui | oui | pre-commit | quality |
 | Analyse des scripts Dart | `dart analyze --fatal-infos scripts` | oui | oui | pre-commit | quality |
@@ -35,7 +37,7 @@ scripts/sync_fiches.sh [--check]          # copie / vérifie les séances du cat
 | Couverture de lignes ≥ 90 % | `dart run scripts/check_coverage.dart 90 app` | — | oui | pre-push | test |
 | Widgetbook : génération, format, analyse stricte | `scripts/generate_widgetbook.sh` puis `dart format` / `flutter analyze --fatal-infos` (dans `widgetbook/`) | — | oui | pre-push | widgetbook |
 | Widgetbook : un use case par widget, code généré à jour | `dart run scripts/check_widgetbook.dart app widgetbook` | — | oui | pre-push | widgetbook |
-| Build web | `flutter build web --release` | — | — | — | build-web |
+| Build web : CanvasKit local, service worker hors ligne stampé (liste de précache = contenu du build), fichiers indispensables | `scripts/build_web.sh` (`flutter build web --release --no-web-resources-cdn`, puis `pwa.dart stamp` et `verify`) ; `firebase.json` rejoue `pwa.dart verify` en `predeploy` | — | — | — | build-web, déploiements Firebase |
 | Build web Widgetbook | `flutter build web --release` (dans `widgetbook/`) | — | — | — | widgetbook |
 | Dépendances verrouillées | `flutter pub get --enforce-lockfile` (quand `CI=true`) | — | oui en CI | — | tous |
 

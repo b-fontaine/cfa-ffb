@@ -46,8 +46,8 @@ revues séparées, `check.sh --full`).
 
 | Lot | Contenu | Remplace / corrige |
 |---|---|---|
-| **U3** Présentation plein écran : **livré le 2026-10-16, parcours web fait** ([plan](presentation-plan.md), [ADR 0017](adr/0017-plein-ecran-port-controleur-partage.md)) | `DiagramStage` (légende réservée, schéma sur le reste, mode compact, défilement sous le minimum), port `FullscreenController` (web `dart:js_interop`, mobile immersif), bouton « Plein écran » (présentation) et entrée du menu ⋮ du guide, touche `F`, « Tournez l'appareil », motif de tapis derrière la scène ; **reste** : iPhone Safari (pas d'API, entrée masquée), PWA installée et Android natif au lot 15 (dont la sortie du mode immersif décidée par le système, à suivre par `SystemChrome.setSystemUIChangeCallback`, et un test navigateur des liaisons web) | F1, lot 13 |
-| **U4** Guide en mode « Mener » : **livré le 2026-10-16, parcours web fait** ([plan](guide-mener-plan.md), [ADR 0015](adr/0015-guide-mener-route-modes-origine.md)) | route hors shell, en-tête compact + frise des phases, schéma en premier, sections repliées, badges de provenance masqués sauf mode « Relecture » (provenance toujours annoncée aux lecteurs d'écran), minuteur en en-tête (temps restant, ton, vibration), barre basse Précédent / Noter / Suivant, « Terminer » confirmé ; solde U-9 (retour à l'origine, groupe conservé) ; **plein écran natif reporté à U3**, test PWA au lot 15 | F3, lot 12, U-9 |
+| **U3** Présentation plein écran : **livré le 2026-10-16, parcours web fait** ([plan](presentation-plan.md), [ADR 0017](adr/0017-plein-ecran-port-controleur-partage.md)) | `DiagramStage` (légende réservée, schéma sur le reste, mode compact, défilement sous le minimum), port `FullscreenController` (web `dart:js_interop`, mobile immersif), bouton « Plein écran » (présentation) et entrée du menu ⋮ du guide, touche `F`, « Tournez l'appareil », motif de tapis derrière la scène ; **reste** : iPhone Safari (pas d'API, entrée masquée) ; le plein écran a été vérifié hors ligne dans Chromium au lot 15 ([plan](hors-ligne-plan.md)) ; PWA installée sur Android et Android natif non vérifiés (dont la sortie du mode immersif décidée par le système, à suivre par `SystemChrome.setSystemUIChangeCallback`) | F1, lot 13 |
+| **U4** Guide en mode « Mener » : **livré le 2026-10-16, parcours web fait** ([plan](guide-mener-plan.md), [ADR 0015](adr/0015-guide-mener-route-modes-origine.md)) | route hors shell, en-tête compact + frise des phases, schéma en premier, sections repliées, badges de provenance masqués sauf mode « Relecture » (provenance toujours annoncée aux lecteurs d'écran), minuteur en en-tête (temps restant, ton, vibration), barre basse Précédent / Noter / Suivant, « Terminer » confirmé ; solde U-9 (retour à l'origine, groupe conservé) ; **plein écran natif reporté à U3** (livré), hors ligne vérifié au lot 15 | F3, lot 12, U-9 |
 | **U6** Navigation recentrée | destinations « Aujourd'hui / Élèves / Résultats / Séances (Planifiées · Catalogue · Suggestion) / Plus (Sauvegarde, Réglages) » ; rappel de sauvegarde | F8 (emplacement du lot 9) |
 | ~~**U7**~~ Accueil « Aujourd'hui » et bilan de fin de séance : **livré le 2026-10-15** ([plan](aujourdhui-plan.md)) | séance en cours à reprendre, prochaine séance planifiée (Préparer / Lancer), alertes, semaine, sauvegarde ; à « Terminer », bilan des passages et proposition de la séance suivante | accueil statique |
 | ~~**U8**~~ Catalogue et détail en mode « Préparer » : **livré le 2026-10-16** ([plan](catalogue-preparer-plan.md)) | nom évocateur en titre, badge « n points à valider » (motifs majeurs en infobulle et dans le détail) + un badge neutre par proposition mineure (U-1), marqueur de parcours par groupe (✓ / ▶ / ○), frise des phases tapable dans le détail, carte d'exercice à deux colonnes dès 720 dp, menu ⋮ « Signaler une proposition », origine « Aujourd'hui » du détail ; le bouton « Suggestion par groupe » est retiré (audit C1 à C5, D1 à D4) | catalogue d'étiquettes, « Aller à », report U-12 d'U7 |
@@ -233,11 +233,24 @@ Lots UX en H0 :
 14. Impression / export PDF d'une séance du catalogue (feuille de l'animateur,
     fiche résultats papier identique au PDF fédéral) ; s'appuie sur `PassDots`
     (U1) pour la fiche résultats.
-15. Hors-ligne : vérifier le PWA (service worker, sqlite3.wasm / OPFS) sans
-    réseau ; installation sur l'écran d'accueil ; le plein écran (U3) et le
-    mode immersif du guide (route hors cadre, U4) et le plein écran du guide et de
-    la présentation (U3, livré : l'API Fullscreen n'existe pas sur iPhone Safari,
-    entrée masquée) sont à tester en PWA installée.
+15. ~~Hors-ligne : vérifier le PWA (service worker, sqlite3.wasm / OPFS) sans
+    réseau ; installation sur l'écran d'accueil ; plein écran et mode immersif~~
+    **Livré le 2026-10-16** ([plan](hors-ligne-plan.md),
+    [ADR 0018](adr/0018-hors-ligne-service-worker-precache-versionne.md)) :
+    service worker maison avec précache versionné de tout le build (l'ancien,
+    celui de Flutter, se désinscrivait : aucun usage hors ligne), CanvasKit et
+    police de repli servis par l'application (`scripts/build_web.sh`), manifeste
+    complet (nom, couleurs du thème, icônes `any` et `maskable` de l'application,
+    orientation libre, `lang: fr`), bannière « nouvelle version disponible »
+    jamais appliquée d'office, initialisation Firebase non bloquante, garde-fous
+    `scripts/pwa.dart check` (dans `check.sh --fast`) et `verify` (build, CI et
+    déploiement). Parcours Chromium fait : élève créé, serveur arrêté,
+    rechargement, données et présentation plein écran présents, installabilité
+    sans erreur, mise à jour sans perte de la saisie. **Reste** : iPhone / iPad
+    Safari, Android avec PWA installée (non vérifiés, pas d'appareil), SDK Firebase
+    web encore chargé depuis `gstatic.com` en ligne (à reprendre en FB1 / FB5),
+    parcours hors ligne non automatisé en CI, sortie du mode immersif décidée
+    par le système sur Android natif (reste d'U3).
 
 ## H3 — Contenu et connaissances
 

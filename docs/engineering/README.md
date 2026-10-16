@@ -16,6 +16,7 @@ règles sont **vérifiées automatiquement** (voir [quality-gates.md](quality-ga
 | [ux/recommandations-design.md](ux/recommandations-design.md) | Recommandations : rôles de couleur, composants, modes Préparer / Mener / Montrer, écrans cibles |
 | [aujourdhui-plan.md](aujourdhui-plan.md) | Lot U7 (livré) : accueil « Aujourd'hui » et bilan de fin de séance, décisions, écarts, points `[U]` restants |
 | [fiche-eleve-plan.md](fiche-eleve-plan.md) | Lot U9 (livré) : fiche en parcours, vue « à montrer à l'élève », vue de groupe, acquittement ; décisions, écarts de livraison, points `[U]` ([ADR 0013](adr/0013-acquittement-des-alertes.md), [ADR 0014](adr/0014-fiche-en-parcours-vue-eleve-et-vue-de-groupe.md)) |
+| [hors-ligne-plan.md](hors-ligne-plan.md) | Lot 15 (livré) : web hors ligne et installable, audit, service worker maison à précache versionné, manifeste, bannière de mise à jour, parcours navigateur, ce qui reste non vérifié ([ADR 0018](adr/0018-hors-ligne-service-worker-precache-versionne.md)) |
 | [guide-mener-plan.md](guide-mener-plan.md) | Lot U4 (implémenté, livraison à confirmer par le parcours web) : guide en mode « Mener » (route de premier niveau, en-tête compact, schéma en premier, modes Mener / Relecture, minuteur en temps restant, barre basse, solde de U-9) ; décisions, écarts, points `[U]` ([ADR 0015](adr/0015-guide-mener-route-modes-origine.md)) |
 | [ux/plan-ux-proposition.md](ux/plan-ux-proposition.md) | Détail des lots UX U1 à U9 (intégrés à la roadmap), scénarios BDD à écrire d'abord, décisions Q1 à Q8 tranchées `[U]` |
 

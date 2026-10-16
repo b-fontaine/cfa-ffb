@@ -19,5 +19,6 @@
 | 0015 | Guide en mode « Mener » : route de premier niveau (ni rail ni barre en séance), modes Mener / Relecture (état du cubit reflété dans `?mode=`, provenance toujours accessible), origine directe `from` et origine du détail `via`, `group` conservé de bout en bout (solde de U-9) ; accepté |
 | 0016 | Identité d'une saisie par (groupe, jour, séance du catalogue) : corrige le lien dérivé planifiée ↔ saisie sans migration ; accepté |
 | 0017 | Plein écran : port `FullscreenController` (Dart pur), API Fullscreen web par `dart:js_interop` sans nouvelle dépendance, contrôleur unique partagé entre présentation et guide, `DiagramStage` (légende réservée, schéma sur le reste) à la place de la mesure de texte ; accepté et livré |
+| 0018 | Hors ligne : service worker maison (celui de Flutter est obsolète), précache versionné de tout le build (empreinte écrite par `scripts/pwa.dart`), CanvasKit local, mise à jour jamais appliquée d'office (bannière à la demande), initialisation Firebase non bloquante, manifeste et icônes de l'application ; accepté et livré |
 
 Recherches sources : `../research/`.
