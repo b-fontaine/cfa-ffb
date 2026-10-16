@@ -192,4 +192,61 @@ void main() {
       0,
     );
   });
+
+  test('does not list the groups of a closed season', () async {
+    await world.seedClub(studentNames: ['s1']);
+    await world.seasons.save(
+      (await world.seasons.byId(const SeasonId('season')))!
+          .copyWith(closedOn: day(10)),
+    );
+
+    final club = ok(await overview(today: day(8)));
+
+    expect(club.groups, isEmpty);
+  });
+
+  group('a prepared season that has not started', () {
+    setUp(() async {
+      await world.seedClub(studentNames: ['s1']);
+      await world.seasons.save(
+        (await world.seasons.byId(const SeasonId('season')))!
+            .copyWith(closedOn: day(10)),
+      );
+      await world.seasons.save(
+        Season(
+          id: const SeasonId('next'),
+          label: '2026-2027 (2)',
+          startDate: day(20),
+          endDate: DateTime(2027, 8, 31),
+        ),
+      );
+      await world.groups.save(
+        Group(
+          id: const GroupId('gn'),
+          seasonId: const SeasonId('next'),
+          name: 'Groupe',
+          audience: Audience.children,
+        ).admit(
+          studentId: const StudentId('s1'),
+          studentAudience: Audience.children,
+          from: day(20),
+        ),
+      );
+    });
+
+    test('shows its roster as of its first day, not as unassigned', () async {
+      final club = ok(await overview(today: day(12)));
+
+      expect(club.groups.map((g) => g.group.id.value), ['gn']);
+      expect(club.groups.single.members.map((m) => m.student.id.value), ['s1']);
+      expect(club.unassigned, isEmpty);
+    });
+
+    test('shows the roster of the day once the season has started', () async {
+      final club = ok(await overview(today: day(25)));
+
+      expect(club.groups.single.members, hasLength(1));
+      expect(club.unassigned, isEmpty);
+    });
+  });
 }

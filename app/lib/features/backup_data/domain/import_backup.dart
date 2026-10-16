@@ -4,6 +4,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgemen
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repository.dart';
+import 'package:billard_cfa/entities/season/domain/season_archive_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session/domain/session_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
@@ -11,6 +12,7 @@ import 'package:billard_cfa/entities/settings/domain/settings_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_codec.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_rules.dart';
+import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
 import 'package:billard_cfa/features/backup_data/domain/import_summary.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/rules_store.dart';
@@ -28,12 +30,19 @@ import 'package:injectable/injectable.dart';
 /// inchangés. Les acquittements d'alertes (format 3, ADR 0013) sont ajoutés à
 /// ceux en place ; un fichier des formats 1 et 2, qui ne les connaît pas, les
 /// efface (dans la même unité de travail, donc annulé si l'import échoue).
-/// Importer deux fois la même sauvegarde est sans effet (les
-/// repositories remplacent par identifiant).
+/// Les archives de saisons closes (format 4, ADR 0019) remplacent celles en
+/// place. Un fichier qui donne pour ouverte une saison que ce club a close est
+/// refusé (`backupReopensClosedSeason`) avant toute écriture : l'effacement
+/// des mineurs ne s'annule pas par un import, et la comparaison ne demande
+/// aucune donnée nominative. Reste hors de portée un club vide (autre
+/// appareil) : rien n'y dit qu'une saison a été close. Importer deux fois la
+/// même sauvegarde est sans effet (les repositories remplacent par
+/// identifiant).
 @injectable
 class ImportBackup {
   ImportBackup(
     this._seasons,
+    this._seasonArchives,
     this._students,
     this._groups,
     this._sessionRecords,
@@ -50,6 +59,7 @@ class ImportBackup {
   );
 
   final SeasonRepository _seasons;
+  final SeasonArchiveRepository _seasonArchives;
   final StudentRepository _students;
   final GroupRepository _groups;
   final SessionRecordRepository _sessionRecords;
@@ -67,6 +77,7 @@ class ImportBackup {
   Future<Result<ImportSummary>> call(String content) => runGuarded(() async {
     final snapshot = _codec.decode(content);
     await _rules.check(snapshot);
+    await _refuseReopening(snapshot);
     final settings = snapshot.settings;
     final restored = settings?.applyTo(_store.current);
     await _unitOfWork.run(() async {
@@ -75,6 +86,9 @@ class ImportBackup {
       if (acknowledgements == null) await _acknowledgements.eraseAll();
       for (final season in snapshot.seasons) {
         await _seasons.save(season);
+      }
+      for (final archive in snapshot.seasonArchives) {
+        await _seasonArchives.save(archive);
       }
       for (final student in snapshot.students) {
         await _students.save(student);
@@ -105,4 +119,18 @@ class ImportBackup {
     if (restored != null) _store.current = restored;
     return ImportSummary.of(snapshot);
   });
+
+  /// Refuse un fichier qui rouvrirait une saison close ici (U11-12).
+  Future<void> _refuseReopening(BackupSnapshot snapshot) async {
+    final reopened = {
+      for (final season in snapshot.seasons)
+        if (!season.isClosed) season.id,
+    };
+    if (reopened.isEmpty) return;
+    for (final local in await _seasons.all()) {
+      if (local.isClosed && reopened.contains(local.id)) {
+        throw const InvariantViolation(InvariantCode.backupReopensClosedSeason);
+      }
+    }
+  }
 }

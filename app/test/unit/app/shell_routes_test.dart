@@ -40,6 +40,11 @@ void main() {
       expect(AppShell.indexOf('/more'), 4);
       expect(AppShell.indexOf('/backup'), 4);
     });
+
+    test('keeps the past seasons under More', () {
+      expect(AppShell.indexOf('/seasons'), 4);
+      expect(AppRoutes.closeSeason(const SeasonId('s1')), '/seasons/s1/close');
+    });
   });
 
   group('AppShell.sessionsTabOf', () {

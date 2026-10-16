@@ -1,4 +1,6 @@
 import 'package:billard_cfa/entities/exercise_result/domain/technique_summary.dart';
+import 'package:billard_cfa/entities/group/domain/group.dart';
+import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/track_group/domain/get_group_overview.dart';
 import 'package:billard_cfa/features/track_group/domain/group_grid.dart';
@@ -53,6 +55,7 @@ void main() {
     overview = GetGroupOverview(
       world.groups,
       world.students,
+      world.seasons,
       world.sessions,
       world.attempts,
       world.acquisitions,
@@ -345,6 +348,7 @@ void main() {
     final strict = GetGroupOverview(
       world.groups,
       world.students,
+      world.seasons,
       world.sessions,
       world.attempts,
       world.acquisitions,
@@ -357,5 +361,35 @@ void main() {
 
     // 2 membres sur 3 : sous les 100 % demandés.
     expect(grid.alerts, isEmpty);
+  });
+
+  test('the columns of a season that has not started are its first-day '
+      'roster', () async {
+    await world.seasons.save(
+      Season(
+        id: const SeasonId('next'),
+        label: 'suite',
+        startDate: day(25),
+        endDate: DateTime(2027, 8, 31),
+      ),
+    );
+    await world.groups.save(
+      Group(
+        id: const GroupId('gn'),
+        seasonId: const SeasonId('next'),
+        name: 'Suite',
+        audience: Audience.children,
+      ).admit(
+        studentId: const StudentId('Léa'),
+        studentAudience: Audience.children,
+        from: day(25),
+      ),
+    );
+
+    final grid = ok(
+      await overview(groupId: const GroupId('gn'), today: day(20)),
+    );
+
+    expect(grid.students.map((s) => s.firstName), ['Léa']);
   });
 }

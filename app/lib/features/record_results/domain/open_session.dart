@@ -45,6 +45,9 @@ class OpenSession {
     if (group == null) throw NotFound('group', groupId.value);
     final season = await _seasons.byId(group.seasonId);
     if (season == null) throw NotFound('season', group.seasonId.value);
+    if (season.isClosed) {
+      throw const InvariantViolation(InvariantCode.seasonClosed);
+    }
     if (!season.contains(date)) {
       throw const InvariantViolation(InvariantCode.seasonOutsidePeriod);
     }

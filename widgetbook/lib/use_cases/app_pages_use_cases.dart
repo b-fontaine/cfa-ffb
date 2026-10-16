@@ -226,7 +226,7 @@ Widget buildExerciseSheetPageUseCase(BuildContext context) => WorldScope(
 
 @widgetbook.UseCase(name: 'Plus', type: MorePage, path: _path)
 Widget buildMorePageUseCase(BuildContext context) =>
-    MorePage(onOpenBackup: () {}, onOpenSettings: () {});
+    MorePage(onOpenBackup: () {}, onOpenSettings: () {}, onOpenSeasons: () {});
 
 @widgetbook.UseCase(name: 'Réglages', type: SettingsPage, path: _path)
 Widget buildSettingsPageUseCase(BuildContext context) => BlocProvider(

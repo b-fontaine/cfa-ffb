@@ -1,4 +1,5 @@
 import 'package:billard_cfa/features/acknowledge_alert/presentation/bloc/acknowledgement_bloc.dart';
+import 'package:billard_cfa/features/manage_groups/presentation/ui/move_student_dialog.dart';
 import 'package:billard_cfa/features/manage_students/presentation/ui/erase_student_card.dart';
 import 'package:billard_cfa/features/place_student/presentation/bloc/placement_bloc.dart';
 import 'package:billard_cfa/features/place_student/presentation/ui/acquire_block_dialog.dart';
@@ -61,6 +62,27 @@ class StudentSheetPage extends StatelessWidget {
       exerciseCount: block.exercises.length,
       today: today(),
     );
+  }
+
+  /// Ouvre la boîte « Changer de groupe » ; l'élève déplacé, un message le dit
+  /// et la fiche se relit.
+  Future<void> _move(BuildContext context, StudentSheet sheet) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final bloc = context.read<StudentSheetBloc>();
+    final group = await showMoveStudentDialog(
+      context,
+      studentId: sheet.student.id,
+    );
+    if (group == null) return;
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(l10n.studentMoved(sheet.student.firstName, group)),
+        ),
+      );
+    bloc.add(const StudentSheetEvent.refreshed());
   }
 
   Future<void> _revoke(
@@ -225,6 +247,11 @@ class StudentSheetPage extends StatelessWidget {
                       onPressed: onEdit,
                       icon: const Icon(Icons.edit_outlined),
                       label: Text(l10n.sheetEdit),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () => _move(context, sheet),
+                      icon: const Icon(Icons.swap_horiz),
+                      label: Text(l10n.studentMoveAction),
                     ),
                     OutlinedButton.icon(
                       onPressed: onOpenAssessment,

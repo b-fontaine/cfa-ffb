@@ -48,6 +48,7 @@ class BackupRules {
     _checkAssessments(snapshot);
     _checkAcquisitions(snapshot, catalogue);
     _checkAcknowledgements(snapshot, catalogue);
+    _checkArchives(snapshot, catalogue);
     _checkPlanned(snapshot);
     await _checkSheets(snapshot);
   }
@@ -102,7 +103,29 @@ class BackupRules {
       final season = group == null ? null : seasons[group.seasonId];
       if (group == null || season == null) throw _inconsistent;
       if (planned.audience != group.audience) throw _invalid;
-      if (!season.contains(planned.date)) throw _invalid;
+      // Une saison close garde ses séances planifiées postérieures à la
+      // clôture quand l'animateur a choisi de ne pas les supprimer : seul le
+      // début de saison borne alors la date.
+      final inside = season.isClosed
+          ? !planned.date.isBefore(season.startDate)
+          : season.contains(planned.date);
+      if (!inside) throw _invalid;
+    }
+  }
+
+  /// Une ligne d'archive vise un exercice du catalogue (`backupUnknownBlock`
+  /// pour un bloc inconnu, `backupInconsistent` pour un numéro absent du
+  /// bloc). Les comptes et le seuil de 3 élèves sont déjà vérifiés au
+  /// décodage.
+  void _checkArchives(BackupSnapshot snapshot, ExerciseCatalogue catalogue) {
+    for (final archive in snapshot.seasonArchives) {
+      for (final line in archive.exercises) {
+        final exercise = line.exercise;
+        if (catalogue.blockById(exercise.blockId) == null) {
+          throw _unknownBlock;
+        }
+        if (catalogue.exercise(exercise) == null) throw _inconsistent;
+      }
     }
   }
 

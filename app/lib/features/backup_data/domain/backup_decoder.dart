@@ -5,6 +5,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dar
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
+import 'package:billard_cfa/entities/season/domain/season_archive.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
@@ -33,10 +34,15 @@ class BackupDecoder {
   /// [withAcknowledgements] : le format connaît la clé `alertAcknowledgements`
   /// (format 3 et suivants, ADR 0013) ; elle y est obligatoire, et refusée
   /// dans un fichier des formats 1 et 2 (la liste décodée est alors `null`).
+  ///
+  /// [withArchives] : le format connaît la clé `seasonArchives` (format 4,
+  /// ADR 0019) ; elle y est obligatoire, et refusée dans un fichier des
+  /// formats 1 à 3 (la liste décodée est alors vide).
   BackupSnapshot decode(
     Object? data, {
     bool withSettings = true,
     bool withAcknowledgements = true,
+    bool withArchives = true,
   }) {
     try {
       final object = _read.object(data);
@@ -47,9 +53,13 @@ class BackupDecoder {
           object.containsKey('alertAcknowledgements')) {
         throw const InvariantViolation(InvariantCode.backupInvalid);
       }
+      if (!withArchives && object.containsKey('seasonArchives')) {
+        throw const InvariantViolation(InvariantCode.backupInvalid);
+      }
       final snapshot = _decodeData(
         object,
         withAcknowledgements: withAcknowledgements,
+        withArchives: withArchives,
       );
       const BackupConsistency().check(snapshot);
       return snapshot;
@@ -63,6 +73,7 @@ class BackupDecoder {
   BackupSnapshot _decodeData(
     Map<String, Object?> data, {
     required bool withAcknowledgements,
+    required bool withArchives,
   }) => BackupSnapshot(
     seasons: _read.objects(data['seasons']).map(_decodeSeason).toList(),
     students: _read.objects(data['students']).map(_decodeStudent).toList(),
@@ -85,6 +96,10 @@ class BackupDecoder {
         .objects(data['blockAcquisitions'])
         .map(_decodeAcquisition)
         .toList(),
+    // Clé obligatoire du format 4 : `objects(null)` lève `backupInvalid`.
+    seasonArchives: withArchives
+        ? _read.objects(data['seasonArchives']).map(_decodeArchive).toList()
+        : const [],
     settings: _decodeSettings(data['settings']),
     // Clé obligatoire du format 3 : `objects(null)` lève `backupInvalid`.
     alertAcknowledgements: withAcknowledgements
@@ -116,6 +131,46 @@ class BackupDecoder {
     label: _read.string(json['label']),
     startDate: _read.dateTime(json['startDate']),
     endDate: _read.dateTime(json['endDate']),
+    closedOn: json['closedOn'] == null ? null : _readDay(json['closedOn']),
+  );
+
+  /// Un jour entier : une date portant une heure est refusée.
+  DateTime _readDay(Object? value) {
+    final date = _read.dateTime(value);
+    if (date != DateTime(date.year, date.month, date.day) &&
+        date != DateTime.utc(date.year, date.month, date.day)) {
+      throw const InvariantViolation(InvariantCode.backupInvalid);
+    }
+    return date;
+  }
+
+  SeasonArchive _decodeArchive(Map<String, Object?> json) => SeasonArchive(
+    seasonId: SeasonId(_read.string(json['seasonId'])),
+    audiences: [
+      for (final a in _read.objects(json['audiences']))
+        AudienceArchive(
+          audience: _read.audience(a['audience']),
+          sessionCount: _read.integer(a['sessionCount']),
+          presenceCount: _read.integer(a['presenceCount']),
+          possiblePresenceCount: _read.integer(a['possiblePresenceCount']),
+          studentCount: _read.integer(a['studentCount']),
+          attemptCount: _read.integer(a['attemptCount']),
+        ),
+    ],
+    exercises: [
+      for (final e in _read.objects(json['exercises']))
+        ExerciseArchive(
+          audience: _read.audience(e['audience']),
+          exercise: ExerciseRef(
+            blockId: _read.string(e['blockId']),
+            number: _read.integer(e['exerciseNumber']),
+          ),
+          studentCount: _read.integer(e['studentCount']),
+          attemptCount: _read.integer(e['attemptCount']),
+          potted: _read.integer(e['potted']),
+          total: _read.integer(e['total']),
+        ),
+    ],
   );
 
   Student _decodeStudent(Map<String, Object?> json) => Student(

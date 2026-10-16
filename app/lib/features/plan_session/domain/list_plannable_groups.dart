@@ -18,7 +18,11 @@ class ListPlannableGroups {
     await _groups.all(),
     currentSeasons: {
       for (final season in await _seasons.all())
-        if (season.contains(today)) season.id,
+        if (season.isOpenOn(today)) season.id,
+    },
+    closedSeasons: {
+      for (final season in await _seasons.all())
+        if (season.isClosed) season.id,
     },
   );
 }

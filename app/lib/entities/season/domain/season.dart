@@ -13,6 +13,9 @@ abstract class Season with _$Season {
     required String label,
     required DateTime startDate,
     required DateTime endDate,
+
+    /// Jour de clôture ; `null` tant que la saison est ouverte (ADR 0019).
+    DateTime? closedOn,
   }) = _Season;
 
   Season._() {
@@ -22,7 +25,20 @@ abstract class Season with _$Season {
     if (!endDate.isAfter(startDate)) {
       throw const InvariantViolation(InvariantCode.invalidPeriod);
     }
+    if (closedOn != null && closedOn!.isBefore(startDate)) {
+      throw const InvariantViolation(InvariantCode.invalidPeriod);
+    }
   }
+
+  /// Vrai une fois la saison close : elle refuse toute nouvelle saisie,
+  /// planification ou inscription.
+  bool get isClosed => closedOn != null;
+
+  /// La saison accepte du travail nouveau ce jour-là : non close et dans sa
+  /// période. Remplace [contains] partout où l'on parle de « saison en cours »
+  /// ou de travail nouveau ; [contains] reste la période seule (données
+  /// historiques, sauvegarde).
+  bool isOpenOn(DateTime date) => !isClosed && contains(date);
 
   /// Bornes incluses.
   bool contains(DateTime date) =>

@@ -12,6 +12,7 @@ class BackupUniqueness {
     _unique(snapshot.students.map((s) => s.id.value));
     _unique(snapshot.groups.map((g) => g.id.value));
     _unique(snapshot.sessionRecords.map((s) => s.id.value));
+    _unique(snapshot.seasonArchives.map((a) => a.seasonId.value));
     _unique(snapshot.attempts.map((a) => a.id.value));
     _unique(snapshot.assessments.map((a) => a.id.value));
     _unique(snapshot.plannedSessions.map((s) => s.id));

@@ -3,6 +3,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/acquisition_reposito
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repository.dart';
+import 'package:billard_cfa/entities/season/domain/season_archive_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session/domain/session_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
@@ -19,6 +20,7 @@ class RepositoryHarness {
     required this.students,
     required this.groups,
     required this.seasons,
+    required this.seasonArchives,
     required this.sessionRecords,
     required this.attempts,
     required this.acquisitions,
@@ -33,6 +35,7 @@ class RepositoryHarness {
   final StudentRepository students;
   final GroupRepository groups;
   final SeasonRepository seasons;
+  final SeasonArchiveRepository seasonArchives;
   final SessionRecordRepository sessionRecords;
   final AttemptRepository attempts;
   final AcquisitionRepository acquisitions;

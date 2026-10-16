@@ -8,5 +8,8 @@ abstract class AudienceChangeState with _$AudienceChangeState {
     @Default(AudienceChangeStatus.idle) AudienceChangeStatus status,
     AudienceChangeOutcome? outcome,
     Failure? failure,
+
+    /// Groupes à choisir après `groupChoiceRequired`.
+    @Default(<GroupChoice>[]) List<GroupChoice> choices,
   }) = _AudienceChangeState;
 }

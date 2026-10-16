@@ -38,6 +38,14 @@ class BackupReferences {
         in snapshot.alertAcknowledgements ?? const <AlertAcknowledgement>[]) {
       _require(students.contains(acknowledgement.studentId));
     }
+    // Une archive décrit une saison du fichier, et une saison close.
+    final closed = {
+      for (final s in snapshot.seasons)
+        if (s.isClosed) s.id,
+    };
+    for (final archive in snapshot.seasonArchives) {
+      _require(closed.contains(archive.seasonId));
+    }
     for (final planned in snapshot.plannedSessions) {
       final groupId = planned.groupId;
       _require(groupId == null || groups.contains(groupId));

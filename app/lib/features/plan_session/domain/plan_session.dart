@@ -49,6 +49,9 @@ class PlanSession {
       }
       final season = await _seasons.byId(group.seasonId);
       if (season == null) throw NotFound('season', group.seasonId.value);
+      if (season.isClosed) {
+        throw const InvariantViolation(InvariantCode.seasonClosed);
+      }
       if (!season.contains(day)) {
         throw const InvariantViolation(InvariantCode.seasonOutsidePeriod);
       }

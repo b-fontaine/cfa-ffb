@@ -5,6 +5,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.d
 import 'package:billard_cfa/entities/exercise_result/domain/student_progress.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/technique_summary.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
+import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/features/track_group/domain/group_alerts.dart';
@@ -23,6 +24,7 @@ class GetGroupOverview {
   GetGroupOverview(
     this._groups,
     this._students,
+    this._seasons,
     this._sessions,
     this._attempts,
     this._acquisitions,
@@ -33,6 +35,7 @@ class GetGroupOverview {
 
   final GroupRepository _groups;
   final StudentRepository _students;
+  final SeasonRepository _seasons;
   final SessionRecordRepository _sessions;
   final AttemptRepository _attempts;
   final AcquisitionRepository _acquisitions;
@@ -40,7 +43,9 @@ class GetGroupOverview {
   final CatalogueRepository _catalogue;
   final RulesConfig _config;
 
-  /// [today] borne l'assiduité et fixe les membres (colonnes) du jour.
+  /// [today] borne l'assiduité et fixe les membres (colonnes) du jour ; pour
+  /// une saison qui n'a pas commencé, les colonnes sont celles de son premier
+  /// jour (saison préparée par une clôture).
   Future<Result<GroupGrid>> call({
     required GroupId groupId,
     required DateTime today,
@@ -48,12 +53,14 @@ class GetGroupOverview {
     final group = await _groups.byId(groupId);
     if (group == null) throw NotFound('group', groupId.value);
     final catalogue = await _catalogue.load();
+    final start = (await _seasons.byId(group.seasonId))?.startDate;
+    final rosterDay = start != null && start.isAfter(today) ? start : today;
     final everyone = {
       for (final student in await _students.all()) student.id: student,
     };
     final members =
         [
-          for (final id in group.membersOn(today))
+          for (final id in group.membersOn(rosterDay))
             if (everyone[id] != null) everyone[id]!,
         ]..sort((a, b) {
           final byName = a.firstName.toLowerCase().compareTo(
@@ -66,7 +73,7 @@ class GetGroupOverview {
     final acknowledgements = await _acknowledgements.all();
     // Mêmes membres que les alertes de l'accueil (`ListGroupAlerts`) : tous
     // les identifiants du groupe au jour donné, connus ou non.
-    final memberIds = group.membersOn(today);
+    final memberIds = group.membersOn(rosterDay);
     final progress = {
       for (final id in memberIds)
         id: StudentProgress.derive(

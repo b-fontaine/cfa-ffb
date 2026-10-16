@@ -11,6 +11,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dar
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
+import 'package:billard_cfa/entities/season/domain/season_archive.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
@@ -49,6 +50,7 @@ class _FixedClock implements Clock {
 
 ExportBackup _export(RepositoryHarness r) => ExportBackup(
   r.seasons,
+  r.seasonArchives,
   r.students,
   r.groups,
   r.sessionRecords,
@@ -64,6 +66,7 @@ ExportBackup _export(RepositoryHarness r) => ExportBackup(
 
 ImportBackup _import(RepositoryHarness r) => ImportBackup(
   r.seasons,
+  r.seasonArchives,
   r.students,
   r.groups,
   r.sessionRecords,
@@ -230,6 +233,45 @@ Future<void> _seed(RepositoryHarness r) async {
   );
 }
 
+SeasonArchive _archive(String season, {int sessions = 2}) => SeasonArchive(
+  seasonId: SeasonId(season),
+  audiences: [
+    AudienceArchive(
+      audience: Audience.children,
+      sessionCount: sessions,
+      presenceCount: 4,
+      possiblePresenceCount: 4,
+      studentCount: 3,
+      attemptCount: 3,
+    ),
+  ],
+  exercises: [
+    ExerciseArchive(
+      audience: Audience.children,
+      exercise: ExerciseRef(blockId: 'puissance', number: 1),
+      studentCount: 3,
+      attemptCount: 3,
+      potted: 12,
+      total: 15,
+    ),
+  ],
+);
+
+/// Clôt la saison `season` du club de test au 12 octobre 2026, avec son
+/// archive, et efface l'élève `s1` comme le fait une clôture.
+Future<void> _closeSeason(RepositoryHarness r) async {
+  final season = (await r.seasons.byId(const SeasonId('season')))!;
+  await r.seasons.save(season.copyWith(closedOn: DateTime(2026, 10, 12)));
+  await r.seasonArchives.save(_archive('season'));
+  const lea = StudentId('s1');
+  await r.attempts.eraseStudent(lea);
+  await r.acknowledgements.eraseStudent(lea);
+  await r.assessments.eraseStudent(lea);
+  await r.sessionRecords.eraseStudent(lea);
+  await r.groups.eraseStudent(lea);
+  await r.students.erase(lea);
+}
+
 Map<String, Object?> _parse(String content) =>
     jsonDecode(content) as Map<String, Object?>;
 
@@ -341,6 +383,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
         final document = _parse(backup)..['schemaVersion'] = 1;
         (document['data']! as Map<String, Object?>)
           ..remove(settingsKey)
+          ..remove('seasonArchives')
           ..remove('alertAcknowledgements');
 
         await _imported(target, jsonEncode(document));
@@ -352,9 +395,9 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
 
       test('refuses a settings key in a file of format 1', () async {
         final document = _parse(backup)..['schemaVersion'] = 1;
-        (document['data']! as Map<String, Object?>).remove(
-          'alertAcknowledgements',
-        );
+        (document['data']! as Map<String, Object?>)
+          ..remove('alertAcknowledgements')
+          ..remove('seasonArchives');
 
         expect(
           await _refused(target, jsonEncode(document)),
@@ -454,9 +497,9 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
     group('acknowledgements across formats', () {
       Map<String, Object?> asFormat(int version) {
         final document = _parse(backup)..['schemaVersion'] = version;
-        (document['data']! as Map<String, Object?>).remove(
-          'alertAcknowledgements',
-        );
+        (document['data']! as Map<String, Object?>)
+          ..remove('alertAcknowledgements')
+          ..remove('seasonArchives');
         return document;
       }
 
@@ -611,6 +654,129 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
       expect(_list(_parse(empty), 'students'), isEmpty);
     });
 
+    group('clôture de saison (format 4)', () {
+      test('round-trips the closing day and the archive', () async {
+        final season = (await source.seasons.byId(const SeasonId('season')))!;
+        await source.seasons.save(
+          season.copyWith(closedOn: DateTime(2026, 10, 12)),
+        );
+        await source.seasonArchives.save(_archive('season'));
+        final closed = await _exported(source);
+
+        final summary = await _imported(target, closed);
+
+        expect(summary.seasonArchives, 1);
+        expect(
+          (await target.seasons.byId(const SeasonId('season')))!.closedOn,
+          DateTime(2026, 10, 12),
+        );
+        expect(
+          await target.seasonArchives.bySeason(const SeasonId('season')),
+          _archive('season'),
+        );
+        expect(await _exported(target), closed);
+      });
+
+      test('the archive of the file replaces the one in place', () async {
+        final season = (await source.seasons.byId(const SeasonId('season')))!;
+        await source.seasons.save(
+          season.copyWith(closedOn: DateTime(2026, 10, 12)),
+        );
+        await source.seasonArchives.save(_archive('season'));
+        await target.seasonArchives.save(_archive('season', sessions: 9));
+
+        await _imported(target, await _exported(source));
+
+        final stored = await target.seasonArchives.bySeason(
+          const SeasonId('season'),
+        );
+        expect(stored!.audienceOf(Audience.children)!.sessionCount, 2);
+      });
+
+      test('refuses a file from before the closure of a season in place, '
+          'so the erased students stay erased', () async {
+        await _imported(target, backup);
+        await _closeSeason(target);
+        final archive = await target.seasonArchives.bySeason(
+          const SeasonId('season'),
+        );
+
+        expect(
+          await _refused(target, backup),
+          InvariantCode.backupReopensClosedSeason,
+        );
+
+        expect(await target.students.byId(const StudentId('s1')), isNull);
+        expect(
+          (await target.seasons.byId(const SeasonId('season')))!.isClosed,
+          isTrue,
+        );
+        expect(
+          await target.seasonArchives.bySeason(const SeasonId('season')),
+          archive,
+        );
+      });
+
+      test('still accepts a file that gives the closed season closed '
+          'too', () async {
+        await _imported(target, backup);
+        await _closeSeason(target);
+        final closed = await _exported(target);
+
+        await _imported(target, closed);
+
+        expect(
+          (await target.seasons.byId(const SeasonId('season')))!.isClosed,
+          isTrue,
+        );
+      });
+
+      test('an older format file leaves the archives of the other seasons '
+          'alone', () async {
+        await target.seasons.save(
+          Season(
+            id: const SeasonId('past'),
+            label: '2025-2026',
+            startDate: DateTime(2025, 9),
+            endDate: DateTime(2026, 6, 30),
+            closedOn: DateTime(2026, 6, 30),
+          ),
+        );
+        await target.seasonArchives.save(_archive('past'));
+        final document = _parse(backup)..['schemaVersion'] = 3;
+        (document['data']! as Map<String, Object?>).remove('seasonArchives');
+
+        await _imported(target, jsonEncode(document));
+
+        expect(
+          await target.seasonArchives.bySeason(const SeasonId('past')),
+          _archive('past'),
+        );
+        expect(
+          (await target.seasons.byId(const SeasonId('past')))!.isClosed,
+          isTrue,
+        );
+      });
+
+      test('refuses an archive of a season the file does not close, '
+          'writing nothing', () async {
+        final document = _parse(backup);
+        (document['data']! as Map<String, Object?>)['seasonArchives'] = [
+          {
+            'seasonId': 'season',
+            'audiences': <Object?>[],
+            'exercises': <Object?>[],
+          },
+        ];
+
+        expect(
+          await _refused(target, jsonEncode(document)),
+          InvariantCode.backupInconsistent,
+        );
+        await expectEmpty(target);
+      });
+    });
+
     group('refuses without writing anything', () {
       test('a file that is not JSON', () async {
         expect(
@@ -632,7 +798,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
         await expectEmpty(target);
       });
 
-      for (final version in <Object?>[0, 4, 99, '1', null]) {
+      for (final version in <Object?>[0, 5, 99, '1', null]) {
         test('an unsupported schemaVersion ($version)', () async {
           final document = _parse(backup)..['schemaVersion'] = version;
 

@@ -28,10 +28,24 @@ String failureMessage(AppLocalizations l10n, Failure failure) =>
         InvariantCode.backupInvalid => l10n.failBackupInvalid,
         InvariantCode.backupInconsistent => l10n.failBackupInconsistent,
         InvariantCode.backupUnknownSheet => l10n.failBackupUnknownSheet,
+        InvariantCode.backupReopensClosedSeason =>
+          l10n.failBackupReopensClosedSeason,
         InvariantCode.backupUnknownBlock => l10n.failBackupUnknownBlock,
         InvariantCode.blockAlreadyAcquired => l10n.failBlockAlreadyAcquired,
         InvariantCode.alertNotActive => l10n.failAlertNotActive,
         InvariantCode.unknownSheet => l10n.failUnknownSheet,
+        InvariantCode.groupNameTaken => l10n.failGroupNameTaken,
+        InvariantCode.groupNotEmpty => l10n.failGroupNotEmpty,
+        InvariantCode.groupHasRecords => l10n.failGroupHasRecords,
+        InvariantCode.groupHasPlanned => l10n.failGroupHasPlanned,
+        InvariantCode.groupChoiceRequired => l10n.failGroupChoiceRequired,
+        InvariantCode.moveBeforeLastPresence => l10n.failMoveBeforeLastPresence,
+        InvariantCode.seasonClosed => l10n.failSeasonClosed,
+        InvariantCode.seasonAlreadyClosed => l10n.failSeasonAlreadyClosed,
+        InvariantCode.membershipNotOpen => l10n.failMembershipNotOpen,
+        InvariantCode.membershipAlreadyOpen => l10n.failMembershipAlreadyOpen,
+        InvariantCode.audienceMismatch => l10n.failAudienceMismatch,
+
         InvariantCode.invalidRules => l10n.failInvalidRules,
         InvariantCode.invalidPeriod ||
         InvariantCode.invalidRange ||
@@ -41,10 +55,7 @@ String failureMessage(AppLocalizations l10n, Failure failure) =>
         InvariantCode.unknownExercise ||
         InvariantCode.unknownBlock ||
         InvariantCode.unknownGroup ||
-        InvariantCode.audienceMismatch ||
         InvariantCode.emptyAudienceHistory ||
-        InvariantCode.membershipAlreadyOpen ||
-        InvariantCode.membershipNotOpen ||
         InvariantCode.membershipPeriodInvalid ||
         InvariantCode.recallEqualsMainBlock ||
         InvariantCode.invalidCatalogue ||

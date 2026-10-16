@@ -4,6 +4,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dar
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
+import 'package:billard_cfa/entities/season/domain/season_archive.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
@@ -34,6 +35,9 @@ class BackupEncoder {
           in snapshot.alertAcknowledgements ?? const <AlertAcknowledgement>[])
         _encodeAcknowledgement(a),
     ],
+    'seasonArchives': [
+      for (final a in snapshot.seasonArchives) _encodeArchive(a),
+    ],
     if (snapshot.settings case final settings?)
       'settings': _encodeSettings(settings),
   };
@@ -51,6 +55,36 @@ class BackupEncoder {
     'label': season.label,
     'startDate': _date(season.startDate),
     'endDate': _date(season.endDate),
+    if (season.closedOn case final closedOn?) 'closedOn': _date(closedOn),
+  };
+
+  /// Aucun identifiant d'élève, groupe ni date de séance : l'archive n'en a
+  /// pas (ADR 0019).
+  Map<String, Object?> _encodeArchive(SeasonArchive archive) => {
+    'seasonId': archive.seasonId.value,
+    'audiences': [
+      for (final a in archive.audiences)
+        {
+          'audience': a.audience.name,
+          'sessionCount': a.sessionCount,
+          'presenceCount': a.presenceCount,
+          'possiblePresenceCount': a.possiblePresenceCount,
+          'studentCount': a.studentCount,
+          'attemptCount': a.attemptCount,
+        },
+    ],
+    'exercises': [
+      for (final e in archive.exercises)
+        {
+          'audience': e.audience.name,
+          'blockId': e.exercise.blockId,
+          'exerciseNumber': e.exercise.number,
+          'studentCount': e.studentCount,
+          'attemptCount': e.attemptCount,
+          'potted': e.potted,
+          'total': e.total,
+        },
+    ],
   };
 
   Map<String, Object?> _encodeStudent(Student student) => {

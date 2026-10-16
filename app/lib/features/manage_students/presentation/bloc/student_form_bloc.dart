@@ -1,10 +1,12 @@
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/manage_students/domain/enroll_student.dart';
 import 'package:billard_cfa/features/manage_students/domain/get_student.dart';
+import 'package:billard_cfa/features/manage_students/domain/list_enrollment_groups.dart';
 import 'package:billard_cfa/features/manage_students/domain/rename_student.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/group_choice.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -17,8 +19,13 @@ part 'student_form_state.dart';
 /// Ajout (prénom + public) ou correction du prénom d'un élève.
 @injectable
 class StudentFormBloc extends Bloc<StudentFormEvent, StudentFormState> {
-  StudentFormBloc(this._getStudent, this._enroll, this._rename, this._clock)
-    : super(const StudentFormState()) {
+  StudentFormBloc(
+    this._getStudent,
+    this._enroll,
+    this._rename,
+    this._listGroups,
+    this._clock,
+  ) : super(const StudentFormState()) {
     on<StudentFormStarted>(_onStarted);
     on<StudentFormSubmitted>(_onSubmitted);
   }
@@ -26,6 +33,7 @@ class StudentFormBloc extends Bloc<StudentFormEvent, StudentFormState> {
   final GetStudent _getStudent;
   final EnrollStudent _enroll;
   final RenameStudent _rename;
+  final ListEnrollmentGroups _listGroups;
   final Clock _clock;
 
   Future<void> _onStarted(
@@ -61,6 +69,7 @@ class StudentFormBloc extends Bloc<StudentFormEvent, StudentFormState> {
         audience: event.audience,
         today: _clock.today(),
         groupName: event.groupName,
+        groupId: event.groupId,
       )) {
         Ok(:final value) => Ok(value.student),
         Err(:final failure) => Err(failure),
@@ -72,7 +81,23 @@ class StudentFormBloc extends Bloc<StudentFormEvent, StudentFormState> {
       case Ok(:final value):
         emit(state.copyWith(status: StudentFormStatus.saved, saved: value));
       case Err(:final failure):
-        emit(state.copyWith(status: StudentFormStatus.ready, failure: failure));
+        // Plusieurs groupes conviennent : on propose le choix (ADR 0019).
+        var choices = state.choices;
+        if (failure is InvariantViolation &&
+            failure.code == InvariantCode.groupChoiceRequired) {
+          final listed = await _listGroups(
+            audience: event.audience,
+            today: _clock.today(),
+          );
+          if (listed case Ok(:final value)) choices = value;
+        }
+        emit(
+          state.copyWith(
+            status: StudentFormStatus.ready,
+            failure: failure,
+            choices: choices,
+          ),
+        );
     }
   }
 }

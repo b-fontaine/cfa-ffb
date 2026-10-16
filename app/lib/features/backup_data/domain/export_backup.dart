@@ -3,6 +3,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/acquisition_reposito
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repository.dart';
+import 'package:billard_cfa/entities/season/domain/season_archive_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session/domain/session_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
@@ -20,6 +21,7 @@ import 'package:injectable/injectable.dart';
 class ExportBackup {
   ExportBackup(
     this._seasons,
+    this._seasonArchives,
     this._students,
     this._groups,
     this._sessionRecords,
@@ -34,6 +36,7 @@ class ExportBackup {
   );
 
   final SeasonRepository _seasons;
+  final SeasonArchiveRepository _seasonArchives;
   final StudentRepository _students;
   final GroupRepository _groups;
   final SessionRecordRepository _sessionRecords;
@@ -50,6 +53,7 @@ class ExportBackup {
   Future<Result<String>> call() => runGuarded(() async {
     final snapshot = BackupSnapshot(
       seasons: await _seasons.all(),
+      seasonArchives: await _seasonArchives.all(),
       students: await _students.all(),
       groups: await _groups.all(),
       sessionRecords: await _sessionRecords.all(),

@@ -48,6 +48,7 @@ class HomePage extends StatelessWidget {
     required this.onOpenPlanned,
     required this.onRecord,
     this.banner,
+    this.seasonCard,
     super.key,
   });
 
@@ -74,6 +75,10 @@ class HomePage extends StatelessWidget {
   /// Bandeau facultatif au-dessus du contenu (rappel de sauvegarde, composé
   /// par la couche app).
   final Widget? banner;
+
+  /// Carte « Clôturer la saison » (U11-15), composée par la couche app ; vide
+  /// tant qu'aucune saison terminée n'est ouverte.
+  final Widget? seasonCard;
 
   Future<void> _abandon(BuildContext context, RunKey key) async {
     final l10n = AppLocalizations.of(context);
@@ -158,6 +163,7 @@ class HomePage extends StatelessWidget {
                   children: [
                     ?banner,
                     header,
+                    ?seasonCard,
                     if (wide)
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,

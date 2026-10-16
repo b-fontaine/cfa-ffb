@@ -25,6 +25,8 @@ part 'app_database.g.dart';
     AlertAcknowledgements,
     BackupExports,
     AppSettings,
+    SeasonArchiveAudiences,
+    SeasonArchiveExercises,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -32,7 +34,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Version du schéma SQL. Elle est indépendante de la version du format de
   /// sauvegarde JSON (`BackupCodec.currentVersion`).
-  static const currentSchemaVersion = 8;
+  static const currentSchemaVersion = 9;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -96,6 +98,13 @@ class AppDatabase extends _$AppDatabase {
         from7To8: (m, schema) async {
           await m.createTable(schema.alertAcknowledgements);
           await m.createIndex(schema.acknowledgementsByStudent);
+        },
+        // Version 9 (ADR 0019) : clôture de saison et archive agrégée non
+        // nominative. Migration additive : aucune donnée n'est transformée.
+        from8To9: (m, schema) async {
+          await m.addColumn(schema.seasons, schema.seasons.closedOn);
+          await m.createTable(schema.seasonArchiveAudiences);
+          await m.createTable(schema.seasonArchiveExercises);
         },
       )(migrator, from, to);
     },

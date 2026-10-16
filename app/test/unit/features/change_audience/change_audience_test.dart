@@ -43,11 +43,13 @@ void main() {
   Future<Result<AudienceChangeOutcome>> toAdults({
     int dayOfMonth = 10,
     String? groupName,
+    GroupId? destinationGroupId,
   }) => change(
     studentId: const StudentId('s1'),
     audience: Audience.adults,
     effectiveFrom: day(dayOfMonth),
     groupName: groupName,
+    destinationGroupId: destinationGroupId,
   );
 
   test('moves the student and keeps the history', () async {
@@ -272,6 +274,59 @@ void main() {
         (await groups()).single.isMemberOn(const StudentId('s1'), day(10)),
         isTrue,
       );
+    });
+  });
+
+  group('several adult groups', () {
+    Future<void> addAdultGroups() async {
+      for (final id in ['ga1', 'ga2']) {
+        await world.groups.save(
+          Group(
+            id: GroupId(id),
+            seasonId: const SeasonId('season'),
+            name: id,
+            audience: Audience.adults,
+          ),
+        );
+      }
+    }
+
+    test('asks for the destination group and changes nothing', () async {
+      await addAdultGroups();
+
+      expect(codeOf(await toAdults()), InvariantCode.groupChoiceRequired);
+
+      final saved = await world.students.byId(const StudentId('s1'));
+      expect(saved!.currentAudience, Audience.children);
+      final origin = await world.groups.byId(const GroupId('g1'));
+      expect(origin!.memberships.single.to, isNull);
+    });
+
+    test('joins the requested destination group', () async {
+      await addAdultGroups();
+
+      ok(await toAdults(destinationGroupId: const GroupId('ga2')));
+
+      final chosen = await world.groups.byId(const GroupId('ga2'));
+      expect(chosen!.isMemberOn(const StudentId('s1'), day(10)), isTrue);
+      final other = await world.groups.byId(const GroupId('ga1'));
+      expect(other!.memberships, isEmpty);
+    });
+
+    test('refuses a destination of the wrong audience', () async {
+      await addAdultGroups();
+      await world.groups.save(
+        Group(
+          id: const GroupId('gk'),
+          seasonId: const SeasonId('season'),
+          name: 'Autre',
+          audience: Audience.children,
+        ),
+      );
+
+      final result = await toAdults(destinationGroupId: const GroupId('gk'));
+
+      expect(codeOf(result), InvariantCode.audienceMismatch);
     });
   });
 }

@@ -36,6 +36,7 @@ Future<void> theNextPickedFileIsABackupOfTheStudent(
         ),
       ],
       blockAcquisitions: const [],
+      seasonArchives: const [],
     ),
     exportedAt: DateTime.utc(2026, 10),
   );

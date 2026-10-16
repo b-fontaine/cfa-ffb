@@ -44,14 +44,19 @@ class EraseStudent {
     if (await _students.byId(studentId) == null) {
       throw NotFound('student', studentId.value);
     }
-    await _unitOfWork.run(() async {
-      await _attempts.eraseStudent(studentId);
-      await _assessments.eraseStudent(studentId);
-      await _acquisitions.eraseStudent(studentId);
-      await _acknowledgements.eraseStudent(studentId);
-      await _sessions.eraseStudent(studentId);
-      await _groups.eraseStudent(studentId);
-      await _students.erase(studentId);
-    });
+    await _unitOfWork.run(() => eraseRecords(studentId));
   });
+
+  /// L'enchaînement d'effacement des dépôts nominatifs, **sans** unité de
+  /// travail : à appeler dans une unité déjà ouverte (clôture de saison, par
+  /// le port `StudentEraser`). L'ordre est celui de la suppression physique.
+  Future<void> eraseRecords(StudentId studentId) async {
+    await _attempts.eraseStudent(studentId);
+    await _assessments.eraseStudent(studentId);
+    await _acquisitions.eraseStudent(studentId);
+    await _acknowledgements.eraseStudent(studentId);
+    await _sessions.eraseStudent(studentId);
+    await _groups.eraseStudent(studentId);
+    await _students.erase(studentId);
+  }
 }

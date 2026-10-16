@@ -1,6 +1,8 @@
+import 'package:billard_cfa/entities/group/domain/choose_group.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
+import 'package:billard_cfa/entities/season/domain/season_calendar.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
@@ -54,6 +56,7 @@ class EnrollStudent {
     required Audience audience,
     required DateTime today,
     String? groupName,
+    GroupId? groupId,
   }) => runGuarded(() async {
     final season = await _seasonOf(today);
     final since = season.startDate.isAfter(today) ? today : season.startDate;
@@ -63,18 +66,20 @@ class EnrollStudent {
       audience: audience,
       since: since,
     );
-    final existing = [
-      for (final group in await _groups.all())
-        if (group.seasonId == season.id && group.audience == audience) group,
-    ];
-    final base = existing.isNotEmpty
-        ? existing.first
-        : Group(
-            id: GroupId(_ids.next()),
-            seasonId: season.id,
-            name: groupName ?? audience.name,
-            audience: audience,
-          );
+    final chosen = chooseGroup(
+      groups: await _groups.all(),
+      seasonId: season.id,
+      audience: audience,
+      requested: groupId,
+    );
+    final base =
+        chosen ??
+        Group(
+          id: GroupId(_ids.next()),
+          seasonId: season.id,
+          name: groupName ?? audience.name,
+          audience: audience,
+        );
     final group = base.admit(
       studentId: student.id,
       studentAudience: audience,
@@ -88,23 +93,21 @@ class EnrollStudent {
     return EnrolledStudent(student: student, group: group);
   });
 
-  /// Saison contenant [today] ; sinon la saison existante qui recouvre
-  /// l'année scolaire ; sinon une nouvelle année scolaire.
+  /// Saison ouverte contenant [today] ; sinon la saison existante qui recouvre
+  /// l'année scolaire ; sinon une nouvelle année scolaire. Une saison close
+  /// n'accueille plus personne : l'inscription ouvre la saison qui la suit.
   Future<Season> _seasonOf(DateTime today) async {
     final seasons = await _seasons.all();
     for (final season in seasons) {
-      if (season.contains(today)) return season;
+      if (season.isOpenOn(today)) return season;
     }
-    // L'année scolaire suivante se prépare dès juillet.
-    final startYear = today.month >= 7 ? today.year : today.year - 1;
-    final created = Season(
-      id: SeasonId(_ids.next()),
-      label: '$startYear-${startYear + 1}',
-      startDate: DateTime(startYear, 9),
-      endDate: DateTime(startYear + 1, 8, 31),
-    );
-    for (final season in seasons) {
-      if (season.overlaps(created)) return season;
+    var created = schoolYearSeason(today, SeasonId(_ids.next()));
+    for (var round = 0; round <= seasons.length; round++) {
+      final overlapping = seasons.where((s) => s.overlaps(created));
+      if (overlapping.isEmpty) return created;
+      final season = overlapping.first;
+      if (!season.isClosed) return season;
+      created = nextSeasonAfter(season, created.id);
     }
     return created;
   }

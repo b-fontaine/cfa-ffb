@@ -58,6 +58,7 @@ void main() {
           ),
         ],
         blockAcquisitions: const [],
+        seasonArchives: const [],
       ),
       exportedAt: exportedAt,
     );
@@ -91,6 +92,7 @@ void main() {
       BackupSnapshot(
         attempts: [attempt(ref('a', 1), potted: 3)],
         blockAcquisitions: const [],
+        seasonArchives: const [],
       ),
       exportedAt: exportedAt,
     );
@@ -136,6 +138,7 @@ void main() {
         ],
         attempts: [attempt(ref('unknown', 1), potted: 3)],
         blockAcquisitions: const [],
+        seasonArchives: const [],
       ),
       exportedAt: exportedAt,
     );

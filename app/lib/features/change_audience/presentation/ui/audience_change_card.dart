@@ -3,9 +3,11 @@ import 'package:billard_cfa/features/change_audience/domain/audience_change_outc
 import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_change_bloc.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/ui/audience_labels.dart';
 import 'package:billard_cfa/shared/ui/confirm_dialog.dart';
 import 'package:billard_cfa/shared/ui/failure_message.dart';
+import 'package:billard_cfa/shared/ui/group_choice_picker.dart';
 import 'package:billard_cfa/shared/ui/section_card.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Public de l'élève : public actuel, historique conservé et changement
 /// MANUEL (toujours confirmé) vers l'autre public.
-class AudienceChangeCard extends StatelessWidget {
+class AudienceChangeCard extends StatefulWidget {
   const AudienceChangeCard({
     required this.student,
     required this.today,
@@ -26,7 +28,16 @@ class AudienceChangeCard extends StatelessWidget {
   final DateTime today;
 
   @override
+  State<AudienceChangeCard> createState() => _AudienceChangeCardState();
+}
+
+class _AudienceChangeCardState extends State<AudienceChangeCard> {
+  GroupId? _groupId;
+
+  @override
   Widget build(BuildContext context) {
+    final student = widget.student;
+    final today = widget.today;
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final dates = MaterialLocalizations.of(context);
@@ -40,6 +51,7 @@ class AudienceChangeCard extends StatelessWidget {
         builder: (context, state) {
           final failure = state.failure;
           final outcome = state.outcome;
+          final choosing = state.choices.isNotEmpty;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -59,6 +71,14 @@ class AudienceChangeCard extends StatelessWidget {
               const SizedBox(height: AppSpacing.md),
               Text(l10n.audienceManualNote, style: theme.textTheme.bodyMedium),
               const SizedBox(height: AppSpacing.sm),
+              if (choosing) ...[
+                GroupChoicePicker(
+                  choices: state.choices,
+                  selected: _groupId,
+                  onChanged: (id) => setState(() => _groupId = id),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+              ],
               OutlinedButton(
                 onPressed: state.status == AudienceChangeStatus.saving
                     ? null
@@ -79,13 +99,14 @@ class AudienceChangeCard extends StatelessWidget {
                               studentId: student.id,
                               audience: target,
                               groupName: target.groupName(l10n),
+                              destinationGroupId: _groupId,
                             ),
                           );
                         }
                       },
                 child: Text(l10n.audienceMoveTo(target.label(l10n))),
               ),
-              if (failure != null) ...[
+              if (failure != null && !choosing) ...[
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   failureMessage(l10n, failure),

@@ -85,6 +85,7 @@ BackupSnapshot _snapshot({
   assessments: assessments,
   plannedSessions: planned,
   blockAcquisitions: acquisitions,
+  seasonArchives: const [],
   alertAcknowledgements: acknowledgements,
 );
 

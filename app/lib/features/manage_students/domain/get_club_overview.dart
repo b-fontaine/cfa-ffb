@@ -37,61 +37,76 @@ class GetClubOverview {
   final CatalogueRepository _catalogue;
   final RulesConfig _config;
 
-  Future<Result<ClubOverview>> call({required DateTime today}) =>
-      runGuarded(() async {
-        final catalogue = await _catalogue.load();
-        final attempts = await _attempts.all();
-        final acquisitions = await _acquisitions.all();
-        final acknowledgements = await _acknowledgements.all();
-        final groups = currentGroups(
-          await _groups.all(),
-          currentSeasons: {
-            for (final season in await _seasons.all())
-              if (season.contains(today)) season.id,
-          },
-        );
-        final summaries = [
-          for (final student in await _students.all())
-            () {
-              final progress = StudentProgress.derive(
-                studentId: student.id,
-                attempts: attempts,
-                acquisitions: acquisitions,
-                acknowledgements: acknowledgements,
-                rates: catalogue.rates,
-                config: _config,
-              );
-              return StudentSummary(
-                student: student,
-                validatedCount: progress.validated.length,
-                exerciseCount: catalogue.exercises.length,
-                alertCount: progress.activeAlerts.length,
-                toStart: progress.toStart,
-              );
-            }(),
-        ];
-        final placed = <StudentSummary>{};
-        final overviews = [
-          for (final group in groups)
-            GroupOverview(
-              group: group,
-              members: [
-                for (final summary in summaries)
-                  if (_isCurrentMember(group, summary, today)) summary,
-              ],
-            ),
-        ];
-        for (final overview in overviews) {
-          placed.addAll(overview.members);
-        }
-        return ClubOverview(
-          groups: overviews,
-          unassigned: [
-            for (final summary in summaries)
-              if (!placed.contains(summary)) summary,
-          ],
-        );
-      });
+  Future<Result<ClubOverview>> call({required DateTime today}) => runGuarded(
+    () async {
+      final catalogue = await _catalogue.load();
+      final attempts = await _attempts.all();
+      final acquisitions = await _acquisitions.all();
+      final acknowledgements = await _acknowledgements.all();
+      final seasons = await _seasons.all();
+      final groups = currentGroups(
+        await _groups.all(),
+        currentSeasons: {
+          for (final season in seasons)
+            if (season.isOpenOn(today)) season.id,
+        },
+        closedSeasons: {
+          for (final season in seasons)
+            if (season.isClosed) season.id,
+        },
+      );
+      // Une saison préparée (après une clôture) montre son effectif au
+      // premier jour, pas « personne » : ses élèves ne sont pas « sans
+      // groupe » pendant l'été.
+      final startOf = {for (final season in seasons) season.id: season};
+      DateTime rosterDay(Group group) {
+        final start = startOf[group.seasonId]?.startDate;
+        return start != null && start.isAfter(today) ? start : today;
+      }
+
+      final summaries = [
+        for (final student in await _students.all())
+          () {
+            final progress = StudentProgress.derive(
+              studentId: student.id,
+              attempts: attempts,
+              acquisitions: acquisitions,
+              acknowledgements: acknowledgements,
+              rates: catalogue.rates,
+              config: _config,
+            );
+            return StudentSummary(
+              student: student,
+              validatedCount: progress.validated.length,
+              exerciseCount: catalogue.exercises.length,
+              alertCount: progress.activeAlerts.length,
+              toStart: progress.toStart,
+            );
+          }(),
+      ];
+      final placed = <StudentSummary>{};
+      final overviews = [
+        for (final group in groups)
+          GroupOverview(
+            group: group,
+            members: [
+              for (final summary in summaries)
+                if (_isCurrentMember(group, summary, rosterDay(group))) summary,
+            ],
+          ),
+      ];
+      for (final overview in overviews) {
+        placed.addAll(overview.members);
+      }
+      return ClubOverview(
+        groups: overviews,
+        unassigned: [
+          for (final summary in summaries)
+            if (!placed.contains(summary)) summary,
+        ],
+      );
+    },
+  );
 
   bool _isCurrentMember(Group group, StudentSummary summary, DateTime today) =>
       group.isMemberOn(summary.student.id, today);

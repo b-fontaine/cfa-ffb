@@ -164,4 +164,28 @@ void main() {
     );
     expect(await world.plannedSessions.getAll(), isEmpty);
   });
+
+  test('refuses a group of a closed season', () async {
+    await world.seasons.save(
+      (await world.seasons.byId(const SeasonId('season')))!
+          .copyWith(closedOn: day(10)),
+    );
+
+    await expectLater(
+      planSession(
+        title: 'Posture',
+        date: day(12),
+        audience: Audience.adults,
+        groupId: const GroupId('g1'),
+      ),
+      throwsA(
+        isA<InvariantViolation>().having(
+          (e) => e.code,
+          'code',
+          InvariantCode.seasonClosed,
+        ),
+      ),
+    );
+    expect(await world.plannedSessions.getAll(), isEmpty);
+  });
 }

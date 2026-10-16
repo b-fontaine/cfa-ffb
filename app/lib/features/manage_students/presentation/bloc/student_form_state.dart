@@ -13,5 +13,8 @@ abstract class StudentFormState with _$StudentFormState {
     /// Élève enregistré (statut `saved`).
     Student? saved,
     Failure? failure,
+
+    /// Groupes à choisir après `groupChoiceRequired`.
+    @Default(<GroupChoice>[]) List<GroupChoice> choices,
   }) = _StudentFormState;
 }

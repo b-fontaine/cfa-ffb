@@ -3,9 +3,11 @@ import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repositor
 import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
+import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
+import 'package:billard_cfa/features/manage_groups/domain/create_group.dart';
 import 'package:billard_cfa/features/manage_students/domain/enroll_student.dart';
 import 'package:billard_cfa/features/place_student/domain/mark_block_acquired.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
@@ -143,6 +145,40 @@ class UiWorld {
         ),
       );
     });
+  }
+
+  /// Crée un groupe de plus pour [audience] dans la saison en cours (la saison
+  /// existe : un élève du même public est déjà inscrit, ou la saison courante
+  /// est créée par une inscription préalable de l'autre public).
+  static Future<void> createGroup(
+    WidgetTester tester,
+    String name,
+    Audience audience,
+  ) async {
+    await prepare(tester);
+    await tester.runAsync(() async {
+      final seasons = await getIt<SeasonRepository>().all();
+      final season = seasons.firstWhere((s) => s.isOpenOn(today));
+      _value(
+        await getIt<CreateGroup>()(
+          seasonId: season.id,
+          name: name,
+          audience: audience,
+        ),
+      );
+    });
+  }
+
+  /// Le nom du groupe où [student] est membre aujourd'hui.
+  static Future<String?> groupNameOf(String student) async {
+    final id = (await studentNamed(student)).id;
+    final groups = await getIt<GroupRepository>().all();
+    for (final group in groups) {
+      if (group.isMemberOn(id, DateTime(today.year, today.month, today.day))) {
+        return group.name;
+      }
+    }
+    return null;
   }
 
   /// [count] passages réussis (taux requis exact) ou manqués (une bille de

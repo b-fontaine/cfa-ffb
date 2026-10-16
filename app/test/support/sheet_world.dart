@@ -94,6 +94,7 @@ class SheetWorld {
         () => GetGroupOverview(
           world.groups,
           world.students,
+          world.seasons,
           world.sessions,
           world.attempts,
           world.acquisitions,

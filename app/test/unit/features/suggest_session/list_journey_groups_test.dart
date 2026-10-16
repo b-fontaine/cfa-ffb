@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/domain_world.dart';
 import '../../../support/fixed_clock.dart';
+import '../../../support/fixtures.dart';
 
 void main() {
   late DomainWorld world;
@@ -71,5 +72,16 @@ void main() {
       const GroupId('g1'),
       const GroupId('old-group'),
     ]);
+  });
+
+  test('never offers the groups of a closed season', () async {
+    await world.seasons.save(
+      (await world.seasons.byId(const SeasonId('season')))!
+          .copyWith(closedOn: day(10)),
+    );
+
+    final groups = ok(await list());
+
+    expect(groups.map((g) => g.name), ['Ancien']);
   });
 }

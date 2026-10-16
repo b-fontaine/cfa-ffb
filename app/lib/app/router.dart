@@ -14,6 +14,11 @@ import 'package:billard_cfa/features/backup_data/presentation/ui/backup_reminder
 import 'package:billard_cfa/features/browse_sheets/presentation/bloc/sheet_catalogue_bloc.dart';
 import 'package:billard_cfa/features/browse_sheets/presentation/bloc/sheet_detail_bloc.dart';
 import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_change_bloc.dart';
+import 'package:billard_cfa/features/close_season/presentation/bloc/closable_season_cubit.dart';
+import 'package:billard_cfa/features/close_season/presentation/bloc/season_closure_bloc.dart';
+import 'package:billard_cfa/features/close_season/presentation/ui/closable_season_section.dart';
+import 'package:billard_cfa/features/manage_groups/presentation/bloc/manage_groups_cubit.dart';
+import 'package:billard_cfa/features/manage_groups/presentation/bloc/move_student_cubit.dart';
 import 'package:billard_cfa/features/manage_settings/presentation/bloc/settings_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_erasure_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_form_bloc.dart';
@@ -41,6 +46,7 @@ import 'package:billard_cfa/features/track_group/presentation/bloc/group_overvie
 import 'package:billard_cfa/features/track_progress/presentation/bloc/student_sheet_bloc.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/watched_students_cubit.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/week_summary_cubit.dart';
+import 'package:billard_cfa/features/track_seasons/presentation/bloc/season_archives_cubit.dart';
 import 'package:billard_cfa/pages/assessment/presentation/assessment_page.dart';
 import 'package:billard_cfa/pages/backup/presentation/backup_page.dart';
 import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_page.dart';
@@ -49,6 +55,8 @@ import 'package:billard_cfa/pages/home/presentation/home_page.dart';
 import 'package:billard_cfa/pages/more/presentation/more_page.dart';
 import 'package:billard_cfa/pages/not_found/presentation/not_found_page.dart';
 import 'package:billard_cfa/pages/record_history/presentation/record_history_page.dart';
+import 'package:billard_cfa/pages/season_archive/presentation/season_archive_page.dart';
+import 'package:billard_cfa/pages/season_closure/presentation/season_closure_page.dart';
 import 'package:billard_cfa/pages/session_planner/presentation/session_planner_page.dart';
 import 'package:billard_cfa/pages/session_review/presentation/session_review_page.dart';
 import 'package:billard_cfa/pages/settings/presentation/settings_page.dart';
@@ -88,6 +96,7 @@ abstract final class AppRoutes {
   static const more = '/more';
   static const backup = '/backup';
   static const settings = '/settings';
+  static const seasons = '/seasons';
   static const catalogue = '/catalogue';
 
   /// Segments des sous-pages d'une séance du catalogue : chemin des routes ET
@@ -99,6 +108,9 @@ abstract final class AppRoutes {
   static const showcaseSegment = 'show';
   static const groupsSegment = 'groups';
   static const presentationSegment = 'presentation';
+
+  /// Segment de l'assistant de clôture d'une saison.
+  static const closeSegment = 'close';
 
   /// Adresse de [path] avec ses paramètres non vides (jamais de `?` seul).
   static String _url(String path, Map<String, String> query) =>
@@ -116,6 +128,10 @@ abstract final class AppRoutes {
     planner,
     {'sheet': ?id?.value, 'audience': ?audience?.name, 'group': ?group?.value},
   );
+
+  /// L'assistant de clôture d'une saison (hors du cadre de navigation).
+  static String closeSeason(SeasonId id) =>
+      '$seasons/${id.value}/$closeSegment';
 
   static String student(StudentId id) => '$students/${id.value}';
 
@@ -439,6 +455,13 @@ GoRouter buildRouter() => GoRouter(
                   return cubit;
                 },
               ),
+              BlocProvider(
+                create: (_) {
+                  final cubit = getIt<ClosableSeasonCubit>();
+                  unawaited(cubit.load());
+                  return cubit;
+                },
+              ),
             ],
             child: HomePage(
               today: getIt<Clock>().today,
@@ -481,6 +504,9 @@ GoRouter buildRouter() => GoRouter(
                   date: date,
                   sheet: sheet,
                 ),
+              ),
+              seasonCard: ClosableSeasonSection(
+                onClose: (id) => context.go(AppRoutes.closeSeason(id)),
               ),
               banner: BlocBuilder<BackupReminderCubit, BackupReminder>(
                 builder: (context, reminder) => BackupReminderBanner(
@@ -537,9 +563,14 @@ GoRouter buildRouter() => GoRouter(
         ),
         GoRoute(
           path: AppRoutes.students,
-          builder: (context, state) => BlocProvider(
-            create: (_) =>
-                getIt<StudentsBloc>()..add(const StudentsEvent.started()),
+          builder: (context, state) => MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (_) =>
+                    getIt<StudentsBloc>()..add(const StudentsEvent.started()),
+              ),
+              BlocProvider(create: (_) => getIt<ManageGroupsCubit>()),
+            ],
             child: StudentsPage(
               onOpenStudent: (id) => context.go(AppRoutes.student(id)),
               onOpenGroup: (id) => context.go(AppRoutes.studentGroup(id)),
@@ -595,6 +626,7 @@ GoRouter buildRouter() => GoRouter(
                 BlocProvider(create: (_) => getIt<StudentErasureBloc>()),
                 BlocProvider(create: (_) => getIt<PlacementBloc>()),
                 BlocProvider(create: (_) => getIt<AcknowledgementBloc>()),
+                BlocProvider(create: (_) => getIt<MoveStudentCubit>()),
               ],
               child: StudentSheetPage(
                 today: getIt<Clock>().today,
@@ -904,6 +936,18 @@ GoRouter buildRouter() => GoRouter(
           builder: (context, state) => MorePage(
             onOpenBackup: () => context.go(AppRoutes.backup),
             onOpenSettings: () => context.go(AppRoutes.settings),
+            onOpenSeasons: () => context.go(AppRoutes.seasons),
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.seasons,
+          builder: (context, state) => BlocProvider(
+            create: (_) {
+              final cubit = getIt<SeasonArchivesCubit>();
+              unawaited(cubit.load());
+              return cubit;
+            },
+            child: SeasonArchivePage(onBack: () => context.go(AppRoutes.more)),
           ),
         ),
         GoRoute(
@@ -915,6 +959,33 @@ GoRouter buildRouter() => GoRouter(
           ),
         ),
       ],
+    ),
+    // Hors du cadre de navigation : l'assistant de clôture ne se quitte pas à
+    // mi-chemin par un geste de navigation (ADR 0019).
+    GoRoute(
+      path: '${AppRoutes.seasons}/:seasonId/${AppRoutes.closeSegment}',
+      builder: (context, state) {
+        final id = SeasonId(state.pathParameters['seasonId']!);
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (_) =>
+                  getIt<SeasonClosureBloc>()
+                    ..add(SeasonClosureEvent.started(seasonId: id)),
+            ),
+            BlocProvider(
+              create: (_) =>
+                  getIt<BackupBloc>()..add(const BackupEvent.started()),
+            ),
+          ],
+          child: SeasonClosurePage(
+            today: getIt<Clock>().today(),
+            onCancel: () => context.go(AppRoutes.home),
+            onSeasons: () => context.go(AppRoutes.seasons),
+            onHome: () => context.go(AppRoutes.home),
+          ),
+        );
+      },
     ),
     // Hors du cadre de navigation : l'écran montré à l'élève n'offre aucun
     // chemin vers les autres élèves (décision Q6).

@@ -4,6 +4,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dar
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
+import 'package:billard_cfa/entities/season/domain/season_archive.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
@@ -22,10 +23,15 @@ part 'backup_snapshot.freezed.dart';
 /// et 2, qui ne les connaissent pas : l'import efface alors les acquittements
 /// en place ; un fichier du format 3 porte toujours la liste (éventuellement
 /// vide), qui est ajoutée à ceux en place.
+/// [seasonArchives] (ADR 0019) est obligatoire à la construction, comme
+/// [blockAcquisitions] : un oubli ne compile pas. Un fichier des formats 1 à 3
+/// n'en porte pas (liste vide) ; l'archive d'un fichier du format 4 remplace
+/// celle en place pour sa saison.
 @freezed
 abstract class BackupSnapshot with _$BackupSnapshot {
   const factory BackupSnapshot({
     required List<BlockAcquisition> blockAcquisitions,
+    required List<SeasonArchive> seasonArchives,
     @Default([]) List<Season> seasons,
     @Default([]) List<Student> students,
     @Default([]) List<Group> groups,

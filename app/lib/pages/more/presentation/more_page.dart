@@ -9,11 +9,13 @@ class MorePage extends StatelessWidget {
   const MorePage({
     required this.onOpenBackup,
     required this.onOpenSettings,
+    required this.onOpenSeasons,
     super.key,
   });
 
   final VoidCallback onOpenBackup;
   final VoidCallback onOpenSettings;
+  final VoidCallback onOpenSeasons;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,15 @@ class MorePage extends StatelessWidget {
             subtitle: Text(l10n.moreBackupHint),
             trailing: const Icon(Icons.chevron_right),
             onTap: onOpenBackup,
+          ),
+        ),
+        Card(
+          child: ListTile(
+            leading: const Icon(Icons.history),
+            title: Text(l10n.moreSeasons),
+            subtitle: Text(l10n.moreSeasonsHint),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: onOpenSeasons,
           ),
         ),
         Card(

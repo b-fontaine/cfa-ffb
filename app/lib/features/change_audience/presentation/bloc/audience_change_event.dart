@@ -8,5 +8,8 @@ sealed class AudienceChangeEvent with _$AudienceChangeEvent {
 
     /// Nom (localisé) du groupe créé si le public n'en a pas encore.
     required String groupName,
+
+    /// Groupe de destination choisi quand le public en compte plusieurs.
+    GroupId? destinationGroupId,
   }) = AudienceChangeRequested;
 }

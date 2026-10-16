@@ -9,6 +9,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dar
 import 'package:billard_cfa/entities/group/data/drift_group_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/drift_assessment_repository.dart';
+import 'package:billard_cfa/entities/season/data/drift_season_archive_repository.dart';
 import 'package:billard_cfa/entities/season/data/drift_season_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/entities/session/data/drift_session_repository.dart';
@@ -112,6 +113,7 @@ void main() {
           attempt(ref('a', 1), potted: 4, id: 'a2', passIndex: 2),
         ],
         blockAcquisitions: const [],
+        seasonArchives: const [],
         settings: ClubSettings.defaults.copyWith(passesRequired: 3),
       ),
       exportedAt: DateTime.utc(2026, 10, 12),
@@ -119,6 +121,7 @@ void main() {
     final store = RulesStore(RulesConfig());
     final import = ImportBackup(
       DriftSeasonRepository(db, clock),
+      DriftSeasonArchiveRepository(db),
       DriftStudentRepository(db, clock),
       DriftGroupRepository(db, clock),
       DriftSessionRecordRepository(db, clock),
@@ -213,16 +216,18 @@ void main() {
               attempt(ref('a', 1), potted: 4, id: 'a2', passIndex: 2),
             ],
             blockAcquisitions: const [],
+            seasonArchives: const [],
           ),
           exportedAt: DateTime.utc(2026, 10, 12),
         ),
       ) as Map<String, Object?>;
       document['schemaVersion'] = 2;
-      (document['data']! as Map<String, Object?>).remove(
-        'alertAcknowledgements',
-      );
+      (document['data']! as Map<String, Object?>)
+        ..remove('alertAcknowledgements')
+        ..remove('seasonArchives');
       final import = ImportBackup(
         DriftSeasonRepository(db, clock),
+        DriftSeasonArchiveRepository(db),
         DriftStudentRepository(db, clock),
         DriftGroupRepository(db, clock),
         DriftSessionRecordRepository(db, clock),
@@ -256,6 +261,7 @@ void main() {
     final clock = TickingClock();
     final import = ImportBackup(
       DriftSeasonRepository(db, clock),
+      DriftSeasonArchiveRepository(db),
       DriftStudentRepository(db, clock),
       DriftGroupRepository(db, clock),
       DriftSessionRecordRepository(db, clock),

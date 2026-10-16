@@ -61,4 +61,53 @@ void main() {
       expect(s.overlaps(season(1, 9)), isFalse);
     });
   });
+
+  group('closure', () {
+    Season closed(int from, int to, int on) => Season(
+      id: const SeasonId('s'),
+      label: '2026-2027',
+      startDate: day(from),
+      endDate: day(to),
+      closedOn: day(on),
+    );
+
+    test('a season is open by default', () {
+      expect(season(10, 20).closedOn, isNull);
+      expect(season(10, 20).isClosed, isFalse);
+    });
+
+    test('is open on a day of its period', () {
+      expect(season(10, 20).isOpenOn(day(15)), isTrue);
+      expect(season(10, 20).isOpenOn(day(21)), isFalse);
+    });
+
+    test('is open on its first and last day, not the day around them', () {
+      final s = season(10, 20);
+
+      expect(s.isOpenOn(day(10)), isTrue);
+      expect(s.isOpenOn(day(20)), isTrue);
+      expect(s.isOpenOn(day(9)), isFalse);
+      expect(s.isOpenOn(day(21)), isFalse);
+    });
+
+    test('a closed season is open on no day, even inside its period', () {
+      final s = closed(10, 20, 15);
+
+      expect(s.isClosed, isTrue);
+      expect(s.isOpenOn(day(12)), isFalse);
+      expect(s.contains(day(12)), isTrue);
+    });
+
+    // L'entité accepte une clôture le jour de début (données importées) ;
+    // `CloseSeason` est plus stricte : elle exige un jour postérieur au début.
+    test('accepts a closure on the start day or after the end', () {
+      expect(closed(10, 20, 10).isClosed, isTrue);
+      expect(closed(10, 20, 11).isClosed, isTrue);
+      expect(closed(10, 20, 25).isClosed, isTrue);
+    });
+
+    test('refuses a closure before the start', () {
+      expect(() => closed(10, 20, 9), violation(InvariantCode.invalidPeriod));
+    });
+  });
 }

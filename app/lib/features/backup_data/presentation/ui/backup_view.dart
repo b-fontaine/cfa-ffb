@@ -88,6 +88,11 @@ class BackupView extends StatelessWidget {
                       l10n.backupMergeNote,
                       style: theme.textTheme.bodyMedium,
                     ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      l10n.backupClosureNote,
+                      style: theme.textTheme.bodyMedium,
+                    ),
                     const SizedBox(height: AppSpacing.md),
                     Wrap(
                       spacing: AppSpacing.sm,
@@ -131,5 +136,7 @@ class BackupView extends StatelessWidget {
     l10n.backupAssessments(summary.assessments),
     l10n.backupPlannedSessions(summary.plannedSessions),
     l10n.backupBlockAcquisitions(summary.blockAcquisitions),
+    if (summary.seasonArchives > 0)
+      l10n.backupSeasonArchives(summary.seasonArchives),
   ];
 }

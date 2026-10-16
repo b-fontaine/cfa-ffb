@@ -444,10 +444,22 @@
   "failBackupInvalid": "Ce fichier contient des données invalides.",
   "failBackupInconsistent": "Ce fichier est incohérent : références manquantes ou doublons.",
   "failBackupUnknownSheet": "Ce fichier désigne une séance du catalogue que cette version de l’application ne connaît pas.",
+  "failBackupReopensClosedSeason": "Ce fichier date d’avant la clôture d’une saison de ce club : l’importer rétablirait des élèves effacés.",
   "failBackupUnknownBlock": "La sauvegarde cite un bloc inconnu du catalogue.",
   "failBlockAlreadyAcquired": "Ce bloc est déjà marqué acquis pour cet élève.",
   "failAlertNotActive": "Cette alerte n’est plus active : il n’y a rien à acquitter.",
   "failUnknownSheet": "Cette séance du catalogue est inconnue : choisissez-en une autre.",
+  "failGroupNameTaken": "Un autre groupe de cette saison porte déjà ce nom.",
+  "failGroupNotEmpty": "Ce groupe a encore des élèves : déplacez-les d’abord.",
+  "failGroupHasRecords": "Ce groupe a des séances saisies : il ne peut pas être supprimé.",
+  "failGroupHasPlanned": "Ce groupe a des séances planifiées : supprimez-les ou changez leur groupe d’abord.",
+  "failGroupChoiceRequired": "Plusieurs groupes conviennent : choisissez-en un.",
+  "failMoveBeforeLastPresence": "Choisissez une date postérieure à la dernière séance de l’élève dans son groupe actuel.",
+  "failSeasonClosed": "Cette saison est close : elle n’accepte plus de saisie.",
+  "failSeasonAlreadyClosed": "Cette saison est déjà close.",
+  "failMembershipNotOpen": "Cet élève n’appartient à aucun groupe en ce moment.",
+  "failMembershipAlreadyOpen": "L’élève fait déjà partie de ce groupe.",
+  "failAudienceMismatch": "Ce groupe est d’un autre public : passez par le changement de public.",
   "failGeneric": "Une erreur est survenue. Vérifiez les données et réessayez.",
   "studentsTitle": "Les élèves du club",
   "studentsSubtitle": "Public et alertes de chaque groupe de la saison.",
@@ -3029,5 +3041,385 @@
   "guideBottomBarLabel": "Se déplacer dans la séance",
   "updateBannerMessage": "Une nouvelle version est disponible. Vos données enregistrées sont conservées.",
   "updateBannerAction": "Mettre à jour",
-  "updateBannerLater": "Plus tard"
+  "updateBannerLater": "Plus tard",
+  "groupsNew": "Nouveau groupe",
+  "groupFormCreateTitle": "Nouveau groupe",
+  "groupFormRenameTitle": "Renommer le groupe",
+  "groupFormName": "Nom du groupe",
+  "groupFormCreate": "Créer le groupe",
+  "groupMenuLabel": "Actions du groupe {name}",
+  "@groupMenuLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupRename": "Renommer",
+  "groupDelete": "Supprimer",
+  "groupDeleteTitle": "Supprimer le groupe ?",
+  "groupDeleteBody": "Le groupe « {name} » n’a plus d’élève ni de séance saisie : il sera supprimé.",
+  "@groupDeleteBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupCreated": "Groupe « {name} » créé.",
+  "@groupCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupRenamed": "Groupe renommé en « {name} ».",
+  "@groupRenamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupDeleted": "Groupe « {name} » supprimé.",
+  "@groupDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupChoiceTitle": "Dans quel groupe ?",
+  "groupChoiceHint": "Plusieurs groupes conviennent : choisissez-en un, puis validez à nouveau.",
+  "studentMoveAction": "Changer de groupe",
+  "studentMoveTitle": "Changer {name} de groupe",
+  "@studentMoveTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "studentMoveCurrent": "Groupe actuel : {group}",
+  "@studentMoveCurrent": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "studentMoveNoGroup": "Cet élève n’a pas de groupe pour le moment.",
+  "studentMoveNoDestination": "Aucun autre groupe de ce public dans la saison. Créez-en un depuis la liste des élèves.",
+  "studentMoveTo": "Nouveau groupe",
+  "studentMoveFrom": "À partir du",
+  "studentMoveConfirm": "Déplacer",
+  "studentMoved": "{name} est maintenant dans le groupe « {group} ».",
+  "@studentMoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "moreSeasons": "Saisons passées",
+  "moreSeasonsHint": "Chiffres des saisons closes, sans aucun nom",
+  "seasonsTitle": "Saisons passées",
+  "seasonsSubtitle": "Résultats conservés sans aucun nom.",
+  "seasonsEmpty": "Aucune saison close pour le moment. Quand vous clorez une saison, ses chiffres resteront ici, sans aucun nom.",
+  "seasonsPeriod": "Du {start} au {end}",
+  "@seasonsPeriod": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "seasonsClosedOn": "Close le {date}",
+  "@seasonsClosedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "seasonsNoFigures": "Aucune séance cette saison.",
+  "archiveSessions": "{count, plural, =1{1 séance} other{{count} séances}}",
+  "@archiveSessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archivePresences": "{present} présences sur {possible} possibles",
+  "@archivePresences": {
+    "placeholders": {
+      "present": {
+        "type": "int"
+      },
+      "possible": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveStudents": "{count, plural, =1{1 élève présent} other{{count} élèves présents}}",
+  "@archiveStudents": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveAttempts": "{count, plural, =0{Aucun passage} =1{1 passage} other{{count} passages}}",
+  "@archiveAttempts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveExercisesTitle": "Exercices pratiqués",
+  "archiveExercisesNote": "Les exercices pratiqués par moins de {min} élèves ne sont pas détaillés.",
+  "@archiveExercisesNote": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveColExercise": "Exercice",
+  "archiveColStudents": "Élèves",
+  "archiveColAttempts": "Passages",
+  "archiveColBalls": "Billes",
+  "archiveRowLabel": "{title}, exercice {number} : {students} élèves, {attempts} passages, {potted} billes sur {total}",
+  "@archiveRowLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      },
+      "students": {
+        "type": "int"
+      },
+      "attempts": {
+        "type": "int"
+      },
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveBalls": "{potted} sur {total}",
+  "@archiveBalls": {
+    "placeholders": {
+      "potted": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveExerciseLabel": "{title} · {number}",
+  "@archiveExerciseLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "archiveFiguresWithheld": "Moins de {min} élèves : présences et passages non conservés.",
+  "@archiveFiguresWithheld": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "homeCloseSeasonTitle": "Clôturer la saison {label} ?",
+  "@homeCloseSeasonTitle": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "homeCloseSeasonBody": "Cette saison est terminée. Clôturez-la pour garder ses chiffres sans aucun nom, effacer les élèves qui ne reviennent pas et préparer la saison suivante.",
+  "homeCloseSeasonAction": "Clôturer la saison",
+  "closureTitle": "Clôturer la saison {label}",
+  "@closureTitle": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "closureCancel": "Quitter l’assistant",
+  "closureRecapTitle": "1. Récapitulatif",
+  "closureRecapPeriod": "Saison du {start} au {end}",
+  "@closureRecapPeriod": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "closureRecapLine": "{sessions, plural, =1{1 séance} other{{sessions} séances}}, {presences, plural, =0{aucune présence} =1{1 présence} other{{presences} présences}}",
+  "@closureRecapLine": {
+    "placeholders": {
+      "sessions": {
+        "type": "int"
+      },
+      "presences": {
+        "type": "int"
+      }
+    }
+  },
+  "closureRecapStudents": "{count, plural, =1{1 élève dans la saison} other{{count} élèves dans la saison}}",
+  "@closureRecapStudents": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "closureEarly": "La saison devait finir le {end} : elle sera close aujourd’hui ({date}) et sa fin sera ramenée à ce jour.",
+  "@closureEarly": {
+    "placeholders": {
+      "end": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "closureBackupTitle": "2. Sauvegarde conseillée",
+  "closureBackupBody": "Le fichier de sauvegarde contient les prénoms des élèves qui vont être effacés. Gardez-le en lieu sûr puis supprimez-le : l’importer sur un club vide, un autre appareil par exemple, les rétablirait.",
+  "closureBackupAction": "Exporter une sauvegarde",
+  "closureBackupDone": "Sauvegarde faite.",
+  "closureChoicesTitle": "3. Que faire de chaque élève ?",
+  "closureKeepAll": "Tout reconduire",
+  "closureEraseAll": "Tout effacer",
+  "closureChoiceKeep": "Reconduire",
+  "closureChoiceErase": "Effacer",
+  "closureReasonInactive": "Absent de toutes les séances cette saison",
+  "closureReasonRetention": "Inscrit avant cette saison : conservation limitée à la saison suivante",
+  "closureReasonCarried": "Actif cette saison, inscrit cette saison",
+  "closureTileLabel": "{name} : {choice}",
+  "@closureTileLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "choice": {
+        "type": "String"
+      }
+    }
+  },
+  "closureNoStudents": "Aucun élève dans cette saison.",
+  "closureOptionsTitle": "4. Options",
+  "closurePrepareNext": "Préparer la saison suivante : groupes de même nom, élèves reconduits replacés",
+  "closureDropPlanned": "{count, plural, =0{Aucune séance planifiée à supprimer après la clôture} =1{Supprimer la séance planifiée postérieure à la clôture} other{Supprimer les {count} séances planifiées postérieures à la clôture}}",
+  "@closureDropPlanned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "closureConfirmTitle": "5. Confirmer",
+  "closureSummary": "{erased, plural, =0{Aucun élève à effacer} =1{1 élève à effacer} other{{erased} élèves à effacer}}, {kept, plural, =0{aucun à reconduire} =1{1 à reconduire} other{{kept} à reconduire}}.",
+  "@closureSummary": {
+    "placeholders": {
+      "erased": {
+        "type": "int"
+      },
+      "kept": {
+        "type": "int"
+      }
+    }
+  },
+  "closureActionClose": "Clore la saison",
+  "closureActionEraseAndClose": "{count, plural, =1{Effacer 1 élève et clore} other{Effacer {count} élèves et clore}}",
+  "@closureActionEraseAndClose": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "closureDialogTitle": "{count, plural, =1{Effacer définitivement 1 élève ?} other{Effacer définitivement {count} élèves ?}}",
+  "@closureDialogTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "closureDialogBody": "Cette action est irréversible. Les résultats de la saison sont conservés sans aucun nom.",
+  "closureUnderstood": "J’ai compris",
+  "closureDoneTitle": "Saison close",
+  "closureDoneSeason": "Saison {label} close.",
+  "@closureDoneSeason": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "closureDoneErased": "{count, plural, =1{1 élève effacé} other{{count} élèves effacés}}",
+  "@closureDoneErased": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "closureDoneKept": "{count, plural, =1{1 élève reconduit} other{{count} élèves reconduits}}",
+  "@closureDoneKept": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "closureDoneGroups": "{count, plural, =1{1 groupe préparé} other{{count} groupes préparés}}",
+  "@closureDoneGroups": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "closureDoneBackup": "Vous pouvez exporter une sauvegarde maintenant : elle ne contiendra plus les élèves effacés.",
+  "closureDoneSeasons": "Voir les saisons passées",
+  "closureDoneHome": "Retour à Aujourd’hui",
+  "backupClosureNote": "Si ce fichier date d’avant la clôture d’une saison de ce club, il est refusé : l’importer rétablirait des élèves effacés.",
+  "backupSeasonArchives": "{count, plural, =1{1 archive de saison close} other{{count} archives de saisons closes}}",
+  "@backupSeasonArchives": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

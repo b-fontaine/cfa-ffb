@@ -94,6 +94,7 @@ final _snapshot = BackupSnapshot(
   attempts: [attempt(ref('a', 1), potted: 3)],
   plannedSessions: [_planned],
   blockAcquisitions: [_acquisition],
+  seasonArchives: const [],
   alertAcknowledgements: [_acknowledgement],
 );
 
@@ -112,13 +113,13 @@ void main() {
   test('writes the format, its own version and the export date', () {
     final document = jsonDecode(
       codec.encode(
-        const BackupSnapshot(blockAcquisitions: []),
+        const BackupSnapshot(blockAcquisitions: [], seasonArchives: []),
         exportedAt: _exportedAt,
       ),
     ) as Map<String, Object?>;
 
     expect(document['format'], BackupCodec.format);
-    expect(document['schemaVersion'], 3);
+    expect(document['schemaVersion'], 4);
     expect(document['exportedAt'], '2026-10-12T08:00:00.000Z');
     expect(document['data'], {
       'seasons': <Object?>[],
@@ -130,6 +131,7 @@ void main() {
       'plannedSessions': <Object?>[],
       'blockAcquisitions': <Object?>[],
       'alertAcknowledgements': <Object?>[],
+      'seasonArchives': <Object?>[],
     });
   });
 
@@ -149,7 +151,9 @@ void main() {
     );
     final document = jsonDecode(content) as Map<String, Object?>
       ..['schemaVersion'] = 1;
-    (document['data']! as Map<String, Object?>).remove('alertAcknowledgements');
+    (document['data']! as Map<String, Object?>)
+      ..remove('alertAcknowledgements')
+      ..remove('seasonArchives');
     final stored =
         ((document['data']! as Map<String, Object?>)['assessments']!
                     as List<Object?>)
@@ -188,8 +192,8 @@ void main() {
   });
 
   test('exposes the supported versions', () {
-    expect(BackupCodec.currentVersion, 3);
-    expect(BackupCodec.supportedVersions, {1, 2, 3});
+    expect(BackupCodec.currentVersion, 4);
+    expect(BackupCodec.supportedVersions, {1, 2, 3, 4});
   });
 
   test(
@@ -222,7 +226,9 @@ void main() {
       codec.encode(_snapshot, exportedAt: _exportedAt),
     ) as Map<String, Object?>;
     document['schemaVersion'] = 2;
-    (document['data']! as Map<String, Object?>).remove('alertAcknowledgements');
+    (document['data']! as Map<String, Object?>)
+      ..remove('alertAcknowledgements')
+      ..remove('seasonArchives');
 
     expect(codec.decode(jsonEncode(document)).alertAcknowledgements, isNull);
   });
@@ -249,7 +255,11 @@ void main() {
     );
 
     final content = codec.encode(
-      const BackupSnapshot(blockAcquisitions: [], settings: settings),
+      const BackupSnapshot(
+        blockAcquisitions: [],
+        seasonArchives: [],
+        settings: settings,
+      ),
       exportedAt: _exportedAt,
     );
 
@@ -265,7 +275,7 @@ void main() {
     });
     expect(codec.decode(content).settings, settings);
     final without = codec.encode(
-      const BackupSnapshot(blockAcquisitions: []),
+      const BackupSnapshot(blockAcquisitions: [], seasonArchives: []),
       exportedAt: _exportedAt,
     );
     expect(
@@ -280,12 +290,14 @@ void main() {
   test('still reads a file of format 1, which has no settings', () {
     final document = jsonDecode(
       codec.encode(
-        const BackupSnapshot(blockAcquisitions: []),
+        const BackupSnapshot(blockAcquisitions: [], seasonArchives: []),
         exportedAt: _exportedAt,
       ),
     ) as Map<String, Object?>;
     document['schemaVersion'] = 1;
-    (document['data']! as Map<String, Object?>).remove('alertAcknowledgements');
+    (document['data']! as Map<String, Object?>)
+      ..remove('alertAcknowledgements')
+      ..remove('seasonArchives');
 
     expect(codec.decode(jsonEncode(document)).settings, isNull);
   });
@@ -562,6 +574,7 @@ void main() {
     test('acknowledgements in a file of format 1 or 2', () {
       for (final version in [1, 2]) {
         final d = document()..['schemaVersion'] = version;
+        data(d).remove('seasonArchives');
 
         expect(
           _codeOf(jsonEncode(d)),
@@ -571,7 +584,7 @@ void main() {
       }
     });
 
-    test('a file of format 3 without the alertAcknowledgements key', () {
+    test('a file of format 4 without the alertAcknowledgements key', () {
       final d = document();
       data(d).remove('alertAcknowledgements');
 

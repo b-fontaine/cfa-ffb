@@ -1,11 +1,14 @@
+import 'package:billard_cfa/app/student_eraser.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_catalogue.dart';
 import 'package:billard_cfa/entities/exercise_result/data/in_memory_acknowledgement_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/in_memory_acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/in_memory_attempt_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/data/in_memory_group_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/in_memory_assessment_repository.dart';
+import 'package:billard_cfa/entities/season/data/in_memory_season_archive_repository.dart';
 import 'package:billard_cfa/entities/season/data/in_memory_season_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/entities/session/data/in_memory_session_repository.dart';
@@ -14,12 +17,15 @@ import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
 import 'package:billard_cfa/entities/student/data/in_memory_student_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
+import 'package:billard_cfa/features/close_season/domain/student_eraser.dart';
+import 'package:billard_cfa/features/manage_students/domain/erase_student.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/id_generator.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
+import 'package:billard_cfa/shared/persistence/in_memory_unit_of_work.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'fixtures.dart';
@@ -62,6 +68,7 @@ class DomainWorld {
   final plannedSessions = InMemorySessionRepository();
   final groups = InMemoryGroupRepository();
   final seasons = InMemorySeasonRepository();
+  final seasonArchives = InMemorySeasonArchiveRepository();
   final students = InMemoryStudentRepository();
   final assessments = InMemoryAssessmentRepository();
   final acquisitions = InMemoryAcquisitionRepository();
@@ -69,6 +76,23 @@ class DomainWorld {
   final ids = CountingIds();
 
   late final catalogueRepository = FixedCatalogueRepository(catalogue);
+
+  /// L'effacement d'un élève tel que l'application le relie à la clôture :
+  /// l'enchaînement d'`EraseStudent`, sur ces dépôts ([attempts] pour en
+  /// substituer un).
+  StudentEraser studentEraser({AttemptRepository? attempts}) =>
+      EraseStudentRecords(
+        EraseStudent(
+          students,
+          groups,
+          sessions,
+          attempts ?? this.attempts,
+          assessments,
+          acquisitions,
+          acknowledgements,
+          InMemoryUnitOfWork(),
+        ),
+      );
 
   static ExerciseCatalogue defaultCatalogue() => buildCatalogue();
 

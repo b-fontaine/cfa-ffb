@@ -83,6 +83,15 @@ abstract class Group with _$Group {
     );
   }
 
+  /// Le même groupe sous un autre nom (membres et public inchangés).
+  Group rename(String newName) => Group(
+    id: id,
+    seasonId: seasonId,
+    name: newName.trim(),
+    audience: audience,
+    memberships: memberships,
+  );
+
   /// Clôt l'appartenance ouverte de l'élève à la date [to].
   Group release({required StudentId studentId, required DateTime to}) {
     final open = memberships.indexWhere(

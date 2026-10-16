@@ -5,6 +5,8 @@ import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.d
 import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/drift_assessment_repository.dart';
+import 'package:billard_cfa/entities/season/data/drift_season_archive_repository.dart';
+import 'package:billard_cfa/entities/season/data/drift_season_repository.dart';
 import 'package:billard_cfa/entities/session/data/drift_session_repository.dart';
 import 'package:billard_cfa/entities/session_record/data/drift_session_record_repository.dart';
 import 'package:billard_cfa/entities/settings/data/drift_settings_repository.dart';
@@ -208,6 +210,55 @@ void main() {
     expect(read.date, DateTime(2026, 10, 5));
   });
 
+  test('a fresh database matches the committed v9 snapshot', () async {
+    final connection = await verifier.startAt(9);
+    final db = AppDatabase(connection);
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 9);
+  });
+
+  test('upgrading v8 to v9 keeps a season open, creates empty archive tables '
+      'and keeps the data', () async {
+    final schema = await verifier.schemaAt(8);
+    schema.rawDatabase
+      ..execute(
+        'INSERT INTO seasons (id, created_at, updated_at, label, start_date, '
+        'end_date) '
+        "VALUES ('s1', '2026-10-01T00:00:00.000Z', "
+        "'2026-10-01T00:00:00.000Z', '2026-2027', "
+        "'2026-09-01T00:00:00.000', '2027-06-30T00:00:00.000')",
+      )
+      ..execute(
+        'INSERT INTO attempts (id, created_at, updated_at, student_id, '
+        'session_id, block_id, exercise_number, date, pass_index, potted, '
+        'total) '
+        "VALUES ('a1', '2026-10-01T00:00:00.000Z', "
+        "'2026-10-01T00:00:00.000Z', 's1', 'x1', 'posture', 1, "
+        "'2026-10-01T00:00:00.000', 1, 3, 5)",
+      );
+    final db = AppDatabase(schema.newConnection());
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 9);
+
+    final clock = TickingClock();
+    final seasons = DriftSeasonRepository(db, clock);
+    final season = (await seasons.byId(const SeasonId('s1')))!;
+    expect(season.closedOn, isNull);
+    expect(season.isClosed, isFalse);
+    expect(await DriftSeasonArchiveRepository(db).all(), isEmpty);
+    expect(
+      (await DriftAttemptRepository(db, clock).all()).single.id.value,
+      'a1',
+    );
+    await seasons.save(season.copyWith(closedOn: DateTime(2027, 6, 30)));
+    expect(
+      (await seasons.byId(const SeasonId('s1')))!.closedOn,
+      DateTime(2027, 6, 30),
+    );
+  });
+
   test('the settings table holds a single row (id = 1)', () async {
     final db = openMemoryDatabase();
     addTearDown(db.close);
@@ -385,7 +436,7 @@ void main() {
   test('refuses to open a database written by a newer version', () async {
     final db = AppDatabase(
       NativeDatabase.memory(
-        setup: (raw) => raw.execute('PRAGMA user_version = 9'),
+        setup: (raw) => raw.execute('PRAGMA user_version = 10'),
       ),
     );
     addTearDown(db.close);
@@ -394,9 +445,9 @@ void main() {
       db.customSelect('SELECT 1').get(),
       throwsA(
         isA<DowngradeNotSupported>()
-            .having((e) => e.from, 'from', 9)
-            .having((e) => e.to, 'to', 8)
-            .having((e) => e.toString(), 'message', contains('version 9')),
+            .having((e) => e.from, 'from', 10)
+            .having((e) => e.to, 'to', 9)
+            .having((e) => e.toString(), 'message', contains('version 10')),
       ),
     );
   });

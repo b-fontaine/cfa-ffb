@@ -59,6 +59,7 @@ import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' show Environment;
 
+import 'closure_ops.dart';
 import 'fixed_clock.dart';
 import 'settings_names.dart';
 
@@ -128,6 +129,8 @@ class TrackingWorld {
   late Result<ClubSettings> lastSettingsSave;
 
   static Future<TrackingWorld> open(WidgetTester tester, String label) async {
+    createdGroups.clear();
+    ClosureOps.reset();
     await getIt.reset();
     await configureDependencies(environment: Environment.test);
     // « Aujourd'hui » est connu : « faite », « future » dépendent de l'horloge.
@@ -159,7 +162,12 @@ class TrackingWorld {
 
   static StudentId studentId(String name) => StudentId('student-$name');
 
-  static GroupId groupId(String name) => GroupId('group-$name');
+  /// Groupes créés par un cas d'usage (lot 11) : leur identifiant n'est pas
+  /// dérivé du nom. Vidé à l'ouverture de chaque scénario.
+  static final Map<String, GroupId> createdGroups = {};
+
+  static GroupId groupId(String name) =>
+      createdGroups[name] ?? GroupId('group-$name');
 
   static List<String> names(String list) =>
       list.split(',').map((name) => name.trim()).toList();
@@ -218,6 +226,47 @@ class TrackingWorld {
     );
     _groupOfStudent[student] = group;
     _audienceOfGroup[group] = audience;
+  }
+
+  /// Un élève inscrit avant la saison ([enrolledOn]) mais membre du groupe
+  /// depuis le début de la saison courante.
+  Future<void> addVeteran({
+    required String group,
+    required String student,
+    required DateTime enrolledOn,
+  }) async {
+    final groups = getIt<GroupRepository>();
+    final existing = (await groups.byId(groupId(group)))!;
+    final audience = _audienceOfGroup[group]!;
+    await groups.save(
+      existing.admit(
+        studentId: studentId(student),
+        studentAudience: audience,
+        from: DateTime(2026, 9),
+      ),
+    );
+    await getIt<StudentRepository>().save(
+      Student.enroll(
+        id: studentId(student),
+        firstName: student,
+        audience: audience,
+        since: enrolledOn,
+      ),
+    );
+    _groupOfStudent[student] = group;
+  }
+
+  /// Un élève du club qu'aucun groupe ne place (jamais placé, ou gardé par une
+  /// clôture sans saison suivante).
+  Future<void> addUngrouped(String student) async {
+    await getIt<StudentRepository>().save(
+      Student.enroll(
+        id: studentId(student),
+        firstName: student,
+        audience: Audience.children,
+        since: DateTime(2026, 9),
+      ),
+    );
   }
 
   Future<SessionRecord> openSession({
@@ -604,8 +653,10 @@ class TrackingWorld {
     document['schemaVersion'] = version;
     (document['data']! as Map<String, Object?>)
       ..remove('settings')
-      // Les formats 1 et 2 ne connaissent pas les acquittements (ADR 0013).
-      ..remove('alertAcknowledgements');
+      // Les formats 1 et 2 ne connaissent pas les acquittements (ADR 0013),
+      // les formats 1 à 3 pas les archives de saisons (ADR 0019).
+      ..remove('alertAcknowledgements')
+      ..remove('seasonArchives');
     return jsonEncode(document);
   }
 
@@ -626,13 +677,15 @@ class TrackingWorld {
     return settings[SettingsNames.key(name)]! as int;
   }
 
-  /// La sauvegarde exportée au format [version] : sans la clé des
-  /// acquittements (formats 1 et 2) ni celle des réglages (format 1).
+  /// La sauvegarde exportée au format [version] : sans la clé des archives
+  /// (formats 1 à 3), des acquittements (formats 1 et 2) ni des réglages
+  /// (format 1).
   String backupAtFormat(int version) {
     final document = jsonDecode(backup) as Map<String, Object?>;
     document['schemaVersion'] = version;
     final data = document['data']! as Map<String, Object?>
-      ..remove('alertAcknowledgements');
+      ..remove('seasonArchives');
+    if (version < 3) data.remove('alertAcknowledgements');
     if (version < 2) data.remove('settings');
     return jsonEncode(document);
   }

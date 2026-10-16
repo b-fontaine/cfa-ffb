@@ -12,5 +12,8 @@ sealed class StudentFormEvent with _$StudentFormEvent {
 
     /// Nom du groupe créé si le public n'en a pas encore (texte localisé).
     required String groupName,
+
+    /// Groupe choisi quand le public en compte plusieurs.
+    GroupId? groupId,
   }) = StudentFormSubmitted;
 }

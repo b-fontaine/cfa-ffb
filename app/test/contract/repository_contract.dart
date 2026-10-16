@@ -219,6 +219,38 @@ void repositoryContract(
       );
     });
 
+    group('clôture des saisons', () {
+      test(
+        'stores the closing day and reopens when saved without it',
+        () async {
+          final closed = _season('a').copyWith(closedOn: DateTime(2027, 6, 30));
+
+          await repos.seasons.save(closed);
+          final read = await repos.seasons.byId(const SeasonId('a'));
+          expect(read, closed);
+          expect(read!.isClosed, isTrue);
+
+          await repos.seasons.save(_season('a'));
+          expect(await repos.seasons.byId(const SeasonId('a')), _season('a'));
+          expect(
+            (await repos.seasons.byId(const SeasonId('a')))!.closedOn,
+            isNull,
+          );
+        },
+      );
+
+      test('a season with a reduced end date keeps both dates', () async {
+        final early = _season('a').copyWith(
+          endDate: DateTime(2026, 10, 12),
+          closedOn: DateTime(2026, 10, 12),
+        );
+
+        await repos.seasons.save(early);
+
+        expect(await repos.seasons.byId(const SeasonId('a')), early);
+      });
+    });
+
     group('séances données', () {
       test('round-trips presences and optional blocks', () async {
         final full = _record(

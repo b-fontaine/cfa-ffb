@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/features/manage_students/domain/enroll_student.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
@@ -29,11 +30,13 @@ void main() {
     Audience audience = Audience.children,
     DateTime? today,
     String? groupName,
+    GroupId? groupId,
   }) => enroll(
     firstName: firstName,
     audience: audience,
     today: today ?? day(12),
     groupName: groupName,
+    groupId: groupId,
   );
 
   test('enrols the student in the group of the season of today', () async {
@@ -144,5 +147,55 @@ void main() {
     expect(codeOf(await call(firstName: '  ')), InvariantCode.blankName);
     expect(await world.students.all(), hasLength(1));
     expect(await world.groups.all(), hasLength(1));
+  });
+
+  group('several groups for the audience', () {
+    Future<void> addSecondGroup() => world.groups.save(
+      Group(
+        id: const GroupId('g2'),
+        seasonId: const SeasonId('season'),
+        name: 'Mercredi',
+        audience: Audience.children,
+      ),
+    );
+
+    test('asks for a group when the audience has several', () async {
+      await world.seedClub();
+      await addSecondGroup();
+
+      expect(codeOf(await call()), InvariantCode.groupChoiceRequired);
+      expect(await world.students.all(), hasLength(1));
+    });
+
+    test('enrols in the requested group', () async {
+      await world.seedClub();
+      await addSecondGroup();
+
+      final enrolled = ok(await call(groupId: const GroupId('g2')));
+
+      expect(enrolled.group.id, const GroupId('g2'));
+      expect(enrolled.group.isMemberOn(enrolled.student.id, day(12)), isTrue);
+      final other = await world.groups.byId(const GroupId('g1'));
+      expect(other!.memberships.map((m) => m.studentId), [
+        const StudentId('s1'),
+      ]);
+    });
+
+    test('refuses a requested group of another audience', () async {
+      await world.seedClub(studentNames: const []);
+      await world.groups.save(
+        Group(
+          id: const GroupId('ga'),
+          seasonId: const SeasonId('season'),
+          name: 'Adultes',
+          audience: Audience.adults,
+        ),
+      );
+
+      expect(
+        codeOf(await call(groupId: const GroupId('ga'))),
+        InvariantCode.audienceMismatch,
+      );
+    });
   });
 }

@@ -67,6 +67,7 @@ class PreviewWorld {
     required this.adults,
     required this.classmate,
     required this.childrenGroup,
+    required this.seasonId,
     required this.sessionId,
     required this.today,
     required this.catalogue,
@@ -78,6 +79,9 @@ class PreviewWorld {
   /// Un camarade de Léa dans le même groupe (grille et alertes de groupe).
   final Student classmate;
   final GroupId childrenGroup;
+
+  /// La saison en cours du club de démonstration.
+  final SeasonId seasonId;
   final SessionId sessionId;
   final DateTime today;
   final ExerciseCatalogue catalogue;
@@ -201,6 +205,7 @@ class PreviewWorld {
       adults: marc.student,
       classmate: hugo.student,
       childrenGroup: lea.group.id,
+      seasonId: lea.group.seasonId,
       sessionId: sessionId,
       today: today,
       catalogue: catalogue,

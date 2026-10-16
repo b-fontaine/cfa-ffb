@@ -48,6 +48,10 @@ class Seasons extends Table with AuditColumns {
   TextColumn get startDate => text().map(const IsoDateTimeConverter())();
 
   TextColumn get endDate => text().map(const IsoDateTimeConverter())();
+
+  /// Jour de clôture (schéma version 9, ADR 0019) ; nul = saison ouverte.
+  TextColumn get closedOn =>
+      text().map(const IsoDateTimeConverter()).nullable()();
 }
 
 @DataClassName('GroupRow')
@@ -236,4 +240,45 @@ class AppSettings extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {id};
+}
+
+/// Archive agrégée d'une saison close, par public (schéma version 9, ADR 0019).
+/// Aucun identifiant d'élève, aucun groupe, aucune date de séance. Pas
+/// d'`AuditColumns` : agrégat calculé une fois, remplacé en bloc par saison.
+/// Pas de clé étrangère vers `seasons` (suppression logique).
+@DataClassName('SeasonArchiveAudienceRow')
+class SeasonArchiveAudiences extends Table {
+  TextColumn get seasonId => text()();
+  TextColumn get audience => text()();
+  IntColumn get sessionCount => integer()();
+  IntColumn get presenceCount => integer()();
+  IntColumn get possiblePresenceCount => integer()();
+  IntColumn get studentCount => integer()();
+  IntColumn get attemptCount => integer()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {seasonId, audience};
+}
+
+/// Lignes par exercice de l'archive ; `student_count >= 3` est garanti par la
+/// construction de l'agrégat et revérifié à l'import. Pas de clé étrangère
+/// vers le catalogue (asset).
+@DataClassName('SeasonArchiveExerciseRow')
+class SeasonArchiveExercises extends Table {
+  TextColumn get seasonId => text()();
+  TextColumn get audience => text()();
+  TextColumn get blockId => text()();
+  IntColumn get exerciseNumber => integer()();
+  IntColumn get studentCount => integer()();
+  IntColumn get attemptCount => integer()();
+  IntColumn get potted => integer()();
+  IntColumn get total => integer()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {
+    seasonId,
+    audience,
+    blockId,
+    exerciseNumber,
+  };
 }

@@ -87,6 +87,12 @@ const _expected = <InvariantCode, (String, String)>{
     'This file contains invalid data.',
     'Ce fichier contient des données invalides.',
   ),
+  InvariantCode.backupReopensClosedSeason: (
+    'This file predates the closing of a season of this club: importing it '
+        'would bring erased students back.',
+    'Ce fichier date d’avant la clôture d’une saison de ce club : l’importer '
+        'rétablirait des élèves effacés.',
+  ),
   InvariantCode.backupInconsistent: (
     'This file is inconsistent: missing references or duplicates.',
     'Ce fichier est incohérent : références manquantes ou doublons.',
@@ -100,6 +106,41 @@ const _expected = <InvariantCode, (String, String)>{
   InvariantCode.blockAlreadyAcquired: (
     'This block is already marked as acquired for this student.',
     'Ce bloc est déjà marqué acquis pour cet élève.',
+  ),
+  InvariantCode.groupNameTaken: (
+    'Another group of this season already has this name.',
+    'Un autre groupe de cette saison porte déjà ce nom.',
+  ),
+  InvariantCode.groupNotEmpty: (
+    'This group still has members: move them first.',
+    'Ce groupe a encore des élèves : déplacez-les d’abord.',
+  ),
+  InvariantCode.groupHasRecords: (
+    'This group has recorded sessions: it cannot be deleted.',
+    'Ce groupe a des séances saisies : il ne peut pas être supprimé.',
+  ),
+  InvariantCode.groupHasPlanned: (
+    'This group has planned sessions: delete them or change their group '
+        'first.',
+    'Ce groupe a des séances planifiées : supprimez-les ou changez leur '
+        'groupe d’abord.',
+  ),
+  InvariantCode.groupChoiceRequired: (
+    'Several groups fit: choose one.',
+    'Plusieurs groupes conviennent : choisissez-en un.',
+  ),
+  InvariantCode.moveBeforeLastPresence: (
+    'Choose a date after the student’s last session in the current group.',
+    'Choisissez une date postérieure à la dernière séance de l’élève '
+        'dans son groupe actuel.',
+  ),
+  InvariantCode.seasonClosed: (
+    'This season is closed: it accepts no new entry.',
+    'Cette saison est close : elle n’accepte plus de saisie.',
+  ),
+  InvariantCode.seasonAlreadyClosed: (
+    'This season is already closed.',
+    'Cette saison est déjà close.',
   ),
   InvariantCode.alertNotActive: (
     'This alert is no longer active: there is nothing to acknowledge.',
@@ -125,10 +166,19 @@ const _expected = <InvariantCode, (String, String)>{
   InvariantCode.unknownExercise: (_genericEn, _genericFr),
   InvariantCode.unknownBlock: (_genericEn, _genericFr),
   InvariantCode.unknownGroup: (_genericEn, _genericFr),
-  InvariantCode.audienceMismatch: (_genericEn, _genericFr),
+  InvariantCode.audienceMismatch: (
+    'This group is for another audience: use the audience change instead.',
+    'Ce groupe est d’un autre public : passez par le changement de public.',
+  ),
   InvariantCode.emptyAudienceHistory: (_genericEn, _genericFr),
-  InvariantCode.membershipAlreadyOpen: (_genericEn, _genericFr),
-  InvariantCode.membershipNotOpen: (_genericEn, _genericFr),
+  InvariantCode.membershipAlreadyOpen: (
+    'The student already belongs to this group.',
+    'L’élève fait déjà partie de ce groupe.',
+  ),
+  InvariantCode.membershipNotOpen: (
+    'This student does not belong to a group at the moment.',
+    'Cet élève n’appartient à aucun groupe en ce moment.',
+  ),
   InvariantCode.membershipPeriodInvalid: (_genericEn, _genericFr),
   InvariantCode.recallEqualsMainBlock: (_genericEn, _genericFr),
   InvariantCode.invalidCatalogue: (_genericEn, _genericFr),
@@ -171,6 +221,6 @@ void main() {
         if (entry.value.$1 == _genericEn) entry.key,
     };
 
-    expect(generic, hasLength(17));
+    expect(generic, hasLength(14));
   });
 }

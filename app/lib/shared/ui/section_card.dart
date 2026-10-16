@@ -19,6 +19,7 @@ class SectionCard extends StatelessWidget {
     required this.child,
     this.emphasis = SectionEmphasis.low,
     this.header,
+    this.trailing,
     super.key,
   });
 
@@ -29,6 +30,9 @@ class SectionCard extends StatelessWidget {
   /// Remplace le texte du titre par un composant (un `StudentChip`, par
   /// exemple) ; [title] reste le libellé sémantique de l'en-tête.
   final Widget? header;
+
+  /// Action alignée à droite du titre (un menu ⋮, par exemple).
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -57,10 +61,19 @@ class SectionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Semantics(
-              header: true,
-              label: header == null ? null : title,
-              child: header ?? Text(title, style: theme.textTheme.titleMedium),
+            Row(
+              children: [
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    label: header == null ? null : title,
+                    child:
+                        header ??
+                        Text(title, style: theme.textTheme.titleMedium),
+                  ),
+                ),
+                ?trailing,
+              ],
             ),
             const SizedBox(height: AppSpacing.sm),
             child,

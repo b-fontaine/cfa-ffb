@@ -25,6 +25,7 @@ class DriftSeasonRepository implements SeasonRepository {
             label: season.label,
             startDate: season.startDate,
             endDate: season.endDate,
+            closedOn: Value(season.closedOn),
             createdAt: now,
             updatedAt: now,
           ),
@@ -33,6 +34,7 @@ class DriftSeasonRepository implements SeasonRepository {
               label: Value(season.label),
               startDate: Value(season.startDate),
               endDate: Value(season.endDate),
+              closedOn: Value(season.closedOn),
               updatedAt: Value(now),
               deletedAt: const Value(null),
             ),
@@ -71,5 +73,6 @@ class DriftSeasonRepository implements SeasonRepository {
     label: row.label,
     startDate: row.startDate,
     endDate: row.endDate,
+    closedOn: row.closedOn,
   );
 }

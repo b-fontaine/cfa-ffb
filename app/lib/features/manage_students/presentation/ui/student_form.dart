@@ -2,8 +2,10 @@ import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_form_bloc.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/ui/audience_labels.dart';
 import 'package:billard_cfa/shared/ui/failure_message.dart';
+import 'package:billard_cfa/shared/ui/group_choice_picker.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +22,7 @@ class StudentForm extends StatefulWidget {
 class _StudentFormState extends State<StudentForm> {
   final _name = TextEditingController();
   Audience _audience = Audience.children;
+  GroupId? _groupId;
   Student? _filledFrom;
 
   @override
@@ -45,6 +48,7 @@ class _StudentFormState extends State<StudentForm> {
       builder: (context, state) {
         final editing = state.student != null;
         final failure = state.failure;
+        final choosing = state.choices.isNotEmpty;
         final saving = state.status == StudentFormStatus.saving;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -55,7 +59,8 @@ class _StudentFormState extends State<StudentForm> {
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
                 labelText: l10n.studentFormFirstName,
-                errorText: failure == null
+                // Le choix du groupe porte son propre message.
+                errorText: failure == null || choosing
                     ? null
                     : failureMessage(l10n, failure),
               ),
@@ -91,6 +96,14 @@ class _StudentFormState extends State<StudentForm> {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
+            if (choosing) ...[
+              const SizedBox(height: AppSpacing.md),
+              GroupChoicePicker(
+                choices: state.choices,
+                selected: _groupId,
+                onChanged: (id) => setState(() => _groupId = id),
+              ),
+            ],
             const SizedBox(height: AppSpacing.md),
             FilledButton(
               onPressed: saving
@@ -100,6 +113,7 @@ class _StudentFormState extends State<StudentForm> {
                         firstName: _name.text,
                         audience: _audience,
                         groupName: _audience.groupName(l10n),
+                        groupId: _groupId,
                       ),
                     ),
               child: Text(l10n.commonSave),

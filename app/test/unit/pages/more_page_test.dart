@@ -9,7 +9,11 @@ void main() {
     var opened = 0;
     await pumpUi(
       tester,
-      MorePage(onOpenBackup: () => opened++, onOpenSettings: () {}),
+      MorePage(
+        onOpenBackup: () => opened++,
+        onOpenSettings: () {},
+        onOpenSeasons: () {},
+      ),
     );
 
     expect(find.text('More'), findsOneWidget);
@@ -23,7 +27,11 @@ void main() {
     var opened = 0;
     await pumpUi(
       tester,
-      MorePage(onOpenBackup: () {}, onOpenSettings: () => opened++),
+      MorePage(
+        onOpenBackup: () {},
+        onOpenSettings: () => opened++,
+        onOpenSeasons: () {},
+      ),
     );
 
     await tester.tap(find.text('Settings'));
@@ -32,9 +40,16 @@ void main() {
   });
 
   testWidgets('offers only entries that lead somewhere', (tester) async {
-    await pumpUi(tester, MorePage(onOpenBackup: () {}, onOpenSettings: () {}));
+    await pumpUi(
+      tester,
+      MorePage(
+        onOpenBackup: () {},
+        onOpenSettings: () {},
+        onOpenSeasons: () {},
+      ),
+    );
 
-    expect(find.byType(ListTile), findsNWidgets(2));
+    expect(find.byType(ListTile), findsNWidgets(3));
     for (final tile in tester.widgetList(find.byType(ListTile))) {
       expect(tile, isA<ListTile>().having((t) => t.onTap, 'onTap', isNotNull));
     }
@@ -47,12 +62,36 @@ void main() {
   testWidgets('is in French on a French device', (tester) async {
     await pumpUi(
       tester,
-      MorePage(onOpenBackup: () {}, onOpenSettings: () {}),
+      MorePage(
+        onOpenBackup: () {},
+        onOpenSettings: () {},
+        onOpenSeasons: () {},
+      ),
       locale: const Locale('fr'),
     );
 
     expect(find.text('Plus'), findsOneWidget);
     expect(find.text('Sauvegarde'), findsOneWidget);
     expect(find.text('Réglages'), findsOneWidget);
+  });
+
+  testWidgets('lists the past seasons and opens them', (tester) async {
+    var opened = 0;
+    await pumpUi(
+      tester,
+      MorePage(
+        onOpenBackup: () {},
+        onOpenSettings: () {},
+        onOpenSeasons: () => opened++,
+      ),
+    );
+
+    expect(
+      find.text('Figures of closed seasons, without any name'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Past seasons'));
+
+    expect(opened, 1);
   });
 }

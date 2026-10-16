@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/features/manage_students/domain/club_overview.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
@@ -16,12 +17,17 @@ class ClubList extends StatelessWidget {
     required this.club,
     required this.onOpenStudent,
     required this.onOpenGroup,
+    this.groupMenu,
     super.key,
   });
 
   final ClubOverview club;
   final ValueChanged<StudentId> onOpenStudent;
   final ValueChanged<GroupId> onOpenGroup;
+
+  /// Menu d'actions d'un groupe, fourni par la page (la gestion des groupes
+  /// est une autre feature).
+  final Widget Function(Group group)? groupMenu;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +38,7 @@ class ClubList extends StatelessWidget {
         for (final group in club.groups) ...[
           SectionCard(
             title: group.group.name,
+            trailing: groupMenu?.call(group.group),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

@@ -200,4 +200,18 @@ void main() {
 
     expect(ok(await f.open(present: {})).present, isEmpty);
   });
+
+  test('refuses a closed season, even on a day inside its period', () async {
+    final world = DomainWorld();
+    await world.seedClub();
+    await world.seasons.save(
+      (await world.seasons.byId(const SeasonId('season')))!
+          .copyWith(closedOn: day(10)),
+    );
+
+    final result = await Fixture(world).open();
+
+    expect(codeOf(result), InvariantCode.seasonClosed);
+    expect(await world.sessions.all(), isEmpty);
+  });
 }

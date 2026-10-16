@@ -74,4 +74,15 @@ void main() {
       const GroupId('old-group'),
     ]);
   });
+
+  test('never offers the groups of a closed season', () async {
+    await world.seasons.save(
+      (await world.seasons.byId(const SeasonId('season')))!
+          .copyWith(closedOn: day(10)),
+    );
+
+    final groups = await list(today: day(12));
+
+    expect(groups.map((g) => g.id), [const GroupId('old-group')]);
+  });
 }

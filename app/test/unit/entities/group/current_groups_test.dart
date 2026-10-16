@@ -33,4 +33,24 @@ void main() {
       throwsUnsupportedError,
     );
   });
+
+  test('never returns the groups of a closed season', () {
+    final current = currentGroups(
+      groups,
+      currentSeasons: const {},
+      closedSeasons: {const SeasonId('past')},
+    );
+
+    expect(current.map((g) => g.id), [const GroupId('g1')]);
+  });
+
+  test('a closed season is excluded even when it is listed as current', () {
+    final current = currentGroups(
+      groups,
+      currentSeasons: {const SeasonId('now'), const SeasonId('past')},
+      closedSeasons: {const SeasonId('past')},
+    );
+
+    expect(current.map((g) => g.id), [const GroupId('g1')]);
+  });
 }

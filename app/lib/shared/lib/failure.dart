@@ -42,9 +42,18 @@ enum InvariantCode {
   backupInvalid,
   backupInconsistent,
   backupUnknownSheet,
+  backupReopensClosedSeason,
   blockAlreadyAcquired,
   backupUnknownBlock,
   alertNotActive,
+  groupNameTaken,
+  groupNotEmpty,
+  groupHasRecords,
+  groupHasPlanned,
+  groupChoiceRequired,
+  moveBeforeLastPresence,
+  seasonClosed,
+  seasonAlreadyClosed,
 }
 
 /// Échec métier attendu (sceller : un `switch` exhaustif suffit à le traiter).

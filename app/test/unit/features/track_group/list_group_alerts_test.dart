@@ -134,4 +134,17 @@ void main() {
 
     expect(ok(await list(today: day(12))).lines, isEmpty);
   });
+
+  test('ignores the groups of a closed season', () async {
+    await miss('s1', 'a');
+    await miss('s2', 'a');
+    await world.seasons.save(
+      (await world.seasons.byId(const SeasonId('season')))!
+          .copyWith(closedOn: day(10)),
+    );
+
+    final result = ok(await list(today: day(12)));
+
+    expect(result.lines, isEmpty);
+  });
 }
