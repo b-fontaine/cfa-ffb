@@ -51,6 +51,7 @@ import 'package:billard_cfa/features/track_progress/domain/watch_list.dart';
 import 'package:billard_cfa/features/track_progress/domain/week_summary.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
+import 'package:billard_cfa/shared/lib/date_only.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
@@ -723,4 +724,19 @@ class TrackingWorld {
   };
 
   static T valueOf<T>(Result<T> result) => _valueOf(result);
+
+  /// Saisies du groupe [group] datées du jour [date] (ISO), lues dans le dépôt.
+  static Future<List<SessionRecord>> recordsOn(
+    String group,
+    String date,
+  ) async {
+    final day = TrackingWorld.date(date);
+    final records = await getIt<SessionRecordRepository>().forGroup(
+      groupId(group),
+    );
+    return [
+      for (final record in records)
+        if (record.date.isSameDayAs(day)) record,
+    ];
+  }
 }

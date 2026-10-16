@@ -1,5 +1,10 @@
 import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart'
+    hide AlertLevel;
+import 'package:billard_cfa/features/record_results/domain/recorded_attempt.dart';
 import 'package:billard_cfa/features/record_results/presentation/ui/student_pass_row.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:billard_cfa/shared/lib/success_rate.dart';
 import 'package:billard_cfa/shared/ui/app_alert.dart';
 import 'package:billard_cfa/shared/ui/counter_field.dart';
@@ -20,6 +25,8 @@ Widget _row({
   void Function(int, int)? onSubmit,
   String? refused,
   SuccessRate? rate,
+  RecordedAttempt? feedback,
+  String? nextExerciseLabel,
 }) => StudentPassRow(
   studentName: 'Léa',
   spec: rate == null ? _spec : ExerciseSpec(ref: ref('a', 1), rate: rate),
@@ -38,7 +45,28 @@ Widget _row({
   passesRequired: 5,
   onSubmit: onSubmit ?? (_, _) {},
   refusedMessage: refused,
+  feedback: feedback,
+  nextExerciseLabel: nextExerciseLabel,
 );
+
+/// Retour d'un passage de 6 sur 6 qui valide l'exercice.
+RecordedAttempt _validatingFeedback() {
+  final last = attempt(ref('a', 1), potted: 6, total: 6, passIndex: 2);
+  return RecordedAttempt(
+    attempt: last,
+    result: ExerciseResult.derive(
+      studentId: const StudentId('s1'),
+      exercise: ref('a', 1),
+      rate: _spec.rate,
+      attempts: [last],
+      config: RulesConfig(),
+    ),
+    passed: true,
+    justValidated: true,
+    resumedFromPlacement: false,
+    nextExercise: ref('a', 2),
+  );
+}
 
 void main() {
   testWidgets('taps four dots out of six then submits 4 of 6', (tester) async {
@@ -249,6 +277,63 @@ void main() {
 
       expect(find.byType(CounterField), findsNothing);
       expect(find.text('Attempts: 7 (sheet: 6)'), findsOneWidget);
+    });
+  });
+
+  group('the compact row on a phone with passes already recorded', () {
+    void phone(WidgetTester tester) {
+      tester.view
+        ..physicalSize = const Size(390, 844)
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+    }
+
+    testWidgets('shows a missed pass and a reached pass in words', (
+      tester,
+    ) async {
+      phone(tester);
+      await pumpUi(tester, _row(passes: [(2, 6)]));
+
+      expect(find.text('Pass 1: 2 of 6, missed'), findsOneWidget);
+      expect(find.byKey(const ValueKey('pass-submit')), findsOneWidget);
+    });
+
+    testWidgets('shows the limit instead of the entry at the maximum', (
+      tester,
+    ) async {
+      phone(tester);
+      await pumpUi(tester, _row(passes: [(4, 6), (2, 6)], passed: 1));
+
+      expect(find.text('Pass 1: 4 of 6, reached'), findsOneWidget);
+      expect(find.text('Pass 2: 2 of 6, missed'), findsOneWidget);
+      expect(find.byKey(const ValueKey('pass-submit')), findsNothing);
+      expect(find.text('Maximum reached for this session'), findsOneWidget);
+    });
+  });
+
+  group('the feedback of the last pass', () {
+    testWidgets('names the next exercise once the exercise is validated', (
+      tester,
+    ) async {
+      await pumpUi(
+        tester,
+        _row(
+          feedback: _validatingFeedback(),
+          nextExerciseLabel: 'Posture, exercice 2',
+        ),
+      );
+
+      expect(find.text('Exercise validated!'), findsOneWidget);
+      expect(find.text('Next exercise: Posture, exercice 2'), findsOneWidget);
+    });
+
+    testWidgets('says there is no next exercise at the end of the level', (
+      tester,
+    ) async {
+      await pumpUi(tester, _row(feedback: _validatingFeedback()));
+
+      expect(find.text('Exercise validated!'), findsOneWidget);
+      expect(find.text('Level 1 completed for this student.'), findsOneWidget);
     });
   });
 

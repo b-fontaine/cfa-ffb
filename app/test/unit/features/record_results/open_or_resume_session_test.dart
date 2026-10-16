@@ -227,6 +227,36 @@ void main() {
     },
   );
 
+  // Reprise depuis le formulaire manuel (aucune séance du catalogue demandée) :
+  // la saisie du jour est reprise sans perdre sa séance, et une autre saisie
+  // du même jour n'est pas touchée (D1 résiduel, ADR 0016, U-1).
+  test(
+    'resumes without sheet the first record of the day and keeps both',
+    () async {
+      final posture = ok(await call(sheet: 'posture-1'));
+      final demi = ok(await call(sheet: 'demi-bille-2'));
+
+      final resumed = ok(await call(present: {'s1', 's2'}));
+
+      expect(resumed.id, posture.id);
+      expect(resumed.sheetId, SheetId('posture-1'));
+      expect(resumed.present, {const StudentId('s1'), const StudentId('s2')});
+      final records = await world.sessions.forGroup(const GroupId('g1'));
+      expect(records, hasLength(2));
+      expect(records.firstWhere((r) => r.id == demi.id), demi);
+    },
+  );
+
+  test('resumes without sheet the record that has no sheet first', () async {
+    ok(await call(sheet: 'posture-1'));
+    await world.session(id: 'x-free', dayOfMonth: 5);
+
+    final resumed = ok(await call(present: {'s1', 's2'}));
+
+    expect(resumed.id, const SessionId('x-free'));
+    expect(resumed.sheetId, isNull);
+  });
+
   test(
     'resumes the session of another day only when it is the same day',
     () async {

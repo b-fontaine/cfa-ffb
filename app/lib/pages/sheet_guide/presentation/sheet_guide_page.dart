@@ -111,13 +111,10 @@ class SheetGuidePage extends StatelessWidget {
                     },
                     onRestart: () =>
                         unawaited(context.read<RunSheetCubit>().restart()),
-                    onRecord: (exercise) => onRecord(
-                      exercise,
-                      plan!.sheet.catalogueBlock,
-                      exercise.blockId != plan.sheet.catalogueBlock
-                          ? exercise.blockId
-                          : plan.recallBlockId,
-                    ),
+                    onRecord: (exercise) {
+                      final blocks = plan!.recordBlocksFor(exercise);
+                      onRecord(exercise, blocks.main, blocks.recall);
+                    },
                   ),
                 ),
               ),

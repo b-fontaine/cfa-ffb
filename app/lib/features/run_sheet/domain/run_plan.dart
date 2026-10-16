@@ -9,6 +9,7 @@ import 'package:billard_cfa/entities/session_sheet/domain/sheet_timing.dart';
 import 'package:billard_cfa/features/run_sheet/domain/recall_exercise.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
 import 'package:billard_cfa/shared/lib/session_shape.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -80,6 +81,19 @@ abstract class RunPlan with _$RunPlan {
   const RunPlan._();
 
   int get stepCount => steps.length;
+
+  /// Blocs de la saisie ouverte depuis l'exercice [exercise] du guide : le bloc
+  /// principal est toujours celui de la séance du catalogue ; le bloc de rappel
+  /// est celui de l'exercice quand il vient d'un autre bloc (créneau de
+  /// rappel, ADR 0011), sinon le bloc du rappel de résultats ([recallBlockId],
+  /// éventuellement `null`).
+  ({String main, String? recall}) recordBlocksFor(ExerciseRef exercise) {
+    final main = sheet.catalogueBlock;
+    return (
+      main: main,
+      recall: exercise.blockId != main ? exercise.blockId : recallBlockId,
+    );
+  }
 
   /// Ramène [step] dans la plage des étapes.
   int clamp(int step) => step.clamp(0, steps.length - 1);

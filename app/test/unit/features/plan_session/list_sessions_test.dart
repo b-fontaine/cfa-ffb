@@ -176,6 +176,83 @@ void main() {
     },
   );
 
+  // D1 résiduel (ADR 0016, U-1) : une saisie sans séance du catalogue est
+  // prise pour celle de chaque planifiée du jour, quelle que soit sa séance.
+  // Ce test fige le défaut connu : l'inverser quand U-1 sera traité.
+  test(
+    'takes one record without catalogue session for two planned sessions',
+    () async {
+      await plan(
+        'p-posture',
+        12,
+        group: const GroupId('g1'),
+        sheet: 'posture-1',
+      );
+      await plan(
+        'p-demi',
+        12,
+        group: const GroupId('g1'),
+        sheet: 'demi-bille-2',
+      );
+      await world.session(id: 'x-free', dayOfMonth: 12);
+
+      final records = {for (final s in await list()) s.session.id: s.recordId};
+
+      expect(records, {
+        'p-posture': const SessionId('x-free'),
+        'p-demi': const SessionId('x-free'),
+      });
+    },
+  );
+
+  test(
+    'takes a record with a catalogue session only for its own planned',
+    () async {
+      await plan(
+        'p-posture',
+        12,
+        group: const GroupId('g1'),
+        sheet: 'posture-1',
+      );
+      await plan(
+        'p-demi',
+        12,
+        group: const GroupId('g1'),
+        sheet: 'demi-bille-2',
+      );
+      await world.session(
+        id: 'x-posture',
+        dayOfMonth: 12,
+        sheet: SheetId('posture-1'),
+      );
+
+      final records = {for (final s in await list()) s.session.id: s.recordId};
+
+      expect(records, {
+        'p-posture': const SessionId('x-posture'),
+        'p-demi': null,
+      });
+    },
+  );
+
+  test('does not link the record of the old day to a moved session', () async {
+    await world.session(
+      id: 'x-old',
+      dayOfMonth: 12,
+      sheet: SheetId('posture-1'),
+    );
+    await plan('p-old', 12, group: const GroupId('g1'), sheet: 'posture-1');
+    expect((await list()).single.recordId, const SessionId('x-old'));
+
+    await world.plannedSessions.delete('p-old');
+    await plan('p-new', 19, group: const GroupId('g1'), sheet: 'posture-1');
+
+    final summary = (await list()).single;
+    expect(summary.session.id, 'p-new');
+    expect(summary.recordId, isNull);
+    expect(await world.sessions.forGroup(const GroupId('g1')), hasLength(1));
+  });
+
   test('is unmodifiable', () async {
     final summaries = await list();
 

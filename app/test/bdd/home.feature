@@ -172,7 +172,8 @@ Feature: Today home
     Given the app is running
     When I go to the address {'/catalogue/posture-1/guide?audience=children&step=0'}
     And I go to the address {'/'}
-    Then I do not see {'In progress'} text
+    Then I see {'Plan the next session'} text
+    And I do not see {'In progress'} text
 
   Scenario: A started session and the next session are both shown
     Given the club has the student {'Léa'} in the {'children'} audience
@@ -323,4 +324,5 @@ Feature: Today home
     Given the club has the student {'Léa'} in the {'children'} audience
     And {'Léa'} has {1} failed passes on {'posture 1'}
     And the app is running
-    Then I do not see {'Group alerts'} text
+    Then I see {'To watch'} text
+    And I do not see {'Group alerts'} text

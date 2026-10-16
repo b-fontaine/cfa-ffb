@@ -7,6 +7,7 @@ import 'package:billard_cfa/features/run_sheet/domain/recall_exercise.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/illustration.dart';
 import 'package:billard_cfa/shared/lib/provenance.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
@@ -420,5 +421,49 @@ void main() {
 
     expect(plan.illustration('absente'), isNull);
     expect(plan.illustration('jeu'), isA<Illustration>());
+  });
+
+  group('recordBlocksFor', () {
+    test('records an exercise of the main block with the results recall', () {
+      final plan = _plan().copyWith(recallBlockId: 'bille-pleine');
+
+      final blocks = plan.recordBlocksFor(
+        ExerciseRef(blockId: 'demi-bille', number: 1),
+      );
+
+      expect(blocks.main, 'demi-bille');
+      expect(blocks.recall, 'bille-pleine');
+    });
+
+    test('records an exercise of the main block without any recall', () {
+      final blocks = _plan().recordBlocksFor(
+        ExerciseRef(blockId: 'demi-bille', number: 2),
+      );
+
+      expect(blocks.main, 'demi-bille');
+      expect(blocks.recall, isNull);
+    });
+
+    test('records the recall slot exercise with its own block as recall', () {
+      final plan = _plan().copyWith(recallBlockId: 'posture');
+
+      final blocks = plan.recordBlocksFor(
+        ExerciseRef(blockId: 'bille-pleine', number: 3),
+      );
+
+      expect(blocks.main, 'demi-bille');
+      expect(blocks.recall, 'bille-pleine');
+    });
+
+    test('keeps the recall of the results for the main block exercise', () {
+      final plan = _plan().copyWith(recallBlockId: 'demi-bille');
+
+      final blocks = plan.recordBlocksFor(
+        ExerciseRef(blockId: 'demi-bille', number: 1),
+      );
+
+      expect(blocks.main, 'demi-bille');
+      expect(blocks.recall, 'demi-bille');
+    });
   });
 }

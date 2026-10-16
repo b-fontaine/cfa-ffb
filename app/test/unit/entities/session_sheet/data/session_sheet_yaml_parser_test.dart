@@ -113,6 +113,76 @@ void main() {
       );
     });
 
+    test('refuses a recall slot without weight', () {
+      _refuses(
+        _edit(
+          'recall_slot: {weight: {children: 1, adults: 1}, passes: 1}',
+          'recall_slot: {passes: 1}',
+        ),
+        mentioning: 'weight',
+      );
+    });
+
+    test('refuses a recall slot that is not an object', () {
+      _refuses(
+        _edit(
+          'recall_slot: {weight: {children: 1, adults: 1}, passes: 1}',
+          'recall_slot: 1',
+        ),
+        mentioning: 'recall_slot',
+      );
+    });
+
+    test('refuses a recall slot with a non-integer number of passes', () {
+      _refuses(
+        _edit(
+          'weight: {children: 1, adults: 1}, passes: 1}',
+          'weight: {children: 1, adults: 1}, passes: 1.5}',
+        ),
+        mentioning: 'passes',
+      );
+    });
+
+    test('refuses a recall slot whose weight is zero for both audiences', () {
+      _refuses(
+        _edit(
+          'recall_slot: {weight: {children: 1, adults: 1}',
+          'recall_slot: {weight: {children: 0, adults: 0}',
+        ),
+        mentioning: 'weight',
+      );
+    });
+
+    test('refuses a recall slot hidden for one audience', () {
+      _refuses(
+        _edit(
+          'recall_slot: {weight: {children: 1, adults: 1}',
+          'recall_slot: {weight: {adults: 1}',
+        ),
+        mentioning: 'children',
+      );
+    });
+
+    test('refuses a recall slot with a zero weight for one audience', () {
+      _refuses(
+        _edit(
+          'recall_slot: {weight: {children: 1, adults: 1}',
+          'recall_slot: {weight: {children: 0, adults: 1}',
+        ),
+        mentioning: 'weight',
+      );
+    });
+
+    test('refuses a recall slot with zero passes', () {
+      _refuses(
+        _edit(
+          'weight: {children: 1, adults: 1}, passes: 1}',
+          'weight: {children: 1, adults: 1}, passes: 0}',
+        ),
+        mentioning: 'passes',
+      );
+    });
+
     test('reads the recall with its reused illustration', () {
       expect(sheet.recall.points, hasLength(3));
       expect(sheet.recall.ask, startsWith('En bille pleine'));

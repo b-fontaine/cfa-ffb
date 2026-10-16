@@ -400,11 +400,14 @@ Feature: Guided session
     And I tap {'Launch'} text
     Then I see the session audience {'Adults · 120 min'}
     When I tap {'Next'} text
+    Then I see the guide at step {2}
+    When I tap {'Next'} text
     And I tap {'Next'} text
+    Then I see the guide at step {4}
+    When I tap {'Next'} text
     And I tap {'Next'} text
-    And I tap {'Next'} text
-    And I tap {'Next'} text
-    And I tap {'Note the results'} text
+    Then I see the guide at step {6}
+    When I tap {'Note the results'} text
     Then I see {'Record the results'} text
     And I see {'Mon, Oct 19'} text
     And I see {'Hugo'} text
@@ -423,11 +426,14 @@ Feature: Guided session
     When I tap {'Plan a session'} text
     And I tap {'Launch'} text
     And I tap {'Next'} text
+    Then I see the guide at step {2}
+    When I tap {'Next'} text
     And I tap {'Next'} text
+    Then I see the guide at step {4}
+    When I tap {'Next'} text
     And I tap {'Next'} text
-    And I tap {'Next'} text
-    And I tap {'Next'} text
-    And I tap {'Note the results'} text
+    Then I see the guide at step {6}
+    When I tap {'Note the results'} text
     And I tap {'Open the session'} text
     Then the group {'Children group'} has {2} recorded sessions on {'2026-10-12'}
     And the group {'Children group'} has a recorded session with the catalogue session {'posture-1'} on {'2026-10-12'}

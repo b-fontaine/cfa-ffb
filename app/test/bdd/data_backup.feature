@@ -68,6 +68,18 @@ Feature: Sauvegarde et restauration des données
     And la séance planifiée {'Cours'} est liée à la séance du catalogue {'demi-bille-2'}
     And la séance saisie du groupe {'Jeunes'} le {'2026-10-19'} note la séance du catalogue {'demi-bille-2'}
 
+  # ADR 0016 : deux saisies d'un même groupe le même jour (séances du
+  # catalogue différentes) sont stockables ; l'aller-retour les conserve.
+  Scenario: Restaurer deux saisies d'un même groupe le même jour
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And la séance du groupe {'Jeunes'} le {'2026-10-19'} note la séance du catalogue {'posture-1'} avec {'Léa'}
+    And la séance du groupe {'Jeunes'} le {'2026-10-19'} note la séance du catalogue {'demi-bille-2'} avec {'Léa'}
+    And j'exporte une sauvegarde du club
+    When j'importe cette sauvegarde dans un club vide
+    Then le groupe {'Jeunes'} compte {2} séances saisies le {'2026-10-19'}
+    And le groupe {'Jeunes'} a une séance saisie le {'2026-10-19'} pour la séance du catalogue {'posture-1'}
+    And le groupe {'Jeunes'} a une séance saisie le {'2026-10-19'} pour la séance du catalogue {'demi-bille-2'}
+
   # Lot 7 (ADR 0008) : les blocs acquis au positionnement font partie de la
   # sauvegarde.
   Scenario: Restaurer les blocs acquis au positionnement
