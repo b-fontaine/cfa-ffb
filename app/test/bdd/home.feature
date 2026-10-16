@@ -51,6 +51,27 @@ Feature: Today home
     Then I do not see {'Cours'} text
     And I see {'Plan the next session'} text
 
+  # D1 : une saisie d'une AUTRE séance du catalogue le même jour ne vaut pas
+  # saisie de la séance planifiée (ADR 0016).
+  Scenario: A session planned for today is the next session although another catalogue session was recorded today
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-2'}
+    And a session is recorded for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-1'}
+    And the app is running
+    Then I see {'Next'} text
+    And I see {'Cours'} text
+    And I do not see {'Plan the next session'} text
+
+  Scenario: Two sessions planned the same day: the recorded one is done, the other stays next
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-1'}
+    And a session {'Atelier'} is planned for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-2'}
+    And a session is recorded for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-1'}
+    And the app is running
+    Then I see {'Atelier'} text
+    And I do not see {'Cours'} text
+    And I do not see {'+ 1 other session that day'} text
+
   Scenario: Only the first session of a day is shown, with the count of the others
     Given the club has the student {'Léa'} in the {'children'} audience
     And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-14'} with the catalogue session {'posture-1'}
@@ -69,6 +90,15 @@ Feature: Today home
     And I see {'Note the results'} text
     When I tap {'Note the results'} text
     Then I see {'Record the results'} text
+
+  Scenario: A past planned session is offered to be noted although another catalogue session was recorded that day
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-08'} with the catalogue session {'posture-2'}
+    And a session is recorded for the group {'Children group'} on {'2026-10-08'} with the catalogue session {'posture-1'}
+    And the app is running
+    Then I see {'To note'} text
+    And I see {'Cours · Thu, Oct 8'} text
+    And I see {'Note the results'} text
 
   Scenario: A planned session without a catalogue session is opened in Planned
     Given the club has the student {'Léa'} in the {'children'} audience

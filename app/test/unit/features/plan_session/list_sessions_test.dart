@@ -3,6 +3,7 @@ import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/features/plan_session/domain/list_sessions.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/domain_world.dart';
@@ -18,16 +19,21 @@ void main() {
     list = ListSessions(world.plannedSessions, world.groups, world.sessions);
   });
 
-  Future<void> plan(String id, int dayOfMonth, {GroupId? group}) =>
-      world.plannedSessions.add(
-        Session(
-          id: id,
-          title: id,
-          date: day(dayOfMonth),
-          audience: Audience.children,
-          groupId: group,
-        ),
-      );
+  Future<void> plan(
+    String id,
+    int dayOfMonth, {
+    GroupId? group,
+    String? sheet,
+  }) => world.plannedSessions.add(
+    Session(
+      id: id,
+      title: id,
+      date: day(dayOfMonth),
+      audience: Audience.children,
+      groupId: group,
+      sheetId: sheet == null ? null : SheetId(sheet),
+    ),
+  );
 
   test('lists nothing when nothing is planned', () async {
     expect(await list(), isEmpty);
@@ -92,6 +98,83 @@ void main() {
     expect(summary.groupUnavailable, isTrue);
     expect(summary.recordId, isNull);
   });
+
+  // D1 (ADR 0016) : une saisie d'une autre séance du catalogue le même jour
+  // ne vaut pas saisie de la séance planifiée.
+  test(
+    'ignores the record of another catalogue session the same day',
+    () async {
+      await plan(
+        'p-demi',
+        12,
+        group: const GroupId('g1'),
+        sheet: 'demi-bille-2',
+      );
+      await world.session(
+        id: 'x-posture',
+        dayOfMonth: 12,
+        sheet: SheetId('posture-1'),
+      );
+
+      expect((await list()).single.recordId, isNull);
+    },
+  );
+
+  test('links two sessions of the same day to their own records', () async {
+    await plan('p-posture', 12, group: const GroupId('g1'), sheet: 'posture-1');
+    await plan('p-demi', 12, group: const GroupId('g1'), sheet: 'demi-bille-2');
+    await world.session(
+      id: 'x-demi',
+      dayOfMonth: 12,
+      sheet: SheetId('demi-bille-2'),
+    );
+
+    final records = {for (final s in await list()) s.session.id: s.recordId};
+
+    expect(records, {'p-posture': null, 'p-demi': const SessionId('x-demi')});
+  });
+
+  test(
+    'links two identical sessions of the same day to the same record',
+    () async {
+      await plan('p1', 12, group: const GroupId('g1'), sheet: 'posture-1');
+      await plan('p2', 12, group: const GroupId('g1'), sheet: 'posture-1');
+      await world.session(dayOfMonth: 12, sheet: SheetId('posture-1'));
+
+      final ids = {for (final s in await list()) s.recordId};
+
+      expect(ids, {const SessionId('x1')});
+    },
+  );
+
+  test(
+    'takes a record without catalogue session for the session of the day',
+    () async {
+      await plan(
+        'p-posture',
+        12,
+        group: const GroupId('g1'),
+        sheet: 'posture-1',
+      );
+      await world.session(id: 'x-free', dayOfMonth: 12);
+
+      expect((await list()).single.recordId, const SessionId('x-free'));
+    },
+  );
+
+  test(
+    'takes a record for a planned session without catalogue session',
+    () async {
+      await plan('p-free', 12, group: const GroupId('g1'));
+      await world.session(
+        id: 'x-posture',
+        dayOfMonth: 12,
+        sheet: SheetId('posture-1'),
+      );
+
+      expect((await list()).single.recordId, const SessionId('x-posture'));
+    },
+  );
 
   test('is unmodifiable', () async {
     final summaries = await list();

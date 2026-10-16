@@ -40,8 +40,8 @@ UpcomingSessions upcomingOf(
 }) {
   final day = today.dateOnly;
   final oldest = DateTime(day.year, day.month, day.day - toRecordDays);
-  // Sans saisie : « faite » (ADR 0007, saisie du même groupe le même jour)
-  // n'est plus à donner.
+  // Avec saisie : « faite » (ADR 0016, saisie du même groupe, du même jour et
+  // de la même séance du catalogue) n'est plus à donner.
   final comingUp = [
     for (final summary in summaries)
       if (summary.recordId == null && !summary.session.date.isBefore(day))

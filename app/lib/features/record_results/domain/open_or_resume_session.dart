@@ -1,18 +1,20 @@
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
+import 'package:billard_cfa/entities/session_record/domain/record_matching.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
 import 'package:billard_cfa/features/record_results/domain/resolve_sheet_blocks.dart';
-import 'package:billard_cfa/shared/lib/date_only.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:injectable/injectable.dart';
 
 /// Cas d'usage : ouvrir la séance d'un groupe à une date, ou la reprendre si
-/// elle existe déjà ce jour-là (les passages déjà saisis sont conservés, les
-/// présents sont mis à jour). Évite les séances en double quand l'animateur
-/// revient sur la saisie.
+/// elle existe déjà ce jour-là **pour la même séance du catalogue** (les
+/// passages déjà saisis sont conservés, les présents sont mis à jour). Évite
+/// les séances en double quand l'animateur revient sur la saisie, mais une
+/// autre séance du catalogue le même jour ouvre sa propre saisie sans toucher
+/// à la première (règle `recordFor`, ADR 0016).
 ///
 /// À la reprise, la séance du catalogue, la notion principale et le rappel
 /// existants sont conservés quand rien n'est donné ; les blocs encore absents
@@ -39,11 +41,12 @@ class OpenOrResumeSession {
     String? recallBlockId,
     SheetId? sheetId,
   }) async {
-    final existing = [
-      for (final session in await _sessions.forGroup(groupId))
-        if (session.date.isSameDayAs(date)) session,
-    ];
-    if (existing.isEmpty) {
+    final existing = recordFor(
+      await _sessions.forGroup(groupId),
+      date,
+      sheetId,
+    );
+    if (existing == null) {
       return await _open(
         groupId: groupId,
         date: date,
@@ -59,13 +62,12 @@ class OpenOrResumeSession {
       if (!present.every((student) => group.isMemberOn(student, date))) {
         throw const InvariantViolation(InvariantCode.studentNotInGroup);
       }
-      final first = existing.first;
-      final sheet = sheetId ?? first.sheetId;
+      final sheet = sheetId ?? existing.sheetId;
       final (:main, :recall) = (await _sheetBlocks(sheet)).resolve(
-        main: mainBlockId ?? first.mainBlockId,
-        recall: recallBlockId ?? first.recallBlockId,
+        main: mainBlockId ?? existing.mainBlockId,
+        recall: recallBlockId ?? existing.recallBlockId,
       );
-      final resumed = first.copyWith(
+      final resumed = existing.copyWith(
         present: present,
         mainBlockId: main,
         recallBlockId: recall,

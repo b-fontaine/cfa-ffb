@@ -197,4 +197,43 @@ void main() {
     expect(failure.kind, 'group');
     expect(failure.id, 'ghost');
   });
+
+  // D1 (ADR 0016) : noter une autre séance du catalogue le même jour ouvre
+  // une nouvelle saisie et laisse la première intacte.
+  test(
+    'opens a second session for another catalogue session the same day',
+    () async {
+      final first = ok(await call(sheet: 'posture-1', present: {'s1', 's2'}));
+      final second = ok(await call(sheet: 'demi-bille-2'));
+
+      expect(second.id, isNot(first.id));
+      expect(second.sheetId, SheetId('demi-bille-2'));
+      final records = await world.sessions.forGroup(const GroupId('g1'));
+      expect(records, hasLength(2));
+      final kept = records.firstWhere((record) => record.id == first.id);
+      expect(kept.sheetId, SheetId('posture-1'));
+      expect(kept.present, {const StudentId('s1'), const StudentId('s2')});
+    },
+  );
+
+  test(
+    'resumes the session of the same catalogue session the same day',
+    () async {
+      final first = ok(await call(sheet: 'posture-1'));
+      final again = ok(await call(sheet: 'posture-1', present: {'s1', 's2'}));
+
+      expect(again.id, first.id);
+      expect(await world.sessions.forGroup(const GroupId('g1')), hasLength(1));
+    },
+  );
+
+  test(
+    'resumes the session of another day only when it is the same day',
+    () async {
+      ok(await call(sheet: 'posture-1'));
+      ok(await call(dayOfMonth: 6, sheet: 'demi-bille-2'));
+
+      expect(await world.sessions.forGroup(const GroupId('g1')), hasLength(2));
+    },
+  );
 }

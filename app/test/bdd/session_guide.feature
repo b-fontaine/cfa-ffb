@@ -413,6 +413,25 @@ Feature: Guided session
     Then I see {'Adults group · Catalogue session: Quantité demi-bille, session 1/2'} text
     And the opened session has the main block {'demi-bille'} and the recall block {'bille-pleine'}
 
+  # D1 (ADR 0016) : noter depuis le guide de la 2e séance du jour ouvre une
+  # nouvelle saisie et laisse intacte celle de la 1re séance.
+  Scenario: Noting from the guide of the second session of the day opens a new record
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-2'}
+    And a session is recorded for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-1'}
+    And the app is running
+    When I tap {'Plan a session'} text
+    And I tap {'Launch'} text
+    And I tap {'Next'} text
+    And I tap {'Next'} text
+    And I tap {'Next'} text
+    And I tap {'Next'} text
+    And I tap {'Next'} text
+    And I tap {'Note the results'} text
+    And I tap {'Open the session'} text
+    Then the group {'Children group'} has {2} recorded sessions on {'2026-10-12'}
+    And the group {'Children group'} has a recorded session with the catalogue session {'posture-1'} on {'2026-10-12'}
+
   # U4 (lot 2) : le guide est un écran de premier niveau (comme la
   # présentation) : ni rail ni barre de navigation en séance.
   Scenario Outline: The guide shows no navigation bar and no rail

@@ -93,3 +93,12 @@ Feature: Recorded sessions history
     When I tap {'Results'} text
     Then I see {'Catalogue session: La puissance, session 1/2'} text
     And I do not see text containing {'Main notion:'}
+
+  # D1 (ADR 0016) : deux séances du catalogue le même jour, deux saisies.
+  Scenario: Two sessions recorded the same day for a group are both listed with their catalogue session
+    Given a session is recorded for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-1'}
+    And a session is recorded for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-2'}
+    And the app is running
+    When I tap {'Results'} text
+    Then I see text containing {'session 1/2'}
+    And I see text containing {'session 2/2'}

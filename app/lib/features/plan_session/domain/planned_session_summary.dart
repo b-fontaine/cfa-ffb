@@ -16,8 +16,9 @@ abstract class PlannedSessionSummary with _$PlannedSessionSummary {
     /// Groupe de la séance ; `null` sans groupe ou quand il a disparu.
     Group? group,
 
-    /// Séance saisie du même groupe le même jour ; `null` tant qu'il n'y en a
-    /// pas (« Noter les résultats » reste proposé).
+    /// Saisie de cette séance : même groupe, même jour, même séance du
+    /// catalogue (`recordFor`, ADR 0016) ; `null` tant qu'il n'y en a pas
+    /// (« Noter les résultats » reste proposé).
     SessionId? recordId,
   }) = _PlannedSessionSummary;
 

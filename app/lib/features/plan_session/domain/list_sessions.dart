@@ -1,16 +1,17 @@
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/session/domain/session_repository.dart';
+import 'package:billard_cfa/entities/session_record/domain/record_matching.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
 import 'package:billard_cfa/features/plan_session/domain/planned_session_summary.dart';
-import 'package:billard_cfa/shared/lib/date_only.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:injectable/injectable.dart';
 
 /// Cas d'usage : les séances planifiées par date croissante (à date égale,
-/// dans l'ordre de planification), avec leur groupe et la saisie du même
-/// groupe le même jour (ADR 0007).
+/// dans l'ordre de planification), avec leur groupe et leur saisie : celle du
+/// même groupe, le même jour et pour la même séance du catalogue (ADR 0016,
+/// règle `recordFor`).
 @injectable
 class ListSessions {
   ListSessions(this._sessions, this._groups, this._records);
@@ -31,10 +32,7 @@ class ListSessions {
       if (groupId != null) {
         group = groups[groupId] ??= await _groups.byId(groupId);
         final recorded = records[groupId] ??= await _records.forGroup(groupId);
-        recordId = recorded
-            .where((record) => record.date.isSameDayAs(session.date))
-            .firstOrNull
-            ?.id;
+        recordId = recordFor(recorded, session.date, session.sheetId)?.id;
       }
       summaries.add(
         PlannedSessionSummary(

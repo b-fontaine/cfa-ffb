@@ -163,3 +163,49 @@ Feature: Session planner
     When I tap {'Results recorded'} text
     Then I see {'Session of Mon, Oct 5'} text
     And I see {'Children group · Catalogue session: La puissance, session 1/2'} text
+
+  # D1 (ADR 0016) : une saisie est identifiée par (groupe, jour, séance du
+  # catalogue). Une autre séance du catalogue le même jour ne la « saisit » pas.
+  Scenario: A planned session offers to note the results although another catalogue session was recorded the same day
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-2'}
+    And a session is recorded for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-1'}
+    And the app is running
+    When I tap {'Plan a session'} text
+    Then I see {'Note the results'} text
+    And I do not see {'Results recorded'} text
+
+  Scenario: Noting the second session of the day opens a second record and keeps the first
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-2'}
+    And a session is recorded for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-1'}
+    And the app is running
+    When I tap {'Plan a session'} text
+    And I tap {'Note the results'} text
+    And I tap {'Open the session'} text
+    Then the group {'Children group'} has {2} recorded sessions on {'2026-10-12'}
+    And the group {'Children group'} has a recorded session with the catalogue session {'posture-1'} on {'2026-10-12'}
+    And the group {'Children group'} has a recorded session with the catalogue session {'posture-2'} on {'2026-10-12'}
+    When I tap {'Today'} text
+    And I tap {'Plan a session'} text
+    Then I see {'Results recorded'} text
+    And I do not see {'Note the results'} text
+
+  Scenario: A record without catalogue session is taken for the planned session of the day
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-12'} with the catalogue session {'posture-1'}
+    And a session is recorded for the group {'Children group'} on {'2026-10-12'} without a catalogue session
+    And the app is running
+    When I tap {'Plan a session'} text
+    Then I see {'Results recorded'} text
+    And I do not see {'Note the results'} text
+
+  Scenario: Deleting a planned session keeps its record
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And a session {'Cours'} is planned for the group {'Children group'} on {'2026-10-05'} with the catalogue session {'puissance-1'}
+    And a session is recorded for the group {'Children group'} on {'2026-10-05'} with the catalogue session {'puissance-1'}
+    And the app is running
+    When I tap {'Plan a session'} text
+    And I delete the planned session {'Cours'}
+    Then I see {'No session planned yet.'} text
+    And the group {'Children group'} has a recorded session with the catalogue session {'puissance-1'} on {'2026-10-05'}
