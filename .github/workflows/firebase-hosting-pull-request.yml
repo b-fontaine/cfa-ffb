@@ -33,9 +33,10 @@ jobs:
           cache: true
       - name: Génération du code
         run: scripts/generate.sh
+      # Une seule recette (CanvasKit local, service worker hors ligne stampé et
+      # vérifié) : scripts/build_web.sh.
       - name: Build web
-        working-directory: app
-        run: flutter build web --release --no-pub
+        run: scripts/build_web.sh
       - name: Déploiement sur un canal de prévisualisation
         uses: FirebaseExtended/action-hosting-deploy@500ac625ca2dd40cbd15f7659af953801858032a # v0
         with:

@@ -70,9 +70,10 @@ jobs:
           cache: true
       - name: Génération du code
         run: scripts/generate.sh
+      # Une seule recette (CanvasKit local, service worker hors ligne stampé et
+      # vérifié) : scripts/build_web.sh.
       - name: Build web
-        working-directory: app
-        run: flutter build web --release --no-pub
+        run: scripts/build_web.sh
 
   widgetbook:
     name: Widgetbook (génération, analyse, build web)

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Point d'entrée UNIQUE des garde-fous déterministes (hooks, agent, CI).
 #
-#   scripts/check.sh --fast   catalogue + diagrammes + fiches + fichiers web drift + format + analyse
+#   scripts/check.sh --fast   catalogue + diagrammes + fiches + fichiers web drift + PWA (+ tests JS du service worker, Node) + format + analyse
 #                             + architecture + séances + validation des fiches
 #   scripts/check.sh --full   --fast + l10n + tests + couverture + Widgetbook
 #                             (génération, format, analyse, use cases)
@@ -43,6 +43,12 @@ step "Fiches de séance (assets identiques à docs/knowledge)"
 
 step "Fichiers web drift (sqlite3.wasm, drift_worker.js)"
 (cd "$ROOT" && dart run scripts/sync_web_assets.dart --check)
+
+step "PWA (manifeste, service worker hors ligne, icônes, aucune ressource externe)"
+(cd "$ROOT" && dart run scripts/pwa.dart check && dart run scripts/generate_pwa_icons.dart --check)
+
+step "Service worker et pont de mise à jour (comportement, node --test)"
+node --test "$ROOT/scripts/pwa_js_test.mjs"
 
 step "Formatage (dart format --set-exit-if-changed)"
 FILES=()

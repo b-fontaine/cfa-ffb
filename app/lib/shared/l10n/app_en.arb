@@ -3026,5 +3026,8 @@
   "guideFoldVariant": "Playful variant",
   "guideFoldLink": "Link with the previous session",
   "guideFoldAdaptation": "Adaptation for this audience",
-  "guideBottomBarLabel": "Moving through the session"
+  "guideBottomBarLabel": "Moving through the session",
+  "updateBannerMessage": "A new version is available. Your saved data is kept.",
+  "updateBannerAction": "Update",
+  "updateBannerLater": "Later"
 }

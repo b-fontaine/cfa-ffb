@@ -1,10 +1,13 @@
 import 'package:billard_cfa/app/router.dart';
+import 'package:billard_cfa/features/app_update/presentation/bloc/app_update_cubit.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/ui/app_navigation.dart';
 import 'package:billard_cfa/shared/ui/app_tabs.dart';
+import 'package:billard_cfa/shared/ui/app_update_banner.dart';
 import 'package:billard_cfa/shared/ui/nav_icon.dart';
 import 'package:billard_cfa/shared/ui/responsive_body.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 /// Cadre de navigation principale : barre (smartphone) ou rail (tablette,
@@ -93,29 +96,71 @@ class AppShell extends StatelessWidget {
       ],
       selectedIndex: indexOf(location),
       onSelected: (index) => context.go(_paths[index]),
-      body: tab == null
-          ? child
-          : Column(
-              children: [
-                SafeArea(
-                  bottom: false,
-                  child: ResponsiveBody(
-                    child: AppTabs(
-                      semanticLabel: l10n.sessionsTabsLabel,
-                      labels: [
-                        l10n.sessionsTabPlanned,
-                        l10n.sessionsTabCatalogue,
-                        l10n.sessionsTabSuggestion,
-                      ],
-                      selectedIndex: tab,
-                      onSelected: (index) =>
-                          context.go(_sessionsTabPaths[index]),
-                    ),
+      body: _UpdateAwareBody(
+        child: Column(
+          children: [
+            // Emplacement stable : le contenu ne se reconstruit pas quand les
+            // onglets apparaissent ou disparaissent.
+            if (tab == null)
+              const SizedBox.shrink()
+            else
+              SafeArea(
+                bottom: false,
+                child: ResponsiveBody(
+                  child: AppTabs(
+                    semanticLabel: l10n.sessionsTabsLabel,
+                    labels: [
+                      l10n.sessionsTabPlanned,
+                      l10n.sessionsTabCatalogue,
+                      l10n.sessionsTabSuggestion,
+                    ],
+                    selectedIndex: tab,
+                    onSelected: (index) => context.go(_sessionsTabPaths[index]),
                   ),
                 ),
-                Expanded(child: child),
-              ],
+              ),
+            Expanded(child: child),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Le contenu de la destination, surmonté de la bannière « nouvelle version »
+/// quand une version attend. Le contenu garde sa place dans l'arbre que la
+/// bannière soit là ou non : afficher ou masquer la bannière ne reconstruit
+/// pas l'écran (la saisie en cours est conservée).
+class _UpdateAwareBody extends StatelessWidget {
+  const _UpdateAwareBody({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<AppUpdateCubit>();
+    return BlocBuilder<AppUpdateCubit, AppUpdateState>(
+      builder: (context, state) => Column(
+        children: [
+          if (state.visible)
+            SafeArea(
+              bottom: false,
+              child: AppUpdateBanner(
+                onUpdate: cubit.apply,
+                onLater: cubit.dismiss,
+              ),
             ),
+          Expanded(
+            // La bannière absorbe l'encoche : l'écran dessous ne la
+            // réserve plus.
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: state.visible,
+              child: child,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

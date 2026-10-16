@@ -10,6 +10,7 @@ import 'package:billard_cfa/features/manage_students/domain/enroll_student.dart'
 import 'package:billard_cfa/features/place_student/domain/mark_block_acquired.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
 import 'package:billard_cfa/features/record_results/domain/record_attempt.dart';
+import 'package:billard_cfa/shared/lib/app_update_source.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
@@ -18,6 +19,7 @@ import 'package:billard_cfa/shared/lib/fullscreen_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' show Environment;
 
+import 'fake_app_update_source.dart';
 import 'fake_fullscreen_controller.dart';
 import 'fixed_clock.dart';
 
@@ -44,6 +46,15 @@ class UiWorld {
   /// Le double de plein écran du scénario en cours.
   static FakeFullscreenController get fullscreen =>
       _fullscreen ?? (throw StateError("l'application n'est pas lancée"));
+
+  /// Version en attente d'activation à l'ouverture : un `Given` peut en
+  /// décider avant le lancement ([prepare]).
+  static bool updateWaiting = false;
+  static FakeAppUpdateSource? _appUpdate;
+
+  /// Le double de mise à jour du scénario en cours.
+  static FakeAppUpdateSource get appUpdate =>
+      _appUpdate ?? (throw StateError("l'application n'est pas lancée"));
   static int _seededDays = 0;
 
   static Future<void> prepare(WidgetTester tester) async {
@@ -59,6 +70,12 @@ class UiWorld {
     final fullscreen = FakeFullscreenController(supported: fullscreenSupported);
     _fullscreen = fullscreen;
     getIt.registerSingleton<FullscreenController>(fullscreen);
+    if (getIt.isRegistered<AppUpdateSource>()) {
+      await getIt.unregister<AppUpdateSource>();
+    }
+    final appUpdate = FakeAppUpdateSource(available: updateWaiting);
+    _appUpdate = appUpdate;
+    getIt.registerSingleton<AppUpdateSource>(appUpdate);
     _ready = true;
     _seededDays = 0;
     addTearDown(() async {
@@ -66,6 +83,9 @@ class UiWorld {
       fullscreenSupported = true;
       await fullscreen.close();
       _fullscreen = null;
+      updateWaiting = false;
+      await appUpdate.close();
+      _appUpdate = null;
       await getIt.reset();
     });
     // Le chargement d'asset est de l'E/S réelle : une fois le catalogue et les

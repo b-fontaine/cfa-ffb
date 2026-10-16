@@ -5,6 +5,7 @@ import 'package:billard_cfa/app/record_screens.dart';
 import 'package:billard_cfa/app/record_sheet.dart';
 import 'package:billard_cfa/app/shell.dart';
 import 'package:billard_cfa/features/acknowledge_alert/presentation/bloc/acknowledgement_bloc.dart';
+import 'package:billard_cfa/features/app_update/presentation/bloc/app_update_cubit.dart';
 import 'package:billard_cfa/features/assess_maturity/presentation/bloc/assessment_bloc.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_reminder.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_bloc.dart';
@@ -391,8 +392,10 @@ GoRouter buildRouter() => GoRouter(
       NotFoundPage(onHome: () => context.go(AppRoutes.home)),
   routes: [
     ShellRoute(
-      builder: (context, state, child) =>
-          AppShell(location: state.uri.path, child: child),
+      builder: (context, state, child) => BlocProvider(
+        create: (_) => getIt<AppUpdateCubit>(),
+        child: AppShell(location: state.uri.path, child: child),
+      ),
       routes: [
         GoRoute(
           path: AppRoutes.home,

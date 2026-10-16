@@ -3026,5 +3026,8 @@
   "guideFoldVariant": "Variante ludique",
   "guideFoldLink": "Lien avec la séance précédente",
   "guideFoldAdaptation": "Adaptation à ce public",
-  "guideBottomBarLabel": "Se déplacer dans la séance"
+  "guideBottomBarLabel": "Se déplacer dans la séance",
+  "updateBannerMessage": "Une nouvelle version est disponible. Vos données enregistrées sont conservées.",
+  "updateBannerAction": "Mettre à jour",
+  "updateBannerLater": "Plus tard"
 }
