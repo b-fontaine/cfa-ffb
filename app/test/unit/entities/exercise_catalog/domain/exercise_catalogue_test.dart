@@ -125,4 +125,14 @@ void main() {
       expect(reordered.nextExercise(validated: {ref('x', 3)}), ref('x', 1));
     });
   });
+
+  group('blockLabels', () {
+    test('gives the title and the proposal flag of every block', () {
+      final labels = buildCatalogue().blockLabels;
+
+      expect(labels.keys, ['a', 'b', 'c']);
+      expect(labels['a']!.title, buildCatalogue().blocks.first.title);
+      expect(labels['a']!.proposal, buildCatalogue().blocks.first.isProposal);
+    });
+  });
 }

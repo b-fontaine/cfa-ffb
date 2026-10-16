@@ -100,26 +100,26 @@ Feature: Leaving a screen
     When I go to the address {'/catalogue/Not_A_Slug/guide'}
     Then I see {'Page not found'} text
     When I tap {'Back to home'} text
-    Then I see {'Prepare a session'} text
+    Then I see {'Plan the next session'} text
     When I go to the address {'/catalogue/Not_A_Slug/presentation'}
     Then I see {'Page not found'} text
     When I tap {'Back to home'} text
-    Then I see {'Prepare a session'} text
+    Then I see {'Plan the next session'} text
 
   Scenario: An unknown session is a missing page that leads home, on every screen
     Given the app is running
     When I go to the address {'/catalogue/unknown-9/presentation'}
     Then I see {'Page not found'} text
     When I tap {'Back to home'} text
-    Then I see {'Prepare a session'} text
+    Then I see {'Plan the next session'} text
     When I go to the address {'/catalogue/unknown-9'}
     Then I see {'Page not found'} text
     When I tap {'Back to home'} text
-    Then I see {'Prepare a session'} text
+    Then I see {'Plan the next session'} text
     When I go to the address {'/catalogue/unknown-9/guide'}
     Then I see {'Page not found'} text
     When I tap {'Back to home'} text
-    Then I see {'Prepare a session'} text
+    Then I see {'Plan the next session'} text
 
   Scenario: A planned session can be deleted after confirmation
     Given the app is running

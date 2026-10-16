@@ -4,6 +4,7 @@ import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit
 import 'package:billard_cfa/features/run_sheet/presentation/ui/run_sheet_view.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/ui/error_view.dart';
 import 'package:billard_cfa/shared/ui/failure_message.dart';
 import 'package:billard_cfa/shared/ui/loading_view.dart';
@@ -21,8 +22,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// des résultats de l'exercice (avec le bloc principal de la séance, le bloc
 /// du rappel de résultats, celui de l'exercice de rappel quand il diffère ;
 /// le guide reste monté : pas d'étape à retrouver), [onFinish] ferme la
-/// séance et [onStepChanged] reporte dans l'adresse l'étape que l'animateur
-/// vient de choisir. [fromPlanner] dit
+/// séance (avec l'identifiant de la saisie ouverte depuis ce guide, s'il y en
+/// a une : le routeur mène alors au bilan) et [onStepChanged] reporte dans
+/// l'adresse l'étape que l'animateur vient de choisir. [fromPlanner] dit
 /// que le guide a été lancé depuis une séance planifiée : « Retour » mène
 /// alors au planificateur, et le libellé le dit.
 class SheetGuidePage extends StatelessWidget {
@@ -48,7 +50,7 @@ class SheetGuidePage extends StatelessWidget {
     String? recallBlockId,
   )
   onRecord;
-  final VoidCallback onFinish;
+  final ValueChanged<SessionId?> onFinish;
   final ValueChanged<int> onStepChanged;
 
   @override
@@ -98,8 +100,12 @@ class SheetGuidePage extends StatelessWidget {
                         },
                         onShow: () => onShow(state.step),
                         onFinish: () {
-                          unawaited(context.read<RunSheetCubit>().finish());
-                          onFinish();
+                          final cubit = context.read<RunSheetCubit>();
+                          // Lue avant `finish()`, qui remet l'état à zéro :
+                          // mène au bilan quand une saisie a été ouverte.
+                          final record = cubit.state.recordChoice?.recordId;
+                          unawaited(cubit.finish());
+                          onFinish(record);
                         },
                         onResume: () {
                           context.read<RunSheetCubit>().resume();

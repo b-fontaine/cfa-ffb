@@ -52,16 +52,25 @@ class RunSheetCubit extends Cubit<RunSheetState> {
     await load();
   }
 
-  /// Retient le groupe, la date et les absents de la saisie des résultats,
-  /// pour les proposer à l'exercice suivant sans les redemander.
+  /// Retient la saisie des résultats ouverte depuis ce guide ([recordId]),
+  /// son groupe, sa date et ses absents : ils sont proposés à l'exercice
+  /// suivant sans les redemander, et [recordId] mène au bilan à « Terminer ».
   void recordChosen({
+    required SessionId recordId,
     required GroupId group,
     required DateTime date,
     required Set<StudentId> absent,
   }) {
     if (isClosed) return;
     emit(
-      state.copyWith(recordChoice: (group: group, date: date, absent: absent)),
+      state.copyWith(
+        recordChoice: (
+          recordId: recordId,
+          group: group,
+          date: date,
+          absent: absent,
+        ),
+      ),
     );
   }
 

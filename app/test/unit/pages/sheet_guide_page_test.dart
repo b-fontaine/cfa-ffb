@@ -2,6 +2,7 @@ import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit
 import 'package:billard_cfa/pages/sheet_guide/presentation/sheet_guide_page.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +20,7 @@ class _Calls {
   final shown = <int>[];
   final recorded = <(ExerciseRef, String, String?)>[];
   int finished = 0;
+  final finishedWith = <SessionId?>[];
   final steps = <int>[];
 }
 
@@ -43,7 +45,10 @@ void main() {
           onShow: calls.shown.add,
           onRecord: (exercise, main, recall) =>
               calls.recorded.add((exercise, main, recall)),
-          onFinish: () => calls.finished++,
+          onFinish: (record) {
+            calls.finished++;
+            calls.finishedWith.add(record);
+          },
           onStepChanged: calls.steps.add,
         ),
       ),
@@ -200,6 +205,41 @@ void main() {
 
     expect(calls.finished, 1);
     expect(cubit.state.step, 0);
+  });
+
+  testWidgets('ends without a record id when no record was opened', (
+    tester,
+  ) async {
+    final cubit = await real(tester, step: 2);
+    final calls = await pump(tester, cubit);
+
+    await tester.tap(find.text('End session'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Confirm'));
+    await tester.pumpAndSettle();
+
+    expect(calls.finishedWith, [null]);
+  });
+
+  testWidgets('hands the opened record id to the finish callback', (
+    tester,
+  ) async {
+    final cubit = await real(tester, step: 2);
+    cubit.recordChosen(
+      recordId: const SessionId('r1'),
+      group: const GroupId('g1'),
+      date: DateTime(2026, 10, 12),
+      absent: const {},
+    );
+    final calls = await pump(tester, cubit);
+
+    await tester.tap(find.text('End session'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Confirm'));
+    await tester.pumpAndSettle();
+
+    expect(calls.finishedWith, [const SessionId('r1')]);
+    expect(cubit.state.recordChoice, isNull);
   });
 
   testWidgets('records the exercise with the main and the recall blocks', (

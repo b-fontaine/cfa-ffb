@@ -38,7 +38,7 @@ Feature: Adaptive navigation
     Given the app is running
     When I go to the address {'/exercises/puissance/abc'}
     And I tap {'Back to home'} text
-    Then I see {'Prepare a session'} text
+    Then I see {'Plan the next session'} text
 
   # Lot U6 : cinq destinations recentrées (ADR 0004, R6).
   Scenario: The five destinations are Today, Students, Results, Sessions and More

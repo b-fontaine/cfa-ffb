@@ -105,6 +105,7 @@ class _RecordSheetState extends State<_RecordSheet> {
         getIt<RunSheetSessions>()
             .of(widget.runKey)
             .recordChosen(
+              recordId: opened.id,
               group: opened.group,
               date: opened.date,
               absent: opened.absent,

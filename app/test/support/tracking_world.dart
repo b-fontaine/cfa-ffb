@@ -23,12 +23,18 @@ import 'package:billard_cfa/features/backup_data/domain/import_summary.dart';
 import 'package:billard_cfa/features/change_audience/domain/audience_change_outcome.dart';
 import 'package:billard_cfa/features/manage_settings/domain/save_settings.dart';
 import 'package:billard_cfa/features/place_student/domain/mark_block_acquired.dart';
+import 'package:billard_cfa/features/plan_session/domain/upcoming_sessions.dart';
 import 'package:billard_cfa/features/record_results/domain/open_or_resume_session.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
 import 'package:billard_cfa/features/record_results/domain/record_attempt.dart';
 import 'package:billard_cfa/features/record_results/domain/recorded_attempt.dart';
+import 'package:billard_cfa/features/review_session/domain/session_review.dart';
+import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_session.dart';
+import 'package:billard_cfa/features/suggest_session/domain/next_sheet.dart';
 import 'package:billard_cfa/features/suggest_session/domain/session_plan.dart';
 import 'package:billard_cfa/features/track_progress/domain/exercise_curve.dart';
+import 'package:billard_cfa/features/track_progress/domain/watch_list.dart';
+import 'package:billard_cfa/features/track_progress/domain/week_summary.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
@@ -69,6 +75,18 @@ class TrackingWorld {
   late AudienceChangeOutcome audienceOutcome;
   late AssessmentOutcome assessment;
   late SessionPlan plan;
+
+  /// Ce que l'accueil « Aujourd'hui » montre (lot U7).
+  late UpcomingSessions upcoming;
+  late WatchList watchList;
+  late WeekSummary week;
+  late List<RunningSession> running;
+
+  /// Bilan de la dernière saisie, la séance suivante proposée et le résultat
+  /// de la dernière planification depuis le bilan.
+  late Result<SessionReview> reviewResult;
+  late NextSheet nextSheet;
+  late Result<Session> planResult;
 
   /// Dernière sauvegarde exportée (JSON) et dernier résultat d'import.
   late String backup;
@@ -223,6 +241,39 @@ class TrackingWorld {
         potted: passed ? rate.successes : rate.successes - 1,
         total: rate.attempts,
       );
+    }
+  }
+
+  /// [count] passages réussis (ou échoués) de l'exercice, saisis le [on],
+  /// deux au plus par séance (limite de la saisie) : une séance du groupe
+  /// de l'élève par paire de passages.
+  Future<void> seedPassesOn(
+    String student,
+    ExerciseRef exercise,
+    int count, {
+    required DateTime on,
+    required bool passed,
+  }) async {
+    final rate = catalogue.exercise(exercise)!.rate;
+    var left = count;
+    while (left > 0) {
+      final session = await openSession(
+        group: _groupOfStudent[student]!,
+        on: on,
+        present: [student],
+      );
+      for (var i = 0; i < left.clamp(0, 2); i++) {
+        _valueOf(
+          await getIt<RecordAttempt>()(
+            sessionId: session.id,
+            studentId: studentId(student),
+            exercise: exercise,
+            potted: passed ? rate.successes : rate.successes - 1,
+            total: rate.attempts,
+          ),
+        );
+      }
+      left -= 2;
     }
   }
 

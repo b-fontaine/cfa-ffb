@@ -7,6 +7,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'exercise_catalogue.freezed.dart';
 
+/// Ce qu'il faut d'un bloc pour titrer ses exercices : son titre et s'il
+/// s'agit d'une proposition `[Prop]` (jamais présentée comme fédérale).
+typedef BlockLabel = ({String title, bool proposal});
+
 /// Catalogue immuable des exercices d'entraînement (niveau 1, Blackball).
 ///
 /// `blocks` est trié par `teachingOrder` strictement croissant (ordre
@@ -42,6 +46,12 @@ abstract class ExerciseCatalogue with _$ExerciseCatalogue {
   /// Taux requis par exercice (entrée des dérivations de résultats).
   Map<ExerciseRef, SuccessRate> get rates => {
     for (final spec in exercises) spec.ref: spec.rate,
+  };
+
+  /// Titre et statut de chaque bloc, par identifiant.
+  Map<String, BlockLabel> get blockLabels => {
+    for (final block in blocks)
+      block.id: (title: block.title, proposal: block.isProposal),
   };
 
   TrainingBlock? blockById(String id) {

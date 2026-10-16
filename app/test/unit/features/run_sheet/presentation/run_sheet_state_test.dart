@@ -53,6 +53,7 @@ void main() {
       addTearDown(cubit.close);
 
       cubit.recordChosen(
+        recordId: const SessionId('x9'),
         group: const GroupId('g2'),
         date: day(20),
         absent: {const StudentId('s1')},
@@ -63,6 +64,7 @@ void main() {
       expect(defaults.group, const GroupId('g2'));
       expect(defaults.date, day(20));
       expect(defaults.absent, {const StudentId('s1')});
+      expect(cubit.state.recordChoice?.recordId, const SessionId('x9'));
     });
   });
 }

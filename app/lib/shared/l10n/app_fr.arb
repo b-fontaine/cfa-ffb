@@ -5,13 +5,10 @@
   "@ffbLogoLabel": {
     "description": "Libellé accessible du logo de la FFB"
   },
-  "homeTitle": "Préparer une séance",
-  "homeSubtitle": "Blackball — séances enfants (1h30) et adultes (2h)",
   "homeOpenPlanner": "Planifier une séance",
   "plannerTitle": "Planification",
   "plannerEmpty": "Aucune séance planifiée pour le moment.",
   "plannerTitleField": "Titre de la séance",
-  "plannerAudienceField": "Public",
   "plannerAdd": "Ajouter la séance",
   "plannerDelete": "Supprimer la séance {title}",
   "@plannerDelete": {
@@ -91,7 +88,6 @@
   },
   "plannerRecord": "Noter les résultats",
   "plannerRecorded": "Résultats saisis",
-  "homeAudiencesTitle": "Deux publics",
   "ballRed": "Bille rouge",
   "ballYellow": "Bille jaune",
   "ballBlack": "Bille noire",
@@ -303,6 +299,21 @@
   "stepAppBarMenu": "Plus d’actions",
   "stepAppBarClose": "Fermer",
   "alertAttention": "Attention",
+  "watchRowLabel": "{name}, {detail}, {level}",
+  "@watchRowLabel": {
+    "description": "Accessible label of a student to watch: name, detail and alert level",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "detail": {
+        "type": "String"
+      },
+      "level": {
+        "type": "String"
+      }
+    }
+  },
   "alertPersistent": "À traiter",
   "plannerFormTitle": "Nouvelle séance",
   "navHome": "Aujourd'hui",
@@ -326,8 +337,6 @@
   "commonBack": "Retour",
   "commonLoading": "Chargement…",
   "commonErrorTitle": "Une erreur est survenue",
-  "commonDecrease": "Diminuer",
-  "commonIncrease": "Augmenter",
   "groupNameChildren": "Groupe enfants",
   "groupNameAdults": "Groupe adultes",
   "statusValidated": "Validé",
@@ -460,7 +469,6 @@
       }
     }
   },
-  "studentsNoAlert": "Aucune alerte",
   "studentsValidated": "{done} sur {total} exercices validés",
   "@studentsValidated": {
     "placeholders": {
@@ -525,7 +533,6 @@
   "sheetRecallReasonLastFailed": "Dernier passage manqué",
   "sheetRecallReasonActiveAlert": "Alerte en cours",
   "sheetRecallReasonStale": "Pas travaillée depuis plusieurs séances",
-  "sheetAlertsTitle": "Alertes",
   "sheetAlertConsecutive": "{exercise} : {count} échecs consécutifs",
   "@sheetAlertConsecutive": {
     "placeholders": {
@@ -640,15 +647,6 @@
       }
     }
   },
-  "sheetLatestAssessment": "Dernier bilan : {date}",
-  "@sheetLatestAssessment": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "sheetNoAssessment": "Aucun bilan de maturité enregistré.",
   "chartAxisX": "Essais",
   "chartAxisY": "Billes empochées",
   "chartTargetLine": "Objectif : {potted} billes",
@@ -2002,7 +2000,6 @@
     }
   },
   "guideShow": "Montrer",
-  "guideShowHint": "Montrer le schéma aux élèves",
   "guideFinish": "Terminer la séance",
   "guideRestart": "Recommencer",
   "guideResumeOffer": "Cette séance est déjà commencée : étape {step} sur {total}.",
@@ -2024,7 +2021,7 @@
       }
     }
   },
-  "guideFinishBody": "Les compteurs, le score et le minuteur gardés sur cet écran seront effacés. Rien de ce qui a été saisi pour les élèves n’est perdu.",
+  "guideFinishBody": "Les compteurs, le score et le minuteur gardés sur cet écran seront effacés. Rien de ce qui a été saisi pour les élèves n’est perdu. Si des résultats ont été notés, le bilan de la séance s’ouvre ensuite.",
   "guideFinishTitle": "Terminer la séance guidée ?",
   "guidePrevious": "Précédent",
   "guideNext": "Suivant",
@@ -2469,5 +2466,214 @@
   "settingsResetDone": "Valeurs par défaut rétablies.",
   "settingsUnsaved": "Modifications non enregistrées.",
   "failInvalidRules": "Ces réglages ne sont pas acceptés : rien n'a été enregistré.",
-  "backupPreviewSettings": "Réglages du club inclus"
+  "backupPreviewSettings": "Réglages du club inclus",
+  "homeHeading": "Aujourd'hui · {date}",
+  "@homeHeading": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "homeEmptyTitle": "Planifier la prochaine séance",
+  "homeEmptyBody": "Aucune séance n'est planifiée. Planifiez-en une, ou partez de la suggestion pour un groupe.",
+  "homeEmptyNoClub": "Bienvenue. Ajoutez vos élèves, puis planifiez la première séance.",
+  "homeSeeSuggestion": "Voir la suggestion",
+  "homeNowRunning": "En cours",
+  "homeNowNext": "Prochaine",
+  "homeResume": "Reprendre",
+  "homeAbandon": "Abandonner",
+  "homeAbandonTitle": "Abandonner cette séance ?",
+  "homeAbandonBody": "Les compteurs, le score et le minuteur de cette séance guidée seront effacés. Rien de ce qui a été saisi pour les élèves n'est perdu.",
+  "homeOtherRunning": "Autre séance commencée : {title}",
+  "@homeOtherRunning": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "homePrepare": "Préparer",
+  "homeOpenInPlanned": "Ouvrir dans Planifiées",
+  "homeSameDayOthers": "{count, plural, =1{+ 1 autre séance ce jour-là} other{+ {count} autres séances ce jour-là}}",
+  "@homeSameDayOthers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeToRecordTitle": "À noter",
+  "homeToRecordLine": "{title} · {date}",
+  "@homeToRecordLine": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "homeWatchTitle": "À surveiller",
+  "homeWatchNobody": "Aucun élève à surveiller",
+  "homeWatchAll": "Voir tous les élèves ({count})",
+  "@homeWatchAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeWeekTitle": "7 derniers jours",
+  "homeWeekPasses": "{count, plural, =1{1 passage saisi} other{{count} passages saisis}}",
+  "@homeWeekPasses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeWeekValidations": "{count, plural, =1{1 exercice validé} other{{count} exercices validés}}",
+  "@homeWeekValidations": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeWeekSessions": "{count, plural, =1{1 séance donnée} other{{count} séances données}}",
+  "@homeWeekSessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeWeekNone": "Aucun passage saisi ces 7 derniers jours",
+  "homeSectionFailed": "Cette section n'a pas pu être chargée.",
+  "reviewTitle": "Bilan de la séance",
+  "reviewMeta": "{date} · {group} · {present, plural, =1{1 élève présent} other{{present} élèves présents}}",
+  "@reviewMeta": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      },
+      "present": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewMetaNoGroup": "{date} · {present, plural, =1{1 élève présent} other{{present} élèves présents}}",
+  "@reviewMetaNoGroup": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "present": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewSheetUnknown": "Séance sans séance du catalogue",
+  "reviewPassesTitle": "Passages saisis",
+  "reviewPassesTotal": "{total, plural, =1{1 passage saisi} other{{total} passages saisis}}, {passed} réussis",
+  "@reviewPassesTotal": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "passed": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewExercisePasses": "{passes, plural, =1{1 passage} other{{passes} passages}}, {passed} réussis",
+  "@reviewExercisePasses": {
+    "placeholders": {
+      "passes": {
+        "type": "int"
+      },
+      "passed": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewNoPasses": "Aucun passage saisi pour cette séance.",
+  "reviewEnterResults": "Saisir les résultats",
+  "reviewValidatedTitle": "Validé pendant cette séance",
+  "reviewValidated": "{name} a validé {exercise}",
+  "@reviewValidated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewNoValidation": "Aucun exercice validé par cette séance.",
+  "reviewUnratedTitle": "Présents sans passage",
+  "reviewWatchTitle": "À surveiller",
+  "reviewNextTitle": "Séance suivante",
+  "reviewNextNone": "Aucune séance du catalogue pour cette notion : planifiez une séance dans le planificateur.",
+  "reviewProposedFor": "Proposée pour le {date}",
+  "@reviewProposedFor": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewPlan": "Planifier",
+  "reviewPlanning": "Planification…",
+  "reviewPlannedFor": "Planifiée pour le {date}",
+  "@reviewPlannedFor": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewAlreadyPlanned": "Déjà planifiée pour le {date}",
+  "@reviewAlreadyPlanned": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewSeeInPlanned": "Voir dans Planifiées",
+  "reviewOpenPlanner": "Ouvrir le planificateur",
+  "reviewSeeRecord": "Voir la saisie",
+  "reviewBackToday": "Retour à Aujourd'hui",
+  "homeDateGroup": "{date} · {group}",
+  "@homeDateGroup": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "homeWatchDetail": "{exercise} · {failures} échecs de suite{others, plural, =0{} =1{ · + 1 autre alerte} other{ · + {others} autres alertes}}",
+  "@homeWatchDetail": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      },
+      "failures": {
+        "type": "int"
+      },
+      "others": {
+        "type": "int"
+      }
+    }
+  }
 }

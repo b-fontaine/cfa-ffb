@@ -26,6 +26,10 @@ void main() {
       expect(AppShell.indexOf('/record/x1'), 2);
     });
 
+    test('keeps the session summary under Results', () {
+      expect(AppShell.indexOf('/record/x1/review'), 2);
+    });
+
     test('keeps the planner under Sessions', () {
       expect(AppShell.indexOf('/planner'), 3);
     });
@@ -52,6 +56,12 @@ void main() {
       expect(AppShell.sessionsTabOf('/exercises/puissance/1'), isNull);
       expect(AppShell.sessionsTabOf('/students'), isNull);
       expect(AppShell.sessionsTabOf('/'), isNull);
+    });
+  });
+
+  group('AppRoutes.review', () {
+    test('addresses the summary of a record', () {
+      expect(AppRoutes.review(const SessionId('x1')), '/record/x1/review');
     });
   });
 

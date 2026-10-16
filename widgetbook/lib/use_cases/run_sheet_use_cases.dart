@@ -139,7 +139,7 @@ Widget buildSheetGuidePageUseCase(BuildContext context) {
           onHome: () {},
           onShow: (_) {},
           onRecord: (_, _, _) {},
-          onFinish: () {},
+          onFinish: (_) {},
           onStepChanged: (_) {},
         ),
       );

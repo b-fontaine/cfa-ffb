@@ -1,14 +1,24 @@
+import 'dart:async';
+
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_option.dart';
 import 'package:billard_cfa/features/plan_session/domain/list_sheet_options.dart';
 import 'package:billard_cfa/features/plan_session/domain/planned_session_summary.dart';
+import 'package:billard_cfa/features/plan_session/presentation/bloc/plan_next_session_cubit.dart';
 import 'package:billard_cfa/features/plan_session/presentation/bloc/session_planner_bloc.dart';
+import 'package:billard_cfa/features/plan_session/presentation/bloc/upcoming_sessions_cubit.dart';
 import 'package:billard_cfa/features/plan_session/presentation/ui/plan_session_form.dart';
+import 'package:billard_cfa/features/review_session/presentation/bloc/session_review_bloc.dart';
+import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_sessions_cubit.dart';
+import 'package:billard_cfa/features/suggest_session/presentation/bloc/next_sheet_cubit.dart';
+import 'package:billard_cfa/features/track_progress/presentation/bloc/watched_students_cubit.dart';
+import 'package:billard_cfa/features/track_progress/presentation/bloc/week_summary_cubit.dart';
 import 'package:billard_cfa/pages/home/presentation/home_page.dart';
 import 'package:billard_cfa/pages/not_found/presentation/not_found_page.dart';
 import 'package:billard_cfa/pages/session_planner/presentation/session_planner_page.dart';
+import 'package:billard_cfa/pages/session_review/presentation/session_review_page.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
@@ -20,9 +30,73 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/planner_support.dart';
 import 'package:widgetbook_workspace/support/preview_world.dart';
 
+/// Démarre [start] sur [cubit] sans attendre : le cubit publie ses états.
+T _loaded<T>(T cubit, Future<void> Function(T cubit) start) {
+  unawaited(start(cubit));
+  return cubit;
+}
+
 @widgetbook.UseCase(name: 'Accueil', type: HomePage, path: '[Pages]')
-Widget buildHomePageUseCase(BuildContext context) =>
-    HomePage(onOpenPlanner: () {});
+Widget buildHomePageUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) => MultiBlocProvider(
+    providers: [
+      BlocProvider(create: (_) => getIt<RunningSessionsCubit>()..refresh()),
+      BlocProvider(
+        create: (_) =>
+            _loaded(getIt<UpcomingSessionsCubit>(), (cubit) => cubit.load()),
+      ),
+      BlocProvider(
+        create: (_) =>
+            _loaded(getIt<WatchedStudentsCubit>(), (cubit) => cubit.load()),
+      ),
+      BlocProvider(
+        create: (_) =>
+            _loaded(getIt<WeekSummaryCubit>(), (cubit) => cubit.load()),
+      ),
+    ],
+    child: HomePage(
+      today: () => world.today,
+      onOpenPlanner: () {},
+      onOpenSuggestion: () {},
+      onAddStudents: () {},
+      onOpenStudents: () {},
+      onOpenStudent: (_) {},
+      onResume: (_, _) {},
+      onPrepare: (_, _) {},
+      onLaunch: (_, _, _) {},
+      onOpenPlanned: () {},
+      onRecord: (_, _, _) {},
+    ),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Bilan de séance',
+  type: SessionReviewPage,
+  path: '[Pages]',
+)
+Widget buildSessionReviewPageUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) => MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (_) =>
+            getIt<SessionReviewBloc>()
+              ..add(SessionReviewEvent.started(world.sessionId)),
+      ),
+      BlocProvider(create: (_) => getIt<NextSheetCubit>()),
+      BlocProvider(create: (_) => getIt<PlanNextSessionCubit>()),
+    ],
+    child: SessionReviewPage(
+      today: () => world.today,
+      onBackToday: () {},
+      onOpenRecord: (_) {},
+      onEnterResults: (_) {},
+      onOpenStudent: (_) {},
+      onOpenPlanner: (_, _) {},
+      onOpenPlanned: () {},
+    ),
+  ),
+);
 
 @widgetbook.UseCase(
   name: 'Adresse introuvable',

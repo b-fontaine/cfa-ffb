@@ -5,9 +5,11 @@ enum RunStatus { loading, ready, notFound, failure }
 /// Camp d'un score de jeu saisi à la main.
 enum ScoreSide { a, b }
 
-/// Le groupe, la date et les absents choisis à la première saisie des
-/// résultats depuis la séance guidée : ils sont repris aux exercices suivants.
+/// La saisie ouverte depuis la séance guidée (son identifiant, son groupe, sa
+/// date, ses absents) : ils sont repris aux exercices suivants, et
+/// l'identifiant mène au bilan de la séance à « Terminer ».
 typedef RunRecordChoice = ({
+  SessionId recordId,
   GroupId group,
   DateTime date,
   Set<StudentId> absent,

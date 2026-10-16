@@ -17,15 +17,22 @@ import 'package:billard_cfa/features/manage_students/presentation/bloc/student_e
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_form_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/students_bloc.dart';
 import 'package:billard_cfa/features/place_student/presentation/bloc/placement_bloc.dart';
+import 'package:billard_cfa/features/plan_session/presentation/bloc/plan_next_session_cubit.dart';
 import 'package:billard_cfa/features/plan_session/presentation/bloc/session_planner_bloc.dart';
+import 'package:billard_cfa/features/plan_session/presentation/bloc/upcoming_sessions_cubit.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/recorded_sessions_bloc.dart';
+import 'package:billard_cfa/features/review_session/presentation/bloc/session_review_bloc.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_presentation_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_sessions.dart';
+import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_sessions_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/exercise_sheet_bloc.dart';
+import 'package:billard_cfa/features/suggest_session/presentation/bloc/next_sheet_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/student_recall_bloc.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/suggested_session_bloc.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/student_sheet_bloc.dart';
+import 'package:billard_cfa/features/track_progress/presentation/bloc/watched_students_cubit.dart';
+import 'package:billard_cfa/features/track_progress/presentation/bloc/week_summary_cubit.dart';
 import 'package:billard_cfa/pages/assessment/presentation/assessment_page.dart';
 import 'package:billard_cfa/pages/backup/presentation/backup_page.dart';
 import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_page.dart';
@@ -34,6 +41,7 @@ import 'package:billard_cfa/pages/more/presentation/more_page.dart';
 import 'package:billard_cfa/pages/not_found/presentation/not_found_page.dart';
 import 'package:billard_cfa/pages/record_history/presentation/record_history_page.dart';
 import 'package:billard_cfa/pages/session_planner/presentation/session_planner_page.dart';
+import 'package:billard_cfa/pages/session_review/presentation/session_review_page.dart';
 import 'package:billard_cfa/pages/settings/presentation/settings_page.dart';
 import 'package:billard_cfa/pages/sheet_catalogue/presentation/sheet_catalogue_page.dart';
 import 'package:billard_cfa/pages/sheet_detail/presentation/sheet_detail_page.dart';
@@ -184,6 +192,12 @@ abstract final class AppRoutes {
     });
   }
 
+  /// Bilan de fin de séance d'une saisie (vue d'une saisie persistée : il se
+  /// partage par son adresse et survit à un rechargement).
+  static String review(SessionId id) => '$record/${id.value}/$reviewSegment';
+
+  static const reviewSegment = 'review';
+
   /// Valeur de `from` d'une séance ouverte depuis le planificateur.
   static const plannerOrigin = 'planner';
 }
@@ -263,14 +277,70 @@ GoRouter buildRouter() => GoRouter(
       routes: [
         GoRoute(
           path: AppRoutes.home,
-          builder: (context, state) => BlocProvider(
-            create: (_) {
-              final cubit = getIt<BackupReminderCubit>();
-              unawaited(cubit.check());
-              return cubit;
-            },
+          builder: (context, state) => MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (_) {
+                  final cubit = getIt<BackupReminderCubit>();
+                  unawaited(cubit.check());
+                  return cubit;
+                },
+              ),
+              BlocProvider(
+                create: (_) => getIt<RunningSessionsCubit>()..refresh(),
+              ),
+              BlocProvider(
+                create: (_) {
+                  final cubit = getIt<UpcomingSessionsCubit>();
+                  unawaited(cubit.load());
+                  return cubit;
+                },
+              ),
+              BlocProvider(
+                create: (_) {
+                  final cubit = getIt<WatchedStudentsCubit>();
+                  unawaited(cubit.load());
+                  return cubit;
+                },
+              ),
+              BlocProvider(
+                create: (_) {
+                  final cubit = getIt<WeekSummaryCubit>();
+                  unawaited(cubit.load());
+                  return cubit;
+                },
+              ),
+            ],
             child: HomePage(
+              today: getIt<Clock>().today,
               onOpenPlanner: () => context.go(AppRoutes.planner),
+              onOpenSuggestion: () => context.go(AppRoutes.session),
+              onAddStudents: () => context.go(AppRoutes.newStudent),
+              onOpenStudents: () => context.go(AppRoutes.students),
+              onOpenStudent: (id) => context.go(AppRoutes.student(id)),
+              onResume: (key, step) => context.go(
+                AppRoutes.guide(
+                  key.sheetId,
+                  audience: key.audience,
+                  session: key.sessionId,
+                  step: step,
+                  group: key.group,
+                ),
+              ),
+              onPrepare: (sheet, audience) => context.go(
+                AppRoutes.sheet(sheet, audience: audience, fromPlanner: true),
+              ),
+              onLaunch: (sheet, audience, sessionId) => context.go(
+                AppRoutes.guide(sheet, audience: audience, session: sessionId),
+              ),
+              onOpenPlanned: () => context.go(AppRoutes.planner),
+              onRecord: (group, date, sheet) => context.go(
+                AppRoutes.recordFromPlan(
+                  group: group,
+                  date: date,
+                  sheet: sheet,
+                ),
+              ),
               banner: BlocBuilder<BackupReminderCubit, BackupReminder>(
                 builder: (context, reminder) => BackupReminderBanner(
                   reminder: reminder,
@@ -441,6 +511,7 @@ GoRouter buildRouter() => GoRouter(
                   getIt<RunSheetSessions>()
                       .of(key)
                       .recordChosen(
+                        recordId: opened.id,
                         group: opened.group,
                         date: opened.date,
                         absent: opened.absent,
@@ -457,6 +528,33 @@ GoRouter buildRouter() => GoRouter(
               },
               onAddStudents: () => context.go(AppRoutes.newStudent),
               onBackToGuide: from == null ? null : () => context.go(from),
+            );
+          },
+        ),
+        GoRoute(
+          path: '${AppRoutes.record}/:sessionId/${AppRoutes.reviewSegment}',
+          builder: (context, state) {
+            final id = SessionId(state.pathParameters['sessionId']!);
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (_) =>
+                      getIt<SessionReviewBloc>()
+                        ..add(SessionReviewEvent.started(id)),
+                ),
+                BlocProvider(create: (_) => getIt<NextSheetCubit>()),
+                BlocProvider(create: (_) => getIt<PlanNextSessionCubit>()),
+              ],
+              child: SessionReviewPage(
+                today: getIt<Clock>().today,
+                onBackToday: () => context.go(AppRoutes.home),
+                onOpenRecord: (id) => context.go(AppRoutes.recordSession(id)),
+                onEnterResults: (id) => context.go(AppRoutes.recordSession(id)),
+                onOpenStudent: (id) => context.go(AppRoutes.student(id)),
+                onOpenPlanner: (sheet, audience) =>
+                    context.go(AppRoutes.plan(sheet, audience: audience)),
+                onOpenPlanned: () => context.go(AppRoutes.planner),
+              ),
             );
           },
         ),
@@ -633,8 +731,12 @@ GoRouter buildRouter() => GoRouter(
                     ),
                   );
                 },
-                onFinish: () {
-                  context.go(origin());
+                // Une saisie ouverte depuis ce guide : le bilan (U7) ; sinon,
+                // retour d'où le guide a été lancé.
+                onFinish: (recordId) {
+                  context.go(
+                    recordId == null ? origin() : AppRoutes.review(recordId),
+                  );
                   unawaited(sessions.release(key));
                 },
                 onStepChanged: (step) => context.go(guide(step)),

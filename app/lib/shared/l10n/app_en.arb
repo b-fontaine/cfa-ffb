@@ -5,13 +5,10 @@
   "@ffbLogoLabel": {
     "description": "Accessible label of the FFB logo"
   },
-  "homeTitle": "Prepare a session",
-  "homeSubtitle": "Blackball — children (1h30) and adult (2h) sessions",
   "homeOpenPlanner": "Plan a session",
   "plannerTitle": "Planning",
   "plannerEmpty": "No session planned yet.",
   "plannerTitleField": "Session title",
-  "plannerAudienceField": "Audience",
   "plannerAdd": "Add session",
   "plannerDelete": "Delete session {title}",
   "@plannerDelete": {
@@ -91,7 +88,6 @@
   },
   "plannerRecord": "Note the results",
   "plannerRecorded": "Results recorded",
-  "homeAudiencesTitle": "Two audiences",
   "ballRed": "Red ball",
   "ballYellow": "Yellow ball",
   "ballBlack": "Black ball",
@@ -303,6 +299,21 @@
   "stepAppBarMenu": "More actions",
   "stepAppBarClose": "Close",
   "alertAttention": "Warning",
+  "watchRowLabel": "{name}, {detail}, {level}",
+  "@watchRowLabel": {
+    "description": "Accessible label of a student to watch: name, detail and alert level",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "detail": {
+        "type": "String"
+      },
+      "level": {
+        "type": "String"
+      }
+    }
+  },
   "alertPersistent": "Action needed",
   "plannerFormTitle": "New session",
   "navHome": "Today",
@@ -326,8 +337,6 @@
   "commonBack": "Back",
   "commonLoading": "Loading…",
   "commonErrorTitle": "Something went wrong",
-  "commonDecrease": "Decrease",
-  "commonIncrease": "Increase",
   "groupNameChildren": "Children group",
   "groupNameAdults": "Adults group",
   "statusValidated": "Validated",
@@ -460,7 +469,6 @@
       }
     }
   },
-  "studentsNoAlert": "No alert",
   "studentsValidated": "{done} of {total} exercises validated",
   "@studentsValidated": {
     "placeholders": {
@@ -525,7 +533,6 @@
   "sheetRecallReasonLastFailed": "Last pass missed",
   "sheetRecallReasonActiveAlert": "Alert in progress",
   "sheetRecallReasonStale": "Not practised for several sessions",
-  "sheetAlertsTitle": "Alerts",
   "sheetAlertConsecutive": "{exercise}: {count} consecutive failures",
   "@sheetAlertConsecutive": {
     "placeholders": {
@@ -640,15 +647,6 @@
       }
     }
   },
-  "sheetLatestAssessment": "Latest review: {date}",
-  "@sheetLatestAssessment": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "sheetNoAssessment": "No maturity review recorded.",
   "chartAxisX": "Attempts",
   "chartAxisY": "Balls potted",
   "chartTargetLine": "Target: {potted} balls",
@@ -2002,7 +2000,6 @@
     }
   },
   "guideShow": "Show",
-  "guideShowHint": "Show the diagram to the students",
   "guideFinish": "End session",
   "guideRestart": "Start over",
   "guideResumeOffer": "This session is already under way: step {step} of {total}.",
@@ -2024,7 +2021,7 @@
       }
     }
   },
-  "guideFinishBody": "The counters, the score and the timer kept on this screen will be cleared. Nothing recorded for the students is lost.",
+  "guideFinishBody": "The counters, the score and the timer kept on this screen will be cleared. Nothing recorded for the students is lost. If results were noted, the session summary opens next.",
   "guideFinishTitle": "End the guided session?",
   "guidePrevious": "Previous",
   "guideNext": "Next",
@@ -2469,5 +2466,214 @@
   "settingsResetDone": "Default values restored.",
   "settingsUnsaved": "Unsaved changes.",
   "failInvalidRules": "These settings are not accepted: nothing was saved.",
-  "backupPreviewSettings": "Club settings included"
+  "backupPreviewSettings": "Club settings included",
+  "homeHeading": "Today · {date}",
+  "@homeHeading": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "homeEmptyTitle": "Plan the next session",
+  "homeEmptyBody": "No session is planned yet. Plan one, or start from the suggestion for a group.",
+  "homeEmptyNoClub": "Welcome. Add your students, then plan the first session.",
+  "homeSeeSuggestion": "See the suggestion",
+  "homeNowRunning": "In progress",
+  "homeNowNext": "Next",
+  "homeResume": "Resume",
+  "homeAbandon": "Abandon",
+  "homeAbandonTitle": "Abandon this session?",
+  "homeAbandonBody": "The counters, the score and the timer of this guided session will be cleared. Nothing recorded for the students is lost.",
+  "homeOtherRunning": "Another session under way: {title}",
+  "@homeOtherRunning": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "homePrepare": "Prepare",
+  "homeOpenInPlanned": "Open in Planned",
+  "homeSameDayOthers": "{count, plural, =1{+ 1 other session that day} other{+ {count} other sessions that day}}",
+  "@homeSameDayOthers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeToRecordTitle": "To note",
+  "homeToRecordLine": "{title} · {date}",
+  "@homeToRecordLine": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "homeWatchTitle": "To watch",
+  "homeWatchNobody": "Nobody needs watching",
+  "homeWatchAll": "See all students ({count})",
+  "@homeWatchAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeWeekTitle": "Last 7 days",
+  "homeWeekPasses": "{count, plural, =1{1 pass entered} other{{count} passes entered}}",
+  "@homeWeekPasses": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeWeekValidations": "{count, plural, =1{1 exercise validated} other{{count} exercises validated}}",
+  "@homeWeekValidations": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeWeekSessions": "{count, plural, =1{1 session given} other{{count} sessions given}}",
+  "@homeWeekSessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeWeekNone": "No pass entered in the last 7 days",
+  "homeSectionFailed": "This section could not be loaded.",
+  "reviewTitle": "Session summary",
+  "reviewMeta": "{date} · {group} · {present, plural, =1{1 student present} other{{present} students present}}",
+  "@reviewMeta": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      },
+      "present": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewMetaNoGroup": "{date} · {present, plural, =1{1 student present} other{{present} students present}}",
+  "@reviewMetaNoGroup": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "present": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewSheetUnknown": "Session without a catalogue session",
+  "reviewPassesTitle": "Passes entered",
+  "reviewPassesTotal": "{total, plural, =1{1 pass entered} other{{total} passes entered}}, {passed} successful",
+  "@reviewPassesTotal": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "passed": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewExercisePasses": "{passes, plural, =1{1 pass} other{{passes} passes}}, {passed} successful",
+  "@reviewExercisePasses": {
+    "placeholders": {
+      "passes": {
+        "type": "int"
+      },
+      "passed": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewNoPasses": "No pass entered for this session.",
+  "reviewEnterResults": "Enter the results",
+  "reviewValidatedTitle": "Validated during this session",
+  "reviewValidated": "{name} validated {exercise}",
+  "@reviewValidated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "exercise": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewNoValidation": "No exercise validated by this session.",
+  "reviewUnratedTitle": "Present without a pass",
+  "reviewWatchTitle": "To watch",
+  "reviewNextTitle": "Next session",
+  "reviewNextNone": "No catalogue session for this notion: plan a session in the planner.",
+  "reviewProposedFor": "Proposed for {date}",
+  "@reviewProposedFor": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewPlan": "Plan",
+  "reviewPlanning": "Planning…",
+  "reviewPlannedFor": "Planned for {date}",
+  "@reviewPlannedFor": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewAlreadyPlanned": "Already planned for {date}",
+  "@reviewAlreadyPlanned": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewSeeInPlanned": "See in Planned",
+  "reviewOpenPlanner": "Open the planner",
+  "reviewSeeRecord": "See the record",
+  "reviewBackToday": "Back to Today",
+  "homeDateGroup": "{date} · {group}",
+  "@homeDateGroup": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "homeWatchDetail": "{exercise} · {failures} failures in a row{others, plural, =0{} =1{ · + 1 other alert} other{ · + {others} other alerts}}",
+  "@homeWatchDetail": {
+    "placeholders": {
+      "exercise": {
+        "type": "String"
+      },
+      "failures": {
+        "type": "int"
+      },
+      "others": {
+        "type": "int"
+      }
+    }
+  }
 }

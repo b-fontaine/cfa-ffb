@@ -2,6 +2,7 @@ import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_ticker.dart';
+import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_session.dart';
 import 'package:injectable/injectable.dart';
 
 /// Les séances guidées en cours, par clé (séance, public, séance planifiée).
@@ -27,6 +28,33 @@ class RunSheetSessions {
 
   /// Les clés des séances en cours, de la moins à la plus récemment utilisée.
   List<RunKey> get runningKeys => List.unmodifiable(_running.keys);
+
+  /// Les séances commencées (guide prêt avec de la progression), de la plus
+  /// récemment utilisée à la plus ancienne. Lecture seule : ne crée rien et
+  /// ne change pas l'ordre d'utilisation.
+  List<RunningSession> snapshot() => [
+    for (final entry in _running.entries.toList().reversed)
+      ?_runningOf(entry.key, entry.value.state),
+  ];
+
+  static RunningSession? _runningOf(RunKey key, RunSheetState state) {
+    final plan = state.plan;
+    if (state.status != RunStatus.ready || plan == null || !state.hasProgress) {
+      return null;
+    }
+    final step = plan.clamp(state.step);
+    return RunningSession(
+      key: key,
+      step: step,
+      stepCount: plan.stepCount,
+      phase: plan.steps[step].phase,
+      sheetTitle: plan.sheet.title,
+      part: plan.sheet.part,
+      partCount: plan.partCount,
+      plannedGroupId: plan.planned?.groupId,
+      plannedDate: plan.planned?.date,
+    );
+  }
 
   /// Le cubit de [key], créé à la première demande ; il devient le plus
   /// récemment utilisé.
