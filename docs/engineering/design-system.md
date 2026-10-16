@@ -212,9 +212,39 @@ Pas de téléchargement à l'exécution (Linux, Windows, web hors ligne).
 - **`WatchRow`** (`shared/ui`) : élève à surveiller, détail et niveau d'alerte
   en toutes lettres (« Avertissement » / « Action nécessaire »), pastille
   `StatusColors.attention` (jamais le rouge d'état, ADR 0010), cible de 48 dp.
+- **`DiagramStage`** (`shared/ui`, U3, [ADR 0017](adr/0017-plein-ecran-port-controleur-partage.md)) :
+  scène de présentation d'un schéma. En-tête et barre précédent/suivant (56 dp)
+  fixes ; au milieu, un corps défilant (titre, schéma, badge, légende) mesuré par
+  un rendu sur mesure : titre et légende à leur hauteur naturelle d'abord, le schéma reçoit le reste, au moins
+  `minFigureHeight` (160 dp par défaut, 304 dp pour un schéma de table avec ses
+  commandes) ; en dessous ou si le schéma ne tient pas, la scène défile. Sous
+  480 dp de haut (mode compact) le titre passe dans la barre basse ; sous 600 dp
+  de large ou 640 dp de haut titre et légende prennent un cran de moins. Le
+  titre est l'unique en-tête sémantique. Le bandeau [`RotateHint`] est posé
+  **au-dessus** de ce corps, hors du conteneur sémantique « présentation aux
+  élèves » (il s'adresse à l'animateur). Une `key` par étape le réaffiche.
+  `bottomBarKey` permet à l'écran de nommer la barre basse (la présentation
+  emploie `presentation-bottom-bar` pour ses deux chemins, scène et colonne).
+  Pas d'intrinsèques (ne pas la placer sous `IntrinsicHeight`).
+- **Bouton « Plein écran »** (présentation, U3) : teinte douce au repos, bleu-tapis
+  plein (`primary`) quand le plein écran est actif, en plus du libellé et de
+  l'icône « Quitter » (jamais la couleur seule). Les clés `guideFullscreen*` et
+  `presentationFullscreen*` ont le même texte mais restent **par écran**, comme
+  les autres libellés de chaque page (un libellé peut diverger sans toucher
+  l'autre écran).
+- **`RotateHint`** (`shared/ui`, U3) : bandeau « Tournez l'appareil » (icône de
+  rotation, bouton de fermeture de 48 dp, région vive, teinte bleu-tapis sans
+  rouge) ; non bloquant. Règle d'affichage pure : `isWidthLimited`
+  (`shared/lib/stage_fit.dart`).
+- **`PresentationCaption`** (`shared/ui`, U3) : légende posée sur un panneau
+  `surface` arrondi ; `PresentationScope(transparent: true)` ne peint plus de
+  fond (un motif passe derrière) et pose sa légende sur ce panneau.
 - **`ClothPattern`** (`shared/ui`) : motif de tapis (grille de losanges 8 × 4,
   `BallColors.cloth` à 6 %), décoratif, exclu de la sémantique, sans dépendance ;
-  sert d'arrière-plan à l'en-tête de l'accueil (réutilisable par U3). La bille
+  sert d'arrière-plan à l'en-tête de l'accueil et, avec U3, à toute la
+  présentation (`ClothPattern.opacity`, protégée par
+  `cloth_contrast_test.dart` : le texte garde un contraste de 4,5 au moins sur le
+  pire pixel du motif, thèmes clair et sombre). La bille
   n° 8 (`BilliardBall(kind: black, label: '8')`) accompagne le titre.
 - **Sections de l'accueil** (dans leur slice, `presentation/ui`) :
   `RunningSessionCard` et `RunningSessionRow` (`run_sheet`), `NextSessionCard`,

@@ -23,7 +23,7 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
 
 | # | Constat | Où |
 |---|---|---|
-| F1 | En présentation, la légende du bas est tronquée à 1280 × 800 ; les commandes du lecteur sont coupées — traité par le lot **U3** | `pages/sheet_presentation` |
+| F1 | ~~En présentation, la légende du bas est tronquée à 1280 × 800 ; les commandes du lecteur sont coupées~~ — corrigé par le lot **U3** (**livré le 2026-10-16**, [plan](presentation-plan.md), [ADR 0017](adr/0017-plein-ecran-port-controleur-partage.md) ; légende entière et barre basse visibles à 1280 × 800, 900 × 600 et 390 × 844, mesuré au navigateur) ; **reste** : en paysage sur téléphone (844 × 390) la scène défile pour atteindre les commandes et la légende | `pages/sheet_presentation` |
 | F2 | ~~Diagramme bille fantôme : l'étiquette « Bille fantôme » chevauche la ligne de visée et la bille ; le cercle fantôme disparaît sous la pointe de flèche ; même défaut sur les repères numérotés (« 3 », « 5 » sous la trajectoire)~~ — corrigé par le lot **U2** (livré le 2026-10-15, voir [design-system.md](design-system.md#lisibilité-des-schémas-lot-u2-r5-corrige-f2)) ; **restes mesurés** : un schéma à 310 px et la présentation sous 900 px sur les schémas denses (« Limites connues ») | `shared/ui/ghost_aim_diagram`, `table_diagram` |
 | F3 | Guide : l'en-tête (titre, public, thème, barre d'étape, minuteur, boutons) occupe ~45 % de l'écran desktop et ~60 % sur mobile ; le schéma d'exercice est sous la ligne de flottaison — traité par le lot **U4** (**livré le 2026-10-16**, [plan](guide-mener-plan.md), [ADR 0015](adr/0015-guide-mener-route-modes-origine.md) ; en-tête compact de ~160 dp, schéma mesuré visible sans défiler à 390 × 844 et 1280 × 800 ; parcours web fait, voir [plan § 18](guide-mener-plan.md)) | `pages/sheet_guide` |
 | F4 | ~~Saisie : le sélecteur d'exercice est un bouton sans libellé accessible, au libellé tronqué sur mobile~~ — corrigé par le lot **U5** (livré le 2026-10-15, [plan](saisie-grille-plan.md)) | `pages/record_session` |
@@ -46,7 +46,7 @@ revues séparées, `check.sh --full`).
 
 | Lot | Contenu | Remplace / corrige |
 |---|---|---|
-| **U3** Présentation plein écran | `DiagramStage` (table sur la plus grande dimension, légende réservée, contrôles en barre basse), plein écran natif, « tournez l'appareil » | F1, lot 13 |
+| **U3** Présentation plein écran : **livré le 2026-10-16, parcours web fait** ([plan](presentation-plan.md), [ADR 0017](adr/0017-plein-ecran-port-controleur-partage.md)) | `DiagramStage` (légende réservée, schéma sur le reste, mode compact, défilement sous le minimum), port `FullscreenController` (web `dart:js_interop`, mobile immersif), bouton « Plein écran » (présentation) et entrée du menu ⋮ du guide, touche `F`, « Tournez l'appareil », motif de tapis derrière la scène ; **reste** : iPhone Safari (pas d'API, entrée masquée), PWA installée et Android natif au lot 15 (dont la sortie du mode immersif décidée par le système, à suivre par `SystemChrome.setSystemUIChangeCallback`, et un test navigateur des liaisons web) | F1, lot 13 |
 | **U4** Guide en mode « Mener » : **livré le 2026-10-16, parcours web fait** ([plan](guide-mener-plan.md), [ADR 0015](adr/0015-guide-mener-route-modes-origine.md)) | route hors shell, en-tête compact + frise des phases, schéma en premier, sections repliées, badges de provenance masqués sauf mode « Relecture » (provenance toujours annoncée aux lecteurs d'écran), minuteur en en-tête (temps restant, ton, vibration), barre basse Précédent / Noter / Suivant, « Terminer » confirmé ; solde U-9 (retour à l'origine, groupe conservé) ; **plein écran natif reporté à U3**, test PWA au lot 15 | F3, lot 12, U-9 |
 | **U6** Navigation recentrée | destinations « Aujourd'hui / Élèves / Résultats / Séances (Planifiées · Catalogue · Suggestion) / Plus (Sauvegarde, Réglages) » ; rappel de sauvegarde | F8 (emplacement du lot 9) |
 | ~~**U7**~~ Accueil « Aujourd'hui » et bilan de fin de séance : **livré le 2026-10-15** ([plan](aujourdhui-plan.md)) | séance en cours à reprendre, prochaine séance planifiée (Préparer / Lancer), alertes, semaine, sauvegarde ; à « Terminer », bilan des passages et proposition de la séance suivante | accueil statique |
@@ -129,8 +129,8 @@ Lots UX en H0 :
   `showFfbLogo`, icônes de navigation, `PassDots`, `TimerChip`,
   `PhaseTimeline`, `StepAppBar`, feuille Widgetbook « Rôles de couleur »).
   Reporté hors U1 : ~~bille n° 8 et motif de tapis (U7)~~ et ~~`NowCard`
-  (U7)~~ livrés avec U7 (le motif de tapis sera réutilisé par U3),
-  `DiagramStage` (U3) ; `StudentChip` a été livré avec U5.
+  (U7)~~ livrés avec U7 (le motif de tapis est réutilisé par U3),
+  ~~`DiagramStage` (U3)~~ livré avec U3 ; `StudentChip` a été livré avec U5.
   Les écrans touchés par les lots 7 et 8 : fiche élève reprise par U9
   (**livré**), séance suggérée par U8.
 
@@ -226,14 +226,17 @@ Lots UX en H0 :
     deux colonnes en tablette paysage.~~ **Remplacé par U4** (même intention,
     périmètre élargi à la cause : mode « Mener » dédié).
 13. ~~Présentation : l'étape complète (consigne + schéma) en plein écran, zoom
-    sur le diagramme, légende jamais tronquée (F1).~~ **Remplacé par U3.**
+    sur le diagramme, légende jamais tronquée (F1).~~ **Remplacé par U3, livré
+    le 2026-10-16** (hors périmètre : zoom sur le diagramme, étape complète avec
+    consigne).
 14. Impression / export PDF d'une séance du catalogue (feuille de l'animateur,
     fiche résultats papier identique au PDF fédéral) ; s'appuie sur `PassDots`
     (U1) pour la fiche résultats.
 15. Hors-ligne : vérifier le PWA (service worker, sqlite3.wasm / OPFS) sans
     réseau ; installation sur l'écran d'accueil ; le plein écran (U3) et le
-    mode immersif du guide (route hors cadre, U4 ; le plein écran natif reste à
-    faire avec U3) sont à tester en PWA installée.
+    mode immersif du guide (route hors cadre, U4) et le plein écran du guide et de
+    la présentation (U3, livré : l'API Fullscreen n'existe pas sur iPhone Safari,
+    entrée masquée) sont à tester en PWA installée.
 
 ## H3 — Contenu et connaissances
 
@@ -379,7 +382,7 @@ familles, AIPD, DPA Google), qui relèvent du club ou de la fédération.
 ```
 H0 : ~~F7~~ → ~~revue T8~~ (faite, constats ouverts ci-dessus) → ~~réaliser D5~~ réalisé (les questions ouvertes sont tranchées ; U2 livré)
 H1 : ~~U5~~ → ~~U6~~ → ~~9~~ → ~~U7~~ → ~~10a + U9~~ → ~~U8~~ → 10b → 11   (5 à 9, U7, U8, U9 et 10a livrés)
-H2 : U4 → U3 → 14 → 15
+H2 : ~~U4~~ → ~~U3~~ → 14 → 15   (U4 et U3 livrés)
 H3 : 16 (avec le mode Relecture de U4) → 17 → 18 → 19 → 20
 H4 : 21 → 22 (rappels) → 23
 H5 : FB0 → FB1 → FB2 → FB3 (+ lot 11) → FB4 → FB5 → FB6 ; FB7 et FB8 après FB4

@@ -18,5 +18,6 @@
 | 0014 | Fiche en parcours (cases, en-tête, courbes repliées, menu de positionnement), vue « à montrer à l'élève » hors du cadre de navigation (garantie de type), vue de groupe (carte de chaleur doublée d'alternatives textuelles, assiduité, alertes de groupe) ; accepté et livré |
 | 0015 | Guide en mode « Mener » : route de premier niveau (ni rail ni barre en séance), modes Mener / Relecture (état du cubit reflété dans `?mode=`, provenance toujours accessible), origine directe `from` et origine du détail `via`, `group` conservé de bout en bout (solde de U-9) ; accepté |
 | 0016 | Identité d'une saisie par (groupe, jour, séance du catalogue) : corrige le lien dérivé planifiée ↔ saisie sans migration ; accepté |
+| 0017 | Plein écran : port `FullscreenController` (Dart pur), API Fullscreen web par `dart:js_interop` sans nouvelle dépendance, contrôleur unique partagé entre présentation et guide, `DiagramStage` (légende réservée, schéma sur le reste) à la place de la mesure de texte ; accepté et livré |
 
 Recherches sources : `../research/`.

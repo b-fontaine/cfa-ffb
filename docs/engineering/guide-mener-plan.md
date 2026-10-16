@@ -337,6 +337,12 @@ l'origine ; Aujourd'hui -> « Lancer » finit sur Planifiées.
 
 ## 9. Ce qui est reporté à U3 et pourquoi
 
+> **Livré par U3 le 2026-10-16** : voir [presentation-plan.md](presentation-plan.md) et
+> l'[ADR 0017](adr/0017-plein-ecran-port-controleur-partage.md). L'entrée « Plein
+> écran » du menu ⋮ est entre « La séance » et « Minuteur à zéro », masquée si
+> `FullscreenController.isSupported` est faux ; le contrat de `RunSheetView` gagne
+> deux paramètres facultatifs (`fullscreen`, `onToggleFullscreen`).
+
 Le plein écran natif demande, sur le web (cible principale, PWA), l'API
 Fullscreen (geste utilisateur, `dart:js_interop` via import conditionnel) ou, sur
 mobile natif, `SystemChrome`. Un contrôleur de plein écran se conçoit **une

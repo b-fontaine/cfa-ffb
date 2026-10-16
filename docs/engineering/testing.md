@@ -150,6 +150,23 @@ se construit) et `catalogue_diagrammes_test.dart` (chaque exercice du catalogue
 d'entraînement reçoit son schéma par `sheet` + `exercise` ; la liste de ceux qui
 n'en ont pas est explicite).
 
+Le plein écran (U3) a un double, `test/support/fake_fullscreen_controller.dart`
+(`supported`, compteurs `enterCalls` / `exitCalls`, `emit` pour une bascule venue
+du navigateur) : `UiWorld` le branche dans get_it à la place du contrôleur de
+plateforme (`the device supports full screen` / `does not support` avant
+`the app is running`). Les implémentations de plateforme sont fines : le natif se
+teste par un canal de plateforme simulé (`SystemChrome`), la logique du web par sa
+couture `FullscreenDocument` ; les liaisons `dart:js_interop`
+(`app/platform/fullscreen_controller_web.dart`, seules non chargeables dans la
+machine virtuelle) se vérifient au parcours web (Playwright, manuel).
+**Exception de couverture assumée** : ce fichier est « référencé » par
+`fullscreen_controller_factory.dart`, donc absent du dénominateur de
+`scripts/check_coverage.dart` et de son alerte « NON CHARGÉ » ; ses lignes
+exécutables (`fullscreenEnabled ?? false`, `_absorb`, écouteur
+`fullscreenchange`) ne sont couvertes par aucun test automatisé. Un test
+`flutter test --platform chrome` (`@TestOn('browser')`) les couvrirait, mais
+la CI n'a pas de passe navigateur ; à ajouter au lot 15 avec le test PWA.
+
 ## Conventions
 
 - Fichier de test = `<fichier_lib>_test.dart` dans le miroir de `lib/`
