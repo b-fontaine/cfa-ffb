@@ -83,6 +83,30 @@ l'horloge au 12/10/2026. Les scénarios d'interface couvrent aussi :
   vérifient avec un presse-papiers simulé sur le canal de plateforme (`the
   clipboard is available` puis `the clipboard holds {..}`) ; l'origine du retour
   se lit sur le bouton (`the back button says {..}`) ;
+- la séance guidée en mode « Mener » (lot U4, `session_guide.feature`,
+  `session_guide_mode.feature`) : l'en-tête compact se lit par la position
+  (`I see the guide at step {n} of {m}` lit « n/m » dans le `StepAppBar`) ; le
+  public et la durée sont dans la feuille « La séance » (`I see the session
+  audience {..}`) ; « Outline », « End session » et le mode passent par le menu
+  ⋮ (`I open the guide menu`, `I open the guide outline`, `I end the guided
+  session`, `I switch the guide to {..} mode`, la confirmation reste un
+  `I tap {'Confirm'} text`) ; la mise en page se mesure sur la **géométrie**,
+  clés `guide-header`, `guide-bottom-bar` et `step-media` (`the diagram is fully
+  visible without scrolling`, `the guide header takes at most a quarter of the
+  screen`, `the bottom bar offers {..}` qui vérifie aussi les cibles ≥ 48 dp,
+  `the bottom bar stays on the screen`) à 390 × 844, 1280 × 800 et 320 dp avec
+  texte à 200 % (`the text size is {200} percent`) ; le minuteur se pilote avec
+  l'horloge de test (`the guide timer has run {n} seconds` le lance, laisse
+  passer les secondes puis le met en pause) ; la provenance se lit par type de
+  badge (`the provenance badges are {..}`) et l'annonce sémantique reste testée
+  (`the proposal is announced to screen readers`) ; une section repliable se lit
+  par son contenu construit ou non (`the section {..} is {..}`) ; l'origine se lit
+  dans l'adresse (`the address is`, `the address contains`, `the address does not
+  contain`) et le retour avec `I tap the back button` (flèche de l'en-tête du
+  guide ou bouton texte des autres pages). Piège : la pause du minuteur demandée par
+  la sortie de l'écran se termine dans la zone réelle (`Stream.periodic`) : l'étape
+  `the guided session of {..} has its timer {..}` laisse d'abord finir un
+  `runAsync` ;
 - la courbe avec son alternative textuelle (`I see the curve of {..} with {n}
   attempts`) ;
 - le thème clair/sombre et la langue de l'appareil (fr / en) ;

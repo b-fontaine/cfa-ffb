@@ -440,14 +440,28 @@ jamais modifier le contenu du catalogue :
 - Pages `sheet_guide` et `sheet_presentation` : composition par callbacks.
   `features/run_sheet` n'importe ni `record_results` ni `suggest_session` : la
   saisie des résultats est composée par la couche `app`.
-- Routes : `/catalogue/:sheetId/guide?audience=&session=&step=&group=`
-  (`group` : groupe de la séance suggérée d'où le guide est lancé, ADR 0009 ;
-  `step` à
-  partir de 0, ramené dans la plage ; le public absent est celui de la séance
-  planifiée) et `/catalogue/:sheetId/presentation?audience=&session=&step=&group=`
-  (hors du shell). Le guide est lancé depuis le détail d'une séance, depuis la
-  liste des séances planifiées ou depuis la séance suggérée (qui transmet le
-  groupe).
+- Routes : `/catalogue/:sheetId/guide?audience=&session=&step=&group=&from=&via=&mode=`
+  et `/catalogue/:sheetId/presentation?` (mêmes paramètres), **toutes deux de premier
+  niveau, hors du shell** (lot U4, [ADR 0015](adr/0015-guide-mener-route-modes-origine.md)) :
+  `group` = groupe pour lequel on prépare ou on mène (catalogue, séance suggérée,
+  ADR 0009), `step` à partir de 0 ramené dans la plage, public absent = celui de la
+  séance planifiée, `from` = origine directe du lancement (`planner`, `today`,
+  `suggestion`), `via` = origine du détail quand le guide en vient, `mode` =
+  `lead` ou `review` (écrit seulement s'il diffère du défaut de la clé :
+  Mener pour une séance planifiée, Relecture sinon). Le retour est décidé par
+  la fonction pure `guideBackTarget` (couche `app`). Le guide est lancé depuis le
+  détail (qui transmet `via` et `group`), la liste des séances planifiées
+  (`from=planner`), Aujourd'hui (`from=today`, « Lancer » et « Reprendre ») ou
+  la séance suggérée (`from=suggestion`, `mode=lead`, groupe transmis).
+- `features/run_sheet` (U4) : `RunMode` et `runTimerRemaining` sont du domaine pur
+  (`run_mode.dart`, `run_timer.dart`, aucune horloge : les secondes viennent du
+  `RunTicker` injecté) ; `RunSheetState` porte `mode`, `timerRemaining` et
+  `timerTone`. Le seuil d'une minute et la fonction pure `timerToneFor` ont une
+  source unique, `shared/lib/timer_tone.dart` (`TimerTone`), que `TimerChip` et le
+  guide partagent. La vue (`run_sheet_view.dart` et ses `part`) compose uniquement des
+  composants de `shared/ui` (`StepAppBar`, `PhaseTimeline`, `TimerChip`) ; la page
+  `sheet_guide` ne connaît ni `AppRoutes` ni `SheetOrigin` (callbacks `onBack`,
+  `onStepChanged`, etc.).
 - Notation : `/record/new?main=<bloc>&recall=<bloc de rappel>&exercise=<n>&sheet=<séance>&from=<adresse>`
   puis `/record/:sessionId?exercise=<n>&from=…` ne servent plus qu'aux liens
   profonds (ADR 0007) et à la saisie hors guide. `from` n'est suivi que

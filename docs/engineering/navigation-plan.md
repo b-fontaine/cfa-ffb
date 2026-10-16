@@ -53,10 +53,20 @@ contenu de deux d'entre elles change.
   « Planifiées »), `today` (retour à « Aujourd'hui ») ou rien (retour au
   catalogue, avec `?group=` restauré). Le choix d'un atterrissage de « Séances »
   sur « Planifiées » reste ouvert.
-- **« Lancer » et le guide** (U8, décision U-9 : à traiter avec le guide, hors
-  lot, rien codé) : « Lancer » depuis « Aujourd'hui » revient à « Planifiées »
-  (le guide d'une séance planifiée revient au planificateur) et le guide perd
-  `from` et `group` : le retour du guide mène à la séance sans origine.
+- ~~**« Lancer » et le guide**~~ (décision U-9) : **soldé par U4**
+  ([ADR 0015](adr/0015-guide-mener-route-modes-origine.md), [plan](guide-mener-plan.md)).
+  Le guide est une route de **premier niveau**, hors du `ShellRoute` : plus de
+  rail ni de barre en séance (la présentation, la vue élève et le guide sont les
+  trois écrans hors cadre). `?from=` (`planner`, `today`, `suggestion`) est
+  l'origine directe du lancement, `?via=` l'origine du détail quand le guide en
+  vient, `?group=` traverse catalogue → détail → guide → présentation → saisie ;
+  la fonction pure `guideBackTarget` décide du retour : « Lancer » et « Reprendre »
+  depuis Aujourd'hui reviennent à Aujourd'hui, depuis Planifiées à Planifiées,
+  depuis la Suggestion à la Suggestion, depuis le détail au détail (avec son
+  origine et son groupe), puis au catalogue avec le groupe choisi. « Planifier
+  cette séance » du détail emporte le groupe. Une valeur d'origine inconnue
+  retombe sur le détail sans origine. La flèche du guide ne termine pas la
+  séance (reprise depuis Aujourd'hui).
 
 ## Rappel de sauvegarde (volet 2)
 

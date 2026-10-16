@@ -176,17 +176,37 @@ celui que vous avez choisi.
    (dès la deuxième séance : l'application choisit, parmi les exercices des
    séances précédentes, celui que le plus de vos élèves n'ont pas encore
    validé, et dit de quelle séance il vient), jeu, bilan. **Précédent** et
-   **Suivant** naviguent ; le **Sommaire** permet de sauter directement à une
-   étape, par exemple au jeu.
-2. Chaque exercice affiche le schéma de mise en place, la mise en place, la
-   consigne, l'attendu et les erreurs fréquentes (notes pour l'animateur).
-3. Un **minuteur** indicatif par phase est facultatif : il ne bloque jamais.
-4. **Montrer** ouvre la présentation : le schéma seul, en grand, sans notes. Les
+   **Suivant** (barre du bas) naviguent ; la **frise des phases** en haut saute à
+   la première étape d'une phase ; le **Sommaire** (menu ⋮ en haut à droite)
+   permet de sauter directement à une étape, par exemple au jeu. La séance guidée
+   occupe tout l'écran : pas de barre de navigation. La **flèche** en haut à
+   gauche revient d'où vous êtes parti (Aujourd'hui, Planifiées, Suggestion ou la
+   séance du catalogue, avec le groupe choisi) **sans terminer** la séance :
+   **Reprendre** la rouvre depuis Aujourd'hui.
+2. Chaque exercice affiche d'abord le **schéma** de mise en place, puis la
+   consigne, la mise en place et l'attendu. Les **erreurs fréquentes** (notes pour
+   l'animateur) et l'**accroche et défi** sont repliées en mode « Mener » (touchez
+   leur titre pour les lire). **Noter les résultats** est dans la barre du bas.
+3. Deux modes, dans le menu ⋮ (**Mode relecture**) : **Mener**, par défaut
+   quand la séance est lancée depuis une séance planifiée ou la suggestion, masque
+   les badges **Proposition** et replie les notes ; **Relecture**, par défaut
+   quand vous lancez une séance depuis le catalogue sans séance planifiée,
+   affiche tous les badges et déplie tout. Une proposition reste annoncée
+   « Proposition » par les lecteurs d'écran même en mode Mener, et **La séance**
+   (menu ⋮) dit combien d'éléments proposés comporte l'étape, avec le titre, le
+   public, le thème et la notion. Le mode choisi est gardé pendant toute la
+   séance (étapes, présentation, saisie, reprise).
+4. Un **minuteur** indicatif par phase, en haut à droite, affiche le **temps
+   restant** : il passe en couleur d'attention (avec une icône) sous une minute,
+   puis au dépassement (« +00:05 »), et vibre une fois à chaque seuil sur
+   téléphone. Il ne bloque jamais ; **Minuteur à zéro** est dans le menu ⋮.
+5. **Montrer** (sous le schéma) ouvre la présentation : le schéma seul, en grand, sans notes. Les
    boutons d'illustration précédente et suivante font défiler les schémas de
    l'étape ; **Fermer** revient à la même étape du guide.
-5. Les compteurs de réussites d'une initiation et le score du jeu sont gardés
+6. Les compteurs de réussites d'une initiation et le score du jeu sont gardés
    **sur cet écran seulement**, avec la mention « non enregistré dans le suivi ».
-   **Terminer la séance** les efface après confirmation. Si vous avez noté des
+   **Terminer la séance** (menu ⋮) ou **Terminer** (à la place de « Suivant » à la
+   dernière étape) les efface après confirmation. Si vous avez noté des
    résultats depuis ce guide, **Terminer** ouvre ensuite le **bilan de la
    séance** (voir plus bas).
 

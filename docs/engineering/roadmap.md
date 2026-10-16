@@ -25,7 +25,7 @@ est retiré d'ici et consigné dans l'ADR ou le plan concerné.
 |---|---|---|
 | F1 | En présentation, la légende du bas est tronquée à 1280 × 800 ; les commandes du lecteur sont coupées — traité par le lot **U3** | `pages/sheet_presentation` |
 | F2 | ~~Diagramme bille fantôme : l'étiquette « Bille fantôme » chevauche la ligne de visée et la bille ; le cercle fantôme disparaît sous la pointe de flèche ; même défaut sur les repères numérotés (« 3 », « 5 » sous la trajectoire)~~ — corrigé par le lot **U2** (livré le 2026-10-15, voir [design-system.md](design-system.md#lisibilité-des-schémas-lot-u2-r5-corrige-f2)) ; **restes mesurés** : un schéma à 310 px et la présentation sous 900 px sur les schémas denses (« Limites connues ») | `shared/ui/ghost_aim_diagram`, `table_diagram` |
-| F3 | Guide : l'en-tête (titre, public, thème, barre d'étape, minuteur, boutons) occupe ~45 % de l'écran desktop et ~60 % sur mobile ; le schéma d'exercice est sous la ligne de flottaison — traité par le lot **U4** | `pages/sheet_guide` |
+| F3 | Guide : l'en-tête (titre, public, thème, barre d'étape, minuteur, boutons) occupe ~45 % de l'écran desktop et ~60 % sur mobile ; le schéma d'exercice est sous la ligne de flottaison — traité par le lot **U4** (**livré le 2026-10-16**, [plan](guide-mener-plan.md), [ADR 0015](adr/0015-guide-mener-route-modes-origine.md) ; en-tête compact de ~160 dp, schéma mesuré visible sans défiler à 390 × 844 et 1280 × 800 ; parcours web fait, voir [plan § 18](guide-mener-plan.md)) | `pages/sheet_guide` |
 | F4 | ~~Saisie : le sélecteur d'exercice est un bouton sans libellé accessible, au libellé tronqué sur mobile~~ — corrigé par le lot **U5** (livré le 2026-10-15, [plan](saisie-grille-plan.md)) | `pages/record_session` |
 | F5 | ~~Onglet « Résultats » : aucun historique des séances saisies ; impossible de relire, corriger ou supprimer un passage~~ — corrigé (ADR 0006) | `pages/record_history` |
 | F6 | ~~Séance planifiée sans date ni groupe, non liée à la saisie (décision 10 de l'ADR 0004, assumée mais visible)~~ — corrigé (ADR 0007) | `pages/session_planner` |
@@ -47,7 +47,7 @@ revues séparées, `check.sh --full`).
 | Lot | Contenu | Remplace / corrige |
 |---|---|---|
 | **U3** Présentation plein écran | `DiagramStage` (table sur la plus grande dimension, légende réservée, contrôles en barre basse), plein écran natif, « tournez l'appareil » | F1, lot 13 |
-| **U4** Guide en mode « Mener » | route hors shell, en-tête compact + frise des phases, schéma en premier, sections repliées, badges de provenance masqués sauf mode « Relecture », minuteur en en-tête, barre basse Précédent / Noter / Suivant | F3, lot 12 |
+| **U4** Guide en mode « Mener » : **livré le 2026-10-16, parcours web fait** ([plan](guide-mener-plan.md), [ADR 0015](adr/0015-guide-mener-route-modes-origine.md)) | route hors shell, en-tête compact + frise des phases, schéma en premier, sections repliées, badges de provenance masqués sauf mode « Relecture » (provenance toujours annoncée aux lecteurs d'écran), minuteur en en-tête (temps restant, ton, vibration), barre basse Précédent / Noter / Suivant, « Terminer » confirmé ; solde U-9 (retour à l'origine, groupe conservé) ; **plein écran natif reporté à U3**, test PWA au lot 15 | F3, lot 12, U-9 |
 | **U6** Navigation recentrée | destinations « Aujourd'hui / Élèves / Résultats / Séances (Planifiées · Catalogue · Suggestion) / Plus (Sauvegarde, Réglages) » ; rappel de sauvegarde | F8 (emplacement du lot 9) |
 | ~~**U7**~~ Accueil « Aujourd'hui » et bilan de fin de séance : **livré le 2026-10-15** ([plan](aujourdhui-plan.md)) | séance en cours à reprendre, prochaine séance planifiée (Préparer / Lancer), alertes, semaine, sauvegarde ; à « Terminer », bilan des passages et proposition de la séance suivante | accueil statique |
 | ~~**U8**~~ Catalogue et détail en mode « Préparer » : **livré le 2026-10-16** ([plan](catalogue-preparer-plan.md)) | nom évocateur en titre, badge « n points à valider » (motifs majeurs en infobulle et dans le détail) + un badge neutre par proposition mineure (U-1), marqueur de parcours par groupe (✓ / ▶ / ○), frise des phases tapable dans le détail, carte d'exercice à deux colonnes dès 720 dp, menu ⋮ « Signaler une proposition », origine « Aujourd'hui » du détail ; le bouton « Suggestion par groupe » est retiré (audit C1 à C5, D1 à D4) | catalogue d'étiquettes, « Aller à », report U-12 d'U7 |
@@ -224,7 +224,8 @@ Lots UX en H0 :
     (U1) pour la fiche résultats.
 15. Hors-ligne : vérifier le PWA (service worker, sqlite3.wasm / OPFS) sans
     réseau ; installation sur l'écran d'accueil ; le plein écran (U3) et le
-    mode immersif (U4) sont à tester en PWA installée.
+    mode immersif du guide (route hors cadre, U4 ; le plein écran natif reste à
+    faire avec U3) sont à tester en PWA installée.
 
 ## H3 — Contenu et connaissances
 

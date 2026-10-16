@@ -441,11 +441,11 @@ décoratif en dur (✓ ▶ ○ sont des `Icon`).
   groupe à chaque sélection ; calcul à la demande, annulé si le groupe change
   (`isClosed`/dernier appel gagne), échec = pas de marqueur et message
   `FailureMessage`, jamais de page d'erreur.
-- **R5 – retour du guide** : « Lancer » depuis Aujourd'hui envoie le guide
+- **R5 – retour du guide** (soldé par U4, voir [guide-mener-plan.md](guide-mener-plan.md) § 6) : « Lancer » depuis Aujourd'hui envoie le guide
   (session planifiée) qui revient à Planifiées (`fromPlanner = sessionId !=
   null`) ; le guide perd aussi `from` et `group` (il ouvre la séance sans
   origine). Incohérent avec le nouveau « Préparer » ; **décision `[U-9]` : à
-  traiter avec le guide (U4), hors lot, documenté seulement, rien codé.**
+  traiter avec le guide (U4), hors lot, documenté seulement, rien codé.** → **Soldé par U4 (2026-10-16).**
 - **R6 – provenance** : le titre de ligne est un `[Prop]`. Parade : note
   d'en-tête, détail inchangé, scénarios 3 à 5 ; relu par
   `relecteur-pedagogique`/`architecte-fsd`/`testeur-bdd` en contexte séparé.
@@ -524,9 +524,10 @@ avec dépendance : prochain numéro libre **0015**).
 - **Largeur du détail** : page à 1100 dp ; les blocs de texte (`_Readable`) sont
   plafonnés à 760 dp, seules les cartes d'exercice profitent de la largeur
   (test de géométrie à 1280 dp).
-- **Guide** : « Lancer » ouvre le guide sans `from` ni `group` ; le retour du
-  guide mène à la séance sans origine, et « Lancer » depuis Aujourd'hui revient
-  à Planifiées (hors lot, U-9 : à traiter avec le guide, rien codé).
+- **Guide** : ~~« Lancer » ouvre le guide sans `from` ni `group`…~~ **U-9 soldé
+  par U4** (2026-10-16) : le détail lance le guide avec `via` (son origine) et
+  `group`, le guide revient au détail avec son origine et son groupe, et
+  « Lancer » depuis Aujourd'hui revient à Aujourd'hui (`from=today`).
 - **Double lecture du parcours** : `GetGroupJourney` lit les passages des
   séances du groupe, puis `SuggestNextSheet` (donc `SuggestSession`) relit
   séances et passages. La supprimer exigerait de changer la signature du cas
@@ -562,8 +563,10 @@ aucun défaut bloquant. Le texte à 200 % n'est pas testable depuis un navigateu
 2. **Aucun groupe repris** : « Préparer » depuis Aujourd'hui ouvre le détail
    sans `group=`, et « Planifier cette séance » depuis le détail n'y reprend pas
    le groupe (le planificateur affiche « Aucun groupe »). Hors périmètre U8
-   (§ 3 point 3 : seul le retour vers Aujourd'hui est demandé). **Point
-   ouvert**, à traiter avec U-9 (guide) ; rien codé.
+   (§ 3 point 3 : seul le retour vers Aujourd'hui est demandé). **Soldé par U4** pour
+   « Planifier cette séance » (`AppRoutes.plan(..., group)` présélectionne le
+   groupe planifiable et son public l'emporte) ; **reste ouvert** : « Préparer »
+   depuis Aujourd'hui, faute de marqueur de groupe sans groupe de catalogue.
 3. **Aujourd'hui, séance du jour déjà saisie** : une saisie le jour J marque
    « faites » toutes les séances planifiées ce jour-là pour le groupe (ADR
    0007, comportement existant) ; Aujourd'hui peut alors annoncer « Aucune

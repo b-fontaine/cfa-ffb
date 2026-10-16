@@ -16,5 +16,6 @@
 | 0012 | Réglages du club : `RulesConfig` lu à la valeur courante (fabrique + `RulesStore`), table `app_settings` (schéma v7), réglages dans la sauvegarde (format v2) ; accepté |
 | 0013 | Acquittement d'une alerte (« Vu ») : entité liée au dernier passage de l'exercice, table `alert_acknowledgements` (schéma v8), sauvegarde v3 ; masque la surveillance, pas le rappel ; accepté (domaine, persistance et interface livrés) |
 | 0014 | Fiche en parcours (cases, en-tête, courbes repliées, menu de positionnement), vue « à montrer à l'élève » hors du cadre de navigation (garantie de type), vue de groupe (carte de chaleur doublée d'alternatives textuelles, assiduité, alertes de groupe) ; accepté et livré |
+| 0015 | Guide en mode « Mener » : route de premier niveau (ni rail ni barre en séance), modes Mener / Relecture (état du cubit reflété dans `?mode=`, provenance toujours accessible), origine directe `from` et origine du détail `via`, `group` conservé de bout en bout (solde de U-9) ; accepté |
 
 Recherches sources : `../research/`.

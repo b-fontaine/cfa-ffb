@@ -162,7 +162,7 @@ Pas de téléchargement à l'exécution (Linux, Windows, web hors ligne).
   bleu-tapis). Sémantique : un bouton par pastille (« Essai k sur n :
   empochée / manquée ») dans un conteneur « x sur n empochées ».
 - **`TimerChip`** : reçoit `remaining`, `running` et `onToggle` (aucune
-  minuterie interne). Le ton vient de la fonction pure `timerToneFor` :
+  minuterie interne). Le ton vient de la fonction pure `timerToneFor` (`shared/lib/timer_tone.dart`, source unique du seuil, partagée avec le guide) :
   `neutral` (≥ 1 min, `surfaceContainerHighest`), `attention` (de 0 inclus à
   1 min exclue, `StatusColors.attention`), `overdue` (< 0,
   `errorContainer`, temps affiché `+mm:ss`). Une icône accompagne les tons
@@ -183,8 +183,9 @@ Pas de téléchargement à l'exécution (Linux, Windows, web hors ligne).
   remplissage `secondaryContainer`, contour de 3 dp et libellé gras (jamais la
   couleur seule). Libellé tronqué à l'écran, entier dans la sémantique
   (« Phase 2 sur 5 : entraînement, 35 min, en cours ») et l'infobulle. Prévue
-  pour 3 à 6 phases et des totaux de 90 ou 120 min. Branchée par U4 (guide) et
-  U8 (détail d'une séance : sous la bascule de public, `currentIndex` à -1,
+  pour 3 à 6 phases et des totaux de 90 ou 120 min. Branchée par U4 (guide :
+  libellés courts « Accueil / Notion / Entraînement / Jeu / Bilan », un tap saute
+  à la première étape de la phase) et U8 (détail d'une séance : sous la bascule de public, `currentIndex` à -1,
   c'est une table des matières). La hauteur d'un segment suit l'échelle du texte
   (`56 dp × max(1, échelle)`) : à 200 %, minutes et libellé ne débordent pas.
 - **`StepAppBar`** : `PreferredSizeWidget` de 48 dp. `title` (en-tête
@@ -193,6 +194,8 @@ Pas de téléchargement à l'exécution (Linux, Windows, web hors ligne).
   (`StepAppBarAction` : libellé, rappel, icône optionnelle ; pas de menu si la
   liste est vide), bouton `onBack` (flèche) ou `onClose` (croix) optionnel.
   Aucune logique de guide : libellés et rappels viennent du parent (U4).
+  `StepAppBarAction` accepte `checked` (case à cocher du menu, annoncée
+  « cochée ») et `enabled` ; le retour et le menu mesurent 48 dp au moins.
 - Use cases Widgetbook : `phase_timeline_use_cases.dart` (interactif adultes,
   enfants, phases courtes et libellés longs) et `step_app_bar_use_cases.dart`
   (interactif, bouton fermer sans menu, titre long).
@@ -797,3 +800,36 @@ s'appuient sur ce monde via `WorldScope` / `LoadedScope`, avec les vrais Bloc.
 - Use cases Widgetbook : `session_sheet_use_cases.dart` (catalogue avec groupe
   choisi, page du catalogue, page du détail avec l'origine du retour).
 
+## Guide en mode « Mener » (lot U4, ADR 0015)
+
+Écran de premier niveau (ni rail ni barre). Tout vient de `shared/ui` et du
+slice `run_sheet` ; aucun nouveau composant public.
+
+- **En-tête compact** (clé `guide-header`, 48 + 56 + 56 dp ≈ 160 dp, au plus
+  25 % de 844 dp) : `StepAppBar` (retour, titre de l'étape **une seule fois**,
+  « n/m », menu ⋮), `PhaseTimeline` (épinglée si la hauteur ≥ 600 dp × facteur de
+  texte, sinon dans le défilement), ligne « phase · minuteur » avec `TimerChip`
+  (temps restant ; neutre, attention sous une minute, dépassé avec icône et
+  conteneur d'erreur, jamais le rouge seul ; vibration légère une fois par
+  seuil). En texte ≥ 130 % le minuteur passe sous la phase.
+- **Schéma en premier** (clé `step-media`, à gauche sur 720 dp et plus), borné à
+  la hauteur restante quand l'écran permet d'épingler la frise : visible sans
+  défiler à 390 × 844 et 1280 × 800 ; « Montrer » est un bouton sous le schéma,
+  masqué (plus désactivé) quand l'étape n'a rien à montrer. Plus de `Card`
+  autour de l'étape.
+- **Barre basse** (clé `guide-bottom-bar`, 56 dp, cibles ≥ 48 dp) : Précédent /
+  Noter les résultats / Suivant avec leur texte dès 600 dp ; flèches à
+  infobulle et nom accessible autour d'un « Noter les résultats » plein sous
+  600 dp ; deux boutons avec texte sans saisie ; boutons empilés à pleine largeur
+  à texte ≥ 130 % ; « Terminer » (confirmé) remplace « Suivant » à la dernière
+  étape.
+- **Mener / Relecture** : Mener masque les badges de provenance (chaque `[Prop]`
+  reste annoncé « Proposition » aux lecteurs d'écran) et replie les sections
+  « pour aller plus loin » (`ExpansionTile` : erreurs fréquentes, accroche et
+  défi, variante, lien, adaptation, points à valider) ; Relecture affiche tout.
+  Bascule : menu ⋮, « Mode relecture » (case à cocher). La feuille « La
+  séance » (menu ⋮) porte titre, public et durée, thème, notion et nombre de
+  propositions de l'étape, avec la provenance toujours visible.
+- Use cases Widgetbook : « Séance guidée » (curseur de mode), « Séance guidée,
+  mode Mener » et « … mode Relecture » (`run_sheet_use_cases.dart`) ; le menu de
+  `StepAppBar` montre une action cochée et une action grisée.

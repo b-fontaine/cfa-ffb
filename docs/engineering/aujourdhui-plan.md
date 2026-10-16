@@ -181,7 +181,11 @@ injectée `Clock.today()`), comme la planification.
   SheetOrigin.today)` depuis U8 : le retour mène à « Aujourd'hui » (libellé
   « Aujourd'hui »). En U7 c'était `fromPlanner: true` (retour à « Planifiées »,
   comportement de la ligne planifiée), voir U-12 ci-dessous : **soldé par U8**.
-  **« Lancer »** = `AppRoutes.guide(sheetId, audience, session: <id>)`.
+  **« Lancer »** = `AppRoutes.guide(sheetId, audience, session: <id>, from:
+  SheetOrigin.today)` depuis U4 ; « Reprendre » porte le même `from=today` : le
+  retour du guide (flèche, ou « Terminer » sans saisie) mène à « Aujourd'hui »
+  et non plus à « Planifiées » (report U-9 **soldé par U4**, [ADR
+  0015](adr/0015-guide-mener-route-modes-origine.md)).
 
 ### 2.4 « Terminer » mène au bilan sans casser reprise ni liens profonds
 
