@@ -31,6 +31,7 @@ import 'package:billard_cfa/shared/lib/rules_store.dart';
 import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/backup_formats.dart';
 import '../../../support/domain_world.dart';
 import '../../../support/drift_support.dart';
 import '../../../support/fixtures.dart';
@@ -225,6 +226,7 @@ void main() {
       (document['data']! as Map<String, Object?>)
         ..remove('alertAcknowledgements')
         ..remove('seasonArchives');
+      dropSessionTags(document['data']! as Map<String, Object?>);
       final import = ImportBackup(
         DriftSeasonRepository(db, clock),
         DriftSeasonArchiveRepository(db),

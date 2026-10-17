@@ -5,6 +5,7 @@ import 'package:billard_cfa/entities/run_progress/domain/run_progress.dart';
 import 'package:billard_cfa/entities/run_progress/domain/run_progress_key.dart';
 import 'package:billard_cfa/entities/run_progress/domain/run_progress_repository.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
+import 'package:billard_cfa/entities/session_record/data/in_memory_session_record_repository.dart';
 import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_progress_keeper.dart';
@@ -14,6 +15,7 @@ import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_ticker.dart
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -73,6 +75,13 @@ class _BrokenRepository extends InMemoryRunProgressRepository {
       throw StateError('disque illisible');
 }
 
+/// Saisies dont l'écriture des étiquettes échoue (disque plein).
+class _BrokenRecords extends InMemorySessionRecordRepository {
+  @override
+  Future<void> setTags(SessionId id, Set<SessionTag> tags) async =>
+      throw StateError('disque plein');
+}
+
 class _ErrorRecorder extends BlocObserver {
   final errors = <Object>[];
 
@@ -128,6 +137,219 @@ void main() {
         sessionId: any(named: 'sessionId'),
       ),
     ).thenAnswer((_) async => Ok(runPlanFixture()));
+  });
+
+  group('session tags (ADR 0023)', () {
+    test('are chosen, replaced and cleared one change at a time', () async {
+      final cubit = await ready();
+      addTearDown(cubit.close);
+
+      cubit.tagsChanged({SessionTag.tooLong});
+      expect(cubit.state.tags, {SessionTag.tooLong});
+      cubit.tagsChanged({SessionTag.tooLong, SessionTag.toRedo});
+      expect(cubit.state.tags, {SessionTag.tooLong, SessionTag.toRedo});
+      cubit.tagsChanged(const {});
+      expect(cubit.state.tags, isEmpty);
+    });
+
+    test('alone are enough to be written with the running session', () async {
+      final cubit = await ready();
+      addTearDown(cubit.close);
+
+      cubit.tagsChanged({SessionTag.gameAppreciated});
+      await pumpEventQueue();
+
+      final saved = (await stored())!;
+      expect(saved.tags, {SessionTag.gameAppreciated});
+      expect(saved.step, 0);
+    });
+
+    test('cleared with nothing else, forget the session', () async {
+      final cubit = await ready();
+      addTearDown(cubit.close);
+      cubit.tagsChanged({SessionTag.gameAppreciated});
+      await pumpEventQueue();
+
+      cubit.tagsChanged(const {});
+      await pumpEventQueue();
+
+      expect(await stored(), isNull);
+    });
+
+    test('are written with the other parts and keep them', () async {
+      final cubit = await ready();
+      addTearDown(cubit.close);
+      cubit
+        ..scoreChanged(ScoreSide.a, 3)
+        ..tagsChanged({SessionTag.tooHard});
+      await pumpEventQueue();
+
+      final saved = (await stored())!;
+      expect(saved.scoreA, 3);
+      expect(saved.tags, {SessionTag.tooHard});
+    });
+
+    test('come back when the session is read again', () async {
+      final first = await ready();
+      first.tagsChanged({SessionTag.tooEasy, SessionTag.equipmentLacking});
+      await pumpEventQueue();
+      await first.close();
+
+      final second = build();
+      addTearDown(second.close);
+      await second.syncFromRoute();
+
+      expect(second.state.tags, {
+        SessionTag.tooEasy,
+        SessionTag.equipmentLacking,
+      });
+      expect(second.state.resumeOffered, isTrue);
+    });
+
+    test('are forgotten with the session at finish and restart', () async {
+      final cubit = await ready();
+      addTearDown(cubit.close);
+      cubit.tagsChanged({SessionTag.tooLong});
+      await pumpEventQueue();
+
+      await cubit.restart();
+      await pumpEventQueue();
+
+      expect(cubit.state.tags, isEmpty);
+      expect(await stored(), isNull);
+    });
+
+    test('restart never gives them to the record', () async {
+      await world.session(dayOfMonth: 5);
+      final cubit = await ready();
+      addTearDown(cubit.close);
+      cubit
+        ..recordChosen(
+          recordId: const SessionId('x1'),
+          group: const GroupId('g1'),
+          date: day(5),
+          absent: const {},
+        )
+        ..tagsChanged({SessionTag.tooLong});
+
+      await cubit.restart();
+
+      expect((await world.sessions.byId(const SessionId('x1')))!.tags, isEmpty);
+    });
+
+    test('end of session gives them to the open record, then resets', () async {
+      await world.session(dayOfMonth: 5);
+      final cubit = await ready();
+      addTearDown(cubit.close);
+      cubit
+        ..recordChosen(
+          recordId: const SessionId('x1'),
+          group: const GroupId('g1'),
+          date: day(5),
+          absent: const {},
+        )
+        ..tagsChanged({SessionTag.tooLong, SessionTag.toRedo});
+
+      await cubit.endSession();
+      await pumpEventQueue();
+
+      expect((await world.sessions.byId(const SessionId('x1')))!.tags, {
+        SessionTag.tooLong,
+        SessionTag.toRedo,
+      });
+      expect(cubit.state.tags, isEmpty);
+      expect(cubit.state.recordChoice, isNull);
+      expect(await stored(), isNull);
+    });
+
+    test('end of session without a record keeps nothing anywhere', () async {
+      await world.session(dayOfMonth: 5);
+      final cubit = await ready();
+      addTearDown(cubit.close);
+      cubit.tagsChanged({SessionTag.tooLong});
+
+      await cubit.endSession();
+
+      expect((await world.sessions.byId(const SessionId('x1')))!.tags, isEmpty);
+      expect(cubit.state.tags, isEmpty);
+    });
+
+    test('end of session without tags leaves the record tags alone', () async {
+      await world.session(dayOfMonth: 5);
+      await world.sessions.setTags(const SessionId('x1'), {SessionTag.toRedo});
+      final cubit = await ready();
+      addTearDown(cubit.close);
+      cubit.recordChosen(
+        recordId: const SessionId('x1'),
+        group: const GroupId('g1'),
+        date: day(5),
+        absent: const {},
+      );
+
+      await cubit.endSession();
+
+      expect((await world.sessions.byId(const SessionId('x1')))!.tags, {
+        SessionTag.toRedo,
+      });
+    });
+
+    test('a failing record write keeps the session open and says so', () async {
+      final failing = _BrokenRecords();
+      final cubit = RunSheetCubit(
+        resolve,
+        ticker,
+        key,
+        RunProgressKeeper(repository, failing, world.groups, clock),
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+      cubit
+        ..recordChosen(
+          recordId: const SessionId('x1'),
+          group: const GroupId('g1'),
+          date: day(5),
+          absent: const {},
+        )
+        ..tagsChanged({SessionTag.tooLong});
+
+      final ended = await cubit.endSession();
+
+      expect(ended, isFalse);
+      expect(cubit.state.tagsNotSaved, isTrue);
+      expect(cubit.state.tags, {SessionTag.tooLong});
+      expect(cubit.state.recordChoice, isNotNull);
+
+      cubit.tagsChanged({SessionTag.tooLong, SessionTag.toRedo});
+      expect(cubit.state.tagsNotSaved, isFalse);
+    });
+
+    test('a successful end of session reports it ended', () async {
+      await world.session(dayOfMonth: 5);
+      final cubit = await ready();
+      addTearDown(cubit.close);
+
+      expect(await cubit.endSession(), isTrue);
+    });
+
+    test('discard gives nothing to the open record', () async {
+      await world.session(dayOfMonth: 5);
+      final cubit = await ready();
+      addTearDown(cubit.close);
+      cubit
+        ..recordChosen(
+          recordId: const SessionId('x1'),
+          group: const GroupId('g1'),
+          date: day(5),
+          absent: const {},
+        )
+        ..tagsChanged({SessionTag.tooLong});
+      await pumpEventQueue();
+
+      await cubit.discard();
+
+      expect(await stored(), isNull);
+      expect((await world.sessions.byId(const SessionId('x1')))!.tags, isEmpty);
+    });
   });
 
   group('writing', () {

@@ -10,5 +10,9 @@ abstract class SessionReviewState with _$SessionReviewState {
 
     /// `NotFound` pour une saisie inconnue (page absente).
     Failure? failure,
+
+    /// Échec de la dernière écriture des étiquettes : le bilan reste affiché,
+    /// avec les étiquettes d'avant.
+    Failure? tagsFailure,
   }) = _SessionReviewState;
 }

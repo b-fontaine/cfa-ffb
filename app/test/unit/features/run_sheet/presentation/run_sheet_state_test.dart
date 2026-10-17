@@ -1,6 +1,8 @@
 import 'package:billard_cfa/entities/session/domain/session.dart';
+import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../support/fixtures.dart';
@@ -65,6 +67,19 @@ void main() {
       expect(defaults.date, day(20));
       expect(defaults.absent, {const StudentId('s1')});
       expect(cubit.state.recordChoice?.recordId, const SessionId('x9'));
+    });
+  });
+
+  group('hasProgress', () {
+    test('is false for a fresh guide', () {
+      expect(const RunSheetState().hasProgress, isFalse);
+    });
+
+    test('counts a session tag as something to resume', () {
+      expect(
+        const RunSheetState(tags: {SessionTag.tooLong}).hasProgress,
+        isTrue,
+      );
     });
   });
 }

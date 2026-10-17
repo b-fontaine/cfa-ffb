@@ -844,6 +844,31 @@ class _ReviewStep extends StatelessWidget {
         if (recap.isEmpty) _Line(l10n.guideRecapNothing) else _Bullets(recap),
         _Line(l10n.sheetNotRecorded),
         _Line(l10n.guideRecapPasses),
+        const SizedBox(height: AppSpacing.sm),
+        Semantics(
+          header: true,
+          child: Text(l10n.sessionTagsTitle, style: theme.textTheme.titleSmall),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        _Line(l10n.sessionTagsHint),
+        SessionTagPicker(
+          selected: state.tags,
+          onChanged: context.read<RunSheetCubit>().tagsChanged,
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        _Line(
+          state.recordChoice == null
+              ? l10n.sessionTagsNotKept
+              : l10n.sessionTagsKept,
+          style: theme.textTheme.bodyMedium,
+        ),
+        if (state.tagsNotSaved) ...[
+          const SizedBox(height: AppSpacing.xs),
+          AppAlert(
+            level: AlertLevel.persistent,
+            message: l10n.sessionTagsNotSaved,
+          ),
+        ],
         if (sheet.uncertainties.isNotEmpty)
           _Fold(
             id: 'uncertainties',

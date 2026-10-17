@@ -8,6 +8,7 @@ import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -41,6 +42,7 @@ SessionRecord _record(
   Set<String> present = const {'s1'},
   String? main,
   String? recall,
+  Set<SessionTag> tags = const {},
 }) => SessionRecord(
   id: SessionId(id),
   groupId: GroupId(group),
@@ -50,6 +52,7 @@ SessionRecord _record(
   present: {for (final name in present) StudentId(name)},
   mainBlockId: main,
   recallBlockId: recall,
+  tags: tags,
 );
 
 ExerciseAttempt _attempt(
@@ -309,6 +312,121 @@ void repositoryContract(
         expect(await repos.sessionRecords.byId(const SessionId('x2')), bare);
         expect(await repos.sessionRecords.byId(const SessionId('zz')), isNull);
       });
+
+      test('round-trips the session tags, none by default', () async {
+        final tagged = _record(
+          'x1',
+          date: DateTime(2026, 10, 3),
+          tags: {SessionTag.tooLong, SessionTag.toRedo},
+        );
+        final plain = _record('x2', date: DateTime(2026, 10, 10));
+
+        await repos.sessionRecords.save(tagged);
+        await repos.sessionRecords.save(plain);
+
+        final read = await repos.sessionRecords.byId(const SessionId('x1'));
+        expect(read, tagged);
+        expect(read!.tags, {SessionTag.tooLong, SessionTag.toRedo});
+        expect(
+          (await repos.sessionRecords.byId(const SessionId('x2')))!.tags,
+          isEmpty,
+        );
+      });
+
+      test('replaces the session tags when saved again', () async {
+        await repos.sessionRecords.save(
+          _record(
+            'x1',
+            date: DateTime(2026, 10, 3),
+            tags: {SessionTag.tooLong},
+          ),
+        );
+        await repos.sessionRecords.save(
+          _record('x1', date: DateTime(2026, 10, 3)),
+        );
+
+        expect(
+          (await repos.sessionRecords.byId(const SessionId('x1')))!.tags,
+          isEmpty,
+        );
+      });
+
+      test(
+        'sets only the tags, leaving presences and the rest alone',
+        () async {
+          final stored = _record(
+            'x1',
+            date: DateTime(2026, 10, 3),
+            present: {'s1', 's2'},
+            main: 'puissance',
+          );
+          await repos.sessionRecords.save(stored);
+
+          await repos.sessionRecords.setTags(const SessionId('x1'), {
+            SessionTag.tooHard,
+            SessionTag.gameAppreciated,
+          });
+
+          final read = await repos.sessionRecords.byId(const SessionId('x1'));
+          expect(
+            read,
+            stored.copyWith(
+              tags: {SessionTag.tooHard, SessionTag.gameAppreciated},
+            ),
+          );
+          await repos.sessionRecords.setTags(const SessionId('x1'), const {});
+          expect(
+            (await repos.sessionRecords.byId(const SessionId('x1')))!.tags,
+            isEmpty,
+          );
+        },
+      );
+
+      test(
+        'setting the tags of an unknown or deleted session does nothing',
+        () async {
+          await repos.sessionRecords.setTags(const SessionId('zz'), {
+            SessionTag.tooLong,
+          });
+          expect(
+            await repos.sessionRecords.byId(const SessionId('zz')),
+            isNull,
+          );
+
+          await repos.sessionRecords.save(
+            _record('x1', date: DateTime(2026, 10, 3)),
+          );
+          await repos.sessionRecords.delete(const SessionId('x1'));
+          await repos.sessionRecords.setTags(const SessionId('x1'), {
+            SessionTag.tooLong,
+          });
+          expect(
+            await repos.sessionRecords.byId(const SessionId('x1')),
+            isNull,
+          );
+          expect(await repos.sessionRecords.all(), isEmpty);
+        },
+      );
+
+      test(
+        'keeps the tags when a student is erased from the presences',
+        () async {
+          await repos.sessionRecords.save(
+            _record(
+              'x1',
+              date: DateTime(2026, 10, 3),
+              present: {'s1', 's2'},
+              tags: {SessionTag.tooLong},
+            ),
+          );
+
+          await repos.sessionRecords.eraseStudent(const StudentId('s1'));
+
+          final read = await repos.sessionRecords.byId(const SessionId('x1'));
+          expect(read!.present, {const StudentId('s2')});
+          expect(read.tags, {SessionTag.tooLong});
+        },
+      );
 
       test('replaces the presences when saved again', () async {
         await repos.sessionRecords.save(

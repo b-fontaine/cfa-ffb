@@ -10,6 +10,7 @@ import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 
 /// Écrit le contenu d'une sauvegarde (section `data`) en structures JSON.
 class BackupEncoder {
@@ -124,6 +125,8 @@ class BackupEncoder {
     'mainBlockId': record.mainBlockId,
     'recallBlockId': record.recallBlockId,
     'sheetId': record.sheetId?.value,
+    // Liste fermée, dans l'ordre d'affichage (ADR 0023).
+    'tags': sessionTagCodes(record.tags),
   };
 
   Map<String, Object?> _encodeAttempt(ExerciseAttempt attempt) => {

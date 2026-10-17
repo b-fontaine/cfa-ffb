@@ -4,7 +4,9 @@ import 'package:billard_cfa/features/run_sheet/presentation/bloc/fullscreen_cubi
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/ui/run_sheet_view.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/provenance.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/timer_tone.dart';
 import 'package:billard_cfa/shared/ui/phase_timeline.dart';
 import 'package:billard_cfa/shared/ui/proposal_badge.dart';
@@ -67,6 +69,7 @@ void main() {
     Size? size,
     FullscreenState? fullscreen,
     bool exportable = false,
+    bool tagsNotSaved = false,
   }) async {
     tester.view.physicalSize =
         size ?? (tablet ? const Size(1280, 800) : const Size(400, 800));
@@ -88,7 +91,7 @@ void main() {
           value: cubit,
           child: BlocBuilder<RunSheetCubit, RunSheetState>(
             builder: (context, state) => RunSheetView(
-              state: state,
+              state: tagsNotSaved ? state.copyWith(tagsNotSaved: true) : state,
               onStep: (s) {
                 calls.steps.add(s);
                 if (applyStep) cubit.showStep(s);
@@ -754,6 +757,121 @@ void main() {
       );
       expect(find.text('Game: 2 – 1'), findsOneWidget);
       expect(find.text('Review question: Question ?'), findsOneWidget);
+    });
+
+    group('session tags in the review', () {
+      testWidgets('offers the closed list, none picked, and no text field', (
+        tester,
+      ) async {
+        final (cubit, _) = await pump(tester, world(), 'demi-bille-1');
+        cubit.showStep(9);
+        await tester.pump();
+
+        expect(find.text('Session notes'), findsOneWidget);
+        expect(
+          find.byType(FilterChip),
+          findsNWidgets(SessionTag.values.length),
+        );
+        expect(
+          tester
+              .widgetList<FilterChip>(find.byType(FilterChip))
+              .any((chip) => chip.selected),
+          isFalse,
+        );
+        expect(find.byType(EditableText), findsNothing);
+      });
+
+      testWidgets('tapping a label chooses it in the guide', (tester) async {
+        final (cubit, _) = await pump(tester, world(), 'demi-bille-1');
+        cubit.showStep(9);
+        await tester.pump();
+
+        await tapVisible(tester, find.text('Too long'));
+
+        expect(cubit.state.tags, {SessionTag.tooLong});
+        expect(
+          tester
+              .widget<FilterChip>(find.widgetWithText(FilterChip, 'Too long'))
+              .selected,
+          isTrue,
+        );
+      });
+
+      testWidgets('says so when the labels could not be saved at the end', (
+        tester,
+      ) async {
+        final (cubit, _) = await pump(
+          tester,
+          world(),
+          'demi-bille-1',
+          tagsNotSaved: true,
+        );
+        cubit.showStep(9);
+        await tester.pump();
+
+        expect(
+          find.text('The labels could not be saved. Try again.'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('shows no such warning by default', (tester) async {
+        final (cubit, _) = await pump(tester, world(), 'demi-bille-1');
+        cubit.showStep(9);
+        await tester.pump();
+
+        expect(
+          find.text('The labels could not be saved. Try again.'),
+          findsNothing,
+        );
+      });
+
+      testWidgets('tells the labels are lost when no results sheet is open', (
+        tester,
+      ) async {
+        final (cubit, _) = await pump(tester, world(), 'demi-bille-1');
+        cubit.showStep(9);
+        await tester.pump();
+
+        expect(
+          find.text(
+            'No results sheet is open from this guide: these labels will not '
+            'be kept when the session ends.',
+          ),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('tells the labels will be kept once a sheet is open', (
+        tester,
+      ) async {
+        final (cubit, _) = await pump(tester, world(), 'demi-bille-1');
+        cubit
+          ..recordChosen(
+            recordId: const SessionId('x1'),
+            group: const GroupId('g1'),
+            date: DateTime(2026, 10, 12),
+            absent: const {},
+          )
+          ..showStep(9);
+        await tester.pump();
+
+        expect(
+          find.text(
+            'They will be kept with the results sheet opened from this guide '
+            'when the session ends.',
+          ),
+          findsOneWidget,
+        );
+        expect(find.textContaining('will not be kept'), findsNothing);
+      });
+
+      testWidgets('are not offered before the review step', (tester) async {
+        await pump(tester, world(), 'demi-bille-1', step: 6);
+
+        expect(find.text('Session notes'), findsNothing);
+        expect(find.byType(FilterChip), findsNothing);
+      });
     });
 
     testWidgets('says nothing was counted when nothing was', (tester) async {

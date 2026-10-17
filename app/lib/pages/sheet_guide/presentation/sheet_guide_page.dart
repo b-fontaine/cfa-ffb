@@ -60,6 +60,13 @@ class SheetGuidePage extends StatelessWidget {
   /// Ouvre l'export PDF de la séance (menu ⋮).
   final VoidCallback onExport;
 
+  /// Termine la séance (les étiquettes passent à la saisie) **puis** ouvre
+  /// le bilan : il relit la saisie, qui doit déjà les porter. Si elles n'ont
+  /// pas pu être données, la séance reste ouverte sur son étape « Bilan ».
+  Future<void> _end(RunSheetCubit cubit, SessionId? record) async {
+    if (await cubit.endSession()) onFinish(record);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -105,11 +112,10 @@ class SheetGuidePage extends StatelessWidget {
                     onShow: () => onShow(state.step),
                     onFinish: () {
                       final cubit = context.read<RunSheetCubit>();
-                      // Lue avant `finish()`, qui remet l'état à zéro :
+                      // Lue avant `endSession()`, qui remet l'état à zéro :
                       // mène au bilan quand une saisie a été ouverte.
                       final record = cubit.state.recordChoice?.recordId;
-                      unawaited(cubit.finish());
-                      onFinish(record);
+                      unawaited(_end(cubit, record));
                     },
                     onResume: () {
                       context.read<RunSheetCubit>().resume();

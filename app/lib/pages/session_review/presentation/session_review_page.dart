@@ -101,6 +101,10 @@ class SessionReviewPage extends StatelessWidget {
                       onOpenRecord: () => onOpenRecord(id),
                       onOpenStudent: onOpenStudent,
                       onBackToday: onBackToday,
+                      tagsNotSaved: state.tagsFailure != null,
+                      onTagsChanged: (tags) => context
+                          .read<SessionReviewBloc>()
+                          .add(SessionReviewEvent.tagsChanged(tags)),
                       next: review.group == null
                           ? null
                           : _NextSession(

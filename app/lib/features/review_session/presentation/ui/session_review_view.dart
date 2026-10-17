@@ -3,9 +3,12 @@ import 'package:billard_cfa/features/review_session/domain/session_review.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
+import 'package:billard_cfa/shared/ui/app_alert.dart' as alert;
 import 'package:billard_cfa/shared/ui/exercise_title.dart';
 import 'package:billard_cfa/shared/ui/page_header.dart';
 import 'package:billard_cfa/shared/ui/section_card.dart';
+import 'package:billard_cfa/shared/ui/session_tag_picker.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:billard_cfa/shared/ui/watch_row.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +26,8 @@ class SessionReviewView extends StatelessWidget {
     required this.onOpenRecord,
     required this.onOpenStudent,
     required this.onBackToday,
+    required this.onTagsChanged,
+    this.tagsNotSaved = false,
     this.next,
     super.key,
   });
@@ -33,6 +38,13 @@ class SessionReviewView extends StatelessWidget {
   final VoidCallback onOpenRecord;
   final ValueChanged<StudentId> onOpenStudent;
   final VoidCallback onBackToday;
+
+  /// Les étiquettes de la note de jeu ont changé (liste fermée, ADR 0023).
+  final ValueChanged<Set<SessionTag>> onTagsChanged;
+
+  /// La dernière écriture des étiquettes a échoué : elles sont revenues à
+  /// leur valeur d'avant.
+  final bool tagsNotSaved;
 
   String _exercise(AppLocalizations l10n, ExerciseRef ref) {
     final label = review.blockLabels[ref.blockId];
@@ -175,6 +187,28 @@ class SessionReviewView extends StatelessWidget {
             ),
           ),
         ],
+        const SizedBox(height: AppSpacing.md),
+        SectionCard(
+          title: l10n.sessionTagsTitle,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.sessionTagsHint, style: theme.textTheme.bodyMedium),
+              const SizedBox(height: AppSpacing.sm),
+              SessionTagPicker(
+                selected: review.record.tags,
+                onChanged: onTagsChanged,
+              ),
+              if (tagsNotSaved) ...[
+                const SizedBox(height: AppSpacing.sm),
+                alert.AppAlert(
+                  level: alert.AlertLevel.persistent,
+                  message: l10n.sessionTagsNotSaved,
+                ),
+              ],
+            ],
+          ),
+        ),
         if (next != null && !outcome.isEmpty) ...[
           const SizedBox(height: AppSpacing.md),
           next!,

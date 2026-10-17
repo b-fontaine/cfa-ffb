@@ -13,6 +13,7 @@ import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/backup_formats.dart';
 import '../../../support/domain_world.dart';
 import '../../../support/fixed_clock.dart';
 import '../../../support/fixtures.dart';
@@ -83,10 +84,10 @@ void main() {
       (archive[key]! as List<Object?>).first! as Map<String, Object?>;
 
   group('format 4', () {
-    test('is the current version and the older ones are still read', () {
-      expect(BackupCodec.currentVersion, 4);
-      expect(BackupCodec.supportedVersions, {1, 2, 3, 4});
-      expect(document()['schemaVersion'], 4);
+    test('is still read, and so are the older ones (the current is 5)', () {
+      expect(BackupCodec.currentVersion, 5);
+      expect(BackupCodec.supportedVersions, {1, 2, 3, 4, 5});
+      expect(document()['schemaVersion'], 5);
     });
 
     test('writes the closing day of a closed season only', () {
@@ -149,6 +150,7 @@ void main() {
       for (final version in [1, 2, 3]) {
         final d = document()..['schemaVersion'] = version;
         data(d).remove('seasonArchives');
+        dropSessionTags(data(d));
         if (version < 3) data(d).remove('alertAcknowledgements');
         if (version < 2) data(d).remove('settings');
 
@@ -162,6 +164,7 @@ void main() {
     test('refuse the archive key', () {
       for (final version in [1, 2, 3]) {
         final d = document()..['schemaVersion'] = version;
+        dropSessionTags(data(d));
         if (version < 3) data(d).remove('alertAcknowledgements');
         if (version < 2) data(d).remove('settings');
 

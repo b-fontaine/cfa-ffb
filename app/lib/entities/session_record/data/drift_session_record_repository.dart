@@ -3,6 +3,7 @@ import 'package:billard_cfa/entities/session_record/domain/session_record_reposi
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
 import 'package:drift/drift.dart';
@@ -31,6 +32,7 @@ class DriftSessionRecordRepository implements SessionRecordRepository {
             mainBlockId: Value(session.mainBlockId),
             recallBlockId: Value(session.recallBlockId),
             sheetId: Value(session.sheetId?.value),
+            tagsJson: Value(encodeSessionTags(session.tags)),
             createdAt: now,
             updatedAt: now,
           ),
@@ -43,6 +45,7 @@ class DriftSessionRecordRepository implements SessionRecordRepository {
               mainBlockId: Value(session.mainBlockId),
               recallBlockId: Value(session.recallBlockId),
               sheetId: Value(session.sheetId?.value),
+              tagsJson: Value(encodeSessionTags(session.tags)),
               updatedAt: Value(now),
               deletedAt: const Value(null),
             ),
@@ -100,6 +103,17 @@ class DriftSessionRecordRepository implements SessionRecordRepository {
   Future<List<SessionRecord>> all() => _where((_) => const Constant(true));
 
   @override
+  Future<void> setTags(SessionId id, Set<SessionTag> tags) =>
+      (_db.update(
+        _db.sessionRecords,
+      )..where((s) => s.id.equals(id.value) & s.deletedAt.isNull())).write(
+        SessionRecordsCompanion(
+          tagsJson: Value(encodeSessionTags(tags)),
+          updatedAt: Value(_clock.now()),
+        ),
+      );
+
+  @override
   Future<void> delete(SessionId id) =>
       (_db.update(_db.sessionRecords)..where((s) => s.id.equals(id.value)))
           .write(SessionRecordsCompanion(deletedAt: Value(_clock.now())));
@@ -142,6 +156,8 @@ class DriftSessionRecordRepository implements SessionRecordRepository {
           mainBlockId: row.mainBlockId,
           recallBlockId: row.recallBlockId,
           sheetId: SheetId.tryParse(row.sheetId),
+          // Donnée durable : un code inconnu est ignoré, jamais bloquant.
+          tags: decodeSessionTags(row.tagsJson, strict: false),
         ),
     ];
   }

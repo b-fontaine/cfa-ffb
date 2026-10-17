@@ -1,6 +1,7 @@
 import 'package:billard_cfa/entities/run_progress/domain/run_progress_key.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_progress_keeper.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -39,6 +40,7 @@ void main() {
         scoreB: 5,
         timerSeconds: 40,
         recordId: const SessionId('x1'),
+        tags: {SessionTag.tooLong, SessionTag.toRedo},
       );
 
       final saved = (await keeper.saved(key))!;
@@ -53,6 +55,7 @@ void main() {
       expect(saved.scoreB, 5);
       expect(saved.timerSeconds, 40);
       expect(saved.recordId, const SessionId('x1'));
+      expect(saved.tags, {SessionTag.tooLong, SessionTag.toRedo});
     });
 
     test('forget erases the progress of that key only', () async {
@@ -169,5 +172,35 @@ void main() {
 
   test('stale delay is seven days', () {
     expect(RunProgressKeeper.staleAfter, const Duration(days: 7));
+  });
+
+  group('giveTags', () {
+    test('writes the tags on the record, leaving the rest alone', () async {
+      await world.session(dayOfMonth: 5, present: {'s1', 's2'});
+      final before = (await world.sessions.byId(const SessionId('x1')))!;
+
+      await keeper.giveTags(const SessionId('x1'), {SessionTag.tooShort});
+
+      final after = (await world.sessions.byId(const SessionId('x1')))!;
+      expect(after.tags, {SessionTag.tooShort});
+      expect(after, before.copyWith(tags: {SessionTag.tooShort}));
+    });
+
+    test('does nothing for a record that is gone', () async {
+      await keeper.giveTags(const SessionId('nope'), {SessionTag.tooShort});
+
+      expect(await world.sessions.byId(const SessionId('nope')), isNull);
+    });
+
+    test('keeps the tags already on the record when given none', () async {
+      await world.session(dayOfMonth: 5);
+      await world.sessions.setTags(const SessionId('x1'), {SessionTag.toRedo});
+
+      await keeper.giveTags(const SessionId('x1'), const {});
+
+      expect((await world.sessions.byId(const SessionId('x1')))!.tags, {
+        SessionTag.toRedo,
+      });
+    });
   });
 }

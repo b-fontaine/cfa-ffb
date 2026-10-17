@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/run_progress/data/drift_run_progress_repository.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -16,10 +17,12 @@ Future<void> _insertRaw(
   String counts = '{}',
   String checked = '{}',
   int scoreA = 0,
+  String tags = '[]',
 }) => db.customStatement(
   'INSERT INTO run_progress_entries (run_key, sheet_id, audience, step, '
-  'counts_json, checked_json, score_a, score_b, timer_seconds, updated_at) '
-  'VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, ?)',
+  'counts_json, checked_json, score_a, score_b, timer_seconds, tags_json, '
+  'updated_at) '
+  'VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, ?, ?)',
   [
     runKey,
     sheetId,
@@ -28,6 +31,7 @@ Future<void> _insertRaw(
     counts,
     checked,
     scoreA,
+    tags,
     '2026-10-16T09:00:00.000Z',
   ],
 );
@@ -56,6 +60,14 @@ void main() {
     });
   });
 
+  test('reads the tags of a healthy raw row', () async {
+    await _insertRaw(db, tags: '["tooLong","toRedo"]');
+
+    final read = await repository.byKey(runKey('posture-1'));
+
+    expect(read!.tags, {SessionTag.tooLong, SessionTag.toRedo});
+  });
+
   for (final (label, insert) in <(String, Future<void> Function(AppDatabase))>[
     ('malformed counts JSON', (db) => _insertRaw(db, counts: 'oups')),
     (
@@ -65,6 +77,9 @@ void main() {
     ('a malformed grid', (db) => _insertRaw(db, checked: '[1]')),
     ('an unknown audience', (db) => _insertRaw(db, audience: 'seniors')),
     ('an invalid sheet id', (db) => _insertRaw(db, sheetId: 'Pas Valide')),
+    ('an unknown tag code', (db) => _insertRaw(db, tags: '["freeText"]')),
+    ('a duplicated tag', (db) => _insertRaw(db, tags: '["tooLong","tooLong"]')),
+    ('malformed tags', (db) => _insertRaw(db, tags: '{"a":1}')),
     ('a negative step', (db) => _insertRaw(db, step: -3)),
     ('a score above the limit', (db) => _insertRaw(db, scoreA: 5000)),
   ]) {

@@ -38,11 +38,17 @@ class BackupDecoder {
   /// [withArchives] : le format connaît la clé `seasonArchives` (format 4,
   /// ADR 0019) ; elle y est obligatoire, et refusée dans un fichier des
   /// formats 1 à 3 (la liste décodée est alors vide).
+  ///
+  /// [withTags] : le format connaît `sessionRecords[].tags` (format 5, ADR
+  /// 0023) ; la clé y est obligatoire sur chaque saisie, et refusée dans un
+  /// fichier des formats 1 à 4 (les saisies décodées n'ont alors aucune
+  /// étiquette).
   BackupSnapshot decode(
     Object? data, {
     bool withSettings = true,
     bool withAcknowledgements = true,
     bool withArchives = true,
+    bool withTags = true,
   }) {
     try {
       final object = _read.object(data);
@@ -60,6 +66,7 @@ class BackupDecoder {
         object,
         withAcknowledgements: withAcknowledgements,
         withArchives: withArchives,
+        withTags: withTags,
       );
       const BackupConsistency().check(snapshot);
       return snapshot;
@@ -74,13 +81,14 @@ class BackupDecoder {
     Map<String, Object?> data, {
     required bool withAcknowledgements,
     required bool withArchives,
+    required bool withTags,
   }) => BackupSnapshot(
     seasons: _read.objects(data['seasons']).map(_decodeSeason).toList(),
     students: _read.objects(data['students']).map(_decodeStudent).toList(),
     groups: _read.objects(data['groups']).map(_decodeGroup).toList(),
     sessionRecords: _read
         .objects(data['sessionRecords'])
-        .map(_decodeSessionRecord)
+        .map((json) => _decodeSessionRecord(json, withTags: withTags))
         .toList(),
     attempts: _read.objects(data['attempts']).map(_decodeAttempt).toList(),
     assessments: _read
@@ -200,21 +208,31 @@ class BackupDecoder {
     ],
   );
 
-  SessionRecord _decodeSessionRecord(Map<String, Object?> json) =>
-      SessionRecord(
-        id: SessionId(_read.string(json['id'])),
-        groupId: GroupId(_read.string(json['groupId'])),
-        seasonId: SeasonId(_read.string(json['seasonId'])),
-        date: _read.dateTime(json['date']),
-        audience: _read.audience(json['audience']),
-        present: {
-          for (final id in _read.list(json['present']))
-            StudentId(_read.string(id)),
-        },
-        mainBlockId: _read.optionalString(json['mainBlockId']),
-        recallBlockId: _read.optionalString(json['recallBlockId']),
-        sheetId: _read.optionalSheetId(json['sheetId']),
-      );
+  SessionRecord _decodeSessionRecord(
+    Map<String, Object?> json, {
+    required bool withTags,
+  }) {
+    // Clé obligatoire du format 5, refusée avant : `sessionTags(null)` lève
+    // `backupInvalid`.
+    if (!withTags && json.containsKey('tags')) {
+      throw const InvariantViolation(InvariantCode.backupInvalid);
+    }
+    return SessionRecord(
+      id: SessionId(_read.string(json['id'])),
+      groupId: GroupId(_read.string(json['groupId'])),
+      seasonId: SeasonId(_read.string(json['seasonId'])),
+      date: _read.dateTime(json['date']),
+      audience: _read.audience(json['audience']),
+      present: {
+        for (final id in _read.list(json['present']))
+          StudentId(_read.string(id)),
+      },
+      mainBlockId: _read.optionalString(json['mainBlockId']),
+      recallBlockId: _read.optionalString(json['recallBlockId']),
+      sheetId: _read.optionalSheetId(json['sheetId']),
+      tags: withTags ? _read.sessionTags(json['tags']) : const {},
+    );
+  }
 
   ExerciseAttempt _decodeAttempt(Map<String, Object?> json) => ExerciseAttempt(
     id: AttemptId(_read.string(json['id'])),

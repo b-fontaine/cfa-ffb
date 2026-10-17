@@ -16,9 +16,11 @@ import 'package:billard_cfa/features/backup_data/domain/json_reader.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/backup_formats.dart';
 import '../../../support/fixtures.dart';
 
 final _exportedAt = DateTime.utc(2026, 10, 12, 8);
@@ -119,7 +121,7 @@ void main() {
     ) as Map<String, Object?>;
 
     expect(document['format'], BackupCodec.format);
-    expect(document['schemaVersion'], 4);
+    expect(document['schemaVersion'], 5);
     expect(document['exportedAt'], '2026-10-12T08:00:00.000Z');
     expect(document['data'], {
       'seasons': <Object?>[],
@@ -154,6 +156,7 @@ void main() {
     (document['data']! as Map<String, Object?>)
       ..remove('alertAcknowledgements')
       ..remove('seasonArchives');
+    dropSessionTags(document['data']! as Map<String, Object?>);
     final stored =
         ((document['data']! as Map<String, Object?>)['assessments']!
                     as List<Object?>)
@@ -192,8 +195,81 @@ void main() {
   });
 
   test('exposes the supported versions', () {
-    expect(BackupCodec.currentVersion, 4);
-    expect(BackupCodec.supportedVersions, {1, 2, 3, 4});
+    expect(BackupCodec.currentVersion, 5);
+    expect(BackupCodec.supportedVersions, {1, 2, 3, 4, 5});
+  });
+
+  group('session tags (format 5, ADR 0023)', () {
+    Map<String, Object?> exported({Set<SessionTag> tags = const {}}) =>
+        jsonDecode(
+          codec.encode(
+            _snapshot.copyWith(sessionRecords: [_record.copyWith(tags: tags)]),
+            exportedAt: _exportedAt,
+          ),
+        ) as Map<String, Object?>;
+
+    Map<String, Object?> recordOf(Map<String, Object?> document) =>
+        ((document['data']! as Map<String, Object?>)['sessionRecords']!
+                    as List<Object?>)
+                .single!
+            as Map<String, Object?>;
+
+    test('writes the codes in display order, an empty list when none', () {
+      expect(
+        recordOf(
+          exported(tags: {SessionTag.toRedo, SessionTag.tooLong}),
+        )['tags'],
+        ['tooLong', 'toRedo'],
+      );
+      expect(recordOf(exported())['tags'], <Object?>[]);
+    });
+
+    test('round-trips the tags of a session', () {
+      final tags = {SessionTag.gameAppreciated, SessionTag.equipmentLacking};
+      final content = codec.encode(
+        _snapshot.copyWith(sessionRecords: [_record.copyWith(tags: tags)]),
+        exportedAt: _exportedAt,
+      );
+
+      expect(codec.decode(content).sessionRecords.single.tags, tags);
+    });
+
+    test('reads a file of format 4 as having no tags', () {
+      final document = exported()..['schemaVersion'] = 4;
+      recordOf(document).remove('tags');
+
+      expect(codec.decode(jsonEncode(document)).sessionRecords.single, _record);
+    });
+
+    test('refuses a tags key in a file of format 4', () {
+      final document = exported(tags: {SessionTag.tooLong})
+        ..['schemaVersion'] = 4;
+
+      expect(_codeOf(jsonEncode(document)), InvariantCode.backupInvalid);
+    });
+
+    test('requires the tags key in a file of format 5', () {
+      final document = exported();
+      recordOf(document).remove('tags');
+
+      expect(_codeOf(jsonEncode(document)), InvariantCode.backupInvalid);
+    });
+
+    for (final (label, value) in <(String, Object?)>[
+      ('an unknown code', ['inconnue']),
+      ('free text', ['Hugo a été pénible']),
+      ('a duplicated code', ['tooLong', 'tooLong']),
+      ('something that is not a list', 'tooLong'),
+      ('a non-string item', [3]),
+      ('null', null),
+    ]) {
+      test('refuses $label', () {
+        final document = exported();
+        recordOf(document)['tags'] = value;
+
+        expect(_codeOf(jsonEncode(document)), InvariantCode.backupInvalid);
+      });
+    }
   });
 
   test(
@@ -229,6 +305,7 @@ void main() {
     (document['data']! as Map<String, Object?>)
       ..remove('alertAcknowledgements')
       ..remove('seasonArchives');
+    dropSessionTags(document['data']! as Map<String, Object?>);
 
     expect(codec.decode(jsonEncode(document)).alertAcknowledgements, isNull);
   });

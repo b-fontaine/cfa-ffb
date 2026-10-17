@@ -13,9 +13,10 @@ String formatTimer(Duration remaining) {
 }
 
 /// Minuteur compact : temps restant en `titleLarge`, fond neutre puis
-/// `StatusColors.attention` sous une minute puis conteneur d'erreur au
-/// dépassement (avec une icône : jamais la couleur seule), et un bouton unique
-/// lecture / pause (cible ≥ 48 dp).
+/// `StatusColors.attention` sous une minute puis `inverseSurface` (sombre,
+/// jamais le rouge d'état : ADR 0010) au dépassement, avec une icône
+/// sablier et le temps en `+mm:ss` (jamais la couleur seule), et un bouton
+/// unique lecture / pause (cible ≥ 48 dp).
 ///
 /// Sans minuterie interne : l'appelant fournit [remaining], [running] et
 /// [onToggle] (testable sans horloge). Le lecteur d'écran n'annonce que les
@@ -45,8 +46,8 @@ class TimerChip extends StatelessWidget {
       ),
       TimerTone.attention => (status.attention, status.onAttention),
       TimerTone.overdue => (
-        theme.colorScheme.errorContainer,
-        theme.colorScheme.onErrorContainer,
+        theme.colorScheme.inverseSurface,
+        theme.colorScheme.onInverseSurface,
       ),
     };
     final time = formatTimer(remaining);
@@ -78,7 +79,7 @@ class TimerChip extends StatelessWidget {
                   excludeSemantics: true,
                   child: Icon(
                     tone == TimerTone.overdue
-                        ? Icons.error_outline
+                        ? Icons.hourglass_bottom
                         : Icons.warning_amber_rounded,
                     color: foreground,
                   ),

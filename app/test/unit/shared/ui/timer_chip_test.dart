@@ -78,7 +78,30 @@ void main() {
     expect(background(tester), theme.extension<StatusColors>()!.attention);
   });
 
-  testWidgets('uses the error container when overdue', (tester) async {
+  testWidgets(
+    'uses the inverse surface, never the error colours, when overdue',
+    (tester) async {
+      await pumpUi(
+        tester,
+        TimerChip(
+          remaining: const Duration(seconds: -10),
+          running: true,
+          onToggle: () {},
+        ),
+      );
+
+      final scheme = Theme.of(tester.element(find.text('+00:10'))).colorScheme;
+      expect(background(tester), scheme.inverseSurface);
+      expect(background(tester), isNot(scheme.errorContainer));
+      expect(find.byIcon(Icons.hourglass_bottom), findsOneWidget);
+      expect(find.byIcon(Icons.error_outline), findsNothing);
+      expect(find.byIcon(Icons.warning_amber_rounded), findsNothing);
+    },
+  );
+
+  testWidgets('wires the inverse foreground to the overdue icon and text', (
+    tester,
+  ) async {
     await pumpUi(
       tester,
       TimerChip(
@@ -89,7 +112,36 @@ void main() {
     );
 
     final scheme = Theme.of(tester.element(find.text('+00:10'))).colorScheme;
-    expect(background(tester), scheme.errorContainer);
+    expect(
+      tester.widget<Icon>(find.byIcon(Icons.hourglass_bottom)).color,
+      scheme.onInverseSurface,
+    );
+    expect(
+      tester.widget<Text>(find.text('+00:10')).style?.color,
+      scheme.onInverseSurface,
+    );
+  });
+
+  testWidgets('zero is not overdue, one second past is', (tester) async {
+    await pumpUi(
+      tester,
+      TimerChip(remaining: Duration.zero, running: true, onToggle: () {}),
+    );
+    final scheme = Theme.of(tester.element(find.text('00:00'))).colorScheme;
+    expect(background(tester), isNot(scheme.inverseSurface));
+    expect(find.byIcon(Icons.hourglass_bottom), findsNothing);
+
+    await pumpUi(
+      tester,
+      TimerChip(
+        remaining: const Duration(seconds: -1),
+        running: true,
+        onToggle: () {},
+      ),
+    );
+    expect(find.text('+00:01'), findsOneWidget);
+    expect(background(tester), scheme.inverseSurface);
+    expect(find.byIcon(Icons.hourglass_bottom), findsOneWidget);
   });
 
   testWidgets('shows a warning icon off neutral, none when neutral', (

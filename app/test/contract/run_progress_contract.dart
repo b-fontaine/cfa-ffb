@@ -4,6 +4,7 @@ import 'package:billard_cfa/entities/run_progress/domain/run_progress_links.dart
 import 'package:billard_cfa/entities/run_progress/domain/run_progress_repository.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -38,6 +39,7 @@ RunProgress runProgress(
   scoreB: 5,
   timerSeconds: 42,
   recordId: record == null ? null : SessionId(record),
+  tags: {SessionTag.tooLong, SessionTag.toRedo},
 );
 
 /// Suite unique du port [RunProgressRepository], exécutée contre chaque
@@ -72,6 +74,7 @@ void runProgressContract(
         'grille': {0, 2},
       });
       expect(read.recordId, const SessionId('x1'));
+      expect(read.tags, {SessionTag.tooLong, SessionTag.toRedo});
       expect(read.updatedAt, _at(0));
     });
 

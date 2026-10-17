@@ -3709,5 +3709,18 @@
       }
     }
   },
-  "exportNamesSection": "First names"
+  "exportNamesSection": "First names",
+  "sessionTagsTitle": "Session notes",
+  "sessionTagsHint": "Pick the labels that fit. They describe the session, never a student.",
+  "sessionTagsKept": "They will be kept with the results sheet opened from this guide when the session ends.",
+  "sessionTagsNotKept": "No results sheet is open from this guide: these labels will not be kept when the session ends.",
+  "sessionTagsNotSaved": "The labels could not be saved. Try again.",
+  "sessionTagGameAppreciated": "Game enjoyed",
+  "sessionTagInstructionsToRephrase": "Instructions to rephrase",
+  "sessionTagTooLong": "Too long",
+  "sessionTagTooShort": "Too short",
+  "sessionTagTooHard": "Too hard",
+  "sessionTagTooEasy": "Too easy",
+  "sessionTagToRedo": "To do again",
+  "sessionTagEquipmentLacking": "Not enough equipment"
 }

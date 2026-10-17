@@ -6,8 +6,6 @@ import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgemen
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/drift_assessment_repository.dart';
 import 'package:billard_cfa/entities/run_progress/data/drift_run_progress_repository.dart';
-import 'package:billard_cfa/entities/run_progress/domain/run_progress.dart';
-import 'package:billard_cfa/entities/run_progress/domain/run_progress_key.dart';
 import 'package:billard_cfa/entities/season/data/drift_season_archive_repository.dart';
 import 'package:billard_cfa/entities/season/data/drift_season_repository.dart';
 import 'package:billard_cfa/entities/session/data/drift_session_repository.dart';
@@ -18,7 +16,7 @@ import 'package:billard_cfa/entities/student/data/drift_student_repository.dart'
 import 'package:billard_cfa/features/backup_data/data/drift_backup_marker_repository.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
-import 'package:billard_cfa/shared/lib/sheet_id.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
@@ -287,21 +285,80 @@ void main() {
 
     await verifier.migrateAndValidate(db, 10);
 
-    final clock = TickingClock();
-    final progress = DriftRunProgressRepository(db);
-    expect(await progress.all(), isEmpty);
+    // SQL brut : le dépôt lit le schéma courant (colonne des étiquettes v11).
+    final rows = await db
+        .customSelect('SELECT count(*) AS n FROM run_progress_entries')
+        .getSingle();
+    expect(rows.data['n'], 0);
     expect(
-      (await DriftAttemptRepository(db, clock).all()).single.id.value,
+      (await DriftAttemptRepository(db, TickingClock()).all()).single.id.value,
       'a1',
     );
-    final key = RunProgressKey(sheetId: SheetId('posture-1'));
-    final stored = RunProgress(
-      key: key,
-      updatedAt: DateTime.utc(2026, 10, 16, 9),
-      step: 3,
+    await db.customStatement(
+      'INSERT INTO run_progress_entries (run_key, sheet_id, step, '
+      'counts_json, checked_json, score_a, score_b, timer_seconds, '
+      'updated_at) '
+      "VALUES ('posture-1||', 'posture-1', 3, '{}', '{}', 0, 0, 0, "
+      "'2026-10-16T09:00:00.000Z')",
     );
-    await progress.save(stored);
-    expect(await progress.byKey(key), stored);
+    final stored = await db
+        .customSelect('SELECT step FROM run_progress_entries')
+        .getSingle();
+    expect(stored.data['step'], 3);
+  });
+
+  test('a fresh database matches the committed v11 snapshot', () async {
+    final connection = await verifier.startAt(11);
+    final db = AppDatabase(connection);
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 11);
+  });
+
+  test('upgrading v10 to v11 gives existing sessions and running sessions no '
+      'tags and keeps their data', () async {
+    final schema = await verifier.schemaAt(10);
+    schema.rawDatabase
+      ..execute(
+        'INSERT INTO session_records (id, created_at, updated_at, group_id, '
+        'season_id, date, audience) '
+        "VALUES ('x1', '2026-10-01T00:00:00.000Z', "
+        "'2026-10-01T00:00:00.000Z', 'g1', 'season', "
+        "'2026-10-05T00:00:00.000', 'children')",
+      )
+      ..execute(
+        'INSERT INTO run_progress_entries (run_key, sheet_id, step, '
+        'counts_json, checked_json, score_a, score_b, timer_seconds, '
+        'updated_at) '
+        "VALUES ('posture-1|children||', 'posture-1', 4, '{}', '{}', 1, 2, "
+        "30, '2026-10-16T09:00:00.000Z')",
+      );
+    final db = AppDatabase(schema.newConnection());
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 11);
+
+    final record = await DriftSessionRecordRepository(
+      db,
+      TickingClock(),
+    ).byId(const SessionId('x1'));
+    expect(record!.groupId, const GroupId('g1'));
+    expect(record.tags, isEmpty);
+    final running = (await DriftRunProgressRepository(db).all()).single;
+    expect(running.step, 4);
+    expect(running.scoreB, 2);
+    expect(running.tags, isEmpty);
+    await DriftSessionRecordRepository(
+      db,
+      TickingClock(),
+    ).setTags(const SessionId('x1'), {SessionTag.tooLong});
+    expect(
+      (await DriftSessionRecordRepository(
+        db,
+        TickingClock(),
+      ).byId(const SessionId('x1')))!.tags,
+      {SessionTag.tooLong},
+    );
   });
 
   test('the settings table holds a single row (id = 1)', () async {
@@ -394,11 +451,20 @@ void main() {
     expect(planned.audience.name, 'adults');
     expect(planned.groupId, isNull);
     expect(planned.sheetId?.value, 'rebond-bande-1');
-    final record = (await DriftSessionRecordRepository(db, clock).all()).single;
-    expect(record.id.value, 'x1');
-    expect(record.date, DateTime(2026, 10, 3));
-    expect(record.mainBlockId, 'posture');
-    expect(record.sheetId, isNull);
+    // SQL brut : le dépôt lit le schéma courant (colonne des étiquettes v11).
+    final record =
+        (await db
+                .customSelect(
+                  'SELECT id, date, main_block_id, sheet_id '
+                  'FROM session_records',
+                )
+                .get())
+            .single
+            .data;
+    expect(record['id'], 'x1');
+    expect(record['date'], '2026-10-03T00:00:00.000');
+    expect(record['main_block_id'], 'posture');
+    expect(record['sheet_id'], isNull);
   });
 
   test(
@@ -481,7 +547,7 @@ void main() {
   test('refuses to open a database written by a newer version', () async {
     final db = AppDatabase(
       NativeDatabase.memory(
-        setup: (raw) => raw.execute('PRAGMA user_version = 11'),
+        setup: (raw) => raw.execute('PRAGMA user_version = 12'),
       ),
     );
     addTearDown(db.close);
@@ -490,9 +556,9 @@ void main() {
       db.customSelect('SELECT 1').get(),
       throwsA(
         isA<DowngradeNotSupported>()
-            .having((e) => e.from, 'from', 11)
-            .having((e) => e.to, 'to', 10)
-            .having((e) => e.toString(), 'message', contains('version 11')),
+            .having((e) => e.from, 'from', 12)
+            .having((e) => e.to, 'to', 11)
+            .having((e) => e.toString(), 'message', contains('version 12')),
       ),
     );
   });

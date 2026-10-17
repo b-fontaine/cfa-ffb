@@ -49,15 +49,26 @@ abstract class RunSheetState with _$RunSheetState {
 
     /// Choix de la dernière saisie des résultats faite depuis ce guide.
     RunRecordChoice? recordChoice,
+
+    /// Étiquettes de la note de jeu choisies à l'étape « Bilan » (ADR 0023) :
+    /// liste fermée, gardées avec la séance en cours, données à la saisie
+    /// ouverte depuis ce guide à « Terminer ».
+    @Default(<SessionTag>{}) Set<SessionTag> tags,
+
+    /// Vrai quand « Terminer » n'a pas pu donner les étiquettes à la saisie :
+    /// la séance reste ouverte (rien n'est perdu sans que l'animateur le
+    /// sache). Retombe au prochain choix d'étiquettes.
+    @Default(false) bool tagsNotSaved,
   }) = _RunSheetState;
 
   const RunSheetState._();
 
   /// Vrai quand la séance a de la progression à reprendre : étape après la
-  /// première, réussites comptées, critères cochés ou score. Le minuteur
-  /// seul n'en est pas (indicatif).
+  /// première, réussites comptées, critères cochés, score ou étiquettes. Le
+  /// minuteur seul n'en est pas (indicatif).
   bool get hasProgress =>
       step > 0 ||
+      tags.isNotEmpty ||
       counts.values.any((count) => count > 0) ||
       this.checked.values.any((criteria) => criteria.isNotEmpty) ||
       scoreA > 0 ||

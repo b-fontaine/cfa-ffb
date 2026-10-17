@@ -1,6 +1,7 @@
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_journal.dart';
 import 'package:injectable/injectable.dart';
 
@@ -32,6 +33,13 @@ class InMemorySessionRecordRepository implements SessionRecordRepository {
 
   @override
   Future<List<SessionRecord>> all() async => _sessions.values.toList();
+
+  @override
+  Future<void> setTags(SessionId id, Set<SessionTag> tags) async {
+    final session = _sessions[id];
+    if (session == null) return;
+    _sessions.journaledPut(id, session.copyWith(tags: Set.of(tags)));
+  }
 
   @override
   Future<void> delete(SessionId id) async => _sessions.journaledRemove(id);

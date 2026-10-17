@@ -99,6 +99,11 @@ class SessionRecords extends Table with AuditColumns {
   /// séances du catalogue sont des assets : pas de clé étrangère ; nul =
   /// séance ouverte sans séance du catalogue.
   TextColumn get sheetId => text().nullable()();
+
+  /// Étiquettes de la note de jeu (ajoutées au schéma version 11, ADR 0023) :
+  /// liste JSON de codes de `SessionTag`, dans l'ordre d'affichage. Aucun
+  /// élève, aucun texte libre.
+  TextColumn get tagsJson => text().withDefault(const Constant('[]'))();
 }
 
 @DataClassName('PresenceRow')
@@ -323,6 +328,10 @@ class RunProgressEntries extends Table {
   IntColumn get scoreB => integer()();
 
   IntColumn get timerSeconds => integer()();
+
+  /// Étiquettes de la note de jeu (schéma version 11, ADR 0023) : liste JSON
+  /// de codes de `SessionTag`.
+  TextColumn get tagsJson => text().withDefault(const Constant('[]'))();
 
   TextColumn get updatedAt => text().map(const IsoDateTimeConverter())();
 

@@ -9,6 +9,7 @@ import 'package:billard_cfa/features/review_session/presentation/ui/session_revi
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,6 +33,7 @@ SessionReview review({
   SessionOutcome outcome = const SessionOutcome(),
   bool withGroup = true,
   bool withSheet = true,
+  Set<SessionTag> tags = const {},
 }) => SessionReview(
   record: SessionRecord(
     id: const SessionId('r1'),
@@ -40,6 +42,7 @@ SessionReview review({
     date: DateTime(2026, 10, 12),
     audience: Audience.children,
     present: {const StudentId('Léa'), const StudentId('Hugo')},
+    tags: tags,
   ),
   outcome: outcome,
   proposedDate: DateTime(2026, 10, 19),
@@ -73,6 +76,7 @@ Widget view(
   VoidCallback? onEnterResults,
   VoidCallback? onBackToday,
   Widget? next,
+  ValueChanged<Set<SessionTag>>? onTagsChanged,
 }) => SingleChildScrollView(
   child: SessionReviewView(
     review: review,
@@ -81,6 +85,7 @@ Widget view(
     onOpenRecord: () {},
     onOpenStudent: (_) {},
     onBackToday: onBackToday ?? () {},
+    onTagsChanged: onTagsChanged ?? (_) {},
   ),
 );
 
@@ -231,5 +236,59 @@ void main() {
     await tester.tap(find.text('Back to Today'));
 
     expect(back, 1);
+  });
+
+  group('session notes', () {
+    testWidgets('offers the closed list with the tags of the record picked', (
+      tester,
+    ) async {
+      await pumpUi(
+        tester,
+        view(review(tags: {SessionTag.tooLong, SessionTag.toRedo})),
+      );
+
+      expect(find.text('Session notes'), findsOneWidget);
+      final selected = [
+        for (final chip in tester.widgetList<FilterChip>(
+          find.byType(FilterChip),
+        ))
+          if (chip.selected) (chip.label as Text).data,
+      ];
+      expect(selected, ['Too long', 'To do again']);
+      expect(find.byType(FilterChip), findsNWidgets(SessionTag.values.length));
+      expect(find.byType(EditableText), findsNothing);
+    });
+
+    testWidgets('reports the new set when a label is tapped', (tester) async {
+      final changes = <Set<SessionTag>>[];
+      await pumpUi(
+        tester,
+        view(review(tags: {SessionTag.tooLong}), onTagsChanged: changes.add),
+      );
+
+      await tester.ensureVisible(find.text('Too easy'));
+      await tester.tap(find.text('Too easy'));
+
+      expect(changes, [
+        {SessionTag.tooLong, SessionTag.tooEasy},
+      ]);
+    });
+
+    testWidgets('is shown even when no pass was entered', (tester) async {
+      await pumpUi(tester, view(review()));
+
+      expect(find.text('Session notes'), findsOneWidget);
+    });
+
+    testWidgets('is read in French', (tester) async {
+      await pumpUi(
+        tester,
+        view(review(tags: {SessionTag.toRedo})),
+        locale: const Locale('fr'),
+      );
+
+      expect(find.text('Notes de séance'), findsOneWidget);
+      expect(find.text('À refaire'), findsOneWidget);
+    });
   });
 }

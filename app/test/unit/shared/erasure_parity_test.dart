@@ -6,6 +6,7 @@ import 'package:billard_cfa/features/close_season/domain/close_season.dart';
 import 'package:billard_cfa/features/manage_students/domain/erase_student.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_unit_of_work.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -77,6 +78,7 @@ Future<DomainWorld> _seed() async {
         updatedAt: DateTime.utc(2026, 10, 12),
         step: 2,
         recordId: record == null ? null : SessionId(record),
+        tags: {SessionTag.tooLong},
       ),
     );
   }

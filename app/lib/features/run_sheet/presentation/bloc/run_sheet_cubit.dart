@@ -14,6 +14,7 @@ import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_ticker.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/timer_tone.dart';
 import 'package:flutter/foundation.dart' show mapEquals, setEquals;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -130,6 +131,13 @@ class RunSheetCubit extends Cubit<RunSheetState> {
         ),
       ),
     );
+  }
+
+  /// Fixe les étiquettes de la note de jeu (liste fermée, ADR 0023) ; elles
+  /// remplacent les précédentes et sont gardées avec la séance en cours.
+  void tagsChanged(Set<SessionTag> tags) {
+    if (isClosed || setEquals(tags, state.tags)) return;
+    emit(state.copyWith(tags: Set.unmodifiable(tags), tagsNotSaved: false));
   }
 
   /// Reprend la séance là où elle en était.
@@ -269,6 +277,30 @@ class RunSheetCubit extends Cubit<RunSheetState> {
     emit(state.copyWith(timerRunning: false));
   }
 
+  /// « Terminer » : donne les étiquettes à la saisie ouverte depuis ce guide
+  /// (s'il y en a une et si des étiquettes sont choisies), puis [finish].
+  ///
+  /// Sans saisie ouverte, les étiquettes n'ont nulle part où aller : elles
+  /// sont oubliées avec la séance (le guide le dit à l'animateur). Si
+  /// l'écriture échoue, la séance n'est **pas** terminée : l'échec est
+  /// signalé à l'observateur de blocs et dans l'état (`tagsNotSaved`), et
+  /// rend `false`. « Recommencer » passe par [finish] : il ne donne rien.
+  Future<bool> endSession() async {
+    final record = state.recordChoice?.recordId;
+    final tags = state.tags;
+    if (record != null && tags.isNotEmpty) {
+      try {
+        await _keeper.giveTags(record, tags);
+      } on Object catch (error, stackTrace) {
+        onError(error, stackTrace);
+        if (!isClosed) emit(state.copyWith(tagsNotSaved: true));
+        return false;
+      }
+    }
+    await finish();
+    return true;
+  }
+
   /// Fin de séance : remet à zéro étape, compteurs, score, minuteur et mode ;
   /// le déroulé reste chargé. Rien n'est enregistré dans le suivi, et l'état
   /// gardé sur l'appareil est oublié.
@@ -330,6 +362,7 @@ class RunSheetCubit extends Cubit<RunSheetState> {
           scoreB: saved.scoreB,
           timerSeconds: saved.timerSeconds,
           recordChoice: link,
+          tags: saved.tags,
         ),
       );
     } on Object catch (error, stackTrace) {
@@ -362,6 +395,7 @@ class RunSheetCubit extends Cubit<RunSheetState> {
       a.step != b.step ||
       a.scoreA != b.scoreA ||
       a.scoreB != b.scoreB ||
+      !setEquals(a.tags, b.tags) ||
       a.recordChoice?.recordId != b.recordChoice?.recordId ||
       !mapEquals(a.counts, b.counts) ||
       !_sameChecked(a.checked, b.checked);
@@ -392,6 +426,7 @@ class RunSheetCubit extends Cubit<RunSheetState> {
         scoreB: state.scoreB,
         timerSeconds: state.timerSeconds,
         recordId: recordId,
+        tags: state.tags,
       ),
     );
   }

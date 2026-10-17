@@ -3,6 +3,7 @@ import 'package:billard_cfa/entities/run_progress/domain/run_progress_key.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -46,6 +47,22 @@ InvariantCode _violation(void Function() build) {
 }
 
 void main() {
+  group('RunProgress.tags', () {
+    test('are empty by default', () {
+      expect(_progress().tags, isEmpty);
+    });
+
+    test('keep the closed-list labels given, without any free text', () {
+      final progress = RunProgress(
+        key: _key(),
+        updatedAt: DateTime.utc(2026, 10, 17),
+        tags: {SessionTag.tooLong, SessionTag.gameAppreciated},
+      );
+
+      expect(progress.tags, {SessionTag.tooLong, SessionTag.gameAppreciated});
+    });
+  });
+
   group('RunProgressKey.encoded', () {
     test('is stable and readable for a plain key', () {
       expect(

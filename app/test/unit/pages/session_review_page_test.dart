@@ -181,6 +181,40 @@ void main() {
     expect(back, 1);
   });
 
+  testWidgets('keeps the review and warns when the labels were not saved', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      state: SessionReviewState(
+        status: SessionReviewStatus.ready,
+        review: review(),
+        tagsFailure: const NotFound('session', 'x'),
+      ),
+    );
+
+    expect(
+      find.text('The labels could not be saved. Try again.'),
+      findsOneWidget,
+    );
+    expect(find.text('Session notes'), findsOneWidget);
+  });
+
+  testWidgets('shows no label warning without a failure', (tester) async {
+    await pump(
+      tester,
+      state: SessionReviewState(
+        status: SessionReviewStatus.ready,
+        review: review(),
+      ),
+    );
+
+    expect(
+      find.text('The labels could not be saved. Try again.'),
+      findsNothing,
+    );
+  });
+
   testWidgets('loads the next sheet for the group and the present students', (
     tester,
   ) async {

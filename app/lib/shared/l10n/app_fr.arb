@@ -3709,5 +3709,18 @@
       }
     }
   },
-  "exportNamesSection": "Prénoms"
+  "exportNamesSection": "Prénoms",
+  "sessionTagsTitle": "Notes de séance",
+  "sessionTagsHint": "Choisissez les étiquettes qui conviennent. Elles décrivent la séance, jamais un élève.",
+  "sessionTagsKept": "Elles seront conservées avec la saisie des résultats ouverte depuis ce guide quand la séance se termine.",
+  "sessionTagsNotKept": "Aucune saisie des résultats n’est ouverte depuis ce guide : ces étiquettes ne seront pas conservées à la fin de la séance.",
+  "sessionTagsNotSaved": "Les étiquettes n’ont pas pu être enregistrées. Réessayez.",
+  "sessionTagGameAppreciated": "Jeu apprécié",
+  "sessionTagInstructionsToRephrase": "Consigne à reformuler",
+  "sessionTagTooLong": "Trop long",
+  "sessionTagTooShort": "Trop court",
+  "sessionTagTooHard": "Trop difficile",
+  "sessionTagTooEasy": "Trop facile",
+  "sessionTagToRedo": "À refaire",
+  "sessionTagEquipmentLacking": "Matériel insuffisant"
 }

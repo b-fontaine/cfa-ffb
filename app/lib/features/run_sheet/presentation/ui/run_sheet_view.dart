@@ -21,10 +21,12 @@ import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/provenance.dart';
 import 'package:billard_cfa/shared/lib/session_shape.dart';
 import 'package:billard_cfa/shared/lib/timer_tone.dart';
+import 'package:billard_cfa/shared/ui/app_alert.dart';
 import 'package:billard_cfa/shared/ui/audience_labels.dart';
 import 'package:billard_cfa/shared/ui/confirm_dialog.dart';
 import 'package:billard_cfa/shared/ui/phase_timeline.dart';
 import 'package:billard_cfa/shared/ui/provenance_badge.dart';
+import 'package:billard_cfa/shared/ui/session_tag_picker.dart';
 import 'package:billard_cfa/shared/ui/step_app_bar.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_player.dart';
 import 'package:billard_cfa/shared/ui/table_diagram/table_diagram_spec.dart'

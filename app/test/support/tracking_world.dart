@@ -55,10 +55,12 @@ import 'package:billard_cfa/shared/lib/date_only.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' show Environment;
 
+import 'backup_formats.dart';
 import 'closure_ops.dart';
 import 'fixed_clock.dart';
 import 'settings_names.dart';
@@ -168,6 +170,11 @@ class TrackingWorld {
 
   static GroupId groupId(String name) =>
       createdGroups[name] ?? GroupId('group-$name');
+
+  /// Les étiquettes de codes [codes] (séparés par des virgules).
+  static Set<SessionTag> tags(String codes) => {
+    for (final code in names(codes)) SessionTag.values.byName(code),
+  };
 
   static List<String> names(String list) =>
       list.split(',').map((name) => name.trim()).toList();
@@ -657,6 +664,7 @@ class TrackingWorld {
       // les formats 1 à 3 pas les archives de saisons (ADR 0019).
       ..remove('alertAcknowledgements')
       ..remove('seasonArchives');
+    dropSessionTags(document['data']! as Map<String, Object?>);
     return jsonEncode(document);
   }
 
@@ -685,8 +693,30 @@ class TrackingWorld {
     document['schemaVersion'] = version;
     final data = document['data']! as Map<String, Object?>
       ..remove('seasonArchives');
+    dropSessionTags(data);
     if (version < 3) data.remove('alertAcknowledgements');
     if (version < 2) data.remove('settings');
+    return jsonEncode(document);
+  }
+
+  /// La sauvegarde exportée comme la lirait le format 4 : sans les étiquettes
+  /// des saisies (ADR 0023).
+  String backupAtFormat4WithoutTags() {
+    final document = jsonDecode(backup) as Map<String, Object?>;
+    document['schemaVersion'] = 4;
+    dropSessionTags(document['data']! as Map<String, Object?>);
+    return jsonEncode(document);
+  }
+
+  /// La sauvegarde exportée, dont la première saisie porte le code [code] à
+  /// la place d'une étiquette.
+  String backupWithTagCode(String code) {
+    final document = jsonDecode(backup) as Map<String, Object?>;
+    final data = document['data']! as Map<String, Object?>;
+    final first =
+        (data['sessionRecords']! as List<Object?>).first!
+            as Map<String, Object?>;
+    first['tags'] = [code];
     return jsonEncode(document);
   }
 

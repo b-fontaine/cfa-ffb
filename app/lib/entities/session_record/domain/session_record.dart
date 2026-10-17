@@ -1,6 +1,7 @@
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -25,6 +26,10 @@ abstract class SessionRecord with _$SessionRecord {
     /// séance ouverte sans séance du catalogue. Peut désigner une séance que
     /// le catalogue ne connaît plus : l'affichage le traite sans échouer.
     SheetId? sheetId,
+
+    /// Note de jeu de la séance (ADR 0023) : étiquettes d'une liste fermée,
+    /// sur la séance et jamais sur un élève, sans texte libre.
+    @Default(<SessionTag>{}) Set<SessionTag> tags,
   }) = _SessionRecord;
 
   SessionRecord._() {

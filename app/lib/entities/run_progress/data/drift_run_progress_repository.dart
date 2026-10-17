@@ -7,6 +7,7 @@ import 'package:billard_cfa/entities/run_progress/domain/run_progress_links.dart
 import 'package:billard_cfa/entities/run_progress/domain/run_progress_repository.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
 import 'package:drift/drift.dart';
@@ -44,6 +45,7 @@ class DriftRunProgressRepository implements RunProgressRepository {
           scoreA: progress.scoreA,
           scoreB: progress.scoreB,
           timerSeconds: progress.timerSeconds,
+          tagsJson: Value(encodeSessionTags(progress.tags)),
           updatedAt: progress.updatedAt,
         ),
       );
@@ -128,6 +130,9 @@ class DriftRunProgressRepository implements RunProgressRepository {
         scoreB: row.scoreB,
         timerSeconds: row.timerSeconds,
         recordId: row.recordId == null ? null : SessionId(row.recordId!),
+        // Lecture stricte, comme les compteurs : la ligne illisible est
+        // supprimée (état transitoire).
+        tags: decodeSessionTags(row.tagsJson),
       );
     } on Exception catch (_) {
       await _erase(row);

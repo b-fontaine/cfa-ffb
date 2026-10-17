@@ -29,9 +29,11 @@ import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/backup_formats.dart';
 import '../support/session_sheet_fixtures.dart';
 import 'repository_harness.dart';
 
@@ -165,6 +167,9 @@ Future<void> _seed(RepositoryHarness r) async {
         present: {const StudentId('s1'), const StudentId('s2')},
         mainBlockId: 'puissance',
         sheetId: id == 'x2' ? SheetId('demi-bille-1') : null,
+        tags: id == 'x2'
+            ? {SessionTag.gameAppreciated, SessionTag.tooLong}
+            : const {},
       ),
     );
   }
@@ -323,8 +328,9 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
         scoreA: 3,
       );
 
-      test('keep the backup format at version 4', () {
-        expect(BackupCodec.currentVersion, 4);
+      test('do not move the backup format: 5 is the tags of the sessions, '
+          'not them (ADR 0023)', () {
+        expect(BackupCodec.currentVersion, 5);
       });
 
       test('are not exported: the file knows nothing of them', () async {
@@ -419,6 +425,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
           ..remove(settingsKey)
           ..remove('seasonArchives')
           ..remove('alertAcknowledgements');
+        dropSessionTags(document['data']! as Map<String, Object?>);
 
         await _imported(target, jsonEncode(document));
 
@@ -432,6 +439,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
         (document['data']! as Map<String, Object?>)
           ..remove('alertAcknowledgements')
           ..remove('seasonArchives');
+        dropSessionTags(document['data']! as Map<String, Object?>);
 
         expect(
           await _refused(target, jsonEncode(document)),
@@ -534,6 +542,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
         (document['data']! as Map<String, Object?>)
           ..remove('alertAcknowledgements')
           ..remove('seasonArchives');
+        dropSessionTags(document['data']! as Map<String, Object?>);
         return document;
       }
 
@@ -779,6 +788,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
         await target.seasonArchives.save(_archive('past'));
         final document = _parse(backup)..['schemaVersion'] = 3;
         (document['data']! as Map<String, Object?>).remove('seasonArchives');
+        dropSessionTags(document['data']! as Map<String, Object?>);
 
         await _imported(target, jsonEncode(document));
 
@@ -832,7 +842,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
         await expectEmpty(target);
       });
 
-      for (final version in <Object?>[0, 5, 99, '1', null]) {
+      for (final version in <Object?>[0, 6, 99, '1', null]) {
         test('an unsupported schemaVersion ($version)', () async {
           final document = _parse(backup)..['schemaVersion'] = version;
 

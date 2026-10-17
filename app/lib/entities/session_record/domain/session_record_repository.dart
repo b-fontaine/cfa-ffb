@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 
 /// Port d'accès aux séances données (implémenté dans la couche data).
 ///
@@ -21,6 +22,11 @@ abstract interface class SessionRecordRepository {
   Future<Set<SessionId>> idsEverPresent(StudentId studentId);
 
   Future<List<SessionRecord>> all();
+
+  /// Remplace les étiquettes de la séance [id] et rien d'autre (présences,
+  /// blocs et date restent) ; sans effet si elle n'existe pas ou a été
+  /// supprimée.
+  Future<void> setTags(SessionId id, Set<SessionTag> tags);
 
   /// Supprime logiquement la séance ; sans effet si elle n'existe pas.
   Future<void> delete(SessionId id);

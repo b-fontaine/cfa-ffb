@@ -6,6 +6,7 @@ import 'package:billard_cfa/entities/run_progress/domain/run_progress_repository
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:injectable/injectable.dart';
 
 /// La saisie des résultats ouverte depuis la séance guidée, relue de la
@@ -59,6 +60,7 @@ class RunProgressKeeper {
     int scoreB = 0,
     int timerSeconds = 0,
     SessionId? recordId,
+    Set<SessionTag> tags = const {},
   }) => _progress.save(
     RunProgress(
       key: key,
@@ -70,8 +72,17 @@ class RunProgressKeeper {
       scoreB: scoreB,
       timerSeconds: timerSeconds,
       recordId: recordId,
+      tags: tags,
     ),
   );
+
+  /// Donne les étiquettes [tags] à la saisie [recordId] (ADR 0023) ; sans
+  /// effet si elle n'existe plus. Un ensemble vide ne touche à rien : les
+  /// étiquettes déjà corrigées depuis le bilan de la saisie sont gardées.
+  Future<void> giveTags(SessionId recordId, Set<SessionTag> tags) async {
+    if (tags.isEmpty) return;
+    await _records.setTags(recordId, tags);
+  }
 
   /// Oublie la progression de [key] ; sans effet s'il n'y en a pas.
   Future<void> forget(RunProgressKey key) => _progress.delete(key);

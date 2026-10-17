@@ -35,7 +35,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Version du schéma SQL. Elle est indépendante de la version du format de
   /// sauvegarde JSON (`BackupCodec.currentVersion`).
-  static const currentSchemaVersion = 10;
+  static const currentSchemaVersion = 11;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -113,6 +113,19 @@ class AppDatabase extends _$AppDatabase {
           await m.createTable(schema.runProgressEntries);
           await m.createIndex(schema.runProgressByGroup);
           await m.createIndex(schema.runProgressByRecord);
+        },
+        // Version 11 (ADR 0023) : étiquettes de la note de jeu, sur la saisie
+        // et sur la séance guidée en cours. Migration additive : une colonne
+        // de texte par table, `'[]'` pour les lignes existantes.
+        from10To11: (m, schema) async {
+          await m.addColumn(
+            schema.sessionRecords,
+            schema.sessionRecords.tagsJson,
+          );
+          await m.addColumn(
+            schema.runProgressEntries,
+            schema.runProgressEntries.tagsJson,
+          );
         },
       )(migrator, from, to);
     },

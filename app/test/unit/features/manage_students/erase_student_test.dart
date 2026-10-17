@@ -7,6 +7,7 @@ import 'package:billard_cfa/features/manage_students/domain/erase_student.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/lib/unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_unit_of_work.dart';
@@ -264,6 +265,29 @@ void main() {
       err(await build()(const StudentId('ghost')));
 
       expect(await _runningSheets(world), hasLength(8));
+    });
+  });
+
+  group('session tags (ADR 0023)', () {
+    test('goes with the running session of the student, tags included, but the '
+        'tags of the record stay: they name no one', () async {
+      await world.seedClub(studentNames: ['s1', 's2']);
+      await world.session(present: {'s1', 's2'});
+      await world.sessions.setTags(const SessionId('x1'), {SessionTag.tooLong});
+      await world.runProgress.save(
+        _running(
+          'par-saisie',
+          record: 'x1',
+        ).copyWith(tags: {SessionTag.toRedo}),
+      );
+
+      final result = await build()(const StudentId('s1'));
+
+      expect(result, isA<Ok<void>>());
+      expect(await world.runProgress.all(), isEmpty);
+      final record = (await world.sessions.byId(const SessionId('x1')))!;
+      expect(record.tags, {SessionTag.tooLong});
+      expect(record.present, {const StudentId('s2')});
     });
   });
 }

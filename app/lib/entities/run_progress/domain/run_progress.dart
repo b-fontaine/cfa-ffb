@@ -1,6 +1,7 @@
 import 'package:billard_cfa/entities/run_progress/domain/run_progress_key.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'run_progress.freezed.dart';
@@ -9,8 +10,8 @@ part 'run_progress.freezed.dart';
 const maxRunScore = 999;
 
 /// Où en est une séance guidée commencée (lot 10b, ADR 0020) : étape,
-/// compteurs d'initiation, grille « acquis », score A / B, minuteur et saisie
-/// ouverte depuis le guide.
+/// compteurs d'initiation, grille « acquis », score A / B, minuteur, saisie
+/// ouverte depuis le guide et étiquettes de la note de jeu.
 ///
 /// **Aucun identifiant d'élève** : la saisie n'est retenue que par son
 /// identifiant ([recordId]) ; son groupe, sa date et ses absents sont relus de
@@ -42,6 +43,10 @@ abstract class RunProgress with _$RunProgress {
 
     /// Saisie des résultats ouverte depuis le guide.
     SessionId? recordId,
+
+    /// Étiquettes de la note de jeu (liste fermée, ADR 0023), choisies à
+    /// l'étape « Bilan » : elles passent à la saisie à « Terminer ».
+    @Default(<SessionTag>{}) Set<SessionTag> tags,
   }) = _RunProgress;
 
   RunProgress._() {

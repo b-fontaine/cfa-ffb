@@ -22,6 +22,7 @@ import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/session_shape.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/ui/cloth_pattern.dart';
 import 'package:billard_cfa/shared/ui/now_card.dart';
@@ -320,6 +321,7 @@ Widget buildSessionReviewViewUseCase(BuildContext context) =>
               date: _today,
               audience: Audience.children,
               present: {const StudentId('Léa'), const StudentId('Hugo')},
+              tags: const {SessionTag.tooLong, SessionTag.toRedo},
             ),
             outcome: SessionOutcome(
               totalPasses: 5,
@@ -365,6 +367,7 @@ Widget buildSessionReviewViewUseCase(BuildContext context) =>
           onOpenRecord: () {},
           onOpenStudent: (_) {},
           onBackToday: () {},
+          onTagsChanged: (_) {},
         ),
       ),
     );

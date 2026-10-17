@@ -138,3 +138,28 @@ Feature: Sauvegarde et restauration des données
     Then l'import est refusé avec le motif {'backupInvalid'}
     And le club compte {0} élèves et {0} passages
     And le réglage {'seuil alerte'} vaut {3}
+
+  # ADR 0023 : les étiquettes de la note de jeu d'une séance (liste fermée, sans
+  # texte libre) font partie de la sauvegarde du format 5.
+  Scenario: Conserver les étiquettes d'une séance saisie
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And la séance du groupe {'Jeunes'} le {'2026-10-19'} note la séance du catalogue {'posture-1'} avec {'Léa'}
+    And je pose les étiquettes {'tooLong,toRedo'} sur la séance saisie du groupe {'Jeunes'} le {'2026-10-19'}
+    And j'exporte une sauvegarde du club
+    When j'importe cette sauvegarde dans un club vide
+    Then la séance saisie du groupe {'Jeunes'} le {'2026-10-19'} porte les étiquettes {'tooLong,toRedo'}
+
+  Scenario: Importer un fichier du format 4 donne des séances sans étiquettes
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And la séance du groupe {'Jeunes'} le {'2026-10-19'} note la séance du catalogue {'posture-1'} avec {'Léa'}
+    And j'exporte une sauvegarde du club
+    When j'importe cette sauvegarde au format {4} sans étiquettes dans un club vide
+    Then la séance saisie du groupe {'Jeunes'} le {'2026-10-19'} ne porte aucune étiquette
+
+  Scenario: Refuser une sauvegarde dont une étiquette est inconnue sans rien écrire
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Léa'}
+    And la séance du groupe {'Jeunes'} le {'2026-10-19'} note la séance du catalogue {'posture-1'} avec {'Léa'}
+    And j'exporte une sauvegarde du club
+    When j'importe cette sauvegarde dans un club vide avec l'étiquette {'Léa a pleuré'}
+    Then l'import est refusé avec le motif {'backupInvalid'}
+    And le club compte {0} élèves et {0} passages

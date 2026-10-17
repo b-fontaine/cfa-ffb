@@ -1,5 +1,6 @@
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 
 /// Lecture typée et stricte de valeurs JSON : toute valeur de mauvais type
@@ -41,6 +42,18 @@ class JsonReader {
   SheetId? optionalSheetId(Object? value) {
     if (value == null) return null;
     return SheetId.tryParse(string(value)) ?? (throw _invalid);
+  }
+
+  /// Étiquettes de la note de jeu (ADR 0023) : une liste de codes de la liste
+  /// fermée, sans doublon. Un code inconnu ou un texte libre est refusé
+  /// (`backupInvalid`) : rien d'autre que la liste fermée n'entre dans la base.
+  Set<SessionTag> sessionTags(Object? value) {
+    final tags = <SessionTag>{};
+    for (final item in list(value)) {
+      final tag = SessionTag.tryParse(string(item)) ?? (throw _invalid);
+      if (!tags.add(tag)) throw _invalid;
+    }
+    return tags;
   }
 
   int integer(Object? value) => value is int ? value : throw _invalid;
