@@ -21,5 +21,6 @@
 | 0017 | Plein écran : port `FullscreenController` (Dart pur), API Fullscreen web par `dart:js_interop` sans nouvelle dépendance, contrôleur unique partagé entre présentation et guide, `DiagramStage` (légende réservée, schéma sur le reste) à la place de la mesure de texte ; accepté et livré |
 | 0018 | Hors ligne : service worker maison (celui de Flutter est obsolète), précache versionné de tout le build (empreinte écrite par `scripts/pwa.dart`), CanvasKit local, mise à jour jamais appliquée d'office (bannière à la demande), initialisation Firebase non bloquante, manifeste et icônes de l'application ; accepté et livré |
 | 0019 | Clôture de saison : archive agrégée non nominative (seuil de 3 élèves), effacement en lot avec confirmation, reconduction, groupes multiples et déplacement d'élève, schéma v9, sauvegarde v4 ; accepté et livré sur les défauts proposés (points `[U]` du lot 11 à confirmer par l'animateur) |
+| 0020 | Séance en cours persistée : table `run_progress_entries` (schéma v10) sans identifiant d'élève, hors sauvegarde (reste v4), effacement par groupe, séance planifiée et saisie liés, minuteur restauré en pause, péremption 7 jours ; accepté et livré sur les défauts proposés (points `[U]` du lot 10b à confirmer ; note de jeu en texte libre exclue) |
 
 Recherches sources : `../research/`.

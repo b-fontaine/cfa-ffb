@@ -54,7 +54,7 @@ formulaire manuel et créerait des doublons : écarté tant que l'option B du pl
 - Filtre d'affichage seul : « Noter » réécrirait la saisie de l'autre séance.
 - `SessionRecord.plannedSessionId` (schéma v9, sauvegarde v4 : **numéros pris
   depuis par le lot 11**, [ADR 0019](0019-cloture-de-saison-archive-agregee-et-effacement-en-lot.md) ;
-  un lien explicite prendrait v10 / sauvegarde v5) : reporté ; le
+  un lien explicite prendrait v11 / sauvegarde v5 (v10 : lot 10b, ADR 0020)) : reporté ; le
   repli par la règle ci-dessus resterait nécessaire pour les saisies sans lien.
   À rouvrir si deux séances identiques le même jour deviennent un besoin.
 - Une seule planifiée par (groupe, jour) ; `Session.recordId` : voir le plan § 3.

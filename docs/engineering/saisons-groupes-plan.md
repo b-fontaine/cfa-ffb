@@ -325,7 +325,7 @@ from8To9: (m, schema) async {
 
 L'ADR 0016 réservait « schéma v9, sauvegarde v4 » à un éventuel
 `SessionRecord.plannedSessionId`, **écarté** : ces numéros sont pris par ce lot ;
-si le lien explicite revient, il prendra v10 / sauvegarde v5.
+si le lien explicite revient, il prendra v11 / sauvegarde v5 (la v10 est prise par le lot 10b).
 
 ## 5. Sauvegarde : format 4
 

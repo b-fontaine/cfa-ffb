@@ -70,7 +70,7 @@ de saisie), U7 (bilan), U8 (origines du détail), tous livrés.
 | Mode immersif / plein écran natif | **U3** (plein écran de la présentation), test PWA au **lot 15** | voir § 9 |
 | Maintien de l'écran allumé (wake lock) | lot 15 | demande une API web ou une dépendance ; hors R7/R9 |
 | `DiagramStage`, zoom du schéma, « tournez l'appareil » | U3 | propre à la présentation |
-| Compteurs d'initiation et score persistés (G7) | lot 10 / U9 | aucun changement de modèle ; la mention « non enregistré » reste telle quelle (bilan de la séance), son éventuelle répétition par étape est à vérifier au lot 3 |
+| ~~Compteurs d'initiation et score persistés (G7)~~ | ~~lot 10 / U9~~ **soldé par le lot 10b** (2026-10-17, [plan](seance-en-cours-plan.md), [ADR 0020](adr/0020-seance-en-cours-persistee-locale-hors-sauvegarde.md)) | état gardé sur l'appareil, hors sauvegarde ; la mention « non enregistré » reste telle quelle (le bilan de la séance ne reçoit ni compteurs ni score) |
 | Marque « relu » persistante des `[Prop]` | lot 16 | le mode Relecture lui sert d'appui |
 | Mode (Mener / Relecture) mémorisé dans les Réglages | non prévu | la règle par défaut suffit (§ 4) |
 | « Préparer » depuis Aujourd'hui qui emporte le groupe de la séance planifiée | hors lot | aucun marqueur de groupe n'existe sans groupe de catalogue ; `HomePage.onPrepare` ne change pas |

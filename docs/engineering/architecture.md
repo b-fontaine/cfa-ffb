@@ -99,6 +99,8 @@ app/
 │   ├── entities/group/  entities/session_record/   # group : chooseGroup, normalizedGroupName, Group.rename
 │   ├── entities/maturity_assessment/  # chacun : domain/ (+ port) et data/ (en mémoire + drift)
 │   ├── entities/settings/             # ClubSettings, SettingsRepository (drift + en mémoire)
+│   ├── entities/run_progress/         # RunProgress, RunProgressKey, RunProgressRepository (drift + en mémoire) :
+│   │                                  # séances guidées en cours, lot 10b (ADR 0020)
 │   ├── features/manage_settings/      # LoadSettings, SaveSettings, ResetSettings, SettingsField ;
 │   │                                  # SettingsBloc, SettingsForm
 │   ├── features/backup_data/          # ExportBackup, ImportBackup, BackupCodec, BackupMarkerRepository,
@@ -236,11 +238,23 @@ widgetbook/                            # projet séparé : catalogue du design s
   groupe ni date de séance ; une ligne par exercice n'existe qu'à partir de
   `minCohortForFigures` = 3 élèves distincts (règle, pas réglage).
   `proposeClosure` (pure) propose, l'animateur décide.
-- **Persistance** : schéma **v9** (`seasons.closed_on`, `season_archive_audiences`,
-  `season_archive_exercises`), migration additive `from8To9` ; sauvegarde **v4**
+- **Persistance** : schéma **v10** (v9 : `seasons.closed_on`, `season_archive_audiences`,
+  `season_archive_exercises`, migration additive `from8To9` ; v10 : `run_progress_entries`,
+  migration additive `from9To10`, voir « Séance guidée en cours » ci-dessous) ; sauvegarde **v4**
   (`seasons[].closedOn` facultatif, `seasonArchives` obligatoire en v4 et refusée
-  en v1 à v3). Importer un fichier qui donne une saison pour ouverte la rouvre et
-  supprime son archive.
+  en v1 à v3), **inchangée par le schéma v10**. Importer un fichier qui donne une saison
+  pour ouverte la rouvre et supprime son archive.
+- **Séance guidée en cours** (lot 10b, [ADR 0020](adr/0020-seance-en-cours-persistee-locale-hors-sauvegarde.md)) :
+  `RunSheetCubit` garde l'étape, les compteurs d'initiation, la grille « acquis », le score A / B, le minuteur
+  (écrit toutes les 10 s, à la pause et au changement de phase) et l'identifiant de la saisie ouverte, via
+  `RunProgressKeeper` (`features/run_sheet/domain`, seul point de contact avec `RunProgressRepository`). Écritures
+  sérialisées, jamais bloquantes. Au démarrage, `RunSheetSessions.restore()` (appelé par `main`, sans bloquer)
+  relit les lignes (péremption 7 jours, 4 plus récentes) ; chaque cubit relit lui-même sa ligne au premier
+  `load()` et la **rapproche de la séance du catalogue** (`reconcileRunProgress`, pure). Aucun identifiant d'élève
+  dans la table ; **hors sauvegarde** (transitoire, propre à l'appareil). Effacement d'un élève (donc clôture de
+  saison) : `EraseStudent` efface par lien (groupes dont il a été membre, leurs séances planifiées, saisies où il
+  était présent), liens calculés avant l'effacement des présences et appartenances ; parité vérifiée par
+  `erasure_parity_test`.
 - **Pages qui composent** : `pages/season_closure` assemble l'assistant
   (`close_season`) et l'export (`backup_data`) ; `pages/students` assemble les
   menus de groupe (`manage_groups`) ; `pages/student_sheet` « Changer de

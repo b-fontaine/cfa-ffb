@@ -300,7 +300,7 @@ sans effet sur le reste. Aucune dépendance.
 - ~~Alertes de **groupe** (« 4 élèves sur 8 »)~~ : **soldé avec U9** (carte « Alertes de groupe » sur « Aujourd'hui », grille du groupe ; seuil `groupFailureSharePercent`).
 - ~~Origine « Aujourd'hui » du détail d'une séance (retour direct) : U8.~~ **Soldé avec U8** (`SheetOrigin.today`, adresse `?from=today`).
 - Rappels natifs (veille de séance, sauvegarde) : H4, lot 22.
-- Persistance de la séance en cours au rechargement : non faite (U-5).
+- ~~Persistance de la séance en cours au rechargement : non faite (U-5).~~ **Soldé par le lot 10b** (2026-10-17, [plan](seance-en-cours-plan.md), [ADR 0020](adr/0020-seance-en-cours-persistee-locale-hors-sauvegarde.md)).
 - Bilan d'une séance **sans** saisie, entrée du bilan depuis l'historique : § 11.
 - Motif de tapis en mode présentation : U3 (le composant `ClothPattern` y sera
   réutilisé).
@@ -459,7 +459,7 @@ le décor (bille 8, motif) est exclu de la sémantique.
 
 | Risque | Parade |
 |--------|--------|
-| Séance en cours **perdue au rechargement** (registre en mémoire) | Comportement actuel assumé et documenté ; l'adresse `?step=` reste valide ; U-5 |
+| ~~Séance en cours **perdue au rechargement** (registre en mémoire)~~ | **Soldé par le lot 10b** : état gardé sur l'appareil (table `run_progress_entries`), restauré au démarrage ; l'adresse `?step=` l'emporte sur l'étape enregistrée |
 | Séances commencées **jamais terminées** restent « en cours » | « Abandonner » avec confirmation ; plafond de 4 ; limite d'affichage |
 | Noms d'élèves mineurs sur un accueil que les élèves peuvent voir | U-4 ; la vue « à montrer à l'élève » (U9) est le contournement prévu |
 | Temps de chargement de l'accueil (4 cubits, tous les passages) | Une seule lecture `AttemptRepository.all()` ; sections indépendantes ; mesure sur 60 élèves au lot I3 ; pas de cache tant que non mesuré |
@@ -493,8 +493,10 @@ Le plan suppose la proposition par défaut ; aucune n'est tranchée.
   ou masquées derrière « Voir les élèves à surveiller » quand la tablette peut
   être vue des élèves.
 - **U-5 Séance en cours après rechargement ou fermeture de l'application** :
-  perdue (proposé, aucun changement de schéma) ou persistée (compteurs et étape :
-  schéma drift v8 + sauvegarde).
+  ~~perdue (proposé, aucun changement de schéma) ou persistée (compteurs et étape :
+  schéma drift v8 + sauvegarde)~~. **Tranché par le lot 10b : persistée**, hors
+  sauvegarde (schéma drift v10, sauvegarde v4 inchangée), voir
+  [ADR 0020](adr/0020-seance-en-cours-persistee-locale-hors-sauvegarde.md).
 - **U-6 « Terminer » sans aucune saisie** : retour inchangé sans bilan (proposé)
   ou bilan « aucun résultat » qui invite à saisir.
 - **U-7 « À noter »** : séances passées sans saisie sur 7 jours listées sur

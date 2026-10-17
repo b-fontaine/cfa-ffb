@@ -51,7 +51,7 @@ revues séparées, `check.sh --full`).
 | **U6** Navigation recentrée | destinations « Aujourd'hui / Élèves / Résultats / Séances (Planifiées · Catalogue · Suggestion) / Plus (Sauvegarde, Réglages) » ; rappel de sauvegarde | F8 (emplacement du lot 9) |
 | ~~**U7**~~ Accueil « Aujourd'hui » et bilan de fin de séance : **livré le 2026-10-15** ([plan](aujourdhui-plan.md)) | séance en cours à reprendre, prochaine séance planifiée (Préparer / Lancer), alertes, semaine, sauvegarde ; à « Terminer », bilan des passages et proposition de la séance suivante | accueil statique |
 | ~~**U8**~~ Catalogue et détail en mode « Préparer » : **livré le 2026-10-16** ([plan](catalogue-preparer-plan.md)) | nom évocateur en titre, badge « n points à valider » (motifs majeurs en infobulle et dans le détail) + un badge neutre par proposition mineure (U-1), marqueur de parcours par groupe (✓ / ▶ / ○), frise des phases tapable dans le détail, carte d'exercice à deux colonnes dès 720 dp, menu ⋮ « Signaler une proposition », origine « Aujourd'hui » du détail ; le bouton « Suggestion par groupe » est retiré (audit C1 à C5, D1 à D4) | catalogue d'étiquettes, « Aller à », report U-12 d'U7 |
-| ~~**U9**~~ Fiche élève, vue élève et vue de groupe : **livré le 2026-10-16** ([plan](fiche-eleve-plan.md), [ADR 0013](adr/0013-acquittement-des-alertes.md), [ADR 0014](adr/0014-fiche-en-parcours-vue-eleve-et-vue-de-groupe.md)) | parcours en cases (technique × exercice), en-tête en cours / prochain / alerte, courbes repliées, vue « à montrer à l'élève », carte de chaleur technique × élève, assiduité et alertes de groupe, acquittement d'une alerte ; le lot **10b est reporté** (voir le point 10) | « 0 sur 70 », lot 10a (vues) |
+| ~~**U9**~~ Fiche élève, vue élève et vue de groupe : **livré le 2026-10-16** ([plan](fiche-eleve-plan.md), [ADR 0013](adr/0013-acquittement-des-alertes.md), [ADR 0014](adr/0014-fiche-en-parcours-vue-eleve-et-vue-de-groupe.md)) | parcours en cases (technique × exercice), en-tête en cours / prochain / alerte, courbes repliées, vue « à montrer à l'élève », carte de chaleur technique × élève, assiduité et alertes de groupe, acquittement d'une alerte ; le lot **10b** (séance en cours persistée) est **livré le 2026-10-17**, seule la note de jeu reste reportée (voir le point 10) | « 0 sur 70 », lot 10a (vues) |
 
 ## Correctif D1 : identité d'une saisie (2026-10-16)
 
@@ -205,14 +205,14 @@ Lots UX en H0 :
       [ADR 0013](adr/0013-acquittement-des-alertes.md), schéma v8, sauvegarde
       v3, et [ADR 0014](adr/0014-fiche-en-parcours-vue-eleve-et-vue-de-groupe.md)).
       Les cases « acquis » s'appuient sur le lot 7 (ADR 0008).
-    - **10b** (reste, **non livré, reporté** par décision de l'animateur du 2026-10-16) : *note de jeu* de la séance (à définir :
-      texte libre, score A / B ou champ du `SessionRecord` ; un texte libre sur
-      des mineurs est une donnée personnelle qui demande son ADR), *compteurs
-      d'initiation, grille acquis et score du jeu persistés* (aujourd'hui en
-      mémoire dans `RunSheetCubit`) et *étape de la séance en cours persistée*
-      (décision U-5 de [aujourdhui-plan.md](aujourdhui-plan.md)) ; schéma v10
-      (la v9 est prise par le lot 11).
-      Aucun écran d'U9 ne les lit.
+    - ~~**10b**~~ séance en cours persistée : **livré le 2026-10-17** ([plan](seance-en-cours-plan.md),
+      [ADR 0020](adr/0020-seance-en-cours-persistee-locale-hors-sauvegarde.md)) : compteurs, grille acquis, score, étape et
+      minuteur (restauré en pause) dans une table `run_progress_entries`, schéma **v10**, **sauvegarde inchangée (v4)**, effacement
+      RGPD par groupe, séance planifiée et saisie liés. Points `[U]` U10b-1 à U10b-5 appliqués sur leurs défauts, à confirmer par
+      l'animateur (voir le plan).
+    - **10b, reste non livré** (**reporté** par décision de l'animateur du 2026-10-16) : *note de jeu* de la séance (à définir :
+      texte libre, score A / B nommé ou champ du `SessionRecord` ; un texte libre sur des mineurs est une donnée personnelle qui
+      demande son propre ADR). Le score en cours est persisté par 10b mais reste non enregistré au bilan.
     - ~~**U8**~~ Catalogue et détail en mode « Préparer » : **livré le
       2026-10-16** ([plan](catalogue-preparer-plan.md)) ; le marqueur de
       parcours par groupe lit les données du lot 8 (ADR 0009). Reste le lot 16
@@ -410,7 +410,7 @@ familles, AIPD, DPA Google), qui relèvent du club ou de la fédération.
 
 ```
 H0 : ~~F7~~ → ~~revue T8~~ (faite, constats ouverts ci-dessus) → ~~réaliser D5~~ réalisé (les questions ouvertes sont tranchées ; U2 livré)
-H1 : ~~U5~~ → ~~U6~~ → ~~9~~ → ~~U7~~ → ~~10a + U9~~ → ~~U8~~ → 10b → 11   (5 à 9, U7, U8, U9 et 10a livrés)
+H1 : ~~U5~~ → ~~U6~~ → ~~9~~ → ~~U7~~ → ~~10a + U9~~ → ~~U8~~ → ~~10b~~ → 11   (5 à 9, U7, U8, U9, 10a et 10b livrés)
 H2 : ~~U4~~ → ~~U3~~ → 14 → 15   (U4 et U3 livrés)
 H3 : 16 (avec le mode Relecture de U4) → 17 → 18 → 19 → 20
 H4 : 21 → 22 (rappels) → 23
