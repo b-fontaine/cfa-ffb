@@ -5,7 +5,8 @@
 //
 // - `drift_worker.js` doit être celui du paquet `drift` résolu (même version) :
 //   copié depuis le cache pub, comparé octet à octet.
-// - `sqlite3.wasm` doit correspondre à la version du paquet `sqlite3` verrouillée
+// - `sqlite3.wasm` doit correspondre à la version du paquet `sqlite3`
+//   verrouillée
 //   dans app/pubspec.lock : téléchargé depuis la release GitHub
 //   `sqlite3-<version>` de simolus3/sqlite3.dart ; `app/web/sqlite3.wasm.version`
 //   consigne la version copiée.
@@ -67,7 +68,7 @@ Future<void> main(List<String> args) async {
   if (!wasm.existsSync()) {
     problems.add('app/web/sqlite3.wasm absent');
   } else if (!_isWasm(wasm)) {
-    problems.add('app/web/sqlite3.wasm n\'est pas un module WebAssembly');
+    problems.add("app/web/sqlite3.wasm n'est pas un module WebAssembly");
   }
   final recorded = versionFile.existsSync()
       ? versionFile.readAsStringSync().trim()

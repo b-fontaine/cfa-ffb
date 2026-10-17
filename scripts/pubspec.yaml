@@ -1,0 +1,9 @@
+name: billard_cfa_scripts
+description: Garde-fous déterministes du dépôt (scripts Dart), analysés avec les mêmes règles que l'application.
+publish_to: none
+
+environment:
+  sdk: ^3.13.5
+
+dev_dependencies:
+  very_good_analysis: ^11.0.0

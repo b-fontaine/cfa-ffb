@@ -1,0 +1,15 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    # Mêmes exceptions que l'application : documentation publique en français.
+    public_member_api_docs: false
+    # Scripts exécutés sur la VM Dart uniquement (jamais compilés en JavaScript) :
+    # l'empreinte FNV-1a 64 bits de pwa.dart a besoin d'entiers 64 bits exacts.
+    avoid_js_rounded_ints: false

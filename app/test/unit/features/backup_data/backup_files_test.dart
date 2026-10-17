@@ -113,6 +113,24 @@ void main() {
       expect(await files.save(fileName: 'club.json', content: '{}'), isFalse);
     });
 
+    test('counts a browser download as saved without any location', () async {
+      // Sur le web, `file_picker` télécharge et rend `null` : rien ne distingue
+      // alors un enregistrement d'une annulation.
+      final browser = FilePickerBackupFiles(savesByDownload: true);
+
+      final saved = await browser.save(fileName: 'club.json', content: '{}');
+
+      expect(saved, isTrue);
+      expect(platform.savedName, 'club.json');
+    });
+
+    test('still counts a save with a location when downloading', () async {
+      platform.saveResult = Uri.parse('file:///tmp/club.json');
+      final browser = FilePickerBackupFiles(savesByDownload: true);
+
+      expect(await browser.save(fileName: 'club.json', content: '{}'), isTrue);
+    });
+
     test('reads the picked file as UTF-8 text', () async {
       platform.pickResult = _PickedFile(utf8.encode('{"é":1}'));
 

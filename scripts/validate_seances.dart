@@ -3,9 +3,12 @@
 // Règles vérifiées :
 //   1. front matter présent avec `public` (enfants|adultes) et `duree_minutes`;
 //   2. duree_minutes = 90 pour enfants, 120 pour adultes;
-//   3. le déroulé minuté est contigu, commence à 0 et se termine à duree_minutes;
-//   4. chaque ligne du déroulé porte une étiquette de source [S], [FFB], [Web] ou [Prop];
-//   5. les phases « Notion », « Entraînement » et « Jeu » apparaissent dans cet ordre.
+//   3. le déroulé minuté est contigu, commence à 0 et se termine à
+//      duree_minutes;
+//   4. chaque ligne du déroulé porte une étiquette de source [S], [FFB], [Web]
+//      ou [Prop];
+//   5. les phases « Notion », « Entraînement » et « Jeu » apparaissent dans
+//      cet ordre.
 //
 // Usage : dart run scripts/validate_seances.dart [dossier]   (défaut : seances)
 import 'dart:io';
@@ -23,8 +26,9 @@ List<String> validate(String path, String content) {
     for (final line in lines.skip(1)) {
       if (line.trim() == '---') break;
       final i = line.indexOf(':');
-      if (i > 0)
+      if (i > 0) {
         meta[line.substring(0, i).trim()] = line.substring(i + 1).trim();
+      }
     }
   } else {
     errors.add('front matter manquant');
@@ -75,8 +79,9 @@ List<String> validate(String path, String content) {
         ? 3
         : -1;
     if (rank != -1) {
-      if (rank < lastRank)
+      if (rank < lastRank) {
         errors.add('ordre des phases non respecté près de $start–$end');
+      }
       lastRank = rank;
     }
   }

@@ -39,7 +39,7 @@ bool _isUiFile(String path) {
   return p.contains('/lib/shared/ui/') ||
       p.contains('/lib/widgets/') ||
       p.contains('/lib/pages/') ||
-      RegExp(r'/lib/features/[^/]+/presentation/ui/').hasMatch(p);
+      RegExp('/lib/features/[^/]+/presentation/ui/').hasMatch(p);
 }
 
 void main(List<String> args) {

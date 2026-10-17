@@ -1,6 +1,7 @@
 // Vérifie la couverture de lignes à partir de app/coverage/lcov.info.
 //
-// - exclut le code généré (*.g.dart, *.freezed.dart, *.config.dart, *.steps.dart, l10n) ;
+// - exclut le code généré (*.g.dart, *.freezed.dart, *.config.dart,
+//   *.steps.dart, l10n) ;
 // - exclut le câblage listé dans `_excluded` (couvert par les tests BDD) ;
 // - échoue si un fichier de lib/ n'est jamais chargé par les tests (lcov omet les
 //   fichiers sans ligne instrumentée, ex. interfaces : ils sont tolérés tant
@@ -70,7 +71,8 @@ void main(List<String> args) {
       referenced.add('lib/${m.group(1)}');
     }
   }
-  // Fermeture transitive : un fichier sans ligne instrumentée peut en importer d'autres.
+  // Fermeture transitive : un fichier sans ligne instrumentée peut en
+  // importer d'autres.
   var grew = true;
   while (grew) {
     grew = false;

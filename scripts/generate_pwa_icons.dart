@@ -82,7 +82,9 @@ Uint8List render(int size, double ballRatio) {
   for (var y = 0; y < size; y++) {
     raw.addByte(0); // filtre « aucun »
     for (var x = 0; x < size; x++) {
-      var r = 0.0, g = 0.0, b = 0.0;
+      var r = 0.0;
+      var g = 0.0;
+      var b = 0.0;
       for (var sy = 0; sy < _supersampling; sy++) {
         for (var sx = 0; sx < _supersampling; sx++) {
           final px = x + (sx + 0.5) / _supersampling - centre;
@@ -109,9 +111,11 @@ Uint8List render(int size, double ballRatio) {
   final shadow = math.sqrt(x * x + (y - radius * 0.08) * (y - radius * 0.08));
   if (d <= radius) {
     // Reflet : petit disque clair en haut à gauche.
-    final hx = x + radius * 0.38, hy = y + radius * 0.42;
-    if (math.sqrt(hx * hx + hy * hy) <= radius * 0.14)
+    final hx = x + radius * 0.38;
+    final hy = y + radius * 0.42;
+    if (math.sqrt(hx * hx + hy * hy) <= radius * 0.14) {
       return _mix(_ball, _white, 0.55);
+    }
     // Disque blanc central (le numéro de la bille).
     if (d <= radius * 0.46) return _white;
     return _ball;

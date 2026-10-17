@@ -10,6 +10,18 @@ Feature: Backup screen
     Then I see {'Backup saved.'} text
     And the saved backup file contains {'Léa'}
 
+  Scenario: A browser download counts as a saved backup
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And {'Léa'} has {2} successful passes on {'puissance 1'}
+    And the browser downloads backups without a location
+    And the app is running
+    When I tap {'Back up now'} text
+    And I tap {'Export a backup (JSON)'} text
+    Then I see {'Backup saved.'} text
+    And the downloaded backup contains {'Léa'}
+    When I tap {'Today'} text
+    Then I do not see {'Back up now'} text
+
   Scenario: Importing a backup shows a preview before confirmation
     Given the app is running
     And the next picked file is a backup of the student {'Zoé'}

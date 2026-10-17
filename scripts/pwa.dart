@@ -1,7 +1,8 @@
 // Garde-fous de la version web installable et hors ligne (lot 15).
 //
 //   dart run scripts/pwa.dart check          sources (app/web) : manifeste, index.html,
-//                                            icônes, service worker, aucune ressource externe
+//                                            icônes, service worker, aucune
+//                                            ressource externe
 //   dart run scripts/pwa.dart stamp [dossier] écrit la version et la liste de précache dans
 //                                            offline_sw.js du build (défaut app/build/web)
 //   dart run scripts/pwa.dart verify [dossier] vérifie le build (défaut app/build/web)
@@ -151,8 +152,8 @@ List<String> checkSources(Directory web) {
     }
     if (!worker.contains("startsWith('/__/')")) {
       problems.add(
-        "offline_sw.js : les gestionnaires Firebase /__/ ne doivent pas être "
-        'interceptés (startsWith(\'/__/\') absent)',
+        'offline_sw.js : les gestionnaires Firebase /__/ ne doivent pas être '
+        "interceptés (startsWith('/__/') absent)",
       );
     }
     if (!worker.contains('skipWaiting') || !worker.contains('SKIP_WAITING')) {
@@ -256,7 +257,8 @@ void _checkManifest(Directory web, String text, List<String> problems) {
   final orientation = m['orientation'];
   if (orientation is String && orientation != 'any') {
     problems.add(
-      'manifest.json : orientation libre (« any ») attendue, pas « $orientation » '
+      'manifest.json : orientation libre (« any ») attendue, '
+      'pas « $orientation » '
       '(le plein écran impose de pouvoir pivoter)',
     );
   }
@@ -395,7 +397,8 @@ List<String> _stamp(Directory build) {
         .replaceFirst(_precacheMarker, jsonEncode(paths)),
   );
   stdout.writeln(
-    'Service worker hors ligne : version $id, ${paths.length} fichiers précachés.',
+    'Service worker hors ligne : version $id, '
+    '${paths.length} fichiers précachés.',
   );
   return const [];
 }
@@ -409,7 +412,7 @@ List<String> verifyBuild(Directory build) {
     return ['offline_sw.js absent du build : lancer scripts/build_web.sh'];
   }
   final worker = workerFile.readAsStringSync();
-  final idMatch = RegExp(r"const BUILD_ID = '([0-9a-f]{16})';")
+  final idMatch = RegExp("const BUILD_ID = '([0-9a-f]{16})';")
       .firstMatch(worker);
   final listMatch = RegExp(
     r'const PRECACHE = (\[.*?\]);',
@@ -464,7 +467,8 @@ List<String> verifyBuild(Directory build) {
   }
   if (problems.isEmpty) {
     stdout.writeln(
-      'Build web hors ligne OK : version ${idMatch.group(1)}, ${listed.length} fichiers précachés.',
+      'Build web hors ligne OK : version ${idMatch.group(1)}, '
+      '${listed.length} fichiers précachés.',
     );
   }
   return problems;

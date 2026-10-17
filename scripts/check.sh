@@ -60,8 +60,9 @@ dart format --output=none --set-exit-if-changed "${FILES[@]}" "$ROOT/scripts"/*.
 step "Analyse statique (flutter analyze --fatal-infos)"
 flutter analyze --no-pub --fatal-infos
 
-step "Analyse des scripts Dart"
-(cd "$ROOT" && dart analyze --fatal-infos scripts)
+step "Analyse des scripts Dart (même jeu de règles que l'application)"
+(cd "$ROOT/scripts" && dart pub get ${CI:+--enforce-lockfile} >/dev/null \
+  && dart analyze --fatal-infos .)
 
 step "Architecture FSD + Clean"
 dart run tool/check_architecture.dart
