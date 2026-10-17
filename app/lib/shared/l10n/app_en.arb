@@ -3722,5 +3722,110 @@
   "sessionTagTooHard": "Too hard",
   "sessionTagTooEasy": "Too easy",
   "sessionTagToRedo": "To do again",
-  "sessionTagEquipmentLacking": "Not enough equipment"
+  "sessionTagEquipmentLacking": "Not enough equipment",
+  "splashLoading": "Opening the app…",
+  "signInTitle": "Sign in to the app",
+  "signInIntro": "Sign in with your account’s e-mail address and password.",
+  "authEmailLabel": "E-mail address",
+  "authPasswordLabel": "Password",
+  "signInSubmit": "Sign in",
+  "authSubmitting": "Sending…",
+  "signInForgot": "Forgot your password?",
+  "signInRegister": "I have an invitation code",
+  "signInResend": "Resend the verification e-mail",
+  "signInVerificationSent": "A verification e-mail has just been sent. Open the link it contains, then sign in.",
+  "authErrorInvalidCredentials": "Incorrect e-mail address or password.",
+  "authErrorEmailNotVerified": "Your e-mail address is not verified yet. Open the link you received by e-mail, then sign in.",
+  "authErrorInvalidEmail": "Enter a valid e-mail address.",
+  "authErrorWeakPassword": "The password must be at least {count} characters long.",
+  "@authErrorWeakPassword": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "authErrorInvalidCode": "The invitation code does not have the expected shape: at least {count} characters, letters A to Z and digits 2 to 7.",
+  "@authErrorInvalidCode": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "authErrorRegistrationFailed": "An account cannot be created with this information.",
+  "authErrorTooManyRequests": "Too many attempts. Wait a few minutes before trying again.",
+  "authErrorNetwork": "No Internet connection. Check your network and try again.",
+  "authErrorUnavailable": "The sign-in service is temporarily unavailable. Try again later.",
+  "forgotPasswordTitle": "Forgot your password",
+  "forgotPasswordIntro": "Enter your account’s e-mail address. If it matches an account, a reset e-mail is sent to you.",
+  "forgotPasswordSubmit": "Send the link",
+  "forgotPasswordSent": "If an account exists for this address, a reset e-mail has just been sent.",
+  "authBackToSignIn": "Back to sign in",
+  "registerTitle": "Sign up with an invitation",
+  "registerIntro": "Sign-up is reserved for people invited by their club. Enter the code you received, your e-mail address and a password of at least {count} characters.",
+  "@registerIntro": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "registerCodeLabel": "Invitation code",
+  "registerPasswordHint": "At least {count} characters",
+  "@registerPasswordHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "registerSubmit": "Create my account",
+  "registerDone": "Account created. Open the link in the verification e-mail, then sign in.",
+  "registerDoneNoMail": "Account created, but the verification e-mail could not be sent. From the sign-in screen, choose “Resend the verification e-mail”.",
+  "roleStudent": "Student",
+  "roleGuardian": "Parent",
+  "roleTeacher": "Teacher",
+  "roleDirector": "Director",
+  "roleAdmin": "Administrator",
+  "selectClubTitle": "Choose a club",
+  "selectClubIntro": "Your account belongs to several clubs. Choose the one you work in.",
+  "selectClubBlocked": "Finish or leave the current session before switching club.",
+  "selectClubRoleCurrent": "{role} · Active club",
+  "@selectClubRoleCurrent": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "noClubTitle": "No club",
+  "noClubBody": "Your account is not attached to any club. Ask your club for an invitation, then refresh this screen.",
+  "noClubRefresh": "Refresh",
+  "accountSectionTitle": "Account",
+  "accountSignedInAs": "Signed in: {email}",
+  "@accountSignedInAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "accountClub": "Active club: {club} ({role})",
+  "@accountClub": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "accountSignOut": "Sign out",
+  "moreSwitchClub": "Switch club",
+  "moreSwitchClubHint": "This account belongs to several clubs",
+  "switchClubBackToMore": "Back to More",
+  "unavailableTitle": "Service unavailable",
+  "unavailableBody": "The account service is not responding. Check your connection and try again. Offline, the app only opens on a device that is already signed in."
 }

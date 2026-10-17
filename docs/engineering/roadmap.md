@@ -324,7 +324,8 @@ Décision `[U]` du 2026-10-16 (répond « oui » à la question ouverte n° 4 de
 `docs/knowledge/08-lacunes-et-questions-ouvertes.md`). Elle change le cadrage
 de l'[ADR 0001](adr/0001-persistance-locale-drift.md) (« un seul animateur »,
 « aucune donnée ne quitte l'appareil ») et la règle « Persistance : local
-d'abord » d'`AGENTS.md` : les deux sont à amender par l'ADR du lot FB0.
+d'abord » d'`AGENTS.md` : les deux sont **amendés par l'[ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md)**
+(lot FB0, en cours), ainsi que les ADR 0006, 0016, 0018, 0019 et 0020.
 Recherche préalable : [research/firebase.md](research/firebase.md) (versions à
 revalider, Linux non supporté, Auth traité aux États-Unis, région Firestore
 irréversible).
@@ -357,39 +358,47 @@ Un utilisateur peut appartenir à plusieurs clubs avec un rôle par club
 (un enseignant qui intervient dans deux écoles) ; l'administrateur est un
 rôle global, hors club.
 
-### Modèle de données (esquisse, tranchée en FB0)
+### Modèle de données (tranché par l'[ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md), décision 14)
 
 ```
-clubs/{clubId}                         nom, saison courante, réglages
-clubs/{clubId}/members/{uid}           rôle (student | teacher | director), groupIds
-clubs/{clubId}/groups/{groupId}        public, nom, teacherUids, studentIds
-clubs/{clubId}/students/{studentId}    prénom + initiale, public, uid lié (nullable)
-clubs/{clubId}/sessions/{id}           séance planifiée (groupe, date, séance du catalogue)
-clubs/{clubId}/records/{id}            saisie (identité ADR 0016)
-clubs/{clubId}/attempts/{id}           passages, un document par passage (ajout seul)
+admins/{uid}                                  administrateurs globaux (console, jamais écrits par l'application)
+clubs/{clubId}                                nom, saison courante
+clubs/{clubId}/settings/main                  réglages du club (RulesConfig), document unique
+clubs/{clubId}/members/{uid}                  rôle (student | guardian | teacher | director), groupIds, studentIds
+clubs/{clubId}/invitations/{code}             code à usage unique (get seul, jamais list)
+clubs/{clubId}/seasons/{seasonId}             saison, closedOn
+clubs/{clubId}/groups/{groupId}               seasonId (champ), public, nom, teacherUids
+clubs/{clubId}/memberships/{studentId_from}   appartenance datée d'un élève à un groupe
+clubs/{clubId}/students/{studentId}           prénom + initiale (bornés), public
+clubs/{clubId}/sessions/{id}                  séance planifiée (groupe, date, séance du catalogue)
+clubs/{clubId}/records/{id}                   saisie (id déterministe si séance du catalogue, ADR 0016 amendé)
+clubs/{clubId}/attempts/{id}                  un passage par document, passIndex dérivé (ADR 0006 amendé)
 clubs/{clubId}/acquisitions|assessments|acknowledgements/{id}
-admins/{uid}                           administrateurs globaux
+clubs/{clubId}/archives/{season_public}       archive agrégée non nominative
 ```
 
-Le catalogue, les fiches et les diagrammes restent des **assets** de
-l'application (ils viennent de `docs/knowledge`, pas de Firestore). Les
-identifiants UUID, `createdAt`, `updatedAt` et `deletedAt` déjà prévus par
-l'ADR 0001 servent tels quels. Un passage par document (ajout seul) évite le
-« dernier qui écrit gagne » sur les données les plus fréquentes.
+`seasonId` est toujours un champ, jamais un ancêtre du chemin ; les documents
+de données portent `groupId`, `studentId` et `seasonId` dénormalisés. Le
+tableau « document × rôle × règle » est dans l'ADR 0024. Le catalogue, les
+fiches et les diagrammes restent des **assets** de l'application (ils
+viennent de `docs/knowledge`, pas de Firestore). Les identifiants UUID,
+`createdAt` et `updatedAt` de l'ADR 0001 servent tels quels ; la suppression
+est physique par défaut (`deletedAt` seulement s'il a un sens métier).
 
 ### Lots
 
 | Lot | Contenu | Dépend de |
 |---|---|---|
-| **FB0** Décisions et conformité | ADR « Firebase source de vérité » (amende ADR 0001 et `AGENTS.md`, ajoute firebase_core / firebase_auth / cloud_firestore à la pile imposée) : modèle de données, matrice des droits, stockage des rôles, sort de drift ; ADR « comptes et données de mineurs » : comptes parents rattachés et comptes élèves de 15 ans et plus, pseudonymisation, information des familles, registre, durée de conservation, AIPD probable (mineurs, plusieurs organismes), DPA Google. **Côté utilisateur** : projet Firebase, base Firestore en `europe-west9` (irréversible), fournisseurs d'Auth, `flutterfire configure`, formule Spark | — |
-| **FB1** Socle | dépendances FlutterFire, environnements (émulateurs en développement, tests et CI ; projet réel en production), initialisation dans `app/di`, Node + Firebase CLI en CI, garde-fou « règles Firestore » : tests des règles contre l'émulateur (`@firebase/rules-unit-testing`) dans `scripts/check.sh --full` | FB0 |
-| **FB2** Authentification | entité `account`, feature `sign_in` (connexion par e-mail et mot de passe, déconnexion, mot de passe oublié), redirection go_router tant que non connecté, sélection du club actif si plusieurs ; pas de Linux (décision 4) | FB1 |
-| **FB3** Clubs, rôles, invitations | entités `club` et `membership`, écrans « Mon club » (directeur : groupes illimités, enseignants, élèves) et « Administration » (admin : clubs, directeurs) ; invitations par lien ou code à usage unique ; lier un compte élève à une fiche `student` existante ; navigation et actions filtrées par rôle ; **règles Firestore** et leurs tests, cas par cas de la matrice | FB2 |
-| **FB4** Repositories Firestore | une implémentation Firestore par interface (14 interfaces aujourd'hui, toutes en `Future`, aucune en `Stream`), portées par club ; la suite de contrat existante (garde-fou de l'ADR 0001) tourne aussi contre l'émulateur ; les implémentations in-memory restent pour les BDD | FB3 |
+| **FB0** Décisions et conformité — **en cours** | **Fait** : [ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) « Firebase source de vérité » (amende ADR 0001, 0006, 0016, 0018, 0019, 0020 et `AGENTS.md` ; modèle de données, matrice des droits, rôles, sort de drift, A1 à A12, B1 à B9, C1 à C7 sur défauts) ; `firebase.json` et `firestore.rules` alignés (`europe-west9`, e-mail seul, refus par défaut). **Reste** : livrables de conformité en **projets « à valider »** (registre, AIPD en brouillon, notice d'information fr/en, durées de conservation, DPA Google) ; base `(default)` **créée par l'animateur en `europe-west9` le 2026-10-17 (fait, région effective à constater dans la console `[à confirmer]`)** ; **côté animateur** : publier `firebase.json` et `firestore.rules`, contrôler dans la console les fournisseurs d'Auth et les règles publiés, relever le quota gratuit de la région (désormais visible), `flutterfire configure`, formule Spark ; désigner qui valide la conformité (fédération ou DPO) | — |
+| **FB1** Socle — **fait le 2026-10-17 sauf le reste ci-dessous** | **Planifié au départ** : dépendances FlutterFire (`shared_preferences` reportée au lot qui crée le port clé/valeur et son test), environnements (`--dart-define=FIREBASE_EMULATOR`, valeur sûre par défaut, release qui refuse l'émulateur ; previews de PR sans Firestore), initialisation dans `app/di`, `package.json` épinglé + Node + Java + Firebase CLI en CI (échec explicite si absents), garde-fou « règles Firestore » : tests de matrice et de refus par défaut contre l'émulateur (`@firebase/rules-unit-testing`) dans `scripts/check.sh --full`, suppression de `app/linux`, retrait de macOS et Windows de `firebase_options`, job CI `flutter build apk --debug`, ports `CurrentUser` / `ActiveClubScope` dans `shared` ; **Fait (détail)** : `package.json` + `package-lock.json` épinglés (`firebase-tools` 15.34.0, `@firebase/rules-unit-testing` 6.0.0, `firebase` 13.0.0), `firebase.json` (bloc `emulators`), `scripts/rules_test.sh` + `scripts/rules_test/` (refus par défaut, 188 cas), branché dans `check.sh --full` (`--fast` inchangé) et `setup.sh` ; CI : Node 24, Java 21, `npm ci`, job `build-android` ; `firebase_auth`, `cloud_firestore` (`shared_preferences` retirée à la relecture : aucun usage ni test avant le port clé/valeur de la décision 23) ; `FirebaseEnvironment` (défaut sûr : l'émulateur seulement si demandé, **y compris en debug**, précision de l'ADR 0024 ; release refuse), `FirebaseStartup` / `FirebaseGateway` dans `app/di` (résultat attendable par l'`AuthCubit` de FB2, non bloquant au démarrage) ; `app/linux` supprimé, macOS et Windows retirés de `firebase_options` et `app/firebase.json`, `Taskfile` (`DEVICE=chrome`) ; `platform_privacy_test` mis à jour (ADR 0025). **Reste** : ~~ports `CurrentUser` / `ActiveClubScope` dans `shared`~~ (livrés avec FB2) ; **SDK web servi localement** (B7 : décision FB5) ; Java 21 non exécuté en local (poste en Java 27, CI en 21, à constater au premier passage) ; Auth exercée de bout en bout dans le build web compilé (`scripts/web_smoke.sh`, FB2) ; Firestore non exercée (FB3 et FB4) ; côté animateur : actions de console de FB0 (publier `firebase.json` et `firestore.rules`, contrôler Auth et règles publiés, `flutterfire configure` pour regénérer `firebase_options` sans macOS ni Windows) | FB0 |
+| FB0 |
+| **FB2** Authentification — **fait le 2026-10-17 sauf le reste ci-dessous** | **Planifié** : entité `account`, feature `sign_in` (connexion par e-mail et mot de passe, déconnexion, mot de passe oublié), redirection go_router tant que non connecté, sélection du club actif si plusieurs ; pas de Linux (décision 4). **Fait (détail, [auth-plan.md](auth-plan.md))** : ports `CurrentUser` / `ActiveClubScope` / `ClubSwitchGuard` / `KeyValueStore` dans `shared/lib` (sans Firebase) ; `entities/account` (`Account`, `AuthRepository`, `AuthFailureCode` distinct d'`InvariantCode`, `FirebaseAuthRepository` derrière le port `AuthSdk`, double en mémoire) et `entities/membership` (`MembershipsSource`, `ActiveClubMemory`) ; `features/sign_in` (connexion, **adresse vérifiée exigée**, renvoi du courriel de vérification, mot de passe oublié, inscription fermée par code avec mot de passe d'au moins 10 caractères qui ne crée que le compte, `PendingInvitations` en point d'extension de FB3) et `features/select_club` (club actif retenu **par compte** avec `shared_preferences` derrière `KeyValueStore`, effacé à la déconnexion, bascule interdite pendant une séance guidée) ; `AuthCubit` (`unknown`, `signedOut`, `noClub`, `ready`, `indisponible`) qui attend `FirebaseStartup.ready`, écran de démarrage localisé, redirection `go_router` (aucune route sans compte, retour à l'adresse demandée), `KeyedSubtree(clubId)`, démarrage hors ligne avec session persistée et club retenu ; pages et widgets avec use cases Widgetbook, textes fr et en ; 24 scénarios BDD (`authentication.feature`), tests unitaires, tests de l'émulateur **Auth** (`auth_emulator.test.mjs`, dans `scripts/rules_test.sh`), **fumée du build web compilé** avec le vrai SDK (`scripts/web_smoke.sh`, dans `check.sh --full` et la CI) et suite de contrat `AuthRepository` ; `AuthCubit` qui borne l'attente de démarrage (20 s, puis « indisponible ») ; les BDD existants s'exécutent connectés (`UiWorld`). **Reste** : implémentation Firestore de `MembershipsSource` et consommation du code d'invitation gardé (FB3 ; en attendant `NoMembershipsSource` : aucun compte n'a de club) ; **côté animateur, console Firebase** : un seul fournisseur actif, **protection contre l'énumération d'adresses à activer**, modèles de courriel (vérification, réinitialisation), domaines autorisés, `flutterfire configure` ; le serveur n'impose que 6 caractères de mot de passe (les 10 sont une règle de l'application) ; web hors ligne tant que le SDK vient de `gstatic.com` (FB5) ; appareils réels Android et iOS non exercés | FB1 |
+| **FB3** Clubs, rôles, invitations | entités `club` et `membership`, écrans « Mon club » (directeur : groupes illimités, enseignants, élèves) et « Administration » (admin : clubs, directeurs) ; invitations par code (inscription fermée, ADR 0024 décision 24) ; lier un compte élève à une fiche `student` existante ; navigation et actions filtrées par rôle ; **règles Firestore** et leurs tests, cas par cas de la matrice (dont l'invité sans `member`) ; **critère de sortie : garde-fou ci-dessous (première invitation d'un vrai élève)** | FB2 |
+| **FB4** Repositories Firestore | une implémentation Firestore par dépôt de données (16 interfaces `*_repository.dart`, dont 3 d'assets ; 13 de données, dont `run_progress` (local, ADR 0024 décision 23) et `backup_marker` (local, sans objet après B5) ; soit 11 dépôts Firestore, tous en `Future`, aucun en `Stream`), portées par club ; la suite de contrat existante (garde-fou de l'ADR 0001) tourne aussi contre l'émulateur ; les implémentations in-memory restent pour les BDD | FB3 |
 | **FB5** Synchronisation temps réel et hors-ligne | méthodes `watch…` (flux) sur les repositories lus par plusieurs appareils, cubits abonnés aux flux, persistance hors-ligne activée sur web (désactivée par défaut), indicateur « synchronisé / en attente / hors-ligne », règle de conflit documentée ; scénario BDD : l'enseignant planifie ou saisit, la fiche de l'élève se met à jour sans rechargement | FB4 |
 | **FB6** Espace élève | accueil élève en lecture seule : sa fiche en parcours et la vue « à montrer à l'élève » (ADR 0014) devenues sa page, prochaines séances planifiées de ses groupes ; aucune donnée d'un autre élève | FB5 |
-| **FB7** Migration des données locales | import d'une sauvegarde JSON (format 3) dans un club par un directeur ou un enseignant ; correspondance des groupes ; contrôle d'intégrité ; le format de sauvegarde reste l'export de portabilité | FB4 |
-| **FB8** Cycle de vie RGPD | suppression d'un compte et de ses données, effacement d'un élève (aujourd'hui local, `UnitOfWork`), clôture de saison par club (rejoint le lot 11), export des données d'un élève (droit d'accès), App Check | FB3, FB4 |
+| **FB7** Migration des données locales | import d'une sauvegarde JSON (format 5, formats 1 à 5 lus) dans un club par le directeur, l'administrateur ou l'enseignant sur ses groupes ; correspondance des groupes ; contrôle d'intégrité ; le format de sauvegarde reste l'export de portabilité | FB4 |
+| **FB8** Cycle de vie RGPD | suppression d'un compte et de ses données, effacement d'un élève (aujourd'hui local, `UnitOfWork` ; demain lots reprenables, ADR 0024 décision 19), clôture de saison par club (rejoint le lot 11), export des données d'un élève (droit d'accès), App Check ; **critère de sortie : garde-fou ci-dessous ([ADR 0025](adr/0025-comptes-et-donnees-de-mineurs-conformite.md))** | FB3, FB4 |
 
 Le lot **11** (saisons et groupes) est à mener **dans** FB3 / FB8 plutôt
 qu'avant : « plusieurs groupes par public » devient « groupes illimités par
@@ -420,10 +429,32 @@ club », et la clôture de saison doit s'appliquer aux données Firestore.
    effacement ; effacement à la demande à tout moment (remplace la durée
    `[Prop]` de l'ADR 0001).
 
-Restent pour l'ADR de FB0 : le détail du modèle de données, le parcours
-d'invitation (code ou lien, expiration), le rattachement d'un compte parent à
-plusieurs enfants, et les démarches de conformité (registre, information des
-familles, AIPD, DPA Google), qui relèvent du club ou de la fédération.
+Les points laissés ouverts le 2026-10-16 (détail du modèle, invitations, parent
+à plusieurs enfants, conformité) sont **tranchés par l'ADR 0024**.
+
+### Garde-fou de mise en production (ADR 0024 décision 12, précisé par [ADR 0025](adr/0025-comptes-et-donnees-de-mineurs-conformite.md) décision 3)
+
+FB1 à FB5 se développent sous émulateurs et avec des comptes de test, sur
+l'unique projet `animation-billard` (previews de PR sans Firestore). **Aucune
+base de production n'accueille de vrai élève, parent ou enseignant avant que
+l'AIPD soit validée et que la notice d'information, le registre, l'accord de
+sous-traitance (DPA) et la procédure d'exercice des droits soient validés,
+le responsable de traitement étant désigné par écrit** : l'agent n'en rédige
+que des projets marqués « à valider » (livrables : [conformite/README.md](conformite/README.md)) ;
+**validation : la fédération ou un DPO, désigné par l'animateur**. Le garde-fou
+n'est levé que par une **décision `[U]` datée**, consignée dans
+`conformite/README.md`. Responsable de traitement visé : chaque club,
+l'éditeur étant sous-traitant ; une fédération, si elle se manifeste, peut
+devenir responsable unique (**à valider : l'animateur**). Ce jalon est hors
+code et s'ajoute aux critères de sortie de FB3 (première invitation d'un vrai
+élève) et de FB8.
+
+### Vérifié à la source le 2026-10-17
+
+Quotas Spark de Firestore (1 GiB, 20 000 écritures, 50 000 lectures et 20 000
+suppressions par jour, pas de Functions) et âge de 15 ans (CNIL, article 45) :
+confirmés, sources dans l'ADR 0024. Restent à vérifier : quota gratuit propre à
+`europe-west9` (à relever dans la console, la base étant créée), TTL sur Spark (FB8).
 
 ## Restes ouverts au 2026-10-17
 

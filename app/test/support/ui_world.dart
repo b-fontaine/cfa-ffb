@@ -1,8 +1,14 @@
 import 'package:billard_cfa/app/di/injection.dart';
+import 'package:billard_cfa/app/session_startup.dart';
+import 'package:billard_cfa/entities/account/data/in_memory_auth_repository.dart';
+import 'package:billard_cfa/entities/account/domain/auth_repository.dart';
 import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repository.dart';
 import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
+import 'package:billard_cfa/entities/membership/data/in_memory_memberships_source.dart';
+import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
+import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
@@ -13,12 +19,15 @@ import 'package:billard_cfa/features/manage_students/domain/enroll_student.dart'
 import 'package:billard_cfa/features/place_student/domain/mark_block_acquired.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
 import 'package:billard_cfa/features/record_results/domain/record_attempt.dart';
+import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/app_update_source.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/fullscreen_controller.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/key_value_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' show Environment;
 
@@ -73,6 +82,46 @@ class UiWorld {
       _appUpdate ?? (throw StateError("l'application n'est pas lancée"));
   static int _seededDays = 0;
 
+  /// Le compte de l'animateur des scénarios, connecté sur l'appareil à
+  /// l'ouverture (session persistée) et seul membre d'un club : les scénarios
+  /// qui ne parlent pas de comptes s'exécutent ainsi connectés, sans écran de
+  /// connexion. Un `Given` d'authentification peut le déconnecter.
+  static const defaultEmail = 'animateur@example.org';
+  static const defaultPassword = 'mot-de-passe-12';
+  static const defaultClub = 'Test club';
+
+  /// L'authentification en mémoire du scénario en cours.
+  static InMemoryAuthRepository get auth =>
+      getIt<AuthRepository>() as InMemoryAuthRepository;
+
+  /// Les appartenances en mémoire du scénario en cours.
+  static InMemoryMembershipsSource get memberships =>
+      getIt<MembershipsSource>() as InMemoryMembershipsSource;
+
+  /// Le démarrage du service de comptes du scénario en cours.
+  static InMemorySessionStartup get startup =>
+      getIt<SessionStartup>() as InMemorySessionStartup;
+
+  /// Le stockage local de l'appareil du scénario en cours.
+  static InMemoryKeyValueStore get store =>
+      getIt<KeyValueStore>() as InMemoryKeyValueStore;
+
+  /// Identifiant de club dérivé du nom (`Club Nice` devient `club-nice`).
+  static ClubId clubIdOf(String name) =>
+      ClubId(name.toLowerCase().replaceAll(' ', '-'));
+
+  static Role role(String label) => Role.values.firstWhere(
+    (role) => role.name == label,
+    orElse: () => throw ArgumentError('rôle inconnu : $label'),
+  );
+
+  static ClubMembership membership(String club, String roleName) =>
+      ClubMembership(
+        clubId: clubIdOf(club),
+        clubName: club,
+        role: role(roleName),
+      );
+
   static Future<void> prepare(WidgetTester tester) async {
     if (_ready) return;
     await getIt.reset();
@@ -97,6 +146,9 @@ class UiWorld {
     final appUpdate = FakeAppUpdateSource(available: updateWaiting);
     _appUpdate = appUpdate;
     getIt.registerSingleton<AppUpdateSource>(appUpdate);
+    final account = auth.seed(email: defaultEmail, password: defaultPassword);
+    memberships.grant(account.id, membership(defaultClub, 'director'));
+    auth.restoreSession(defaultEmail);
     _ready = true;
     _seededDays = 0;
     addTearDown(() async {

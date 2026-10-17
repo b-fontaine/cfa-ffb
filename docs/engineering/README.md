@@ -22,6 +22,7 @@ règles sont **vérifiées automatiquement** (voir [quality-gates.md](quality-ga
 | [etiquettes-seance-plan.md](etiquettes-seance-plan.md) | Lot 10b, reste (livré) : note de jeu par étiquettes prédéfinies (huit, `[Prop]`, sans texte libre, non nominatives), schéma v11, sauvegarde v5 rétrocompatible, effacement, scénarios, mutation, parcours web ([ADR 0023](adr/0023-etiquettes-de-seance-liste-fermee-schema-v11-sauvegarde-v5.md)) |
 | [seance-en-cours-plan.md](seance-en-cours-plan.md) | Lot 10b (livré) : séance guidée en cours persistée (étape, compteurs, grille, score, minuteur), table `run_progress_entries` schéma v10, hors sauvegarde (v4), effacement RGPD par groupe, séance planifiée et saisie liés ; décisions, écarts de livraison, scénarios, mutation, parcours web, points `[U]` ([ADR 0020](adr/0020-seance-en-cours-persistee-locale-hors-sauvegarde.md)) |
 | [export-pdf-plan.md](export-pdf-plan.md) | Lot 14 (livré) : export PDF de la feuille de l'animateur et des fiches résultats (`pdf` bas niveau, scène d'impression en domaine pur, schémas vectoriels, Exo 2, Enregistrer et Imprimer, aucune donnée nominative par défaut) ; décisions, écarts de livraison, scénarios, mutations, parcours web, limites, points `[U]` ([ADR 0021](adr/0021-export-pdf-feuille-animateur-et-fiche-resultats.md)) |
+| [auth-plan.md](auth-plan.md) | Lot FB2 (livré sous émulateur et en mémoire) : authentification par e-mail et mot de passe, adresse vérifiée exigée, `AuthCubit` et redirection, club actif retenu par compte, inscription fermée par code (compte seul), anti-énumération, tests (BDD, unitaires, émulateur Auth), reste côté console ([ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md)) |
 | [ux/plan-ux-proposition.md](ux/plan-ux-proposition.md) | Détail des lots UX U1 à U9 (intégrés à la roadmap), scénarios BDD à écrire d'abord, décisions Q1 à Q8 tranchées `[U]` |
 
 ## Démarrage rapide
@@ -35,7 +36,7 @@ cd widgetbook && flutter run -d chrome   # catalogue du design system
 ```
 
 Pile : Flutter 3.47.7 (Dart 3.13), flutter_bloc, get_it + injectable, freezed,
-go_router, gen-l10n, drift (SQLite, [ADR 0001](adr/0001-persistance-locale-drift.md)),
+go_router, gen-l10n, drift (SQLite, [ADR 0001](adr/0001-persistance-locale-drift.md), retiré après la migration FB7), Firebase (Auth + Firestore, source de vérité cible, [ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) ; `shared_preferences` derrière le port clé/valeur local, lot FB2, décision 23),
 bdd_widget_test, bloc_test, mocktail ; design system
 validé dans Widgetbook 3.x (projet séparé `widgetbook/`).
-Plateformes cibles : Android et iOS (priorité), tablettes, macOS/Windows/Linux, web.
+Plateformes cibles : Android et iOS (priorité), tablettes, web ; Linux abandonné, Windows et macOS hors production (ADR 0024). Les tests de règles Firestore (émulateurs, lot FB1 livré) exigent Node >= 24.12 et Java >= 21 : voir [quality-gates.md](quality-gates.md) § Prérequis de l'outillage Firebase.

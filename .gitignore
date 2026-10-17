@@ -15,3 +15,8 @@ app/lib/**/*.config.dart
 app/lib/shared/l10n/generated/
 app/test/bdd/*_test.dart
 widgetbook/lib/**/*.g.dart
+
+# Outillage Node (émulateurs Firebase, tests des règles) : npm ci
+node_modules/
+# Journaux des émulateurs Firebase
+*-debug.log

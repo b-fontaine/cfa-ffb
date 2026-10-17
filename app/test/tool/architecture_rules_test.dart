@@ -109,6 +109,75 @@ void main() {
     });
   });
 
+  group('platform SDKs (rule 9)', () {
+    for (final package in [
+      'firebase_auth',
+      'firebase_core',
+      'cloud_firestore',
+    ]) {
+      test('rejects $package outside app/platform', () {
+        write(
+          'features/f/data/r.dart',
+          "import 'package:$package/$package.dart';",
+        );
+
+        expect(messages().join('\n'), contains('SDK Firebase'));
+      });
+
+      test('rejects $package in the app layer outside app/platform', () {
+        write('app/x.dart', "import 'package:$package/$package.dart';");
+
+        expect(messages().join('\n'), contains('app/platform'));
+      });
+
+      test('accepts $package under app/platform', () {
+        write(
+          'app/platform/x.dart',
+          "import 'package:$package/$package.dart';",
+        );
+
+        expect(messages(), isEmpty);
+      });
+    }
+
+    test('accepts firebase_core in the generated options file only', () {
+      write(
+        'app/firebase_options.dart',
+        "import 'package:firebase_core/firebase_core.dart';",
+      );
+      write(
+        'app/firebase_other.dart',
+        "import 'package:firebase_core/firebase_core.dart';",
+      );
+
+      expect(messages(), hasLength(1));
+      expect(messages().single, contains('firebase_other.dart'));
+    });
+
+    test('options file may not import firebase_auth', () {
+      write(
+        'app/firebase_options.dart',
+        "import 'package:firebase_auth/firebase_auth.dart';",
+      );
+
+      expect(messages().join('\n'), contains('SDK Firebase'));
+    });
+
+    test('shared_preferences has a single importer', () {
+      write(
+        'app/platform/shared_preferences_key_value_store.dart',
+        "import 'package:shared_preferences/shared_preferences.dart';",
+      );
+      write(
+        'app/platform/other.dart',
+        "import 'package:shared_preferences/shared_preferences.dart';",
+      );
+
+      expect(messages(), hasLength(1));
+      expect(messages().single, contains('other.dart'));
+    });
+  });
+
   test('accepts a clean layered layout', () {
     write('entities/a/domain/a.dart', 'class A {}');
     write(

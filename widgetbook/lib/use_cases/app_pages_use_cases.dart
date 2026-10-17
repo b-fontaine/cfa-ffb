@@ -15,6 +15,7 @@ import 'package:billard_cfa/features/place_student/presentation/bloc/placement_b
 import 'package:billard_cfa/features/record_results/presentation/bloc/open_session_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/record_results_bloc.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/session_date_cubit.dart';
+import 'package:billard_cfa/features/sign_in/presentation/ui/account_section.dart';
 import 'package:billard_cfa/features/student_showcase/presentation/bloc/showcase_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/exercise_sheet_bloc.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/student_recall_bloc.dart';
@@ -225,8 +226,18 @@ Widget buildExerciseSheetPageUseCase(BuildContext context) => WorldScope(
 );
 
 @widgetbook.UseCase(name: 'Plus', type: MorePage, path: _path)
-Widget buildMorePageUseCase(BuildContext context) =>
-    MorePage(onOpenBackup: () {}, onOpenSettings: () {}, onOpenSeasons: () {});
+Widget buildMorePageUseCase(BuildContext context) => MorePage(
+  onOpenBackup: () {},
+  onOpenSettings: () {},
+  onOpenSeasons: () {},
+  account: AccountSection(
+    email: 'animateur@example.org',
+    clubName: 'Billard Club de Nice',
+    roleLabel: 'Directeur',
+    onSignOut: () {},
+  ),
+  onSwitchClub: () {},
+);
 
 @widgetbook.UseCase(name: 'Réglages', type: SettingsPage, path: _path)
 Widget buildSettingsPageUseCase(BuildContext context) => BlocProvider(

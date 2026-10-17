@@ -6,13 +6,15 @@ n'est dupliquée ailleurs.
 
 ```bash
 scripts/check.sh --fast   # ~5 s : format, analyse, scripts, architecture, séances (lecture seule)
-scripts/check.sh --full   # fast + l10n + tests + couverture + Widgetbook (~40 s)
+scripts/check.sh --full   # fast + l10n + règles Firestore (émulateurs) + tests + couverture + Widgetbook (~1 min ; Node, Java et `npm ci` requis)
 COVERAGE_MIN=95 scripts/check.sh --full   # relever le seuil de couverture
 
 scripts/sync_catalogue.sh [--check]       # copie / vérifie le catalogue (docs/knowledge -> app/assets)
 scripts/sync_diagrammes.sh [--check]      # copie / vérifie les diagrammes à table (docs/knowledge -> app/assets)
 scripts/sync_fiches.sh [--check]          # copie / vérifie les séances du catalogue (docs/knowledge -> app/assets)
 (cd app && dart run tool/fiches.dart [--complete])   # valide les séances (FORMAT.md § 7)
+scripts/rules_test.sh                     # règles Firestore contre l'émulateur (Node, Java, npm ci)
+scripts/web_smoke.sh [--build]            # build web compilé + vrai SDK Auth contre l'émulateur (+ Google Chrome)
 ```
 
 ## Tableau des garde-fous
@@ -27,6 +29,11 @@ scripts/sync_fiches.sh [--check]          # copie / vérifie les séances du cat
 | Fichiers web drift : `drift_worker.js` = paquet résolu, `sqlite3.wasm` = version verrouillée | `dart run scripts/sync_web_assets.dart --check` | oui | oui | pre-commit | quality |
 | PWA : manifeste (champs, couleurs = thème, icônes `any`/`maskable` présentes et de la bonne taille, orientation libre), `index.html`, service worker, aucune URL externe ; icônes régénérées à l'identique | `dart run scripts/pwa.dart check` et `dart run scripts/generate_pwa_icons.dart --check` | oui | oui | pre-commit | quality |
 | Comportement du service worker et du pont de mise à jour (précache et reprise, HTML refusé, purge des anciens caches, activation seulement sur demande, autre onglet, `/__/` non intercepté, worker non stampé), contrat Dart/JS du pont | `node --test scripts/pwa_js_test.mjs` (Node requis) | oui | oui | pre-commit | quality |
+| Règles Firestore : refus par défaut (anonyme, authentifié, e-mail non vérifié, rôles déclarés dans la base ; lecture, liste, création, mise à jour, suppression ; documents existants et inexistants ; collections connues et inconnues), aucune autorisation inconditionnelle ni date d'expiration, et preuve de sensibilité (sans règles, la même lecture réussit) | `scripts/rules_test.sh` (`firebase emulators:exec` + `node --test scripts/rules_test/`) | — | oui | pre-push | test (ubuntu + macOS) |
+| Fumée du build web compilé ([ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md), lot FB2) : le build release (`scripts/build_web.sh`) chargé dans Chrome avec le vrai SDK `firebase_auth` ; démarrage jusqu'à l'écran de connexion, échec générique (mauvais mot de passe, adresse inconnue), connexion, session conservée au rechargement, déconnexion ; appels d'authentification renvoyés à l'émulateur, tout autre hôte refusé | `scripts/web_smoke.sh --build` (`firebase emulators:exec` + `node --test scripts/web_smoke/`) | — | oui | pre-push | test (ubuntu + macOS) |
+| Authentification Firebase contre l'émulateur Auth ([ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md), lot FB2) : adresse non vérifiée à la création, mauvais mot de passe et adresse inconnue (codes que l'application regroupe), adresse déjà utilisée, 6 caractères seulement côté serveur, courriels de vérification et de réinitialisation émis, adresse inconnue sans courriel | `scripts/rules_test.sh` (le même appel, `scripts/rules_test/auth_emulator.test.mjs`) | — | oui | pre-push | test (ubuntu + macOS) |
+| Confidentialité de la plateforme ([ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md), [0025](adr/0025-comptes-et-donnees-de-mineurs-conformite.md)) : sauvegardes Android et iCloud désactivées, `firebase.json` (e-mail seul, `europe-west9`, émulateurs locaux), `firestore.rules` sans accès ouvert, plateformes Android / iOS / web seulement, aucune URL hors domaines Firebase dans `lib/` et `web/`, aucun SDK de mesure, release qui refuse l'émulateur | `app/test/tool/platform_privacy_test.dart` (avec les tests) | — | oui | pre-push | test |
+| Build Android debug (incompatibilités natives des plugins FlutterFire ; sans signature) | `flutter build apk --debug` (dans `app/`) | — | — | — | build-android |
 | Formatage | `dart format --output=none --set-exit-if-changed` (lib, test, tool, scripts) | oui | oui | pre-commit | quality |
 | Analyse statique stricte | `flutter analyze --no-pub --fatal-infos` (`very_good_analysis` + strict-casts/inference/raw-types) | oui | oui | pre-commit | quality |
 | Analyse des scripts Dart (paquet `scripts/`, mêmes règles `very_good_analysis` que l'application, [ADR 0022](adr/0022-dette-outillage-scripts-wasm-mutation.md)) | `dart pub get` puis `dart analyze --fatal-infos .` dans `scripts/` | oui | oui | pre-commit | quality |
@@ -45,6 +52,27 @@ Hooks git : `.githooks/pre-commit` → `--fast`, `.githooks/pre-push` → `--ful
 (installés par `scripts/setup.sh` : `git config core.hooksPath .githooks`).
 Hook agent : l'événement `Stop` lance `scripts/check.sh --fast` lorsque `app/` ou
 `scripts/` ont changé ; l'agent ne déclare jamais « terminé » avec un garde-fou rouge.
+
+## Prérequis de l'outillage Firebase (FB1)
+
+Le garde-fou « règles Firestore » exige **Node >= 24.12** (`package.json` : `engines` ;
+`@firebase/rules-unit-testing` 6.0.0, `playwright-core` 1.64.1), **Java >= 21** (les émulateurs de `firebase-tools` 15
+refusent Java < 21) et les dépendances épinglées (`package.json` + `package-lock.json`, `npm ci`).
+`scripts/rules_test.sh` **échoue avec un message explicite** (code 1) si `node`, `java`, `npx` ou
+`node_modules` manquent ou sont trop anciens : jamais de saut silencieux. `scripts/setup.sh` fait les
+mêmes vérifications puis `npm ci`.
+
+- **Versions réellement testées** (poste de développement du 2026-10-17) : Node 26.12.0, Java 27
+  (OpenJDK, Homebrew), `firebase-tools` 15.34.0, `@firebase/rules-unit-testing` 6.0.0, `firebase` 13.0.0.
+  La borne basse « Java 21 » (ADR 0024, décision 20) est celle que `firebase-tools` impose ; **la CI
+  utilise Java 21 (Temurin)**, ce poste n'a pas pu l'exécuter en local. Plage acceptée par le script : Java >= 21 sans borne haute.
+- Projet des tests : `demo-cfa-ffb` (préfixe `demo-` : aucun appel au projet réel) ; les tests refusent de
+  s'exécuter hors de l'émulateur local (hôte `FIRESTORE_EMULATOR_HOST` obligatoire et local).
+  Ports (`firebase.json`, bloc `emulators`) : Auth 9099, Firestore 8080, interface désactivée,
+  `singleProjectMode`. Aucun déploiement n'est lancé par ces scripts.
+- `scripts/web_smoke.sh` exige en plus **Google Chrome** (installé d'office sur les exécuteurs GitHub ubuntu et macOS ; aucun téléchargement de navigateur : `playwright-core` pilote le Chrome installé) et construit le web release (~1 min) ; il échoue explicitement si Chrome, `playwright-core` ou le build manquent.
+- `--fast` est **inchangé** : il n'exige ni Java ni `node_modules` (seul Node est requis, pour le service worker).
+- Le job CI `test` installe Node 24 et Java 21 (`setup-node`, `setup-java`), lance `npm ci` puis `check.sh --full`.
 
 ## Détail des contrôles
 
@@ -97,6 +125,10 @@ Hook agent : l'événement `Stop` lance `scripts/check.sh --fast` lorsque `app/`
 - **Paquet `pdf`** (ADR 0021) : `tool/architecture` refuse `package:pdf/widgets.dart`,
   `package:pdf/src/` et `package:printing/` dans `lib/`, et tout `package:pdf/`
   hors de `features/export_sheet/data/` (cas rouges dans `architecture_rules_test`).
+- **SDK de plateforme** (règle 9 d'[architecture.md](architecture.md)) : `firebase_auth`, `firebase_core` et
+  `cloud_firestore` hors de `lib/app/platform/` (`firebase_core` aussi par le fichier généré `firebase_options.dart`), et
+  `shared_preferences` hors de `lib/app/platform/shared_preferences_key_value_store.dart`, font échouer
+  `tool/check_architecture.dart` (cas rouges dans `architecture_rules_test`).
 
 ## Hors périmètre actuel : mutation testing
 

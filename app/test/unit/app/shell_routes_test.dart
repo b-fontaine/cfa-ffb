@@ -1,3 +1,4 @@
+import 'package:billard_cfa/app/auth/auth_refresh.dart';
 import 'package:billard_cfa/app/router.dart';
 import 'package:billard_cfa/app/shell.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
@@ -6,6 +7,8 @@ import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../support/auth_rig.dart';
 
 void main() {
   group('AppShell.indexOf', () {
@@ -450,7 +453,13 @@ void main() {
 
   group('guide route', () {
     test('is a top-level route, outside the navigation shell', () {
-      final routes = buildRouter().configuration.routes;
+      final rig = AuthRig();
+      addTearDown(rig.cubit.close);
+      final refresh = AuthRefresh(rig.cubit);
+      addTearDown(refresh.dispose);
+      final router = buildRouter(auth: rig.cubit, refresh: refresh);
+      addTearDown(router.dispose);
+      final routes = router.configuration.routes;
       const guide = '/catalogue/:sheetId/guide';
 
       bool isGuide(RouteBase r) => r is GoRoute && r.path == guide;

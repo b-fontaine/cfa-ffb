@@ -1,4 +1,5 @@
 import 'package:billard_cfa/app/app.dart';
+import 'package:billard_cfa/app/auth/auth_cubit.dart';
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_sessions.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,8 @@ Future<void> relaunchApp(WidgetTester tester, {String? address}) async {
   // Ni l'un ni l'autre sous `runAsync` : les cubits restaurés doivent naître
   // dans la zone du test (leur fermeture y attend ses flux), et tout ce que le
   // déroulé lit est déjà en cache (`UiWorld.prepare`).
+  // Un nouveau lancement relit la session persistée de l'appareil.
+  await getIt.resetLazySingleton<AuthCubit>();
   await getIt<RunSheetSessions>().dispose();
   await getIt<RunSheetSessions>().restore();
   await tester.pumpWidget(const App());

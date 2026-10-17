@@ -3,8 +3,10 @@
 #
 #   scripts/check.sh --fast   catalogue + diagrammes + fiches + fichiers web drift + PWA (+ tests JS du service worker, Node) + format + analyse
 #                             + architecture + séances + validation des fiches
-#   scripts/check.sh --full   --fast + l10n + tests + couverture + Widgetbook
-#                             (génération, format, analyse, use cases)
+#   scripts/check.sh --full   --fast + l10n + règles Firestore (émulateurs : Node, Java, npm ci)
+#                             + fumée du build web compilé (build release + Chrome, émulateur Auth)
+#                             + tests + couverture + Widgetbook (génération, format, analyse, use cases)
+#                             --fast reste inchangé : il n'exige ni Java ni node_modules.
 #
 # --fast est en LECTURE SEULE sur les sources (dart format --output=none) ; la
 # preuve est dans app/test/tool/check_fast_read_only_test.dart.
@@ -80,6 +82,12 @@ fi
 
 step "Localisations fr/en (mêmes clés)"
 (cd "$ROOT" && dart run scripts/check_l10n.dart app/lib/shared/l10n)
+
+step "Règles Firestore (refus par défaut, contre l'émulateur ; échec si Node, Java ou npm ci manquent)"
+"$ROOT/scripts/rules_test.sh"
+
+step "Build web compilé contre l'émulateur Auth (fumée navigateur ; échec si Node, Java, npm ci ou Chrome manquent)"
+"$ROOT/scripts/web_smoke.sh" --build
 
 step "Tests (BDD + unitaires) avec couverture"
 rm -rf coverage

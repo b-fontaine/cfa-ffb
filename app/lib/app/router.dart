@@ -1,10 +1,14 @@
 import 'dart:async';
 
+import 'package:billard_cfa/app/auth/auth_cubit.dart';
+import 'package:billard_cfa/app/auth/auth_redirect.dart';
+import 'package:billard_cfa/app/auth/auth_state.dart';
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/app/record_screens.dart';
 import 'package:billard_cfa/app/record_sheet.dart';
 import 'package:billard_cfa/app/sheet_export.dart';
 import 'package:billard_cfa/app/shell.dart';
+import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
 import 'package:billard_cfa/features/acknowledge_alert/presentation/bloc/acknowledgement_bloc.dart';
 import 'package:billard_cfa/features/app_update/presentation/bloc/app_update_cubit.dart';
 import 'package:billard_cfa/features/assess_maturity/presentation/bloc/assessment_bloc.dart';
@@ -38,6 +42,10 @@ import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_presentation_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_sessions.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_sessions_cubit.dart';
+import 'package:billard_cfa/features/sign_in/presentation/bloc/forgot_password_cubit.dart';
+import 'package:billard_cfa/features/sign_in/presentation/bloc/register_cubit.dart';
+import 'package:billard_cfa/features/sign_in/presentation/bloc/sign_in_cubit.dart';
+import 'package:billard_cfa/features/sign_in/presentation/ui/account_section.dart';
 import 'package:billard_cfa/features/student_showcase/presentation/bloc/showcase_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/exercise_sheet_bloc.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/group_journey_cubit.dart';
@@ -54,13 +62,16 @@ import 'package:billard_cfa/pages/assessment/presentation/assessment_page.dart';
 import 'package:billard_cfa/pages/backup/presentation/backup_page.dart';
 import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_page.dart';
 import 'package:billard_cfa/pages/export_sheet/presentation/export_sheet_page.dart';
+import 'package:billard_cfa/pages/forgot_password/presentation/forgot_password_page.dart';
 import 'package:billard_cfa/pages/group_overview/presentation/group_overview_page.dart';
 import 'package:billard_cfa/pages/home/presentation/home_page.dart';
 import 'package:billard_cfa/pages/more/presentation/more_page.dart';
 import 'package:billard_cfa/pages/not_found/presentation/not_found_page.dart';
 import 'package:billard_cfa/pages/record_history/presentation/record_history_page.dart';
+import 'package:billard_cfa/pages/register/presentation/register_page.dart';
 import 'package:billard_cfa/pages/season_archive/presentation/season_archive_page.dart';
 import 'package:billard_cfa/pages/season_closure/presentation/season_closure_page.dart';
+import 'package:billard_cfa/pages/select_club/presentation/select_club_page.dart';
 import 'package:billard_cfa/pages/session_planner/presentation/session_planner_page.dart';
 import 'package:billard_cfa/pages/session_review/presentation/session_review_page.dart';
 import 'package:billard_cfa/pages/settings/presentation/settings_page.dart';
@@ -68,20 +79,26 @@ import 'package:billard_cfa/pages/sheet_catalogue/presentation/sheet_catalogue_p
 import 'package:billard_cfa/pages/sheet_detail/presentation/sheet_detail_page.dart';
 import 'package:billard_cfa/pages/sheet_guide/presentation/sheet_guide_page.dart';
 import 'package:billard_cfa/pages/sheet_presentation/presentation/sheet_presentation_page.dart';
+import 'package:billard_cfa/pages/sign_in/presentation/sign_in_page.dart';
+import 'package:billard_cfa/pages/splash/presentation/splash_page.dart';
 import 'package:billard_cfa/pages/student_form/presentation/student_form_page.dart';
 import 'package:billard_cfa/pages/student_sheet/presentation/student_sheet_page.dart';
 import 'package:billard_cfa/pages/student_showcase/presentation/student_showcase_page.dart';
 import 'package:billard_cfa/pages/students/presentation/students_page.dart';
 import 'package:billard_cfa/pages/suggested_session/presentation/suggested_session_page.dart';
+import 'package:billard_cfa/pages/unavailable/presentation/unavailable_page.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
+import 'package:billard_cfa/shared/lib/club_switch_guard.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
+import 'package:billard_cfa/shared/ui/role_labels.dart';
 import 'package:billard_cfa/widgets/roster_picker/presentation/roster_selection_cubit.dart';
-import 'package:flutter/material.dart' show MaterialLocalizations, ValueKey;
+import 'package:flutter/material.dart'
+    show Listenable, MaterialLocalizations, ValueKey;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -104,6 +121,18 @@ abstract final class AppRoutes {
   static const seasons = '/seasons';
   static const catalogue = '/catalogue';
 
+  /// Changer de club (sous « Plus » : plusieurs clubs, ADR 0024 décision 22).
+  static const switchClub = '/more/club';
+
+  /// Écrans de session (ADR 0024, décision 31) : aucun n'est protégé, et
+  /// aucune route n'est ouverte sans compte.
+  static const splash = '/splash';
+  static const signIn = '/sign-in';
+  static const forgotPassword = '/forgot-password';
+  static const register = '/register';
+  static const selectClub = '/select-club';
+  static const unavailable = '/unavailable';
+
   /// Segments des sous-pages d'une séance du catalogue : chemin des routes ET
   /// des constructeurs d'adresse.
   static const guideSegment = 'guide';
@@ -123,6 +152,11 @@ abstract final class AppRoutes {
   /// Adresse de [path] avec ses paramètres non vides (jamais de `?` seul).
   static String _url(String path, Map<String, String> query) =>
       Uri(path: path, queryParameters: query.isEmpty ? null : query).toString();
+
+  /// [path] suivi de l'adresse à retrouver après la connexion (`from`), si elle
+  /// existe.
+  static String withFrom(String path, String? from) =>
+      _url(path, {'from': ?from});
 
   /// Jour en paramètre d'adresse (`2026-10-13`), relu par `_dateParam`.
   static String _dateQuery(DateTime date) =>
@@ -418,10 +452,83 @@ String? _nonBlank(String? raw) =>
 StudentId _studentId(GoRouterState state) =>
     StudentId(state.pathParameters['studentId']!);
 
-GoRouter buildRouter() => GoRouter(
+/// Le routeur de l'application. [auth] décide de la redirection (aucune route
+/// sans compte, ADR 0024 décision 31) ; [refresh] la réévalue à chaque
+/// changement de session.
+GoRouter buildRouter({
+  required AuthCubit auth,
+  required Listenable refresh,
+}) => GoRouter(
+  refreshListenable: refresh,
+  redirect: (context, state) => authRedirect(auth.state, state.uri),
   errorBuilder: (context, state) =>
       NotFoundPage(onHome: () => context.go(AppRoutes.home)),
   routes: [
+    GoRoute(
+      path: AppRoutes.splash,
+      builder: (context, state) => const SplashPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.signIn,
+      builder: (context, state) {
+        final from = state.uri.queryParameters['from'];
+        return BlocProvider(
+          create: (_) => getIt<SignInCubit>(),
+          child: SignInPage(
+            onForgotPassword: () =>
+                context.go(AppRoutes.withFrom(AppRoutes.forgotPassword, from)),
+            onRegister: () =>
+                context.go(AppRoutes.withFrom(AppRoutes.register, from)),
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.forgotPassword,
+      builder: (context, state) {
+        final from = state.uri.queryParameters['from'];
+        return BlocProvider(
+          create: (_) => getIt<ForgotPasswordCubit>(),
+          child: ForgotPasswordPage(
+            onBack: () =>
+                context.go(AppRoutes.withFrom(AppRoutes.signIn, from)),
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.register,
+      builder: (context, state) {
+        final from = state.uri.queryParameters['from'];
+        return BlocProvider(
+          create: (_) => getIt<RegisterCubit>(),
+          child: RegisterPage(
+            onBack: () =>
+                context.go(AppRoutes.withFrom(AppRoutes.signIn, from)),
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.selectClub,
+      builder: (context, state) {
+        final choices = switch (auth.state) {
+          AuthNoClub(:final choices) => choices,
+          _ => const <ClubMembership>[],
+        };
+        return SelectClubPage(
+          choices: choices,
+          onChoose: (club) => unawaited(auth.chooseClub(club)),
+          onRefresh: () => unawaited(auth.refresh()),
+          onSignOut: () => unawaited(auth.signOut()),
+        );
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.unavailable,
+      builder: (context, state) =>
+          UnavailablePage(onRetry: () => unawaited(auth.retry())),
+    ),
     ShellRoute(
       builder: (context, state, child) => BlocProvider(
         create: (_) => getIt<AppUpdateCubit>(),
@@ -951,11 +1058,48 @@ GoRouter buildRouter() => GoRouter(
         ),
         GoRoute(
           path: AppRoutes.more,
-          builder: (context, state) => MorePage(
-            onOpenBackup: () => context.go(AppRoutes.backup),
-            onOpenSettings: () => context.go(AppRoutes.settings),
-            onOpenSeasons: () => context.go(AppRoutes.seasons),
-          ),
+          builder: (context, state) {
+            final session = auth.state;
+            return MorePage(
+              onOpenBackup: () => context.go(AppRoutes.backup),
+              onOpenSettings: () => context.go(AppRoutes.settings),
+              onOpenSeasons: () => context.go(AppRoutes.seasons),
+              account: session is AuthReady
+                  ? AccountSection(
+                      email: session.account.email,
+                      clubName: session.club.clubName,
+                      roleLabel: session.club.role.label(
+                        AppLocalizations.of(context),
+                      ),
+                      onSignOut: () => unawaited(auth.signOut()),
+                    )
+                  : null,
+              onSwitchClub: session is AuthReady && session.canSwitchClub
+                  ? () => context.go(AppRoutes.switchClub)
+                  : null,
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.switchClub,
+          builder: (context, state) {
+            final session = auth.state;
+            if (session is! AuthReady) {
+              return NotFoundPage(onHome: () => context.go(AppRoutes.home));
+            }
+            return SelectClubPage(
+              choices: session.choices,
+              current: session.club.clubId,
+              blocked: getIt<ClubSwitchGuard>().isBlocked,
+              onChoose: (club) async {
+                if (await auth.chooseClub(club) && context.mounted) {
+                  context.go(AppRoutes.home);
+                }
+              },
+              onSignOut: () => unawaited(auth.signOut()),
+              onBack: () => context.go(AppRoutes.more),
+            );
+          },
         ),
         GoRoute(
           path: AppRoutes.seasons,

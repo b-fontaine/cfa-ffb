@@ -1,4 +1,5 @@
 import 'package:billard_cfa/app/app.dart';
+import 'package:billard_cfa/app/auth/auth_cubit.dart';
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/entities/settings/domain/settings_repository.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// réglages persistés, comme au lancement (`RulesModule`).
 Future<void> theAppRestarts(WidgetTester tester) async {
   await tester.pumpWidget(const SizedBox());
+  await getIt.resetLazySingleton<AuthCubit>();
   final base = RulesConfig();
   final stored = await tester.runAsync(
     () async => (await getIt<SettingsRepository>().load()).orDefaults(base),

@@ -1,10 +1,24 @@
 import 'dart:io';
 
+import 'package:billard_cfa/app/auth/auth_cubit.dart';
+import 'package:billard_cfa/app/auth/auth_state.dart';
 import 'package:billard_cfa/app/di/injection.dart';
+import 'package:billard_cfa/app/firebase_environment.dart';
+import 'package:billard_cfa/app/firebase_startup.dart';
 import 'package:billard_cfa/app/platform/file_picker_pdf_files.dart';
+import 'package:billard_cfa/app/platform/firebase_sdk_gateway.dart';
 import 'package:billard_cfa/app/platform/fullscreen_controller_native.dart';
+import 'package:billard_cfa/app/platform/shared_preferences_key_value_store.dart';
+import 'package:billard_cfa/app/session_startup.dart';
+import 'package:billard_cfa/entities/account/data/firebase_auth_repository.dart';
+import 'package:billard_cfa/entities/account/data/in_memory_auth_repository.dart';
+import 'package:billard_cfa/entities/account/domain/auth_repository.dart';
+import 'package:billard_cfa/entities/account/domain/session_scope.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
+import 'package:billard_cfa/entities/membership/data/in_memory_memberships_source.dart';
+import 'package:billard_cfa/entities/membership/data/no_memberships_source.dart';
+import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/features/backup_data/data/file_picker_backup_files.dart';
@@ -16,9 +30,12 @@ import 'package:billard_cfa/features/export_sheet/domain/pdf_files.dart';
 import 'package:billard_cfa/features/export_sheet/domain/print_renderer.dart';
 import 'package:billard_cfa/features/export_sheet/presentation/bloc/export_sheet_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/fullscreen_cubit.dart';
+import 'package:billard_cfa/shared/lib/active_club_scope.dart';
+import 'package:billard_cfa/shared/lib/current_user.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/fullscreen_controller.dart';
 import 'package:billard_cfa/shared/lib/id_generator.dart';
+import 'package:billard_cfa/shared/lib/key_value_store.dart';
 import 'package:billard_cfa/shared/lib/storage_status.dart';
 import 'package:billard_cfa/shared/lib/unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
@@ -27,6 +44,8 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' show Environment;
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
 void main() {
   late Directory directory;
@@ -100,6 +119,27 @@ void main() {
     },
   );
 
+  test(
+    'production wires Firebase on production, started by main only',
+    () async {
+      await configureProduction();
+
+      final startup = getIt<FirebaseStartup>();
+
+      expect(startup.environment.target, FirebaseTarget.production);
+      expect(startup.gateway, isA<FirebaseSdkGateway>());
+      // Rien n'est lancé par le câblage : c'est `main` qui appelle start().
+      expect(startup.isReady, equals(null));
+      expect(identical(startup, getIt<FirebaseStartup>()), isTrue);
+    },
+  );
+
+  test('the test environment does not wire Firebase', () async {
+    await configureDependencies(environment: Environment.test);
+
+    expect(getIt.isRegistered<FirebaseStartup>(), isFalse);
+  });
+
   test('the test environment keeps repositories in memory', () async {
     await configureDependencies(environment: Environment.test);
 
@@ -140,4 +180,34 @@ void main() {
       expect(cubit.state.canPrint, isFalse);
     },
   );
+
+  test(
+    'production wires the session: Firebase auth, one scope, local store',
+    () async {
+      SharedPreferencesAsyncPlatform.instance =
+          InMemorySharedPreferencesAsync.empty();
+      await configureProduction();
+
+      expect(getIt<AuthRepository>(), isA<FirebaseAuthRepository>());
+      expect(getIt<MembershipsSource>(), isA<NoMembershipsSource>());
+      expect(getIt<KeyValueStore>(), isA<SharedPreferencesKeyValueStore>());
+      expect(getIt<SessionStartup>(), same(getIt<FirebaseStartup>()));
+      // Un seul porteur de session derrière les deux ports minuscules.
+      expect(getIt<CurrentUser>(), same(getIt<SessionScope>()));
+      expect(getIt<ActiveClubScope>(), same(getIt<SessionScope>()));
+      final cubit = getIt<AuthCubit>();
+      expect(identical(cubit, getIt<AuthCubit>()), isTrue);
+      // Rien n'est lancé par le câblage : l'application démarre la session.
+      expect(cubit.state, const AuthUnknown());
+    },
+  );
+
+  test('the test environment keeps the session in memory', () async {
+    await configureDependencies(environment: Environment.test);
+
+    expect(getIt<AuthRepository>(), isA<InMemoryAuthRepository>());
+    expect(getIt<MembershipsSource>(), isA<InMemoryMembershipsSource>());
+    expect(getIt<KeyValueStore>(), isA<InMemoryKeyValueStore>());
+    expect(getIt<SessionStartup>(), isA<InMemorySessionStartup>());
+  });
 }

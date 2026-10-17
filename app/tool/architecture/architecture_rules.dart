@@ -162,6 +162,11 @@ List<Violation> checkArchitecture(
         report(line, pdfProblem);
         continue;
       }
+      final sdkProblem = _sdkImportProblem(uri, relative);
+      if (sdkProblem != null) {
+        report(line, sdkProblem);
+        continue;
+      }
       if (isPure) {
         final allowed =
             uri.startsWith(prefix) || _pureAllowedPrefixes.any(uri.startsWith);
@@ -208,6 +213,45 @@ String? _pdfImportProblem(String uri, String relative) {
   if (uri.startsWith('package:pdf/') &&
       !relative.startsWith(_pdfDataDirectory)) {
     return 'package:pdf réservé à $_pdfDataDirectory (ADR 0021) : $uri';
+  }
+  return null;
+}
+
+/// Dossier qui isole les SDK de la plateforme (règle 9) : seule la couche `app`
+/// y touche, derrière des ports du domaine ou de `shared/lib`.
+const _platformDirectory = 'app/platform/';
+
+/// Fichier généré par `flutterfire configure` : seul hors de
+/// [_platformDirectory] à importer `firebase_core` (le type `FirebaseOptions`).
+const _firebaseOptionsFile = 'app/firebase_options.dart';
+
+/// Seul importeur de `shared_preferences`.
+const _sharedPreferencesFile =
+    'app/platform/shared_preferences_key_value_store.dart';
+
+/// Règle 9 : les SDK Firebase ne sont importés que sous `lib/app/platform/`
+/// (`firebase_core` aussi par le fichier généré des options) ;
+/// `shared_preferences` seulement par un fichier de ce dossier.
+String? _sdkImportProblem(String uri, String relative) {
+  const firebasePackages = [
+    'package:firebase_auth/',
+    'package:firebase_core/',
+    'package:cloud_firestore/',
+  ];
+  for (final package in firebasePackages) {
+    if (!uri.startsWith(package)) continue;
+    final allowed =
+        relative.startsWith(_platformDirectory) ||
+        (package == 'package:firebase_core/' &&
+            relative == _firebaseOptionsFile);
+    if (!allowed) {
+      return 'SDK Firebase réservé à lib/$_platformDirectory (règle 9) : $uri';
+    }
+  }
+  if (uri.startsWith('package:shared_preferences/') &&
+      relative != _sharedPreferencesFile) {
+    return 'shared_preferences réservé à lib/$_sharedPreferencesFile '
+        '(règle 9) : $uri';
   }
   return null;
 }

@@ -17,3 +17,10 @@ extension type const AssessmentId(String value);
 extension type const AcquisitionId(String value);
 
 extension type const AcknowledgementId(String value);
+
+/// Identifiant d'un compte (l'`uid` du fournisseur d'authentification).
+extension type const UserId(String value);
+
+/// Identifiant d'un club (ADR 0024 : `clubId` se lit dans le chemin des
+/// données).
+extension type const ClubId(String value);

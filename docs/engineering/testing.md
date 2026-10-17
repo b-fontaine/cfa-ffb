@@ -219,6 +219,70 @@ d'architecture qui réserve `pdf` à `export_sheet/data`.
 - Les `.feature` sont la spécification vivante : tout nouveau comportement visible
   par l'utilisateur y apparaît, y compris pour les deux langues quand c'est pertinent.
 
+## Règles Firestore et environnement Firebase (FB1)
+
+- **Règles** : `scripts/rules_test/*.test.mjs` (`node:test` + `@firebase/rules-unit-testing`),
+  lancés par `scripts/rules_test.sh` contre l'émulateur (`firebase emulators:exec`). Lot FB1 :
+  refus par défaut, lecture **et** écriture, anonyme comme authentifié, toute collection ; chaque
+  refus porte sur un document qui existe (le refus vient des règles, pas d'une absence) et un test
+  de sensibilité prouve qu'une règle ouverte ferait échouer la suite. Les cas de la matrice rôle x
+  action s'ajouteront dans ce dossier avec les règles (FB3). Non exécuté par `flutter test`.
+- **Environnement** : `FirebaseEnvironment` (`app/lib/app/firebase_environment.dart`) décide de la
+  cible Firebase. Sans `--dart-define=FIREBASE_EMULATOR=true` : jamais d'émulateur ; avec : debug et
+  profile parlent aux émulateurs (`10.0.2.2` sur l'émulateur Android, `127.0.0.1` ailleurs,
+  `FIREBASE_EMULATOR_HOST` pour un appareil physique) ; **release refuse** le drapeau
+  (`FirebaseEnvironmentError`, au câblage, avant le premier écran). Tests : `firebase_environment_test`,
+  ports comparés à `firebase.json`.
+- **Initialisation** : `FirebaseStartup` (`firebase_startup_test`) reçoit une `FirebaseGateway` ; les tests
+  utilisent `test/support/fake_firebase_gateway.dart`, **jamais le SDK ni le réseau**. L'implémentation
+  réelle (`platform/firebase_sdk_gateway.dart`) n'est couverte que pour son aiguillage (les trois
+  appels directs au SDK sont des tear-offs non exécutés en test). Pas de scénario BDD en FB1 : aucun
+  comportement visible n'a changé (le premier, la connexion, arrive en FB2).
+- **Application sous émulateurs** : `task emulators` puis `flutter run -d chrome --dart-define=FIREBASE_EMULATOR=true`.
+
+## Authentification (lot FB2)
+
+- **BDD** : `authentication.feature`. Les BDD existants s'exécutent **connectés** : `UiWorld.prepare` crée le compte de
+  l'animateur (`animateur@example.org`, adresse vérifiée, session persistée, un seul club « Test club », rôle `director`) dans
+  l'`InMemoryAuthRepository` ; un `Given` peut déconnecter (`nobody is signed in on the device`), créer un compte
+  (`the account … exists with the password …`, `… but is not verified`), ajouter des clubs (`… is a {'teacher'} of the club …`),
+  retenir un club (`the club … is remembered for … on the device`), couper les clubs (`the clubs of the account cannot be read`)
+  ou le service (`the account service is unavailable`). `I relaunch the app` / `I reload the page` / `the app restarts`
+  réinitialisent l'`AuthCubit` : un lancement relit la session persistée (l'annulation d'un abonnement n'est pas attendue,
+  elle ne se termine pas dans la zone simulée).
+- **Unitaires** : `test/support/auth_rig.dart` assemble un `AuthCubit` avec ses doubles en mémoire (`AuthRig`). Le dépôt
+  Firebase se teste sur un `AuthSdk` scripté (tous les codes d'erreur) ; `FirebaseAuthSdk` sur un `FirebaseAuth` mocktail ;
+  `SharedPreferencesKeyValueStore` sur `InMemorySharedPreferencesAsync` (`shared_preferences_platform_interface`, dépendance de test).
+- **Ce que prouvent les BDD d'échec de connexion** : le message affiché pour `invalidCredentials`. Ils tournent sur
+  `InMemoryAuthRepository`, qui lève déjà `invalidCredentials` pour un mauvais mot de passe comme pour une adresse inconnue :
+  ils ne prouveraient rien si l'anti-énumération de `FirebaseAuthRepository` était cassée. Cette garde est la **suite de
+  contrat** `test/unit/entities/account/auth_repository_contract_test.dart` (mêmes assertions sur les deux implémentations,
+  plusieurs variantes de codes du service) et le test unitaire du dépôt Firebase. Le `detail` d'un `AuthFailure`
+  (`wrong-password`, `user-not-found`) diffère et n'est jamais affiché ; le `code`, qui pilote le message, est identique.
+- **Bornes** : la longueur minimale du mot de passe est fixée par des littéraux (9 refusé, 10 et 11 acceptés) dans
+  `use_cases_test.dart` et par un scénario BDD à 10 caractères, pas seulement par la constante.
+- **Changement de club** : `ClubScoped` (reconstruction de toute l'interface) est testé à part (`club_scoped_test.dart`) :
+  l'état local d'un écran est remis à zéro quand le club change, conservé quand il reste le même.
+- **Fumée du build web compilé** : `scripts/web_smoke.sh` (dans `check.sh --full` et la CI ; prérequis Node, Java, `npm ci`
+  et Google Chrome, échec explicite sinon). Il charge `app/build/web` (build **release** de `scripts/build_web.sh`) dans Chrome
+  piloté par `playwright-core`, renvoie les appels du SDK vers l'émulateur Auth et **refuse tout autre hôte** que localhost et
+  `gstatic.com` : démarrage jusqu'à l'écran de connexion, mauvais mot de passe et adresse inconnue (même message), connexion
+  d'un compte vérifié (écran « Aucun club »), session conservée au rechargement, déconnexion. Il a été écrit après un blocage
+  sur l'écran de démarrage qu'aucun autre test ne pouvait voir.
+- **Piège : ne pas tester ni livrer un build `--profile` avec Firebase Auth sur le web.** `firebase_core_web` décide du mode
+  debug par `!bool.fromEnvironment('dart.vm.product')` (vrai en profile) alors que `firebase_auth_web` utilise `kDebugMode`
+  (faux en profile) : en profile, les trois écouteurs d'état partagent la clé `'no-op'`, le suivant désabonne le précédent et
+  le flux des comptes n'émet jamais. L'application reste alors sur l'écran de démarrage (constaté 2026-10-17, `flutter build
+  web --profile`). En debug (`flutter run`, DDC) et en release (`scripts/build_web.sh`) le flux émet. Le build de production
+  est un release : il atteint `#/sign-in`. L'`AuthCubit` borne en plus l'attente (`startupTimeout`, 20 s) : sans réponse, l'écran
+  « Service indisponible » et « Réessayer » remplacent un écran de démarrage éternel.
+- **Contre l'émulateur Auth** : `scripts/rules_test/auth_emulator.test.mjs` (lancé avec les tests de règles, `scripts/rules_test.sh`).
+  Il prouve les codes d'erreur et les courriels que le code Dart suppose (adresse non vérifiée à la création, mauvais mot de passe
+  et adresse inconnue regroupés par l'application, 6 caractères seulement côté serveur, courriels de vérification et de
+  réinitialisation émis par le service, adresse inconnue sans courriel). **Justification de l'absence de test du code Dart
+  contre l'émulateur** : `firebase_auth` est un plugin natif, absent sous `flutter test` ; un test d'intégration sur appareil ou
+  navigateur seul entre dans un garde-fou déterministe : c'est la fumée ci-dessus.
+
 ## Couverture
 
 - Seuil de couverture de lignes : **≥ 90 %** sur `lib/` hors code généré, `main.dart`

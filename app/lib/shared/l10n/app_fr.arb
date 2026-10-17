@@ -3722,5 +3722,110 @@
   "sessionTagTooHard": "Trop difficile",
   "sessionTagTooEasy": "Trop facile",
   "sessionTagToRedo": "À refaire",
-  "sessionTagEquipmentLacking": "Matériel insuffisant"
+  "sessionTagEquipmentLacking": "Matériel insuffisant",
+  "splashLoading": "Ouverture de l’application…",
+  "signInTitle": "Connexion à l’application",
+  "signInIntro": "Connectez-vous avec l’adresse e-mail et le mot de passe de votre compte.",
+  "authEmailLabel": "Adresse e-mail",
+  "authPasswordLabel": "Mot de passe",
+  "signInSubmit": "Se connecter",
+  "authSubmitting": "Envoi en cours…",
+  "signInForgot": "Mot de passe oublié ?",
+  "signInRegister": "J’ai un code d’invitation",
+  "signInResend": "Renvoyer l’e-mail de vérification",
+  "signInVerificationSent": "Un e-mail de vérification vient d’être envoyé. Ouvrez le lien qu’il contient, puis connectez-vous.",
+  "authErrorInvalidCredentials": "Adresse e-mail ou mot de passe incorrect.",
+  "authErrorEmailNotVerified": "Votre adresse e-mail n’est pas encore vérifiée. Ouvrez le lien reçu par e-mail, puis connectez-vous.",
+  "authErrorInvalidEmail": "Saisissez une adresse e-mail valide.",
+  "authErrorWeakPassword": "Le mot de passe doit comporter au moins {count} caractères.",
+  "@authErrorWeakPassword": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "authErrorInvalidCode": "Le code d’invitation n’a pas la forme attendue : au moins {count} caractères, lettres A à Z et chiffres 2 à 7.",
+  "@authErrorInvalidCode": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "authErrorRegistrationFailed": "Impossible de créer un compte avec ces informations.",
+  "authErrorTooManyRequests": "Trop de tentatives. Patientez quelques minutes avant de réessayer.",
+  "authErrorNetwork": "Pas de connexion à Internet. Vérifiez votre réseau puis réessayez.",
+  "authErrorUnavailable": "Le service de connexion est momentanément indisponible. Réessayez plus tard.",
+  "forgotPasswordTitle": "Mot de passe oublié",
+  "forgotPasswordIntro": "Saisissez l’adresse e-mail de votre compte. Si elle correspond à un compte, un e-mail de réinitialisation vous est envoyé.",
+  "forgotPasswordSubmit": "Envoyer le lien",
+  "forgotPasswordSent": "Si un compte existe pour cette adresse, un e-mail de réinitialisation vient d’être envoyé.",
+  "authBackToSignIn": "Retour à la connexion",
+  "registerTitle": "Inscription sur invitation",
+  "registerIntro": "L’inscription est réservée aux personnes invitées par leur club. Saisissez le code reçu, votre adresse e-mail et un mot de passe d’au moins {count} caractères.",
+  "@registerIntro": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "registerCodeLabel": "Code d’invitation",
+  "registerPasswordHint": "Au moins {count} caractères",
+  "@registerPasswordHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "registerSubmit": "Créer mon compte",
+  "registerDone": "Compte créé. Ouvrez le lien de l’e-mail de vérification, puis connectez-vous.",
+  "registerDoneNoMail": "Compte créé, mais l’e-mail de vérification n’a pas pu partir. Depuis l’écran de connexion, choisissez « Renvoyer l’e-mail de vérification ».",
+  "roleStudent": "Élève",
+  "roleGuardian": "Parent",
+  "roleTeacher": "Enseignant",
+  "roleDirector": "Directeur",
+  "roleAdmin": "Administrateur",
+  "selectClubTitle": "Choisir un club",
+  "selectClubIntro": "Votre compte appartient à plusieurs clubs. Choisissez celui dans lequel vous travaillez.",
+  "selectClubBlocked": "Terminez ou quittez la séance en cours avant de changer de club.",
+  "selectClubRoleCurrent": "{role} · Club actif",
+  "@selectClubRoleCurrent": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "noClubTitle": "Aucun club",
+  "noClubBody": "Votre compte n’est rattaché à aucun club. Demandez une invitation à votre club, puis actualisez cet écran.",
+  "noClubRefresh": "Actualiser",
+  "accountSectionTitle": "Compte",
+  "accountSignedInAs": "Connecté : {email}",
+  "@accountSignedInAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "accountClub": "Club actif : {club} ({role})",
+  "@accountClub": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "accountSignOut": "Se déconnecter",
+  "moreSwitchClub": "Changer de club",
+  "moreSwitchClubHint": "Ce compte appartient à plusieurs clubs",
+  "switchClubBackToMore": "Retour à Plus",
+  "unavailableTitle": "Service indisponible",
+  "unavailableBody": "Le service de comptes ne répond pas. Vérifiez votre connexion puis réessayez. Hors ligne, l’application ne s’ouvre que sur un appareil déjà connecté."
 }

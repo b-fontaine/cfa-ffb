@@ -16,6 +16,10 @@ permissions:
 env:
   # Version épinglée : alignée sur le Flutter utilisé en local (voir docs/engineering).
   FLUTTER_VERSION: "3.47.7"
+  # Outillage Firebase (émulateurs, tests des règles) : package.json exige Node >= 24.12 ;
+  # les émulateurs de firebase-tools 15 exigent Java >= 21 (voir docs/engineering/quality-gates.md).
+  NODE_VERSION: "24"
+  JAVA_VERSION: "21"
 
 jobs:
   quality:
@@ -47,7 +51,21 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
-      - name: Garde-fous complets
+      # Prérequis des règles Firestore (check.sh --full lance les émulateurs) ; leur
+      # absence fait ÉCHOUER le garde-fou, jamais sauter (scripts/rules_test.sh).
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - name: Dépendances Node (versions épinglées)
+        run: npm ci
+      # Google Chrome est installé d'office sur ubuntu-latest et macos-latest : la fumée du
+      # build web compilé (scripts/web_smoke.sh) pilote ce Chrome, sans téléchargement.
+      - name: Garde-fous complets (dont règles Firestore et fumée du build web compilé, contre les émulateurs)
         run: scripts/check.sh --full
       - name: Rapport de couverture
         if: always() && matrix.os == 'ubuntu-latest'
@@ -74,6 +92,30 @@ jobs:
       # vérifié) : scripts/build_web.sh.
       - name: Build web
         run: scripts/build_web.sh
+
+  build-android:
+    name: Build Android (debug)
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      # Gradle (AGP 9) exige Java 17 ou plus.
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - name: Génération du code
+        run: scripts/generate.sh
+      # Détecte tôt les incompatibilités natives des plugins FlutterFire ;
+      # pas de signature (plateforme Android signée : lot 21).
+      - name: Build APK debug
+        working-directory: app
+        run: flutter build apk --debug --no-pub
 
   widgetbook:
     name: Widgetbook (génération, analyse, build web)

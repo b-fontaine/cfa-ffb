@@ -14,7 +14,8 @@ class DatabaseSettings {
   final DriftNativeOptions? native;
 }
 
-/// Ouvre la base : fichier SQLite natif (Android, iOS, macOS, Windows, Linux)
+/// Ouvre la base : fichier SQLite natif (Android et iOS ; macOS et Windows
+/// hors production, Linux abandonné : ADR 0024)
 /// ou WebAssembly sur le web (`sqlite3.wasm` et `drift_worker.js` servis depuis
 /// `web/`, à la version de drift ; voir `scripts/sync_web_assets.sh`).
 ///

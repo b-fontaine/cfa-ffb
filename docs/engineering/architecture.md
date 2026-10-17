@@ -46,6 +46,15 @@ Les règles ci-dessous sont vérifiées par `app/tool/check_architecture.dart`
    chargé depuis un CDN, incompatible avec le hors ligne) sont interdits partout
    dans `lib/` (les tests peuvent lire `pdf/src` : table des glyphes).
 
+9. **SDK de plateforme** : `firebase_auth`, `firebase_core` et `cloud_firestore`
+   ne sont importés que sous `lib/app/platform/` (aujourd'hui
+   `firebase_auth_sdk.dart` et `firebase_sdk_gateway.dart` ; `firebase_core`
+   aussi par `lib/app/firebase_options.dart`, fichier généré qui n'en prend que
+   `FirebaseOptions`) ; `shared_preferences` seulement par
+   `lib/app/platform/shared_preferences_key_value_store.dart`. Le reste du code
+   passe par des ports (`AuthSdk`, `FirebaseGateway`, `KeyValueStore`).
+   Vérifié par `check_architecture.dart` (test : `architecture_rules_test.dart`).
+
 Dépendances : `domain` ← `data`, `domain` ← `presentation`. Le domaine ne dépend de rien.
 
 ## Arbre de dossiers
@@ -61,7 +70,14 @@ app/
 │   │   ├── record_screens.dart        # buildRecordSetup / buildRecordSession : câblage unique (route et feuille)
 │   │   ├── sheet_export.dart          # RunPlanExportSource : déroulé (run_sheet) -> entrées de l'export PDF (lot 14)
 │   │   ├── platform/                  # plein écran, mise à jour, sortie PDF (web / natif par import conditionnel)
-│   │   ├── firebase_options.dart      # généré par `flutterfire configure` (chemin fixé dans app/firebase.json)
+│   │   ├── firebase_options.dart      # généré par `flutterfire configure` (Android, iOS et web) (chemin fixé dans app/firebase.json)
+│   │   ├── firebase_environment.dart  # FirebaseEnvironment : production / émulateur (--dart-define=FIREBASE_EMULATOR), release refuse l'émulateur
+│   │   ├── firebase_gateway.dart      # port du SDK (initialize, useEmulators) ; firebase_startup.dart : FirebaseStartup (start / ready)
+│   │   ├── di/firebase_module.dart    # câblage prod de Firebase ; platform/firebase_sdk_gateway.dart : SDK réel
+│   │   ├── auth/                      # lot FB2 : AuthCubit (unknown / signedOut / noClub / ready / indisponible), AuthState, authRedirect (pure), AuthRefresh, RunningSessionsClubSwitchGuard
+│   │   ├── session_startup.dart       # SessionStartup : ce que l'AuthCubit attend (FirebaseStartup en production, double en mémoire en test)
+│   │   ├── di/auth_module.dart        # SessionScope exposé par CurrentUser et ActiveClubScope ; KeyValueStore de production
+│   │   ├── platform/firebase_auth_sdk.dart  # AuthSdk ; avec platform/firebase_sdk_gateway.dart, les deux seuls importeurs de firebase_auth (règle 9) ; platform/shared_preferences_key_value_store.dart : seul importeur de shared_preferences
 │   │   └── di/injection.dart          # @InjectableInit → injection.config.dart (généré)
 │   ├── pages/                         # une page par parcours, Bloc fourni par le routeur
 │   │   ├── home/  session_planner/
@@ -108,6 +124,10 @@ app/
 │   ├── entities/group/  entities/session_record/   # group : chooseGroup, normalizedGroupName, Group.rename
 │   ├── entities/maturity_assessment/  # chacun : domain/ (+ port) et data/ (en mémoire + drift)
 │   ├── entities/settings/             # ClubSettings, SettingsRepository (drift + en mémoire)
+│   ├── entities/account/              # lot FB2 : Account, AuthRepository, AuthFailure(Code), SessionScope ; data = AuthSdk (frontière du SDK), FirebaseAuthRepository, InMemoryAuthRepository
+│   ├── entities/membership/           # lot FB2 : ClubMembership, MembershipsSource (FB3 l'implémente), ActiveClubMemory (club actif par compte) ; data = en mémoire, NoMembershipsSource
+│   ├── features/sign_in/              # lot FB2 : SignIn, ResendVerification, RequestPasswordReset, RegisterWithInvitation, PendingInvitations ; SignInCubit, RegisterCubit, ForgotPasswordCubit, formulaires, AccountSection
+│   ├── features/select_club/          # lot FB2 : resolveActiveClub, ChooseClub ; ClubChoiceList
 │   ├── entities/run_progress/         # RunProgress, RunProgressKey, RunProgressRepository (drift + en mémoire) :
 │   │                                  # séances guidées en cours, lot 10b (ADR 0020)
 │   ├── features/export_sheet/         # lot 14 (ADR 0021) : domaine = scène d'impression, mise en page des deux
@@ -122,7 +142,8 @@ app/
 │       ├── lib/                       # noyau Dart pur : Audience, identifiants typés,
 │       │                              # ExerciseRef, SuccessRate, RulesConfig,
 │       │                              # Failure/Result, IdGenerator, Clock,
-│       │                              # UnitOfWork, StorageStatus, PdfFiles (sortie PDF)
+│       │                              # UnitOfWork, StorageStatus, PdfFiles (sortie PDF),
+│       │                              # CurrentUser, ActiveClubScope (ClubId, Role), ClubSwitchGuard, KeyValueStore (FB2)
 │       ├── persistence/               # base drift (SQLite) : tables, AppDatabase,
 │       │                              # ouverture natif/web, unité de travail
 │       ├── ui/                        # design system (voir design-system.md)
@@ -140,7 +161,7 @@ app/
 ├── assets/fiches/                     # copie des séances du catalogue (scripts/sync_fiches.sh)
 ├── tool/                              # check_architecture.dart (+ architecture/)
 ├── l10n.yaml  build.yaml  analysis_options.yaml
-└── android/ ios/ web/ linux/ macos/ windows/
+└── android/ ios/ web/ macos/ windows/  # macOS et Windows hors production (Linux supprimé, ADR 0024)
 widgetbook/                            # projet séparé : catalogue du design system
 ├── lib/main.dart                      # @App + addons
 ├── lib/use_cases/                     # @UseCase par composant et par page
@@ -728,6 +749,27 @@ v3) et [ADR 0014](adr/0014-fiche-en-parcours-vue-eleve-et-vue-de-groupe.md)
 - **Règles de calcul** : toute la dérivation (`derive`, cases, technique, alerte
   de groupe) reste en Dart pur avec l'horloge en paramètre (`asOf`) ; les
   cubits lisent `Clock.today()`.
+
+## Authentification et session (lot FB2, ADR 0024)
+
+Détail : [auth-plan.md](auth-plan.md). L'essentiel de l'architecture :
+
+- **Aucune route sans compte.** `AuthCubit` (couche `app`, un seul exemplaire `@lazySingleton`) pilote `authRedirect`
+  (fonction pure) par `GoRouter.refreshListenable`. Il vit dans `app/` parce qu'il compose des slices qui ne peuvent
+  pas s'importer : `entities/account` (comptes), `entities/membership` (clubs) et `features/select_club` (club actif).
+- **Ports minuscules** dans `shared/lib`, sans dépendance au SDK : `CurrentUser` et `ActiveClubScope` (`ClubId`, `Role`)
+  sont lus **à chaque appel** par les dépôts (jamais figés dans un singleton), comme `RulesStore` (ADR 0012). Un seul
+  porteur, `SessionScope` (`entities/account/domain`), écrit uniquement par `AuthCubit` et exposé sous les deux ports
+  par `di/auth_module.dart`. Le club actif reconstruit l'interface (`KeyedSubtree(clubId)` autour du routeur) ;
+  `ClubSwitchGuard` (port) interdit la bascule pendant une séance guidée, `RunningSessionsClubSwitchGuard` l'implémente.
+- **Le SDK reste à la frontière.** `firebase_auth` n'est importé que sous `app/platform/` (`firebase_auth_sdk.dart` et `firebase_sdk_gateway.dart`, règle 9)
+  (`AuthSdk`, port de `entities/account/data`) ; `FirebaseAuthRepository` traduit les codes du SDK en `AuthFailureCode`
+  génériques. `SessionStartup` (`FirebaseStartup` en production) est ce que l'`AuthCubit` attend avant de lire la session.
+- **Stockage local** : `KeyValueStore` (port) ; `shared_preferences` n'est importé que par
+  `app/platform/shared_preferences_key_value_store.dart`. Clés par compte (`active_club.<uid>`, `pending_invitation.<uid>`).
+- **Environnement `test`** : dépôt d'authentification, appartenances, stockage et démarrage **en mémoire**
+  (`InMemoryAuthRepository`, `InMemoryMembershipsSource`, `InMemoryKeyValueStore`, `InMemorySessionStartup`) ;
+  `FirebaseStartup` n'y est toujours pas câblé. Production : `FirebaseAuthRepository`, `NoMembershipsSource` (avant FB3).
 
 ## États et modèles
 

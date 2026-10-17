@@ -6,7 +6,8 @@ import 'package:injectable/injectable.dart';
 /// base retombe alors en mémoire et les données sont perdues à la fermeture ;
 /// l'interface doit l'indiquer et proposer l'export JSON.
 enum StorageImplementation {
-  /// Fichier SQLite natif (Android, iOS, macOS, Windows, Linux).
+  /// Fichier SQLite natif (Android et iOS ; macOS et Windows hors
+  /// production, Linux abandonné : ADR 0024).
   nativeFile(persistent: true),
 
   /// Web : origin private file system (le plus fiable).

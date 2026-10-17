@@ -13,7 +13,7 @@ Instructions pour tout agent de code (Claude Code, Codex, Cursor, Gemini CLI, Co
 - **Suivi des élèves** sur la saison (mêmes élèves) pour adapter les cours : résultats d'exercices, courbes, recommandations déterministes.
 - Passage enfants → cours adultes dès 16–17 ans selon maturité (décision manuelle) : `docs/knowledge/05-seances/passage-enfants-adultes.md`.
 - Validation d'un exercice : plusieurs passages réussis (5 le plus souvent, réglable). Ordre : rebond sur bande avant rejet naturel.
-- Persistance : local d'abord ; Firebase possible ultérieurement derrière une interface de repository.
+- Persistance : **Firestore est la source de vérité** (comptes, clubs, rôles, synchronisation ; plan Spark, base en `europe-west9`), derrière les interfaces de repository ; drift est retiré une fois la migration (FB7) livrée ; reste local à l'appareil : séance en cours, club actif, préférences (port clé/valeur local `KeyValueStore`, `shared_preferences`, lot FB2). Décision : [ADR 0024](docs/engineering/adr/0024-firebase-source-de-verite-comptes-clubs-roles.md), qui amende l'ADR 0001 ; **aucune base de production avec de vrais élèves avant AIPD et textes juridiques validés** (« à valider » par la fédération ou un DPO).
 - Design system : Widgetbook, thème évoquant la FFB et le Blackball.
 
 ## Cartographie
@@ -68,9 +68,9 @@ Interdits : inventer un exercice « officiel », présenter une adaptation non s
 
 1. **BDD puis TDD, toujours** : écrire d'abord un scénario `.feature` (bdd_widget_test), le voir échouer, puis cycles TDD unitaires rouge → vert → refactor. Aucun code de production sans test qui l'a exigé.
 2. **Architecture FSD + Clean** : couches `app > pages > widgets > features > entities > shared`, imports uniquement vers le bas ; jamais entre slices d'une même couche ; `domain` en Dart pur. Détails : `docs/engineering/architecture.md`.
-3. **Pile imposée** : flutter_bloc, get_it + injectable, freezed, go_router, bdd_widget_test, gen-l10n (fr + en). Ne pas introduire d'alternative sans décision écrite.
+3. **Pile imposée** : flutter_bloc, get_it + injectable, freezed, go_router, bdd_widget_test, gen-l10n (fr + en), firebase_core, firebase_auth, cloud_firestore (ADR 0024) ; `shared_preferences` (état local d'appareil, ADR 0024 décision 23 ; introduite au lot FB2 derrière le port `KeyValueStore`) ; outillage des émulateurs : Node LTS, Java 21, `firebase-tools` épinglé (`package.json` + verrou). Ne pas introduire d'alternative sans décision écrite.
 4. **i18n** : aucune chaîne utilisateur en dur ; clés identiques en `fr` et `en` (fr par défaut).
-5. **Garde-fous** : ne jamais contourner (`--no-verify`, `// ignore`, abaisser un seuil, supprimer un test). Un garde-fou qui échoue se corrige à la racine.
+5. **Garde-fous** : ne jamais contourner (`--no-verify`, `// ignore`, abaisser un seuil, supprimer un test). Un garde-fou qui échoue se corrige à la racine. Les tests des règles Firestore contre l'émulateur en font partie : un prérequis manquant (Node, Java) est un échec explicite, jamais un skip ; `firestore.rules` reste en refus par défaut tant que les règles par rôle (FB3) n'ont pas leurs tests.
 6. **Fichiers générés** (`*.g.dart`, `*.freezed.dart`, `*.config.dart`) : ne jamais éditer à la main ; régénérer avec build_runner.
 
 ### Commandes (depuis la racine du dépôt)
@@ -80,6 +80,7 @@ Interdits : inventer un exercice « officiel », présenter une adaptation non s
 | Installer les hooks git | `scripts/setup.sh` |
 | Vérification rapide (format, analyse, architecture) | `scripts/check.sh --fast` |
 | Vérification complète (tests, couverture, l10n, Widgetbook) | `scripts/check.sh --full` |
+| Règles Firestore contre l'émulateur (Node >= 24.12, Java >= 21, `npm ci` ; échec explicite sinon) | `scripts/rules_test.sh` (aussi dans `scripts/check.sh --full`) |
 | Build web de production (CanvasKit local, service worker hors ligne, contrôle du résultat) | `scripts/build_web.sh` |
 | Valider les séances | `dart run scripts/validate_seances.dart` |
 | Copier / vérifier le catalogue (asset = `docs/knowledge`) | `scripts/sync_catalogue.sh [--check]` |

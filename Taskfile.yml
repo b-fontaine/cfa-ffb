@@ -4,15 +4,16 @@
 # appelée par les hooks git et la CI) : ce fichier ne fait que les nommer.
 #
 #   task            liste des tâches
-#   task run        lance l'application (DEVICE=linux par défaut)
+#   task run        lance l'application (DEVICE=chrome par défaut ; Android, iOS et web seulement)
 #   task run DEVICE=chrome
 #   task check      vérification rapide ; task check:full pour tout
+#   task emulators  émulateurs Firebase (Auth + Firestore) ; task rules:test pour les règles
 #   task diagrammes:sync | diagrammes:check | diagrammes:validate
 #   task fiches:sync | fiches:check | fiches:validate
 version: '3'
 
 vars:
-  DEVICE: linux
+  DEVICE: chrome
   COVERAGE_MIN: '{{.COVERAGE_MIN | default "90"}}'
   PORT: 8080
 
@@ -28,6 +29,11 @@ tasks:
     desc: Installe les hooks git, les dépendances et génère le code
     cmds:
       - scripts/setup.sh
+
+  node:install:
+    desc: "Installe l'outillage Node épinglé (firebase-tools, tests de règles), via npm ci"
+    cmds:
+      - npm ci
 
   generate:
     desc: Génère le code de l'app (freezed, injectable, bdd, l10n)
@@ -104,7 +110,7 @@ tasks:
 
   # ── Exécution ───────────────────────────────────────────────────────────
   run:
-    desc: Lance l'application (DEVICE=linux|chrome|<id>)
+    desc: Lance l'application (DEVICE=chrome|<id> d'un appareil Android ou iOS)
     dir: app
     deps: [generate]
     cmds:
@@ -120,27 +126,13 @@ tasks:
     desc: Lance Widgetbook (DEVICE=chrome par défaut)
     dir: widgetbook
     deps: [generate:widgetbook]
-    vars:
-      WB_DEVICE: '{{if eq .DEVICE "linux"}}chrome{{else}}{{.DEVICE}}{{end}}'
     cmds:
-      - flutter run -d {{.WB_DEVICE}} {{.CLI_ARGS}}
+      - flutter run -d {{.DEVICE}} {{.CLI_ARGS}}
 
   devices:
     desc: Liste les appareils Flutter disponibles
     cmds:
       - flutter devices
-
-  # ── Données locales ─────────────────────────────────────────────────────
-  data:reset:
-    desc: Supprime la base SQLite locale (Linux natif) — irréversible
-    prompt: Supprimer billard_cfa.sqlite (élèves, résultats, réglages) ?
-    cmds:
-      - |
-        docs="$(xdg-user-dir DOCUMENTS 2>/dev/null || echo "$HOME/Documents")"
-        for f in "$docs"/billard_cfa.sqlite "$docs"/billard_cfa.sqlite-wal "$docs"/billard_cfa.sqlite-shm; do
-          [ -e "$f" ] && rm -v -- "$f"
-        done
-        echo "Base native réinitialisée (web : vider les données du site dans le navigateur)."
 
   # ── Qualité ─────────────────────────────────────────────────────────────
   check:
@@ -258,6 +250,16 @@ tasks:
     desc: Valide les séances (front matter, durées, déroulé, sources)
     cmds:
       - dart run scripts/validate_seances.dart seances
+
+  rules:test:
+    desc: Tests des règles Firestore contre l'émulateur (Node, Java, npm ci requis)
+    cmds:
+      - scripts/rules_test.sh
+
+  emulators:
+    desc: "Émulateurs Firebase locaux (Auth 9099, Firestore 8080) ; app avec --dart-define=FIREBASE_EMULATOR=true"
+    cmds:
+      - npx --no-install firebase emulators:start --only auth,firestore --project demo-cfa-ffb
 
   # ── Build ───────────────────────────────────────────────────────────────
   build:web:

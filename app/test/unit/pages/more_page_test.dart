@@ -94,4 +94,38 @@ void main() {
 
     expect(opened, 1);
   });
+
+  testWidgets('shows the account section when there is one', (tester) async {
+    await pumpUi(
+      tester,
+      MorePage(
+        onOpenBackup: () {},
+        onOpenSettings: () {},
+        onOpenSeasons: () {},
+        account: const Text('account section'),
+      ),
+    );
+
+    expect(find.text('account section'), findsOneWidget);
+    expect(find.text('Switch club'), findsNothing);
+  });
+
+  testWidgets('offers to switch club only when a callback is given', (
+    tester,
+  ) async {
+    var switched = 0;
+    await pumpUi(
+      tester,
+      MorePage(
+        onOpenBackup: () {},
+        onOpenSettings: () {},
+        onOpenSeasons: () {},
+        onSwitchClub: () => switched++,
+      ),
+    );
+
+    await tester.tap(find.text('Switch club'));
+
+    expect(switched, 1);
+  });
 }

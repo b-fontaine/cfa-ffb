@@ -10,6 +10,8 @@ class MorePage extends StatelessWidget {
     required this.onOpenBackup,
     required this.onOpenSettings,
     required this.onOpenSeasons,
+    this.account,
+    this.onSwitchClub,
     super.key,
   });
 
@@ -17,12 +19,30 @@ class MorePage extends StatelessWidget {
   final VoidCallback onOpenSettings;
   final VoidCallback onOpenSeasons;
 
+  /// Le compte connecté et la déconnexion (`AccountSection`), fournis par le
+  /// routeur ; absent hors d'une session ouverte.
+  final Widget? account;
+
+  /// Ouvre « Changer de club » ; absent quand le compte n'a qu'un club.
+  final VoidCallback? onSwitchClub;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return ScrollPage(
       title: l10n.moreTitle,
       children: [
+        ?account,
+        if (onSwitchClub != null)
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.swap_horiz),
+              title: Text(l10n.moreSwitchClub),
+              subtitle: Text(l10n.moreSwitchClubHint),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: onSwitchClub,
+            ),
+          ),
         Card(
           child: ListTile(
             leading: const Icon(Icons.save_alt_outlined),

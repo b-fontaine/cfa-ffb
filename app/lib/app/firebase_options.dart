@@ -25,9 +25,15 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -65,24 +71,5 @@ class DefaultFirebaseOptions {
     projectId: 'animation-billard',
     storageBucket: 'animation-billard.firebasestorage.app',
     iosBundleId: 'fr.cfaffb.billardCfa',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDH9XuyoufRq-TWHSN5aN-DiarxYKhzjMQ',
-    appId: '1:173719719523:ios:e6a0292df26c332e28f256',
-    messagingSenderId: '173719719523',
-    projectId: 'animation-billard',
-    storageBucket: 'animation-billard.firebasestorage.app',
-    iosBundleId: 'fr.cfaffb.billardCfa',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyALkuJ7eKlN8n5LydsZVf8s1-X5iEbuUW4',
-    appId: '1:173719719523:web:c2060492b5b28bcd28f256',
-    messagingSenderId: '173719719523',
-    projectId: 'animation-billard',
-    authDomain: 'animation-billard.firebaseapp.com',
-    storageBucket: 'animation-billard.firebasestorage.app',
-    measurementId: 'G-18HKG7B5FM',
   );
 }
