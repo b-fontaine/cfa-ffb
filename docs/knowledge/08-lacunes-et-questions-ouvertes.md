@@ -32,6 +32,7 @@
 ## Décision de l'utilisateur (2026-10-16) `[U]`
 
 10. **Firebase** : authentification ; plusieurs écoles (une école = un club, groupes illimités) ; profils élève, enseignant, directeur de club et administrateur (tous les droits) ; données dans Firestore avec accès sécurisés ; synchronisation multi-appareils (une modification de l'enseignant se répercute chez ses élèves). Plan : horizon H5 de `docs/engineering/roadmap.md`.
+    **Décisions prises le 2026-10-17 (FB0, recommandations retenues)** : base Firestore créée en `europe-west9` (région effective à constater dans la console) ; chaque club responsable de traitement, l'éditeur sous-traitant (bascule possible vers une fédération) ; aucun vrai élève en production avant AIPD et textes validés (tous marqués « projet à valider par la fédération ou un DPO ») ; case déclarative « 15 ans » (âge de consentement numérique confirmé à la source CNIL), prénom + initiale bornés, commentaire d'évaluation (`MaturityAssessment.comment`) facultatif, borné, conservé et signalé à l'AIPD comme texte libre sur un mineur (la note de jeu reste sans texte libre) ; le parent ou l'élève ne voit que la fiche en parcours et les séances planifiées ; conservation des élèves, parents, enseignants, directeurs et invitations fixée dans l'ADR 0025 (durées hors élèves à confirmer). Détail : `docs/engineering/adr/0025-comptes-et-donnees-de-mineurs-conformite.md` et `docs/engineering/conformite/`.
 
 ## Questions encore ouvertes
 

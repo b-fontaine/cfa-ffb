@@ -2,12 +2,12 @@
 
 | N° | Décision |
 |----|----------|
-| 0001 | Persistance locale drift ; Firebase plus tard |
+| 0001 | Persistance locale drift ; Firebase plus tard (**amendé par 0024 et 0025** : Firestore devient la source de vérité ; conservation) |
 | 0002 | Design system : Widgetbook 3.x séparé, thème FFB/Blackball |
 | 0003 | Suivi des élèves : domaine pur, règles déterministes |
 | 0004 | Catalogue de séances (14 techniques, 28 séances), blocs d'entraînement `[Prop]` ajoutés, lecture seule, lancement guidé |
 | 0005 | Illustrations du joueur (personnage), de la cible sur la blanche et du dosage (plan amplitude × vitesse) |
-| 0006 | Historique des séances saisies (`/record`), formulaire en `/record/new`, correction en place et suppression renumérotée des passages, assiduité |
+| 0006 | Historique des séances saisies (`/record`), formulaire en `/record/new`, correction en place et suppression renumérotée des passages, assiduité ; **amendé par 0024** |
 | 0007 | Séance planifiée datée et par groupe, saisie qui note sa séance du catalogue, lien planifiée ↔ saisie dérivé (même groupe, même jour), schéma v4 |
 | 0008 | Positionnement initial : bloc acquis sans passage (état distinct stocké, compté dans n/72, saute la suggestion, réversible), schéma v5 (livré) |
 | 0009 | Suggestion ↔ catalogue : séance du catalogue proposée depuis la suggestion (règle déterministe, aucune migration), **accepté et livré**, arbitrages S1 à S8 intégrés |
@@ -17,14 +17,15 @@
 | 0013 | Acquittement d'une alerte (« Vu ») : entité liée au dernier passage de l'exercice, table `alert_acknowledgements` (schéma v8), sauvegarde v3 ; masque la surveillance, pas le rappel ; accepté (domaine, persistance et interface livrés) |
 | 0014 | Fiche en parcours (cases, en-tête, courbes repliées, menu de positionnement), vue « à montrer à l'élève » hors du cadre de navigation (garantie de type), vue de groupe (carte de chaleur doublée d'alternatives textuelles, assiduité, alertes de groupe) ; accepté et livré |
 | 0015 | Guide en mode « Mener » : route de premier niveau (ni rail ni barre en séance), modes Mener / Relecture (état du cubit reflété dans `?mode=`, provenance toujours accessible), origine directe `from` et origine du détail `via`, `group` conservé de bout en bout (solde de U-9) ; accepté |
-| 0016 | Identité d'une saisie par (groupe, jour, séance du catalogue) : corrige le lien dérivé planifiée ↔ saisie sans migration ; accepté |
+| 0016 | Identité d'une saisie par (groupe, jour, séance du catalogue) : corrige le lien dérivé planifiée ↔ saisie sans migration ; accepté ; **amendé par 0024** |
 | 0017 | Plein écran : port `FullscreenController` (Dart pur), API Fullscreen web par `dart:js_interop` sans nouvelle dépendance, contrôleur unique partagé entre présentation et guide, `DiagramStage` (légende réservée, schéma sur le reste) à la place de la mesure de texte ; accepté et livré |
-| 0018 | Hors ligne : service worker maison (celui de Flutter est obsolète), précache versionné de tout le build (empreinte écrite par `scripts/pwa.dart`), CanvasKit local, mise à jour jamais appliquée d'office (bannière à la demande), initialisation Firebase non bloquante, manifeste et icônes de l'application ; accepté et livré |
-| 0019 | Clôture de saison : archive agrégée non nominative (seuil de 3 élèves), effacement en lot avec confirmation, reconduction, groupes multiples et déplacement d'élève, schéma v9, sauvegarde v4 ; accepté et livré sur les défauts proposés (points `[U]` du lot 11 à confirmer par l'animateur) |
-| 0020 | Séance en cours persistée : table `run_progress_entries` (schéma v10) sans identifiant d'élève, hors sauvegarde (reste v4), effacement par groupe, séance planifiée et saisie liés, minuteur restauré en pause, péremption 7 jours ; accepté et livré sur les défauts proposés (points `[U]` du lot 10b à confirmer ; note de jeu en texte libre exclue) |
+| 0018 | Hors ligne : service worker maison (celui de Flutter est obsolète), précache versionné de tout le build (empreinte écrite par `scripts/pwa.dart`), CanvasKit local, mise à jour jamais appliquée d'office (bannière à la demande), initialisation Firebase non bloquante, manifeste et icônes de l'application ; accepté et livré ; **amendé par 0024** |
+| 0019 | Clôture de saison : archive agrégée non nominative (seuil de 3 élèves), effacement en lot avec confirmation, reconduction, groupes multiples et déplacement d'élève, schéma v9, sauvegarde v4 ; accepté et livré sur les défauts proposés (points `[U]` du lot 11 à confirmer par l'animateur) ; **amendé par 0024 et 0025** |
+| 0020 | Séance en cours persistée : table `run_progress_entries` (schéma v10) sans identifiant d'élève, hors sauvegarde (reste v4), effacement par groupe, séance planifiée et saisie liés, minuteur restauré en pause, péremption 7 jours ; accepté et livré sur les défauts proposés (points `[U]` du lot 10b à confirmer ; note de jeu en texte libre exclue) ; **amendé par 0024** |
 | 0021 | Export PDF (lot 14) : `pdf` en API bas niveau seule (+77 Ko mesurés, widgets et `printing` écartés), mise en page en domaine pur (scène d'impression, deux rendus : PDF et aperçu), schémas de table dessinés en vectoriel, Exo 2 (sans `θ`, `✓`, `→`), Enregistrer (`file_picker`) et Imprimer (web), aucune donnée nominative par défaut ; accepté et livré sur les défauts proposés (points `[U]` U14-1 à U14-12 à confirmer) |
 | 0022 | Dette d'outillage (lot 23) : `scripts/` devient un paquet analysé avec `very_good_analysis` (21 écarts corrigés, aucun `ignore`) ; build `--wasm` évalué (compile et fonctionne, mono-fil sans COOP/COEP, précache à refaire) et non adopté ; mutation testing toujours hors périmètre, avec condition de réexamen |
-
 | 0023 | Étiquettes de séance (note de jeu, lot 10b) : liste fermée de huit étiquettes `[Prop]` sans texte libre ni élève, colonnes `tags_json` (schéma v11) sur la saisie et la séance en cours, sauvegarde v5 (clé obligatoire, refusée avant), saisie à l'étape « Bilan » et corrigeable depuis le bilan ; accepté et livré |
+| 0024 | Firebase source de vérité (lot FB0, H5) : Firestore seul sous Spark en `europe-west9`, projet unique et previews sans Firestore, comptes par code d'invitation (inscription fermée), rôles `student` / `guardian` / `teacher` / `director` / admin lus par `get()` sur `members`, modèle par club (saison en champ, appartenances datées, réglages en document unique), `passIndex` dérivé et identifiant déterministe de la saisie, `WriteBatch` et lots reprenables, `shared_preferences` pour l'état d'appareil, émulateurs (Node, Java, `firebase-tools`), garde-fou de mise en production (AIPD et textes à valider) ; amende 0001, 0006, 0016, 0018, 0019, 0020 et `AGENTS.md` ; accepté |
+| 0025 | Comptes et données de mineurs (H5, FB0) : club responsable et éditeur sous-traitant, garde-fou de mise en production (aucun vrai élève avant AIPD et textes validés), case « 15 ans » et prénom + initiale (minimisation), visibilité parent, conservation, purge par lots sans Functions, App Check, cache hors ligne ; livrables dans `../conformite/` ; accepté sur les recommandations (durées hors élèves à confirmer) |
 
 Recherches sources : `../research/`.

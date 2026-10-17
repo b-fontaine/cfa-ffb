@@ -1,5 +1,7 @@
 # ADR 0019 — Clôture de saison : archive agrégée non nominative, effacement en lot, groupes multiples ; schéma v9, sauvegarde v4
 
+> **Amendé par [ADR 0024](0024-firebase-source-de-verite-comptes-clubs-roles.md) et par [ADR 0025](0025-comptes-et-donnees-de-mineurs-conformite.md) (trace transitoire)** (2026-10-17). L'atomicité « une seule unité de travail » et « aucune trace nominative » sont **amendées** : `WriteBatch` pour les petits cas, lots idempotents reprenables pour la clôture, la purge et l'import, marqueur `erasing` transitoire sur la fiche (décision 19). Le modèle d'appartenances datées est conservé (décision 14). Le texte ci-dessous est conservé tel qu'il a été décidé.
+
 - Statut : **accepté et livré le 2026-10-16 sur les défauts proposés** des points `[U]` U11-1 à U11-15 du plan
   [../saisons-groupes-plan.md](../saisons-groupes-plan.md) (lot 11) ; la **confirmation de l'animateur** reste à recueillir (écarts
   de livraison : plan § 12). Complète l'[ADR 0001](0001-persistance-locale-drift.md)

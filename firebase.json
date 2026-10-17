@@ -1,7 +1,7 @@
 {
   "firestore": {
     "database": "(default)",
-    "location": "eur3",
+    "location": "europe-west9",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
@@ -44,12 +44,21 @@
   },
   "auth": {
     "providers": {
-      "anonymous": true,
-      "emailPassword": true,
-      "googleSignIn": {
-        "oAuthBrandDisplayName": "animation-billard",
-        "supportEmail": "support@animation-billard.firebaseapp.com"
-      }
+      "emailPassword": true
     }
+  },
+  "emulators": {
+    "auth": {
+      "host": "127.0.0.1",
+      "port": 9099
+    },
+    "firestore": {
+      "host": "127.0.0.1",
+      "port": 8080
+    },
+    "ui": {
+      "enabled": false
+    },
+    "singleProjectMode": true
   }
 }

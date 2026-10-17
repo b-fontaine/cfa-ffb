@@ -1,5 +1,7 @@
 # ADR 0001 — Persistance locale avec drift, Firebase plus tard
 
+> **Amendé par [ADR 0024](0024-firebase-source-de-verite-comptes-clubs-roles.md) et par [ADR 0025](0025-comptes-et-donnees-de-mineurs-conformite.md) (conservation)** (2026-10-17). Le statut « Firebase plus tard » et les points 3 et 4 de la décision sont **amendés** : Firestore devient la source de vérité (décision 1), drift est retiré une fois FB7 livré, « un seul animateur » et « aucune donnée ne quitte l'appareil » ne sont plus vrais, la suppression logique cède la place à l'effacement physique (décision 15), la suite de contrat tourne aussi contre l'émulateur. Le texte ci-dessous est conservé tel qu'il a été décidé.
+
 - Statut : accepté (2026-10-11), **implémenté (2026-10-12)** ; décision de l'assistant sur la base de `research/persistance-locale.md` et `research/firebase.md`, validable par l'animateur.
 - Contexte : un seul animateur, mêmes élèves toute la saison, données de mineurs, 6 plateformes (dont Linux, non supporté par FlutterFire).
 - Décision :

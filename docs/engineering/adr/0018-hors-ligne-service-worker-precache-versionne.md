@@ -1,5 +1,7 @@
 # ADR 0018 — Hors ligne : service worker maison, précache versionné, mise à jour à la demande
 
+> **Amendé par [ADR 0024](0024-firebase-source-de-verite-comptes-clubs-roles.md)** (2026-10-17). La chaîne de build accueille **Node LTS, Java 21 et `firebase-tools`** (émulateurs, tests de règles ; décision 20), ce que cet ADR écartait ; le SDK web Firebase est servi localement avant FB5 (décision 30) et l'initialisation Firebase est attendue par `AuthCubit` (décision 31) au lieu d'être non bloquante. Le texte ci-dessous est conservé tel qu'il a été décidé.
+
 - Statut : **accepté et implémenté** (2026-10-16). Plan : `../hors-ligne-plan.md`.
   Lot **15** de la [roadmap](../roadmap.md). Complète l'[ADR 0001](0001-persistance-locale-drift.md)
   (drift web : `sqlite3.wasm`, `drift_worker.js`) et l'[ADR 0017](0017-plein-ecran-port-controleur-partage.md)

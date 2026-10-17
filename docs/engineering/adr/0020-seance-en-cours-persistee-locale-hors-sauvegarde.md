@@ -1,5 +1,7 @@
 # ADR 0020 — Séance en cours persistée : état local par appareil, sans identifiant d'élève, hors sauvegarde ; schéma v10, sauvegarde inchangée (v4)
 
+> **Amendé par [ADR 0024](0024-firebase-source-de-verite-comptes-clubs-roles.md)** (2026-10-17). L'hôte local de la séance en cours change : la table `run_progress_entries` disparaît avec drift ; l'état passe dans `shared_preferences`, clé par uid et club, même contenu, même péremption de 7 jours (décision 23). Le texte ci-dessous est conservé tel qu'il a été décidé.
+
 - Statut : **accepté et livré** (2026-10-17) sur les défauts proposés (points `[U]` U10b-1 à U10b-5 du plan à confirmer par l'animateur), lot 10b. Conception : [../seance-en-cours-plan.md](../seance-en-cours-plan.md). Solde la décision U-5 de
   [../aujourdhui-plan.md](../aujourdhui-plan.md). S'appuie sur l'[ADR 0001](0001-persistance-locale-drift.md) (effacement et conservation), l'[ADR
   0015](0015-guide-mener-route-modes-origine.md) (le cubit du guide vit dans `RunSheetSessions`) et l'[ADR

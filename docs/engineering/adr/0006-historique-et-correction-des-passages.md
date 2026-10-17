@@ -1,5 +1,7 @@
 # ADR 0006 — Historique des séances saisies et correction des passages
 
+> **Amendé par [ADR 0024](0024-firebase-source-de-verite-comptes-clubs-roles.md)** (2026-10-17). La décision « passages renumérotés » est **amendée** : `passIndex` est dérivé (tri par date, `createdAt` serveur, identifiant) et un passage est un document (décision 17). Les règles de correction en place restent ; la suppression ne renumérote plus. Le texte ci-dessous est conservé tel qu'il a été décidé.
+
 - Statut : **accepté** (2026-10-14), en cours d'implémentation. Plan :
   `../historique-seances-plan.md`. Lot 5 de `../roadmap.md`.
 - Contexte de livraison : application V1 non livrée, aucune compatibilité de

@@ -1,5 +1,7 @@
 # ADR 0016 — Identité d'une saisie : groupe, jour et séance du catalogue
 
+> **Amendé par [ADR 0024](0024-firebase-source-de-verite-comptes-clubs-roles.md)** (2026-10-17). L'identité de la saisie liée à une séance du catalogue devient un **identifiant déterministe** (groupe, jour, séance) et le transfert silencieux devient explicite (décision 18) ; une saisie libre garde un UUID. Le texte ci-dessous est conservé tel qu'il a été décidé.
+
 - Statut : **accepté et implémenté** (2026-10-16), points [U] au défaut proposé. Plan :
   `../lien-saisie-planifiee-plan.md`. Amende la décision 2 et la limite de
   l'[ADR 0007](0007-lien-seance-planifiee-saisie-catalogue.md).
