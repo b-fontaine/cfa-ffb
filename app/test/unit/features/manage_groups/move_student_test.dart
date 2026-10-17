@@ -265,4 +265,8 @@ class _FailingOnSave implements GroupRepository {
   @override
   Future<void> eraseStudent(StudentId studentId) =>
       _inner.eraseStudent(studentId);
+
+  @override
+  Future<Set<GroupId>> idsEverContaining(StudentId studentId) =>
+      _inner.idsEverContaining(studentId);
 }

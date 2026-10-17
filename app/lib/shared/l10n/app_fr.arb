@@ -1226,7 +1226,7 @@
       }
     }
   },
-  "eraseConfirmBody": "Tout ce qui concerne {name} est supprimé de cet appareil et ne peut pas être récupéré. Exportez d’abord une sauvegarde si vous voulez en garder une copie.",
+  "eraseConfirmBody": "Tout ce qui concerne {name} est supprimé de cet appareil et ne peut pas être récupéré. L’état d’une séance guidée en cours de son groupe est aussi effacé. Exportez d’abord une sauvegarde si vous voulez en garder une copie.",
   "@eraseConfirmBody": {
     "placeholders": {
       "name": {

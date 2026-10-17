@@ -25,6 +25,12 @@ class InMemorySessionRecordRepository implements SessionRecordRepository {
       _byDate(_sessions.values.where((s) => s.present.contains(studentId)));
 
   @override
+  Future<Set<SessionId>> idsEverPresent(StudentId studentId) async => {
+    for (final session in _sessions.values)
+      if (session.present.contains(studentId)) session.id,
+  };
+
+  @override
   Future<List<SessionRecord>> all() async => _sessions.values.toList();
 
   @override

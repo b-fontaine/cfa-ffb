@@ -16,6 +16,10 @@ abstract interface class SessionRecordRepository {
   /// Séances où l'élève était présent, de la plus ancienne à la plus récente.
   Future<List<SessionRecord>> forStudent(StudentId studentId);
 
+  /// Les identifiants des séances où l'élève était présent, supprimées
+  /// logiquement comprises (droit à l'effacement).
+  Future<Set<SessionId>> idsEverPresent(StudentId studentId);
+
   Future<List<SessionRecord>> all();
 
   /// Supprime logiquement la séance ; sans effet si elle n'existe pas.

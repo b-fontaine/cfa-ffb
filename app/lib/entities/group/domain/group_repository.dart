@@ -18,4 +18,9 @@ abstract interface class GroupRepository {
   /// Efface physiquement les appartenances de l'élève dans tous les groupes
   /// (droit à l'effacement) ; les groupes eux-mêmes restent.
   Future<void> eraseStudent(StudentId studentId);
+
+  /// Les groupes où l'élève a été membre, périodes closes et groupes
+  /// supprimés logiquement compris : de quoi retrouver tout ce qui s'y
+  /// rattache pour l'effacer (droit à l'effacement).
+  Future<Set<GroupId>> idsEverContaining(StudentId studentId);
 }

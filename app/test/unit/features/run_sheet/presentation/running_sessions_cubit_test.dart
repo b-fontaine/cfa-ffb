@@ -17,7 +17,7 @@ void main() {
 
   setUp(() async {
     final world = RunSheetWorld();
-    sessions = RunSheetSessions(world.resolve, world.ticker);
+    sessions = RunSheetSessions(world.resolve, world.ticker, world.keeper);
     final guide = sessions.of(key);
     await guide.load();
     guide.showStep(2);

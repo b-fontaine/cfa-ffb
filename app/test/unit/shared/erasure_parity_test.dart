@@ -1,7 +1,12 @@
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
+import 'package:billard_cfa/entities/run_progress/domain/run_progress.dart';
+import 'package:billard_cfa/entities/run_progress/domain/run_progress_key.dart';
+import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/features/close_season/domain/close_season.dart';
 import 'package:billard_cfa/features/manage_students/domain/erase_student.dart';
+import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_unit_of_work.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -45,6 +50,36 @@ Future<DomainWorld> _seed() async {
       ),
     );
   }
+  // Séances guidées en cours : une liée au groupe des deux élèves, une à leur
+  // séance planifiée, une à la saisie, une sans aucun lien (relecture seule).
+  await world.plannedSessions.add(
+    Session(
+      id: 'p1',
+      title: 'Cours',
+      date: day(8),
+      audience: Audience.children,
+      groupId: const GroupId('g1'),
+    ),
+  );
+  for (final (sheet, group, record, planned) in [
+    ('posture-1', 'g1', null, null),
+    ('posture-2', null, 'x1', null),
+    ('posture-3', null, null, null),
+    ('posture-4', null, null, 'p1'),
+  ]) {
+    await world.runProgress.save(
+      RunProgress(
+        key: RunProgressKey(
+          sheetId: SheetId(sheet),
+          sessionId: planned,
+          groupId: group == null ? null : GroupId(group),
+        ),
+        updatedAt: DateTime.utc(2026, 10, 12),
+        step: 2,
+        recordId: record == null ? null : SessionId(record),
+      ),
+    );
+  }
   return world;
 }
 
@@ -57,6 +92,7 @@ Future<Map<String, Object?>> _state(DomainWorld world) async => {
   'assessments': await world.assessments.all(),
   'acquisitions': await world.acquisitions.all(),
   'acknowledgements': await world.acknowledgements.all(),
+  'runProgress': await world.runProgress.all(),
 };
 
 void main() {
@@ -73,6 +109,8 @@ void main() {
       byHand.assessments,
       byHand.acquisitions,
       byHand.acknowledgements,
+      byHand.runProgress,
+      byHand.plannedSessions,
       InMemoryUnitOfWork(),
     );
     ok(await erase(const StudentId('a')));
@@ -102,5 +140,7 @@ void main() {
     expect(await _state(byClosing), await _state(byHand));
     // L'état comparé est bien vide de l'élève effacé.
     expect((await _state(byHand))['attempts'], hasLength(1));
+    // Seule la séance guidée sans lien avec l'élève reste.
+    expect((await _state(byHand))['runProgress'], hasLength(1));
   });
 }

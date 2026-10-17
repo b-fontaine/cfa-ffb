@@ -24,6 +24,10 @@ class _UnreadableGroups implements GroupRepository {
 
   @override
   Future<void> eraseStudent(StudentId studentId) async {}
+
+  @override
+  Future<Set<GroupId>> idsEverContaining(StudentId studentId) async =>
+      throw const NotFound('group', 'illisible');
 }
 
 /// Usage: the groups cannot be read

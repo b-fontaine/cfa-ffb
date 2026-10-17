@@ -1226,7 +1226,7 @@
       }
     }
   },
-  "eraseConfirmBody": "Everything about {name} is deleted from this device and cannot be recovered. Export a backup first if you want to keep a copy.",
+  "eraseConfirmBody": "Everything about {name} is deleted from this device and cannot be recovered. The state of a running guided session of their group is erased too. Export a backup first if you want to keep a copy.",
   "@eraseConfirmBody": {
     "placeholders": {
       "name": {

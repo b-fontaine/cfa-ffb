@@ -282,3 +282,50 @@ class SeasonArchiveExercises extends Table {
     exerciseNumber,
   };
 }
+
+/// Séances guidées en cours (schéma version 10, ADR 0020) : une ligne par
+/// séance guidée commencée, effacée **physiquement** (pas de `AuditColumns`,
+/// donc ni suppression logique ni synchronisation). Donnée transitoire, locale
+/// à l'appareil et hors sauvegarde.
+///
+/// **Aucun identifiant d'élève.** `groupId` et `recordId` ne sont que des
+/// liens (pas de clé étrangère : suppression logique des groupes et des
+/// saisies) qui servent à effacer la ligne quand un élève est effacé. Les
+/// compteurs et la grille sont de petites cartes lues et écrites d'un bloc :
+/// du JSON, (dé)sérialisé et validé par `RunProgressJson`.
+@DataClassName('RunProgressRow')
+@TableIndex(name: 'run_progress_by_group', columns: {#groupId})
+@TableIndex(name: 'run_progress_by_record', columns: {#recordId})
+class RunProgressEntries extends Table {
+  /// `RunProgressKey.encoded`.
+  TextColumn get runKey => text()();
+
+  TextColumn get sheetId => text()();
+
+  TextColumn get audience => text().nullable()();
+
+  TextColumn get sessionId => text().nullable()();
+
+  TextColumn get groupId => text().nullable()();
+
+  TextColumn get recordId => text().nullable()();
+
+  IntColumn get step => integer()();
+
+  /// `{"initiationId": n}`.
+  TextColumn get countsJson => text()();
+
+  /// `{"initiationId": [0, 2]}`.
+  TextColumn get checkedJson => text()();
+
+  IntColumn get scoreA => integer()();
+
+  IntColumn get scoreB => integer()();
+
+  IntColumn get timerSeconds => integer()();
+
+  TextColumn get updatedAt => text().map(const IsoDateTimeConverter())();
+
+  @override
+  Set<Column<Object>> get primaryKey => {runKey};
+}

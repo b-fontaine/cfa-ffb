@@ -10,6 +10,8 @@ import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.da
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
+import 'package:billard_cfa/entities/run_progress/domain/run_progress.dart';
+import 'package:billard_cfa/entities/run_progress/domain/run_progress_key.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/entities/season/domain/season_archive.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
@@ -311,6 +313,38 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
       expect(await r.assessments.all(), isEmpty);
       expect(await r.sessions.getAll(), isEmpty);
     }
+
+    group('running guided sessions (ADR 0020)', () {
+      RunProgress running() => RunProgress(
+        key: RunProgressKey(sheetId: SheetId('posture-9')),
+        updatedAt: DateTime.utc(2026, 10, 12, 8),
+        step: 4,
+        counts: const {'ini': 2},
+        scoreA: 3,
+      );
+
+      test('keep the backup format at version 4', () {
+        expect(BackupCodec.currentVersion, 4);
+      });
+
+      test('are not exported: the file knows nothing of them', () async {
+        await source.runProgress.save(running());
+
+        final exported = await _exported(source);
+
+        expect(exported, backup);
+        expect(exported, isNot(contains('posture-9')));
+        expect(_parse(exported).keys, isNot(contains('runProgress')));
+      });
+
+      test('are left alone by an import', () async {
+        await target.runProgress.save(running());
+
+        await _imported(target, backup);
+
+        expect(await target.runProgress.all(), [running()]);
+      });
+    });
 
     test('declares its own format version', () {
       final document = _parse(backup);

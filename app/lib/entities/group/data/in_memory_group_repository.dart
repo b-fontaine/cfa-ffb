@@ -22,6 +22,12 @@ class InMemoryGroupRepository implements GroupRepository {
   Future<void> delete(GroupId id) async => _groups.journaledRemove(id);
 
   @override
+  Future<Set<GroupId>> idsEverContaining(StudentId studentId) async => {
+    for (final group in _groups.values)
+      if (group.memberships.any((m) => m.studentId == studentId)) group.id,
+  };
+
+  @override
   Future<void> eraseStudent(StudentId studentId) async {
     for (final group in _groups.values.toList()) {
       if (group.memberships.every((m) => m.studentId != studentId)) continue;

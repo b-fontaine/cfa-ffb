@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:math' as math;
 
+import 'package:billard_cfa/entities/run_progress/domain/run_progress.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/scoring.dart';
+import 'package:billard_cfa/features/run_sheet/domain/reconcile_run_progress.dart';
 import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_plan.dart';
+import 'package:billard_cfa/features/run_sheet/domain/run_progress_keeper.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_timer.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
@@ -11,6 +15,7 @@ import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_ticker.dart
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/timer_tone.dart';
+import 'package:flutter/foundation.dart' show mapEquals, setEquals;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -20,15 +25,27 @@ part 'run_sheet_state.dart';
 /// Séance guidée : étape courante, compteurs locaux, score du jeu et minuteur
 /// indicatif.
 ///
-/// Tout est local et jamais enregistré. Toutes les étapes sont atteignables
-/// librement, sans élèves ni séance planifiée ni saisie : on peut relire la
-/// séance entière. Le cubit est conservé par `RunSheetSessions` (clé =
-/// séance, public, séance planifiée) pour survivre à un aller-retour par la
-/// saisie des résultats ; [finish] le réinitialise et `RunSheetSessions`
-/// le libère.
+/// Rien de tout cela n'entre dans le suivi des élèves. Toutes les étapes sont
+/// atteignables librement, sans élèves ni séance planifiée ni saisie : on peut
+/// relire la séance entière. Le cubit est conservé par `RunSheetSessions`
+/// (clé = séance, public, séance planifiée) pour survivre à un aller-retour
+/// par la saisie des résultats ; [finish] le réinitialise et
+/// `RunSheetSessions` le libère.
+///
+/// L'état de la séance en cours est aussi **gardé sur l'appareil** (ADR 0020,
+/// lot 10b) pour survivre à un rechargement ou à la fermeture de
+/// l'application : étape, compteurs, grille, score, minuteur (restauré en
+/// pause) et identifiant de la saisie ouverte. Les écritures se font à la
+/// suite les unes des autres, la dernière gagne, et un échec d'écriture ne
+/// bloque jamais le guide (il est signalé à l'observateur de blocs).
 class RunSheetCubit extends Cubit<RunSheetState> {
-  RunSheetCubit(this._resolve, this._ticker, this.key)
+  RunSheetCubit(this._resolve, this._ticker, this.key, this._keeper)
     : super(RunSheetState(mode: _defaultMode(key)));
+
+  /// Le minuteur n'est écrit que toutes les [timerCheckpointSeconds]
+  /// secondes (une écriture par seconde serait inutile) : un rechargement perd
+  /// au plus ce délai. La pause et le changement de phase écrivent à l'instant.
+  static const timerCheckpointSeconds = 10;
 
   /// Mode d'ouverture de [key] : « Mener » pour une séance planifiée.
   static RunMode _defaultMode(RunKey key) =>
@@ -37,10 +54,28 @@ class RunSheetCubit extends Cubit<RunSheetState> {
   final ResolveRunPlan _resolve;
   final RunTicker _ticker;
   final RunKey key;
+  final RunProgressKeeper _keeper;
 
   StreamSubscription<void>? _ticks;
   bool _loadStarted = false;
   int? _requestedStep;
+
+  /// Lecture de l'état enregistré, faite une seule fois (avant le déroulé).
+  Future<void>? _hydration;
+
+  /// Une ligne enregistrée existe et doit être réécrite à l'arrivée du
+  /// déroulé (la saisie qu'elle nommait n'existe plus).
+  bool _rewriteOnReady = false;
+
+  /// Vrai si une ligne était enregistrée pour cette clé au démarrage.
+  bool _hadSaved = false;
+
+  /// L'état gardé a été effacé de force (droit à l'effacement) : plus aucune
+  /// écriture ne doit le recréer.
+  bool _erased = false;
+
+  /// Dernière écriture demandée : les suivantes l'attendent.
+  Future<void> _writes = Future<void>.value();
 
   /// Mode à reporter dans l'adresse (`?mode=`) : `null` tant qu'il est celui
   /// d'ouverture de la clé (l'adresse reste courte et le défaut s'applique à
@@ -62,6 +97,9 @@ class RunSheetCubit extends Cubit<RunSheetState> {
   /// l'ancienne étape. Idempotent : appelé à chaque reconstruction de la
   /// route, il ne change rien de plus la deuxième fois.
   Future<void> syncFromRoute({int? step, RunMode? mode}) async {
+    // L'état enregistré d'abord : la reprise se propose sur ce qu'il contient.
+    await _hydrate();
+    if (isClosed) return;
     if (mode != null) modeChanged(mode);
     if (step != null) {
       showStep(step);
@@ -106,6 +144,8 @@ class RunSheetCubit extends Cubit<RunSheetState> {
   Future<void> load() async {
     if (_loadStarted && state.status != RunStatus.failure) return;
     _loadStarted = true;
+    await _hydrate();
+    if (isClosed) return;
     emit(state.copyWith(status: RunStatus.loading, failure: null));
     final result = await _resolve(
       key.sheetId,
@@ -115,14 +155,37 @@ class RunSheetCubit extends Cubit<RunSheetState> {
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):
-        emit(
-          state.copyWith(
-            status: RunStatus.ready,
-            plan: value,
-            step: value.clamp(_requestedStep ?? state.step),
+        // Une séance planifiée supprimée depuis l'enregistrement : le guide
+        // s'ouvre à neuf (la fiche, elle, existe) et l'état gardé est oublié.
+        final orphaned =
+            _hadSaved && isOrphanedProgress(key.progressKey, value);
+        if (orphaned) _enqueue(() => _keeper.forget(key.progressKey));
+        final base = orphaned ? RunSheetState(mode: state.mode) : state;
+        // L'état enregistré est ramené à la séance telle qu'elle est
+        // aujourd'hui (fiche raccourcie, initiation disparue…).
+        final fitted = reconcileRunProgress(
+          RunProgress(
+            key: key.progressKey,
+            updatedAt: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+            step: math.max(0, _requestedStep ?? base.step),
+            counts: base.counts,
+            checked: base.checked,
           ),
+          value,
+        );
+        final next = base.copyWith(
+          status: RunStatus.ready,
+          plan: value,
+          step: fitted.step,
+          counts: fitted.counts,
+          checked: fitted.checked,
+        );
+        emit(
+          next.copyWith(resumeOffered: next.resumeOffered && next.hasProgress),
         );
       case Err(failure: NotFound()):
+        // Une séance planifiée supprimée, une fiche retirée : rien à reprendre.
+        if (_hadSaved) _enqueue(() => _keeper.forget(key.progressKey));
         emit(state.copyWith(status: RunStatus.notFound));
       case Err(:final failure):
         emit(state.copyWith(status: RunStatus.failure, failure: failure));
@@ -207,7 +270,8 @@ class RunSheetCubit extends Cubit<RunSheetState> {
   }
 
   /// Fin de séance : remet à zéro étape, compteurs, score, minuteur et mode ;
-  /// le déroulé reste chargé. Rien n'est écrit.
+  /// le déroulé reste chargé. Rien n'est enregistré dans le suivi, et l'état
+  /// gardé sur l'appareil est oublié.
   Future<void> finish() async {
     _requestedStep = null;
     emit(
@@ -220,6 +284,126 @@ class RunSheetCubit extends Cubit<RunSheetState> {
     await _stopTicks();
   }
 
+  /// Oublie l'état gardé sur l'appareil, sans toucher à l'état du cubit
+  /// (abandon, éviction) ; rend la main une fois l'effacement terminé.
+  Future<void> discard() {
+    _enqueue(() => _keeper.forget(key.progressKey));
+    return _writes;
+  }
+
+  /// Efface l'état gardé de force (droit à l'effacement d'un élève dont ce
+  /// guide portait le score ou la saisie) : plus aucune écriture n'est
+  /// acceptée, celles déjà demandées vont à leur terme, puis la ligne est
+  /// oubliée **après** elles (une écriture en vol ne la recrée pas).
+  Future<void> erase() async {
+    _erased = true;
+    await _writes;
+    try {
+      await _keeper.forget(key.progressKey);
+    } on Object catch (error, stackTrace) {
+      onError(error, stackTrace);
+    }
+  }
+
+  /// Remet dans le cubit l'état enregistré de cette séance, une seule fois.
+  /// Le déroulé n'est pas encore là : l'état est rapproché de la séance à son
+  /// arrivée (voir [load]). Une lecture qui échoue laisse un guide neuf.
+  Future<void> _hydrate() => _hydration ??= _readSaved();
+
+  Future<void> _readSaved() async {
+    try {
+      final saved = await _keeper.saved(key.progressKey);
+      if (saved == null || isClosed) return;
+      _hadSaved = true;
+      final recordId = saved.recordId;
+      final link = recordId == null ? null : await _keeper.recordLink(recordId);
+      if (isClosed) return;
+      _rewriteOnReady = recordId != null && link == null;
+      // Le déroulé n'est pas encore là : `onChange` n'écrit rien (ce n'est pas
+      // un changement).
+      emit(
+        state.copyWith(
+          step: saved.step,
+          counts: saved.counts,
+          checked: saved.checked,
+          scoreA: saved.scoreA,
+          scoreB: saved.scoreB,
+          timerSeconds: saved.timerSeconds,
+          recordChoice: link,
+        ),
+      );
+    } on Object catch (error, stackTrace) {
+      onError(error, stackTrace);
+    }
+  }
+
+  @override
+  void onChange(Change<RunSheetState> change) {
+    super.onChange(change);
+    final next = change.nextState;
+    // Rien n'est écrit avant que le déroulé soit prêt, donc ni pour la remise
+    // en place de l'état enregistré (qui précède le déroulé).
+    if (next.plan == null) return;
+    final previous = change.currentState;
+    final changed = _persistedDiffers(previous, next);
+    final checkpoint =
+        next.hasProgress &&
+        ((previous.timerSeconds != next.timerSeconds &&
+                next.timerSeconds % timerCheckpointSeconds == 0) ||
+            (previous.timerRunning && !next.timerRunning));
+    if (!changed && !checkpoint && !_rewriteOnReady) return;
+    _rewriteOnReady = false;
+    _persist(next);
+  }
+
+  /// Vrai si quelque chose d'enregistré diffère entre [a] et [b] (le minuteur
+  /// mis à part).
+  static bool _persistedDiffers(RunSheetState a, RunSheetState b) =>
+      a.step != b.step ||
+      a.scoreA != b.scoreA ||
+      a.scoreB != b.scoreB ||
+      a.recordChoice?.recordId != b.recordChoice?.recordId ||
+      !mapEquals(a.counts, b.counts) ||
+      !_sameChecked(a.checked, b.checked);
+
+  static bool _sameChecked(Map<String, Set<int>> a, Map<String, Set<int>> b) =>
+      a.length == b.length &&
+      a.entries.every((e) {
+        final other = b[e.key];
+        return other != null && setEquals(e.value, other);
+      });
+
+  /// Enregistre [state], ou oublie la séance quand il n'y a plus rien à
+  /// reprendre.
+  void _persist(RunSheetState state) {
+    final progressKey = key.progressKey;
+    if (!state.hasProgress) {
+      _enqueue(() => _keeper.forget(progressKey));
+      return;
+    }
+    final recordId = state.recordChoice?.recordId;
+    _enqueue(
+      () => _keeper.save(
+        key: progressKey,
+        step: state.step,
+        counts: state.counts,
+        checked: state.checked,
+        scoreA: state.scoreA,
+        scoreB: state.scoreB,
+        timerSeconds: state.timerSeconds,
+        recordId: recordId,
+      ),
+    );
+  }
+
+  /// Met [write] à la suite des écritures en attente : jamais deux à la fois,
+  /// la dernière demandée est la dernière faite. Un échec est signalé, jamais
+  /// propagé (D10).
+  void _enqueue(Future<void> Function() write) {
+    if (_erased) return;
+    _writes = _writes.then((_) => write()).catchError(onError);
+  }
+
   Future<void> _stopTicks() async {
     final cancelled = _ticks?.cancel();
     _ticks = null;
@@ -229,6 +413,10 @@ class RunSheetCubit extends Cubit<RunSheetState> {
   @override
   Future<void> close() async {
     await _stopTicks();
+    // Les écritures déjà demandées vont à leur terme sans que la fermeture les
+    // attende : un état enregistré ne se perd pas parce que le cubit se ferme
+    // (changement de page, mise à jour de l'application). Ceux qui doivent
+    // attendre l'effacement le font par [discard].
     await super.close();
   }
 }

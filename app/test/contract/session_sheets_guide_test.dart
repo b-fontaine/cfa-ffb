@@ -26,6 +26,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/run_progress_support.dart';
+
 // Contrat de rendu de la séance guidée et de la présentation sur les 28
 // vraies séances de `assets/fiches/` : pour chaque séance, chaque public et
 // chaque étape, aucune erreur de rendu (débordement compris), en français et
@@ -157,6 +159,7 @@ void main() {
                 resolve,
                 PeriodicRunTicker(),
                 RunKey(sheetId: sheet.id, audience: audience),
+                inMemoryRunProgressKeeper(),
               );
               await tester.runAsync(cubit.load);
               addTearDown(cubit.close);

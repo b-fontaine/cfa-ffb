@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/run_progress/domain/run_progress_key.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
@@ -17,10 +18,25 @@ final class RunKey {
     this.group,
   });
 
+  /// La clé relue d'une progression enregistrée (reprise au démarrage).
+  RunKey.fromProgress(RunProgressKey key)
+    : sheetId = key.sheetId,
+      audience = key.audience,
+      sessionId = key.sessionId,
+      group = key.groupId;
+
   final SheetId sheetId;
   final Audience? audience;
   final String? sessionId;
   final GroupId? group;
+
+  /// La même identité sous sa forme persistable (ADR 0020).
+  RunProgressKey get progressKey => RunProgressKey(
+    sheetId: sheetId,
+    audience: audience,
+    sessionId: sessionId,
+    groupId: group,
+  );
 
   @override
   bool operator ==(Object other) =>

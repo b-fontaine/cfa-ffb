@@ -40,6 +40,17 @@ class DriftSessionRepository implements SessionRepository {
   }
 
   @override
+  Future<Set<String>> idsOfGroups(Set<GroupId> groups) async {
+    if (groups.isEmpty) return const {};
+    final rows =
+        await (_db.select(_db.plannedSessions)..where(
+              (s) => s.groupId.isIn([for (final group in groups) group.value]),
+            ))
+            .get();
+    return {for (final row in rows) row.id};
+  }
+
+  @override
   Future<void> add(Session session) async {
     final now = _clock.now();
     await _db

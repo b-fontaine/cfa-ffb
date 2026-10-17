@@ -29,7 +29,7 @@ void main() {
 
   setUp(() {
     world = RunSheetWorld();
-    sessions = RunSheetSessions(world.resolve, world.ticker);
+    sessions = RunSheetSessions(world.resolve, world.ticker, world.keeper);
   });
 
   test('is empty when no guide is open', () {

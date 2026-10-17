@@ -179,6 +179,46 @@ void repositoryContract(
         expect(await repos.groups.byId(const GroupId('x')), isNull);
       });
 
+      test('finds the groups a student was ever a member of, closed periods '
+          'included', () async {
+        await repos.groups.save(
+          _group('g1').admit(
+            studentId: const StudentId('s1'),
+            studentAudience: Audience.children,
+            from: DateTime(2026, 9),
+          ),
+        );
+        await repos.groups.save(
+          _group('g2')
+              .admit(
+                studentId: const StudentId('s1'),
+                studentAudience: Audience.children,
+                from: DateTime(2026, 9),
+              )
+              .release(
+                studentId: const StudentId('s1'),
+                to: DateTime(2026, 10),
+              ),
+        );
+        await repos.groups.save(
+          _group('g3').admit(
+            studentId: const StudentId('s2'),
+            studentAudience: Audience.children,
+            from: DateTime(2026, 9),
+          ),
+        );
+        await repos.groups.save(_group('g4'));
+
+        expect(await repos.groups.idsEverContaining(const StudentId('s1')), {
+          const GroupId('g1'),
+          const GroupId('g2'),
+        });
+        expect(
+          await repos.groups.idsEverContaining(const StudentId('inconnu')),
+          isEmpty,
+        );
+      });
+
       test('replaces, lists in order and deletes logically', () async {
         await repos.groups.save(_group('g1'));
         await repos.groups.save(_group('g2', name: 'Adultes'));
@@ -319,6 +359,27 @@ void repositoryContract(
         ]);
       });
 
+      test('finds the sessions a student attended', () async {
+        await repos.sessionRecords.save(
+          _record('x1', date: DateTime(2026, 10, 3)),
+        );
+        await repos.sessionRecords.save(
+          _record('x2', date: DateTime(2026, 10, 10), present: {'s1', 's2'}),
+        );
+        await repos.sessionRecords.save(
+          _record('x3', date: DateTime(2026, 10, 17), present: {'s2'}),
+        );
+
+        expect(
+          await repos.sessionRecords.idsEverPresent(const StudentId('s1')),
+          {const SessionId('x1'), const SessionId('x2')},
+        );
+        expect(
+          await repos.sessionRecords.idsEverPresent(const StudentId('absent')),
+          isEmpty,
+        );
+      });
+
       test('hides a deleted session everywhere', () async {
         await repos.sessionRecords.save(
           _record('x1', date: DateTime(2026, 10, 3)),
@@ -442,6 +503,32 @@ void repositoryContract(
     });
 
     group('séances planifiées', () {
+      test(
+        'lists the planned sessions of some groups, and only those',
+        () async {
+          Session planned(String id, String? group) => Session(
+            id: id,
+            title: id,
+            date: DateTime(2026, 10, 12),
+            audience: Audience.children,
+            groupId: group == null ? null : GroupId(group),
+          );
+          await repos.sessions.add(planned('p1', 'g1'));
+          await repos.sessions.add(planned('p2', 'g2'));
+          await repos.sessions.add(planned('p3', 'g3'));
+          await repos.sessions.add(planned('p4', null));
+
+          expect(
+            await repos.sessions.idsOfGroups({
+              const GroupId('g1'),
+              const GroupId('g3'),
+            }),
+            {'p1', 'p3'},
+          );
+          expect(await repos.sessions.idsOfGroups({}), isEmpty);
+        },
+      );
+
       test('round-trips, replaces by id and deletes logically', () async {
         final first = Session(
           id: 'p1',

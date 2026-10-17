@@ -88,6 +88,17 @@ class DriftGroupRepository implements GroupRepository {
     _db.groupMemberships,
   )..where((m) => m.studentId.equals(studentId.value))).go();
 
+  @override
+  Future<Set<GroupId>> idsEverContaining(StudentId studentId) async {
+    final column = _db.groupMemberships.groupId;
+    final rows =
+        await (_db.selectOnly(_db.groupMemberships, distinct: true)
+              ..addColumns([column])
+              ..where(_db.groupMemberships.studentId.equals(studentId.value)))
+            .get();
+    return {for (final row in rows) GroupId(row.read(column)!)};
+  }
+
   Future<List<Group>> _hydrate(List<GroupRow> rows) async {
     final memberships =
         await (_db.select(_db.groupMemberships)

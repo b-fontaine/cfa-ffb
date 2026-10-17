@@ -27,6 +27,7 @@ part 'app_database.g.dart';
     AppSettings,
     SeasonArchiveAudiences,
     SeasonArchiveExercises,
+    RunProgressEntries,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -34,7 +35,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Version du schéma SQL. Elle est indépendante de la version du format de
   /// sauvegarde JSON (`BackupCodec.currentVersion`).
-  static const currentSchemaVersion = 9;
+  static const currentSchemaVersion = 10;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -105,6 +106,13 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(schema.seasons, schema.seasons.closedOn);
           await m.createTable(schema.seasonArchiveAudiences);
           await m.createTable(schema.seasonArchiveExercises);
+        },
+        // Version 10 (ADR 0020) : séances guidées en cours. Migration
+        // additive : une table vide et ses index, aucune donnée transformée.
+        from9To10: (m, schema) async {
+          await m.createTable(schema.runProgressEntries);
+          await m.createIndex(schema.runProgressByGroup);
+          await m.createIndex(schema.runProgressByRecord);
         },
       )(migrator, from, to);
     },

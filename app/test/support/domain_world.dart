@@ -8,6 +8,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.d
 import 'package:billard_cfa/entities/group/data/in_memory_group_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/in_memory_assessment_repository.dart';
+import 'package:billard_cfa/entities/run_progress/data/in_memory_run_progress_repository.dart';
 import 'package:billard_cfa/entities/season/data/in_memory_season_archive_repository.dart';
 import 'package:billard_cfa/entities/season/data/in_memory_season_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
@@ -73,6 +74,7 @@ class DomainWorld {
   final assessments = InMemoryAssessmentRepository();
   final acquisitions = InMemoryAcquisitionRepository();
   final acknowledgements = InMemoryAcknowledgementRepository();
+  final runProgress = InMemoryRunProgressRepository();
   final ids = CountingIds();
 
   late final catalogueRepository = FixedCatalogueRepository(catalogue);
@@ -90,6 +92,8 @@ class DomainWorld {
           assessments,
           acquisitions,
           acknowledgements,
+          runProgress,
+          plannedSessions,
           InMemoryUnitOfWork(),
         ),
       );

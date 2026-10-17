@@ -3,6 +3,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/acquisition_reposito
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repository.dart';
+import 'package:billard_cfa/entities/run_progress/domain/run_progress_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season_archive_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session/domain/session_repository.dart';
@@ -28,6 +29,7 @@ class RepositoryHarness {
     required this.assessments,
     required this.sessions,
     required this.settings,
+    required this.runProgress,
     required this.unitOfWork,
     required this.close,
   });
@@ -43,6 +45,7 @@ class RepositoryHarness {
   final AssessmentRepository assessments;
   final SessionRepository sessions;
   final SettingsRepository settings;
+  final RunProgressRepository runProgress;
   final UnitOfWork unitOfWork;
   final Future<void> Function() close;
 

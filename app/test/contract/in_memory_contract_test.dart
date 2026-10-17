@@ -3,6 +3,7 @@ import 'package:billard_cfa/entities/exercise_result/data/in_memory_acquisition_
 import 'package:billard_cfa/entities/exercise_result/data/in_memory_attempt_repository.dart';
 import 'package:billard_cfa/entities/group/data/in_memory_group_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/in_memory_assessment_repository.dart';
+import 'package:billard_cfa/entities/run_progress/data/in_memory_run_progress_repository.dart';
 import 'package:billard_cfa/entities/season/data/in_memory_season_archive_repository.dart';
 import 'package:billard_cfa/entities/season/data/in_memory_season_repository.dart';
 import 'package:billard_cfa/entities/session/data/in_memory_session_repository.dart';
@@ -18,6 +19,7 @@ import 'backup_contract.dart';
 import 'backup_marker_contract.dart';
 import 'repository_contract.dart';
 import 'repository_harness.dart';
+import 'run_progress_contract.dart';
 import 'season_archive_contract.dart';
 import 'settings_contract.dart';
 
@@ -33,6 +35,7 @@ Future<RepositoryHarness> _open() async => RepositoryHarness(
   assessments: InMemoryAssessmentRepository(),
   sessions: InMemorySessionRepository(),
   settings: InMemorySettingsRepository(),
+  runProgress: InMemoryRunProgressRepository(),
   unitOfWork: InMemoryUnitOfWork(),
   close: () async {},
 );
@@ -58,6 +61,11 @@ void main() {
     'en mémoire',
     () async =>
         (repository: InMemorySeasonArchiveRepository(), close: () async {}),
+  );
+  runProgressContract(
+    'en mémoire',
+    () async =>
+        (repository: InMemoryRunProgressRepository(), close: () async {}),
   );
   backupMarkerContract(
     'en mémoire',

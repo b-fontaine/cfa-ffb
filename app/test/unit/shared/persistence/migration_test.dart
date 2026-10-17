@@ -5,6 +5,9 @@ import 'package:billard_cfa/entities/exercise_result/domain/acquisition_source.d
 import 'package:billard_cfa/entities/exercise_result/domain/alert_acknowledgement.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/drift_assessment_repository.dart';
+import 'package:billard_cfa/entities/run_progress/data/drift_run_progress_repository.dart';
+import 'package:billard_cfa/entities/run_progress/domain/run_progress.dart';
+import 'package:billard_cfa/entities/run_progress/domain/run_progress_key.dart';
 import 'package:billard_cfa/entities/season/data/drift_season_archive_repository.dart';
 import 'package:billard_cfa/entities/season/data/drift_season_repository.dart';
 import 'package:billard_cfa/entities/session/data/drift_session_repository.dart';
@@ -15,6 +18,7 @@ import 'package:billard_cfa/entities/student/data/drift_student_repository.dart'
 import 'package:billard_cfa/features/backup_data/data/drift_backup_marker_repository.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
@@ -259,6 +263,47 @@ void main() {
     );
   });
 
+  test('a fresh database matches the committed v10 snapshot', () async {
+    final connection = await verifier.startAt(10);
+    final db = AppDatabase(connection);
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 10);
+  });
+
+  test('upgrading v9 to v10 creates an empty running-sessions table and keeps '
+      'the data', () async {
+    final schema = await verifier.schemaAt(9);
+    schema.rawDatabase.execute(
+      'INSERT INTO attempts (id, created_at, updated_at, student_id, '
+      'session_id, block_id, exercise_number, date, pass_index, potted, '
+      'total) '
+      "VALUES ('a1', '2026-10-01T00:00:00.000Z', "
+      "'2026-10-01T00:00:00.000Z', 's1', 'x1', 'posture', 1, "
+      "'2026-10-01T00:00:00.000', 1, 3, 5)",
+    );
+    final db = AppDatabase(schema.newConnection());
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 10);
+
+    final clock = TickingClock();
+    final progress = DriftRunProgressRepository(db);
+    expect(await progress.all(), isEmpty);
+    expect(
+      (await DriftAttemptRepository(db, clock).all()).single.id.value,
+      'a1',
+    );
+    final key = RunProgressKey(sheetId: SheetId('posture-1'));
+    final stored = RunProgress(
+      key: key,
+      updatedAt: DateTime.utc(2026, 10, 16, 9),
+      step: 3,
+    );
+    await progress.save(stored);
+    expect(await progress.byKey(key), stored);
+  });
+
   test('the settings table holds a single row (id = 1)', () async {
     final db = openMemoryDatabase();
     addTearDown(db.close);
@@ -436,7 +481,7 @@ void main() {
   test('refuses to open a database written by a newer version', () async {
     final db = AppDatabase(
       NativeDatabase.memory(
-        setup: (raw) => raw.execute('PRAGMA user_version = 10'),
+        setup: (raw) => raw.execute('PRAGMA user_version = 11'),
       ),
     );
     addTearDown(db.close);
@@ -445,9 +490,9 @@ void main() {
       db.customSelect('SELECT 1').get(),
       throwsA(
         isA<DowngradeNotSupported>()
-            .having((e) => e.from, 'from', 10)
-            .having((e) => e.to, 'to', 9)
-            .having((e) => e.toString(), 'message', contains('version 10')),
+            .having((e) => e.from, 'from', 11)
+            .having((e) => e.to, 'to', 10)
+            .having((e) => e.toString(), 'message', contains('version 11')),
       ),
     );
   });

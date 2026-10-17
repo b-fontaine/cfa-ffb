@@ -8,13 +8,21 @@ import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../../support/run_progress_support.dart';
+
 class _MockResolve extends Mock implements ResolveRunPlan;
 
 void main() {
   late RunSheetSessions sessions;
   final key = RunKey(sheetId: SheetId('demi-bille-1'));
 
-  setUp(() => sessions = RunSheetSessions(_MockResolve(), PeriodicRunTicker()));
+  setUp(
+    () => sessions = RunSheetSessions(
+      _MockResolve(),
+      PeriodicRunTicker(),
+      inMemoryRunProgressKeeper(),
+    ),
+  );
 
   test('keeps one cubit per key', () {
     expect(sessions.of(key), same(sessions.of(key)));

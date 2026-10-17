@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/session/domain/session.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 
 /// Port d'accès aux séances planifiées (implémenté dans la couche data).
 ///
@@ -10,4 +11,9 @@ abstract interface class SessionRepository {
 
   /// Supprime logiquement la séance ; sans effet si elle n'existe pas.
   Future<void> delete(String id);
+
+  /// Les identifiants des séances planifiées de ces [groups], supprimées
+  /// logiquement comprises (droit à l'effacement : une séance supprimée de ses
+  /// groupes reste en base jusqu'à sa purge).
+  Future<Set<String>> idsOfGroups(Set<GroupId> groups);
 }

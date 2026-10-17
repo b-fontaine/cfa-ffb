@@ -77,6 +77,24 @@ Feature: Students
     Then I see {'Les élèves du club'} text
     And I see {'Enfants'} text
 
+  # Lot 10b (ADR 0020) : l'état d'une séance guidée en cours de son groupe
+  # s'efface aussi ; la confirmation le dit avant l'effacement.
+  Scenario: The erasure confirmation warns that a running guided session of the group is erased too
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
+    When I open the sheet of {'Léa'}
+    And I tap {'Erase Léa'} text
+    Then I see text containing {'running guided session'}
+
+  Scenario: The erasure confirmation warns in French that a running guided session is erased too
+    Given the device language is {'fr'}
+    And the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
+    When I tap {'Élèves'} text
+    And I tap {'Léa'} text
+    And I tap {'Effacer Léa'} text
+    Then I see text containing {'séance guidée en cours'}
+
   # Lot 7 (ADR 0008) : les blocs marqués acquis d'un élève s'effacent avec lui.
   Scenario: Erasing a student also erases the blocks marked as acquired
     Given the club has the student {'Léa'} in the {'children'} audience

@@ -89,6 +89,14 @@ class DriftSessionRecordRepository implements SessionRecordRepository {
   );
 
   @override
+  Future<Set<SessionId>> idsEverPresent(StudentId studentId) async {
+    final rows = await (_db.select(
+      _db.sessionPresences,
+    )..where((p) => p.studentId.equals(studentId.value))).get();
+    return {for (final row in rows) SessionId(row.sessionId)};
+  }
+
+  @override
   Future<List<SessionRecord>> all() => _where((_) => const Constant(true));
 
   @override

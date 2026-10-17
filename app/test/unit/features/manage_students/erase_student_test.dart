@@ -1,7 +1,13 @@
+import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
+import 'package:billard_cfa/entities/run_progress/domain/run_progress.dart';
+import 'package:billard_cfa/entities/run_progress/domain/run_progress_key.dart';
+import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/features/manage_students/domain/erase_student.dart';
+import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/lib/unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_unit_of_work.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +25,27 @@ class _FailingAtTheEnd implements UnitOfWork {
       });
 }
 
+RunProgress _running(
+  String sheet, {
+  String? group,
+  String? record,
+  String? planned,
+}) => RunProgress(
+  key: RunProgressKey(
+    sheetId: SheetId(sheet),
+    sessionId: planned,
+    groupId: group == null ? null : GroupId(group),
+  ),
+  updatedAt: DateTime.utc(2026, 10, 12),
+  step: 2,
+  recordId: record == null ? null : SessionId(record),
+);
+
+Future<List<String>> _runningSheets(DomainWorld world) async => [
+  for (final progress in await world.runProgress.all())
+    progress.key.sheetId.value,
+]..sort();
+
 void main() {
   late DomainWorld world;
 
@@ -30,6 +57,8 @@ void main() {
     world.assessments,
     world.acquisitions,
     world.acknowledgements,
+    world.runProgress,
+    world.plannedSessions,
     unitOfWork ?? InMemoryUnitOfWork(),
   );
 
@@ -128,5 +157,113 @@ void main() {
     expect(group.memberships, hasLength(2));
     final session = (await world.sessions.byId(const SessionId('x1')))!;
     expect(session.present, hasLength(2));
+  });
+
+  group('running guided sessions (ADR 0020)', () {
+    setUp(() async {
+      // Un groupe où s1 a été membre puis est parti (période close), et un
+      // groupe où il n'a jamais été.
+      await world.groups.save(
+        Group(
+              id: const GroupId('g2'),
+              seasonId: const SeasonId('season'),
+              name: 'Ancien groupe',
+              audience: Audience.children,
+            )
+            .admit(
+              studentId: const StudentId('s1'),
+              studentAudience: Audience.children,
+              from: day(1),
+            )
+            .release(studentId: const StudentId('s1'), to: day(2)),
+      );
+      await world.groups.save(
+        Group(
+          id: const GroupId('g3'),
+          seasonId: const SeasonId('season'),
+          name: 'Autre groupe',
+          audience: Audience.children,
+        ).admit(
+          studentId: const StudentId('s2'),
+          studentAudience: Audience.children,
+          from: day(1),
+        ),
+      );
+      await world.session(id: 'x2', present: {'s2'});
+      await world.runProgress.save(_running('par-groupe', group: 'g1'));
+      await world.runProgress.save(_running('ancien-groupe', group: 'g2'));
+      await world.runProgress.save(_running('par-saisie', record: 'x1'));
+      await world.runProgress.save(_running('autre-groupe', group: 'g3'));
+      await world.runProgress.save(_running('autre-saisie', record: 'x2'));
+      await world.runProgress.save(_running('sans-lien'));
+      await world.plannedSessions.add(
+        Session(
+          id: 'p1',
+          title: 'Cours',
+          date: day(8),
+          audience: Audience.children,
+          groupId: const GroupId('g1'),
+        ),
+      );
+      await world.plannedSessions.add(
+        Session(
+          id: 'p3',
+          title: 'Autre cours',
+          date: day(8),
+          audience: Audience.children,
+          groupId: const GroupId('g3'),
+        ),
+      );
+      await world.runProgress.save(
+        _running('planifiee-du-groupe', planned: 'p1'),
+      );
+      await world.runProgress.save(_running('planifiee-autre', planned: 'p3'));
+    });
+
+    test('erases the sessions of a group the student belongs to, of a group '
+        'they left, of a planned session of their group (which carries no '
+        'group of its own) and of a record they attended', () async {
+      ok(await build()(const StudentId('s1')));
+
+      expect(await _runningSheets(world), [
+        'autre-groupe',
+        'autre-saisie',
+        'planifiee-autre',
+        'sans-lien',
+      ]);
+    });
+
+    test(
+      'computes the links before the presences and memberships go',
+      () async {
+        // Si les liens étaient calculés après l'effacement des présences et des
+        // appartenances, aucune de ces séances ne serait retrouvée.
+        ok(await build()(const StudentId('s1')));
+
+        expect(
+          await world.runProgress.byKey(_running('par-saisie').key),
+          isNull,
+        );
+        expect(
+          await world.runProgress.byKey(_running('par-groupe').key),
+          isNull,
+        );
+      },
+    );
+
+    test('leaves the running sessions in place when a write fails', () async {
+      await expectLater(
+        build(_FailingAtTheEnd())(const StudentId('s1')),
+        throwsStateError,
+      );
+
+      expect(await _runningSheets(world), hasLength(8));
+    });
+
+    test('refuses an unknown student without erasing any session', () async {
+      err(await build()(const StudentId('ghost')));
+
+      expect(await _runningSheets(world), hasLength(8));
+    });
   });
 }

@@ -18,6 +18,7 @@ import 'package:billard_cfa/shared/lib/timer_tone.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../../support/run_progress_support.dart';
 import '../../../../support/session_sheet_fixtures.dart';
 
 class _MockResolve extends Mock implements ResolveRunPlan;
@@ -105,7 +106,8 @@ void main() {
     ).thenAnswer((_) async => Ok(_plan()));
   });
 
-  RunSheetCubit build() => RunSheetCubit(resolve, ticker, key);
+  RunSheetCubit build() =>
+      RunSheetCubit(resolve, ticker, key, inMemoryRunProgressKeeper());
 
   Future<RunSheetCubit> ready() async {
     final cubit = build();
@@ -124,6 +126,7 @@ void main() {
           audience: Audience.adults,
           sessionId: 'p1',
         ),
+        inMemoryRunProgressKeeper(),
       );
 
       await cubit.load();
@@ -564,6 +567,7 @@ void main() {
       resolve,
       ticker,
       RunKey(sheetId: SheetId('demi-bille-1'), sessionId: 'p1'),
+      inMemoryRunProgressKeeper(),
     );
 
     test('starts in review mode without planned session', () {

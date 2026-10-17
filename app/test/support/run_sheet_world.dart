@@ -9,6 +9,7 @@ import 'package:billard_cfa/entities/session/data/in_memory_session_repository.d
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet.dart';
 import 'package:billard_cfa/features/run_sheet/domain/load_validated_exercises.dart';
 import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
+import 'package:billard_cfa/features/run_sheet/domain/run_progress_keeper.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_ticker.dart';
@@ -18,6 +19,7 @@ import 'package:billard_cfa/shared/lib/rules_store.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 
 import 'domain_world.dart';
+import 'fixed_clock.dart';
 import 'fixtures.dart';
 import 'session_sheet_fixtures.dart';
 
@@ -99,6 +101,14 @@ class RunSheetWorld {
   final ticker = ManualTicker();
   late final ResolveRunPlan resolve;
 
+  /// Garde d'état des séances guidées, sur les dépôts en mémoire du monde.
+  late final RunProgressKeeper keeper = RunProgressKeeper(
+    domain.runProgress,
+    domain.sessions,
+    domain.groups,
+    FixedClock(DateTime.utc(2026, 10, 12, 9)),
+  );
+
   /// Cubit chargé de la séance [sheet] pour [audience].
   Future<RunSheetCubit> cubit(
     String sheet, {
@@ -110,6 +120,7 @@ class RunSheetWorld {
       resolve,
       ticker,
       RunKey(sheetId: SheetId(sheet), audience: audience, sessionId: sessionId),
+      keeper,
     );
     if (step != null) cubit.showStep(step);
     await cubit.load();
