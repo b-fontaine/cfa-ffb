@@ -45,4 +45,20 @@ void main() {
 
     expect(err(result), isA<NotFound>());
   });
+
+  test('accepts a first name of 40 characters and refuses 41', () async {
+    final ok40 = await rename(
+      studentId: const StudentId('s1'),
+      firstName: 'é' * 40,
+    );
+    expect(ok(ok40).firstName, 'é' * 40);
+
+    final tooLong = await rename(
+      studentId: const StudentId('s1'),
+      firstName: 'é' * 41,
+    );
+    expect(codeOf(tooLong), InvariantCode.nameTooLong);
+    final stored = await world.students.byId(const StudentId('s1'));
+    expect(stored!.firstName, 'é' * 40);
+  });
 }

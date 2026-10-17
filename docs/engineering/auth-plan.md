@@ -1,6 +1,6 @@
 # Plan : authentification (lot FB2)
 
-Statut : **livré** (2026-10-17). Le code Dart d'authentification est exercé contre le **vrai SDK `firebase_auth`** dans le **build web compilé** (dart2js, `scripts/build_web.sh`) sous l'émulateur Auth (`scripts/web_smoke.sh` : démarrage, échec générique, connexion, session conservée au rechargement, déconnexion) ; les tests Dart restent sur des doubles (le plugin natif est absent de `flutter test`). **Aucune base de production touchée**, rien de déployé, `flutterfire configure` non exécuté. Android et iOS réels non exercés.
+Statut : **livré** (2026-10-17). Le code Dart d'authentification est exercé contre le **vrai SDK `firebase_auth`** dans le **build web compilé** (dart2js, `scripts/build_web.sh`) sous l'émulateur Auth (`scripts/web_smoke.sh` : démarrage, échec générique, connexion, session conservée au rechargement, déconnexion) ; les tests Dart restent sur des doubles (le plugin natif est absent de `flutter test`). Le parcours **application + émulateurs Auth et Firestore + graine** a son garde-fou (`scripts/emulator_e2e.sh`, application en mode debug). **Aucune base de production touchée**, rien de déployé, `flutterfire configure` non exécuté. Android et iOS réels non exercés.
 Décisions : [ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) (décisions 22, 23, 24 et 31 ; A9 à A12, B8, B9 de la roadmap), conformité : [ADR 0025](adr/0025-comptes-et-donnees-de-mineurs-conformite.md).
 Aucune décision nouvelle : les précisions de réalisation sont en note dans l'ADR 0024.
 
@@ -14,7 +14,7 @@ Aucune route n'est ouverte sans compte, sur Android, iOS et web (aucun mode « s
 |---|---|
 | `shared/lib` | ports minuscules sans dépendance Firebase : `CurrentUser` (`UserId`), `ActiveClubScope` (`ClubId`, `Role`), `ClubSwitchGuard`, `KeyValueStore` (+ double en mémoire) |
 | `entities/account` | `Account` (id, e-mail, `emailVerified`), `AuthRepository` (port), `AuthFailure` / `AuthFailureCode` (**distincts d'`InvariantCode`**), `SessionScope` (porteur des deux ports) ; `data` : `AuthSdk` (frontière du SDK), `FirebaseAuthRepository` (traduit les codes du SDK), `InMemoryAuthRepository` (BDD) |
-| `entities/membership` | `ClubMembership`, `MembershipsSource` (port que FB3 implémentera), `ActiveClubMemory` (club actif retenu **par compte**) ; `data` : `InMemoryMembershipsSource` (BDD), `NoMembershipsSource` (production avant FB3 : aucun club n'existe encore côté serveur) |
+| `entities/membership` | `ClubMembership`, `MembershipsSource` (port : clubs d'un compte, et `isAdmin`), `ActiveClubMemory` (club actif retenu **par compte**, avec ses groupes et fiches) ; `data` : `StoreMembershipsSource` (production et BDD, lot FB3, [clubs-roles-plan.md](clubs-roles-plan.md)) |
 | `features/sign_in` | cas d'usage `SignIn`, `ResendVerification`, `RequestPasswordReset`, `RegisterWithInvitation`, `InvitationCode`, port `PendingInvitations` (point d'extension de FB3) ; `SignInCubit`, `RegisterCubit`, `ForgotPasswordCubit` ; `SignInForm`, `RegisterForm`, `ForgotPasswordForm`, `AuthFormFeedback`, `AccountSection` |
 | `features/select_club` | `resolveActiveClub` (fonction pure), `ChooseClub` ; `ClubChoiceList` |
 | `pages` | `splash`, `sign_in`, `forgot_password`, `register`, `select_club`, `unavailable` ; `more` reçoit le compte et « Changer de club » |
@@ -68,7 +68,7 @@ Les BDD existants s'exécutent **connectés** : `UiWorld.prepare` crée le compt
 ## Reste (par l'utilisateur ou par un autre lot)
 
 - **Console Firebase** (rien n'a été fait) : vérifier que l'e-mail et mot de passe est le seul fournisseur actif ; **activer la protection contre l'énumération d'adresses e-mail** (elle fait renvoyer `invalid-credential`, le code l'attend déjà) ; contrôler les modèles de courriel de vérification et de réinitialisation (langue, expéditeur, lien) ; domaines autorisés pour le web ; `flutterfire configure` (reste de FB1).
-- **FB3** : `MembershipsSource` Firestore (remplace `NoMembershipsSource`), consommation du code gardé par `PendingInvitations`, règles et leurs tests.
+- ~~**FB3**~~ : livré (`StoreMembershipsSource`, consommation du code gardé, règles et leurs tests) ; voir [clubs-roles-plan.md](clubs-roles-plan.md).
 - **FB5** : SDK web servi localement (hors ligne sur le web : tant qu'il vient de `gstatic.com`, le web hors ligne s'ouvre en « indisponible » même avec une session persistée ; les plateformes natives s'ouvrent avec la session persistée et le club retenu).
 - **Libellés fr/en** des écrans de session : projets `[Prop]`, à relire par l'animateur.
 - Appareil réel Android et iOS non exercés (aucun build natif n'a été lancé dans ce lot).

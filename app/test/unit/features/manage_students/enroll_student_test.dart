@@ -198,4 +198,12 @@ void main() {
       );
     });
   });
+
+  test('accepts a first name of 40 characters and refuses 41', () async {
+    expect(ok(await call(firstName: 'é' * 40)).student.firstName, 'é' * 40);
+
+    final tooLong = await call(firstName: 'é' * 41);
+    expect(codeOf(tooLong), InvariantCode.nameTooLong);
+    expect(await world.students.all(), hasLength(1));
+  });
 }

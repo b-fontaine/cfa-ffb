@@ -1,6 +1,7 @@
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/field_limits.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:injectable/injectable.dart';
 
@@ -16,6 +17,9 @@ class RenameStudent {
     required StudentId studentId,
     required String firstName,
   }) => runGuarded(() async {
+    if (firstName.trim().length > maxFirstNameLength) {
+      throw const InvariantViolation(InvariantCode.nameTooLong);
+    }
     final student = await _students.byId(studentId);
     if (student == null) throw NotFound('student', studentId.value);
     final renamed = Student(

@@ -15,6 +15,27 @@ const _expected = <InvariantCode, (String, String)>{
     'The first name is required.',
     'Le prénom est obligatoire.',
   ),
+  InvariantCode.nameRequired: (
+    'A name is required.',
+    'Un nom est obligatoire.',
+  ),
+  InvariantCode.nameTooLong: (
+    'This name is too long.',
+    'Ce nom est trop long.',
+  ),
+  InvariantCode.invalidInvitation: (_genericEn, _genericFr),
+  InvariantCode.actionNotAllowed: (
+    'Your role does not allow this action.',
+    'Votre rôle ne permet pas cette action.',
+  ),
+  InvariantCode.ageConfirmationRequired: (
+    'Confirm that this student is 15 or older, or invite a parent instead.',
+    'Confirmez que cet élève a 15 ans ou plus, ou invitez plutôt un parent.',
+  ),
+  InvariantCode.studentChoiceRequired: (
+    'Choose the student first.',
+    'Choisissez d’abord l’élève.',
+  ),
   InvariantCode.passesLimitReached: (
     'At most two passes per exercise and per session.',
     'Deux passages au plus par exercice et par séance.',
@@ -222,12 +243,39 @@ void main() {
     expect(failureMessage(fr, failure), 'Élément introuvable.');
   });
 
+  test('maps the failures of the remote service', () {
+    expect(
+      failureMessage(en, const ServiceFailure(ServiceFailureCode.unavailable)),
+      'The service is not responding. Check your connection and try again.',
+    );
+    expect(
+      failureMessage(fr, const ServiceFailure(ServiceFailureCode.unavailable)),
+      'Le service ne répond pas. Vérifiez votre connexion puis réessayez.',
+    );
+    expect(
+      failureMessage(en, const ServiceFailure(ServiceFailureCode.denied)),
+      'You are not allowed to do this.',
+    );
+    expect(
+      failureMessage(fr, const ServiceFailure(ServiceFailureCode.denied)),
+      'Vous n’avez pas le droit de faire cela.',
+    );
+    expect(
+      failureMessage(en, const ServiceFailure(ServiceFailureCode.other)),
+      _genericEn,
+    );
+    expect(
+      failureMessage(fr, const ServiceFailure(ServiceFailureCode.other)),
+      _genericFr,
+    );
+  });
+
   test('only the documented codes fall back to the generic message', () {
     final generic = {
       for (final entry in _expected.entries)
         if (entry.value.$1 == _genericEn) entry.key,
     };
 
-    expect(generic, hasLength(14));
+    expect(generic, hasLength(15));
   });
 }

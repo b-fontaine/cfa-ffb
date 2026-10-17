@@ -51,7 +51,7 @@ class FirebaseStartup implements SessionStartup {
 
   Future<bool> _initialize() async {
     try {
-      await gateway.initialize();
+      await gateway.initialize(emulator: environment.usesEmulator);
       if (environment.usesEmulator) {
         await gateway.useEmulators(
           host: environment.emulatorHost!,

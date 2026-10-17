@@ -20,7 +20,7 @@ Registre au sens de l'article 30 du RGPD, modèle pour un club. Statut : **proje
 | Finalité | Préparer et adapter les séances de billard (Blackball, niveau 1) ; suivre les résultats d'exercices des élèves de la saison |
 | Base légale | `[Prop]` intérêt légitime du club (suivi pédagogique) ou exécution du contrat d'adhésion ; **à valider par le DPO**. Compte propre d'un élève de 15 ans et plus : il s'inscrit lui-même ; sous 15 ans, accès par le parent |
 | Personnes | Élèves mineurs et adultes du club |
-| Données | Prénom + initiale du nom (bornées) ; public (enfants, adultes) ; appartenance à des groupes datés ; présences ; passages et résultats d'exercices ; acquittements d'alertes ; étiquettes de séance (liste fermée, non nominatives) ; **commentaire d'évaluation** (`MaturityAssessment.comment`, texte libre facultatif, borné à `maxCommentLength`, conservé). **Exclus** : date de naissance, santé, photo, coordonnées de l'élève, tout autre texte libre (la note de jeu est sans texte libre, ADR 0023) |
+| Données | Prénom + initiale du nom (bornées : prénom de 40 caractères au plus, initiale d'une seule lettre) ; public (enfants, adultes) ; **dès le lot FB3, une copie minimale de la fiche (prénom, public, groupes courants) est publiée sur le serveur à la première invitation d'un élève ou d'un parent** (les autres données restent locales jusqu'au lot FB4) ; appartenance à des groupes datés ; présences ; passages et résultats d'exercices ; acquittements d'alertes ; étiquettes de séance (liste fermée, non nominatives) ; **commentaire d'évaluation** (`MaturityAssessment.comment`, texte libre facultatif, borné à `maxCommentLength`, conservé). **Exclus** : date de naissance, santé, photo, coordonnées de l'élève, tout autre texte libre (la note de jeu est sans texte libre, ADR 0023) |
 | Catégories particulières | Aucune |
 | Destinataires | Enseignants des groupes de l'élève ; directeur du club ; **administrateurs de l'éditeur (un à deux comptes, accès à tous les clubs, y compris aux prénoms de mineurs)** ; parent ou élève (fiche en parcours et séances planifiées seulement) ; Google (hébergement) |
 | Transferts hors UE | Firestore : `europe-west9` (France), pas de transfert. **Auth : traité aux États-Unis** (e-mail des adultes) : DPF et clauses contractuelles types de Google ; `[garanties de transfert à valider par le DPO]` |
@@ -34,8 +34,8 @@ Registre au sens de l'article 30 du RGPD, modèle pour un club. Statut : **proje
 |---|---|
 | Finalité | Authentifier les utilisateurs, appliquer les droits par rôle et par club, inviter les membres |
 | Base légale | `[Prop]` intérêt légitime du club (accès sécurisé au service) ; **à valider par le DPO** |
-| Données | Adresse e-mail, mot de passe (haché par Google), identifiant de compte, rôle par club, lien avec une ou plusieurs fiches élèves (parent), adresses IP et agent utilisateur traités par Google Auth, codes d'invitation (rôle, club, expiration) |
-| Destinataires | Directeur du club (liste des membres) ; administrateurs ; Google (Auth, Firestore) |
+| Données | Adresse e-mail, mot de passe (haché par Google), identifiant de compte, rôle par club, lien avec une ou plusieurs fiches élèves (parent), adresses IP et agent utilisateur traités par Google Auth ; **ajoutées par le lot FB3** : le **nom affiché** que l'invité saisit à l'inscription (40 caractères au plus, visible de l'équipe du club), le document `members` (rôle, groupes, fiches liées, date de rattachement, **code d'invitation utilisé**), le document d'invitation (code Base32, rôle, club, groupes ou fiches liées, identifiant du créateur, dates de création et d'expiration, état « utilisée » et identifiant de l'utilisateur), un **journal local des codes émis** sur l'appareil de l'inviteur (jamais envoyé au serveur, effacé à la déconnexion), le code gardé sur l'appareil entre l'inscription et la première connexion |
+| Destinataires | Directeur du club (liste des membres : nom affiché et rôle) ; administrateurs (tous les clubs, y compris les listes de membres) ; Google (Auth, Firestore). **Un enseignant, un élève ou un parent ne lit que son propre `member`** (règles Firestore, testées) |
 | Transferts hors UE | **Auth : États-Unis** (DPF, clauses contractuelles types) ; `[garanties de transfert à valider par le DPO]` |
 | Durée de conservation | Parent : fin de la saison suivante du dernier enfant lié ; enseignant et directeur : 12 mois après le dernier rattachement ; invitation : purgée à la clôture de saison (validité 7 jours, 48 h pour un enseignant) ; compte supprimé : sauvegardes Google purgées sous 180 jours. **Durées proposées, à valider** |
 | Sécurité | Inscription fermée par code d'invitation à usage unique (10 caractères Base32), e-mail vérifié, App Check, MFA directeur et administrateur à étudier |
@@ -48,6 +48,15 @@ Registre au sens de l'article 30 du RGPD, modèle pour un club. Statut : **proje
 | Données | Jeton d'attestation (7 jours au plus), adresse IP vue par reCAPTCHA sur web (destinataire : Google) |
 | Destinataires | Google |
 | Durée | Jetons de 7 jours au plus (source Firebase) ; durée de reCAPTCHA **non vérifiée** : `[à valider par le DPO]` |
+
+## Traitement 3 bis — Sonde de connectivité du SDK Firestore web
+
+| Rubrique | Contenu |
+|---|---|
+| Constat | Le SDK web de Firestore (WebChannel) charge une image de sonde `https://www.google.com/images/cleardot.gif` pour tester la connectivité (observé le 2026-10-17 dans le build web compilé, `scripts/web_smoke.sh`) |
+| Données | Adresse IP et agent utilisateur du navigateur, vus par Google ; aucune donnée du club |
+| Destinataire | Google |
+| Mesure | Aucune : appel fait par le SDK, non désactivable par un paramètre documenté ; à lister aux destinataires de la notice et à l'AIPD `[à valider par le DPO]` |
 
 ## Traitement 4 — Cache local hors ligne et sauvegardes JSON
 

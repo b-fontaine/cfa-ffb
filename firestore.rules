@@ -1,9 +1,596 @@
-rules_version='2'
+rules_version = '2';
 
-// Refus par défaut (ADR 0024, A9). Les règles par rôle arrivent avec FB3 et
-// leurs tests contre l'émulateur ; tant qu'elles n'existent pas, rien n'est lisible.
+// Règles Firestore COMPLÈTES du modèle de données (lot FB3, ADR 0024 décisions 14 à 16, 24, 25).
+//
+// Principes (voir docs/engineering/clubs-roles-plan.md pour le détail et le budget de get()) :
+//   - refus par défaut : tout chemin non listé ci-dessous est refusé, y compris pour
+//     l'administrateur (dernier bloc `match /{document=**}`) ;
+//   - e-mail vérifié exigé partout (`request.auth.token.email_verified`) ;
+//   - le rôle se lit par UN get() sur `clubs/{c}/members/{uid}` (même document pour tous les
+//     tests d'une règle) ; l'administrateur (`exists(/admins/{uid})`, document VIDE créé en
+//     console, jamais un champ) n'est évalué qu'après le rôle de club (`||` court-circuite) ;
+//   - les documents de données portent `groupId`, `studentId` et `seasonId` dénormalisés : une
+//     règle ne filtre pas les champs et ne parcourt pas une liste ;
+//   - `admins` : écriture jamais (console) ; `invitations` : get seul, jamais de list ;
+//   - un `member` ne se crée que par une invitation valide consommée dans le MÊME lot
+//     (`getAfter`), ou par le directeur (rôles teacher, student, guardian) ou l'administrateur ;
+//   - aucune élévation de privilège : un member ne modifie que son `displayName`.
+//
+// Les noms de collections sont listés dans scripts/rules_test/model.json, lu par les tests : une
+// collection ajoutée ici sans y figurer, ou l'inverse, fait échouer scripts/rules_test.sh.
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ───────────────────────── Aides ─────────────────────────
+
+    function verified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    // Le member du compte courant dans le club c : UN get() (même document pour tous les appels).
+    function me(c) {
+      return get(/databases/$(database)/documents/clubs/$(c)/members/$(request.auth.uid)).data;
+    }
+
+    // Administrateur : document `admins/{uid}` VIDE ; on teste l'existence, jamais un champ.
+    function isAdmin() {
+      return exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function adminOk() { return verified() && isAdmin(); }
+
+    function roleIs(c, roles) { return verified() && me(c).role in roles; }
+
+    function isDirector(c) { return roleIs(c, ['director']); }
+    function isTeacher(c) { return roleIs(c, ['teacher']); }
+    function isFamily(c) { return roleIs(c, ['student', 'guardian']); }
+    function isMember(c) { return roleIs(c, ['student', 'guardian', 'teacher', 'director']); }
+
+    // Directeur ou administrateur : tous les droits de gestion du club.
+    function manages(c) { return isDirector(c) || adminOk(); }
+
+    // Un enseignant agit sur les groupes de son member (`groupIds`).
+    function teachesGroup(c, g) { return isTeacher(c) && g in me(c).groupIds; }
+
+    // Élève ou parent : la fiche liée (`studentIds` du member).
+    function linkedTo(c, s) { return isFamily(c) && s in me(c).studentIds; }
+
+    // Lecture d'un document d'un groupe : gestionnaires, enseignant du groupe.
+    function staffReadsGroup(c, g) { return manages(c) || teachesGroup(c, g); }
+
+    // Élève ou parent : un groupe de son member (séances planifiées, groupes).
+    function familyInGroup(c, g) { return isFamily(c) && g in me(c).groupIds; }
+
+    // ── Bornes de champs (liste blanche par collection, ADR 0025 décision 4) ──
+    // Aucun champ hors liste : pas de texte libre sur un mineur, pas de stockage libre jusqu'à
+    // 1 MiB par document. Un champ facultatif absent ou `null` est accepté.
+
+    function optString(d, k, n) {
+      return !(k in d) || d[k] == null || (d[k] is string && d[k].size() <= n);
+    }
+
+    function optInt(d, k, lo, hi) {
+      return !(k in d) || d[k] == null || (d[k] is int && d[k] >= lo && d[k] <= hi);
+    }
+
+    // Date : texte ISO court (format actuel de l'application) ou horodatage.
+    function optStamp(d, k) {
+      return !(k in d) || d[k] == null || d[k] is timestamp || (d[k] is string && d[k].size() <= 40);
+    }
+
+    function optOneOf(d, k, values) {
+      return !(k in d) || d[k] == null || d[k] in values;
+    }
+
+    // Élément i d'une liste : absent, ou texte.
+    function textAt(l, i) { return l.size() <= i || l[i] is string; }
+
+    // Liste d'au plus 30 identifiants (taille totale bornée) dont CHAQUE élément est un texte
+    // (contrôle un à un : une règle ne boucle pas). Trop coûteux pour être répété dans une requête
+    // chargée (budget de 1000 expressions) : réservé à `groups.teacherUids`, écrit par le seul
+    // directeur ; ailleurs, `idList` borne seulement la taille totale.
+    function strList30(l) {
+      return idList(l, 30)
+        && textAt(l, 0) && textAt(l, 1) && textAt(l, 2) && textAt(l, 3) && textAt(l, 4)
+        && textAt(l, 5) && textAt(l, 6) && textAt(l, 7) && textAt(l, 8) && textAt(l, 9)
+        && textAt(l, 10) && textAt(l, 11) && textAt(l, 12) && textAt(l, 13) && textAt(l, 14)
+        && textAt(l, 15) && textAt(l, 16) && textAt(l, 17) && textAt(l, 18) && textAt(l, 19)
+        && textAt(l, 20) && textAt(l, 21) && textAt(l, 22) && textAt(l, 23) && textAt(l, 24)
+        && textAt(l, 25) && textAt(l, 26) && textAt(l, 27) && textAt(l, 28) && textAt(l, 29);
+    }
+
+    // Liste d'au plus `max` identifiants. Dérouler un contrôle par élément dépasse le budget de
+    // 1000 expressions par requête (mesuré : 60 éléments x 2 listes) : la longueur totale du texte
+    // joint borne la taille de la liste (au plus 128 caractères par identifiant, plus le
+    // séparateur), donc aucun élément ne peut porter 900 Ko.
+    function idList(l, max) {
+      return l is list && l.size() <= max && l.join('|').size() <= max * 129;
+    }
+
+    // Champs d'appartenance dénormalisés, immuables après la création.
+    function sameGroupAndSeason() {
+      return request.resource.data.groupId == resource.data.groupId
+        && request.resource.data.seasonId == resource.data.seasonId;
+    }
+
+    function sameOwnership() {
+      return sameGroupAndSeason()
+        && request.resource.data.studentId == resource.data.studentId;
+    }
+
+    // Données d'un groupe : `groupId` et `seasonId` obligatoires.
+    function groupOwned() {
+      let d = request.resource.data;
+      return d.groupId is string && d.groupId.size() > 0 && d.groupId.size() <= 64
+        && d.seasonId is string && d.seasonId.size() > 0 && d.seasonId.size() <= 64;
+    }
+
+    // Données d'un élève dans un groupe : en plus, `studentId`.
+    function studentOwned() {
+      let d = request.resource.data;
+      return groupOwned()
+        && d.studentId is string && d.studentId.size() > 0 && d.studentId.size() <= 64;
+    }
+
+    // La fiche existe : une donnée d'un élève effacé ne ressuscite pas (ADR 0024, limites).
+    function studentExists(c) {
+      return exists(/databases/$(database)/documents/clubs/$(c)/students/$(request.resource.data.studentId));
+    }
+
+    // La fiche existe ET l'élève appartient au groupe écrit dans le document : un enseignant ne
+    // crée pas de donnée sur un élève hors de ses groupes (la donnée porterait son `groupId` mais
+    // serait lue par la famille de l'autre élève). Un seul get() (remplace exists()).
+    function studentInGroup(c) {
+      return get(/databases/$(database)/documents/clubs/$(c)/students/$(request.resource.data.studentId))
+        .data.groupIds.hasAny([request.resource.data.groupId]);
+    }
+
+    // Création d'une donnée d'élève : gestionnaire (fiche existante, import possible d'un
+    // historique) ou enseignant du groupe dont l'élève fait partie.
+    function mayCreateStudentData(c) {
+      return (manages(c) && studentExists(c))
+        || (teachesGroup(c, request.resource.data.groupId) && studentInGroup(c));
+    }
+
+    function mayWriteGroupData(c, g) { return manages(c) || teachesGroup(c, g); }
+
+    // ── Formes des documents de données ──
+    function dateOk(d) { return optStamp(d, 'createdAt') && optStamp(d, 'updatedAt') && optStamp(d, 'deletedAt'); }
+
+    function sessionShape() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['groupId', 'seasonId', 'title', 'date', 'audience', 'sheetId',
+                               'createdAt', 'updatedAt', 'deletedAt'])
+        && optString(d, 'title', 120) && optStamp(d, 'date') && optOneOf(d, 'audience', ['children', 'adults'])
+        && optString(d, 'sheetId', 64) && dateOk(d);
+    }
+
+    function recordShape() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['groupId', 'seasonId', 'date', 'audience', 'mainBlockId', 'recallBlockId',
+                               'sheetId', 'plannedSessionId', 'tags', 'presentStudentIds',
+                               'createdAt', 'updatedAt', 'deletedAt'])
+        && optStamp(d, 'date') && optOneOf(d, 'audience', ['children', 'adults'])
+        && optString(d, 'mainBlockId', 64) && optString(d, 'recallBlockId', 64)
+        && optString(d, 'sheetId', 64) && optString(d, 'plannedSessionId', 64)
+        // Étiquettes de la note de jeu : codes prédéfinis, jamais de texte libre (ADR 0023).
+        && (!('tags' in d) || (d.tags is list && d.tags.size() <= 8
+            && d.tags.hasOnly(['gameAppreciated', 'instructionsToRephrase', 'tooLong', 'tooShort',
+                               'tooHard', 'tooEasy', 'toRedo', 'equipmentLacking'])))
+        && (!('presentStudentIds' in d) || idList(d.presentStudentIds, 60))
+        && dateOk(d);
+    }
+
+    function attemptShape() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['groupId', 'seasonId', 'studentId', 'sessionId', 'blockId', 'exerciseNumber',
+                               'date', 'passIndex', 'potted', 'total', 'createdAt', 'updatedAt', 'deletedAt'])
+        && optString(d, 'sessionId', 64) && optString(d, 'blockId', 64)
+        && optInt(d, 'exerciseNumber', 0, 1000) && optStamp(d, 'date')
+        && optInt(d, 'passIndex', 0, 10000) && optInt(d, 'potted', 0, 100) && optInt(d, 'total', 0, 100)
+        && dateOk(d);
+    }
+
+    function acquisitionShape() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['groupId', 'seasonId', 'studentId', 'blockId', 'date', 'source',
+                               'createdAt', 'updatedAt', 'deletedAt'])
+        && optString(d, 'blockId', 64) && optStamp(d, 'date') && optOneOf(d, 'source', ['placement'])
+        && dateOk(d);
+    }
+
+    // Bilan : trois notes de 1 à 4 et un commentaire facultatif borné à 500 caractères (seul
+    // texte libre, signalé à l'AIPD).
+    function assessmentShape() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['groupId', 'seasonId', 'studentId', 'date', 'concentration', 'endurance',
+                               'frustration', 'comment', 'createdAt', 'updatedAt', 'deletedAt'])
+        && optStamp(d, 'date') && optInt(d, 'concentration', 1, 4) && optInt(d, 'endurance', 1, 4)
+        && optInt(d, 'frustration', 1, 4) && optString(d, 'comment', 500) && dateOk(d);
+    }
+
+    function acknowledgementShape() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['groupId', 'seasonId', 'studentId', 'blockId', 'exerciseNumber',
+                               'lastAttemptId', 'date', 'createdBy', 'createdAt', 'updatedAt', 'deletedAt'])
+        && optString(d, 'blockId', 64) && optInt(d, 'exerciseNumber', 0, 1000)
+        && optString(d, 'lastAttemptId', 64) && optStamp(d, 'date') && optString(d, 'createdBy', 128)
+        && dateOk(d);
+    }
+
+    function membershipShape() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['groupId', 'seasonId', 'studentId', 'from', 'to', 'createdAt', 'updatedAt'])
+        && optStamp(d, 'from') && optStamp(d, 'to') && optStamp(d, 'createdAt') && optStamp(d, 'updatedAt');
+    }
+
+    // ───────────────────────── Administrateurs ─────────────────────────
+    // Document VIDE créé à la main dans la console. Lecture de soi seulement ; jamais d'écriture.
+    match /admins/{adminId} {
+      allow get: if verified() && request.auth.uid == adminId;
+      allow list: if false;
+      allow write: if false;
+    }
+
+    // ───────────────────────── Clubs ─────────────────────────
+
+    function clubShape() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['name', 'currentSeasonId', 'createdAt'])
+        && d.keys().hasAll(['name', 'createdAt'])
+        && d.name is string && d.name.size() >= 1 && d.name.size() <= 80
+        && (!('currentSeasonId' in d) || d.currentSeasonId == null
+            || (d.currentSeasonId is string && d.currentSeasonId.size() <= 64));
+    }
+
+    match /clubs/{clubId} {
+      allow get: if isMember(clubId) || adminOk();
+      allow list: if adminOk();
+      allow create: if adminOk() && clubShape()
+        && clubId.matches('[A-Za-z0-9_-]{1,64}')
+        && request.resource.data.createdAt == request.time;
+      // Le directeur ne modifie que le nom ; l'administrateur aussi la saison courante.
+      allow update: if clubShape() && request.resource.data.createdAt == resource.data.createdAt
+        && ((isDirector(clubId)
+              && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name']))
+            || adminOk());
+      allow delete: if adminOk();
+
+      // ── Réglages du club : document unique `main` ──
+      function settingsShape() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['passesRequired', 'alertThreshold', 'recallStaleSessions',
+                                 'groupFailureSharePercent', 'backupReminderDays'])
+          && d.keys().hasAll(['passesRequired', 'alertThreshold', 'recallStaleSessions',
+                              'groupFailureSharePercent'])
+          && d.passesRequired is int && d.passesRequired >= 1 && d.passesRequired <= 100
+          && d.alertThreshold is int && d.alertThreshold >= 1 && d.alertThreshold <= 100
+          && d.recallStaleSessions is int && d.recallStaleSessions >= 1 && d.recallStaleSessions <= 100
+          && d.groupFailureSharePercent is int
+          && d.groupFailureSharePercent >= 1 && d.groupFailureSharePercent <= 100
+          && (!('backupReminderDays' in d)
+              || (d.backupReminderDays is int && d.backupReminderDays >= 1 && d.backupReminderDays <= 365));
+      }
+
+      match /settings/main {
+        allow get: if isMember(clubId) || adminOk();
+        allow list: if false;
+        allow create, update: if manages(clubId) && settingsShape();
+        allow delete: if manages(clubId);
+      }
+
+      // ── Membres : rôle et périmètre (`groupIds`, `studentIds`) ──
+      function memberShape() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['uid', 'role', 'groupIds', 'studentIds', 'displayName',
+                                 'invitationCode', 'createdAt'])
+          && d.keys().hasAll(['uid', 'role', 'groupIds', 'studentIds', 'displayName', 'createdAt'])
+          && d.role in ['student', 'guardian', 'teacher', 'director']
+          && idList(d.groupIds, 30) && idList(d.studentIds, 30)
+          && d.displayName is string && d.displayName.size() >= 1 && d.displayName.size() <= 40;
+      }
+
+      // Invitation valide, consommée dans le MÊME lot : le member créé reprend exactement le
+      // rôle, le club, les groupes et les fiches de l'invitation.
+      function joinsWithInvitation(memberId) {
+        let d = request.resource.data;
+        return verified() && memberId == request.auth.uid && d.uid == memberId
+          && d.invitationCode is string && d.invitationCode.matches('[A-Z2-7]{10,32}')
+          && d.createdAt == request.time
+          && get(/databases/$(database)/documents/invitations/$(d.invitationCode)).data.clubId == clubId
+          && get(/databases/$(database)/documents/invitations/$(d.invitationCode)).data.role == d.role
+          && get(/databases/$(database)/documents/invitations/$(d.invitationCode)).data.groupIds == d.groupIds
+          && get(/databases/$(database)/documents/invitations/$(d.invitationCode)).data.studentIds == d.studentIds
+          && get(/databases/$(database)/documents/invitations/$(d.invitationCode)).data.used == false
+          && request.time < get(/databases/$(database)/documents/invitations/$(d.invitationCode)).data.expiresAt
+          && getAfter(/databases/$(database)/documents/invitations/$(d.invitationCode)).data.used == true
+          && getAfter(/databases/$(database)/documents/invitations/$(d.invitationCode)).data.usedBy == memberId;
+      }
+
+      function directorMemberRoles() { return ['teacher', 'student', 'guardian']; }
+
+      match /members/{memberId} {
+        // Lecture du sien : voir le bloc `{path=**}/members/{m}` plus bas (aussi pour la requête
+        // de groupe de collections). Le directeur lit ceux de son club, l'administrateur tous.
+        allow get, list: if manages(clubId);
+
+        allow create: if memberShape() && (
+          joinsWithInvitation(memberId)
+          || (isDirector(clubId) && request.resource.data.role in directorMemberRoles()
+              && request.resource.data.uid == memberId
+              && request.resource.data.createdAt == request.time)
+          || (adminOk() && request.resource.data.uid == memberId
+              && request.resource.data.createdAt == request.time));
+
+        // Aucune élévation de privilège : le titulaire ne change que son nom affiché ; le
+        // directeur ne touche ni à un directeur ni ne crée de directeur.
+        allow update: if memberShape()
+          && request.resource.data.uid == resource.data.uid
+          && request.resource.data.createdAt == resource.data.createdAt
+          && (
+            (verified() && request.auth.uid == memberId
+              && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName']))
+            || (isDirector(clubId)
+                && resource.data.role in directorMemberRoles()
+                && request.resource.data.role in directorMemberRoles()
+                && request.resource.data.diff(resource.data).affectedKeys()
+                     .hasOnly(['role', 'groupIds', 'studentIds', 'displayName']))
+            || (adminOk()
+                && request.resource.data.diff(resource.data).affectedKeys()
+                     .hasOnly(['role', 'groupIds', 'studentIds', 'displayName'])));
+
+        allow delete: if (isDirector(clubId) && resource.data.role in directorMemberRoles())
+          || adminOk();
+      }
+
+      // ── Saisons ──
+      function seasonShape() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['label', 'startDate', 'endDate', 'closedOn', 'createdAt', 'updatedAt',
+                                 'deletedAt'])
+          && d.keys().hasAll(['label'])
+          && d.label is string && d.label.size() >= 1 && d.label.size() <= 80
+          && optStamp(d, 'startDate') && optStamp(d, 'endDate') && optStamp(d, 'closedOn') && dateOk(d);
+      }
+
+      match /seasons/{seasonId} {
+        allow get, list: if isMember(clubId) || adminOk();
+        allow create, update: if manages(clubId) && seasonShape();
+        allow delete: if manages(clubId);
+      }
+
+      // ── Groupes ──
+      function groupShape() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['seasonId', 'name', 'audience', 'teacherUids', 'createdAt', 'updatedAt',
+                                 'deletedAt'])
+          && d.keys().hasAll(['seasonId', 'name', 'teacherUids'])
+          && d.seasonId is string && d.seasonId.size() >= 1 && d.seasonId.size() <= 64
+          && d.name is string && d.name.size() >= 1 && d.name.size() <= 80
+          && optOneOf(d, 'audience', ['children', 'adults'])
+          && strList30(d.teacherUids) && dateOk(d);
+      }
+
+      match /groups/{groupId} {
+        allow get: if manages(clubId) || teachesGroup(clubId, groupId) || familyInGroup(clubId, groupId);
+        allow list: if manages(clubId);
+        allow create, update: if manages(clubId) && groupShape();
+        allow delete: if manages(clubId);
+      }
+
+      // ── Appartenances datées (id `studentId_from`) ──
+      match /memberships/{membershipId} {
+        allow get, list: if staffReadsGroup(clubId, resource.data.groupId);
+        allow create: if manages(clubId) && studentOwned() && membershipShape();
+        allow update: if manages(clubId) && studentOwned() && sameOwnership() && membershipShape();
+        allow delete: if manages(clubId);
+      }
+
+      // ── Fiches élèves : prénom, initiale, public, groupes courants ──
+      function studentShape() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['firstName', 'initial', 'audience', 'groupIds', 'createdAt',
+                                 'erasing', 'expireOn'])
+          && d.keys().hasAll(['firstName', 'groupIds'])
+          && d.firstName is string && d.firstName.size() >= 1 && d.firstName.size() <= 40
+          && (!('initial' in d) || (d.initial is string && d.initial.matches('\\pL')))
+          && (!('audience' in d) || d.audience in ['children', 'adults'])
+          && idList(d.groupIds, 30);
+      }
+
+      match /students/{studentId} {
+        allow get: if manages(clubId)
+          || (isTeacher(clubId) && resource.data.groupIds.hasAny(me(clubId).groupIds))
+          || linkedTo(clubId, studentId);
+        // L'enseignant liste ses élèves (array-contains / array-contains-any sur `groupIds`).
+        allow list: if manages(clubId)
+          || (isTeacher(clubId) && resource.data.groupIds.hasAny(me(clubId).groupIds));
+        // L'enseignant crée une fiche dans ses groupes ; il ne la modifie ni ne l'efface.
+        allow create: if studentShape() && (
+          manages(clubId)
+          || (isTeacher(clubId) && request.resource.data.groupIds.size() >= 1
+              && request.resource.data.groupIds.hasOnly(me(clubId).groupIds)));
+        allow update: if manages(clubId) && studentShape();
+        allow delete: if manages(clubId);
+      }
+
+      // ── Séances planifiées : lisibles aussi par élève et parent de leurs groupes ──
+      match /sessions/{sessionId} {
+        allow get, list: if staffReadsGroup(clubId, resource.data.groupId)
+          || familyInGroup(clubId, resource.data.groupId);
+        allow create: if groupOwned() && sessionShape()
+          && mayWriteGroupData(clubId, request.resource.data.groupId);
+        allow update: if groupOwned() && sessionShape() && sameGroupAndSeason()
+          && mayWriteGroupData(clubId, resource.data.groupId);
+        allow delete: if staffReadsGroup(clubId, resource.data.groupId);
+      }
+
+      // ── Saisies de séance (assiduité, étiquettes) : jamais lisibles par élève ou parent ──
+      match /records/{recordId} {
+        allow get, list: if staffReadsGroup(clubId, resource.data.groupId);
+        allow create: if groupOwned() && recordShape()
+          && mayWriteGroupData(clubId, request.resource.data.groupId);
+        allow update: if groupOwned() && recordShape() && sameGroupAndSeason()
+          && mayWriteGroupData(clubId, resource.data.groupId);
+        allow delete: if staffReadsGroup(clubId, resource.data.groupId);
+      }
+
+      // ── Passages et acquis : lisibles aussi par la fiche liée ──
+      match /attempts/{attemptId} {
+        allow get, list: if staffReadsGroup(clubId, resource.data.groupId)
+          || linkedTo(clubId, resource.data.studentId);
+        allow create: if studentOwned() && attemptShape() && mayCreateStudentData(clubId);
+        allow update: if studentOwned() && attemptShape() && sameOwnership()
+          && mayWriteGroupData(clubId, resource.data.groupId);
+        allow delete: if staffReadsGroup(clubId, resource.data.groupId);
+      }
+
+      match /acquisitions/{acquisitionId} {
+        allow get, list: if staffReadsGroup(clubId, resource.data.groupId)
+          || linkedTo(clubId, resource.data.studentId);
+        allow create: if studentOwned() && acquisitionShape() && mayCreateStudentData(clubId);
+        allow update: if studentOwned() && acquisitionShape() && sameOwnership()
+          && mayWriteGroupData(clubId, resource.data.groupId);
+        allow delete: if staffReadsGroup(clubId, resource.data.groupId);
+      }
+
+      // ── Bilans (commentaire libre borné) et acquittements « Vu » : jamais lisibles par la famille ──
+      match /assessments/{assessmentId} {
+        allow get, list: if staffReadsGroup(clubId, resource.data.groupId);
+        allow create: if studentOwned() && assessmentShape() && mayCreateStudentData(clubId);
+        allow update: if studentOwned() && assessmentShape() && sameOwnership()
+          && mayWriteGroupData(clubId, resource.data.groupId);
+        allow delete: if staffReadsGroup(clubId, resource.data.groupId);
+      }
+
+      match /acknowledgements/{acknowledgementId} {
+        allow get, list: if staffReadsGroup(clubId, resource.data.groupId);
+        allow create: if studentOwned() && acknowledgementShape() && mayCreateStudentData(clubId);
+        allow update: if studentOwned() && acknowledgementShape() && sameOwnership()
+          && mayWriteGroupData(clubId, resource.data.groupId);
+        allow delete: if staffReadsGroup(clubId, resource.data.groupId);
+      }
+
+      // ── Archives agrégées de fin de saison : lues par les animateurs, écrites à la clôture ──
+      // Un document de synthèse (`season_public`) et un document par exercice : aucun identifiant
+      // d'élève ni de groupe, uniquement des compteurs bornés.
+      function archiveShape() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['seasonId', 'public', 'sessionCount', 'presenceCount',
+                                 'possiblePresenceCount', 'studentCount', 'attemptCount', 'blockId',
+                                 'exerciseNumber', 'potted', 'total', 'createdAt'])
+          && d.keys().hasAll(['seasonId'])
+          && d.seasonId is string && d.seasonId.size() >= 1 && d.seasonId.size() <= 64
+          && optOneOf(d, 'public', ['children', 'adults'])
+          && optInt(d, 'sessionCount', 0, 1000000) && optInt(d, 'presenceCount', 0, 1000000)
+          && optInt(d, 'possiblePresenceCount', 0, 1000000) && optInt(d, 'studentCount', 0, 1000000)
+          && optInt(d, 'attemptCount', 0, 1000000) && optString(d, 'blockId', 64)
+          && optInt(d, 'exerciseNumber', 0, 1000) && optInt(d, 'potted', 0, 1000000)
+          && optInt(d, 'total', 0, 1000000) && optStamp(d, 'createdAt');
+      }
+
+      match /archives/{archiveId} {
+        allow get, list: if isTeacher(clubId) || manages(clubId);
+        allow create, update: if manages(clubId) && archiveShape();
+        allow delete: if manages(clubId);
+      }
+    }
+
+    // ───────────────────────── Invitations ─────────────────────────
+    // `invitations/{code}` (code Base32 d'au moins 10 caractères) : get seul, JAMAIS de list. Le
+    // chemin ne porte pas le club : l'invité ne connaît que le code (écart au tableau de
+    // l'ADR 0024, noté dans sa note de réalisation FB3).
+
+    function codeShape(code) { return code.matches('[A-Z2-7]{10,32}'); }
+
+    function invitationShape() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['clubId', 'role', 'groupIds', 'studentIds', 'createdBy',
+                               'createdAt', 'expiresAt', 'used'])
+        && d.keys().hasAll(['clubId', 'role', 'groupIds', 'studentIds', 'createdBy',
+                            'createdAt', 'expiresAt', 'used'])
+        && d.clubId is string && d.clubId.matches('[A-Za-z0-9_-]{1,64}')
+        && d.role in ['teacher', 'student', 'guardian', 'director']
+        && idList(d.groupIds, 30) && idList(d.studentIds, 4)
+        && d.createdBy == request.auth.uid
+        && d.createdAt == request.time
+        && d.used == false
+        // 7 jours (48 h pour un rôle plus puissant : enseignant, directeur), 1 h de tolérance
+        // sur l'horloge du client.
+        && d.expiresAt is timestamp && d.expiresAt > request.time
+        && d.expiresAt <= request.time
+             + (d.role in ['teacher', 'director'] ? duration.value(49, 'h') : duration.value(169, 'h'))
+        // Une fiche liée pour élève (une) et parent (une à quatre) ; aucune pour enseignant et
+        // directeur ; groupes obligatoires pour élève et parent.
+        && (d.role == 'student' ? (d.studentIds.size() == 1 && d.groupIds.size() >= 1) : true)
+        && (d.role == 'guardian' ? (d.studentIds.size() >= 1 && d.groupIds.size() >= 1) : true)
+        && (d.role in ['teacher', 'director'] ? d.studentIds.size() == 0 : true)
+        && (d.role == 'director' ? d.groupIds.size() == 0 : true);
+    }
+
+    // Les fiches liées existent (jusqu'à quatre : déroulé sans boucle).
+    function studentsExist(clubId, ids) {
+      return (ids.size() < 1 || exists(/databases/$(database)/documents/clubs/$(clubId)/students/$(ids[0])))
+        && (ids.size() < 2 || exists(/databases/$(database)/documents/clubs/$(clubId)/students/$(ids[1])))
+        && (ids.size() < 3 || exists(/databases/$(database)/documents/clubs/$(clubId)/students/$(ids[2])))
+        && (ids.size() < 4 || exists(/databases/$(database)/documents/clubs/$(clubId)/students/$(ids[3])));
+    }
+
+    // Les fiches liées sont dans un groupe de l'enseignant qui invite.
+    function studentsInMyGroups(clubId, ids) {
+      return (ids.size() < 1 || get(/databases/$(database)/documents/clubs/$(clubId)/students/$(ids[0])).data.groupIds.hasAny(me(clubId).groupIds))
+        && (ids.size() < 2 || get(/databases/$(database)/documents/clubs/$(clubId)/students/$(ids[1])).data.groupIds.hasAny(me(clubId).groupIds))
+        && (ids.size() < 3 || get(/databases/$(database)/documents/clubs/$(clubId)/students/$(ids[2])).data.groupIds.hasAny(me(clubId).groupIds))
+        && (ids.size() < 4 || get(/databases/$(database)/documents/clubs/$(clubId)/students/$(ids[3])).data.groupIds.hasAny(me(clubId).groupIds));
+    }
+
+    match /invitations/{code} {
+      allow get: if verified();
+      allow list: if false;
+
+      // L'administrateur invite partout (le directeur d'un club existant) ; le directeur dans son
+      // club (jamais un directeur) ; l'enseignant des élèves et parents de SES groupes.
+      allow create: if verified() && codeShape(code) && invitationShape() && (
+        (isAdmin()
+          && exists(/databases/$(database)/documents/clubs/$(request.resource.data.clubId))
+          && studentsExist(request.resource.data.clubId, request.resource.data.studentIds))
+        || (isDirector(request.resource.data.clubId)
+            && request.resource.data.role in ['teacher', 'student', 'guardian']
+            && studentsExist(request.resource.data.clubId, request.resource.data.studentIds))
+        || (isTeacher(request.resource.data.clubId)
+            && request.resource.data.role in ['student', 'guardian']
+            && request.resource.data.groupIds.hasOnly(me(request.resource.data.clubId).groupIds)
+            && studentsInMyGroups(request.resource.data.clubId, request.resource.data.studentIds)));
+
+      // Usage unique : seule la consommation est permise (used, usedBy, usedAt), une fois, avant
+      // l'expiration, et seulement si le member correspondant naît dans le même lot.
+      allow update: if verified()
+        && resource.data.used == false
+        && request.time < resource.data.expiresAt
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used', 'usedBy', 'usedAt'])
+        && request.resource.data.used == true
+        && request.resource.data.usedBy == request.auth.uid
+        && request.resource.data.usedAt == request.time
+        && existsAfter(/databases/$(database)/documents/clubs/$(resource.data.clubId)/members/$(request.auth.uid))
+        && getAfter(/databases/$(database)/documents/clubs/$(resource.data.clubId)/members/$(request.auth.uid)).data.invitationCode == code
+        && getAfter(/databases/$(database)/documents/clubs/$(resource.data.clubId)/members/$(request.auth.uid)).data.role == resource.data.role;
+
+      // Révocation : l'administrateur, le directeur du club, l'enseignant qui l'a créée.
+      allow delete: if adminOk() || isDirector(resource.data.clubId)
+        || (isTeacher(resource.data.clubId) && resource.data.createdBy == request.auth.uid);
+    }
+
+    // ───────────────────────── Requête « mes clubs » ─────────────────────────
+    // Le compte lit SES documents `members` (get ou requête de groupe de collections filtrée sur
+    // `uid`), où qu'ils soient : c'est ainsi que l'application découvre ses clubs et son rôle.
+    // Index d'exemption `members.uid` en portée « groupe de collections » (firestore.indexes.json).
+    match /{path=**}/members/{memberId} {
+      allow read: if verified() && resource.data.uid == request.auth.uid;
+    }
+
+    // ───────────────────────── Refus par défaut ─────────────────────────
+    // Tout le reste est refusé : aucune autre collection, aucun sous-chemin inconnu, y compris
+    // pour l'administrateur et le directeur.
     match /{document=**} {
       allow read, write: if false;
     }

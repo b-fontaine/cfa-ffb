@@ -5,8 +5,19 @@ import 'package:billard_cfa/shared/lib/failure.dart';
 String failureMessage(AppLocalizations l10n, Failure failure) =>
     switch (failure) {
       NotFound() => l10n.failNotFound,
+      ServiceFailure(:final code) => switch (code) {
+        ServiceFailureCode.unavailable => l10n.failServiceUnavailable,
+        ServiceFailureCode.denied => l10n.failServiceDenied,
+        ServiceFailureCode.other => l10n.failGeneric,
+      },
       InvariantViolation(:final code) => switch (code) {
         InvariantCode.blankName => l10n.failBlankName,
+        InvariantCode.nameRequired => l10n.failNameRequired,
+        InvariantCode.nameTooLong => l10n.failNameTooLong,
+        InvariantCode.actionNotAllowed => l10n.failActionNotAllowed,
+        InvariantCode.ageConfirmationRequired =>
+          l10n.failAgeConfirmationRequired,
+        InvariantCode.studentChoiceRequired => l10n.failStudentChoiceRequired,
         InvariantCode.passesLimitReached => l10n.failPassesLimit,
         InvariantCode.studentNotPresent => l10n.failStudentNotPresent,
         InvariantCode.studentNotInGroup => l10n.failStudentNotInGroup,
@@ -61,6 +72,7 @@ String failureMessage(AppLocalizations l10n, Failure failure) =>
         InvariantCode.recallEqualsMainBlock ||
         InvariantCode.invalidCatalogue ||
         InvariantCode.invalidDiagram ||
+        InvariantCode.invalidInvitation ||
         InvariantCode.invalidSheet => l10n.failGeneric,
       },
     };

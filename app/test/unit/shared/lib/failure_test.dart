@@ -57,15 +57,31 @@ void main() {
       'InvariantViolation(negativePotted)',
     );
     expect(const NotFound('group', 'g1').toString(), 'NotFound(group, g1)');
+    expect(
+      const ServiceFailure(ServiceFailureCode.unavailable).toString(),
+      'ServiceFailure(unavailable)',
+    );
+    expect(
+      const ServiceFailure(
+        ServiceFailureCode.denied,
+        'permission-denied',
+      ).toString(),
+      'ServiceFailure(denied: permission-denied)',
+    );
   });
 
   test('a switch over Failure is exhaustive', () {
     String describe(Failure failure) => switch (failure) {
       InvariantViolation() => 'invariant',
       NotFound() => 'not-found',
+      ServiceFailure() => 'service',
     };
 
     expect(describe(const NotFound('a', 'b')), 'not-found');
+    expect(
+      describe(const ServiceFailure(ServiceFailureCode.denied)),
+      'service',
+    );
     expect(
       describe(const InvariantViolation(InvariantCode.blankName)),
       'invariant',

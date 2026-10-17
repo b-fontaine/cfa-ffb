@@ -7,7 +7,7 @@
 #   task run        lance l'application (DEVICE=chrome par défaut ; Android, iOS et web seulement)
 #   task run DEVICE=chrome
 #   task check      vérification rapide ; task check:full pour tout
-#   task emulators  émulateurs Firebase (Auth + Firestore) ; task rules:test pour les règles
+#   task emulators  émulateurs Firebase (Auth + Firestore) ; task rules:test pour les règles ; task emulators:seed pour la graine
 #   task diagrammes:sync | diagrammes:check | diagrammes:validate
 #   task fiches:sync | fiches:check | fiches:validate
 version: '3'
@@ -256,9 +256,20 @@ tasks:
     cmds:
       - scripts/rules_test.sh
 
+  emulators:e2e:
+    desc: "Parcours navigateur : application (debug) + émulateurs Auth et Firestore + graine (Chrome, Java, npm ci)"
+    cmds:
+      - scripts/emulator_e2e.sh
+
+  emulators:seed:
+    desc: "Pose la graine (admin, directeur, deux enseignants, parent, élève de 15 ans, club « Démo ») dans les émulateurs lancés par `task emulators`"
+    cmds:
+      - node scripts/seed_emulator.mjs
+
   emulators:
     desc: "Émulateurs Firebase locaux (Auth 9099, Firestore 8080) ; app avec --dart-define=FIREBASE_EMULATOR=true"
     cmds:
+      # Projet « demo-… » : l'application sous émulateur le prend aussi (FirebaseEnvironment.emulatorProjectId).
       - npx --no-install firebase emulators:start --only auth,firestore --project demo-cfa-ffb
 
   # ── Build ───────────────────────────────────────────────────────────────

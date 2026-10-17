@@ -3827,5 +3827,143 @@
   "moreSwitchClubHint": "Ce compte appartient à plusieurs clubs",
   "switchClubBackToMore": "Retour à Plus",
   "unavailableTitle": "Service indisponible",
-  "unavailableBody": "Le service de comptes ne répond pas. Vérifiez votre connexion puis réessayez. Hors ligne, l’application ne s’ouvre que sur un appareil déjà connecté."
+  "unavailableBody": "Le service de comptes ne répond pas. Vérifiez votre connexion puis réessayez. Hors ligne, l’application ne s’ouvre que sur un appareil déjà connecté.",
+  "failNameTooLong": "Ce nom est trop long.",
+  "failServiceUnavailable": "Le service ne répond pas. Vérifiez votre connexion puis réessayez.",
+  "failServiceDenied": "Vous n’avez pas le droit de faire cela.",
+  "failActionNotAllowed": "Votre rôle ne permet pas cette action.",
+  "failAgeConfirmationRequired": "Confirmez que cet élève a 15 ans ou plus, ou invitez plutôt un parent.",
+  "failStudentChoiceRequired": "Choisissez d’abord l’élève.",
+  "moreClub": "Mon club",
+  "moreClubHint": "Équipe, familles et invitations",
+  "moreAdministration": "Administration",
+  "moreAdministrationHint": "Clubs, directeurs et codes d’invitation",
+  "clubTitle": "Mon club",
+  "clubBack": "Retour à Mon club",
+  "clubRename": "Renommer le club",
+  "clubRenameLabel": "Nom du club",
+  "clubInviteAction": "Inviter quelqu’un",
+  "clubMembersTitle": "Équipe et familles",
+  "clubMembersEmpty": "Personne n’a encore rejoint le club.",
+  "clubMemberRemove": "Retirer l’accès",
+  "clubMemberRemoveTitle": "Retirer {name} ?",
+  "@clubMemberRemoveTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "clubMemberRemoveBody": "Cette personne perd aussitôt l’accès au club. Son compte n’est pas supprimé.",
+  "clubMemberRemoveConfirm": "Retirer",
+  "clubInvitationsTitle": "Invitations envoyées depuis cet appareil",
+  "clubInvitationsEmpty": "Aucune invitation envoyée depuis cet appareil.",
+  "clubInvitationsNote": "Par confidentialité, les codes ne sont pas listés sur le serveur : seules les invitations créées sur cet appareil figurent ici.",
+  "invitationStatusWaiting": "En attente",
+  "invitationStatusUsed": "Utilisée",
+  "invitationStatusExpired": "Expirée",
+  "invitationStatusUnknown": "État inconnu",
+  "invitationRevoke": "Révoquer",
+  "invitationRowSubtitle": "{role} · {status}",
+  "@invitationRowSubtitle": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteTitle": "Inviter quelqu’un",
+  "inviteRoleTitle": "Qui invitez-vous ?",
+  "inviteGroupsTitle": "Groupes de l’enseignant (facultatif)",
+  "inviteGroupsEmpty": "Aucun groupe pour l’instant.",
+  "inviteStudentTitle": "Quel élève ?",
+  "inviteChildrenTitle": "Quels enfants ? ({count} au plus)",
+  "@inviteChildrenTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inviteStudentsEmpty": "Aucun élève disponible. Ajoutez d’abord des élèves.",
+  "inviteStudentOption": "{name} · {group}",
+  "@inviteStudentOption": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteAgeConfirm": "Cet élève a 15 ans ou plus",
+  "inviteAgeHelp": "En dessous de 15 ans, invitez un parent. Aucun âge n’est enregistré.",
+  "inviteNoticeReminder": "Remettez la notice d’information aux familles avant de les inviter. Projet, à valider par la fédération ou un DPO.",
+  "inviteSubmit": "Créer l’invitation",
+  "inviteResultTitle": "Code d’invitation",
+  "inviteResultHelp": "Remettez ce code à la personne. Il ne sert qu’une fois.",
+  "inviteValidUntil": "Valable jusqu’au {date} à {time}",
+  "@inviteValidUntil": {
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "yMMMd"
+      },
+      "time": {
+        "type": "DateTime",
+        "format": "Hm"
+      }
+    }
+  },
+  "inviteCopyCode": "Copier le code",
+  "inviteCopyLink": "Copier le lien",
+  "inviteCopied": "Copié",
+  "inviteAnother": "Inviter quelqu’un d’autre",
+  "joinTitle": "Rejoindre un club",
+  "joinIntro": "Saisissez le code d’invitation reçu et le nom que verra votre équipe.",
+  "joinNameLabel": "Votre nom",
+  "joinNameHint": "Visible de l’équipe du club ({count} caractères au plus)",
+  "@joinNameHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "joinNotice": "Le club utilise votre nom et, pour une famille, le prénom et la progression de l’élève suivi, pour organiser les cours. Projet de notice, à valider par la fédération ou un DPO.",
+  "joinSubmit": "Rejoindre le club",
+  "joinErrorNotFound": "Ce code n’existe pas. Vérifiez-le puis réessayez.",
+  "joinErrorExpired": "Cette invitation a expiré. Demandez-en une nouvelle.",
+  "joinErrorUsed": "Cette invitation a déjà servi.",
+  "joinErrorRefused": "Cette invitation ne peut pas servir avec ce compte. Vous faites peut-être déjà partie de ce club.",
+  "joinErrorName": "Saisissez votre nom ({count} caractères au plus).",
+  "@joinErrorName": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noClubJoin": "J’ai un code d’invitation",
+  "noClubAdministration": "Administration",
+  "adminTitle": "Administration",
+  "adminIntro": "Créez des clubs et invitez leurs directeurs. Les administrateurs agissent dans tous les clubs.",
+  "adminBack": "Retour",
+  "adminCreateClub": "Créer un club",
+  "adminClubNameLabel": "Nom du club",
+  "adminCreateConfirm": "Créer",
+  "adminClubsEmpty": "Aucun club pour l’instant.",
+  "adminInviteDirector": "Inviter un directeur",
+  "adminDirectorInvitationsNote": "Invitations de directeur envoyées depuis cet appareil",
+  "navMyChildren": "Mes enfants",
+  "navMyProgress": "Ma progression",
+  "childrenTitleGuardian": "Mes enfants",
+  "childrenTitleStudent": "Ma progression",
+  "childrenEmpty": "Aucun élève n’est encore lié à votre compte.",
+  "childrenShow": "Voir la progression",
+  "failNameRequired": "Un nom est obligatoire."
 }

@@ -31,4 +31,12 @@ abstract interface class ActiveClubScope {
   ClubId? get clubId;
 
   Role? get role;
+
+  /// Les groupes du `member` dans le club actif (enseignant : les siens ;
+  /// élève ou parent : ceux de sa fiche) ; vide pour un directeur ou un
+  /// administrateur, qui voient tout le club.
+  List<GroupId> get groupIds;
+
+  /// Les fiches liées au `member` (élève : la sienne ; parent : ses enfants).
+  List<StudentId> get studentIds;
 }

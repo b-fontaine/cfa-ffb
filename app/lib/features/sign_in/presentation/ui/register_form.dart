@@ -7,19 +7,30 @@ import 'package:flutter/material.dart';
 
 /// Formulaire d'inscription sur invitation : code, adresse e-mail et mot de
 /// passe d'au moins dix caractères. Il ne crée que le compte d'authentification
-/// (le rattachement au club est le lot FB3).
+/// et garde le code : le rattachement au club se fait après la première
+/// connexion (« Rejoindre un club »).
 class RegisterForm extends StatefulWidget {
-  const RegisterForm({required this.state, required this.onSubmit, super.key});
+  const RegisterForm({
+    required this.state,
+    required this.onSubmit,
+    this.initialCode,
+    super.key,
+  });
 
   final AuthFormState state;
   final void Function(String code, String email, String password) onSubmit;
+
+  /// Le code d'un lien d'invitation (`/join/<code>`), déjà saisi.
+  final String? initialCode;
 
   @override
   State<RegisterForm> createState() => _RegisterFormState();
 }
 
 class _RegisterFormState extends State<RegisterForm> {
-  final _code = TextEditingController();
+  late final TextEditingController _code = TextEditingController(
+    text: widget.initialCode,
+  );
   final _email = TextEditingController();
   final _password = TextEditingController();
 

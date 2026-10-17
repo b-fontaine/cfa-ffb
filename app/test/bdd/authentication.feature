@@ -192,6 +192,7 @@ Feature: Account access
     Given the account service is unavailable
     And the app is running
     Then I see {'Service unavailable'} text
+    And I do not see {'Sign out'} text
     When the account service is available again
     And I tap {'Retry'} text
     Then I see {'Plan the next session'} text
@@ -212,6 +213,19 @@ Feature: Account access
     And I enter {'correct-horse-battery'} into {1} input field
     And I tap {'Sign in'} text
     Then I see {'Service unavailable'} text
+
+  Scenario: A signed-in account whose clubs cannot be read can sign out
+    Given the clubs of the account cannot be read
+    And nobody is signed in on the device
+    And the account {'coach@example.org'} exists with the password {'correct-horse-battery'}
+    And {'coach@example.org'} is a {'director'} of the club {'Club Nice'}
+    And the app is running
+    When I enter {'coach@example.org'} into {0} input field
+    And I enter {'correct-horse-battery'} into {1} input field
+    And I tap {'Sign in'} text
+    Then I see {'Service unavailable'} text
+    When I tap {'Sign out'} text
+    Then I see {'Sign in to the app'} text
 
   Scenario: Sign-up needs an invitation code and creates only the account
     Given nobody is signed in on the device

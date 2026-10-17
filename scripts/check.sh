@@ -5,6 +5,8 @@
 #                             + architecture + séances + validation des fiches
 #   scripts/check.sh --full   --fast + l10n + règles Firestore (émulateurs : Node, Java, npm ci)
 #                             + fumée du build web compilé (build release + Chrome, émulateur Auth)
+#                             + parcours de bout en bout (application en mode debug + Chrome, émulateurs
+#                               Auth et Firestore + graine : connexion de la directrice, lecture de son club)
 #                             + tests + couverture + Widgetbook (génération, format, analyse, use cases)
 #                             --fast reste inchangé : il n'exige ni Java ni node_modules.
 #
@@ -88,6 +90,9 @@ step "Règles Firestore (refus par défaut, contre l'émulateur ; échec si Node
 
 step "Build web compilé contre l'émulateur Auth (fumée navigateur ; échec si Node, Java, npm ci ou Chrome manquent)"
 "$ROOT/scripts/web_smoke.sh" --build
+
+step "Application + émulateurs Auth et Firestore + graine (parcours navigateur ; échec si Node, Java, npm ci, Chrome ou Flutter manquent)"
+"$ROOT/scripts/emulator_e2e.sh"
 
 step "Tests (BDD + unitaires) avec couverture"
 rm -rf coverage

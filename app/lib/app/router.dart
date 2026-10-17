@@ -10,6 +10,7 @@ import 'package:billard_cfa/app/sheet_export.dart';
 import 'package:billard_cfa/app/shell.dart';
 import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
 import 'package:billard_cfa/features/acknowledge_alert/presentation/bloc/acknowledgement_bloc.dart';
+import 'package:billard_cfa/features/administration/presentation/bloc/administration_cubit.dart';
 import 'package:billard_cfa/features/app_update/presentation/bloc/app_update_cubit.dart';
 import 'package:billard_cfa/features/assess_maturity/presentation/bloc/assessment_bloc.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_reminder.dart';
@@ -23,6 +24,8 @@ import 'package:billard_cfa/features/close_season/presentation/bloc/closable_sea
 import 'package:billard_cfa/features/close_season/presentation/bloc/season_closure_bloc.dart';
 import 'package:billard_cfa/features/close_season/presentation/ui/closable_season_section.dart';
 import 'package:billard_cfa/features/export_sheet/presentation/bloc/export_sheet_cubit.dart';
+import 'package:billard_cfa/features/manage_club/presentation/bloc/club_cubit.dart';
+import 'package:billard_cfa/features/manage_club/presentation/bloc/invite_cubit.dart';
 import 'package:billard_cfa/features/manage_groups/presentation/bloc/manage_groups_cubit.dart';
 import 'package:billard_cfa/features/manage_groups/presentation/bloc/move_student_cubit.dart';
 import 'package:billard_cfa/features/manage_settings/presentation/bloc/settings_bloc.dart';
@@ -43,9 +46,11 @@ import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_presentatio
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_sheet_sessions.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/running_sessions_cubit.dart';
 import 'package:billard_cfa/features/sign_in/presentation/bloc/forgot_password_cubit.dart';
+import 'package:billard_cfa/features/sign_in/presentation/bloc/join_cubit.dart';
 import 'package:billard_cfa/features/sign_in/presentation/bloc/register_cubit.dart';
 import 'package:billard_cfa/features/sign_in/presentation/bloc/sign_in_cubit.dart';
 import 'package:billard_cfa/features/sign_in/presentation/ui/account_section.dart';
+import 'package:billard_cfa/features/student_showcase/presentation/bloc/linked_students_cubit.dart';
 import 'package:billard_cfa/features/student_showcase/presentation/bloc/showcase_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/exercise_sheet_bloc.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/group_journey_cubit.dart';
@@ -58,14 +63,19 @@ import 'package:billard_cfa/features/track_progress/presentation/bloc/student_sh
 import 'package:billard_cfa/features/track_progress/presentation/bloc/watched_students_cubit.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/week_summary_cubit.dart';
 import 'package:billard_cfa/features/track_seasons/presentation/bloc/season_archives_cubit.dart';
+import 'package:billard_cfa/pages/administration/presentation/administration_page.dart';
 import 'package:billard_cfa/pages/assessment/presentation/assessment_page.dart';
 import 'package:billard_cfa/pages/backup/presentation/backup_page.dart';
+import 'package:billard_cfa/pages/club/presentation/club_page.dart';
 import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_page.dart';
 import 'package:billard_cfa/pages/export_sheet/presentation/export_sheet_page.dart';
 import 'package:billard_cfa/pages/forgot_password/presentation/forgot_password_page.dart';
 import 'package:billard_cfa/pages/group_overview/presentation/group_overview_page.dart';
 import 'package:billard_cfa/pages/home/presentation/home_page.dart';
+import 'package:billard_cfa/pages/invite_member/presentation/invite_member_page.dart';
+import 'package:billard_cfa/pages/join/presentation/join_page.dart';
 import 'package:billard_cfa/pages/more/presentation/more_page.dart';
+import 'package:billard_cfa/pages/my_children/presentation/my_children_page.dart';
 import 'package:billard_cfa/pages/not_found/presentation/not_found_page.dart';
 import 'package:billard_cfa/pages/record_history/presentation/record_history_page.dart';
 import 'package:billard_cfa/pages/register/presentation/register_page.dart';
@@ -88,17 +98,21 @@ import 'package:billard_cfa/pages/students/presentation/students_page.dart';
 import 'package:billard_cfa/pages/suggested_session/presentation/suggested_session_page.dart';
 import 'package:billard_cfa/pages/unavailable/presentation/unavailable_page.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/club_switch_guard.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/invitation_code.dart';
+import 'package:billard_cfa/shared/lib/role_policy.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/ui/role_labels.dart';
 import 'package:billard_cfa/widgets/roster_picker/presentation/roster_selection_cubit.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart'
-    show Listenable, MaterialLocalizations, ValueKey;
+    show BuildContext, Listenable, MaterialLocalizations, ValueKey, Widget;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -123,6 +137,19 @@ abstract final class AppRoutes {
 
   /// Changer de club (sous « Plus » : plusieurs clubs, ADR 0024 décision 22).
   static const switchClub = '/more/club';
+
+  /// « Mon club » (équipe, familles, invitations) et « Inviter quelqu'un ».
+  static const club = '/club';
+  static const invite = '/club/invite';
+
+  /// « Administration » (administrateur) : clubs, directeurs, codes.
+  static const administration = '/administration';
+
+  /// Accueil d'un parent ou d'un élève : les élèves liés au compte.
+  static const myChildren = '/my-children';
+
+  /// Rejoindre un club avec un code d'invitation (`/join/<code>` : le lien).
+  static const join = '/join';
 
   /// Écrans de session (ADR 0024, décision 31) : aucun n'est protégé, et
   /// aucune route n'est ouverte sans compte.
@@ -152,6 +179,22 @@ abstract final class AppRoutes {
   /// Adresse de [path] avec ses paramètres non vides (jamais de `?` seul).
   static String _url(String path, Map<String, String> query) =>
       Uri(path: path, queryParameters: query.isEmpty ? null : query).toString();
+
+  /// `/join/<code>` : le lien d'une invitation.
+  static String joinWith(String code) => '$join/$code';
+
+  /// Le lien web d'une invitation : `<origine>/#/join/<code>` (la navigation
+  /// web utilise le fragment). Un simple confort : le code seul suffit.
+  static String joinLink(String origin, String code) =>
+      '${origin.replaceFirst(RegExp(r'/+$'), '')}/#${joinWith(code)}';
+
+  /// `/register?code=<code>` : l'inscription avec le code déjà saisi.
+  static String registerWith(String code) => _url(register, {'code': code});
+
+  /// `/splash?code=<code>` : l'écran de démarrage qui garde le code d'un lien
+  /// d'invitation le temps de lire la session (démarrage à froid : l'état est
+  /// d'abord inconnu). Jamais dans `from`.
+  static String splashWith(String code) => _url(splash, {'code': code});
 
   /// [path] suivi de l'adresse à retrouver après la connexion (`from`), si elle
   /// existe.
@@ -452,6 +495,38 @@ String? _nonBlank(String? raw) =>
 StudentId _studentId(GoRouterState state) =>
     StudentId(state.pathParameters['studentId']!);
 
+/// Vrai si la session ouverte a un rôle de club qui a [capability] : ce que le
+/// menu propose, et ce que le garde de route (`roleRedirect`) accepte.
+bool _can(AuthCubit auth, Capability capability) => switch (auth.state) {
+  AuthReady(:final club) => club.role.can(capability),
+  _ => false,
+};
+
+/// « Rejoindre un club » : le code d'un lien ou de l'inscription est
+/// prérempli ; une fois le `member` créé, la session est relue et le club
+/// s'ouvre. Sans club actif, « Se déconnecter » reste la seule autre sortie.
+Widget _joinPage(BuildContext context, AuthCubit auth, String? code) {
+  final router = GoRouter.of(context);
+  final ready = auth.state is AuthReady;
+  return BlocProvider(
+    create: (_) => getIt<JoinCubit>(),
+    child: JoinPage(
+      initialCode: code,
+      onBack: ready ? () => router.go(AppRoutes.more) : null,
+      onSignOut: ready ? null : () => unawaited(auth.signOut()),
+      onJoined: () => unawaited(() async {
+        await auth.refresh();
+        router.go(AppRoutes.home);
+      }()),
+    ),
+  );
+}
+
+/// Construit le lien web d'une invitation sur [origin] (schéma et hôte de
+/// l'application web) ; `null` hors du web, où seul le code se copie.
+String Function(InvitationCode)? inviteLinkFor(String? origin) =>
+    origin == null ? null : (code) => AppRoutes.joinLink(origin, code.value);
+
 /// Le routeur de l'application. [auth] décide de la redirection (aucune route
 /// sans compte, ADR 0024 décision 31) ; [refresh] la réévalue à chaque
 /// changement de session.
@@ -503,6 +578,7 @@ GoRouter buildRouter({
         return BlocProvider(
           create: (_) => getIt<RegisterCubit>(),
           child: RegisterPage(
+            initialCode: state.uri.queryParameters['code'],
             onBack: () =>
                 context.go(AppRoutes.withFrom(AppRoutes.signIn, from)),
           ),
@@ -516,23 +592,71 @@ GoRouter buildRouter({
           AuthNoClub(:final choices) => choices,
           _ => const <ClubMembership>[],
         };
+        final isAdmin = switch (auth.state) {
+          AuthNoClub(:final isAdmin) => isAdmin,
+          _ => false,
+        };
         return SelectClubPage(
           choices: choices,
           onChoose: (club) => unawaited(auth.chooseClub(club)),
           onRefresh: () => unawaited(auth.refresh()),
           onSignOut: () => unawaited(auth.signOut()),
+          onJoin: () => context.go(AppRoutes.join),
+          onAdministration: isAdmin
+              ? () => context.go(AppRoutes.administration)
+              : null,
+        );
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.join,
+      builder: (context, state) => _joinPage(context, auth, null),
+    ),
+    GoRoute(
+      path: '${AppRoutes.join}/:code',
+      builder: (context, state) =>
+          _joinPage(context, auth, state.pathParameters['code']),
+    ),
+    GoRoute(
+      path: AppRoutes.administration,
+      builder: (context, state) {
+        final session = auth.state;
+        return BlocProvider(
+          create: (_) {
+            final cubit = getIt<AdministrationCubit>();
+            unawaited(cubit.load());
+            return cubit;
+          },
+          child: AdministrationPage(
+            linkFor: inviteLinkFor(kIsWeb ? Uri.base.origin : null),
+            backLabel: session is AuthReady
+                ? AppLocalizations.of(context).switchClubBackToMore
+                : AppLocalizations.of(context).adminBack,
+            onBack: () => context.go(
+              session is AuthReady ? AppRoutes.more : AppRoutes.selectClub,
+            ),
+          ),
         );
       },
     ),
     GoRoute(
       path: AppRoutes.unavailable,
-      builder: (context, state) =>
-          UnavailablePage(onRetry: () => unawaited(auth.retry())),
+      builder: (context, state) => UnavailablePage(
+        onRetry: () => unawaited(auth.retry()),
+        onSignOut: auth.hasSession ? () => unawaited(auth.signOut()) : null,
+      ),
     ),
     ShellRoute(
       builder: (context, state, child) => BlocProvider(
         create: (_) => getIt<AppUpdateCubit>(),
-        child: AppShell(location: state.uri.path, child: child),
+        child: AppShell(
+          location: state.uri.path,
+          role: switch (auth.state) {
+            AuthReady(:final club) => club.role,
+            _ => null,
+          },
+          child: child,
+        ),
       ),
       routes: [
         GoRoute(
@@ -627,9 +751,11 @@ GoRouter buildRouter({
                   sheet: sheet,
                 ),
               ),
-              seasonCard: ClosableSeasonSection(
-                onClose: (id) => context.go(AppRoutes.closeSeason(id)),
-              ),
+              seasonCard: _can(auth, Capability.closeSeason)
+                  ? ClosableSeasonSection(
+                      onClose: (id) => context.go(AppRoutes.closeSeason(id)),
+                    )
+                  : null,
               banner: BlocBuilder<BackupReminderCubit, BackupReminder>(
                 builder: (context, reminder) => BackupReminderBanner(
                   reminder: reminder,
@@ -1060,10 +1186,23 @@ GoRouter buildRouter({
           path: AppRoutes.more,
           builder: (context, state) {
             final session = auth.state;
+            final role = session is AuthReady ? session.club.role : null;
             return MorePage(
-              onOpenBackup: () => context.go(AppRoutes.backup),
-              onOpenSettings: () => context.go(AppRoutes.settings),
-              onOpenSeasons: () => context.go(AppRoutes.seasons),
+              onOpenBackup: role?.animates ?? false
+                  ? () => context.go(AppRoutes.backup)
+                  : null,
+              onOpenSettings: _can(auth, Capability.manageSettings)
+                  ? () => context.go(AppRoutes.settings)
+                  : null,
+              onOpenSeasons: role?.animates ?? false
+                  ? () => context.go(AppRoutes.seasons)
+                  : null,
+              onOpenClub: _can(auth, Capability.openClub)
+                  ? () => context.go(AppRoutes.club)
+                  : null,
+              onOpenAdministration: session is AuthReady && session.isAdmin
+                  ? () => context.go(AppRoutes.administration)
+                  : null,
               account: session is AuthReady
                   ? AccountSection(
                       email: session.account.email,
@@ -1079,6 +1218,61 @@ GoRouter buildRouter({
                   : null,
             );
           },
+        ),
+        GoRoute(
+          path: AppRoutes.myChildren,
+          builder: (context, state) => BlocProvider(
+            create: (_) {
+              final cubit = getIt<LinkedStudentsCubit>();
+              unawaited(cubit.load());
+              return cubit;
+            },
+            child: MyChildrenPage(
+              studentOwnAccount:
+                  (auth.state is AuthReady
+                      ? (auth.state as AuthReady).club.role
+                      : null) ==
+                  Role.student,
+              onShow: (id) => context.go(AppRoutes.showcase(id)),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.club,
+          builder: (context, state) => BlocProvider(
+            create: (_) {
+              final cubit = getIt<ClubCubit>();
+              unawaited(cubit.load());
+              return cubit;
+            },
+            // Le nom du club vient de la session : il se met à jour quand le
+            // directeur renomme le club (la session est relue).
+            child: BlocBuilder<AuthCubit, AuthState>(
+              bloc: auth,
+              builder: (context, session) => session is AuthReady
+                  ? ClubPage(
+                      clubName: session.club.clubName,
+                      onInvite: () => context.go(AppRoutes.invite),
+                      onBack: () => context.go(AppRoutes.more),
+                      onRenamed: () => unawaited(auth.refresh()),
+                    )
+                  : NotFoundPage(onHome: () => context.go(AppRoutes.home)),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.invite,
+          builder: (context, state) => BlocProvider(
+            create: (_) {
+              final cubit = getIt<InviteCubit>();
+              unawaited(cubit.load());
+              return cubit;
+            },
+            child: InviteMemberPage(
+              linkFor: inviteLinkFor(kIsWeb ? Uri.base.origin : null),
+              onBack: () => context.go(AppRoutes.club),
+            ),
+          ),
         ),
         GoRoute(
           path: AppRoutes.switchClub,
@@ -1163,7 +1357,11 @@ GoRouter buildRouter({
           },
           child: StudentShowcasePage(
             studentId: id,
-            onDone: () => context.go(AppRoutes.student(id)),
+            onDone: () => context.go(
+              _can(auth, Capability.animate)
+                  ? AppRoutes.student(id)
+                  : AppRoutes.myChildren,
+            ),
           ),
         );
       },

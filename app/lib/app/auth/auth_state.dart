@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/account/domain/account.dart';
 import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
+import 'package:billard_cfa/shared/lib/invitation_code.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'auth_state.freezed.dart';
@@ -18,9 +19,15 @@ sealed class AuthState with _$AuthState {
 
   /// Connecté (adresse vérifiée) mais sans club actif : `choices` est vide (le
   /// compte n'est dans aucun club) ou liste les clubs à choisir.
+  ///
+  /// `isAdmin` : le compte est administrateur (il atteint « Administration »
+  /// même sans club). `pendingInvitation` : le code gardé à l'inscription
+  /// (FB2) que l'écran « Rejoindre un club » propose de consommer (FB3).
   const factory AuthState.noClub({
     required Account account,
     required List<ClubMembership> choices,
+    @Default(false) bool isAdmin,
+    InvitationCode? pendingInvitation,
   }) = AuthNoClub;
 
   /// Connecté, avec un club actif et un rôle : l'application s'ouvre.
@@ -30,6 +37,7 @@ sealed class AuthState with _$AuthState {
     required Account account,
     required ClubMembership club,
     required List<ClubMembership> choices,
+    @Default(false) bool isAdmin,
   }) = AuthReady;
 
   /// Le service de comptes est indisponible (initialisation échouée, ou clubs

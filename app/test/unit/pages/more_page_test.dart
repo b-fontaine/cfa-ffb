@@ -128,4 +128,52 @@ void main() {
 
     expect(switched, 1);
   });
+
+  testWidgets('shows only the entries that were given an action', (
+    tester,
+  ) async {
+    await pumpUi(tester, const MorePage());
+
+    expect(find.byType(ListTile), findsNothing);
+    expect(find.text('Backup'), findsNothing);
+    expect(find.text('Settings'), findsNothing);
+    expect(find.text('My club'), findsNothing);
+    expect(find.text('Administration'), findsNothing);
+  });
+
+  testWidgets('My club and Administration lead where they say', (tester) async {
+    var club = 0;
+    var administration = 0;
+    await pumpUi(
+      tester,
+      MorePage(
+        onOpenClub: () => club++,
+        onOpenAdministration: () => administration++,
+      ),
+    );
+
+    expect(find.byType(ListTile), findsNWidgets(2));
+    await tester.tap(find.text('My club'));
+    await tester.tap(find.text('Administration'));
+
+    expect([club, administration], [1, 1]);
+    expect(
+      tester.getSize(find.byType(ListTile).first).height,
+      greaterThanOrEqualTo(48),
+    );
+  });
+
+  testWidgets(
+    "a teacher's More has the backup and seasons, never the settings",
+    (tester) async {
+      await pumpUi(
+        tester,
+        MorePage(onOpenBackup: () {}, onOpenSeasons: () {}, onOpenClub: () {}),
+      );
+
+      expect(find.text('Backup'), findsOneWidget);
+      expect(find.text('Past seasons'), findsOneWidget);
+      expect(find.text('Settings'), findsNothing);
+    },
+  );
 }

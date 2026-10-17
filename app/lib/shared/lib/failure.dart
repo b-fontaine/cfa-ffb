@@ -3,6 +3,10 @@
 /// L'interface traduit ces codes via les ARB ; le domaine ne porte aucun texte.
 enum InvariantCode {
   blankName,
+
+  /// Un nom de club ou de membre est vide (le « prénom obligatoire » de
+  /// [blankName] ne convient pas à un club).
+  nameRequired,
   invalidPeriod,
   seasonOutsidePeriod,
   invalidRange,
@@ -55,6 +59,25 @@ enum InvariantCode {
   seasonClosed,
   seasonAlreadyClosed,
 
+  /// Un nom (club, prénom d'élève, nom affiché) dépasse la longueur que les
+  /// règles du serveur acceptent.
+  nameTooLong,
+
+  /// Une invitation ne respecte pas la forme que les règles du serveur
+  /// acceptent (rôle, groupes, fiches).
+  invalidInvitation,
+
+  /// Le rôle courant ne permet pas cette action (inviter ce rôle, retirer un
+  /// directeur, ouvrir un écran réservé : ADR 0024, décisions 6 et 14).
+  actionNotAllowed,
+
+  /// Une invitation d'élève exige la case « a 15 ans ou plus » (ADR 0025,
+  /// décision 4) : sinon, inviter un parent.
+  ageConfirmationRequired,
+
+  /// Aucun élève n'est choisi pour une invitation d'élève ou de parent.
+  studentChoiceRequired,
+
   /// Un texte à imprimer contient un caractère que la fonte du document ne
   /// sait pas dessiner (export PDF, ADR 0021).
   unprintableContent,
@@ -90,6 +113,34 @@ final class NotFound extends Failure {
 
   @override
   String toString() => 'NotFound($kind, $id)';
+}
+
+/// Pourquoi le service distant a échoué.
+enum ServiceFailureCode {
+  /// Réseau ou service injoignable.
+  unavailable,
+
+  /// Les règles du serveur refusent l'opération (rôle insuffisant, club
+  /// différent, invitation non valable).
+  denied,
+
+  /// Toute autre erreur du service.
+  other,
+}
+
+/// Le service distant (Firestore) n'a pas pu faire ce qu'on lui demandait.
+final class ServiceFailure extends Failure {
+  const ServiceFailure(this.code, [this.detail]);
+
+  final ServiceFailureCode code;
+
+  /// Précision technique pour le diagnostic (jamais affichée à l'utilisateur).
+  final String? detail;
+
+  @override
+  String toString() => detail == null
+      ? 'ServiceFailure(${code.name})'
+      : 'ServiceFailure(${code.name}: $detail)';
 }
 
 /// Résultat d'un cas d'usage : une valeur ou un [Failure].

@@ -26,6 +26,7 @@ void main() {
 
     expect(ready, isTrue);
     expect(gateway.calls, ['initialize']);
+    expect(gateway.emulatorRequests, [false]);
   });
 
   test('never touches the emulators in production', () async {
@@ -46,6 +47,9 @@ void main() {
 
     expect(ready, isTrue);
     expect(gateway.calls, ['initialize', 'useEmulators 10.0.2.2 9099 8080']);
+    expect(gateway.emulatorRequests, [
+      true,
+    ], reason: "le projet de l'émulateur est demandé dès l'initialisation");
   });
 
   test(

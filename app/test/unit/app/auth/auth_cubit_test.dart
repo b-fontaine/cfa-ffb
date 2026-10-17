@@ -7,12 +7,14 @@ import 'package:billard_cfa/entities/account/data/in_memory_auth_repository.dart
 import 'package:billard_cfa/entities/account/domain/account.dart';
 import 'package:billard_cfa/entities/account/domain/auth_failure.dart';
 import 'package:billard_cfa/entities/account/domain/auth_repository.dart';
+import 'package:billard_cfa/entities/invitation/domain/invitation_log.dart';
 import 'package:billard_cfa/entities/membership/data/key_value_active_club_memory.dart';
 import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
 import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
 import 'package:billard_cfa/features/select_club/domain/choose_club.dart';
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/invitation_code.dart';
 import 'package:billard_cfa/shared/lib/key_value_store.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -83,6 +85,9 @@ class _ExplodingMemberships implements MembershipsSource {
   @override
   Future<List<ClubMembership>> membershipsOf(UserId user) =>
       throw StateError('clubs illisibles');
+
+  @override
+  Future<bool> isAdmin(UserId user) => throw StateError('clubs illisibles');
 }
 
 /// Stockage local dont la lecture lève une erreur inattendue.
@@ -178,6 +183,8 @@ void main() {
         rig.memory,
         rig.chooseClub,
         rig.scope,
+        rig.pending,
+        rig.issued,
       );
       addTearDown(cubit.close);
       final reported = <FlutterErrorDetails>[];
@@ -435,6 +442,8 @@ void main() {
           rig.memory,
           rig.chooseClub,
           rig.scope,
+          rig.pending,
+          rig.issued,
         );
         addTearDown(cubit.close);
         await cubit.start();
@@ -476,6 +485,8 @@ void main() {
       rig.memory,
       rig.chooseClub,
       rig.scope,
+      rig.pending,
+      rig.issued,
     );
     addTearDown(cubit.close);
     final other = rig.auth.seed(email: 'other@example.org', password: 'pw');
@@ -543,6 +554,8 @@ void main() {
           rig.memory,
           rig.chooseClub,
           rig.scope,
+          rig.pending,
+          rig.issued,
         );
         addTearDown(cubit.close);
 
@@ -571,6 +584,8 @@ void main() {
           memory,
           ChooseClub(memory, rig.guard),
           rig.scope,
+          rig.pending,
+          rig.issued,
         );
         addTearDown(cubit.close);
 
@@ -594,6 +609,8 @@ void main() {
         rig.memory,
         rig.chooseClub,
         rig.scope,
+        rig.pending,
+        rig.issued,
       );
       addTearDown(cubit.close);
       return cubit;
@@ -666,6 +683,237 @@ void main() {
       await tester.pump(const Duration(seconds: 2));
 
       expect(cubit.state, const AuthIndisponible());
+    });
+  });
+
+  group('hasSession', () {
+    test('is false before and without an account, true with one', () async {
+      expect(rig.cubit.hasSession, isFalse);
+
+      await rig.cubit.start();
+      await settle();
+      expect(rig.cubit.hasSession, isFalse);
+    });
+
+    test(
+      'is true when the clubs of a signed-in account cannot be read',
+      () async {
+        rig.auth.restoreSession('coach@example.org');
+        rig.memberships.unavailable = true;
+
+        await rig.cubit.start();
+        await settle();
+
+        expect(rig.cubit.state, const AuthIndisponible());
+        expect(rig.cubit.hasSession, isTrue);
+      },
+    );
+
+    test('is false again after signing out', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.grant(coach.id, _nice);
+      await rig.cubit.start();
+      await settle();
+
+      await rig.cubit.signOut();
+
+      expect(rig.cubit.hasSession, isFalse);
+    });
+  });
+
+  group('administrators, scope and invitations (FB3)', () {
+    test('an administrator with no club reaches the administration', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.makeAdmin(coach.id);
+
+      await rig.cubit.start();
+      await settle();
+
+      expect(
+        rig.cubit.state,
+        AuthNoClub(account: coach, choices: const [], isAdmin: true),
+      );
+      expect(rig.scope.isAdmin, isTrue);
+      expect(rig.scope.clubId, isNull);
+    });
+
+    test(
+      'an administrator acting in a club is ready, flagged as such',
+      () async {
+        const admin = ClubMembership(
+          clubId: ClubId('nice'),
+          clubName: 'Club Nice',
+          role: Role.admin,
+        );
+        rig.auth.restoreSession('coach@example.org');
+        rig.memberships
+          ..makeAdmin(coach.id)
+          ..grant(coach.id, admin);
+
+        await rig.cubit.start();
+        await settle();
+
+        expect(
+          rig.cubit.state,
+          AuthReady(
+            account: coach,
+            club: admin,
+            choices: const [admin],
+            isAdmin: true,
+          ),
+        );
+        expect(rig.scope.role, Role.admin);
+        expect(rig.scope.isAdmin, isTrue);
+      },
+    );
+
+    test('a plain account is not an administrator', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.grant(coach.id, _nice);
+
+      await rig.cubit.start();
+      await settle();
+
+      expect(rig.scope.isAdmin, isFalse);
+      expect((rig.cubit.state as AuthReady).isAdmin, isFalse);
+    });
+
+    test(
+      'the scope carries the groups and the students of the member',
+      () async {
+        const family = ClubMembership(
+          clubId: ClubId('nice'),
+          clubName: 'Club Nice',
+          role: Role.guardian,
+          groupIds: [GroupId('g1')],
+          studentIds: [StudentId('s1'), StudentId('s2')],
+        );
+        rig.auth.restoreSession('coach@example.org');
+        rig.memberships.grant(coach.id, family);
+
+        await rig.cubit.start();
+        await settle();
+
+        expect(rig.scope.role, Role.guardian);
+        expect(rig.scope.groupIds, [const GroupId('g1')]);
+        expect(rig.scope.studentIds, [
+          const StudentId('s1'),
+          const StudentId('s2'),
+        ]);
+        expect(await rig.memory.read(coach.id), family);
+      },
+    );
+
+    test(
+      'the groups and students of a club are forgotten when it is left',
+      () async {
+        const family = ClubMembership(
+          clubId: ClubId('nice'),
+          clubName: 'Club Nice',
+          role: Role.student,
+          studentIds: [StudentId('s1')],
+        );
+        rig.auth.restoreSession('coach@example.org');
+        rig.memberships.grant(coach.id, family);
+        await rig.cubit.start();
+        await settle();
+
+        await rig.cubit.signOut();
+
+        expect(rig.scope.studentIds, isEmpty);
+        expect(rig.scope.groupIds, isEmpty);
+        expect(rig.scope.isAdmin, isFalse);
+      },
+    );
+
+    test(
+      'a code kept at sign-up is offered to an account with no club',
+      () async {
+        rig.auth.restoreSession('coach@example.org');
+        final code = InvitationCode.tryParse('ABCDEFGHJKMN')!;
+        await rig.pending.hold(coach.id, code);
+
+        await rig.cubit.start();
+        await settle();
+
+        expect(
+          rig.cubit.state,
+          AuthNoClub(
+            account: coach,
+            choices: const [],
+            pendingInvitation: code,
+          ),
+        );
+      },
+    );
+
+    test('a kept code does not hold back an account that has a club', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.grant(coach.id, _nice);
+      await rig.pending.hold(
+        coach.id,
+        InvitationCode.tryParse('ABCDEFGHJKMN')!,
+      );
+
+      await rig.cubit.start();
+      await settle();
+
+      expect(rig.cubit.state, isA<AuthReady>());
+    });
+
+    test('refresh offers the club that the invitation just created', () async {
+      rig.auth.restoreSession('coach@example.org');
+      await rig.cubit.start();
+      await settle();
+      expect((rig.cubit.state as AuthNoClub).choices, isEmpty);
+
+      rig.memberships.grant(coach.id, _nice);
+      await rig.cubit.refresh();
+
+      expect(rig.cubit.state, isA<AuthReady>());
+      expect(rig.scope.clubId, _nice.clubId);
+    });
+
+    test('signing out forgets the invitations sent from the device', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.grant(coach.id, _nice);
+      await rig.cubit.start();
+      await settle();
+      await rig.issued.add(
+        coach.id,
+        _nice.clubId,
+        IssuedInvitation(
+          code: InvitationCode.tryParse('ABCDEFGHJKMN')!,
+          role: Role.teacher,
+          createdAt: DateTime(2026, 10, 12),
+          expiresAt: DateTime(2026, 10, 14),
+        ),
+      );
+
+      await rig.cubit.signOut();
+
+      expect(await rig.issued.read(coach.id, _nice.clubId), isEmpty);
+    });
+
+    test('choosing a club keeps the administrator flag', () async {
+      const other = ClubMembership(
+        clubId: ClubId('lyon'),
+        clubName: 'Club Lyon',
+        role: Role.admin,
+      );
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships
+        ..makeAdmin(coach.id)
+        ..grant(coach.id, _nice)
+        ..grant(coach.id, other);
+      await rig.cubit.start();
+      await settle();
+      expect(rig.cubit.state, isA<AuthNoClub>());
+
+      expect(await rig.cubit.chooseClub(other), isTrue);
+
+      expect((rig.cubit.state as AuthReady).isAdmin, isTrue);
+      expect(rig.scope.role, Role.admin);
     });
   });
 }

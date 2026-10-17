@@ -1,6 +1,6 @@
-import 'package:billard_cfa/features/sign_in/domain/credentials.dart';
 import 'package:billard_cfa/features/sign_in/domain/pending_invitations.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/invitation_code.dart';
 import 'package:billard_cfa/shared/lib/key_value_store.dart';
 import 'package:injectable/injectable.dart';
 
@@ -20,12 +20,7 @@ class KeyValuePendingInvitations implements PendingInvitations {
   @override
   Future<InvitationCode?> read(UserId user) async {
     final raw = await _store.read(keyFor(user));
-    if (raw == null) return null;
-    try {
-      return InvitationCode.parse(raw);
-    } on Object {
-      return null;
-    }
+    return raw == null ? null : InvitationCode.tryParse(raw);
   }
 
   @override

@@ -65,7 +65,9 @@ jobs:
         run: npm ci
       # Google Chrome est installé d'office sur ubuntu-latest et macos-latest : la fumée du
       # build web compilé (scripts/web_smoke.sh) pilote ce Chrome, sans téléchargement.
-      - name: Garde-fous complets (dont règles Firestore et fumée du build web compilé, contre les émulateurs)
+      # Le parcours application + émulateurs (scripts/emulator_e2e.sh) compile l'application en debug
+      # avec le Flutter déjà installé par ce job.
+      - name: Garde-fous complets (dont règles Firestore, fumée du build web compilé et parcours application + émulateurs)
         run: scripts/check.sh --full
       - name: Rapport de couverture
         if: always() && matrix.os == 'ubuntu-latest'

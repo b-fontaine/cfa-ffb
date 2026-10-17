@@ -6,11 +6,13 @@ import 'package:billard_cfa/entities/account/domain/account.dart';
 import 'package:billard_cfa/entities/account/domain/auth_failure.dart';
 import 'package:billard_cfa/entities/account/domain/auth_repository.dart';
 import 'package:billard_cfa/entities/account/domain/session_scope.dart';
+import 'package:billard_cfa/entities/invitation/domain/invitation_log.dart';
 import 'package:billard_cfa/entities/membership/domain/active_club_memory.dart';
 import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
 import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
 import 'package:billard_cfa/features/select_club/domain/choose_club.dart';
 import 'package:billard_cfa/features/select_club/domain/resolve_active_club.dart';
+import 'package:billard_cfa/features/sign_in/domain/pending_invitations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -42,6 +44,8 @@ class AuthCubit extends Cubit<AuthState> {
     this._memory,
     this._chooseClub,
     this._scope,
+    this._pending,
+    this._issued,
   ) : super(const AuthUnknown());
 
   final SessionStartup _startup;
@@ -50,6 +54,8 @@ class AuthCubit extends Cubit<AuthState> {
   final ActiveClubMemory _memory;
   final ChooseClub _chooseClub;
   final SessionScope _scope;
+  final PendingInvitations _pending;
+  final InvitationLog _issued;
 
   /// Délai au-delà duquel un démarrage resté sans réponse (SDK qui ne
   /// s'initialise pas, première session jamais livrée) mène à `indisponible`
@@ -65,6 +71,10 @@ class AuthCubit extends Cubit<AuthState> {
 
   /// Un compte de plus à traiter rend caduque la résolution précédente.
   int _generation = 0;
+
+  /// Vrai quand un compte vérifié est connecté (même si ses clubs sont
+  /// illisibles) : « Se déconnecter » a alors un sens.
+  bool get hasSession => _account != null;
 
   /// Lance la session (une seule fois par exemplaire).
   Future<void> start() async {
@@ -99,6 +109,11 @@ class AuthCubit extends Cubit<AuthState> {
       AuthReady(:final choices) => choices,
       _ => null,
     };
+    final isAdmin = switch (current) {
+      AuthNoClub(:final isAdmin) => isAdmin,
+      AuthReady(:final isAdmin) => isAdmin,
+      _ => false,
+    };
     if (account == null || choices == null) return false;
     try {
       await _chooseClub(
@@ -110,7 +125,7 @@ class AuthCubit extends Cubit<AuthState> {
       return false;
     }
     _generation++;
-    _activate(account, club, choices);
+    _activate(account, club, choices, isAdmin: isAdmin);
     return true;
   }
 
@@ -126,7 +141,10 @@ class AuthCubit extends Cubit<AuthState> {
     } on AuthFailure {
       return;
     }
-    if (user != null) await _memory.clear(user);
+    if (user != null) {
+      await _memory.clear(user);
+      await _issued.clear(user);
+    }
     // Sans attendre le flux (SDK lent) : l'interface ne montre plus de club.
     _generation++;
     _setSignedOut();
@@ -185,13 +203,17 @@ class AuthCubit extends Cubit<AuthState> {
       _account = account;
       _scope.signIn(account.id);
       List<ClubMembership>? memberships;
+      var isAdmin = false;
       try {
         memberships = await _memberships.membershipsOf(account.id);
+        isAdmin = await _memberships.isAdmin(account.id);
       } on MembershipsUnavailable {
         memberships = null;
       }
       final remembered = await _memory.read(account.id);
+      final pending = await _pending.read(account.id);
       if (isClosed || generation != _generation) return;
+      _scope.signIn(account.id, isAdmin: isAdmin);
       if (memberships == null) {
         // Clubs illisibles (hors ligne) : seul le club retenu sur l'appareil
         // permet d'ouvrir l'application.
@@ -211,14 +233,28 @@ class AuthCubit extends Cubit<AuthState> {
           await _memory.clear(account.id);
           if (isClosed || generation != _generation) return;
           _scope.deactivateClub();
-          emit(AuthNoClub(account: account, choices: const []));
+          emit(
+            AuthNoClub(
+              account: account,
+              choices: const [],
+              isAdmin: isAdmin,
+              pendingInvitation: pending,
+            ),
+          );
         case MustChooseClub():
           _scope.deactivateClub();
-          emit(AuthNoClub(account: account, choices: memberships));
+          emit(
+            AuthNoClub(
+              account: account,
+              choices: memberships,
+              isAdmin: isAdmin,
+              pendingInvitation: pending,
+            ),
+          );
         case ChosenClub(:final club):
           if (remembered != club) await _memory.write(account.id, club);
           if (isClosed || generation != _generation) return;
-          _activate(account, club, memberships);
+          _activate(account, club, memberships, isAdmin: isAdmin);
       }
     } on Object catch (error, stackTrace) {
       FlutterError.reportError(
@@ -239,10 +275,23 @@ class AuthCubit extends Cubit<AuthState> {
   void _activate(
     Account account,
     ClubMembership club,
-    List<ClubMembership> choices,
-  ) {
-    _scope.activate(club.clubId, club.role);
-    emit(AuthReady(account: account, club: club, choices: choices));
+    List<ClubMembership> choices, {
+    bool isAdmin = false,
+  }) {
+    _scope.activate(
+      club.clubId,
+      club.role,
+      groupIds: club.groupIds,
+      studentIds: club.studentIds,
+    );
+    emit(
+      AuthReady(
+        account: account,
+        club: club,
+        choices: choices,
+        isAdmin: isAdmin,
+      ),
+    );
   }
 
   @override

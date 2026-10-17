@@ -81,6 +81,8 @@ Interdits : inventer un exercice « officiel », présenter une adaptation non s
 | Vérification rapide (format, analyse, architecture) | `scripts/check.sh --fast` |
 | Vérification complète (tests, couverture, l10n, Widgetbook) | `scripts/check.sh --full` |
 | Règles Firestore contre l'émulateur (Node >= 24.12, Java >= 21, `npm ci` ; échec explicite sinon) | `scripts/rules_test.sh` (aussi dans `scripts/check.sh --full`) |
+| Parcours navigateur : application (debug) + émulateurs Auth et Firestore + graine (Chrome, Flutter en plus) | `scripts/emulator_e2e.sh` (aussi dans `scripts/check.sh --full`) |
+| Graine des émulateurs (comptes et club « Démo » ; refuse tout hôte non local et tout projet hors `demo-…`) | `task emulators` puis `scripts/seed_emulator.mjs` |
 | Build web de production (CanvasKit local, service worker hors ligne, contrôle du résultat) | `scripts/build_web.sh` |
 | Valider les séances | `dart run scripts/validate_seances.dart` |
 | Copier / vérifier le catalogue (asset = `docs/knowledge`) | `scripts/sync_catalogue.sh [--check]` |

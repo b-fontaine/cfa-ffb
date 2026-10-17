@@ -79,19 +79,37 @@ void main() {
       }
     });
 
-    test('rules: no open access and no expiry date', () {
+    test('rules: no open access, no expiry date, deny by default', () {
       final rules = File('../firestore.rules')
           .readAsLinesSync()
           .map((line) => line.replaceFirst(RegExp('//.*'), '').trim())
           .join('\n');
 
       expect(rules, isNot(matches(RegExp(r'if\s+true'))));
-      expect(rules, isNot(contains('request.time')));
+      // Les règles complètes (FB3) comparent des dates à `request.time`
+      // (création d'une invitation, expiration) mais n'ont jamais de date
+      // limite de validité du type « mode test ».
+      expect(rules, isNot(contains('timestamp.date')));
+      expect(rules, isNot(matches(RegExp(r'request\.time\s*<\s*timestamp'))));
       expect(
         rules,
         matches(RegExp(r'allow\s+read\s*,\s*write\s*:\s*if\s+false')),
       );
     });
+
+    test(
+      'rules: e-mail verified, roles by one member read, admin by existence',
+      () {
+        final rules = File('../firestore.rules').readAsStringSync();
+
+        expect(rules, contains('request.auth.token.email_verified == true'));
+        expect(rules, contains(r'/members/$(request.auth.uid)'));
+        expect(
+          rules,
+          contains(r'exists(/databases/$(database)/documents/admins/'),
+        );
+      },
+    );
   });
 
   group('platforms (ADR 0024, decision 4)', () {

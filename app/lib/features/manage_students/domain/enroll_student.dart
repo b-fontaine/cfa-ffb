@@ -8,6 +8,7 @@ import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/field_limits.dart';
 import 'package:billard_cfa/shared/lib/id_generator.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/unit_of_work.dart';
@@ -58,6 +59,9 @@ class EnrollStudent {
     String? groupName,
     GroupId? groupId,
   }) => runGuarded(() async {
+    if (firstName.trim().length > maxFirstNameLength) {
+      throw const InvariantViolation(InvariantCode.nameTooLong);
+    }
     final season = await _seasonOf(today);
     final since = season.startDate.isAfter(today) ? today : season.startDate;
     final student = Student.enroll(

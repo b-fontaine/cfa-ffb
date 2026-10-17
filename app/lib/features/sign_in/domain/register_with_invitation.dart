@@ -34,7 +34,7 @@ class RegisterWithInvitation {
     required String email,
     required String password,
   }) async {
-    final invitation = InvitationCode.parse(code);
+    final invitation = parseInvitationCode(code);
     if (!isPlausibleEmail(email)) {
       throw const AuthFailure(AuthFailureCode.invalidEmail);
     }

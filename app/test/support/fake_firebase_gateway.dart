@@ -14,9 +14,13 @@ class FakeFirebaseGateway implements FirebaseGateway {
   final Object? useEmulatorsError;
   final List<String> calls = [];
 
+  /// Pour chaque `initialize`, la cible demandée (`true` : l'émulateur).
+  final List<bool> emulatorRequests = [];
+
   @override
-  Future<void> initialize() {
+  Future<void> initialize({required bool emulator}) {
     calls.add('initialize');
+    emulatorRequests.add(emulator);
     final sync = initializeThrowsSynchronously;
     if (sync != null) {
       // ignore: only_throw_errors, simule une erreur lancée avant tout await

@@ -23,18 +23,18 @@ void main() {
     });
   });
 
-  group('InvitationCode.parse', () {
+  group('parseInvitationCode', () {
     test('normalises case, spaces and dashes', () {
-      expect(InvitationCode.parse('abcd-efgh jkmn').value, 'ABCDEFGHJKMN');
+      expect(parseInvitationCode('abcd-efgh jkmn').value, 'ABCDEFGHJKMN');
     });
 
     test('accepts exactly the minimum length', () {
-      expect(InvitationCode.parse('ABCDEFGHJK').value, 'ABCDEFGHJK');
+      expect(parseInvitationCode('ABCDEFGHJK').value, 'ABCDEFGHJK');
     });
 
     test('refuses a short code', () {
       expect(
-        () => InvitationCode.parse('ABCDEFGHJ'),
+        () => parseInvitationCode('ABCDEFGHJ'),
         throwsA(
           isA<AuthFailure>().having(
             (f) => f.code,
@@ -53,7 +53,7 @@ void main() {
         'ABCDEFGHJK!',
       ]) {
         expect(
-          () => InvitationCode.parse(bad),
+          () => parseInvitationCode(bad),
           throwsA(isA<AuthFailure>()),
           reason: bad,
         );

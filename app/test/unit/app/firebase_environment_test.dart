@@ -128,6 +128,23 @@ void main() {
     });
   });
 
+  group('emulator project', () {
+    test('is the project the emulators and the seed are launched on', () {
+      const id = FirebaseEnvironment.emulatorProjectId;
+
+      expect(id, startsWith('demo-'));
+      expect(
+        File('../Taskfile.yml').readAsStringSync(),
+        contains('--project $id'),
+      );
+      expect(
+        File('../scripts/rules_test.sh').readAsStringSync(),
+        contains('RULES_TEST_PROJECT:-$id'),
+      );
+      expect(File('../scripts/web_smoke.sh').readAsStringSync(), contains(id));
+    });
+  });
+
   group('build flags', () {
     test('without --dart-define the build targets production', () {
       // Les tests tournent en debug, sans FIREBASE_EMULATOR.

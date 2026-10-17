@@ -48,11 +48,11 @@ Les règles ci-dessous sont vérifiées par `app/tool/check_architecture.dart`
 
 9. **SDK de plateforme** : `firebase_auth`, `firebase_core` et `cloud_firestore`
    ne sont importés que sous `lib/app/platform/` (aujourd'hui
-   `firebase_auth_sdk.dart` et `firebase_sdk_gateway.dart` ; `firebase_core`
+   `firebase_auth_sdk.dart`, `firebase_sdk_gateway.dart` et `firestore_document_store.dart` ; `firebase_core`
    aussi par `lib/app/firebase_options.dart`, fichier généré qui n'en prend que
    `FirebaseOptions`) ; `shared_preferences` seulement par
    `lib/app/platform/shared_preferences_key_value_store.dart`. Le reste du code
-   passe par des ports (`AuthSdk`, `FirebaseGateway`, `KeyValueStore`).
+   passe par des ports (`AuthSdk`, `FirebaseGateway`, `DocumentStore`, `KeyValueStore`).
    Vérifié par `check_architecture.dart` (test : `architecture_rules_test.dart`).
 
 Dépendances : `domain` ← `data`, `domain` ← `presentation`. Le domaine ne dépend de rien.
@@ -125,8 +125,12 @@ app/
 │   ├── entities/maturity_assessment/  # chacun : domain/ (+ port) et data/ (en mémoire + drift)
 │   ├── entities/settings/             # ClubSettings, SettingsRepository (drift + en mémoire)
 │   ├── entities/account/              # lot FB2 : Account, AuthRepository, AuthFailure(Code), SessionScope ; data = AuthSdk (frontière du SDK), FirebaseAuthRepository, InMemoryAuthRepository
-│   ├── entities/membership/           # lot FB2 : ClubMembership, MembershipsSource (FB3 l'implémente), ActiveClubMemory (club actif par compte) ; data = en mémoire, NoMembershipsSource
-│   ├── features/sign_in/              # lot FB2 : SignIn, ResendVerification, RequestPasswordReset, RegisterWithInvitation, PendingInvitations ; SignInCubit, RegisterCubit, ForgotPasswordCubit, formulaires, AccountSection
+│   ├── entities/membership/           # lots FB2, FB3 : ClubMembership (rôle, groupes, fiches), Member, MemberRepository, MembershipsSource (+ isAdmin), ActiveClubMemory ; data = StoreMembershipsSource, StoreMemberRepository
+│   ├── entities/club/                 # lot FB3 : Club, ClubRepository ; data = StoreClubRepository
+│   ├── entities/invitation/           # lot FB3 : Invitation, InvitationPolicy, InvitationRepository, InvitationLog, IssuedInvitations, InvitationCodeSource ; data = StoreInvitationRepository, KeyValueInvitationLog
+│   ├── features/manage_club/          # lot FB3 : « Mon club » : membres, retrait, renommage, invitations (créer, lister, révoquer) ; ClubCubit, InviteCubit
+│   ├── features/administration/       # lot FB3 : « Administration » : clubs, directeurs invités ; AdministrationCubit
+│   ├── features/sign_in/              # lot FB2 : SignIn, ResendVerification, RequestPasswordReset, RegisterWithInvitation, PendingInvitations ; lot FB3 : AcceptInvitation, JoinCubit, JoinForm ; SignInCubit, RegisterCubit, ForgotPasswordCubit, formulaires, AccountSection
 │   ├── features/select_club/          # lot FB2 : resolveActiveClub, ChooseClub ; ClubChoiceList
 │   ├── entities/run_progress/         # RunProgress, RunProgressKey, RunProgressRepository (drift + en mémoire) :
 │   │                                  # séances guidées en cours, lot 10b (ADR 0020)
@@ -143,9 +147,11 @@ app/
 │       │                              # ExerciseRef, SuccessRate, RulesConfig,
 │       │                              # Failure/Result, IdGenerator, Clock,
 │       │                              # UnitOfWork, StorageStatus, PdfFiles (sortie PDF),
-│       │                              # CurrentUser, ActiveClubScope (ClubId, Role), ClubSwitchGuard, KeyValueStore (FB2)
+│       │                              # CurrentUser, ActiveClubScope (ClubId, Role), ClubSwitchGuard, KeyValueStore (FB2) ;
+│       │                              # FB3 : InvitationCode, Capability/RolePolicy, ClubSession, field_limits
 │       ├── persistence/               # base drift (SQLite) : tables, AppDatabase,
-│       │                              # ouverture natif/web, unité de travail
+│       │                              # ouverture natif/web, unité de travail ; FB3 : DocumentStore (port Firestore),
+│       │                              # InMemoryDocumentStore, guardStore
 │       ├── ui/                        # design system (voir design-system.md)
 │       │   ├── theme/                 # ColorScheme, extensions billes/statuts, typo, AppTheme
 │       │   └── *.dart                 # ScoreIndicator, BallChip, SectionCard, PageHeader…
@@ -768,8 +774,28 @@ Détail : [auth-plan.md](auth-plan.md). L'essentiel de l'architecture :
 - **Stockage local** : `KeyValueStore` (port) ; `shared_preferences` n'est importé que par
   `app/platform/shared_preferences_key_value_store.dart`. Clés par compte (`active_club.<uid>`, `pending_invitation.<uid>`).
 - **Environnement `test`** : dépôt d'authentification, appartenances, stockage et démarrage **en mémoire**
-  (`InMemoryAuthRepository`, `InMemoryMembershipsSource`, `InMemoryKeyValueStore`, `InMemorySessionStartup`) ;
-  `FirebaseStartup` n'y est toujours pas câblé. Production : `FirebaseAuthRepository`, `NoMembershipsSource` (avant FB3).
+  (`InMemoryAuthRepository`, `InMemoryDocumentStore` derrière `StoreMembershipsSource`, `InMemoryKeyValueStore`, `InMemorySessionStartup`) ;
+  `FirebaseStartup` n'y est toujours pas câblé. Production : `FirebaseAuthRepository`, `StoreMembershipsSource` sur `FirestoreDocumentStore` (FB3).
+
+## Clubs, rôles et invitations (lot FB3, ADR 0024)
+
+Détail et tableaux : [clubs-roles-plan.md](clubs-roles-plan.md). L'essentiel de l'architecture :
+
+- **Un port minuscule pour Firestore** : `DocumentStore` (`shared/persistence`) ne connaît ni collection typée ni SDK : `get`, `list`, requête de groupe de collections sur un
+  champ, **lot atomique** (`SetOp`, `UpdateOp`, `DeleteOp`, date du serveur `serverTimestamp`). `app/platform/firestore_document_store.dart` l'implémente sur
+  `cloud_firestore` (règle 9) en deux étages : `FirestoreSdkAccess` (quatre appels directs au SDK) et `FirestoreDocumentStore` (traduction des valeurs et des échecs, testée sur
+  un accès scripté). Tous les dépôts de FB3 (`StoreClubRepository`, `StoreMemberRepository`, `StoreMembershipsSource`, `StoreInvitationRepository`, `StoreStudentDirectory`) ne
+  dépendent que du port : **les mêmes classes servent la production et les scénarios BDD** (sur `InMemoryDocumentStore`, qui n'émule aucune règle).
+- **Les règles sont le garde de fond, l'interface ne propose que ce qu'elles acceptent.** La table des droits est unique (`Capability`, `RolePolicy` dans `shared/lib`) ; les cas
+  d'usage la lisent (`requireClubSession`, `requireAdmin`) et refusent d'eux-mêmes (`InvariantCode.actionNotAllowed`), les menus la lisent, et le routeur l'applique aux adresses
+  (`roleRedirect`, appelé par `authRedirect` : fonction pure).
+- **Qui agit** : `ActiveClubScope` porte désormais le périmètre du `member` (groupes, fiches liées) et `CurrentUser.isAdmin` ; `SessionScope` reste le seul porteur, écrit
+  uniquement par `AuthCubit`. Un cas d'usage lit la portée **à chaque appel** (`ClubSession`), jamais figée.
+- **`AuthCubit` en FB3** : il lit aussi `isAdmin` et le code gardé à l'inscription ; un compte sans club et avec code est envoyé sur `/join/<code>` ; un administrateur sans club
+  atteint « Administration ». Il efface à la déconnexion le club retenu **et** le journal local des invitations.
+- **Écrans d'un élève ou d'un parent** : `AppShell` n'a que « Mes enfants » (« Ma progression ») et « Plus » ; la fiche en parcours (`/students/<id>/show`) reste hors du cadre.
+- **Invitation par lot** : `InvitationRepository.accept` lit l'invitation (états distincts : introuvable, expirée, utilisée), puis écrit **un seul lot** (`member` + consommation) ;
+  le serveur le re-vérifie (`getAfter`). Voir le plan pour les formes, durées et la révocation.
 
 ## États et modèles
 

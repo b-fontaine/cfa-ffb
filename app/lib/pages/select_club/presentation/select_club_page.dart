@@ -21,6 +21,8 @@ class SelectClubPage extends StatelessWidget {
     this.blocked = false,
     this.onRefresh,
     this.onBack,
+    this.onJoin,
+    this.onAdministration,
     super.key,
   });
 
@@ -31,6 +33,13 @@ class SelectClubPage extends StatelessWidget {
   final VoidCallback onSignOut;
   final VoidCallback? onRefresh;
   final VoidCallback? onBack;
+
+  /// « J'ai un code d'invitation » : ouvre « Rejoindre un club » (accès au
+  /// choix du club, pas à la bascule).
+  final VoidCallback? onJoin;
+
+  /// « Administration » : pour un administrateur, même sans club.
+  final VoidCallback? onAdministration;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +70,18 @@ class SelectClubPage extends StatelessWidget {
           ),
         if (empty && onRefresh != null)
           FilledButton(onPressed: onRefresh, child: Text(l10n.noClubRefresh)),
+        if (onJoin != null)
+          OutlinedButton.icon(
+            onPressed: onJoin,
+            icon: const Icon(Icons.vpn_key_outlined),
+            label: Text(l10n.noClubJoin),
+          ),
+        if (onAdministration != null)
+          OutlinedButton.icon(
+            onPressed: onAdministration,
+            icon: const Icon(Icons.admin_panel_settings_outlined),
+            label: Text(l10n.noClubAdministration),
+          ),
         if (onBack == null)
           OutlinedButton.icon(
             onPressed: onSignOut,

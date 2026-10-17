@@ -240,6 +240,22 @@ d'architecture qui réserve `pdf` à `export_sheet/data`.
   comportement visible n'a changé (le premier, la connexion, arrive en FB2).
 - **Application sous émulateurs** : `task emulators` puis `flutter run -d chrome --dart-define=FIREBASE_EMULATOR=true`.
 
+### Mutations à la main des règles (relecture FB3, 2026-10-18)
+
+Copie des règles (`RULES_FILE=copie.rules`, jamais le fichier versionné), suite `bounds.test.mjs` :
+
+| Mutant | Résultat |
+|---|---|
+| `studentInGroup` remplacé par `studentExists` (enseignant, A1) | **tué** : « un enseignant ne crée de donnée que sur un élève de SON groupe » |
+| code d'étiquette `x` ajouté à la liste autorisée | tué : étiquettes de séance (un code inconnu, même court) ; **a d'abord survécu** : test renforcé (les huit codes, `x`, un intrus parmi les codes connus) |
+| `hasOnly` des passages neutralisé (`true \|\|`) | tué : champ inconnu refusé dans chaque collection, appartenance immuable |
+| borne de taille totale de `idList` retirée | tué : 900 Ko dans un identifiant de member et de groupe |
+| `strList30` remplacé par `idList` (`teacherUids: [1]`) | tué : un enseignant doit être un texte (A27) |
+| `optString` élargi de 2 000 000 caractères | tué : champ connu de 900 Ko, commentaire à 501, archive |
+| note de bilan 1 à 5 au lieu de 1 à 4 | tué : types et bornes des valeurs |
+
+Mutants M2 et M5 de la première série, qui n'ajoutaient qu'une valeur permise sans rien retirer, ne prouvaient rien : remplacés ci-dessus.
+
 ## Authentification (lot FB2)
 
 - **BDD** : `authentication.feature`. Les BDD existants s'exécutent **connectés** : `UiWorld.prepare` crée le compte de
@@ -267,8 +283,15 @@ d'architecture qui réserve `pdf` à `export_sheet/data`.
   et Google Chrome, échec explicite sinon). Il charge `app/build/web` (build **release** de `scripts/build_web.sh`) dans Chrome
   piloté par `playwright-core`, renvoie les appels du SDK vers l'émulateur Auth et **refuse tout autre hôte** que localhost et
   `gstatic.com` : démarrage jusqu'à l'écran de connexion, mauvais mot de passe et adresse inconnue (même message), connexion
-  d'un compte vérifié (écran « Aucun club »), session conservée au rechargement, déconnexion. Il a été écrit après un blocage
-  sur l'écran de démarrage qu'aucun autre test ne pouvait voir.
+  d'un compte vérifié **jusqu'à l'accueil du club retenu sur l'appareil** (assertion de succès ; le club retenu est posé dans `localStorage`
+  parce que Firestore est refusé), session conservée au rechargement, déconnexion ; « Service indisponible » (sans club retenu) est un test
+  distinct du chemin d'échec, jamais le chemin nominal. Il a été écrit après un blocage sur l'écran de démarrage qu'aucun autre test ne pouvait voir.
+- **Application + émulateurs Auth et Firestore + graine** : `scripts/emulator_e2e.sh` (dans `check.sh --full` et la CI ; mêmes prérequis plus Flutter).
+  `firebase emulators:exec` (projet `demo-cfa-ffb`), graine, `flutter run -d web-server --dart-define=FIREBASE_EMULATOR=true` (**mode debug** : release
+  refuse l'émulateur, profile est inutilisable, voir le piège ci-dessous), puis `scripts/emulator_e2e/e2e.test.mjs` dans Chrome : la directrice se
+  connecte, « Mon club » affiche les quatre autres membres (lus dans Firestore sous les règles) ; un parent atterrit sur « Mes enfants », sans « Mon club »
+  ni onglet d'animateur (sa liste d'enfants vient encore du stock local : FB4). Ce parcours **échoue** si l'application vise un autre projet que celui des
+  émulateurs (constat de relecture : projet réel `animation-billard` face à une graine `demo-cfa-ffb`, « Aucun club »).
 - **Piège : ne pas tester ni livrer un build `--profile` avec Firebase Auth sur le web.** `firebase_core_web` décide du mode
   debug par `!bool.fromEnvironment('dart.vm.product')` (vrai en profile) alors que `firebase_auth_web` utilise `kDebugMode`
   (faux en profile) : en profile, les trois écouteurs d'état partagent la clé `'no-op'`, le suivant désabonne le précédent et

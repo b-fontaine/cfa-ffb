@@ -95,6 +95,8 @@ void main() {
       VoidCallback? onBack,
       VoidCallback? onRefresh,
       VoidCallback? onSignOut,
+      VoidCallback? onJoin,
+      VoidCallback? onAdministration,
     }) => pumpUi(
       tester,
       SelectClubPage(
@@ -104,8 +106,38 @@ void main() {
         onSignOut: onSignOut ?? () {},
         onRefresh: onRefresh,
         onBack: onBack,
+        onJoin: onJoin,
+        onAdministration: onAdministration,
       ),
     );
+
+    testWidgets(
+      'offers the invitation code, and Administration to an administrator',
+      (tester) async {
+        var joined = 0;
+        var administered = 0;
+        await pump(
+          tester,
+          choices: const [],
+          onJoin: () => joined++,
+          onAdministration: () => administered++,
+        );
+
+        await tester.tap(find.text('I have an invitation code'));
+        await tester.tap(find.text('Administration'));
+
+        expect([joined, administered], [1, 1]);
+      },
+    );
+
+    testWidgets('offers neither when it was not given the actions', (
+      tester,
+    ) async {
+      await pump(tester, choices: const []);
+
+      expect(find.text('I have an invitation code'), findsNothing);
+      expect(find.text('Administration'), findsNothing);
+    });
 
     testWidgets('at sign-in, offers the choice and signing out', (
       tester,

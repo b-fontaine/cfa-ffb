@@ -3,8 +3,10 @@ import 'package:billard_cfa/app/firebase_gateway.dart';
 import 'package:billard_cfa/app/firebase_startup.dart';
 import 'package:billard_cfa/app/platform/firebase_auth_sdk.dart';
 import 'package:billard_cfa/app/platform/firebase_sdk_gateway.dart';
+import 'package:billard_cfa/app/platform/firestore_document_store.dart';
 import 'package:billard_cfa/app/session_startup.dart';
 import 'package:billard_cfa/entities/account/data/auth_sdk.dart';
+import 'package:billard_cfa/shared/persistence/document_store.dart';
 import 'package:injectable/injectable.dart';
 
 /// Câblage de Firebase en production (l'environnement `test` n'y touche pas).
@@ -36,4 +38,10 @@ abstract class FirebaseModule {
   @Environment(Environment.prod)
   @singleton
   AuthSdk authSdk() => FirebaseAuthSdk();
+
+  /// Le stock de documents : Firestore (les règles s'appliquent côté serveur).
+  /// Le SDK n'est lu qu'à l'appel, une fois Firebase initialisé.
+  @Environment(Environment.prod)
+  @singleton
+  DocumentStore documentStore() => FirestoreDocumentStore();
 }

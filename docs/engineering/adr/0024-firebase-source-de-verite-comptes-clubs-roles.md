@@ -271,3 +271,52 @@ Détail : [../auth-plan.md](../auth-plan.md). Précisions des décisions 22, 23,
   l'énumération d'adresses e-mail du projet (le code attend alors `invalid-credential`, déjà traité).
 - **Avant FB3**, la production lie `MembershipsSource` à `NoMembershipsSource` : aucun club n'existe côté serveur (règles : refus
   total), donc tout compte connecté arrive en « Aucun club » ; FB3 remplace cette classe par la lecture des documents `members`.
+
+## Notes de réalisation du lot FB3 (2026-10-17, aucune décision nouvelle)
+
+Détail : [../clubs-roles-plan.md](../clubs-roles-plan.md). Précisions et **écarts** constatés à la réalisation (le tableau « document × rôle × règle » de la décision 14
+reste la référence des droits ; les noms de champs sont figés par `scripts/rules_test/`, comme il le dit) :
+
+- **Écart : `invitations/{code}` à la racine**, pas sous `clubs/{c}/invitations/{code}`. L'invité ne connaît que le code, jamais le club : sous un chemin de club il ne
+  pourrait pas le lire avant d'en être membre. Le document porte `clubId`. Conséquences : « get seul, jamais list » devient un fait de structure (rien à énumérer) ;
+  la création vérifie que le club existe (administrateur) ou que le créateur y a le bon rôle (`get` du member de `clubId`).
+- **Écart : le champ `uid` du `member`** (égal à l'identifiant du document) : la requête de groupe de collections `members` filtrée sur `uid` est la seule requête qu'un compte
+  **sans club** peut faire pour découvrir ses clubs ; la règle `{path=**}/members/{m}` autorise la lecture du **seul** document dont `uid` est celui du compte. Elle exige
+  une exemption d'index « groupe de collections » (`firestore.indexes.json`, à déployer avec les règles).
+- **Écart : `groupIds` sur la fiche élève** (groupes courants, copie dénormalisée). Une règle ne parcourt pas une liste : lire une fiche, ou la lister par `array-contains`
+  sur un groupe, exige ce champ (mesuré : `resource.data.groupIds.hasAny(me(c).groupIds)` est accepté en `get` **et** en requête, la forme inverse non). Un enseignant
+  qui invite pour une fiche prouve qu'elle est dans un de ses groupes par le même champ (jusqu'à quatre fiches, `get` de chacune).
+- **Précisions du `member`** : `displayName` (1 à 40 caractères) saisi par l'invité ; `invitationCode` (le code utilisé, qui lie le `member` à l'invitation consommée dans
+  le lot) ; `createdAt` (date du serveur). Le directeur écrit les `members` de rôle `teacher`, `student`, `guardian` (jamais `director`) ; l'administrateur tous ; le titulaire ne
+  change que son nom affiché.
+- **Usage unique** : le lot crée le `member` et met l'invitation à « utilisée » ; chaque écriture **seule** est refusée (`getAfter` côté member, `existsAfter` côté
+  invitation) ; les conditions vérifiées des deux côtés (club, rôle, état, expiration, e-mail vérifié) sont **volontairement redondantes** (défense en profondeur) : un
+  mutant qui n'en retire qu'un côté survit, **les doubles mutants** (retrait des deux) sont tués (testing.md).
+- **Durées** : 48 heures pour un enseignant **et un directeur** (rôles plus puissants ; la décision 24 ne chiffrait que l'enseignant : le directeur suit, `[Prop]`), 7 jours
+  pour un élève ou un parent ; une heure de tolérance sur l'horloge du client dans la règle.
+- **Journal local des invitations** : puisque `list` est interdit, l'appareil de l'inviteur se souvient des codes créés (`KeyValueStore`, par compte et par club, effacé à la déconnexion). Une
+  invitation créée sur un autre appareil ne s'y voit pas.
+- **Fiche publiée avant l'invitation** : tant que les dépôts de données sont locaux (FB4), la première invitation d'un élève ou d'un parent publie sa fiche minimale
+  (prénom tronqué à 40 caractères, public, groupes courants) sous l'identifiant local (`StudentDirectory`) ; une fiche déjà publiée n'est jamais réécrite. FB4 écrit le même document.
+- **Le directeur d'un club créé par l'administrateur** est invité par un code de 48 heures ; l'administrateur voit **tous** les clubs (`MembershipsSource`), avec le rôle `admin`
+  dans ceux où il n'a pas de `member` ; son document `admins/{uid}` reste **vide** (créé en console).
+- **Budget de `get()`** : 10 documents distincts par évaluation, un même document n'en compte qu'un (mesuré à l'émulateur, `budget.test.mjs`). Les opérations les plus coûteuses
+  en consomment 6 : `teacherGroupIds` (décision 25) n'est pas nécessaire. Tableau par écran dans le plan.
+- **Limites** : l'adaptateur `FirestoreDocumentStore` n'est pas exercé contre l'émulateur par du code Dart (plugin natif) ; ses opérations le sont avec le SDK web (jetons réels
+  de l'émulateur Auth) ; la fumée du build web n'exerce pas Firestore. Le SDK web de Firestore appelle `https://www.google.com/images/cleardot.gif` (sonde de connectivité) :
+  consigné au registre des traitements.
+- **Corrections de relecture FB3 (2026-10-18)** : (1) **un enseignant ne crée une donnée d'élève** (`attempts`, `acquisitions`, `assessments`, `acknowledgements`) **que si l'élève
+  est de SON groupe** : `get()` de la fiche et `groupIds.hasAny([groupId])` remplacent `exists()` (même budget d'accès) ; le directeur et l'administrateur gardent « la fiche
+  existe » (import d'un historique, FB7). (2) **Liste blanche de champs par collection** (`keys().hasOnly`) et bornes de chaque valeur (texte, entier, date courte, codes
+  d'étiquettes prédéfinis) : plus de champ libre ni de stockage libre jusqu'à 1 MiB par document (décision `[U]` « étiquettes sans texte libre » tenue, commentaire d'évaluation
+  seul texte libre). Noms de champs figés par `scripts/rules_test/bounds.test.mjs`. Les archives deviennent un document de synthèse (`season_public`) **et un document par
+  exercice** (compteurs seulement) : une règle ne valide pas les éléments d'une liste de tables. (3) **Limite mesurée** : une règle ne boucle pas et le budget est de 1000
+  expressions par requête ; les listes d'identifiants (`groupIds`, `studentIds`, `presentStudentIds`) sont bornées en nombre **et en taille totale** (`join`), pas élément par
+  élément ; seule `groups.teacherUids` (écrite par le seul directeur) vérifie que **chaque** élément est un texte (30 éléments déroulés). (4) **Projet de l'émulateur** : l'application
+  vise `demo-cfa-ffb` (`FirebaseEnvironment.emulatorProjectId`) quand elle vise l'émulateur ; avec le projet réel, elle lisait une base vide.
+- **Choix assumés des règles (relecture FB3, 2026-10-18, constatés dans `firestore.rules`)** : (a) le **directeur et l'administrateur** peuvent créer une donnée d'élève
+  (`attempts`, `acquisitions`, `assessments`, `acknowledgements`) pour **n'importe quelle fiche existante du club**, y compris hors des groupes écrits (import d'un historique,
+  FB7) ; seul l'enseignant est borné à ses groupes. (b) Les **archives de saison** (`archives/{id}`) sont **lisibles par tous les enseignants du club** (pas par groupe : un
+  document de synthèse n'a pas d'élève nommé), écrites et supprimées par le seul directeur ou l'administrateur ; élèves et parents n'y ont pas accès. (c) Le **directeur crée
+  un `member` sans invitation** (rôles `teacher`, `student`, `guardian`, jamais `director` ; `uid` égal à l'identifiant du document, `createdAt` du serveur) ; l'administrateur
+  crée n'importe quel rôle. L'invitation reste la seule voie pour un compte **qui s'ajoute lui-même** (usage unique, e-mail vérifié).

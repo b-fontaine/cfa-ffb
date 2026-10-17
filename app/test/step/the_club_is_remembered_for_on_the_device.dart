@@ -1,5 +1,6 @@
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/entities/membership/domain/active_club_memory.dart';
+import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/ui_world.dart';
@@ -16,7 +17,7 @@ Future<void> theClubIsRememberedForOnTheDevice(
 ) async {
   await UiWorld.prepare(tester);
   final account = UiWorld.auth.accountOf(email)!;
-  final known = await UiWorld.memberships.membershipsOf(account.id);
+  final known = await getIt<MembershipsSource>().membershipsOf(account.id);
   final membership = known.firstWhere(
     (m) => m.clubName == club,
     orElse: () => UiWorld.membership(club, 'director'),

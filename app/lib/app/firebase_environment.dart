@@ -68,6 +68,13 @@ class FirebaseEnvironment {
     );
   }
 
+  /// Le projet « demo-… » sur lequel se lancent les émulateurs (`task
+  /// emulators`, `scripts/rules_test.sh`, `scripts/web_smoke.sh`) : l'application
+  /// le prend à la place du projet réel quand elle vise l'émulateur, sinon elle
+  /// lirait une base vide et ne verrait ni la graine ni les tests. Jamais un
+  /// projet réel : l'émulateur n'atteint aucun service Google.
+  static const emulatorProjectId = 'demo-cfa-ffb';
+
   /// Ports de `emulators` dans `firebase.json` (garde : test dédié).
   static const authPort = 9099;
   static const firestorePort = 8080;

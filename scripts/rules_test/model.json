@@ -1,0 +1,26 @@
+{
+  "commentaire": "Collections du modèle de données de l'ADR 0024 (décision 14) que firestore.rules DOIT couvrir : chaque `path` est normalisé (variables de chemin = {}). Lu par model_coverage.test.mjs, qui exige l'égalité avec les `match` du fichier de règles (ni collection oubliée, ni collection non documentée) et la présence de chaque `adr` dans l'ADR. Une collection ajoutée au modèle s'ajoute ici, dans les règles ET dans matrix.test.mjs.",
+  "adr": "docs/engineering/adr/0024-firebase-source-de-verite-comptes-clubs-roles.md",
+  "collections": [
+    { "name": "admins", "path": "admins/{}", "adr": "`admins/{uid}`" },
+    { "name": "clubs", "path": "clubs/{}", "adr": "`clubs/{c}` (nom, saison courante)" },
+    { "name": "settings", "path": "clubs/{}/settings/main", "adr": "`clubs/{c}/settings/main`" },
+    { "name": "members", "path": "clubs/{}/members/{}", "adr": "`clubs/{c}/members/{uid}`" },
+    { "name": "invitations", "path": "invitations/{}", "adr": "`clubs/{c}/invitations/{code}`", "ecart": "Chemin à la racine : l'invité ne connaît que le code, pas le club (note de réalisation FB3 de l'ADR 0024)." },
+    { "name": "seasons", "path": "clubs/{}/seasons/{}", "adr": "`clubs/{c}/seasons/{s}`" },
+    { "name": "groups", "path": "clubs/{}/groups/{}", "adr": "`clubs/{c}/groups/{g}`" },
+    { "name": "memberships", "path": "clubs/{}/memberships/{}", "adr": "`clubs/{c}/memberships/{studentId_from}`" },
+    { "name": "students", "path": "clubs/{}/students/{}", "adr": "`clubs/{c}/students/{id}`" },
+    { "name": "sessions", "path": "clubs/{}/sessions/{}", "adr": "`clubs/{c}/sessions/{id}`" },
+    { "name": "records", "path": "clubs/{}/records/{}", "adr": "`clubs/{c}/records/{id}`" },
+    { "name": "attempts", "path": "clubs/{}/attempts/{}", "adr": "`clubs/{c}/attempts/{id}`" },
+    { "name": "acquisitions", "path": "clubs/{}/acquisitions/{}", "adr": "`clubs/{c}/acquisitions/{id}`" },
+    { "name": "assessments", "path": "clubs/{}/assessments/{}", "adr": "`clubs/{c}/assessments/{id}`" },
+    { "name": "acknowledgements", "path": "clubs/{}/acknowledgements/{}", "adr": "`acknowledgements/{id}`" },
+    { "name": "archives", "path": "clubs/{}/archives/{}", "adr": "`clubs/{c}/archives/{season_public}`" }
+  ],
+  "speciaux": [
+    { "name": "mes clubs (groupe de collections members)", "path": "{**}/members/{}" },
+    { "name": "refus par défaut", "path": "{**}" }
+  ]
+}

@@ -4,6 +4,7 @@ import 'package:billard_cfa/app/shell.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/invitation_code.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -43,6 +44,21 @@ void main() {
       expect(AppShell.indexOf('/more'), 4);
       expect(AppShell.indexOf('/backup'), 4);
     });
+
+    test('keeps My club and its invitations under More', () {
+      expect(AppShell.indexOf('/club'), 4);
+      expect(AppShell.indexOf('/club/invite'), 4);
+    });
+
+    test(
+      'a student or a parent has two destinations: their children, More',
+      () {
+        expect(AppShell.familyIndexOf('/my-children'), 0);
+        expect(AppShell.familyIndexOf('/more'), 1);
+        expect(AppShell.familyIndexOf('/more/club'), 1);
+        expect(AppShell.familyIndexOf('/anything-else'), 0);
+      },
+    );
 
     test('keeps the past seasons under More', () {
       expect(AppShell.indexOf('/seasons'), 4);
@@ -468,6 +484,37 @@ void main() {
       for (final route in routes.whereType<ShellRoute>()) {
         expect(route.routes.any(isGuide), isFalse);
       }
+    });
+  });
+
+  group('invitation link', () {
+    test('is built from the join route and opens a route of the router', () {
+      final rig = AuthRig();
+      addTearDown(rig.cubit.close);
+      final refresh = AuthRefresh(rig.cubit);
+      addTearDown(refresh.dispose);
+      final router = buildRouter(auth: rig.cubit, refresh: refresh);
+      addTearDown(router.dispose);
+      final code = InvitationCode.tryParse('ABCDEFGHJKMN')!;
+
+      final link = inviteLinkFor('https://club.example/')!(code);
+
+      expect(link, 'https://club.example/#${AppRoutes.joinWith(code.value)}');
+      final match = router.configuration.findMatch(
+        Uri.parse(Uri.parse(link).fragment),
+      );
+      expect(match.isError, isFalse);
+      expect(match.pathParameters['code'], code.value);
+      expect(
+        router.configuration
+            .findMatch(Uri.parse('/joined/${code.value}'))
+            .isError,
+        isTrue,
+      );
+    });
+
+    test('is absent outside the web', () {
+      expect(inviteLinkFor(null), isNull);
     });
   });
 }

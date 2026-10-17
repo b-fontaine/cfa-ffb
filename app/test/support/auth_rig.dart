@@ -2,15 +2,18 @@ import 'package:billard_cfa/app/auth/auth_cubit.dart';
 import 'package:billard_cfa/app/session_startup.dart';
 import 'package:billard_cfa/entities/account/data/in_memory_auth_repository.dart';
 import 'package:billard_cfa/entities/account/domain/session_scope.dart';
-import 'package:billard_cfa/entities/membership/data/in_memory_memberships_source.dart';
+import 'package:billard_cfa/entities/invitation/data/key_value_invitation_log.dart';
 import 'package:billard_cfa/entities/membership/data/key_value_active_club_memory.dart';
 import 'package:billard_cfa/entities/membership/domain/active_club_memory.dart';
 import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
 import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
 import 'package:billard_cfa/features/select_club/domain/choose_club.dart';
+import 'package:billard_cfa/features/sign_in/data/key_value_pending_invitations.dart';
 import 'package:billard_cfa/shared/lib/club_switch_guard.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/key_value_store.dart';
+
+import 'in_memory_memberships_source.dart';
 
 /// Garde de bascule des tests : bloquée à la demande.
 class FakeClubSwitchGuard implements ClubSwitchGuard {
@@ -24,7 +27,18 @@ class AuthRig {
   AuthRig() {
     memory = KeyValueActiveClubMemory(store);
     chooseClub = ChooseClub(memory, guard);
-    cubit = AuthCubit(startup, auth, memberships, memory, chooseClub, scope);
+    pending = KeyValuePendingInvitations(store);
+    issued = KeyValueInvitationLog(store);
+    cubit = AuthCubit(
+      startup,
+      auth,
+      memberships,
+      memory,
+      chooseClub,
+      scope,
+      pending,
+      issued,
+    );
   }
 
   final InMemoryAuthRepository auth = InMemoryAuthRepository();
@@ -35,6 +49,8 @@ class AuthRig {
   final SessionScope scope = SessionScope();
   late final ActiveClubMemory memory;
   late final ChooseClub chooseClub;
+  late final KeyValuePendingInvitations pending;
+  late final KeyValueInvitationLog issued;
   late final AuthCubit cubit;
 }
 
@@ -49,4 +65,7 @@ class SlowMemberships implements MembershipsSource {
   @override
   Future<List<ClubMembership>> membershipsOf(UserId user) =>
       user.value == 'user-1' ? _slow : _fast.membershipsOf(user);
+
+  @override
+  Future<bool> isAdmin(UserId user) => _fast.isAdmin(user);
 }

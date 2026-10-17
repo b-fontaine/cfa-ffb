@@ -1,6 +1,8 @@
 import 'package:billard_cfa/app/router.dart';
 import 'package:billard_cfa/features/app_update/presentation/bloc/app_update_cubit.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/active_club_scope.dart';
+import 'package:billard_cfa/shared/lib/role_policy.dart';
 import 'package:billard_cfa/shared/ui/app_navigation.dart';
 import 'package:billard_cfa/shared/ui/app_tabs.dart';
 import 'package:billard_cfa/shared/ui/app_update_banner.dart';
@@ -15,10 +17,25 @@ import 'package:go_router/go_router.dart';
 /// écrans de « Séances » (Planifiées, Catalogue, Suggestion) sont surmontés de
 /// leurs onglets.
 class AppShell extends StatelessWidget {
-  const AppShell({required this.location, required this.child, super.key});
+  const AppShell({
+    required this.location,
+    required this.child,
+    this.role,
+    super.key,
+  });
 
   final String location;
   final Widget child;
+
+  /// Le rôle de club de la session. Un élève ou un parent n'a que « Mes
+  /// enfants » (« Ma progression ») et « Plus » ; les autres rôles ont les cinq
+  /// destinations. `null` (hors session ouverte) : les cinq destinations.
+  final Role? role;
+
+  /// Destination d'un élève ou d'un parent : « Mes enfants » (0) ou « Plus »
+  /// (1).
+  static int familyIndexOf(String location) =>
+      location.startsWith(AppRoutes.more) ? 1 : 0;
 
   static int indexOf(String location) {
     if (location.startsWith(AppRoutes.students)) return 1;
@@ -32,6 +49,7 @@ class AppShell extends StatelessWidget {
     if (location.startsWith(AppRoutes.more) ||
         location.startsWith(AppRoutes.backup) ||
         location.startsWith(AppRoutes.seasons) ||
+        location.startsWith(AppRoutes.club) ||
         location.startsWith(AppRoutes.settings)) {
       return 4;
     }
@@ -67,36 +85,56 @@ class AppShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final tab = sessionsTabOf(location);
+    final family = role != null && !role!.animates;
     return AppNavigation(
-      destinations: [
-        AppDestination(
-          icon: const NavIcon(NavGlyph.today),
-          selectedIcon: const NavIcon(NavGlyph.today, selected: true),
-          label: l10n.navHome,
-        ),
-        AppDestination(
-          icon: const NavIcon(NavGlyph.students),
-          selectedIcon: const NavIcon(NavGlyph.students, selected: true),
-          label: l10n.navStudents,
-        ),
-        AppDestination(
-          icon: const NavIcon(NavGlyph.results),
-          selectedIcon: const NavIcon(NavGlyph.results, selected: true),
-          label: l10n.navResults,
-        ),
-        AppDestination(
-          icon: const NavIcon(NavGlyph.sessions),
-          selectedIcon: const NavIcon(NavGlyph.sessions, selected: true),
-          label: l10n.navSessions,
-        ),
-        AppDestination(
-          icon: const NavIcon(NavGlyph.more),
-          selectedIcon: const NavIcon(NavGlyph.more, selected: true),
-          label: l10n.navMore,
-        ),
-      ],
-      selectedIndex: indexOf(location),
-      onSelected: (index) => context.go(_paths[index]),
+      destinations: family
+          ? [
+              AppDestination(
+                icon: const NavIcon(NavGlyph.students),
+                selectedIcon: const NavIcon(NavGlyph.students, selected: true),
+                label: role == Role.student
+                    ? l10n.navMyProgress
+                    : l10n.navMyChildren,
+              ),
+              AppDestination(
+                icon: const NavIcon(NavGlyph.more),
+                selectedIcon: const NavIcon(NavGlyph.more, selected: true),
+                label: l10n.navMore,
+              ),
+            ]
+          : [
+              AppDestination(
+                icon: const NavIcon(NavGlyph.today),
+                selectedIcon: const NavIcon(NavGlyph.today, selected: true),
+                label: l10n.navHome,
+              ),
+              AppDestination(
+                icon: const NavIcon(NavGlyph.students),
+                selectedIcon: const NavIcon(NavGlyph.students, selected: true),
+                label: l10n.navStudents,
+              ),
+              AppDestination(
+                icon: const NavIcon(NavGlyph.results),
+                selectedIcon: const NavIcon(NavGlyph.results, selected: true),
+                label: l10n.navResults,
+              ),
+              AppDestination(
+                icon: const NavIcon(NavGlyph.sessions),
+                selectedIcon: const NavIcon(NavGlyph.sessions, selected: true),
+                label: l10n.navSessions,
+              ),
+              AppDestination(
+                icon: const NavIcon(NavGlyph.more),
+                selectedIcon: const NavIcon(NavGlyph.more, selected: true),
+                label: l10n.navMore,
+              ),
+            ],
+      selectedIndex: family ? familyIndexOf(location) : indexOf(location),
+      onSelected: (index) => context.go(
+        family
+            ? const [AppRoutes.myChildren, AppRoutes.more][index]
+            : _paths[index],
+      ),
       body: _UpdateAwareBody(
         child: Column(
           children: [

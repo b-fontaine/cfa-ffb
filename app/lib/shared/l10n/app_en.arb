@@ -3827,5 +3827,143 @@
   "moreSwitchClubHint": "This account belongs to several clubs",
   "switchClubBackToMore": "Back to More",
   "unavailableTitle": "Service unavailable",
-  "unavailableBody": "The account service is not responding. Check your connection and try again. Offline, the app only opens on a device that is already signed in."
+  "unavailableBody": "The account service is not responding. Check your connection and try again. Offline, the app only opens on a device that is already signed in.",
+  "failNameTooLong": "This name is too long.",
+  "failServiceUnavailable": "The service is not responding. Check your connection and try again.",
+  "failServiceDenied": "You are not allowed to do this.",
+  "failActionNotAllowed": "Your role does not allow this action.",
+  "failAgeConfirmationRequired": "Confirm that this student is 15 or older, or invite a parent instead.",
+  "failStudentChoiceRequired": "Choose the student first.",
+  "moreClub": "My club",
+  "moreClubHint": "Team, families and invitations",
+  "moreAdministration": "Administration",
+  "moreAdministrationHint": "Clubs, directors and invitation codes",
+  "clubTitle": "My club",
+  "clubBack": "Back to My club",
+  "clubRename": "Rename the club",
+  "clubRenameLabel": "Club name",
+  "clubInviteAction": "Invite someone",
+  "clubMembersTitle": "Team and families",
+  "clubMembersEmpty": "Nobody has joined yet.",
+  "clubMemberRemove": "Remove access",
+  "clubMemberRemoveTitle": "Remove {name}?",
+  "@clubMemberRemoveTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "clubMemberRemoveBody": "This person loses access to the club immediately. Their account is not deleted.",
+  "clubMemberRemoveConfirm": "Remove",
+  "clubInvitationsTitle": "Invitations sent from this device",
+  "clubInvitationsEmpty": "No invitation sent from this device yet.",
+  "clubInvitationsNote": "For privacy, codes are not listed on the server: only invitations created on this device appear here.",
+  "invitationStatusWaiting": "Waiting",
+  "invitationStatusUsed": "Used",
+  "invitationStatusExpired": "Expired",
+  "invitationStatusUnknown": "Status unknown",
+  "invitationRevoke": "Revoke",
+  "invitationRowSubtitle": "{role} · {status}",
+  "@invitationRowSubtitle": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteTitle": "Invite someone",
+  "inviteRoleTitle": "Who do you invite?",
+  "inviteGroupsTitle": "Groups of the teacher (optional)",
+  "inviteGroupsEmpty": "No group yet.",
+  "inviteStudentTitle": "Which student?",
+  "inviteChildrenTitle": "Which children? (up to {count})",
+  "@inviteChildrenTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inviteStudentsEmpty": "No student available. Add students first.",
+  "inviteStudentOption": "{name} · {group}",
+  "@inviteStudentOption": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "group": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteAgeConfirm": "This student is 15 or older",
+  "inviteAgeHelp": "Under 15, invite a parent instead. No age is stored.",
+  "inviteNoticeReminder": "Give families the information notice before inviting them. Draft, to be validated by the federation or a DPO.",
+  "inviteSubmit": "Create the invitation",
+  "inviteResultTitle": "Invitation code",
+  "inviteResultHelp": "Give this code to the person. It can be used once.",
+  "inviteValidUntil": "Valid until {date} {time}",
+  "@inviteValidUntil": {
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "yMMMd"
+      },
+      "time": {
+        "type": "DateTime",
+        "format": "Hm"
+      }
+    }
+  },
+  "inviteCopyCode": "Copy the code",
+  "inviteCopyLink": "Copy the link",
+  "inviteCopied": "Copied",
+  "inviteAnother": "Invite someone else",
+  "joinTitle": "Join a club",
+  "joinIntro": "Enter the invitation code you received and the name your team will see.",
+  "joinNameLabel": "Your name",
+  "joinNameHint": "Shown to the club’s team ({count} characters at most)",
+  "@joinNameHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "joinNotice": "The club uses your name and, for a family, the first name and progress of the student you follow, to organise lessons. Draft notice, to be validated by the federation or a DPO.",
+  "joinSubmit": "Join the club",
+  "joinErrorNotFound": "This code does not exist. Check it and try again.",
+  "joinErrorExpired": "This invitation has expired. Ask for a new one.",
+  "joinErrorUsed": "This invitation has already been used.",
+  "joinErrorRefused": "This invitation cannot be used with this account. You may already belong to this club.",
+  "joinErrorName": "Enter your name ({count} characters at most).",
+  "@joinErrorName": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noClubJoin": "I have an invitation code",
+  "noClubAdministration": "Administration",
+  "adminTitle": "Administration",
+  "adminIntro": "Create clubs and invite their directors. Administrators can act in every club.",
+  "adminBack": "Back",
+  "adminCreateClub": "Create a club",
+  "adminClubNameLabel": "Club name",
+  "adminCreateConfirm": "Create",
+  "adminClubsEmpty": "No club yet.",
+  "adminInviteDirector": "Invite a director",
+  "adminDirectorInvitationsNote": "Director invitations sent from this device",
+  "navMyChildren": "My children",
+  "navMyProgress": "My progress",
+  "childrenTitleGuardian": "My children",
+  "childrenTitleStudent": "My progress",
+  "childrenEmpty": "No student is linked to your account yet.",
+  "childrenShow": "See the progress",
+  "failNameRequired": "A name is required."
 }

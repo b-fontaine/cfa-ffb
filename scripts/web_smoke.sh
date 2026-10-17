@@ -17,7 +17,6 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 WEB_SMOKE_PROJECT="${WEB_SMOKE_PROJECT:-demo-cfa-ffb}"
-JAVA_MIN=21
 
 fail() {
   printf '\n✘ Fumée du build web impossible : %s\n' "$1" >&2
@@ -25,22 +24,12 @@ fail() {
   exit 1
 }
 
-command -v node >/dev/null 2>&1 || fail "node introuvable (Node >= 24.12 requis)."
-command -v java >/dev/null 2>&1 || fail "java introuvable (Java >= ${JAVA_MIN} requis par les émulateurs)."
-java_version="$(java -version 2>&1 | sed -n '1s/.*version "\([0-9]*\).*/\1/p')"
-[[ "$java_version" =~ ^[0-9]+$ ]] || fail "version de Java illisible (java -version)."
-(( java_version >= JAVA_MIN )) || fail "Java ${java_version} trop ancien (>= ${JAVA_MIN} requis)."
-[[ -x node_modules/.bin/firebase ]] \
-  || fail "node_modules/.bin/firebase absent : lancer « npm ci » à la racine du dépôt."
-[[ -d node_modules/playwright-core ]] \
-  || fail "playwright-core absent : lancer « npm ci » à la racine du dépôt."
-
-chrome_found=false
-for candidate in google-chrome google-chrome-stable chrome chromium; do
-  command -v "$candidate" >/dev/null 2>&1 && chrome_found=true
-done
-[[ "$chrome_found" == true || -d "/Applications/Google Chrome.app" ]] \
-  || fail "Google Chrome introuvable (installé d'office sur les exécuteurs GitHub)."
+source "$ROOT/scripts/lib/prereqs.sh"
+require_node
+require_java
+require_firebase_cli
+require_npm_package playwright-core
+require_chrome
 
 if [[ "${1:-}" == "--build" || ! -f app/build/web/index.html ]]; then
   "$ROOT/scripts/build_web.sh"

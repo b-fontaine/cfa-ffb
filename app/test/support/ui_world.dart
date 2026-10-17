@@ -6,9 +6,7 @@ import 'package:billard_cfa/entities/exercise_catalog/domain/catalogue_repositor
 import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
-import 'package:billard_cfa/entities/membership/data/in_memory_memberships_source.dart';
 import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
-import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
@@ -28,6 +26,8 @@ import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/fullscreen_controller.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/key_value_store.dart';
+import 'package:billard_cfa/shared/persistence/document_store.dart';
+import 'package:billard_cfa/shared/persistence/in_memory_document_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' show Environment;
 
@@ -35,6 +35,7 @@ import 'fake_app_update_source.dart';
 import 'fake_fullscreen_controller.dart';
 import 'fake_pdf_files.dart';
 import 'fixed_clock.dart';
+import 'memberships_fixture.dart';
 
 /// Monde des scénarios d'interface : graphe get_it réel (dépôts en mémoire,
 /// catalogue de l'asset, horloge figée) et amorçage du club par les cas
@@ -94,9 +95,13 @@ class UiWorld {
   static InMemoryAuthRepository get auth =>
       getIt<AuthRepository>() as InMemoryAuthRepository;
 
-  /// Les appartenances en mémoire du scénario en cours.
-  static InMemoryMembershipsSource get memberships =>
-      getIt<MembershipsSource>() as InMemoryMembershipsSource;
+  /// Le stock de documents en mémoire du scénario en cours (ce que serait
+  /// Firestore).
+  static InMemoryDocumentStore get documents =>
+      getIt<DocumentStore>() as InMemoryDocumentStore;
+
+  /// Les clubs et les membres des scénarios, écrits dans [documents].
+  static MembershipsFixture get memberships => MembershipsFixture(documents);
 
   /// Le démarrage du service de comptes du scénario en cours.
   static InMemorySessionStartup get startup =>
@@ -129,6 +134,7 @@ class UiWorld {
     await getIt.unregister<Clock>();
     _clock = FixedClock(today);
     getIt.registerSingleton<Clock>(_clock);
+    documents.serverNow = _clock.now;
     if (getIt.isRegistered<FullscreenController>()) {
       await getIt.unregister<FullscreenController>();
     }
@@ -328,6 +334,59 @@ class UiWorld {
         ),
       );
     });
+  }
+
+  /// Les groupes où l'élève est membre aujourd'hui.
+  static Future<List<String>> currentGroupIdsOf(StudentId student) async {
+    final day = DateTime(today.year, today.month, today.day);
+    return [
+      for (final group in await getIt<GroupRepository>().all())
+        if (group.isMemberOn(student, day)) group.id.value,
+    ];
+  }
+
+  /// Une invitation telle que le serveur la stocke : valable (durée de son
+  /// rôle depuis « aujourd'hui ») sauf [expiresAt] ou [used] contraires.
+  static void seedInvitation({
+    required String code,
+    required String club,
+    required String role,
+    List<String> groupIds = const [],
+    List<String> studentIds = const [],
+    DateTime? expiresAt,
+    bool used = false,
+  }) {
+    final validity = switch (role) {
+      'teacher' || 'director' => const Duration(hours: 48),
+      _ => const Duration(days: 7),
+    };
+    final expiry = expiresAt ?? today.add(validity);
+    documents.seed('invitations/$code', {
+      'clubId': clubIdOf(club).value,
+      'role': role,
+      'groupIds': groupIds,
+      'studentIds': studentIds,
+      'createdBy': 'u-seed',
+      // Une invitation expirée a été créée avant son expiration.
+      'createdAt': expiry.subtract(validity),
+      'expiresAt': expiry,
+      'used': used,
+      if (used) 'usedBy': 'u-other',
+    });
+  }
+
+  /// L'identifiant du club de ce nom dans le stock de documents (un club créé
+  /// par l'application reçoit un identifiant tiré par le générateur).
+  static String clubIdNamed(String name) {
+    final ids = [
+      for (final entry in documents.documents.entries)
+        if (entry.key.startsWith('clubs/') &&
+            entry.key.split('/').length == 2 &&
+            entry.value['name'] == name)
+          entry.key.split('/')[1],
+    ];
+    expect(ids, hasLength(1), reason: 'club « $name » introuvable ou ambigu');
+    return ids.single;
   }
 
   static Future<int> attemptCountOf(String name) async {

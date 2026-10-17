@@ -36,7 +36,13 @@ class KeyValueActiveClubMemory implements ActiveClubMemory {
       if (club is! String || club.isEmpty || name is! String || role == null) {
         return null;
       }
-      return ClubMembership(clubId: ClubId(club), clubName: name, role: role);
+      return ClubMembership(
+        clubId: ClubId(club),
+        clubName: name,
+        role: role,
+        groupIds: _ids(json['groups'], GroupId.new),
+        studentIds: _ids(json['students'], StudentId.new),
+      );
     } on FormatException {
       return null;
     }
@@ -49,8 +55,18 @@ class KeyValueActiveClubMemory implements ActiveClubMemory {
       'club': club.clubId.value,
       'name': club.clubName,
       'role': club.role.name,
+      'groups': [for (final id in club.groupIds) id.value],
+      'students': [for (final id in club.studentIds) id.value],
     }),
   );
+
+  /// Les identifiants d'une liste stockée ; une valeur absente ou illisible
+  /// donne une liste vide (anciennes valeurs d'avant FB3).
+  static List<T> _ids<T>(Object? raw, T Function(String) make) => [
+    if (raw is List<Object?>)
+      for (final item in raw)
+        if (item is String && item.isNotEmpty) make(item),
+  ];
 
   @override
   Future<void> clear(UserId user) => _store.remove(keyFor(user));

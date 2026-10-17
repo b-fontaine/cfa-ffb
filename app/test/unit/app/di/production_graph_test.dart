@@ -7,6 +7,7 @@ import 'package:billard_cfa/app/firebase_environment.dart';
 import 'package:billard_cfa/app/firebase_startup.dart';
 import 'package:billard_cfa/app/platform/file_picker_pdf_files.dart';
 import 'package:billard_cfa/app/platform/firebase_sdk_gateway.dart';
+import 'package:billard_cfa/app/platform/firestore_document_store.dart';
 import 'package:billard_cfa/app/platform/fullscreen_controller_native.dart';
 import 'package:billard_cfa/app/platform/shared_preferences_key_value_store.dart';
 import 'package:billard_cfa/app/session_startup.dart';
@@ -16,8 +17,9 @@ import 'package:billard_cfa/entities/account/domain/auth_repository.dart';
 import 'package:billard_cfa/entities/account/domain/session_scope.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
-import 'package:billard_cfa/entities/membership/data/in_memory_memberships_source.dart';
-import 'package:billard_cfa/entities/membership/data/no_memberships_source.dart';
+import 'package:billard_cfa/entities/invitation/data/invitation_code_sources.dart';
+import 'package:billard_cfa/entities/invitation/domain/invitation_code_source.dart';
+import 'package:billard_cfa/entities/membership/data/store_memberships_source.dart';
 import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
@@ -38,7 +40,9 @@ import 'package:billard_cfa/shared/lib/id_generator.dart';
 import 'package:billard_cfa/shared/lib/key_value_store.dart';
 import 'package:billard_cfa/shared/lib/storage_status.dart';
 import 'package:billard_cfa/shared/lib/unit_of_work.dart';
+import 'package:billard_cfa/shared/persistence/document_store.dart';
 import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
+import 'package:billard_cfa/shared/persistence/in_memory_document_store.dart';
 import 'package:billard_cfa/shared/persistence/open_app_database.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
@@ -189,7 +193,9 @@ void main() {
       await configureProduction();
 
       expect(getIt<AuthRepository>(), isA<FirebaseAuthRepository>());
-      expect(getIt<MembershipsSource>(), isA<NoMembershipsSource>());
+      expect(getIt<MembershipsSource>(), isA<StoreMembershipsSource>());
+      expect(getIt<DocumentStore>(), isA<FirestoreDocumentStore>());
+      expect(getIt<InvitationCodeSource>(), isA<SecureInvitationCodeSource>());
       expect(getIt<KeyValueStore>(), isA<SharedPreferencesKeyValueStore>());
       expect(getIt<SessionStartup>(), same(getIt<FirebaseStartup>()));
       // Un seul porteur de session derrière les deux ports minuscules.
@@ -206,7 +212,12 @@ void main() {
     await configureDependencies(environment: Environment.test);
 
     expect(getIt<AuthRepository>(), isA<InMemoryAuthRepository>());
-    expect(getIt<MembershipsSource>(), isA<InMemoryMembershipsSource>());
+    expect(getIt<MembershipsSource>(), isA<StoreMembershipsSource>());
+    expect(getIt<DocumentStore>(), isA<InMemoryDocumentStore>());
+    expect(
+      getIt<InvitationCodeSource>(),
+      isA<SequentialInvitationCodeSource>(),
+    );
     expect(getIt<KeyValueStore>(), isA<InMemoryKeyValueStore>());
     expect(getIt<SessionStartup>(), isA<InMemorySessionStartup>());
   });

@@ -9,9 +9,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// Inscription sur invitation (bloc fourni par l'appelant) ; [onBack] ramène à
 /// la connexion.
 class RegisterPage extends StatelessWidget {
-  const RegisterPage({required this.onBack, super.key});
+  const RegisterPage({required this.onBack, this.initialCode, super.key});
 
   final VoidCallback onBack;
+
+  /// Le code d'un lien d'invitation, déjà saisi.
+  final String? initialCode;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +29,7 @@ class RegisterPage extends StatelessWidget {
         BlocBuilder<RegisterCubit, AuthFormState>(
           builder: (context, state) => RegisterForm(
             state: state,
+            initialCode: initialCode,
             onSubmit: (code, email, password) =>
                 cubit.submit(code: code, email: email, password: password),
           ),

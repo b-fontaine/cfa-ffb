@@ -8,8 +8,19 @@
 //
 // - le démarrage aboutit à l'écran de connexion (pas de blocage sur l'écran de démarrage) ;
 // - un mauvais mot de passe et une adresse inconnue donnent le MÊME message générique ;
-// - un compte vérifié se connecte (sans club : écran « Aucun club »), la session survit à un
-//   rechargement, et la déconnexion ramène à l'écran de connexion.
+// - le lien d'une invitation (`/join/<code>`) ouvre l'inscription avec le code (FB3) ;
+// - un compte vérifié se connecte ; Firestore n'étant PAS émulé ici, l'application, qui a bien
+//   interrogé Firestore (requête refusée), n'ouvre que sur un club déjà retenu sur l'appareil :
+//   avec un club retenu, la connexion aboutit à l'accueil (assertion de SUCCÈS) ; sans club
+//   retenu, elle affiche « Service indisponible » (chemin d'échec, éprouvé à part) ; la session
+//   survit à un rechargement et la déconnexion ramène à l'écran de connexion.
+//
+// Pourquoi Firestore n'est pas émulé : ses flux longs (WebChannel) ne passent pas par une
+// interception de requêtes du navigateur, et le build de production refuse l'émulateur. Les
+// règles et les opérations Firestore sont éprouvées par scripts/rules_test/ (SDK web, jetons
+// réels de l'émulateur Auth) et les dépôts par les tests Dart. Le parcours « application + émulateurs
+// Auth et Firestore + graine » a son propre garde-fou (scripts/emulator_e2e.sh) : le build de
+// production, lui, refuse l'émulateur.
 //
 // Le build de production n'accepte jamais l'émulateur (`FirebaseEnvironment`) : le test ne
 // le modifie pas. Il intercepte au niveau du navigateur les appels du SDK vers
@@ -82,7 +93,12 @@ let browser;
 let context;
 let page;
 const blocked = new Set();
+// Appels que le SDK Firestore a tentés : ce test n'émule PAS Firestore (les flux longs du SDK
+// ne passent pas par une interception de requêtes) ; ils sont refusés explicitement, et les
+// règles et les dépôts sont éprouvés par scripts/rules_test/ et par les tests Dart.
+const firestoreRefused = new Set();
 const pageErrors = [];
+let accountUid;
 
 const startServer = () =>
   new Promise((done) => {
@@ -114,6 +130,15 @@ const route = async (r) => {
   const url = new URL(request.url());
   if (url.hostname === '127.0.0.1' || url.hostname === 'localhost') return r.continue();
   if (url.hostname === 'gstatic.com' || url.hostname.endsWith('.gstatic.com')) return r.continue();
+  // Le SDK web de Firestore appelle aussi une image de sonde de connectivité de Google
+  // (WebChannel) : même traitement, et c'est consigné au registre des traitements.
+  if (
+    url.hostname === 'firestore.googleapis.com' ||
+    (url.hostname === 'www.google.com' && url.pathname === '/images/cleardot.gif')
+  ) {
+    firestoreRefused.add(`${url.hostname}${url.pathname}`);
+    return r.abort('connectionrefused');
+  }
   if (proxied.has(url.hostname)) {
     const upstream = await fetch(`${emulator}/${url.hostname}${url.pathname}${url.search}`, {
       method: request.method(),
@@ -147,7 +172,19 @@ const seedVerifiedAccount = async () => {
   await applyActionCode(auth, verification.oobCode);
   await signOut(auth);
   await deleteApp(app);
+  return user.uid;
 };
+
+// Le club retenu par compte sur l'appareil (KeyValueActiveClubMemory, `shared_preferences` web :
+// `localStorage`, valeur encodée en JSON) : de quoi ouvrir hors ligne dans un club.
+const rememberClub = (uid) =>
+  page.evaluate(
+    ([key, club]) => localStorage.setItem(key, JSON.stringify(JSON.stringify(club))),
+    [
+      `active_club.${uid}`,
+      { club: 'demo', name: 'Démo', role: 'director', groups: [], students: [] },
+    ],
+  );
 
 // Flutter web n'expose l'arbre sémantique qu'après un clic sur le marqueur d'accessibilité.
 const enableSemantics = () =>
@@ -205,7 +242,7 @@ before(async () => {
   page = await context.newPage();
   page.on('pageerror', (error) => pageErrors.push(error.message));
   await fetch(`${emulator}/emulator/v1/projects/${projectId}/accounts`, { method: 'DELETE' });
-  await seedVerifiedAccount();
+  accountUid = await seedVerifiedAccount();
 });
 
 after(async () => {
@@ -239,23 +276,58 @@ describe('build web compilé contre l’émulateur Auth', () => {
     assert.equal(unknownAddress, wrongPassword);
   });
 
-  test('un compte vérifié se connecte, la session survit au rechargement, la déconnexion la ferme', async () => {
+  test('le lien d’une invitation ouvre l’inscription avec le code (adresse /join/<code>)', async () => {
+    await page.goto(`${origin}/#/join/ABCDEFGHJKMN`);
+    await page.reload();
+    await page.waitForSelector('flt-semantics-placeholder', { state: 'attached', timeout: 30_000 });
+    await enableSemantics();
+
+    await see('Inscription sur invitation');
+    assert.match(page.url(), /#\/register\?code=ABCDEFGHJKMN/);
+  });
+
+  test('sans club retenu et Firestore injoignable : « Service indisponible » (chemin d’échec)', async () => {
     await open();
     await see('Connexion à l’application');
 
     await signInWith(email, password);
-    await see('Aucun club');
+    // L'application a bien tenté de lire les clubs du compte (adaptateur Firestore du build
+    // compilé) ; sans club retenu sur l'appareil, elle ne peut que signaler l'indisponibilité.
+    await see('Service indisponible');
+    assert.ok(firestoreRefused.size > 0, 'le build compilé doit avoir interrogé Firestore');
+
+    await page.getByRole('button', { name: 'Se déconnecter', exact: true }).click();
+    await see('Connexion à l’application');
+  });
+
+  test('un compte vérifié se connecte et ouvre son club retenu ; la session survit au rechargement, la déconnexion la ferme', async () => {
+    await open();
+    await see('Connexion à l’application');
+    await rememberClub(accountUid);
+    // Remise à zéro : seules les requêtes Firestore refusées PENDANT cette connexion comptent.
+    firestoreRefused.clear();
+
+    await signInWith(email, password);
+    // SUCCÈS : l'accueil du club retenu (directeur : onglets de l'animateur), pas une erreur.
+    await see('Aujourd\'hui');
+    await see('Plus');
+    assert.equal(await text('Service indisponible').count(), 0);
+    assert.equal(await text('Aucun club').count(), 0);
+    assert.doesNotMatch(page.url(), /#\/(sign-in|splash|unavailable|select-club)/);
+    assert.ok(firestoreRefused.size > 0, 'le build compilé doit avoir interrogé Firestore (refusé) pendant la connexion');
 
     await page.reload();
     await enableSemantics();
-    await see('Aucun club');
+    await see('Aujourd\'hui');
+    assert.equal(await text('Service indisponible').count(), 0);
 
+    await page.getByText(/^Plus/).first().click();
     await page.getByRole('button', { name: 'Se déconnecter', exact: true }).click();
     await see('Connexion à l’application');
     assert.match(page.url(), /#\/sign-in/);
   });
 
-  test('aucun appel vers un autre hôte que localhost, gstatic et le SDK d’authentification', () => {
+  test('aucun appel vers un autre hôte que localhost, gstatic, Firestore (refusé) et le SDK d’authentification', () => {
     assert.deepEqual([...blocked], []);
     assert.deepEqual(pageErrors, []);
   });
