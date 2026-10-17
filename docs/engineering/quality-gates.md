@@ -94,6 +94,10 @@ Hook agent : l'événement `Stop` lance `scripts/check.sh --fast` lorsque `app/`
   entrées limites (`validate_seances_test`, `check_coverage_test`,
   `check_l10n_test`, `check_widgetbook_test`, `architecture_rules_test`).
 
+- **Paquet `pdf`** (ADR 0021) : `tool/architecture` refuse `package:pdf/widgets.dart`,
+  `package:pdf/src/` et `package:printing/` dans `lib/`, et tout `package:pdf/`
+  hors de `features/export_sheet/data/` (cas rouges dans `architecture_rules_test`).
+
 ## Hors périmètre actuel : mutation testing
 
 Le mutation testing a été **retiré le 2026-10-12** (décision de l'animateur) : il

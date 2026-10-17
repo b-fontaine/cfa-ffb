@@ -179,6 +179,29 @@ exécutables (`fullscreenEnabled ?? false`, `_absorb`, écouteur
 `flutter test --platform chrome` (`@TestOn('browser')`) les couvrirait, mais
 la CI n'a pas de passe navigateur ; à ajouter au lot 15 avec le test PWA.
 
+Le **rendu PDF** (lot 14) a ses doubles et ses garde-fous : `FakePrintRenderer`
+(mesure à chasse fixe `FixedTextMeasure`, « PDF » réduit à une ligne qui compte
+les pages) pour les cas d'usage et le cubit ; `FakePdfFiles` (`UiWorld` le branche
+à la place de la sortie de plateforme : `the platform can print`, `the save dialog
+is cancelled`) ; `FakeExportSource`. Le vrai `PdfPrintRenderer` se teste avec la
+vraie fonte Exo 2 (`pdf_print_renderer_test`, document **non compressé** pour lire
+les opérateurs : y inversé, pages dans l'ordre, dashes, rotation, gras simulé,
+police embarquée, aucune action `/URI`) ; `catalogue_export_test` imprime les **28
+séances × 2 publics × 2 langues** avec la vraie fonte (aucun caractère absent
+d'Exo 2, nombre de pages, valeurs préremplies dans la colonne de gauche). Les
+scénarios BDD lisent la **même scène** que le PDF dans l'aperçu
+(`test/support/pdf_preview.dart`) et le fichier enregistré dans le double.
+Les liaisons `dart:js_interop` de l'impression web
+(`app/platform/pdf_files_web.dart`) ne sont chargeables que dans le navigateur :
+même exception de couverture que le plein écran (vérifiées au parcours web ;
+l'ouverture de la boîte d'impression du navigateur ne se pilote pas).
+Limite connue : le garde « aucun accès réseau » du scénario BDD
+(`network_access_is_forbidden`, `HttpOverrides`) ne voit que les clients
+`dart:io` ; une requête web par `package:http` ou `fetch` ne serait pas
+détectée. L'absence de réseau repose donc surtout sur le rendu lui-même (le
+test unitaire du rendu : aucun lien `/URI` dans le PDF) et sur la règle
+d'architecture qui réserve `pdf` à `export_sheet/data`.
+
 ## Conventions
 
 - Fichier de test = `<fichier_lib>_test.dart` dans le miroir de `lib/`

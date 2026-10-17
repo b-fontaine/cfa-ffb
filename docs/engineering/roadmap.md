@@ -245,9 +245,16 @@ Lots UX en H0 :
     sur le diagramme, légende jamais tronquée (F1).~~ **Remplacé par U3, livré
     le 2026-10-16** (hors périmètre : zoom sur le diagramme, étape complète avec
     consigne).
-14. Impression / export PDF d'une séance du catalogue (feuille de l'animateur,
-    fiche résultats papier identique au PDF fédéral) ; s'appuie sur `PassDots`
-    (U1) pour la fiche résultats.
+14. ~~Impression / export PDF d'une séance du catalogue~~ (feuille de l'animateur,
+    fiche résultats papier identique au PDF fédéral) : **livré le 2026-10-17**
+    ([plan](export-pdf-plan.md), [ADR 0021](adr/0021-export-pdf-feuille-animateur-et-fiche-resultats.md)) :
+    `pdf` bas niveau, scène d'impression en domaine pur (deux rendus : PDF et
+    aperçu), schémas en vectoriel, bouton sur le détail et dans le guide, page
+    d'export hors du cadre ; la fiche résultats reprend la grille fédérale (0 à
+    16), pas des pastilles (point U14-1). **Reste** : impression directe non
+    automatisable (à vérifier à la main), Safari iPhone et PWA Android non
+    vérifiés, PDF non balisé, impression système sur mobile natif (ADR à part),
+    dessin des illustrations qui ne sont pas des schémas de table.
 15. ~~Hors-ligne : vérifier le PWA (service worker, sqlite3.wasm / OPFS) sans
     réseau ; installation sur l'écran d'accueil ; plein écran et mode immersif~~
     **Livré le 2026-10-16** ([plan](hors-ligne-plan.md),

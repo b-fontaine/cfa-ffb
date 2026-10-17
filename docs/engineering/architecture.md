@@ -40,6 +40,12 @@ Les règles ci-dessous sont vérifiées par `app/tool/check_architecture.dart`
    importé que par `data` et la couche `app` (jamais par `presentation`,
    `domain`, `shared/ui` ni `shared/l10n`) ; `domain` n'importe que `shared/lib`.
 
+8. **Paquet `pdf`** (ADR 0021) : seule la couche `data` de `features/export_sheet`
+   importe `package:pdf/pdf.dart` (API bas niveau) ; `package:pdf/widgets.dart`
+   (+905 Ko de code compilé), `package:pdf/src/` et `package:printing/` (pdf.js
+   chargé depuis un CDN, incompatible avec le hors ligne) sont interdits partout
+   dans `lib/` (les tests peuvent lire `pdf/src` : table des glyphes).
+
 Dépendances : `domain` ← `data`, `domain` ← `presentation`. Le domaine ne dépend de rien.
 
 ## Arbre de dossiers
@@ -53,6 +59,8 @@ app/
 │   │   ├── router.dart                # GoRouter (AppRoutes)
 │   │   ├── record_sheet.dart          # showRecordSheet : feuille basse de saisie depuis le guide
 │   │   ├── record_screens.dart        # buildRecordSetup / buildRecordSession : câblage unique (route et feuille)
+│   │   ├── sheet_export.dart          # RunPlanExportSource : déroulé (run_sheet) -> entrées de l'export PDF (lot 14)
+│   │   ├── platform/                  # plein écran, mise à jour, sortie PDF (web / natif par import conditionnel)
 │   │   ├── firebase_options.dart      # généré par `flutterfire configure` (chemin fixé dans app/firebase.json)
 │   │   └── di/injection.dart          # @InjectableInit → injection.config.dart (généré)
 │   ├── pages/                         # une page par parcours, Bloc fourni par le routeur
@@ -64,6 +72,7 @@ app/
 │   │   ├── assessment/                # (e) bilan de maturité, changement de public manuel
 │   │   ├── backup/                    # (f) export / import JSON
 │   │   ├── season_closure/  season_archive/   # lot 11 : assistant de clôture, « Saisons passées »
+│   │   ├── export_sheet/              # lot 14 : export PDF d'une séance (hors du cadre de navigation)
 │   │   └── settings/                  # réglages du club (sous « Plus »)
 │   ├── widgets/session_list/  widgets/roster_picker/   # blocs réutilisables entre pages
 │   ├── features/plan_session/
@@ -101,6 +110,9 @@ app/
 │   ├── entities/settings/             # ClubSettings, SettingsRepository (drift + en mémoire)
 │   ├── entities/run_progress/         # RunProgress, RunProgressKey, RunProgressRepository (drift + en mémoire) :
 │   │                                  # séances guidées en cours, lot 10b (ADR 0020)
+│   ├── features/export_sheet/         # lot 14 (ADR 0021) : domaine = scène d'impression, mise en page des deux
+│   │                                  # documents, schémas, gabarit fédéral, cas d'usage ; data = PdfPrintRenderer (seul
+│   │                                  # importeur de `pdf`) ; presentation = ExportSheetCubit, ExportView, aperçu
 │   ├── features/manage_settings/      # LoadSettings, SaveSettings, ResetSettings, SettingsField ;
 │   │                                  # SettingsBloc, SettingsForm
 │   ├── features/backup_data/          # ExportBackup, ImportBackup, BackupCodec, BackupMarkerRepository,
@@ -110,7 +122,7 @@ app/
 │       ├── lib/                       # noyau Dart pur : Audience, identifiants typés,
 │       │                              # ExerciseRef, SuccessRate, RulesConfig,
 │       │                              # Failure/Result, IdGenerator, Clock,
-│       │                              # UnitOfWork, StorageStatus
+│       │                              # UnitOfWork, StorageStatus, PdfFiles (sortie PDF)
 │       ├── persistence/               # base drift (SQLite) : tables, AppDatabase,
 │       │                              # ouverture natif/web, unité de travail
 │       ├── ui/                        # design system (voir design-system.md)
@@ -643,6 +655,38 @@ aucune dépendance, pas d'ADR.
   statut `[Prop]`), portés par `WatchList` et `SessionReview`.
 - **Limite connue** : le registre des séances guidées (`RunSheetSessions`) est
   en mémoire ; « En cours » ne survit pas à un rechargement (plan U-5).
+
+## Export PDF (lot 14)
+
+Plan et décisions : [export-pdf-plan.md](export-pdf-plan.md),
+[ADR 0021](adr/0021-export-pdf-feuille-animateur-et-fiche-resultats.md). Aucune
+migration, sauvegarde inchangée (v4), aucun asset ajouté (Exo 2 est déjà précachée).
+
+- **Scène d'impression** (`features/export_sheet/domain/print_scene.dart`) : pages en
+  points (origine en haut à gauche), éléments `PrintText` (ligne déjà coupée, ligne
+  de base `y`), `PrintLine`, `PrintPolyline`, `PrintRect`, `PrintCircle`,
+  `PrintPolygon`, niveaux de gris seulement. Deux interprètes la rendent : le PDF
+  (`PdfPrintRenderer`, `data`) et l'aperçu (`PrintScenePainter`, `presentation`).
+- **Mise en page en domaine pur**, mesure du texte par le port `TextMeasure` (fournie
+  par la fonte embarquée : la coupure et le dessin utilisent les mêmes métriques) :
+  `layoutAnimatorSheet` (déroulé, sections, pagination par blocs insécables),
+  `layoutResultsSheets` + `ResultsTemplate` (gabarit mesuré sur le PDF fédéral),
+  `drawDiagram` (schéma de table en vectoriel), `wrapText`, `printable` (θ par le mot
+  de la langue, « thêta » en français ; caractère absent de la fonte refusé).
+- **Entrées sans élève** : `SheetPrintInput` n'a aucun champ nominatif ; les
+  prénoms d'un groupe n'entrent que par `ResultsSheetsRequest.groupId`, lu par
+  `ExportResultsSheets` (membres du jour, tri sans accents) **quand l'animateur l'a
+  demandé** ; `ResolveRunPlan(withRecallExercise: false)` évite de lire les élèves
+  pour le créneau de rappel.
+- **Jonction** (couche `app`, une feature n'en importe pas une autre) :
+  `RunPlanExportSource` met en forme le `RunPlan` de `run_sheet` en
+  `SheetPrintInput` / `ResultsPlan` (port `ExportSource` de la feature).
+- **Sortie** : port `PdfFiles` (`shared/lib`) : `FilePickerPdfFiles` (téléchargement
+  sur le web, boîte d'enregistrement ailleurs), impression directe sur le web par
+  une iframe cachée (`pdf_files_web.dart`, `dart:js_interop`, URL d'objet locale).
+- **Écran** : route `/catalogue/:sheetId/export?audience=` hors du cadre ;
+  `ExportSheetCubit` (le dernier choix gagne), `ExportView`, `PrintPreviewView`.
+  Entrées : bouton du détail d'une séance, menu ⋮ du guide.
 
 ## Fiche en parcours, vue élève et vue de groupe (lot U9)
 

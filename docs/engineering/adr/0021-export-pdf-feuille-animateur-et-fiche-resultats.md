@@ -1,0 +1,71 @@
+# ADR 0021 — Export PDF : `pdf` en API bas niveau, mise en page en domaine pur, schémas dessinés en vectoriel, aucune donnée nominative par défaut
+
+- Statut : **accepté et livré** le 2026-10-17 (lot 14) sur les défauts proposés ; les points `[U]` U14-1 à U14-12 du plan restent à confirmer par l'animateur (un défaut contredit se corrige sans changer la décision ci-dessous). Écarts de livraison : voir « Écarts à la livraison » en fin de page. Conception et exécution : [../export-pdf-plan.md](../export-pdf-plan.md). Lot **14** de la [roadmap](../roadmap.md).
+  S'appuie sur l'[ADR 0018](0018-hors-ligne-service-worker-precache-versionne.md) (tout le build est précaché, aucune ressource externe), l'[ADR 0020](0020-seance-en-cours-persistee-locale-hors-sauvegarde.md) (un fichier exporté échappe à l'effacement) et l'[ADR 0001](0001-persistance-locale-drift.md) (rien de nouveau en base).
+- Contexte : l'animateur veut une **feuille papier** d'une séance du catalogue (déroulé, minutes, consignes, schémas de table, provenance `[Prop]` signalée) et la **fiche résultats** du PDF fédéral (`docs/sources/Fiches résultats CFA blackball.pdf`, 4 grilles par page A4) à remplir à la table. Tout doit marcher **hors ligne** dans la PWA, web d'abord. Aucune dépendance PDF n'existe dans `app/pubspec.yaml` ; le texte des séances est en français, l'interface en fr + en.
+
+## Décision
+
+1. **Une seule nouvelle dépendance directe : `pdf` `^3.11.3`** (Apache-2.0, Dart pur, aucun JavaScript ni CDN), utilisée **par son API bas niveau uniquement** (`package:pdf/pdf.dart` : `PdfDocument`, `PdfPage`, `PdfGraphics`, `PdfTtfFont`). `package:pdf/widgets.dart` est **interdit** (règle ajoutée à `tool/architecture`) : à usage égal il coûte onze fois plus de code compilé (mesures ci-dessous). `printing` n'est **pas** adopté.
+2. **Mise en page en domaine pur, rendu par deux interprètes.** Le domaine (`features/export_sheet/domain`) calcule des **scènes d'impression** : pages en points, éléments positionnés (texte déjà coupé en lignes, trait, polyligne pointillée, rectangle, cercle, polygone). Il ne connaît ni `pdf` ni Flutter ; la mesure du texte passe par un port (`TextMeasure`). Deux rendus de la même scène : le **PDF** (couche `data`, `pdf`) et l'**aperçu à l'écran** (couche `presentation`, `CustomPainter`). Pagination, coupe des lignes, minutes cumulées, gabarit de la fiche résultats et schémas sont donc testés sans PDF.
+3. **Schémas de table dessinés directement** à partir de `DiagramTable` (domaine des schémas), en **vectoriel, sans couleur porteuse de sens** (lettre dans chaque bille, trait plein / tirets / points pour les flèches, comme à l'écran). Les painters Flutter ne sont **pas** réutilisés (voir alternatives). Les illustrations de séance qui ne sont pas des schémas de table (silhouette, contact, dosage, angle…) sont imprimées en **légende + texte alternatif** (obligatoire dans le modèle) ; leur dessin est un second temps éventuel.
+4. **Polices : Exo 2, déjà dans le build et le précache** (`assets/fonts/Exo2.ttf`, `Exo2-Italic.ttf`, OFL) ; aucune ressource ajoutée. Les deux fichiers sont **variables** : seule l'instance par défaut s'embarque, le gras est obtenu en « remplir et contourer » (`PdfTextRenderingMode.fillAndStroke`, trait fin). Exo 2 **n'a pas** `θ`, `✓` ni `→` (vérifié dans la table des glyphes) : une normalisation (`θ` → « thêta ») et un **test de garde** sur tous les textes imprimables du catalogue empêchent un carré vide sur le papier.
+5. **Sortie : « Enregistrer » (partout) et « Imprimer » (web).** Enregistrer reprend le mécanisme de la sauvegarde (`file_picker`, déjà une dépendance : téléchargement sur le web, boîte d'enregistrement ailleurs) derrière un port propre à la feature (`PdfFiles`). Imprimer = iframe cachée et `print()` du navigateur sur le PDF produit, par `dart:js_interop` (précédent : ADR 0017), sans dépendance ; absent hors du web (entrée masquée), comme le plein écran.
+6. **Aucune donnée nominative sans choix explicite.** La **feuille de l'animateur ne contient aucun nom d'élève** et ne lit aucun dépôt d'élèves (le créneau de rappel est imprimé « exercice choisi pendant la séance », ADR 0011). La **fiche résultats** a des noms **vides par défaut** ; l'animateur peut demander les **prénoms** d'un groupe (jamais autre chose), avec un avertissement : le fichier exporté échappe à l'effacement d'un élève (même raisonnement que la sauvegarde et l'ADR 0020, décision 3). Les noms ne sont ni stockés ni mis dans le nom du fichier.
+7. **Provenance imprimée en texte, jamais en couleur** : chaque élément porte sa marque (`[S]`, `[FFB]`, `[Web]`, `[Prop]`), les minutes sont signalées `[Prop]` (calculées par l'application), une légende en pied de page explique `[Prop]` : « proposition non sourcée, à valider ». La fiche résultats reproduit celle du PDF fédéral et cite sa source `[S]` ; elle n'est pas présentée comme un document fédéral émis par l'application.
+8. **Aucune migration, sauvegarde inchangée** (format v4), aucun asset ajouté, aucun changement du précache.
+
+## Mesures qui fondent le choix
+
+Reproductibles : applications d'essai dans le répertoire de travail, Flutter 3.47.7, `flutter build web --release --no-web-resources-cdn`, taille de `main.dart.js` (même `MaterialApp` et même bouton ; seule la production d'un PDF change).
+
+| Variante | `main.dart.js` | gzip -9 | Écart (brut / gzip) |
+|---|---:|---:|---:|
+| Sans PDF | 1 789 330 o | 527 717 o | — |
+| `pdf` bas niveau (`PdfDocument`, `PdfPage`, `PdfGraphics`, `PdfTtfFont`) | 1 866 626 o | 554 399 o | **+77 296 o / +26 682 o** |
+| `pdf` widgets (`MultiPage`, `Row`, `Container`, `CustomPaint`, police TTF) | 2 695 089 o | 796 705 o | +905 759 o / +268 988 o |
+| `pdf` widgets avec `Page` + `Table` | 2 691 183 o | 794 782 o | +901 853 o / +267 065 o |
+
+- Sur le vrai build (`main.dart.js` = 5 045 702 o), le bas niveau pèse **+1,5 %** ; le précache (21,1 Mo, ADR 0018) gagne environ 0,08 Mo. Dépendances transitives ajoutées au verrou : `archive`, `barcode`, `bidi`, `image`, `path_parsing`, `qr` (`crypto`, `vector_math`, `xml`, `petitparser`, `meta`, `collection`, `path`, `typed_data` y sont déjà ou sont des paquets Dart de base).
+- **Polices** : un PDF d'essai (deux polices Exo 2, trois lignes avec accents, `œ`, `—`, `≥`) fait 5,6 Ko, polices embarquées (`pdffonts` : `emb yes`), accents et ligature rendus (`pdftoppm`, `pdftotext`). Le ✓ sort vide : Exo 2 ne l'a pas.
+- **Impression du navigateur** : le build web actuel servi par `http.server`, `emulateMedia('print')` puis `page.pdf()` (Chromium) donne **une seule page** A4 qui est l'écran d'accueil rasterisé et **tronqué à droite**, **sans aucun caractère extractible** (`pdftotext` : 1 octet). Aucune feuille de style `@media print` ne peut rendre la séance : l'application est dessinée dans un canevas CanvasKit, pas dans le DOM.
+- **`printing` 5.14.2** (lu dans le cache pub, `lib/printing_web.dart`) : sur le web, `info()` et toute rastérisation chargent **pdf.js depuis `https://unpkg.com/pdfjs-dist@3.2.146/`** ; il faudrait servir pdf.js localement (`dartPdfJsBaseUrl`, ~1 Mo à précacher) et s'interdire à jamais `info()` et `PdfPreview`. Il ajoute `http`, `image`, `ffi`, `pdf_widget_wrapper`, `flutter_web_plugins`. Son `layoutPdf` web se réduit à un iframe caché et `print()` : ce que la décision 5 écrit en une quarantaine de lignes.
+
+## Alternatives écartées
+
+- **Impression navigateur de l'application (`@media print`)** : mesuré ci-dessus, inutilisable avec CanvasKit.
+- **Document HTML généré dans un iframe, puis `window.print()`** : sans dépendance et paginé par le navigateur, mais il n'y a **aucun fichier PDF** à enregistrer ou partager (hors boîte d'impression), la pagination et les coupures de page varient d'un navigateur à l'autre, rien ne sert sur mobile natif, les polices doivent être déclarées en `@font-face` et précachées, et les schémas de table sont à redessiner de toute façon (en SVG). Reste le **repli** si `pdf` posait un problème de licence ou de taille.
+- **`pdf` + `printing`** : voir ci-dessus (CDN, dépendances, rien de plus que ce dont on a besoin sur le web). À rouvrir avec un ADR quand un lot **natif** voudra l'impression système (AirPrint, Android) : le port `PdfFiles` l'accueillera sans toucher au domaine.
+- **`pdf` widgets (`MultiPage`, `Table`)** : +905 Ko de code, et une pagination que le domaine fait déjà (et teste mieux).
+- **Rastériser les painters Flutter** (`PictureRecorder`, `toImage`, PNG dans le PDF) : réutilise tout (douze types d'illustration), mais PNG volumineux (un schéma à 300 dpi, une centaine de Ko, une dizaine par séance), texte des schémas non sélectionnable, couleurs de tapis à encrer, `toImage` asynchrone à contourner dans les tests, rendu dépendant du moteur. Retenu seulement comme **second temps** pour les illustrations qui ne sont pas des schémas de table, si l'animateur les réclame.
+- **Génération côté serveur** : incompatible avec le hors-ligne.
+- **Bibliothèques à licence commerciale** (par ex. Syncfusion) : écartées d'office.
+- **Réutiliser `PassDots` sur le papier** : la fiche fédérale est une grille à pointer (axe 0 à 16, essais en colonnes), pas des pastilles ; l'identité avec le PDF fédéral prime (U14-1). Ce qu'on partage avec `PassDots`, c'est le modèle (« un passage = n billes empochées sur total », `SuccessRate.maxAttempts` = 16 pour l'axe), pas le widget.
+
+## Conséquences
+
+- Nouvelle feature `features/export_sheet` (domaine, données, présentation), nouveau bouton dans le menu ⋮ du détail d'une séance ; pas de nouvelle route.
+- `pubspec.yaml` (+ `pdf`), verrou (+ six paquets transitifs), `injection.config.dart` régénéré, clés fr + en, règle d'architecture, use case Widgetbook de l'aperçu.
+- Le dessin des schémas **duplique** la géométrie du painter d'écran (positions des billes, poches, flèches) : un test de parité sur les points caractéristiques la borne ; faire consommer la même scène par le painter d'écran est un refactor séparé, non fait dans ce lot (risque pour la présentation et le guide).
+- Le PDF n'est **pas balisé** (le paquet ne le permet pas) : les lecteurs d'écran n'en tirent qu'un texte en ordre de lecture, sans structure. L'accessibilité reste portée par les écrans de l'application, qui disent la même chose.
+- Un PDF nominatif enregistré sur l'appareil n'est pas effacé avec l'élève (avertissement affiché au moment de choisir les prénoms).
+
+## Limites assumées
+
+- Impression directe non automatisable : la boîte d'impression du navigateur ne se pilote pas par Playwright ; seul le PDF produit est vérifié (`pdftotext`, `pdftoppm`). Safari iPhone et PWA installée sur Android : non vérifiés.
+- Gras simulé (instance unique de la police variable) : à juger à l'œil sur l'impression.
+- Le texte des séances reste en français quelle que soit la langue de l'interface (contenu du catalogue, non traduit) ; les libellés fixes du document (feuille de l'animateur **et** fiches résultats, via `PrintLabels` et `ResultsLabels`, clés ARB `fr` et `en`) suivent la langue, ainsi que le mot qui remplace `θ`. Un changement de langue pendant que l'écran d'export est ouvert recrée le cubit (clé de `BlocProvider`) : le document est refait dans la nouvelle langue, le choix de document revient à la feuille de l'animateur.
+
+## Écarts à la livraison (2026-10-17)
+
+La conception du plan a été suivie, sauf :
+
+- **Dépendances** : `pdf` résolu en **3.13.1** (contrainte `^3.11.3`) ; le verrou gagne **sept** paquets transitifs, pas six (`archive`, `barcode`, `bidi`, `image`, `path_parsing`, `posix`, `qr`).
+- **Le port de sortie** `PdfFiles` (Dart pur, `List<int>`) est dans le domaine de la feature (`features/export_sheet/domain/pdf_files.dart`, comme `BackupFiles` pour la sauvegarde ; d'abord posé dans `shared/lib`, déplacé après revue puisque seule cette feature l'utilise) : implémentations de plateforme dans `app/platform` (`FilePickerPdfFiles`, `pdf_files_web.dart` en `dart:js_interop`, `pdf_files_native.dart`), double de test `FakePdfFiles`. Le port du rendu (`PrintRenderer`, `PrintSession`) reste dans le domaine de la feature ; `render` est asynchrone (`PdfDocument.save` l'est).
+- **Entrées de l'interface** : un bouton « Imprimer / exporter en PDF » **visible** sur le détail d'une séance et une entrée du menu ⋮ du **guide** (le plan ne prévoyait que le menu du détail), vers une **route de premier niveau** `/catalogue/:sheetId/export?audience=` (hors du cadre de navigation) ; le document, le public, le groupe et les prénoms se choisissent sur cette page, l'aperçu se refait à chaque choix.
+- **`ResolveRunPlan(withRecallExercise: false)`** : l'impression ne choisit pas l'exercice du créneau de rappel, donc **aucun dépôt d'élèves n'est lu** pour la feuille de l'animateur (prouvé par un dépôt qui échoue à toute lecture).
+- **Schémas** : la **description** du schéma est imprimée à côté de la table en petit (7 pt), pas en dessous (essayé : une page de plus en moyenne) ; le médaillon de quantité de bille et la numérotation des tirs ne sont pas imprimés (les flèches le sont toutes).
+- **Fiche résultats** : la case « Nb de billes empochées » s'arrête au bord de la grille (mesure du PDF fédéral corrigée en cours de lot) ; les valeurs préremplies (séance, exercice, notion, technique) se posent **dans la colonne de gauche de 58,6 pt**, à la suite et à petit corps, au lieu des positions fixes de la fiche fédérale (il n'y a pas la place d'écrire à côté) ; « Notion » devient « Notion : ».
+- **Mise en page de la feuille** : une phrase de phase (« Accueil », « Entraînement »…) précède ses étapes, sauf quand l'étape porte le nom de sa phase ; le texte de théorie complet n'est pas imprimé (titre, point clé, démonstration, illustrations).
+- **Enregistrer sur le web** : `file_picker` y déclenche un téléchargement et rend `null` (comme une annulation) ; `FilePickerPdfFiles(savesByDownload: true)` tient donc le fichier pour enregistré. Constaté au parcours web ; la sauvegarde JSON (`FilePickerBackupFiles`) a le même défaut, **hors de ce lot** (voir le plan, § 12).
+- **Mesures de la livraison** : `main.dart.js` 5 236 122 o (5 045 702 o avant le lot, +190 Ko pour tout le lot) ; précache inchangé (129 fichiers) ; feuille de l'animateur de 4 à 7 pages A4 selon la séance et le public (56 documents mesurés), 45 Ko au plus.
