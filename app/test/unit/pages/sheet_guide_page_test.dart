@@ -25,6 +25,7 @@ class _Calls {
   int finished = 0;
   final finishedWith = <SessionId?>[];
   final steps = <int>[];
+  int exported = 0;
 }
 
 void main() {
@@ -59,6 +60,7 @@ void main() {
             calls.finishedWith.add(record);
           },
           onStepChanged: calls.steps.add,
+          onExport: () => calls.exported++,
         ),
       ),
     );
@@ -336,5 +338,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Full screen'), findsNothing);
+  });
+
+  testWidgets('opens the PDF export from the menu', (tester) async {
+    final calls = await pump(tester, await real(tester));
+
+    await tester.tap(find.byKey(const ValueKey('step-app-bar-menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Print / export as PDF'));
+    await tester.pumpAndSettle();
+
+    expect(calls.exported, 1);
   });
 }

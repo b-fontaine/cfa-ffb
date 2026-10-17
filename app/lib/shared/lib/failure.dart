@@ -54,6 +54,10 @@ enum InvariantCode {
   moveBeforeLastPresence,
   seasonClosed,
   seasonAlreadyClosed,
+
+  /// Un texte à imprimer contient un caractère que la fonte du document ne
+  /// sait pas dessiner (export PDF, ADR 0021).
+  unprintableContent,
 }
 
 /// Échec métier attendu (sceller : un `switch` exhaustif suffit à le traiter).

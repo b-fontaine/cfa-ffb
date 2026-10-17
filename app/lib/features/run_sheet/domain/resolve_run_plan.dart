@@ -31,6 +31,10 @@ import 'package:injectable/injectable.dart';
 /// planifiée `sessionId` ; à défaut, les enfants. Identifiant inconnu :
 /// `NotFound('sheet', id)`. Des schémas illisibles ne font pas échouer le
 /// déroulé.
+///
+/// Avec `withRecallExercise: false` (l'impression de la feuille de
+/// l'animateur, ADR 0021), l'exercice du créneau de rappel n'est pas choisi :
+/// aucun élève n'est lu et le créneau garde ses minutes.
 @injectable
 class ResolveRunPlan {
   ResolveRunPlan(
@@ -53,6 +57,7 @@ class ResolveRunPlan {
     SheetId id, {
     Audience? audience,
     String? sessionId,
+    bool withRecallExercise = true,
   }) => runGuarded(() async {
     final sheet = await _sheets.getById(id);
     if (sheet == null) throw NotFound('sheet', id.value);
@@ -68,18 +73,20 @@ class ResolveRunPlan {
       for (final e in sheet.exercises) e.id: ?catalogue.exercise(e.ref),
     };
     final planGroup = planned?.groupId;
-    final recall = chooseRecallExercise(
-      sheet: sheet,
-      all: all,
-      audience: resolved,
-      validatedByStudent: await _validated(
-        audience: resolved,
-        catalogue: catalogue,
-        group: planGroup == null || planned == null
-            ? null
-            : (id: planGroup, on: planned.date),
-      ),
-    );
+    final recall = withRecallExercise
+        ? chooseRecallExercise(
+            sheet: sheet,
+            all: all,
+            audience: resolved,
+            validatedByStudent: await _validated(
+              audience: resolved,
+              catalogue: catalogue,
+              group: planGroup == null || planned == null
+                  ? null
+                  : (id: planGroup, on: planned.date),
+            ),
+          )
+        : null;
     final wanted = {
       ...diagramIdsOf(sheet, previous),
       if (recall != null) recall.exercise.diagramId,

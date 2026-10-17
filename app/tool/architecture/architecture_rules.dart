@@ -157,6 +157,11 @@ List<Violation> checkArchitecture(
         report(line, 'import relatif interdit ($uri) : utiliser package:');
         continue;
       }
+      final pdfProblem = _pdfImportProblem(uri, relative);
+      if (pdfProblem != null) {
+        report(line, pdfProblem);
+        continue;
+      }
       if (isPure) {
         final allowed =
             uri.startsWith(prefix) || _pureAllowedPrefixes.any(uri.startsWith);
@@ -181,6 +186,30 @@ List<Violation> checkArchitecture(
     }
   }
   return violations;
+}
+
+/// Dossier où seul l'ADR 0021 autorise l'API bas niveau du paquet `pdf`.
+const _pdfDataDirectory = 'features/export_sheet/data/';
+
+/// Règle de l'ADR 0021 : le paquet `pdf` n'est utilisé que par son API bas
+/// niveau (`package:pdf/pdf.dart`), et seulement dans la couche `data` de
+/// l'export ; ses widgets, ses fichiers privés et `printing` (pdf.js chargé
+/// depuis un CDN, donc incompatible avec le hors ligne) sont interdits.
+String? _pdfImportProblem(String uri, String relative) {
+  if (uri.startsWith('package:pdf/widgets.dart')) {
+    return 'pdf/widgets interdit (ADR 0021) : API bas niveau seulement';
+  }
+  if (uri.startsWith('package:pdf/src/')) {
+    return 'pdf/src interdit (ADR 0021) : API publique seulement';
+  }
+  if (uri.startsWith('package:printing/')) {
+    return 'printing interdit (ADR 0021) : pdf.js est chargé depuis un CDN';
+  }
+  if (uri.startsWith('package:pdf/') &&
+      !relative.startsWith(_pdfDataDirectory)) {
+    return 'package:pdf réservé à $_pdfDataDirectory (ADR 0021) : $uri';
+  }
+  return null;
 }
 
 void _checkImport(

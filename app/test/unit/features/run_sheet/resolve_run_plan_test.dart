@@ -2,9 +2,11 @@ import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_library.dar
 import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_repository.dart';
 import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_table.dart';
 import 'package:billard_cfa/entities/exercise_diagram/domain/exercise_diagram.dart';
+import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/session/data/in_memory_session_repository.dart';
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/audience_weight.dart';
+import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/features/run_sheet/domain/load_validated_exercises.dart';
 import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_step.dart';
@@ -21,6 +23,23 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/domain_world.dart';
 import '../../../support/fixtures.dart';
 import '../../../support/session_sheet_fixtures.dart';
+
+/// Dépôt d'élèves qui échoue à toute lecture.
+class _UnreadableStudents implements StudentRepository {
+  int reads = 0;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    reads++;
+    throw StateError("lecture d'un dépôt d'élèves interdite");
+  }
+}
+
+class _UnreadableGroups implements GroupRepository {
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      throw StateError("lecture d'un dépôt de groupes interdite");
+}
 
 class _Diagrams implements DiagramRepository {
   _Diagrams(this._load);
@@ -348,5 +367,67 @@ void main() {
     );
 
     expect(failure, isA<InvariantViolation>());
+  });
+
+  group('without the recall exercise (printing)', () {
+    late _UnreadableStudents students;
+    late ResolveRunPlan resolver;
+
+    setUp(() {
+      students = _UnreadableStudents();
+      final domain = DomainWorld(catalogue: catalogue);
+      resolver = ResolveRunPlan(
+        FixtureSessionSheetRepository(catalogueFixture()),
+        sessions,
+        domain.catalogueRepository,
+        _Diagrams(() async => DiagramLibrary(const [])),
+        RulesStore(RulesConfig()),
+        LoadValidatedExercises(
+          students,
+          _UnreadableGroups(),
+          domain.attempts,
+          domain.acquisitions,
+          RulesStore(domain.config),
+        ),
+      );
+    });
+
+    test('reads no student and chooses no exercise', () async {
+      final plan = ok(
+        await resolver(
+          SheetId('demi-bille-1'),
+          audience: Audience.children,
+          withRecallExercise: false,
+        ),
+      );
+
+      expect(students.reads, 0);
+      expect(plan.recallExercise, isNull);
+      expect(plan.recallSpec, isNull);
+    });
+
+    test('keeps the recall slot, with its minutes, in the steps', () async {
+      final plan = ok(
+        await resolver(
+          SheetId('demi-bille-1'),
+          audience: Audience.children,
+          withRecallExercise: false,
+        ),
+      );
+
+      final slot = plan.steps.singleWhere(
+        (s) => s.kind == RunStepKind.recallExercise,
+      );
+      expect(slot.minutes, greaterThan(0));
+      expect(plan.timing.total, 90);
+    });
+
+    test('reads the students by default, as the guide does', () async {
+      await expectLater(
+        resolver(SheetId('demi-bille-1'), audience: Audience.children),
+        throwsA(isA<StateError>()),
+      );
+      expect(students.reads, greaterThan(0));
+    });
   });
 }

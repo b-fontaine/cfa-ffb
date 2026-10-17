@@ -26,7 +26,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// le guide reste monté : pas d'étape à retrouver), [onFinish] ferme la
 /// séance (avec l'identifiant de la saisie ouverte depuis ce guide, s'il y en
 /// a une : le routeur mène alors au bilan) et [onStepChanged] reporte dans
-/// l'adresse l'étape (et le mode) que l'animateur vient de choisir.
+/// l'adresse l'étape (et le mode) que l'animateur vient de choisir, [onExport]
+/// ouvre l'export PDF de la séance.
 ///
 /// Le plein écran (menu ⋮) vient d'un `FullscreenCubit` fourni par l'appelant.
 ///
@@ -40,6 +41,7 @@ class SheetGuidePage extends StatelessWidget {
     required this.onRecord,
     required this.onFinish,
     required this.onStepChanged,
+    required this.onExport,
     super.key,
   });
 
@@ -54,6 +56,9 @@ class SheetGuidePage extends StatelessWidget {
   onRecord;
   final ValueChanged<SessionId?> onFinish;
   final ValueChanged<int> onStepChanged;
+
+  /// Ouvre l'export PDF de la séance (menu ⋮).
+  final VoidCallback onExport;
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +91,7 @@ class SheetGuidePage extends StatelessWidget {
                     onToggleFullscreen: () =>
                         unawaited(context.read<FullscreenCubit>().toggle()),
                     onBack: onBack,
+                    onExport: onExport,
                     onStep: (step) {
                       context.read<RunSheetCubit>().showStep(step);
                       onStepChanged(step);

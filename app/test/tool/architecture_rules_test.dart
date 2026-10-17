@@ -65,6 +65,50 @@ void main() {
     });
   });
 
+  group('pdf package', () {
+    test('rejects the pdf widgets API (ADR 0021)', () {
+      write('features/f/data/r.dart', "import 'package:pdf/widgets.dart';");
+
+      expect(messages().join('\n'), contains('pdf/widgets'));
+    });
+
+    test('rejects the printing package (ADR 0021)', () {
+      write(
+        'features/f/data/r.dart',
+        "import 'package:printing/printing.dart';",
+      );
+
+      expect(messages().join('\n'), contains('printing'));
+    });
+
+    test('rejects private files of the pdf package', () {
+      write(
+        'features/f/data/r.dart',
+        "import 'package:pdf/src/pdf/document.dart';",
+      );
+
+      expect(messages().join('\n'), contains('pdf/src'));
+    });
+
+    test('accepts the low level API in the export data layer', () {
+      write(
+        'features/export_sheet/data/r.dart',
+        "import 'package:pdf/pdf.dart';",
+      );
+
+      expect(messages(), isEmpty);
+    });
+
+    test('rejects the low level API outside the export data layer', () {
+      write(
+        'features/export_sheet/presentation/r.dart',
+        "import 'package:pdf/pdf.dart';",
+      );
+
+      expect(messages().join('\n'), contains('export_sheet/data'));
+    });
+  });
+
   test('accepts a clean layered layout', () {
     write('entities/a/domain/a.dart', 'class A {}');
     write(

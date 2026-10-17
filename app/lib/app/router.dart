@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/app/record_screens.dart';
 import 'package:billard_cfa/app/record_sheet.dart';
+import 'package:billard_cfa/app/sheet_export.dart';
 import 'package:billard_cfa/app/shell.dart';
 import 'package:billard_cfa/features/acknowledge_alert/presentation/bloc/acknowledgement_bloc.dart';
 import 'package:billard_cfa/features/app_update/presentation/bloc/app_update_cubit.dart';
@@ -17,6 +18,7 @@ import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_
 import 'package:billard_cfa/features/close_season/presentation/bloc/closable_season_cubit.dart';
 import 'package:billard_cfa/features/close_season/presentation/bloc/season_closure_bloc.dart';
 import 'package:billard_cfa/features/close_season/presentation/ui/closable_season_section.dart';
+import 'package:billard_cfa/features/export_sheet/presentation/bloc/export_sheet_cubit.dart';
 import 'package:billard_cfa/features/manage_groups/presentation/bloc/manage_groups_cubit.dart';
 import 'package:billard_cfa/features/manage_groups/presentation/bloc/move_student_cubit.dart';
 import 'package:billard_cfa/features/manage_settings/presentation/bloc/settings_bloc.dart';
@@ -29,6 +31,7 @@ import 'package:billard_cfa/features/plan_session/presentation/bloc/session_plan
 import 'package:billard_cfa/features/plan_session/presentation/bloc/upcoming_sessions_cubit.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/recorded_sessions_bloc.dart';
 import 'package:billard_cfa/features/review_session/presentation/bloc/session_review_bloc.dart';
+import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
 import 'package:billard_cfa/features/run_sheet/domain/run_mode.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/fullscreen_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/run_key.dart';
@@ -50,6 +53,7 @@ import 'package:billard_cfa/features/track_seasons/presentation/bloc/season_arch
 import 'package:billard_cfa/pages/assessment/presentation/assessment_page.dart';
 import 'package:billard_cfa/pages/backup/presentation/backup_page.dart';
 import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_page.dart';
+import 'package:billard_cfa/pages/export_sheet/presentation/export_sheet_page.dart';
 import 'package:billard_cfa/pages/group_overview/presentation/group_overview_page.dart';
 import 'package:billard_cfa/pages/home/presentation/home_page.dart';
 import 'package:billard_cfa/pages/more/presentation/more_page.dart';
@@ -77,6 +81,7 @@ import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/widgets/roster_picker/presentation/roster_selection_cubit.dart';
+import 'package:flutter/material.dart' show MaterialLocalizations, ValueKey;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -102,6 +107,9 @@ abstract final class AppRoutes {
   /// Segments des sous-pages d'une séance du catalogue : chemin des routes ET
   /// des constructeurs d'adresse.
   static const guideSegment = 'guide';
+
+  /// Segment de l'export PDF d'une séance du catalogue (ADR 0021).
+  static const exportSegment = 'export';
 
   /// Segments des sous-pages d'un élève et d'un groupe : vue « à montrer à
   /// l'élève » (hors du cadre de navigation) et grille d'un groupe.
@@ -237,6 +245,13 @@ abstract final class AppRoutes {
     if (via != null && via != SheetOrigin.catalogue) 'via': via.name,
     'mode': ?mode?.name,
   });
+
+  /// Export PDF d'une séance du catalogue (hors du cadre de navigation) ;
+  /// [audience] présélectionne le public.
+  static String export(SheetId id, {Audience? audience}) => _url(
+    '$catalogue/${id.value}/$exportSegment',
+    {'audience': ?audience?.name},
+  );
 
   static String exercise(ExerciseRef ref) =>
       '$exercises/${ref.blockId}/${ref.number}';
@@ -916,6 +931,9 @@ GoRouter buildRouter() => GoRouter(
                     via: origin,
                   ),
                 ),
+                onExport: (audience) => unawaited(
+                  context.push(AppRoutes.export(id, audience: audience)),
+                ),
               ),
             );
           },
@@ -1099,6 +1117,56 @@ GoRouter buildRouter() => GoRouter(
               unawaited(sessions.release(key));
             },
             onStepChanged: (step) => context.go(guide(step)),
+            onExport: () => unawaited(
+              context.push(AppRoutes.export(id, audience: key.audience)),
+            ),
+          ),
+        );
+      },
+    ),
+    // Hors du cadre de navigation, comme le guide : l'export PDF s'ouvre depuis
+    // le détail d'une séance ou le guide et y revient (ADR 0021).
+    GoRoute(
+      path: '${AppRoutes.catalogue}/:sheetId/${AppRoutes.exportSegment}',
+      builder: (context, state) {
+        final id = SheetId.tryParse(state.pathParameters['sheetId']);
+        if (id == null) {
+          return NotFoundPage(onHome: () => context.go(AppRoutes.home));
+        }
+        final audience =
+            _audienceParam(state.uri.queryParameters['audience']) ??
+            Audience.children;
+        final l10n = AppLocalizations.of(context);
+        final printedOn = MaterialLocalizations.of(context)
+            .formatMediumDate(getIt<Clock>().now());
+        // La clé suit la langue : le document est refait dans la nouvelle
+        // langue (les libellés et la date sont lus à la création).
+        return BlocProvider(
+          key: ValueKey('export-${l10n.localeName}'),
+          create: (_) {
+            final cubit = getIt<ExportSheetCubit>();
+            unawaited(
+              cubit.started(
+                source: RunPlanExportSource(
+                  sheetId: id,
+                  l10n: l10n,
+                  printedOn: printedOn,
+                  resolve: (sheet, audience) => getIt<ResolveRunPlan>()(
+                    sheet,
+                    audience: audience,
+                    withRecallExercise: false,
+                  ),
+                ),
+                audience: audience,
+              ),
+            );
+            return cubit;
+          },
+          child: ExportSheetPage(
+            onBack: () => context.canPop()
+                ? context.pop()
+                : context.go(AppRoutes.sheet(id, audience: audience)),
+            onHome: () => context.go(AppRoutes.home),
           ),
         );
       },

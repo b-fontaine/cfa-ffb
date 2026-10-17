@@ -20,7 +20,8 @@ const double _maxWidth = 1100;
 /// [onBack] revient à l'origine de la page (catalogue, planificateur ou
 /// Aujourd'hui) et [backLabel] la nomme ; [onHome] est proposé quand la séance
 /// n'existe pas ; [onPlan] ouvre le planificateur sur cette séance ;
-/// [onLaunch] lance la séance guidée pour le public affiché. Le menu ⋮
+/// [onLaunch] lance la séance guidée pour le public affiché, [onExport] ouvre
+/// l'export PDF. Le menu ⋮
 /// « Signaler une proposition » copie l'identifiant de la séance (en attendant
 /// le workflow de validation).
 class SheetDetailPage extends StatelessWidget {
@@ -29,6 +30,7 @@ class SheetDetailPage extends StatelessWidget {
     required this.onHome,
     required this.onPlan,
     required this.onLaunch,
+    required this.onExport,
     required this.backLabel,
     super.key,
   });
@@ -44,6 +46,10 @@ class SheetDetailPage extends StatelessWidget {
 
   /// Lance la séance guidée, pour le public affiché.
   final ValueChanged<Audience> onLaunch;
+
+  /// Ouvre l'export PDF (feuille de l'animateur, fiches résultats), pour le
+  /// public affiché.
+  final ValueChanged<Audience> onExport;
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +95,11 @@ class SheetDetailPage extends StatelessWidget {
                     onPressed: () => onPlan(state.audience),
                     icon: const Icon(Icons.event_available_outlined),
                     label: Text(l10n.sheetPlan),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () => onExport(state.audience),
+                    icon: const Icon(Icons.picture_as_pdf_outlined),
+                    label: Text(l10n.exportMenu),
                   ),
                 ],
               ),

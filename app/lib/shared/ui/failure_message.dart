@@ -45,6 +45,7 @@ String failureMessage(AppLocalizations l10n, Failure failure) =>
         InvariantCode.membershipNotOpen => l10n.failMembershipNotOpen,
         InvariantCode.membershipAlreadyOpen => l10n.failMembershipAlreadyOpen,
         InvariantCode.audienceMismatch => l10n.failAudienceMismatch,
+        InvariantCode.unprintableContent => l10n.failUnprintableContent,
 
         InvariantCode.invalidRules => l10n.failInvalidRules,
         InvariantCode.invalidPeriod ||

@@ -34,6 +34,7 @@ void main() {
     VoidCallback? onHome,
     ValueChanged<Audience>? onPlan,
     ValueChanged<Audience>? onLaunch,
+    ValueChanged<Audience>? onExport,
     String backLabel = 'Session catalogue',
   }) async {
     tester.view.physicalSize = const Size(800, 1600);
@@ -49,6 +50,7 @@ void main() {
           onHome: onHome ?? () {},
           onPlan: onPlan ?? (_) {},
           onLaunch: onLaunch ?? (_) {},
+          onExport: onExport ?? (_) {},
         ),
       ),
     );
@@ -361,6 +363,35 @@ void main() {
       await tester.tap(find.text('Launch'));
 
       expect(launched, [Audience.adults]);
+    });
+
+    testWidgets('opens the PDF export for the audience on screen', (
+      tester,
+    ) async {
+      final exported = <Audience>[];
+      whenListen(
+        bloc,
+        const Stream<SheetDetailState>.empty(),
+        initialState: ready(Audience.adults),
+      );
+      await pump(tester, onExport: exported.add);
+
+      await tester.tap(find.text('Print / export as PDF'));
+
+      expect(exported, [Audience.adults]);
+    });
+
+    testWidgets('does not offer the PDF export while the session loads', (
+      tester,
+    ) async {
+      whenListen(
+        bloc,
+        const Stream<SheetDetailState>.empty(),
+        initialState: const SheetDetailState(),
+      );
+      await pump(tester);
+
+      expect(find.text('Print / export as PDF'), findsNothing);
     });
 
     testWidgets('asks the bloc to change the audience', (tester) async {

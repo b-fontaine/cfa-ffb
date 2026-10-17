@@ -7,6 +7,8 @@ import 'package:billard_cfa/entities/exercise_diagram/domain/diagram_repository.
 import 'package:billard_cfa/entities/session_sheet/data/asset_session_sheet_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
+import 'package:billard_cfa/features/export_sheet/data/pdf_print_renderer.dart';
+import 'package:billard_cfa/features/export_sheet/domain/print_renderer.dart';
 import 'package:billard_cfa/features/manage_students/domain/enroll_student.dart';
 import 'package:billard_cfa/features/place_student/domain/mark_block_acquired.dart';
 import 'package:billard_cfa/features/record_results/domain/open_session.dart';
@@ -51,6 +53,23 @@ Future<void> _useBundledPackageAssets() async {
   getIt.registerLazySingleton<SessionSheetRepository>(
     () => AssetSessionSheetRepository(load, listPackageAssets),
   );
+  // Les fontes du PDF (Exo 2) sont lues sous le même préfixe.
+  await getIt.unregister<PrintRenderer>();
+  getIt.registerLazySingleton<PrintRenderer>(
+    () => PdfPrintRenderer.configured(bundle: _PackageBundle()),
+  );
+}
+
+/// Lit les assets de `billard_cfa` sous leur préfixe de package.
+class _PackageBundle extends AssetBundle {
+  @override
+  Future<ByteData> load(String key) => rootBundle.load('$_packageAssets$key');
+
+  @override
+  Future<T> loadStructuredData<T>(
+    String key,
+    Future<T> Function(String value) parser,
+  ) => rootBundle.loadStructuredData('$_packageAssets$key', parser);
 }
 
 /// Horloge figée du catalogue de démonstration.

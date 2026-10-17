@@ -7,6 +7,7 @@ import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/session_sheet_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
+import 'package:billard_cfa/features/export_sheet/domain/pdf_files.dart';
 import 'package:billard_cfa/features/manage_groups/domain/create_group.dart';
 import 'package:billard_cfa/features/manage_students/domain/enroll_student.dart';
 import 'package:billard_cfa/features/place_student/domain/mark_block_acquired.dart';
@@ -23,6 +24,7 @@ import 'package:injectable/injectable.dart' show Environment;
 
 import 'fake_app_update_source.dart';
 import 'fake_fullscreen_controller.dart';
+import 'fake_pdf_files.dart';
 import 'fixed_clock.dart';
 
 /// Monde des scénarios d'interface : graphe get_it réel (dépôts en mémoire,
@@ -48,6 +50,18 @@ class UiWorld {
   /// Le double de plein écran du scénario en cours.
   static FakeFullscreenController get fullscreen =>
       _fullscreen ?? (throw StateError("l'application n'est pas lancée"));
+
+  /// La plate-forme sait imprimer un PDF : un `Given` peut en décider avant le
+  /// lancement ([prepare]).
+  static bool pdfCanPrint = true;
+
+  /// L'enregistrement du prochain PDF est annulé par l'utilisateur.
+  static bool pdfSaveCancelled = false;
+  static FakePdfFiles? _pdfFiles;
+
+  /// Le double de sortie PDF du scénario en cours.
+  static FakePdfFiles get pdfFiles =>
+      _pdfFiles ?? (throw StateError("l'application n'est pas lancée"));
 
   /// Version en attente d'activation à l'ouverture : un `Given` peut en
   /// décider avant le lancement ([prepare]).
@@ -75,6 +89,11 @@ class UiWorld {
     if (getIt.isRegistered<AppUpdateSource>()) {
       await getIt.unregister<AppUpdateSource>();
     }
+    if (getIt.isRegistered<PdfFiles>()) await getIt.unregister<PdfFiles>();
+    final pdfFiles = FakePdfFiles(printSupported: pdfCanPrint)
+      ..cancelSave = pdfSaveCancelled;
+    _pdfFiles = pdfFiles;
+    getIt.registerSingleton<PdfFiles>(pdfFiles);
     final appUpdate = FakeAppUpdateSource(available: updateWaiting);
     _appUpdate = appUpdate;
     getIt.registerSingleton<AppUpdateSource>(appUpdate);
@@ -83,6 +102,9 @@ class UiWorld {
     addTearDown(() async {
       _ready = false;
       fullscreenSupported = true;
+      pdfCanPrint = true;
+      pdfSaveCancelled = false;
+      _pdfFiles = null;
       await fullscreen.close();
       _fullscreen = null;
       updateWaiting = false;

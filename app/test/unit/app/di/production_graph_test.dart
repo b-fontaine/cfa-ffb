@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:billard_cfa/app/di/injection.dart';
+import 'package:billard_cfa/app/platform/file_picker_pdf_files.dart';
 import 'package:billard_cfa/app/platform/fullscreen_controller_native.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
@@ -10,6 +11,10 @@ import 'package:billard_cfa/features/backup_data/data/file_picker_backup_files.d
 import 'package:billard_cfa/features/backup_data/data/in_memory_backup_files.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_files.dart';
 import 'package:billard_cfa/features/backup_data/domain/export_backup.dart';
+import 'package:billard_cfa/features/export_sheet/data/pdf_print_renderer.dart';
+import 'package:billard_cfa/features/export_sheet/domain/pdf_files.dart';
+import 'package:billard_cfa/features/export_sheet/domain/print_renderer.dart';
+import 'package:billard_cfa/features/export_sheet/presentation/bloc/export_sheet_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/fullscreen_cubit.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/fullscreen_controller.dart';
@@ -109,4 +114,30 @@ void main() {
 
     expect(getIt<BackupFiles>(), isA<FilePickerBackupFiles>());
   });
+
+  test(
+    'production exports PDF files through the file picker, native',
+    () async {
+      await configureProduction();
+
+      final files = getIt<PdfFiles>();
+
+      expect(files, isA<FilePickerPdfFiles>());
+      // Hors navigateur : enregistrement seulement, pas d'impression directe.
+      expect(files.canPrint, isFalse);
+      expect(identical(files, getIt<PdfFiles>()), isTrue);
+    },
+  );
+
+  test(
+    'production renders PDF with the pdf package and wires the cubit',
+    () async {
+      await configureProduction();
+
+      expect(getIt<PrintRenderer>(), isA<PdfPrintRenderer>());
+      final cubit = getIt<ExportSheetCubit>();
+      addTearDown(cubit.close);
+      expect(cubit.state.canPrint, isFalse);
+    },
+  );
 }

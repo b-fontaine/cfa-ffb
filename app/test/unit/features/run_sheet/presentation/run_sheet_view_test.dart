@@ -35,6 +35,7 @@ class _Calls {
   int finished = 0;
   int backs = 0;
   int fullscreenToggles = 0;
+  int exports = 0;
   final recorded = <ExerciseRef>[];
 }
 
@@ -65,6 +66,7 @@ void main() {
     bool applyStep = true,
     Size? size,
     FullscreenState? fullscreen,
+    bool exportable = false,
   }) async {
     tester.view.physicalSize =
         size ?? (tablet ? const Size(1280, 800) : const Size(400, 800));
@@ -95,6 +97,7 @@ void main() {
               onFinish: () => calls.finished++,
               onRecord: calls.recorded.add,
               onBack: () => calls.backs++,
+              onExport: exportable ? () => calls.exports++ : null,
               fullscreen: fullscreen,
               onToggleFullscreen: fullscreen == null
                   ? null
@@ -1269,6 +1272,33 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('3 proposals on this step.'), findsOneWidget);
+    });
+  });
+
+  group('PDF export entry of the menu', () {
+    testWidgets('opens the export from the menu', (tester) async {
+      final (_, calls) = await pump(
+        tester,
+        world(),
+        'demi-bille-1',
+        step: 3,
+        tablet: true,
+        exportable: true,
+      );
+
+      await openMenu(tester);
+      await tester.tap(find.text('Print / export as PDF'));
+      await tester.pumpAndSettle();
+
+      expect(calls.exports, 1);
+    });
+
+    testWidgets('is left out when the export is not wired', (tester) async {
+      await pump(tester, world(), 'demi-bille-1', step: 3, tablet: true);
+
+      await openMenu(tester);
+
+      expect(find.text('Print / export as PDF'), findsNothing);
     });
   });
 

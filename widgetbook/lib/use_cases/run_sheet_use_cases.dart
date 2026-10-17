@@ -171,6 +171,7 @@ Widget buildSheetGuidePageUseCase(BuildContext context) {
           onRecord: (_, _, _) {},
           onFinish: (_) {},
           onStepChanged: (_) {},
+          onExport: () {},
         ),
       );
     },

@@ -3421,5 +3421,293 @@
         "type": "int"
       }
     }
-  }
+  },
+  "exportMenu": "Print / export as PDF",
+  "exportTitle": "PDF export",
+  "exportBackLabel": "Session",
+  "exportKindSection": "Document",
+  "exportKindAnimator": "Animator sheet",
+  "exportKindResults": "Results sheets",
+  "exportAudienceSection": "Audience",
+  "exportGroupLabel": "Group (for the first names)",
+  "exportGroupNone": "No group, blank names",
+  "exportNamesSwitch": "Print the group’s first names",
+  "exportNamesWarning": "The PDF will contain first names. A saved file is not erased when you erase a student: keep it on your own device.",
+  "exportResultsHint": "The sheets copy the federal results sheet: four grids per page, one series per training exercise of the session. Names stay blank unless you pick a group.",
+  "exportAnimatorHint": "The animator sheet holds the run-down, the instructions and the diagrams, without any student name. Unsourced proposals are marked [Prop].",
+  "exportPreparing": "Preparing the PDF…",
+  "exportPreviewTitle": "Preview",
+  "exportPageOf": "Page {page} of {pages}",
+  "@exportPageOf": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "pages": {
+        "type": "int"
+      }
+    }
+  },
+  "exportPreviewSemantics": "PDF preview, page {page} of {pages}",
+  "@exportPreviewSemantics": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "pages": {
+        "type": "int"
+      }
+    }
+  },
+  "exportPrevious": "Previous page",
+  "exportNext": "Next page",
+  "exportSave": "Save PDF",
+  "exportPrint": "Print",
+  "exportSaved": "PDF saved.",
+  "exportCancelled": "Save cancelled.",
+  "exportSaveFailed": "The PDF could not be saved.",
+  "exportPrintFailed": "The PDF could not be sent to the printer.",
+  "exportGroupsFailed": "The groups could not be listed: first names cannot be printed for now.",
+  "printResultsTitle": "Results sheet",
+  "printResultsTabBrand": "BLACKBALL",
+  "printResultsTabTitle": "RESULTS SHEET",
+  "printResultsSourceLine": "Source [S]: CFA Blackball Results Sheet, National Technical Directorate (grid reproduced).",
+  "printResultsNotFederal": "Document produced by the Billard CFA app: it is not a federal document.",
+  "printResultsName": "Name:",
+  "printResultsTotalFirst": "Balls",
+  "printResultsTotalSecond": "pocketed",
+  "printResultsAttempt": "TRY",
+  "printResultsAttemptLegend": "try {number}",
+  "@printResultsAttemptLegend": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "printResultsSession": "Session:",
+  "printResultsExercise": "Exercise:",
+  "printResultsNotion": "Notion:",
+  "printResultsTechnique": "Technique:",
+  "printResultsSessionLine": "{title} (session {part}/{parts})",
+  "@printResultsSessionLine": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "part": {
+        "type": "int"
+      },
+      "parts": {
+        "type": "int"
+      }
+    }
+  },
+  "printThetaWord": "theta",
+  "printMinutes": "{minutes} min",
+  "@printMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "exportPrinted": "Sent to the printer.",
+  "exportAccessibilityNote": "The PDF is not tagged: a screen reader reads its text in order, without structure. The same content is on the session screen.",
+  "failUnprintableContent": "A session text contains a character the document font cannot draw: the export is refused rather than printing an empty box.",
+  "printRundown": "Run-down",
+  "printColumnTime": "Time",
+  "printColumnStep": "Step",
+  "printColumnMinutes": "Min",
+  "printTotal": "Total: {minutes} min",
+  "@printTotal": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "printMinutesNote": "Minutes are [Prop]: computed by the application from the weight of each element.",
+  "printProposalLegend": "[Prop]: unsourced proposal, to be validated.",
+  "printSources": "Sources",
+  "printUncertainties": "Points to check",
+  "printIllustrationAlt": "Description:",
+  "printBallLegend": "R red, J yellow, N black, B white (French letters)",
+  "printPageOf": "{page} / {pages}",
+  "@printPageOf": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "pages": {
+        "type": "int"
+      }
+    }
+  },
+  "printAudienceLine": "{audience}, {minutes} min",
+  "@printAudienceLine": {
+    "placeholders": {
+      "audience": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "printNotionLine": "Notion: {notion}",
+  "@printNotionLine": {
+    "placeholders": {
+      "notion": {
+        "type": "String"
+      }
+    }
+  },
+  "printLevelLine": "Blackball, technical level 1 · printed on {date} · Billard CFA",
+  "@printLevelLine": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "printRecallPoints": "Points to recall",
+  "printQuestion": "Question",
+  "printAnswer": "Expected answer",
+  "printKeyPoint": "Key point",
+  "printDemo": "Demonstration",
+  "printSetup": "Setup",
+  "printGoal": "Goal",
+  "printExpected": "Expected",
+  "printScoring": "Scoring",
+  "printScoringCounter": "Count the successes out of {of} tries.",
+  "@printScoringCounter": {
+    "placeholders": {
+      "of": {
+        "type": "int"
+      }
+    }
+  },
+  "printScoringChecklist": "Tick each criterion: acquired or to rework.",
+  "printInstruction": "Instruction",
+  "printRate": "Success rate",
+  "printRateValue": "{successes} out of {attempts}",
+  "@printRateValue": {
+    "placeholders": {
+      "successes": {
+        "type": "int"
+      },
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "printPasses": "Passes",
+  "printPassesValue": "{count, plural, =1{1 pass per student} other{{count} passes per student}}",
+  "@printPassesValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "printMistakes": "Frequent mistakes",
+  "printMistake": "{symptom} — {fix}",
+  "@printMistake": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      },
+      "fix": {
+        "type": "String"
+      }
+    }
+  },
+  "printHook": "Hook",
+  "printChallenge": "Challenge",
+  "printPlayers": "Players",
+  "printMaterials": "Material",
+  "printRules": "Rules",
+  "printGameScoring": "Scoring",
+  "printGameEnd": "End",
+  "printVariant": "Playful variant",
+  "printAdaptation": "Adaptation",
+  "printLink": "Link to the previous session",
+  "printLinkValue": "{rule} — {note}",
+  "@printLinkValue": {
+    "placeholders": {
+      "rule": {
+        "type": "String"
+      },
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "printRecallSlot": "Recall exercise: chosen during the session",
+  "printRecallSlotNote": "The exercise is chosen among those of the previous sessions from the follow-up of the students; the sheet names none.",
+  "printSourceLine": "{rank} {file}, page {page} — {note}",
+  "@printSourceLine": {
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      },
+      "file": {
+        "type": "String"
+      },
+      "page": {
+        "type": "int"
+      },
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "printSourceLineNoPage": "{rank} {file} — {note}",
+  "@printSourceLineNoPage": {
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      },
+      "file": {
+        "type": "String"
+      },
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "printFileSession": "session-{sheet}-{audience}.pdf",
+  "@printFileSession": {
+    "placeholders": {
+      "sheet": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      }
+    }
+  },
+  "printFileResults": "results-sheets-{sheet}-{audience}.pdf",
+  "@printFileResults": {
+    "placeholders": {
+      "sheet": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      }
+    }
+  },
+  "printFileChildren": "children",
+  "printFileAdults": "adults",
+  "printResultsDocTitle": "Results sheets: {title}",
+  "@printResultsDocTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "exportNamesSection": "First names"
 }

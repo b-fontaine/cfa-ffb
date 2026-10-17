@@ -3421,5 +3421,293 @@
         "type": "int"
       }
     }
-  }
+  },
+  "exportMenu": "Imprimer / exporter en PDF",
+  "exportTitle": "Export PDF",
+  "exportBackLabel": "Séance",
+  "exportKindSection": "Document",
+  "exportKindAnimator": "Feuille de l’animateur",
+  "exportKindResults": "Fiches résultats",
+  "exportAudienceSection": "Public",
+  "exportGroupLabel": "Groupe (pour les prénoms)",
+  "exportGroupNone": "Aucun groupe, noms vides",
+  "exportNamesSwitch": "Imprimer les prénoms du groupe",
+  "exportNamesWarning": "Le PDF contiendra des prénoms. Un fichier enregistré n’est pas effacé quand vous effacez un élève : gardez-le sur votre appareil.",
+  "exportResultsHint": "Les fiches reprennent la fiche résultats fédérale : quatre grilles par page, une série par exercice d’entraînement de la séance. Les noms restent vides sauf si vous choisissez un groupe.",
+  "exportAnimatorHint": "La feuille de l’animateur contient le déroulé, les consignes et les schémas, sans aucun nom d’élève. Les propositions non sourcées sont marquées [Prop].",
+  "exportPreparing": "Préparation du PDF…",
+  "exportPreviewTitle": "Aperçu",
+  "exportPageOf": "Page {page} sur {pages}",
+  "@exportPageOf": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "pages": {
+        "type": "int"
+      }
+    }
+  },
+  "exportPreviewSemantics": "Aperçu du PDF, page {page} sur {pages}",
+  "@exportPreviewSemantics": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "pages": {
+        "type": "int"
+      }
+    }
+  },
+  "exportPrevious": "Page précédente",
+  "exportNext": "Page suivante",
+  "exportSave": "Enregistrer le PDF",
+  "exportPrint": "Imprimer",
+  "exportSaved": "PDF enregistré.",
+  "exportCancelled": "Enregistrement annulé.",
+  "exportSaveFailed": "Le PDF n’a pas pu être enregistré.",
+  "exportPrintFailed": "Le PDF n’a pas pu être envoyé à l’impression.",
+  "exportGroupsFailed": "Impossible de lister les groupes : les prénoms ne peuvent pas être imprimés pour l’instant.",
+  "printResultsTitle": "Fiche Résultats",
+  "printResultsTabBrand": "BLACKBALL",
+  "printResultsTabTitle": "FICHE RESULTATS",
+  "printResultsSourceLine": "Source [S] : Fiche Résultats CFA Blackball, Direction Technique Nationale (grille reproduite).",
+  "printResultsNotFederal": "Document produit par l’application Billard CFA : ce n’est pas un document fédéral.",
+  "printResultsName": "Nom :",
+  "printResultsTotalFirst": "Nb de billes",
+  "printResultsTotalSecond": "empochées",
+  "printResultsAttempt": "ESSAI",
+  "printResultsAttemptLegend": "essai {number}",
+  "@printResultsAttemptLegend": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "printResultsSession": "Séance :",
+  "printResultsExercise": "Exercice :",
+  "printResultsNotion": "Notion :",
+  "printResultsTechnique": "Technique :",
+  "printResultsSessionLine": "{title} (séance {part}/{parts})",
+  "@printResultsSessionLine": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "part": {
+        "type": "int"
+      },
+      "parts": {
+        "type": "int"
+      }
+    }
+  },
+  "printThetaWord": "thêta",
+  "printMinutes": "{minutes} min",
+  "@printMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "exportPrinted": "Envoyé à l’impression.",
+  "exportAccessibilityNote": "Le PDF n’est pas balisé : un lecteur d’écran en lit le texte dans l’ordre, sans structure. Le même contenu est sur l’écran de la séance.",
+  "failUnprintableContent": "Un texte de la séance contient un caractère que la police du document ne sait pas dessiner : l’export est refusé plutôt que d’imprimer un carré vide.",
+  "printRundown": "Déroulé",
+  "printColumnTime": "Horaire",
+  "printColumnStep": "Étape",
+  "printColumnMinutes": "Min",
+  "printTotal": "Total : {minutes} min",
+  "@printTotal": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "printMinutesNote": "Les minutes sont [Prop] : calculées par l’application d’après le poids de chaque élément.",
+  "printProposalLegend": "[Prop] : proposition non sourcée, à valider.",
+  "printSources": "Sources",
+  "printUncertainties": "Points à vérifier",
+  "printIllustrationAlt": "Description :",
+  "printBallLegend": "R rouge, J jaune, N noire, B blanche",
+  "printPageOf": "{page} / {pages}",
+  "@printPageOf": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "pages": {
+        "type": "int"
+      }
+    }
+  },
+  "printAudienceLine": "{audience}, {minutes} min",
+  "@printAudienceLine": {
+    "placeholders": {
+      "audience": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "printNotionLine": "Notion : {notion}",
+  "@printNotionLine": {
+    "placeholders": {
+      "notion": {
+        "type": "String"
+      }
+    }
+  },
+  "printLevelLine": "Blackball, niveau technique 1 · imprimé le {date} · Billard CFA",
+  "@printLevelLine": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "printRecallPoints": "Points à rappeler",
+  "printQuestion": "Question",
+  "printAnswer": "Réponse attendue",
+  "printKeyPoint": "À retenir",
+  "printDemo": "Démonstration",
+  "printSetup": "Mise en place",
+  "printGoal": "But",
+  "printExpected": "Attendu",
+  "printScoring": "Comptage",
+  "printScoringCounter": "Compter les réussites sur {of} essais.",
+  "@printScoringCounter": {
+    "placeholders": {
+      "of": {
+        "type": "int"
+      }
+    }
+  },
+  "printScoringChecklist": "Cocher chaque critère : acquis ou à retravailler.",
+  "printInstruction": "Consigne",
+  "printRate": "Taux de réussite",
+  "printRateValue": "{successes} sur {attempts}",
+  "@printRateValue": {
+    "placeholders": {
+      "successes": {
+        "type": "int"
+      },
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "printPasses": "Passages",
+  "printPassesValue": "{count, plural, =1{1 passage par élève} other{{count} passages par élève}}",
+  "@printPassesValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "printMistakes": "Erreurs fréquentes",
+  "printMistake": "{symptom} — {fix}",
+  "@printMistake": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      },
+      "fix": {
+        "type": "String"
+      }
+    }
+  },
+  "printHook": "Accroche",
+  "printChallenge": "Défi",
+  "printPlayers": "Joueurs",
+  "printMaterials": "Matériel",
+  "printRules": "Règles",
+  "printGameScoring": "Décompte",
+  "printGameEnd": "Fin",
+  "printVariant": "Variante ludique",
+  "printAdaptation": "Adaptation",
+  "printLink": "Lien avec la séance précédente",
+  "printLinkValue": "{rule} — {note}",
+  "@printLinkValue": {
+    "placeholders": {
+      "rule": {
+        "type": "String"
+      },
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "printRecallSlot": "Exercice de rappel : choisi pendant la séance",
+  "printRecallSlotNote": "L’exercice est choisi parmi ceux des séances précédentes d’après le suivi des élèves ; la feuille n’en nomme aucun.",
+  "printSourceLine": "{rank} {file}, page {page} — {note}",
+  "@printSourceLine": {
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      },
+      "file": {
+        "type": "String"
+      },
+      "page": {
+        "type": "int"
+      },
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "printSourceLineNoPage": "{rank} {file} — {note}",
+  "@printSourceLineNoPage": {
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      },
+      "file": {
+        "type": "String"
+      },
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "printFileSession": "seance-{sheet}-{audience}.pdf",
+  "@printFileSession": {
+    "placeholders": {
+      "sheet": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      }
+    }
+  },
+  "printFileResults": "fiches-resultats-{sheet}-{audience}.pdf",
+  "@printFileResults": {
+    "placeholders": {
+      "sheet": {
+        "type": "String"
+      },
+      "audience": {
+        "type": "String"
+      }
+    }
+  },
+  "printFileChildren": "enfants",
+  "printFileAdults": "adultes",
+  "printResultsDocTitle": "Fiches résultats : {title}",
+  "@printResultsDocTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "exportNamesSection": "Prénoms"
 }

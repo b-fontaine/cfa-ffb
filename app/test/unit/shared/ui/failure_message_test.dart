@@ -142,6 +142,13 @@ const _expected = <InvariantCode, (String, String)>{
     'This season is already closed.',
     'Cette saison est déjà close.',
   ),
+  InvariantCode.unprintableContent: (
+    'A session text contains a character the document font cannot draw: '
+        'the export is refused rather than printing an empty box.',
+    'Un texte de la séance contient un caractère que la police du document '
+        'ne sait pas dessiner : l’export est refusé plutôt que d’imprimer un '
+        'carré vide.',
+  ),
   InvariantCode.alertNotActive: (
     'This alert is no longer active: there is nothing to acknowledge.',
     'Cette alerte n’est plus active : il n’y a rien à acquitter.',

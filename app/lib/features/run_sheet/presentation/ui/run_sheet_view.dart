@@ -119,6 +119,7 @@ class RunSheetView extends StatelessWidget {
     required this.onModeChanged,
     this.onResume,
     this.onRestart,
+    this.onExport,
     this.fullscreen,
     this.onToggleFullscreen,
     super.key,
@@ -138,6 +139,9 @@ class RunSheetView extends StatelessWidget {
   final ValueChanged<RunMode> onModeChanged;
   final VoidCallback? onResume;
   final VoidCallback? onRestart;
+
+  /// Ouvre l'export PDF de la séance (menu ⋮) ; absent, l'entrée est masquée.
+  final VoidCallback? onExport;
 
   @override
   Widget build(BuildContext context) {
@@ -220,6 +224,12 @@ class RunSheetView extends StatelessWidget {
                                   : RunMode.review,
                             ),
                           ),
+                          if (onExport != null)
+                            StepAppBarAction(
+                              label: l10n.exportMenu,
+                              icon: Icons.picture_as_pdf_outlined,
+                              onSelected: onExport!,
+                            ),
                           StepAppBarAction(
                             label: l10n.guideSessionInfo,
                             icon: Icons.info_outline,
