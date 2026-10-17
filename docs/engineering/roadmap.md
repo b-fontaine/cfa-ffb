@@ -423,6 +423,34 @@ d'invitation (code ou lien, expiration), le rattachement d'un compte parent à
 plusieurs enfants, et les démarches de conformité (registre, information des
 familles, AIPD, DPA Google), qui relèvent du club ou de la fédération.
 
+## Restes ouverts au 2026-10-17
+
+Récapitulatif central ; le détail est dans le plan de chaque lot.
+
+- **Décisions de l'animateur** : note de jeu en texte libre (ADR dédié, lot 10b) ;
+  question n° 4 (synchronisation) ; tous les `[U]` des lots U3 (U3-1 à U3-4),
+  11 (15 points), 10b (U10b-1 à U10b-5) et 14 (U14-1 à U14-12), appliqués sur
+  leur défaut ; minuteur dépassé en rouge (écart possible avec l'ADR 0010) ;
+  « Noter » aux seules étapes d'exercice ; lien explicite `plannedSessionId` (D1).
+- **Non vérifié sur appareil** : iPhone / iPad Safari, PWA installée sur
+  Android, Firefox et Safari bureau, vibration du minuteur, Échap en plein écran,
+  impression directe (`window.print()`), en-têtes `no-cache` sur Firebase Hosting.
+- **Défauts connus** : schéma de table à 844 × 390 qui défile ; groupe sans
+  membre du jour (grilles vierges, sans message) ; libellé « Aujourd'hui » coupé
+  à 320 dp ; titres tronqués à 390 dp dans le guide (E3) ; segment « Bilan » de la
+  frise étroit (E4) ; dernière présence absente de la liste des élèves (E1) ;
+  double lecture dans `GetGroupJourney` ; importer un fichier d'avant une
+  clôture rétablit les élèves effacés (limite assumée, ADR 0019).
+- **Tests à compléter** : mutant `kIsWeb` de `FilePickerBackupFiles.platform()`
+  (test sur Chrome), service worker sans test de navigateur automatisé, BDD de
+  U3, 11, 10b et 14 validés par mutation et non par rouge préalable.
+- **Contenu (H3)** : lots 16 à 20 ; restes de l'audit des séances et cinq
+  contenus `[Prop]` de la revue T8 (voir plus haut).
+- **Technique** : lot 21 (clé de signature), 22, H5 ; `--wasm` à réexaminer
+  après l'ADR d'authentification (ADR 0022).
+- **Hors-ligne** : le SDK Firebase web est encore chargé depuis `gstatic.com`
+  (FB1 et FB5) ; indicateur « prêt hors ligne » non fait.
+
 ## Ordre recommandé
 
 ```
