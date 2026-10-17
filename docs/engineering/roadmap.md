@@ -208,11 +208,13 @@ Lots UX en H0 :
     - ~~**10b**~~ séance en cours persistée : **livré le 2026-10-17** ([plan](seance-en-cours-plan.md),
       [ADR 0020](adr/0020-seance-en-cours-persistee-locale-hors-sauvegarde.md)) : compteurs, grille acquis, score, étape et
       minuteur (restauré en pause) dans une table `run_progress_entries`, schéma **v10**, **sauvegarde inchangée (v4)**, effacement
-      RGPD par groupe, séance planifiée et saisie liés. Points `[U]` U10b-1 à U10b-5 appliqués sur leurs défauts, à confirmer par
-      l'animateur (voir le plan).
-    - **10b, reste non livré** (**reporté** par décision de l'animateur du 2026-10-16) : *note de jeu* de la séance (à définir :
-      texte libre, score A / B nommé ou champ du `SessionRecord` ; un texte libre sur des mineurs est une donnée personnelle qui
-      demande son propre ADR). Le score en cours est persisté par 10b mais reste non enregistré au bilan.
+      RGPD par groupe, séance planifiée et saisie liés. Points `[U]` U10b-1 à U10b-5 **confirmés par l'animateur le 2026-10-17** (U10b-5, la note de
+      jeu, par des étiquettes sans texte libre).
+    - ~~**10b, reste**~~ *note de jeu* : **livrée le 2026-10-17** par **étiquettes prédéfinies, sans texte libre** (décision de
+      l'animateur du même jour ; [plan](etiquettes-seance-plan.md),
+      [ADR 0023](adr/0023-etiquettes-de-seance-liste-fermee-schema-v11-sauvegarde-v5.md)) : huit étiquettes `[Prop]`, saisies à l'étape
+      « Bilan » du guide, passées à la saisie à « Terminer », corrigeables depuis le bilan ; schéma **v11**, sauvegarde **v5**. Le
+      score A / B en cours reste non enregistré au bilan.
     - ~~**U8**~~ Catalogue et détail en mode « Préparer » : **livré le
       2026-10-16** ([plan](catalogue-preparer-plan.md)) ; le marqueur de
       parcours par groupe lit les données du lot 8 (ADR 0009). Reste le lot 16
@@ -300,9 +302,9 @@ Lots UX en H0 :
     canal de prévisualisation par PR, même recette de build que `ci.yml`) ;
     reste le build Android signé (plateforme prioritaire).
 22. ~~Synchronisation multi-appareils seulement si la question ouverte n° 4
-    est tranchée « oui »~~ : **tranchée « oui » le 2026-10-16** `[U]`, avec un
-    périmètre élargi (comptes, clubs, rôles) ; remplacée par l'horizon **H5**
-    ci-dessous. Restent ici les deux rappels natifs sobres et désactivables :
+    est tranchée « oui »~~ : **tranchée « oui, via Firebase »** (le 2026-10-16 `[U]`,
+    **confirmée le 2026-10-17**), avec un périmètre élargi (comptes, clubs, rôles) ;
+    le lot 22 est **rattaché à H5** (l'horizon ci-dessous) et n'a plus d'existence propre. Restent ici les deux rappels natifs sobres et désactivables :
     veille d'une séance planifiée (« Préparer la séance de demain ») et
     sauvegarde de plus de 30 jours (ce dernier devient sans objet pour un
     compte synchronisé).
@@ -427,11 +429,12 @@ familles, AIPD, DPA Google), qui relèvent du club ou de la fédération.
 
 Récapitulatif central ; le détail est dans le plan de chaque lot.
 
-- **Décisions de l'animateur** : note de jeu en texte libre (ADR dédié, lot 10b) ;
-  question n° 4 (synchronisation) ; tous les `[U]` des lots U3 (U3-1 à U3-4),
-  11 (15 points), 10b (U10b-1 à U10b-5) et 14 (U14-1 à U14-12), appliqués sur
-  leur défaut ; minuteur dépassé en rouge (écart possible avec l'ADR 0010) ;
-  « Noter » aux seules étapes d'exercice ; lien explicite `plannedSessionId` (D1).
+- **Décisions de l'animateur** : toutes tranchées le 2026-10-17. Confirmés sur leur défaut : les `[U]` des lots **U3** (U3-1 à
+  U3-4), **10b** (U10b-1 à U10b-5), **11** (15 points), **14** (U14-1 à U14-12), ainsi que « Noter » aux seules étapes d'exercice,
+  le lien explicite `plannedSessionId` (**D1** : saisie sans séance du catalogue = saisie de la planifiée du jour) et l'export
+  avant clôture (U11-9, proposé, non bloquant). Tranchés autrement : **note de jeu** par étiquettes prédéfinies, sans texte libre
+  (livrée, ADR 0023) ; **question n° 4 : oui, via Firebase** (lot 22 rattaché à H5) ; **minuteur dépassé : pas de rouge**
+  (livré, `inverseSurface` avec sablier, aligné sur l'ADR 0010).
 - **Non vérifié sur appareil** : iPhone / iPad Safari, PWA installée sur
   Android, Firefox et Safari bureau, vibration du minuteur, Échap en plein écran,
   impression directe (`window.print()`), en-têtes `no-cache` sur Firebase Hosting.
@@ -443,7 +446,7 @@ Récapitulatif central ; le détail est dans le plan de chaque lot.
   clôture rétablit les élèves effacés (limite assumée, ADR 0019).
 - **Tests à compléter** : mutant `kIsWeb` de `FilePickerBackupFiles.platform()`
   (test sur Chrome), service worker sans test de navigateur automatisé, BDD de
-  U3, 11, 10b et 14 validés par mutation et non par rouge préalable.
+  U3, 11, 10b et 14 validés par mutation et non par rouge préalable (les étiquettes de séance, elles, ont leurs rouges : plan § 7).
 - **Contenu (H3)** : lots 16 à 20 ; restes de l'audit des séances et cinq
   contenus `[Prop]` de la revue T8 (voir plus haut).
 - **Technique** : lot 21 (clé de signature), 22, H5 ; `--wasm` à réexaminer

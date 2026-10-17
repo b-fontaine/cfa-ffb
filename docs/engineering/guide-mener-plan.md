@@ -304,8 +304,9 @@ l'origine ; Aujourd'hui -> « Lancer » finit sur Planifiées.
 - **Ton** : `timerToneFor(remaining)` du composant U1, sans nouvelle logique :
   neutre ≥ 1 min ; **attention** de 0 inclus à 1 min exclue ; **dépassé** < 0
   (texte `+mm:ss`, icône, région vive annoncée **au franchissement**, pas chaque
-  seconde). Jamais le rouge seul (ADR 0010 : `StatusColors.attention`, puis
-  conteneur d'erreur avec icône).
+  seconde). Jamais de rouge (ADR 0010, décision de l'animateur du 2026-10-17) :
+  `StatusColors.attention`, puis `inverseSurface` (fond sombre) avec icône sablier
+  et `+mm:ss`.
 - **Ancien comportement conservé** : le message d'alerte n'apparaissait qu'une fois
   le minuteur lancé ; avec `remaining = prévu` au départ (≥ 1 min), le ton neutre
   l'impose déjà. Minutes de phase ≥ 1 : pas de cas « attention » au repos.
@@ -592,8 +593,8 @@ bloquant, aucune correction de code nécessaire.
   jeu (variante, lien, adaptation) en Mener et en Relecture ; le rappel de la séance
   précédente reste lisible en Mener (constat D3 : voulu, ce n'est pas une section
   repliable).
-- **Constats tranchés conformes** : D2 minuteur dépassé en `errorContainer` avec
-  icône (design-system.md) ; E1 « Noter » aux seules étapes d'exercice (§ 5) ; E2 le
+- **Constats tranchés conformes** : D2 minuteur dépassé : `errorContainer` retiré le 2026-10-17 (pas de rouge), remplacé par
+  `inverseSurface` avec sablier (design-system.md) ; E1 « Noter » aux seules étapes d'exercice (§ 5) ; E2 le
   retour du guide lancé depuis le détail ramène au détail (`guideBackTarget`).
 - **Hors périmètre U4, à traiter ailleurs** :
   - ~~D1~~ **soldé le 2026-10-16** ([ADR 0016](adr/0016-identite-de-la-saisie-par-groupe-jour-et-seance.md),

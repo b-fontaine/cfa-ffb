@@ -250,12 +250,13 @@ widgetbook/                            # projet séparé : catalogue du design s
   groupe ni date de séance ; une ligne par exercice n'existe qu'à partir de
   `minCohortForFigures` = 3 élèves distincts (règle, pas réglage).
   `proposeClosure` (pure) propose, l'animateur décide.
-- **Persistance** : schéma **v10** (v9 : `seasons.closed_on`, `season_archive_audiences`,
-  `season_archive_exercises`, migration additive `from8To9` ; v10 : `run_progress_entries`,
-  migration additive `from9To10`, voir « Séance guidée en cours » ci-dessous) ; sauvegarde **v4**
-  (`seasons[].closedOn` facultatif, `seasonArchives` obligatoire en v4 et refusée
-  en v1 à v3), **inchangée par le schéma v10**. Importer un fichier qui donne une saison
-  pour ouverte la rouvre et supprime son archive.
+- **Persistance** : version courante **schéma v11, sauvegarde v5**. Historique, du plus ancien au plus récent :
+  schéma v9 (`seasons.closed_on`, `season_archive_audiences`, `season_archive_exercises`, migration additive
+  `from8To9`) ; schéma v10 (`run_progress_entries`, migration additive `from9To10`, voir « Séance guidée en
+  cours » ci-dessous) ; schéma v11 (colonne `tags_json` sur `session_records` et `run_progress_entries`,
+  ADR 0023). Sauvegarde v4 : `seasons[].closedOn` facultatif, `seasonArchives` obligatoire en v4 et refusée
+  en v1 à v3, inchangée par le schéma v10. Sauvegarde v5 : `sessionRecords[].tags` obligatoire en v5, refusée
+  en v1 à v4. Importer un fichier qui donne une saison pour ouverte la rouvre et supprime son archive.
 - **Séance guidée en cours** (lot 10b, [ADR 0020](adr/0020-seance-en-cours-persistee-locale-hors-sauvegarde.md)) :
   `RunSheetCubit` garde l'étape, les compteurs d'initiation, la grille « acquis », le score A / B, le minuteur
   (écrit toutes les 10 s, à la pause et au changement de phase) et l'identifiant de la saisie ouverte, via

@@ -71,6 +71,7 @@ app/lib/shared/ui/
 ├── score_indicator.dart         # score x/n : pastilles pleines/creuses + texte
 ├── student_chip.dart            # StudentChip : prénom + pastille d'état (à faire, manqué, réussi), cible ≥ 48 dp
 ├── pass_dots.dart               # PassDots : n pastilles tapables (pleine = empochée, creuse = manquée) + « x/n »
+├── session_tag_picker.dart      # SessionTagPicker : choix multiple d'étiquettes de la note de jeu (liste fermée, ADR 0023)
 ├── timer_chip.dart              # TimerChip : minuteur compact, ton neutre / attention / dépassé, lecture-pause
 ├── phase_timeline.dart          # PhaseTimeline : frise proportionnelle des phases (minutes), phase courante, tapable
 ├── step_app_bar.dart            # StepAppBar : en-tête d'étape (titre, « 6/9 », menu ⋮ d'actions injectées)
@@ -123,7 +124,7 @@ Pas de téléchargement à l'exécution (Linux, Windows, web hors ligne).
 | État (sélection, puces, segments, pistes) | `secondary` / `secondaryContainer` (bleu-tapis) | indicateur de la navigation, `FilterChip`, `SegmentedButton`, piste de `ProgressMeter`, bord de `SectionCard` forte |
 | Marque | `BrandColors.accent`, `onAccent`, `accentContainer`, `onAccentContainer` (rouge FFB) | ligne d'objectif de `ProgressChart`, badge « Enfants » ; **toujours via un composant** |
 | Statut | `StatusColors` (`success`, `attention`) | réussite, alerte ambrée, ton `attention` de `TimerChip` |
-| Erreur | `error` / `errorContainer` | échec, minuteur dépassé |
+| Erreur | `error` / `errorContainer` | échec ; **pas** le minuteur dépassé (décision de l'animateur du 2026-10-17, ADR 0010 : `inverseSurface`) |
 
 - **`BrandColors`** : `ThemeExtension` branchée dans `AppTheme.light` et
   `AppTheme.dark`. Un écran ne la lit pas directement ; `contrast_test.dart`
@@ -165,12 +166,25 @@ Pas de téléchargement à l'exécution (Linux, Windows, web hors ligne).
   minuterie interne). Le ton vient de la fonction pure `timerToneFor` (`shared/lib/timer_tone.dart`, source unique du seuil, partagée avec le guide) :
   `neutral` (≥ 1 min, `surfaceContainerHighest`), `attention` (de 0 inclus à
   1 min exclue, `StatusColors.attention`), `overdue` (< 0,
-  `errorContainer`, temps affiché `+mm:ss`). Une icône accompagne les tons
-  `attention` et `overdue`. La région vive (`liveRegion`) n'existe qu'à ces
+  `inverseSurface` / `onInverseSurface` : fond sombre, **jamais le rouge**,
+  temps affiché `+mm:ss`). Une icône accompagne les tons `attention`
+  (avertissement) et `overdue` (sablier `hourglass_bottom`) ; le contraste de la
+  paire est déjà couvert par le test de contraste (`inverseSurface`). La région vive (`liveRegion`) n'existe qu'à ces
   deux seuils : le lecteur d'écran n'annonce pas chaque seconde.
 - Use cases Widgetbook : `pass_dots_use_cases.dart` (interactif, lecture
   seule, désactivé, vingt essais) et `timer_chip_use_cases.dart` (interactif
   avec curseur du temps, neutre, attention, dépassé, en pause).
+
+### SessionTagPicker (lot 10b, ADR 0023)
+
+- **`SessionTagPicker`** : `selected` et `onChanged` (le nouvel ensemble, jamais l'ensemble donné
+  muté ; sans `onChanged`, lecture seule). Un `FilterChip` par valeur de `SessionTag`, dans l'ordre
+  d'affichage, **aucun champ de texte** : la liste est fermée. Choisi = coche + `secondaryContainer`
+  (bleu-tapis, jamais la couleur seule, jamais rouge) ; cible de 48 dp ; retour à la ligne (aucun
+  débordement à 320 dp et 200 % de texte). Sémantique : une case à cocher par étiquette.
+- Utilisé à l'étape « Bilan » du guide (état du cubit, gardé avec la séance en cours) et dans le bilan
+  de la saisie (écrit à chaque tap). Use cases Widgetbook : `session_tag_picker_use_cases.dart`
+  (interactif, deux étiquettes choisies, lecture seule).
 
 ### PhaseTimeline et StepAppBar (lot U1, R4)
 
@@ -839,8 +853,8 @@ slice `run_sheet` ; aucun nouveau composant public.
   25 % de 844 dp) : `StepAppBar` (retour, titre de l'étape **une seule fois**,
   « n/m », menu ⋮), `PhaseTimeline` (épinglée si la hauteur ≥ 600 dp × facteur de
   texte, sinon dans le défilement), ligne « phase · minuteur » avec `TimerChip`
-  (temps restant ; neutre, attention sous une minute, dépassé avec icône et
-  conteneur d'erreur, jamais le rouge seul ; vibration légère une fois par
+  (temps restant ; neutre, attention sous une minute, dépassé : sablier,
+  `+mm:ss` et fond `inverseSurface`, jamais le rouge ; vibration légère une fois par
   seuil). En texte ≥ 130 % le minuteur passe sous la phase.
 - **Schéma en premier** (clé `step-media`, à gauche sur 720 dp et plus), borné à
   la hauteur restante quand l'écran permet d'épingler la frise : visible sans

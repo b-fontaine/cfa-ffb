@@ -25,4 +25,6 @@
 | 0021 | Export PDF (lot 14) : `pdf` en API bas niveau seule (+77 Ko mesurés, widgets et `printing` écartés), mise en page en domaine pur (scène d'impression, deux rendus : PDF et aperçu), schémas de table dessinés en vectoriel, Exo 2 (sans `θ`, `✓`, `→`), Enregistrer (`file_picker`) et Imprimer (web), aucune donnée nominative par défaut ; accepté et livré sur les défauts proposés (points `[U]` U14-1 à U14-12 à confirmer) |
 | 0022 | Dette d'outillage (lot 23) : `scripts/` devient un paquet analysé avec `very_good_analysis` (21 écarts corrigés, aucun `ignore`) ; build `--wasm` évalué (compile et fonctionne, mono-fil sans COOP/COEP, précache à refaire) et non adopté ; mutation testing toujours hors périmètre, avec condition de réexamen |
 
+| 0023 | Étiquettes de séance (note de jeu, lot 10b) : liste fermée de huit étiquettes `[Prop]` sans texte libre ni élève, colonnes `tags_json` (schéma v11) sur la saisie et la séance en cours, sauvegarde v5 (clé obligatoire, refusée avant), saisie à l'étape « Bilan » et corrigeable depuis le bilan ; accepté et livré |
+
 Recherches sources : `../research/`.

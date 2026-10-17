@@ -70,3 +70,12 @@ rouge, couleur de marque, n'avait pas de rôle propre.
 - **Hors U1, reporté** : le signe en bille n° 8 et le motif de tapis (R3) vont
   à U7 (accueil, état vide) et U3 (présentation) ; `StudentChip` (R4) à U5,
   `NowCard` à U7, `DiagramStage` à U3.
+
+## Addendum du 2026-10-17 : minuteur dépassé
+
+Décision de l'animateur : le minuteur dépassé n'est **pas** rouge. `TimerChip`
+passe de `StatusColors.attention` (sous une minute) à `inverseSurface` /
+`onInverseSurface` au dépassement, avec l'icône sablier et le temps en
+`+mm:ss` (jamais la couleur seule). `errorContainer` reste réservé aux échecs
+(`AppAlert` persistant, `design-system.md`). La paire est couverte par
+`contrast_test.dart` et son câblage par `timer_chip_test.dart`.
