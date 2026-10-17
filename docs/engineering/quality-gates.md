@@ -29,7 +29,7 @@ scripts/sync_fiches.sh [--check]          # copie / vérifie les séances du cat
 | Comportement du service worker et du pont de mise à jour (précache et reprise, HTML refusé, purge des anciens caches, activation seulement sur demande, autre onglet, `/__/` non intercepté, worker non stampé), contrat Dart/JS du pont | `node --test scripts/pwa_js_test.mjs` (Node requis) | oui | oui | pre-commit | quality |
 | Formatage | `dart format --output=none --set-exit-if-changed` (lib, test, tool, scripts) | oui | oui | pre-commit | quality |
 | Analyse statique stricte | `flutter analyze --no-pub --fatal-infos` (`very_good_analysis` + strict-casts/inference/raw-types) | oui | oui | pre-commit | quality |
-| Analyse des scripts Dart | `dart analyze --fatal-infos scripts` | oui | oui | pre-commit | quality |
+| Analyse des scripts Dart (paquet `scripts/`, mêmes règles `very_good_analysis` que l'application, [ADR 0022](adr/0022-dette-outillage-scripts-wasm-mutation.md)) | `dart pub get` puis `dart analyze --fatal-infos .` dans `scripts/` | oui | oui | pre-commit | quality |
 | Architecture FSD + Clean | `dart run tool/check_architecture.dart` (dans `app/`) | oui | oui | pre-commit | quality |
 | Séances générées | `dart run scripts/validate_seances.dart seances` | oui | oui | pre-commit | quality |
 | l10n fr/en : mêmes clés | `dart run scripts/check_l10n.dart app/lib/shared/l10n` | — | oui | pre-push | test |
@@ -105,7 +105,10 @@ dépassait plusieurs heures sur la base de code actuelle (≈ 1250 mutants, suit
 complète par mutant) et sera réintroduit plus tard, après mesure des performances.
 Aucun script, seuil, job CI ni dépendance n'y est associé aujourd'hui ; la
 qualité des tests repose sur la couverture, la relecture par l'agent `testeur-bdd`
-et les tests de contrat.
+et les tests de contrat. **Réévalué le 2026-10-17** ([ADR 0022](adr/0022-dette-outillage-scripts-wasm-mutation.md)) :
+décision maintenue (580 fichiers de production, 431 de test, la durée ne s'est pas
+améliorée) ; la mutation ciblée à la main sur les fichiers touchés est la pratique
+en vigueur, avec une condition de réexamen écrite.
 
 ## Politique
 

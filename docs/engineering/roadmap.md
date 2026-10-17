@@ -254,7 +254,10 @@ Lots UX en H0 :
     16), pas des pastilles (point U14-1). **Reste** : impression directe non
     automatisable (à vérifier à la main), Safari iPhone et PWA Android non
     vérifiés, PDF non balisé, impression système sur mobile natif (ADR à part),
-    dessin des illustrations qui ne sont pas des schémas de table.
+    dessin des illustrations qui ne sont pas des schémas de table. Défaut
+    constaté puis **corrigé le 2026-10-17** : sur le web, l'export de sauvegarde
+    affichait « Export annulé. » et n'enregistrait pas la sauvegarde faite
+    (`FilePickerBackupFiles`, même cause que `PdfFiles`).
 15. ~~Hors-ligne : vérifier le PWA (service worker, sqlite3.wasm / OPFS) sans
     réseau ; installation sur l'écran d'accueil ; plein écran et mode immersif~~
     **Livré le 2026-10-16** ([plan](hors-ligne-plan.md),
@@ -303,8 +306,15 @@ Lots UX en H0 :
     veille d'une séance planifiée (« Préparer la séance de demain ») et
     sauvegarde de plus de 30 jours (ce dernier devient sans objet pour un
     compte synchronisé).
-23. Dette : `scripts/` sans `pubspec.yaml`, build `--wasm`, mutation testing
-    retiré (à réévaluer).
+23. ~~Dette : `scripts/` sans `pubspec.yaml`, build `--wasm`, mutation testing
+    retiré~~ **Traitée le 2026-10-17** ([ADR 0022](adr/0022-dette-outillage-scripts-wasm-mutation.md)) :
+    `scripts/` est un paquet analysé avec `very_good_analysis` (21 écarts
+    corrigés) ; `--wasm` évalué, il compile et fonctionne mais reste mono-fil
+    sans COOP/COEP (qui menacent Firebase Auth, H5) et exige un précache
+    refait : **non adopté**, à réexaminer après l'ADR d'authentification de H5
+    et sur mesure de performance ; mutation testing **maintenu hors
+    périmètre** (mutation ciblée à la main), condition de réexamen écrite.
+    Aussi corrigé ce jour : l'export de sauvegarde sur le web (voir lot 14).
 
 ## H5 — Firebase : comptes, clubs, rôles et synchronisation
 

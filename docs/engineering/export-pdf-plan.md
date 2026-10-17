@@ -492,10 +492,10 @@ fichier était téléchargé).
 - **Impression directe** (`window.print()` d'une iframe sur le PDF) : **non vérifiée** (la boîte d'impression ne se pilote pas) ; le
   bouton « Imprimer » est visible sur le web et masqué ailleurs. Safari iPhone et PWA installée sur Android : non vérifiés.
 - PDF **non balisé** ; le texte est extractible dans l'ordre de lecture (vérifié par `pdftotext`).
-- **Défaut hors du lot, à corriger** : `FilePickerBackupFiles.save` (sauvegarde JSON) a le même `location != null` ; sur le web
+- **Défaut hors du lot, corrigé le 2026-10-17** (`FilePickerBackupFiles(savesByDownload: true)` sur le web, comme `FilePickerPdfFiles` ; scénario BDD « A browser download counts as a saved backup », test unitaire, vérifié dans le navigateur : « Sauvegarde enregistrée. » au lieu de « Export annulé. ») : `FilePickerBackupFiles.save` (sauvegarde JSON) a le même `location != null` ; sur le web
   `file_picker` rend `null` après le téléchargement, donc l'export de sauvegarde affiche « Export annulé. » et **n'enregistre
   pas la sauvegarde faite** (`RecordBackupDone`, rappel de sauvegarde). Constaté par lecture du paquet (`file_picker_web 4.1.0`,
-  `saveFile` rend `null`) et par le PDF ; non vérifié sur la page de sauvegarde. Non corrigé ici (autre lot).
+  `saveFile` rend `null`) et par le PDF ; non vérifié sur la page de sauvegarde. Constat d'origine, conservé.
 - Le médaillon de quantité de bille et la numérotation des tirs d'un schéma ne sont pas imprimés ; les illustrations qui ne sont
   pas des tables (silhouette, contact, dosage, angle) le sont en légende et texte alternatif (U14-9).
 - Une séance dont le texte contiendrait un caractère absent d'Exo 2 serait **refusée** à l'export (message), pas imprimée avec un
