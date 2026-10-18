@@ -289,6 +289,64 @@ Mutants M2 et M5 de la première série, qui n'ajoutaient qu'une valeur permise 
   `failedPrecondition` en `MembershipsUnavailable` fait échouer le BDD « missing server index ».
 - **Index** : voir [quality-gates.md](quality-gates.md) (`check_indexes_test`, mutation incluse).
 
+## Dépôts Firestore (FB4, partie 2)
+
+- **Unité de travail** : `unit_of_work_contract.dart`, rejoué sur le double en mémoire (`firestore_unit_of_work_test`) **et** sur `fake_cloud_firestore`
+  (`firestore_contract_test`) : écritures appliquées ensemble, **lecture de ses propres écritures** (une fiche créée dans l'unité est vue par l'enregistrement du groupe),
+  rien d'écrit si le corps échoue, unité imbriquée jointe à l'englobante, 500 écritures acceptées, 501 refusées par une erreur explicite (`batchTooLarge`, avant toute écriture).
+  Le test « une écriture refusée par le stock n'écrit rien » ne tourne que sur le double : **`fake_cloud_firestore` applique les écritures d'un lot une à une**
+  (mesuré : la première reste), le contrat le déclare (`storeRollsBack: false`) au lieu de l'ignorer. L'atomicité du **vrai** lot est prouvée contre l'émulateur
+  (`repositories.test.mjs`, « un lot dont une écriture est refusée n'écrit rien »). Unitaires : un seul lot envoyé, deux écritures d'un même document fusionnées (`ArrayUnion`
+  cumulés), `composite_unit_of_work_test` (le lot Firestore part avant la validation de drift ; son échec annule drift).
+- **Création d'un élève par un enseignant** : `firestore_enroll_by_teacher_test` joue le cas d'usage `EnrollStudent` avec les dépôts Firestore d'un enseignant : **un seul lot**,
+  fiche (`groupIds: ['g1']`) et appartenance, **ni la saison ni le groupe réécrits** (l'enseignant n'y a pas droit). Mutation : réécrire le groupe inchangé fait échouer les deux tests.
+  Contre les règles (`repositories.test.mjs`) : le lot est accepté pour l'enseignant du groupe, refusé pour une fiche existante, sans fiche dans le lot, pour le groupe d'un autre
+  enseignant, pour les autres rôles ; mise à jour et suppression d'une appartenance par l'enseignant toujours refusées.
+- **Contrat de la planification** : `planning_contract.dart` (saisons, séances planifiées, séances données) tourne sur la mémoire, **drift** et Firestore (faux) ;
+  `season_archive_contract.dart` aussi sur Firestore. Les listes y sont attendues dans l'ordre chronologique (celui de la première sauvegarde pour drift et la mémoire).
+- **Unitaires** : `firestore_planning_repositories_test` (champs écrits = liste blanche des règles ; séance sans groupe = garde défensive (`ServiceFailure`, la règle métier est dans `PlanSession`, `plan_session_test`) ; ouverture concurrente d'une saisie (`open`, `resume`, `createIfAbsent`, `createdAt` jamais envoyé à une mise à jour) ;
+  une saison inchangée n'est pas réécrite ; `createdAt` conservé ; requêtes par rôle : un groupe à la fois pour l'enseignant et la famille, **aucune lecture** de saisie pour
+  un parent ou un élève ; `eraseStudent` par `ArrayRemove` serveur ; archive sans identifiant d'élève ni de groupe), `rule_bounds_test` (bornes du domaine = bornes des
+  règles, lues dans `firestore.rules`), `sitting_id_test` et `open_session_test` (identité déterministe d'une saisie liée, UUID pour une saisie libre).
+- **Contre l'émulateur** : `scripts/rules_test/planning.test.mjs` (dans `rules_test.sh`) joue les **mêmes opérations** par rôle : écriture dans son groupe seulement, lecture
+  par groupe (staff et famille pour les séances planifiées, **staff seul** pour les saisies), requêtes que le dépôt Dart évite (saisies par élève seul pour un enseignant :
+  refusées), `array-contains-any` du gestionnaire, bornes (titre 120, 60 présents, étiquettes de la liste fermée), archives (compteurs seulement, écriture au gestionnaire).
+  **Aucun index composite** : toutes les requêtes sont d'égalité ou `array-contains-any` sur un seul champ ; `firestore.indexes.json` est inchangé et
+  `tool/check_indexes.dart` reste vert (pas de nouvel index, donc pas de mutation à prouver).
+
+- **Limites de la preuve de l'ouverture concurrente** : (1) le faux Firestore **sérialise** les transactions (`isolatedTransactions: false` dans le contrat) : le test Dart « deux ouvertures simultanées convergent »
+  ne prouve que la logique du dépôt, pas l'isolation du serveur ; (2) l'ouverture concurrente **côté Dart** n'est **pas rejouée contre l'émulateur avec le SDK Dart** : `planning.test.mjs` en joue une **réplique en JS**
+  (`openSitting` : transaction « lire puis créer », puis `arrayUnion`), copiée des opérations du dépôt ; une divergence entre le dépôt Dart et cette réplique ne serait vue ni par l'un ni par l'autre
+  (le dépôt Dart contre l'émulateur reste à faire avec le parcours navigateur de la partie 3). Le refus d'une union de plus de 60 présents est rejoué par un double qui imite la règle (`_BoundedSpy`), la règle
+  elle-même l'étant dans `bounds.test.mjs` / `planning.test.mjs`.
+- **Reprise et ouverture** : la reprise **remplace** les présents (contrat `resume changes the blocks and replaces the presents` sur drift, mémoire et Firestore ; `open_or_resume_session_test`), l'ouverture les **réunit**
+  (contrat `open keeps the blocks and the tags, adds the presents`). **Import avec Firestore** : `backupImportUnsupportedContract` (`ServiceFailure` `unsupported`, rien d'écrit, côté Firestore comme côté drift).
+
+### Mutations à la main (FB4, partie 2)
+
+Copie des règles (`RULES_FILE=copie.rules`), `repositories.test.mjs` (A-C) ou `planning.test.mjs` (D-H) :
+
+| Mutant | Résultat |
+|---|---|
+| (A) `!exists(fiche)` retiré de `teacherEnrolls` | **survivait** à la série d'origine (les autres conditions refusaient le cas testé) ; **tué** depuis par « ATTAQUE : une appartenance seule, pour une fiche DÉJÀ existante qui satisfait tout le reste… » (`repositories.test.mjs`), où `!exists` est la seule condition qui refuse (fiche existante, groupe et jour d'entrée conformes) : la condition n'est donc pas redondante, gardée |
+| (B) `getAfter(fiche).groupIds` retiré de `teacherEnrolls` | tué : le même test et « un enseignant ne peut pas écrire le groupe ni ses appartenances » |
+| (C) `teachesGroup` remplacé par `isTeacher` dans `teacherEnrolls` | **survit, équivalent** : la fiche neuve porte des groupes bornés à ceux de l'enseignant (`students.create`) et `getAfter` impose que le groupe de l'appartenance en fasse partie ; la condition est une défense en profondeur, gardée |
+| (D) lecture des séances planifiées : `familyInGroup` remplacé par `isFamily` | tué : « la lecture suit le groupe » |
+| (E) lecture des saisies ouverte à tout membre (`isMember`) | tué : « un parent et un élève ne lisent AUCUNE saisie », « un enseignant interroge ses groupes un à un » |
+| (G) `idList(presentStudentIds, 60)` passé à 61 | tué : « 60 élèves présents au plus » |
+| (H) archives écrites aussi par l'enseignant | tué : « un enseignant lit mais n'écrit pas » |
+| (I) identifiant de l'appartenance d'un enseignant non vérifié (`membershipId == …` retiré de `teacherEnrolls`) | tué : « l'appartenance d'un enseignant est liée à son contenu » |
+| (J) `from` non lié au début de l'historique de la fiche neuve (`audienceHistory[0].effectiveFrom == d.from` retiré) | tué : le même test (seconde période arbitraire) |
+| (K) saison de l'appartenance non liée à celle du groupe (`get(groupe).seasonId == d.seasonId` retiré) | tué : le même test (saison libre) |
+| (L) période fermée admise (`d.get('to', null) == null` retiré) | tué : le même test |
+| (M) `createdAt` autorisé dans le diff d'une mise à jour de saisie | tué : « createdAt : exigé et daté du serveur à la création, jamais dans le diff d'une mise à jour » et « la date de création d'une saisie est figée » |
+| (N) `createdAt` non exigé à la création d'une saisie | tué : le même test (« création sans date ») |
+| (F) lecture d'une saisie **existante** ouverte à tout enseignant (`manages \|\| isTeacher` au lieu de `staffReadsGroup`) | tué : « get (groupe g1/g2) : animateurs du groupe » (matrice) et « un enseignant lit une saisie ABSENTE… » (`existante, autre groupe`) |
+| (O) lecture d'une saisie absente refusée à l'enseignant (retour à `staffReadsGroup(resource.data.groupId)` seul) | tué : « un enseignant lit une saisie ABSENTE de son club » et « deux appareils ouvrent la même saisie en même temps » |
+| (P) `mayProbeAbsent` : l'enseignant ne lit qu'un identifiant aléatoire (le test sur le groupe de l'identifiant retiré) | tué : « ATTAQUE… » (sessions et saisies), « deux appareils ouvrent la même saisie », « la reprise… REMPLACE les présents » |
+| (Q) `mayProbeAbsent` : l'enseignant ne lit qu'un identifiant portant son groupe (la branche « identifiant aléatoire » retirée) | tué : « un enseignant lit une saisie/séance ABSENTE de son club » et les deux « ATTAQUE… » (un enseignant ne pourrait plus créer une saisie libre ni une séance planifiée, à identifiant UUID) |
+| (R) `mayProbeAbsent` revenu à `manages \|\| isTeacher` (le comportement avant resserrage) | tué : « ATTAQUE : lire une séance/saisie ABSENTE à identifiant déterministe d'un autre groupe est refusé » (un enseignant de g2 apprenait si g1 avait tenu une séance) |
+
 ## Authentification (lot FB2)
 
 - **BDD** : `authentication.feature`. Les BDD existants s'exécutent **connectés** : `UiWorld.prepare` crée le compte de

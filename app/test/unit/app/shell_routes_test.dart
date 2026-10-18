@@ -254,18 +254,14 @@ void main() {
   });
 
   group('AppRoutes.plan', () {
-    test('preselects the catalogue session and the audience', () {
+    test('preselects the catalogue session', () {
       expect(
-        AppRoutes.plan(SheetId('puissance-1'), audience: Audience.adults),
-        '/planner?sheet=puissance-1&audience=adults',
+        AppRoutes.plan(SheetId('puissance-1')),
+        '/planner?sheet=puissance-1',
       );
     });
 
     test('opens the planner without catalogue session', () {
-      expect(
-        AppRoutes.plan(null, audience: Audience.children),
-        '/planner?audience=children',
-      );
       expect(AppRoutes.plan(null), '/planner');
     });
   });
@@ -398,12 +394,8 @@ void main() {
   group('AppRoutes.plan with a group', () {
     test('carries the group chosen in the catalogue', () {
       expect(
-        AppRoutes.plan(
-          SheetId('puissance-1'),
-          audience: Audience.adults,
-          group: const GroupId('g1'),
-        ),
-        '/planner?sheet=puissance-1&audience=adults&group=g1',
+        AppRoutes.plan(SheetId('puissance-1'), group: const GroupId('g1')),
+        '/planner?sheet=puissance-1&group=g1',
       );
       expect(
         AppRoutes.plan(null, group: const GroupId('g1')),

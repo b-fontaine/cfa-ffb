@@ -7,7 +7,7 @@ import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
 /// Saisons persistées dans SQLite (drift).
-@LazySingleton(as: SeasonRepository, env: [Environment.prod])
+@LazySingleton(env: [Environment.prod])
 class DriftSeasonRepository implements SeasonRepository {
   DriftSeasonRepository(this._db, this._clock);
 

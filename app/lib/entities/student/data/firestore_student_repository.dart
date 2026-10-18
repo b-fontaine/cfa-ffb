@@ -34,13 +34,13 @@ class FirestoreStudentRepository implements StudentRepository {
   @override
   Future<void> save(Student student) => guardStore(() async {
     final path = _club.paths.student(student.id);
-    final exists = await _club.documents.get(path) != null;
+    final exists = await _club.get(path) != null;
     final fields = StudentDocument.encode(student);
     // Fusion : même si la lecture ne voit pas une fiche qui existe
     // (concurrence,
     // cache hors ligne), `groupIds` n'est jamais remplacé (`ArrayUnion([])` le
     // crée vide ou le laisse tel quel). Seule `createdAt` dépend de la lecture.
-    await _club.documents.commit([
+    await _club.commit([
       SetOp(path, {
         ...fields,
         'groupIds': const ArrayUnion([]),
@@ -51,7 +51,7 @@ class FirestoreStudentRepository implements StudentRepository {
 
   @override
   Future<Student?> byId(StudentId id) => guardStore(() async {
-    final document = await _club.documents.get(_club.paths.student(id));
+    final document = await _club.get(_club.paths.student(id));
     return document == null ? null : StudentDocument.decode(document);
   });
 
@@ -88,7 +88,7 @@ class FirestoreStudentRepository implements StudentRepository {
       case Role.student || Role.guardian:
         return [
           for (final id in _club.studentIds)
-            ?await _club.documents.get('$collection/${id.value}'),
+            ?await _club.get('$collection/${id.value}'),
         ];
       case Role.director || Role.admin || null:
         return const [];
@@ -101,7 +101,6 @@ class FirestoreStudentRepository implements StudentRepository {
   @override
   Future<void> erase(StudentId id) => _remove(id);
 
-  Future<void> _remove(StudentId id) => guardStore(
-    () => _club.documents.commit([DeleteOp(_club.paths.student(id))]),
-  );
+  Future<void> _remove(StudentId id) =>
+      guardStore(() => _club.commit([DeleteOp(_club.paths.student(id))]));
 }

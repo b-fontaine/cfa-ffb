@@ -5,7 +5,7 @@ import 'package:injectable/injectable.dart';
 /// Unité de travail SQLite : une transaction. Toutes les écritures faites par
 /// les repositories pendant [run] (même zone) sont validées ensemble ou
 /// annulées ensemble si le corps lève une exception.
-@LazySingleton(as: UnitOfWork, env: [Environment.prod])
+@LazySingleton(env: [Environment.prod])
 class DriftUnitOfWork implements UnitOfWork {
   DriftUnitOfWork(this._db);
 

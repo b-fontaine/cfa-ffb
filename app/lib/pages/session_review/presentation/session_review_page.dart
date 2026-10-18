@@ -8,7 +8,6 @@ import 'package:billard_cfa/features/review_session/presentation/ui/session_revi
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/next_sheet_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/ui/next_sheet_card.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
-import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
@@ -48,7 +47,7 @@ class SessionReviewPage extends StatelessWidget {
   final ValueChanged<StudentId> onOpenStudent;
 
   /// Ouvre le planificateur, séance du catalogue (si connue) présélectionnée.
-  final void Function(SheetId? sheet, Audience audience) onOpenPlanner;
+  final void Function(SheetId? sheet, GroupId group) onOpenPlanner;
   final VoidCallback onOpenPlanned;
 
   void _loadNext(BuildContext context, SessionReview review) {
@@ -137,7 +136,7 @@ class _NextSession extends StatefulWidget {
 
   final SessionReview review;
   final DateTime Function() today;
-  final void Function(SheetId? sheet, Audience audience) onOpenPlanner;
+  final void Function(SheetId? sheet, GroupId group) onOpenPlanner;
   final VoidCallback onOpenPlanned;
   final VoidCallback onRetry;
 
@@ -217,15 +216,16 @@ class _NextSessionState extends State<_NextSession> {
                   option.partCount,
                 ),
                 date: _date,
-                audience: next.audience,
                 sheetId: option.id,
                 groupId: widget.review.record.groupId,
               ),
             );
           },
           onChangeDate: () => unawaited(_pickDate()),
-          onOpenPlanner: () =>
-              widget.onOpenPlanner(sheet?.option.id, next.audience),
+          onOpenPlanner: () => widget.onOpenPlanner(
+            sheet?.option.id,
+            widget.review.record.groupId,
+          ),
           onOpenPlanned: widget.onOpenPlanned,
         );
     }

@@ -58,6 +58,17 @@ class _FakeAccess implements FirestoreAccess {
     _maybeFail();
     written = writes;
   }
+
+  bool created = true;
+  Map<String, Object?>? createdData;
+
+  @override
+  Future<bool> createDocument(String path, Map<String, Object?> data) async {
+    calls.add('create $path');
+    _maybeFail();
+    createdData = data;
+    return created;
+  }
 }
 
 FirebaseException _failure(String code) =>
@@ -70,6 +81,44 @@ void main() {
   setUp(() {
     access = _FakeAccess();
     store = FirestoreDocumentStore(access: access);
+  });
+
+  group('createIfAbsent', () {
+    test('translates the values and reports a creation', () async {
+      final created = await store.createIfAbsent('clubs/c1/records/x1', {
+        'date': DateTime.utc(2026, 10, 3),
+        'createdAt': serverTimestamp,
+      });
+
+      expect(created, isTrue);
+      expect(access.calls, ['create clubs/c1/records/x1']);
+      expect(access.createdData!['date'], isA<Timestamp>());
+      expect(access.createdData!['createdAt'], isA<FieldValue>());
+    });
+
+    test('reports an existing document without failing', () async {
+      access.created = false;
+
+      expect(
+        await store.createIfAbsent('clubs/c1/records/x1', {'a': 1}),
+        isFalse,
+      );
+    });
+
+    test('translates a refusal of the rules', () async {
+      access.error = _failure('permission-denied');
+
+      await expectLater(
+        store.createIfAbsent('clubs/c1/records/x1', {'a': 1}),
+        throwsA(
+          isA<StoreFailure>().having(
+            (e) => e.code,
+            'code',
+            StoreFailureCode.permissionDenied,
+          ),
+        ),
+      );
+    });
   });
 
   group('reads', () {

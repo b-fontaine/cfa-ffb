@@ -4,6 +4,7 @@ import 'package:billard_cfa/features/plan_session/domain/invalid_session_title.d
 import 'package:billard_cfa/features/plan_session/domain/plan_session.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/field_limits.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,14 +33,15 @@ void main() {
       final session = await planSession(
         title: '  Posture  ',
         date: DateTime(2026, 10, 12, 18, 30),
-        audience: Audience.children,
+        groupId: const GroupId('g1'),
       );
 
       final expected = Session(
         id: 'id-1',
         title: 'Posture',
         date: day(12),
-        audience: Audience.children,
+        audience: Audience.adults,
+        groupId: const GroupId('g1'),
       );
       expect(session, expected);
       expect(await world.plannedSessions.getAll(), [expected]);
@@ -50,19 +52,18 @@ void main() {
     final session = await planSession(
       title: 'Demi-bille',
       date: day(12),
-      audience: Audience.adults,
       sheetId: SheetId('demi-bille-2'),
+      groupId: const GroupId('g1'),
     );
 
     expect(session.sheetId?.value, 'demi-bille-2');
-    expect(session.groupId, isNull);
+    expect(session.groupId, const GroupId('g1'));
   });
 
   test('takes the audience of the group it is planned for', () async {
     final session = await planSession(
       title: 'Cours',
       date: day(12),
-      audience: Audience.children,
       groupId: const GroupId('g1'),
     );
 
@@ -70,12 +71,24 @@ void main() {
     expect(session.audience, Audience.adults, reason: 'public du groupe');
   });
 
+  test('refuses a session without a group, whatever its title', () async {
+    await expectLater(
+      planSession(title: 'Cours', date: day(12)),
+      violation(InvariantCode.sessionNeedsGroup),
+    );
+    await expectLater(
+      planSession(title: '   ', date: day(12)),
+      throwsA(isA<InvalidSessionTitle>()),
+      reason: 'le titre est contrôlé avant le groupe',
+    );
+    expect(await world.plannedSessions.getAll(), isEmpty);
+  });
+
   test('refuses an unknown group', () {
     expect(
       () => planSession(
         title: 'Cours',
         date: day(12),
-        audience: Audience.adults,
         groupId: const GroupId('nope'),
       ),
       violation(InvariantCode.unknownGroup),
@@ -87,7 +100,6 @@ void main() {
       () => planSession(
         title: 'Cours',
         date: DateTime(2027, 7),
-        audience: Audience.adults,
         groupId: const GroupId('g1'),
       ),
       violation(InvariantCode.seasonOutsidePeriod),
@@ -101,13 +113,11 @@ void main() {
       final first = await planSession(
         title: 'Premier',
         date: DateTime(2026, 10, 1, 9),
-        audience: Audience.adults,
         groupId: const GroupId('g1'),
       );
       final last = await planSession(
         title: 'Dernier',
         date: DateTime(2026, 10, 31, 23),
-        audience: Audience.adults,
         groupId: const GroupId('g1'),
       );
 
@@ -122,7 +132,6 @@ void main() {
         () => planSession(
           title: 'Cours',
           date: date,
-          audience: Audience.adults,
           groupId: const GroupId('g1'),
         ),
         violation(InvariantCode.seasonOutsidePeriod),
@@ -146,7 +155,6 @@ void main() {
       () => planSession(
         title: 'Cours',
         date: day(12),
-        audience: Audience.adults,
         groupId: const GroupId('orphan'),
       ),
       throwsA(
@@ -159,7 +167,7 @@ void main() {
 
   test('rejects a blank title without storing anything', () async {
     expect(
-      () => planSession(title: '   ', date: day(12), audience: Audience.adults),
+      () => planSession(title: '   ', date: day(12)),
       throwsA(isA<InvalidSessionTitle>()),
     );
     expect(await world.plannedSessions.getAll(), isEmpty);
@@ -175,7 +183,6 @@ void main() {
       planSession(
         title: 'Posture',
         date: day(12),
-        audience: Audience.adults,
         groupId: const GroupId('g1'),
       ),
       throwsA(
@@ -187,5 +194,28 @@ void main() {
       ),
     );
     expect(await world.plannedSessions.getAll(), isEmpty);
+  });
+
+  test('refuses a title longer than the rules accept', () async {
+    await expectLater(
+      planSession(
+        title: 'a' * (maxSessionTitleLength + 1),
+        date: day(12),
+        groupId: const GroupId('g1'),
+      ),
+      throwsA(
+        isA<InvariantViolation>().having(
+          (v) => v.code,
+          'code',
+          InvariantCode.nameTooLong,
+        ),
+      ),
+    );
+    final kept = await planSession(
+      title: 'a' * maxSessionTitleLength,
+      date: day(12),
+      groupId: const GroupId('g1'),
+    );
+    expect(kept.title, hasLength(maxSessionTitleLength));
   });
 }

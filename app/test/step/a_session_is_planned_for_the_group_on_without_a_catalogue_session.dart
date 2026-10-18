@@ -23,7 +23,6 @@ Future<void> aSessionIsPlannedForTheGroupOnWithoutACatalogueSession(
     () => getIt<PlanSession>()(
       title: title,
       date: DateTime.parse(date),
-      audience: group.audience,
       groupId: group.id,
     ),
   );

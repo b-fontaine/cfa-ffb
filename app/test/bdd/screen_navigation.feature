@@ -87,7 +87,8 @@ Feature: Leaving a screen
 
   Scenario: A session opened from the planner leads back to the planner
     Given the app is running
-    And je planifie la séance {'Cours'} pour les {'adultes'} avec la séance du catalogue {'demi-bille-2'}
+    And the club has the student {'Hugo'} in the {'adults'} audience
+    And a session {'Cours'} is planned for the group {'Adults group'} on {'2026-10-12'} with the catalogue session {'demi-bille-2'}
     When I tap {'Plan a session'} text
     And I tap {'Catalogue session: Quantité demi-bille, session 2/2'} text
     Then I see {'Launch'} text
@@ -123,7 +124,8 @@ Feature: Leaving a screen
 
   Scenario: A planned session can be deleted after confirmation
     Given the app is running
-    And je planifie la séance {'Cours'} pour les {'adultes'} avec la séance du catalogue {'demi-bille-2'}
+    And the club has the student {'Hugo'} in the {'adults'} audience
+    And a session {'Cours'} is planned for the group {'Adults group'} on {'2026-10-12'} with the catalogue session {'demi-bille-2'}
     When I tap {'Plan a session'} text
     Then I see {'Cours'} text
     When I delete the planned session {'Cours'}

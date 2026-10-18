@@ -17,7 +17,6 @@ Future<void> jePlanifieLaSeanceSuivanteLe(
     () => getIt<PlanSession>()(
       title: sheet.title,
       date: TrackingWorld.date(date),
-      audience: review.record.audience,
       sheetId: sheet.id,
       groupId: review.record.groupId,
     ),

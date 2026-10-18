@@ -188,7 +188,9 @@ describe('club et réglages', () => {
 describe('données de groupe : identifiants dénormalisés et taille', () => {
   const director = () => dbOf(env, 'director');
   const create = (collectionName, data) =>
-    allowed(() => setDoc(doc(director(), `clubs/c1/${collectionName}/n1`), data));
+    allowed(() => setDoc(doc(director(), `clubs/c1/${collectionName}/n1`),
+      // La création d'une saisie exige `createdAt == request.time` (ouverture concurrente).
+      collectionName === 'records' ? { createdAt: serverTimestamp(), ...data } : data));
 
   test('groupId et seasonId sont obligatoires, en texte non vide', async () => {
     for (const name of ['sessions', 'records']) {

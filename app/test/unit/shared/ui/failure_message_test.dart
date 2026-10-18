@@ -1,5 +1,6 @@
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/field_limits.dart';
 import 'package:billard_cfa/shared/ui/failure_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,6 +23,18 @@ const _expected = <InvariantCode, (String, String)>{
   InvariantCode.nameTooLong: (
     'This name is too long.',
     'Ce nom est trop long.',
+  ),
+  InvariantCode.tooManyPresent: (
+    'A session has at most 60 students present.',
+    'Une séance compte 60 élèves présents au plus.',
+  ),
+  InvariantCode.sessionNeedsGroup: (
+    'Choose a group to plan this session.',
+    'Choisissez un groupe pour planifier cette séance.',
+  ),
+  InvariantCode.sessionReferenceTooLong: (
+    'This session cannot be opened: its identifier is too long.',
+    'Cette séance ne peut pas être ouverte : son identifiant est trop long.',
   ),
   InvariantCode.invalidInvitation: (_genericEn, _genericFr),
   InvariantCode.actionNotAllowed: (
@@ -271,6 +284,34 @@ void main() {
     expect(
       failureMessage(fr, const ServiceFailure(ServiceFailureCode.other)),
       _genericFr,
+    );
+  });
+
+  test('the unsupported operation of the online storage is explained', () {
+    const failure = ServiceFailure(ServiceFailureCode.unsupported);
+
+    expect(
+      failureMessage(en, failure),
+      'This operation is not yet available with online storage: importing a '
+      'backup will come later.',
+    );
+    expect(
+      failureMessage(fr, failure),
+      'Cette opération n’est pas encore disponible avec le stockage en ligne : '
+      'l’importation d’une sauvegarde viendra plus tard.',
+    );
+  });
+
+  test('the present students maximum is the one of the rules, not a number '
+      'written in the message', () {
+    expect(en.failTooManyPresent(maxPresentStudents), contains('60'));
+    expect(
+      en.failTooManyPresent(30),
+      'A session has at most 30 students present.',
+    );
+    expect(
+      fr.failTooManyPresent(30),
+      'Une séance compte 30 élèves présents au plus.',
     );
   });
 

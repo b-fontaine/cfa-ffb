@@ -25,7 +25,6 @@ Future<void> aSessionIsPlannedForTheGroupOnWithTheCatalogueSession(
     () => getIt<PlanSession>()(
       title: title,
       date: DateTime.parse(date),
-      audience: group.audience,
       sheetId: SheetId(sheetId),
       groupId: group.id,
     ),

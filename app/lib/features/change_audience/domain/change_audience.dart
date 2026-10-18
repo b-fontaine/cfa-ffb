@@ -90,6 +90,7 @@ class ChangeAudience {
             to: end.isBefore(from) ? from : end,
           ),
         );
+        if (groupName != null) requireGroupNameFits(groupName);
         final destination =
             (chosen == null ? null : await _groups.byId(chosen.id)) ??
             chosen ??

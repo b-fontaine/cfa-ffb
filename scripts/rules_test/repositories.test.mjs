@@ -22,6 +22,7 @@ import {
   getDoc,
   getDocs,
   query,
+  Timestamp,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -31,7 +32,7 @@ import {
   arrayUnion,
 } from 'firebase/firestore';
 
-import { allowed, createEnv, dbOf, seed } from './support.mjs';
+import { allowed, createEnv, dbOf, put, seed } from './support.mjs';
 
 let env;
 before(async () => {
@@ -142,15 +143,147 @@ describe('élèves : clubs/{c}/students/{id}', () => {
     assert.deepEqual((await getDoc(doc(dir, `${C}/students/s1`))).data().groupIds, ['g3']);
   });
 
-  test('un enseignant ne crée pas de fiche sans groupe (limite connue du dépôt, partie 2)', async () => {
-    // Le dépôt crée toujours `groupIds: []` : les règles exigent au moins un groupe de
-    // l'enseignant à la création. C'est refusé, et c'est dit (testing.md, reste à faire FB4b).
-    assert.equal(await allowed(() => setDoc(doc(dbOf(env, 'teacherA'), `${C}/students/n1`), studentCreate())), false);
+  test('un enseignant ne crée pas de fiche sans groupe : le dépôt inscrit donc fiche et groupe dans UN lot', async () => {
+    // Les règles exigent au moins un groupe de l'enseignant à la création (règle inchangée, la plus
+    // stricte) : `groupIds: []` est refusé, c'est le cas d'usage qui écrit la fiche AVEC son groupe.
+    const teacher = dbOf(env, 'teacherA');
+    assert.equal(await allowed(() => setDoc(doc(teacher, `${C}/students/n1`), studentCreate())), false);
     assert.equal(
-      await allowed(() => setDoc(doc(dbOf(env, 'teacherA'), `${C}/students/n1`), studentCreate({ groupIds: ['g1'] }))),
+      await allowed(() => setDoc(doc(teacher, `${C}/students/n1`), studentCreate({ groupIds: ['g1'] }))),
       true,
       'avec un de ses groupes, oui',
     );
+  });
+
+  // Ce que le dépôt Dart envoie pour l'inscription d'un élève par un enseignant (UnitOfWork) : la
+  // fiche fusionnée (`groupIds` par union) et l'appartenance, dans un seul lot, une écriture par document.
+  const enroll = (db, { student = 'n1', group = 'g1', groups = ['g1'] } = {}) => {
+    const batch = writeBatch(db);
+    batch.set(
+      doc(db, `${C}/students/${student}`),
+      { ...studentUpdate, groupIds: arrayUnion(...groups), createdAt: serverTimestamp() },
+      { merge: true },
+    );
+    batch.set(doc(db, membershipId(group, student, FROM)), membershipDoc(group, student));
+    return allowed(() => batch.commit());
+  };
+
+  test('un enseignant inscrit un NOUVEL élève dans SON groupe : fiche et appartenance, un lot', async () => {
+    assert.equal(await enroll(dbOf(env, 'teacherA')), true);
+    const dir = dbOf(env, 'director');
+    assert.deepEqual((await getDoc(doc(dir, `${C}/students/n1`))).data().groupIds, ['g1']);
+    assert.equal((await getDoc(doc(dir, membershipId('g1', 'n1', FROM)))).exists(), true);
+  });
+
+  test('l\'appartenance d\'un enseignant n\'est acceptée que pour une fiche NEUVE de son groupe', async () => {
+    const teacher = dbOf(env, 'teacherA');
+    // Élève déjà inscrit (s1, g1) : l'enseignant n'y ajoute pas d'appartenance (ni ne rouvre une période).
+    assert.equal(
+      await allowed(() => setDoc(doc(teacher, membershipId('g1', 's1', '2026-10-01T00:00:00.000')), membershipDoc('g1', 's1'))),
+      false,
+      'fiche existante',
+    );
+    // Sans la fiche dans le même lot : pas d'appartenance orpheline.
+    assert.equal(
+      await allowed(() => setDoc(doc(teacher, membershipId('g1', 'n1', FROM)), membershipDoc('g1', 'n1'))),
+      false,
+      'fiche absente du lot',
+    );
+    // Groupe d'un autre enseignant : refusé même avec une fiche neuve.
+    assert.equal(await enroll(teacher, { group: 'g2', groups: ['g1'] }), false, 'appartenance à g2');
+    assert.equal(await enroll(teacher, { group: 'g2', groups: ['g2'] }), false, 'fiche et appartenance à g2');
+    assert.equal(await enroll(dbOf(env, 'teacherB')), false, 'g1 pour l\'enseignant de g2');
+    // Fiche neuve d'un groupe, appartenance d'une autre fiche (existante).
+    const batch = writeBatch(teacher);
+    batch.set(doc(teacher, `${C}/students/n1`), studentCreate({ groupIds: ['g1'] }));
+    batch.set(doc(teacher, membershipId('g1', 's1', '2026-10-01T00:00:00.000')), membershipDoc('g1', 's1'));
+    assert.equal(await allowed(() => batch.commit()), false, 'appartenance d\'une fiche existante dans un lot qui en crée une autre');
+    // Aucun reste des essais refusés.
+    const dir = dbOf(env, 'director');
+    assert.equal((await getDoc(doc(dir, `${C}/students/n1`))).exists(), false);
+  });
+
+  // Resserrage (revue FB4b) : l'appartenance d'un enseignant est liée à son contenu. Identifiant
+  // `groupId_studentId_from`, `from` égal au début de l'historique de la fiche (le jour d'entrée),
+  // période ouverte, saison du groupe : UNE appartenance par (fiche, groupe), pas d'autre période.
+  const enrollWith = (db, memberships, { student = 'n1', groups = ['g1'] } = {}) => {
+    const batch = writeBatch(db);
+    batch.set(
+      doc(db, `${C}/students/${student}`),
+      { ...studentUpdate, groupIds: arrayUnion(...groups), createdAt: serverTimestamp() },
+      { merge: true },
+    );
+    for (const [id, data] of memberships) batch.set(doc(db, `${C}/memberships/${id}`), data);
+    return allowed(() => batch.commit());
+  };
+
+  test('l\'appartenance d\'un enseignant est liée à son contenu : identifiant, jour d\'entrée, saison, période ouverte', async () => {
+    const teacher = dbOf(env, 'teacherA');
+    const id = `g1_n1_${FROM}`;
+    const ok = membershipDoc('g1', 'n1');
+    assert.equal(await enrollWith(teacher, [[id, ok]]), true, 'référence : la forme de l\'application');
+    await seed(env);
+    assert.equal(await enrollWith(teacher, [['n1_whatever', ok]]), false, 'identifiant sans rapport avec le contenu');
+    assert.equal(await enrollWith(teacher, [[`g1_n1_${FROM}x`, ok]]), false, 'identifiant qui diffère du from');
+    assert.equal(await enrollWith(teacher, [[id, membershipDoc('g1', 'n1', { seasonId: 'se-inventee' })]]), false, 'saison libre');
+    assert.equal(await enrollWith(teacher, [[id, membershipDoc('g1', 'n1', { to: '2026-12-01T00:00:00.000' })]]), false, 'période fermée');
+    assert.equal(await enrollWith(teacher, [[id, membershipDoc('g1', 'n1', { from: '2020-01-01T00:00:00.000' })]]), false, 'jour d\'entrée inventé');
+    const early = '2020-01-01T00:00:00.000';
+    assert.equal(
+      await enrollWith(teacher, [[id, ok], [`g1_n1_${early}`, membershipDoc('g1', 'n1', { from: early })]]),
+      false,
+      'une seconde période arbitraire pour la même fiche neuve',
+    );
+    assert.equal(
+      await enrollWith(teacher, [[id, { ...ok, from: Timestamp.fromMillis(0) }]]),
+      false,
+      'from horodatage : l\'identifiant ne peut pas le reproduire',
+    );
+    const dir = dbOf(env, 'director');
+    assert.equal((await getDoc(doc(dir, `${C}/students/n1`))).exists(), false, 'aucun reste des essais refusés');
+    assert.equal((await getDocs(query(collection(dir, `${C}/memberships`), where('studentId', '==', 'n1')))).size, 0);
+  });
+
+  test('ATTAQUE : une appartenance seule, pour une fiche DÉJÀ existante qui satisfait tout le reste, est refusée par la seule condition « fiche absente avant le lot »', async () => {
+    // La fiche x1 existe (groupe g1, historique commençant à FROM) mais n'a aucune appartenance :
+    // identifiant, période ouverte, saison, groupe de la fiche et jour d'entrée sont ceux d'une
+    // inscription légitime. Seule `!exists(fiche)` distingue ce cas d'une fiche neuve du même lot.
+    await put(env, `${C}/students/x1`, {
+      firstName: 'Léa',
+      audienceHistory: [{ audience: 'children', effectiveFrom: FROM }],
+      groupIds: ['g1'],
+      createdAt: Timestamp.fromMillis(1000),
+    });
+    const teacher = dbOf(env, 'teacherA');
+    assert.equal(
+      await allowed(() => setDoc(doc(teacher, membershipId('g1', 'x1', FROM)), membershipDoc('g1', 'x1'))),
+      false,
+      'fiche existante, tout le reste conforme',
+    );
+    assert.equal(
+      await allowed(() => setDoc(doc(dbOf(env, 'director'), membershipId('g1', 'x1', FROM)), membershipDoc('g1', 'x1'))),
+      true,
+      'le directeur le peut (contrôle : la forme est valable)',
+    );
+  });
+
+  test('les autres rôles et les modifications d\'appartenance restent refusés', async () => {
+    for (const actor of ['guardian', 'student', 'directorOther', 'invited']) {
+      assert.equal(await enroll(dbOf(env, actor)), false, actor);
+    }
+    assert.equal(await enroll(dbOf(env, 'director')), true, 'le directeur');
+    const teacher = dbOf(env, 'teacherA');
+    assert.equal(await allowed(() => updateDoc(doc(teacher, membershipId('g1', 'n1', FROM)), { to: '2026-12-01T00:00:00.000' })), false, 'mise à jour');
+    assert.equal(await allowed(() => deleteDoc(doc(teacher, membershipId('g1', 'n1', FROM)))), false, 'suppression');
+  });
+
+  test('un lot dont une écriture est refusée n\'écrit rien (atomicité réelle du lot)', async () => {
+    const teacher = dbOf(env, 'teacherA');
+    const batch = writeBatch(teacher);
+    batch.set(doc(teacher, `${C}/students/n1`), studentCreate({ groupIds: ['g1'] }));
+    batch.set(doc(teacher, membershipId('g2', 'n1', FROM)), membershipDoc('g2', 'n1'));
+    assert.equal(await allowed(() => batch.commit()), false);
+    assert.equal((await getDoc(doc(dbOf(env, 'director'), `${C}/students/n1`))).exists(), false);
   });
 
   test('suppression physique : le directeur seulement', async () => {

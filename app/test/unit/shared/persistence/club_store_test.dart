@@ -2,7 +2,6 @@ import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/club_paths.dart';
-import 'package:billard_cfa/shared/persistence/club_store.dart';
 import 'package:billard_cfa/shared/persistence/document_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 

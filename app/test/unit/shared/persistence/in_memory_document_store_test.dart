@@ -28,6 +28,31 @@ void main() {
     expect(second.segments, ['clubs', 'c1']);
   });
 
+  test(
+    'createIfAbsent creates once and leaves an existing document alone',
+    () async {
+      expect(
+        await store.createIfAbsent('clubs/a', {'n': 1, 't': serverTimestamp}),
+        isTrue,
+      );
+      expect(await store.createIfAbsent('clubs/a', {'n': 2}), isFalse);
+
+      expect(store.read('clubs/a'), {'n': 1, 't': now});
+    },
+  );
+
+  test(
+    'createIfAbsent fails like any operation when the store fails',
+    () async {
+      store.failing = StoreFailureCode.unavailable;
+
+      await expectLater(
+        store.createIfAbsent('clubs/a', {'n': 1}),
+        throwsA(isA<StoreFailure>()),
+      );
+    },
+  );
+
   test('a missing document is null', () async {
     expect(await store.get('clubs/none'), isNull);
   });

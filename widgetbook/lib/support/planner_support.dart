@@ -41,13 +41,13 @@ final plannerGroups = [
 /// (déjà garnis de [sessions] et de [plannerGroups]) et au catalogue de
 /// séances [options].
 ///
-/// [preselected] et [audience] reproduisent le lien profond du détail d'une
+/// [preselected] et [group] reproduisent le lien profond du détail d'une
 /// séance.
 SessionPlannerBloc buildPlannerBloc(
   ListSheetOptions options, {
   List<Session> sessions = const [],
   SheetId? preselected,
-  Audience audience = Audience.children,
+  GroupId? group,
 }) {
   final repository = InMemorySessionRepository();
   final groups = InMemoryGroupRepository();
@@ -80,7 +80,7 @@ SessionPlannerBloc buildPlannerBloc(
     SessionPlannerEvent.started(
       today: plannerToday,
       sheetId: preselected,
-      audience: audience,
+      groupId: group,
     ),
   );
 }

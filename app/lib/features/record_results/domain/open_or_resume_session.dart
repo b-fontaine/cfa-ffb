@@ -11,8 +11,9 @@ import 'package:injectable/injectable.dart';
 
 /// Cas d'usage : ouvrir la séance d'un groupe à une date, ou la reprendre si
 /// elle existe déjà ce jour-là **pour la même séance du catalogue** (les
-/// passages déjà saisis sont conservés, les présents sont mis à jour). Évite
-/// les séances en double quand l'animateur revient sur la saisie, mais une
+/// passages déjà saisis sont conservés, les présents sont **remplacés** par
+/// ceux de l'appel). Évite les séances en double quand l'animateur
+/// revient sur la saisie, mais une
 /// autre séance du catalogue le même jour ouvre sa propre saisie sans toucher
 /// à la première (règle `recordFor`, ADR 0016).
 ///
@@ -57,6 +58,7 @@ class OpenOrResumeSession {
       );
     }
     return await runGuarded(() async {
+      requirePresentFit(present);
       final group = await _groups.byId(groupId);
       if (group == null) throw NotFound('group', groupId.value);
       if (!present.every((student) => group.isMemberOn(student, date))) {
@@ -67,14 +69,14 @@ class OpenOrResumeSession {
         main: mainBlockId ?? existing.mainBlockId,
         recall: recallBlockId ?? existing.recallBlockId,
       );
-      final resumed = existing.copyWith(
-        present: present,
-        mainBlockId: main,
-        recallBlockId: recall,
-        sheetId: sheet,
+      return await _sessions.resume(
+        existing.copyWith(
+          present: present,
+          mainBlockId: main,
+          recallBlockId: recall,
+          sheetId: sheet,
+        ),
       );
-      await _sessions.save(resumed);
-      return resumed;
     });
   }
 }

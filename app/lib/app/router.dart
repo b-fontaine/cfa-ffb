@@ -207,14 +207,13 @@ abstract final class AppRoutes {
   static String _dateQuery(DateTime date) =>
       date.toIso8601String().substring(0, 10);
 
-  /// Planificateur, séance du catalogue (et public) présélectionnés.
+  /// Planificateur, séance du catalogue présélectionnée (le public est celui
+  /// du groupe, que l'animateur choisit : décision du 2026-10-18).
   /// Sans [id] (notion sans séance du catalogue), le planificateur s'ouvre
   /// sans séance présélectionnée.
   /// [group] présélectionne le groupe choisi dans le catalogue.
-  static String plan(SheetId? id, {Audience? audience, GroupId? group}) => _url(
-    planner,
-    {'sheet': ?id?.value, 'audience': ?audience?.name, 'group': ?group?.value},
-  );
+  static String plan(SheetId? id, {GroupId? group}) =>
+      _url(planner, {'sheet': ?id?.value, 'group': ?group?.value});
 
   /// L'assistant de clôture d'une saison (hors du cadre de navigation).
   static String closeSeason(SeasonId id) =>
@@ -783,8 +782,6 @@ GoRouter buildRouter({
                     today: getIt<Clock>().today(),
                     sheetId: SheetId.tryParse(query['sheet']),
                     groupId: _groupParam(query['group']),
-                    audience:
-                        _audienceParam(query['audience']) ?? Audience.children,
                   ),
                 ),
               child: SessionPlannerPage(
@@ -1010,8 +1007,8 @@ GoRouter buildRouter({
                 onOpenRecord: (id) => context.go(AppRoutes.recordSession(id)),
                 onEnterResults: (id) => context.go(AppRoutes.recordSession(id)),
                 onOpenStudent: (id) => context.go(AppRoutes.student(id)),
-                onOpenPlanner: (sheet, audience) =>
-                    context.go(AppRoutes.plan(sheet, audience: audience)),
+                onOpenPlanner: (sheet, group) =>
+                    context.go(AppRoutes.plan(sheet, group: group)),
                 onOpenPlanned: () => context.go(AppRoutes.planner),
               ),
             );
@@ -1069,8 +1066,8 @@ GoRouter buildRouter({
                   mode: RunMode.lead,
                 ),
               ),
-              onPlan: (id, audience) =>
-                  context.go(AppRoutes.plan(id, audience: audience)),
+              onPlan: (id, group) =>
+                  context.go(AppRoutes.plan(id, group: group)),
               onAddStudents: () => context.go(AppRoutes.newStudent),
             ),
           ),
@@ -1160,9 +1157,7 @@ GoRouter buildRouter({
                   SheetOrigin.catalogue => AppRoutes.catalogueFor(group),
                 }),
                 onHome: () => context.go(AppRoutes.home),
-                onPlan: (audience) => context.go(
-                  AppRoutes.plan(id, audience: audience, group: group),
-                ),
+                onPlan: () => context.go(AppRoutes.plan(id, group: group)),
                 onLaunch: (audience) => context.go(
                   AppRoutes.guide(
                     id,

@@ -5,6 +5,7 @@ import 'package:billard_cfa/features/record_results/domain/resolve_sheet_blocks.
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -50,6 +51,7 @@ Future<Fixture> fixture({Audience audience = Audience.children}) async {
 }
 
 void main() {
+  identityTests();
   test('opens and stores the session with the group audience', () async {
     final f = await fixture(audience: Audience.adults);
 
@@ -213,5 +215,87 @@ void main() {
 
     expect(codeOf(result), InvariantCode.seasonClosed);
     expect(await world.sessions.all(), isEmpty);
+  });
+}
+
+void identityTests() {
+  // ADR 0016 amendé (ADR 0024, décision 18) : l'identité d'une saisie liée à
+  // une séance du catalogue est déterministe, celle d'une saisie libre non.
+  group('identité de la saisie', () {
+    test('a sheet-linked record has the deterministic id', () async {
+      final f = await fixture();
+
+      final record = ok(await f.open(sheet: 'posture-1'));
+
+      expect(record.id, const SessionId('g1_20261005_posture-1'));
+    });
+
+    test(
+      'a second opening of the same sitting keeps tags and present',
+      () async {
+        final f = await fixture();
+        final first = ok(await f.open(sheet: 'posture-1', present: {'s1'}));
+        await f.world.sessions.save(first.copyWith(tags: {SessionTag.toRedo}));
+
+        final second = ok(await f.open(sheet: 'posture-1', present: {'s2'}));
+
+        expect(second.id, first.id);
+        expect(second.tags, {SessionTag.toRedo});
+        expect(second.present, {const StudentId('s1'), const StudentId('s2')});
+        expect(await f.world.sessions.byId(first.id), second);
+      },
+    );
+
+    test('two simultaneous openings of one sitting converge', () async {
+      final f = await fixture();
+
+      final results = await Future.wait([
+        f.open(sheet: 'posture-1', present: {'s1'}),
+        f.open(sheet: 'posture-1', present: {'s2'}),
+      ]);
+
+      expect(ok(results[0]).id, ok(results[1]).id);
+      final stored = await f.world.sessions.forGroup(const GroupId('g1'));
+      expect(stored, hasLength(1));
+      expect(stored.single.present, {
+        const StudentId('s1'),
+        const StudentId('s2'),
+      });
+    });
+
+    test('refuses more present students than the rules accept', () async {
+      final f = await fixture();
+
+      final result = await f.open(
+        present: {for (var i = 0; i < 61; i++) 's$i'},
+      );
+
+      expect(codeOf(result), InvariantCode.tooManyPresent);
+      expect(await f.world.sessions.all(), isEmpty);
+    });
+
+    test('a free record keeps a generated id', () async {
+      final f = await fixture();
+
+      final record = ok(await f.open());
+
+      expect(record.id, const SessionId('id-1'));
+    });
+
+    test(
+      'two devices opening the same sitting write the same record',
+      () async {
+        final f = await fixture();
+
+        final first = ok(await f.open(sheet: 'posture-1'));
+        final second = ok(await f.open(sheet: 'posture-1', present: {'s2'}));
+
+        expect(second.id, first.id);
+        expect(
+          await f.world.sessions.forGroup(const GroupId('g1')),
+          hasLength(1),
+        );
+      },
+    );
   });
 }

@@ -83,7 +83,7 @@ Le plan **Spark** (gratuit) impose : pas de Cloud Functions (donc ni claims pers
 | `clubs/{c}/invitations/{code}` | — | `get` ; crée pour ses groupes (élève, parent) | `get` ; crée, révoque | idem, partout | `get` ; **mise à jour unique** (consommée), dans le même lot que la création de son `member` |
 | `clubs/{c}/seasons/{s}` | lecture | lecture | lecture, écriture, clôture | idem | — |
 | `clubs/{c}/groups/{g}` (`seasonId`, public, `teacherUids`) | lecture des siens | lecture des siens | lecture, écriture | idem | — |
-| `clubs/{c}/memberships/{studentId_from}` (appartenance datée) | — | lecture de ses groupes | lecture, écriture | idem | — |
+| `clubs/{c}/memberships/{studentId_from}` (appartenance datée) | — | lecture de ses groupes ; **création** avec une fiche neuve de son groupe (même lot, FB4b) | lecture, écriture | idem | — |
 | `clubs/{c}/students/{id}` (prénom, initiale, public) | lecture de la fiche liée (`studentIds`) | lecture de ses groupes ; crée | lecture, écriture, effacement | idem | — |
 | `clubs/{c}/sessions/{id}` (séance planifiée) | lecture des séances de ses groupes | lecture, écriture de ses groupes | club | idem | — |
 | `clubs/{c}/records/{id}` (saisie, assiduité, étiquettes) | **aucune lecture** (expose les camarades présents) | lecture, écriture de ses groupes | club | idem | — |
@@ -114,8 +114,12 @@ figés par les tests de règles de FB3, pas par ce tableau. Le catalogue, les fi
     d'être stocké et renuméroté. La correction en place d'un passage reste possible ; la suppression ne renumérote plus rien.
     `ExerciseAttempt` et `ExerciseResult.derive` changent ; ce changement précède FB4.
 18. **ADR 0016 amendé** : une saisie liée à une séance du catalogue reçoit un **identifiant déterministe** (groupe, jour, séance du
-    catalogue) : deux appareils qui la créent écrivent le même document. Une saisie libre garde un UUID. Le transfert silencieux d'une
-    saisie vers une autre séance du catalogue devient explicite.
+    catalogue) : deux appareils qui la créent écrivent le même document. Une saisie libre garde un UUID. **Amendée le 2026-10-18
+    (décision de l'utilisateur)** : le transfert d'une saisie libre vers une séance du catalogue **reste la confirmation actuelle de
+    l'écran** (l'animateur confirme le rattachement) et la saisie **garde son UUID** (elle ne prend pas l'identifiant déterministe).
+    **Limite assumée** : si deux appareils ouvrent ensuite la même séance du catalogue, l'un ouvrant le document déterministe et l'autre
+    reprenant la saisie transférée, un **doublon** est possible ; il est rare (un transfert, puis une ouverture concurrente d'un autre
+    appareil le même jour) et corrigeable à la main (suppression de la saisie en trop).
 19. **ADR 0019 amendé** : `UnitOfWork` devient un **`WriteBatch`** pour les petits cas ; la clôture de saison, la purge et l'import sont
     des **lots idempotents reprenables** (500 écritures par lot, marqueur de reprise, reprise après coupure). Les garanties « tout ou
     rien » et « aucune trace nominative » de l'ADR 0019 deviennent : atomicité **par lot**, et **marqueur `erasing` transitoire** sur la
@@ -358,3 +362,49 @@ Première partie de FB4 (détail : [repositories-firestore-plan.md](../repositor
 - **Constat pour la partie 3** : `RulesStore` est chargé au démarrage depuis `SettingsRepository` ; avec Firestore, la lecture a lieu avant l'ouverture de session
   (club absent, accès refusé) : il devra être rechargé à l'activation d'un club.
 
+## Notes de réalisation du lot FB4b (2026-10-18, dont deux décisions de l'utilisateur : décision 18 amendée, groupe obligatoire)
+
+Deuxième partie de FB4 (détail : [repositories-firestore-plan.md](../repositories-firestore-plan.md)). Écarts et précisions (les deux décisions de l'utilisateur du 2026-10-18 sont celles marquées « tranché » ou « décision de l'utilisateur » : l'identité d'une saisie, décision 18 amendée, et le groupe obligatoire d'une séance planifiée, amendement de l'[ADR 0007](0007-lien-seance-planifiee-saisie-catalogue.md)) :
+
+- **`UnitOfWork` (décision 19)** : `FirestoreUnitOfWork` retient les écritures des dépôts Firestore faites pendant `run` (zone) et les envoie en **un seul `WriteBatch`** (500 au plus ;
+  `StoreFailure(batchTooLarge)` explicite avant toute écriture, aussi dans le stock en mémoire). Écritures d'un même document fusionnées ; lecture de ses propres écritures pour `get` seulement. **Écart corrigé dans le texte** : `CloseSeason` appelle encore `UnitOfWork.run` ; avec `DATA_BACKEND=firestore`, au-delà de 500 écritures (club réel : appartenances, fiches, groupes reconduits) elle échoue
+  explicitement (`batchTooLarge`, aucune écriture, testé), et les listes n'y voient pas les écritures en attente. **`ImportBackup` n'est PAS supporté avec `DATA_BACKEND=firestore` avant FB7** : il écrit les
+  saisies par `SessionRecordRepository.save`, qui crée le document par une transaction (`createIfAbsent`), impossible dans le lot d'une unité de travail ; l'import (dès qu'il contient une saisie, c'est-à-dire
+  toute sauvegarde d'un club réel) échoue donc par un `ServiceFailure` `unsupported`, message localisé fr/en (« l'importation d'une sauvegarde viendra plus tard »), **sans rien écrire** (lot annulé, drift
+  annulé), et jamais par une exception hors `Failure`. Prouvé par `backupImportUnsupportedContract` (`firestore_contract_test.dart`, dépôts Firestore + drift + `CompositeUnitOfWork`). Les lots reprenables avec
+  marqueur de la décision 19 (FB7, FB8) remplaceront la clôture et l'import : **bloquant de bascule**, inscrit pour la partie 3.
+- **Hors ligne (décision 1, C4)** : le SDK n'acquitte `batch.commit()` qu'à la réponse du serveur ; hors ligne, l'attendre dans la transaction drift de `CompositeUnitOfWork` la laisserait ouverte et
+  bloquerait les écritures drift. **Stratégie retenue** (à réaliser avant la bascule, bloquant) : valider le lot localement (le SDK l'applique au cache dès l'appel), ne pas attendre l'accusé du serveur
+  dans une transaction locale, et suivre l'envoi à part pour la pastille « Envoi en attente » (C4). Tant que `CompositeUnitOfWork` existe (drift partiel), le réglage Firestore reste réservé au
+  développement et aux tests. Les opérations longues seront des lots reprenables de FB7 et FB8. Tant que des dépôts restent sur drift, `CompositeUnitOfWork` enveloppe le lot dans la
+  transaction drift (le lot Firestore part avant la validation de drift ; si une panne de l'appareil survient entre les deux, l'écart est assumé).
+- **Création d'un élève par un enseignant (tableau A5, ligne `students` « crée » ; ligne `memberships`)** : l'enseignant écrit fiche (avec un de **ses** groupes) et appartenance dans le **même lot**.
+  Règle des fiches inchangée ; règle des appartenances : création par un enseignant **seulement** si la fiche n'existe pas avant le lot et si la fiche du lot porte ce groupe
+  (`!exists` + `getAfter`) ; mise à jour et suppression au gestionnaire. Le tableau A5 (« `memberships` : écriture directeur, admin ») est précisé en ce sens. Les documents inchangés (saison, groupe)
+  ne sont pas réécrits, l'enseignant n'ayant pas le droit de les écrire.
+- **Identifiant d'une saisie (décision 18, amendée)** : `groupe_AAAAMMJJ_séance` (domaine, `sittingId`), pour les saisies liées à une séance du catalogue ; UUID pour les saisies libres. Le transfert d'une
+  saisie libre vers une séance du catalogue (`OpenOrResumeSession`) reste la confirmation actuelle de l'écran et **la saisie garde son UUID** ; un doublon entre deux appareils est possible mais rare et assumé
+  (décision 18 amendée). Plus d'écart « à décider ». **Bornes** : l'identifiant d'une saisie est cité par les passages (`sessionId`, borné à 64 par les règles) : `sittingId` lève `sessionReferenceTooLong`
+  (fr/en) au-delà de `maxSessionReferenceLength` (64), comparée à `firestore.rules` par `rule_bounds_test`.
+- **Ouverture concurrente d'une saisie (relecture FB4b)** : `createdAt` est posé par la **création** seulement (règle : exigé à la création et égal à `request.time`, **interdit dans le diff d'une
+  mise à jour**) ; la création est une transaction `createIfAbsent` (un lot ne sait pas « créer »), puis, si le document existe, `open` réunit les présents par **`ArrayUnion`** seul.
+  Deux appareils qui ouvrent la même saisie réussissent donc tous deux, sans qu'aucun réécrive la date. Si la réunion dépasse 60 présents (40 + 30), les règles refusent sans dire pourquoi : le dépôt relit la
+  saisie et lève `InvariantViolation(tooManyPresent)` (message avec le maximum). **`resume`** (l'animateur revient sur sa saisie) **remplace** les présents, comme avant FB4b, en drift comme en Firestore : décocher
+  un élève coché par erreur reste possible ; l'union est réservée à l'ouverture concurrente (création absente des deux côtés). Cas limite assumé : un appareil dont la liste locale est périmée appelle `open`
+  (et non `resume`) pour une saisie qui existe déjà et en réunit les présents au lieu de les remplacer. **Lecture d'un document absent** (`records`, `sessions` ; sans elle `resource.data` fait échouer la lecture
+  avant création) : réservée à un gestionnaire, ou à un enseignant pour un identifiant **aléatoire** (sans `_` : rien à deviner) ou dont le groupe (avant le premier `_`) est l'un des siens ; sans cela
+  l'identifiant déterministe `groupe_AAAAMMJJ_séance` serait un oracle d'existence (« g1 a-t-il tenu une séance ce jour-là ? ») ; fonction `mayProbeAbsent`, test d'attaque et mutations dans `testing.md`. Le faux Firestore n'isole pas ses transactions : l'isolation est
+  prouvée contre l'émulateur (`planning.test.mjs`). Hors ligne, une transaction échoue : à traiter avec la stratégie hors ligne de la partie 3.
+- **Appartenance créée par un enseignant (resserrage)** : liée à son contenu : identifiant `groupId_studentId_from`, `from` = début de l'historique de la fiche neuve (une seule période par fiche et par
+  groupe), période ouverte, `seasonId` = celui du groupe (`get`). Limite assumée : un enseignant du groupe peut recréer une fiche sous le même identifiant après sa suppression par le directeur (les
+  données gardées sous cet identifiant restent) ; non corrigé, faute de preuve simple.
+- **Collections** : `records` (pas `session_records`), `archives` (`{saison}_{public}` et `{saison}_{public}_{bloc}_{n}`, un document d'exercice se reconnaît à `blockId`). Les saisies portent `presentStudentIds`
+  (60 au plus) et leurs étiquettes en codes de la liste fermée ; **parent et élève ne lisent aucune saisie** (les listes de leurs dépôts sont vides, aucune requête refusée).
+- **Séance planifiée : groupe obligatoire (décision de l'utilisateur, 2026-10-18)** : l'invariant est dans le **domaine** (`PlanSession` lève `sessionNeedsGroup`, localisé fr/en) ; l'écran de
+  planification exige un groupe (plus d'option « aucun groupe », ni de choix du public : c'est celui du groupe ; sans groupe dans le club, consigne de le créer). Le dépôt Firestore ne porte
+  plus de règle métier : il garde une garde défensive (`StoreFailure`, jamais affichée). Les séances **sans groupe déjà présentes dans drift restent lisibles** (aucune exception à la lecture) :
+  **reprise à faire au FB7** (migration : les rattacher à un groupe, ou les écarter, avant leur transfert vers Firestore).
+- **Saison courante** : reste dans le document du club, écrite par l'administrateur (FB3) ; `SeasonRepository` ne la touche pas.
+- **Suppression physique** (décision 15) des saisons, séances planifiées, saisies et archives : `idsEverPresent` et `idsOfGroups` ne rendent que ce qui existe.
+- **Bornes** : libellé de saison 80 (constructeur), nom de groupe 80 et 60 présents (vérifiés à la saisie, pas à la construction : les données déjà enregistrées restent lisibles), titre de séance 120 : `InvariantViolation` fr/en, `rule_bounds_test` les compare aux règles. Aucun index nouveau.
+- **Test** : `fake_cloud_firestore` n'est **pas atomique** pour un lot dont une écriture échoue (les précédentes restent) ; l'atomicité du vrai lot est prouvée contre l'émulateur.

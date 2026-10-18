@@ -97,6 +97,16 @@ void main() {
       expect(codeOf(result), InvariantCode.blankName);
     });
 
+    test('refuses a name longer than the rules accept', () async {
+      final result = await create(
+        seasonId: season,
+        name: 'a' * 81,
+        audience: Audience.children,
+      );
+
+      expect(codeOf(result), InvariantCode.nameTooLong);
+    });
+
     test('refuses an unknown season', () async {
       final result = await create(
         seasonId: const SeasonId('ghost'),

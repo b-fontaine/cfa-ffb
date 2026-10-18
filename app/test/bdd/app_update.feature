@@ -44,14 +44,16 @@ Feature: New version banner
     Then the new version of the app was activated {1} times
 
   Scenario: A banner appearing during a data entry keeps what was typed
-    Given the app is running
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
     When I tap {'Plan a session'} text
     And I enter {'Posture basics'} into {0} input field
+    And I choose the group {'Children group'}
     And the browser installs a new version of the app
     Then I see {'A new version is available. Your saved data is kept.'} text
     And I see {'Posture basics'} text
     When I tap {'Add session'} text
-    Then I see {'Mon, Oct 12 · Children · 90 min'} text
+    Then I see {'Mon, Oct 12 · Children group · Children · 90 min'} text
 
   Scenario Outline: The banner fits a small screen
     Given the screen is {<width>} by {<height>}

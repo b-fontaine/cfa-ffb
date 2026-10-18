@@ -10,7 +10,7 @@ import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
 /// Séances données persistées dans SQLite (drift).
-@LazySingleton(as: SessionRecordRepository, env: [Environment.prod])
+@LazySingleton(env: [Environment.prod])
 class DriftSessionRecordRepository implements SessionRecordRepository {
   DriftSessionRecordRepository(this._db, this._clock);
 
@@ -65,6 +65,30 @@ class DriftSessionRecordRepository implements SessionRecordRepository {
       ]),
     );
   });
+
+  @override
+  Future<SessionRecord> open(SessionRecord candidate) =>
+      _db.transaction(() async {
+        final existing = await byId(candidate.id);
+        final stored = existing == null
+            ? candidate
+            : existing.copyWith(
+                present: {...existing.present, ...candidate.present},
+              );
+        await save(stored);
+        return stored;
+      });
+
+  @override
+  Future<SessionRecord> resume(SessionRecord record) =>
+      _db.transaction(() async {
+        final existing = await byId(record.id);
+        final stored = existing == null
+            ? record
+            : record.copyWith(present: record.present, tags: existing.tags);
+        await save(stored);
+        return stored;
+      });
 
   @override
   Future<SessionRecord?> byId(SessionId id) async {

@@ -62,6 +62,7 @@ class EnrollStudent {
     if (firstName.trim().length > maxFirstNameLength) {
       throw const InvariantViolation(InvariantCode.nameTooLong);
     }
+    if (groupName != null) requireGroupNameFits(groupName);
     final season = await _seasonOf(today);
     final since = season.startDate.isAfter(today) ? today : season.startDate;
     final student = Student.enroll(

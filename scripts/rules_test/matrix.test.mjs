@@ -467,7 +467,8 @@ const groupOwnedSuite = (name, options) => {
       test(`création dans le groupe ${g}`, () =>
         check({
           expectAllowed: writers(g),
-          run: (db) => setDoc(doc(db, `clubs/c1/${name}/nouveau`), bodyOf(g)),
+          run: (db) => setDoc(doc(db, `clubs/c1/${name}/nouveau`),
+            name === 'records' ? { ...bodyOf(g), createdAt: serverTimestamp() } : bodyOf(g)),
           reset: () => remove(env, `clubs/c1/${name}/nouveau`),
         }));
 

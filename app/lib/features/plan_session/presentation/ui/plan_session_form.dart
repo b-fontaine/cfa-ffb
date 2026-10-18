@@ -2,7 +2,6 @@ import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/session_sheet/domain/sheet_option.dart';
 import 'package:billard_cfa/features/plan_session/presentation/bloc/session_planner_bloc.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
-import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/ui/audience_labels.dart';
@@ -12,13 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Formulaire de planification : titre, séance du catalogue (facultative,
-/// groupée par technique), groupe (facultatif), public et date.
+/// groupée par technique), groupe (obligatoire, son public est celui de la
+/// séance) et date.
 ///
-/// Tout l'état vit dans le `SessionPlannerBloc` (titre, public, séance,
+/// Tout l'état vit dans le `SessionPlannerBloc` (titre, séance,
 /// groupe et date choisis) ; le widget ne garde que le contrôleur du champ,
 /// synchronisé par un écouteur. Choisir une séance du catalogue propose son
 /// titre (règle du bloc : il remplace le titre tant que l'animateur n'y a pas
-/// touché) ; choisir un groupe fixe le public (ADR 0007).
+/// touché) ; le public est celui du groupe (ADR 0007).
 class PlanSessionForm extends StatefulWidget {
   const PlanSessionForm({super.key});
 
@@ -117,7 +117,6 @@ class _PlanSessionFormState extends State<PlanSessionForm> {
     );
     final date = state.date;
     final failure = state.failure;
-    final groupChosen = state.selectedGroupValue != null;
     return MultiBlocListener(
       listeners: [
         BlocListener<SessionPlannerBloc, SessionPlannerState>(
@@ -149,24 +148,6 @@ class _PlanSessionFormState extends State<PlanSessionForm> {
           const SizedBox(height: AppSpacing.sm),
           _GroupField(state: state, onTap: () => _pickGroup(context, state)),
           const SizedBox(height: AppSpacing.sm),
-          SegmentedButton<Audience>(
-            segments: [
-              for (final audience in Audience.values)
-                ButtonSegment(
-                  value: audience,
-                  label: Text(audience.label(l10n)),
-                ),
-            ],
-            selected: {state.audience},
-            // Le public d'une séance avec groupe est celui du groupe.
-            onSelectionChanged: groupChosen
-                ? null
-                : (selection) => context.read<SessionPlannerBloc>().add(
-                    SessionPlannerEvent.audienceChanged(
-                      audience: selection.first,
-                    ),
-                  ),
-          ),
           if (date != null) ...[
             const SizedBox(height: AppSpacing.sm),
             Text(l10n.plannerDate, style: theme.textTheme.titleMedium),
@@ -208,8 +189,8 @@ class _PlanSessionFormState extends State<PlanSessionForm> {
 /// Valeur du sélecteur : une séance du catalogue ou `null` (séance libre).
 typedef _SheetChoice = ({SheetId? id});
 
-/// Valeur du sélecteur de groupe : un groupe ou `null` (sans groupe).
-typedef _GroupChoice = ({GroupId? id});
+/// Valeur du sélecteur de groupe.
+typedef _GroupChoice = ({GroupId id});
 
 /// Champ « Séance du catalogue » : affiche le choix et ouvre le sélecteur.
 class _SheetField extends StatelessWidget {
@@ -244,7 +225,7 @@ class _SheetField extends StatelessWidget {
 }
 
 /// Champ « Groupe » : affiche le groupe choisi et ouvre le sélecteur ;
-/// désactivé quand le club n'a aucun groupe.
+/// désactivé, avec la consigne de créer un groupe, quand le club n'en a aucun.
 class _GroupField extends StatelessWidget {
   const _GroupField({required this.state, required this.onTap});
 
@@ -256,13 +237,14 @@ class _GroupField extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final selected = state.selectedGroupValue;
     final value = selected == null
-        ? l10n.plannerGroupNone
+        ? l10n.plannerGroupToChoose
         : l10n.plannerGroupOption(selected.name, selected.audience.label(l10n));
     return _PickerField(
       fieldKey: const ValueKey('planner-group-field'),
       label: l10n.plannerGroupField,
       value: value,
       enabled: state.groups.isNotEmpty,
+      errorText: state.groups.isEmpty ? l10n.plannerNoGroup : null,
       onTap: onTap,
     );
   }
@@ -383,8 +365,7 @@ class _SheetPicker extends StatelessWidget {
   }
 }
 
-/// Feuille de choix du groupe : « aucun groupe » puis les groupes de la
-/// saison (« Jeunes · Enfants »).
+/// Feuille de choix du groupe : ceux de la saison (« Jeunes · Enfants »).
 class _GroupPicker extends StatelessWidget {
   const _GroupPicker({required this.groups, required this.selected});
 
@@ -397,12 +378,6 @@ class _GroupPicker extends StatelessWidget {
     return _PickerSheet(
       title: l10n.plannerGroupPickerTitle,
       children: [
-        ListTile(
-          key: const ValueKey('group-option:none'),
-          selected: selected == null,
-          title: Text(l10n.plannerGroupNone),
-          onTap: () => Navigator.of(context).pop<_GroupChoice>((id: null)),
-        ),
         for (final group in groups)
           ListTile(
             key: ValueKey('group-option:${group.id.value}'),

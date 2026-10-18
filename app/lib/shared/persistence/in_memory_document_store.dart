@@ -1,4 +1,5 @@
 import 'package:billard_cfa/shared/persistence/document_store.dart';
+import 'package:billard_cfa/shared/persistence/write_values.dart';
 import 'package:injectable/injectable.dart';
 
 /// Stock de documents en mémoire (tests, scénarios BDD) : même contrat que
@@ -120,9 +121,19 @@ class InMemoryDocumentStore implements DocumentStore {
   }
 
   @override
+  Future<bool> createIfAbsent(String path, Fields fields) async {
+    commits++;
+    _check();
+    if (_documents.containsKey(path)) return false;
+    _documents[path] = _resolve(_copy(fields), const {});
+    return true;
+  }
+
+  @override
   Future<void> commit(List<WriteOp> operations) async {
     commits++;
     _check();
+    checkBatchSize(operations);
     // Tout ou rien : on valide d'abord, on applique ensuite.
     final staged = {..._documents};
     for (final operation in operations) {
@@ -147,33 +158,8 @@ class InMemoryDocumentStore implements DocumentStore {
       ..addAll(staged);
   }
 
-  Fields _resolve(Fields fields, Fields current) => {
-    for (final entry in fields.entries)
-      entry.key: switch (entry.value) {
-        ServerTimestamp() => serverNow(),
-        ArrayUnion(:final values) => [
-          ..._listOf(current[entry.key]),
-          for (final value in values)
-            if (!_listOf(current[entry.key]).contains(value)) value,
-        ],
-        ArrayRemove(:final values) => [
-          for (final item in _listOf(current[entry.key]))
-            if (!values.contains(item)) item,
-        ],
-        final other => other,
-      },
-  };
+  Fields _resolve(Fields fields, Fields current) =>
+      resolveWriteValues(fields, current, serverNow);
 
-  static List<Object?> _listOf(Object? value) =>
-      value is List<Object?> ? value : const [];
-
-  static Fields _copy(Fields fields) => {
-    for (final entry in fields.entries) entry.key: _copyValue(entry.value),
-  };
-
-  static Object? _copyValue(Object? value) => switch (value) {
-    final List<Object?> list => [for (final item in list) _copyValue(item)],
-    final Map<String, Object?> map => _copy(map),
-    _ => value,
-  };
+  static Fields _copy(Fields fields) => copyFields(fields);
 }

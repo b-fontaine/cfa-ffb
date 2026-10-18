@@ -1,6 +1,5 @@
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/features/plan_session/domain/plan_session.dart';
-import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -20,7 +19,6 @@ Future<void> laPlanificationPourLeGroupeLeEstRefuseeAvecLeMotif(
     await getIt<PlanSession>()(
       title: 'Posture',
       date: TrackingWorld.date(date),
-      audience: Audience.children,
       groupId: (await GroupOps.groupNamed(group)).id,
     );
     fail('la planification aurait dû être refusée');

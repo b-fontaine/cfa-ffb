@@ -7,7 +7,27 @@ import 'package:billard_cfa/shared/lib/session_tag.dart';
 /// Même contrat que `StudentRepository` : ordre de première sauvegarde pour
 /// [all], remplacement par id, suppression logique.
 abstract interface class SessionRecordRepository {
+  /// Écrit la séance **telle quelle** : les présents et les blocs remplacent
+  /// ceux d'une saisie existante (import d'une sauvegarde).
   Future<void> save(SessionRecord session);
+
+  /// Ouvre la saisie [candidate] : la **crée** si son identifiant est libre,
+  /// sinon la **reprend** sans rien perdre (ses blocs, sa séance du catalogue
+  /// et ses étiquettes restent, les présents de [candidate] s'y **ajoutent**).
+  /// Deux appareils qui ouvrent en même temps la même saisie (identifiant
+  /// déterministe, ADR 0024 décision 18) réussissent tous deux et convergent :
+  /// la création est atomique, la réunion des présents ne relit ni ne réécrit
+  /// la liste. Rend la saisie telle qu'enregistrée.
+  Future<SessionRecord> open(SessionRecord candidate);
+
+  /// Reprend une saisie existante (l'animateur revient sur sa saisie) : blocs
+  /// et séance du catalogue de [record] remplacent les siens, ses présents
+  /// **remplacent** ceux enregistrés (un élève coché par erreur se décoche),
+  /// les étiquettes ne changent pas. Crée la saisie si elle n'existe plus.
+  /// Rend la
+  /// saisie telle qu'enregistrée. Seule l'ouverture concurrente ([open]) réunit
+  /// les présents.
+  Future<SessionRecord> resume(SessionRecord record);
 
   Future<SessionRecord?> byId(SessionId id);
 

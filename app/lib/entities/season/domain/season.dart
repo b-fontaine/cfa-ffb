@@ -1,4 +1,5 @@
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/field_limits.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -21,6 +22,9 @@ abstract class Season with _$Season {
   Season._() {
     if (label.trim().isEmpty) {
       throw const InvariantViolation(InvariantCode.blankName);
+    }
+    if (label.length > maxSeasonLabelLength) {
+      throw const InvariantViolation(InvariantCode.nameTooLong);
     }
     if (!endDate.isAfter(startDate)) {
       throw const InvariantViolation(InvariantCode.invalidPeriod);

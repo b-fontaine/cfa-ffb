@@ -237,7 +237,7 @@ Widget buildSheetDetailPageUseCase(BuildContext context) {
         ),
         onBack: () {},
         onHome: () {},
-        onPlan: (_) {},
+        onPlan: () {},
         onLaunch: (_) {},
         onExport: (_) {},
       ),

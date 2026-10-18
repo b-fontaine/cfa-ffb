@@ -5,22 +5,40 @@ Feature: Session planner
     When I tap {'Plan a session'} text
     Then I see {'No session planned yet.'} text
 
-  Scenario: A children session lasts 1h30
-    Given the app is running
+  # Décision du 2026-10-18 : le groupe est obligatoire pour une séance planifiée.
+  Scenario: A session needs a group
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
     When I tap {'Plan a session'} text
     And I enter {'Posture basics'} into {0} input field
     And I tap {'Add session'} text
-    Then I see {'Posture basics'} text
-    And I see {'Mon, Oct 12 · Children · 90 min'} text
+    Then I see {'Choose a group to plan this session.'} text
+    And I see {'No session planned yet.'} text
 
-  Scenario: An adult session lasts 2h
+  Scenario: A club without any group cannot plan a session yet
     Given the app is running
     When I tap {'Plan a session'} text
+    Then I see {'Create a group first to plan a session.'} text
+
+  Scenario: A children session lasts 1h30
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
+    When I tap {'Plan a session'} text
+    And I enter {'Posture basics'} into {0} input field
+    And I choose the group {'Children group'}
+    And I tap {'Add session'} text
+    Then I see {'Posture basics'} text
+    And I see {'Mon, Oct 12 · Children group · Children · 90 min'} text
+
+  Scenario: An adult session lasts 2h
+    Given the club has the student {'Hugo'} in the {'adults'} audience
+    And the app is running
+    When I tap {'Plan a session'} text
     And I enter {'Position play'} into {0} input field
-    And I tap {'Adults'} text
+    And I choose the group {'Adults group'}
     And I tap {'Add session'} text
     Then I see {'Position play'} text
-    And I see {'Mon, Oct 12 · Adults · 120 min'} text
+    And I see {'Mon, Oct 12 · Adults group · Adults · 120 min'} text
 
   Scenario: A session needs a title
     Given the app is running
@@ -30,28 +48,34 @@ Feature: Session planner
 
   # Lien séance planifiée <-> séance du catalogue (L5, ADR 0004).
   Scenario: A catalogue session prefills the title and is kept with the session
-    Given the app is running
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
     When I tap {'Plan a session'} text
     And I choose the catalogue session {'puissance-1'}
+    And I choose the group {'Children group'}
     Then the session title is {'La puissance, session 1/2'}
     When I tap {'Add session'} text
     Then I see {'La puissance, session 1/2'} text
     And I see {'Catalogue session: La puissance, session 1/2'} text
-    And I see {'Mon, Oct 12 · Children · 90 min'} text
+    And I see {'Mon, Oct 12 · Children group · Children · 90 min'} text
 
   Scenario: The prefilled title stays editable
-    Given the app is running
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
     When I tap {'Plan a session'} text
     And I choose the catalogue session {'puissance-1'}
+    And I choose the group {'Children group'}
     And I enter {'Les bases de la puissance'} into {0} input field
     And I tap {'Add session'} text
     Then I see {'Les bases de la puissance'} text
     And I see {'Catalogue session: La puissance, session 1/2'} text
 
   Scenario: A session without catalogue session offers to choose one
-    Given the app is running
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
     When I tap {'Plan a session'} text
     And I enter {'Posture basics'} into {0} input field
+    And I choose the group {'Children group'}
     And I tap {'Add session'} text
     Then I see {'Posture basics'} text
     And I see {'Choose a session'} text
@@ -59,26 +83,29 @@ Feature: Session planner
     Then I see {'Session catalogue'} text
 
   Scenario: The second session of a technique is planned and opens its detail
-    Given the app is running
+    Given the club has the student {'Hugo'} in the {'adults'} audience
+    And the app is running
     When I tap {'Plan a session'} text
     And I choose the catalogue session {'demi-bille-2'}
-    And I tap {'Adults'} text
+    And I choose the group {'Adults group'}
     And I tap {'Add session'} text
     Then I see {'Quantité demi-bille, session 2/2'} text
     And I see {'Catalogue session: Quantité demi-bille, session 2/2'} text
-    And I see {'Mon, Oct 12 · Adults · 120 min'} text
+    And I see {'Mon, Oct 12 · Adults group · Adults · 120 min'} text
     When I tap {'Catalogue session: Quantité demi-bille, session 2/2'} text
     Then I see {'Previous session: Quantité demi-bille, session 1/2'} text
 
   Scenario: A catalogue session is planned from its detail
-    Given the app is running
+    Given the club has the student {'Hugo'} in the {'adults'} audience
+    And the app is running
     When I go to the address {'/catalogue/demi-bille-2'}
     And I tap {'Adults · 120 min'} text
     And I tap {'Plan this session'} text
     Then the session title is {'Quantité demi-bille, session 2/2'}
-    When I tap {'Add session'} text
+    When I choose the group {'Adults group'}
+    And I tap {'Add session'} text
     Then I see {'Catalogue session: Quantité demi-bille, session 2/2'} text
-    And I see {'Mon, Oct 12 · Adults · 120 min'} text
+    And I see {'Mon, Oct 12 · Adults group · Adults · 120 min'} text
 
   # U4 (lot 2, U-9) : « Planifier cette séance » emporte le groupe du catalogue.
   Scenario: Plan this session from the detail keeps the group chosen in the catalogue
@@ -122,8 +149,10 @@ Feature: Session planner
     Then I see {'Mon, Oct 12 · Adults group · Adults · 120 min'} text
 
   Scenario: Planned sessions are listed by date
-    Given the app is running
+    Given the club has the student {'Léa'} in the {'children'} audience
+    And the app is running
     When I tap {'Plan a session'} text
+    And I choose the group {'Children group'}
     And I enter {'Later'} into {0} input field
     And I move the session date to day {19}
     And I tap {'Add session'} text
@@ -131,8 +160,8 @@ Feature: Session planner
     And I move the session date to day {12}
     And I tap {'Add session'} text
     Then the planned session {'Sooner'} is listed before {'Later'}
-    And I see {'Mon, Oct 12 · Children · 90 min'} text
-    And I see {'Mon, Oct 19 · Children · 90 min'} text
+    And I see {'Mon, Oct 12 · Children group · Children · 90 min'} text
+    And I see {'Mon, Oct 19 · Children group · Children · 90 min'} text
 
   Scenario: Noting the results of a planned session opens a record that knows its catalogue session
     Given the club has the student {'Léa'} in the {'children'} audience

@@ -20,7 +20,10 @@ coupée en deux endroits.
 
 ## Décision
 
-1. **Date et groupe sur la séance planifiée.** `Session.date` est obligatoire
+1. *(Amendé le 2026-10-18, décision de l'utilisateur, voir l'[ADR 0024](0024-firebase-source-de-verite-comptes-clubs-roles.md), notes FB4b : **le groupe est
+   obligatoire**. `PlanSession` refuse une séance sans groupe (`sessionNeedsGroup`), l'écran n'offre plus « aucun groupe » ni le choix du public, qui est celui du
+   groupe ; un club sans groupe doit d'abord en créer un. Les séances sans groupe déjà enregistrées restent lisibles ; reprise au FB7.)*
+   **Date et groupe sur la séance planifiée.** `Session.date` est obligatoire
    (jour, proposé au jour courant) ; `Session.groupId` est facultatif. Avec un
    groupe, le public est **celui du groupe** et la date doit tomber dans sa
    saison (`seasonOutsidePeriod`, comme l'ouverture de saisie) ; sans groupe,

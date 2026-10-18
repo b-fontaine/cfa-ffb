@@ -33,4 +33,24 @@ final class ClubPaths {
   /// 8601 (fuseau conservé, microsecondes comprises).
   String membership(GroupId group, StudentId student, DateTime from) =>
       '$memberships/${group.value}_${student.value}_${from.toIso8601String()}';
+
+  String get seasons => '$root/seasons';
+
+  String season(SeasonId id) => '$seasons/${id.value}';
+
+  /// Séances planifiées (identifiant texte libre : UUID).
+  String get sessions => '$root/sessions';
+
+  String session(String id) => '$sessions/$id';
+
+  /// Séances données (`SessionRecord`) : collection `records` des règles.
+  String get records => '$root/records';
+
+  String record(SessionId id) => '$records/${id.value}';
+
+  /// Archives agrégées de fin de saison (un document de synthèse par saison et
+  /// public, un par exercice).
+  String get archives => '$root/archives';
+
+  String archive(String id) => '$archives/$id';
 }

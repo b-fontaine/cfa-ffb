@@ -7,7 +7,6 @@ import 'package:billard_cfa/features/plan_session/domain/list_sessions.dart';
 import 'package:billard_cfa/features/plan_session/domain/list_sheet_options.dart';
 import 'package:billard_cfa/features/plan_session/domain/plan_session.dart';
 import 'package:billard_cfa/features/plan_session/domain/planned_session_summary.dart';
-import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
@@ -35,7 +34,6 @@ class SessionPlannerBloc
     on<SessionPlannerDateChanged>(_onDateChanged);
     on<SessionPlannerTitleSuggested>(_onTitleSuggested);
     on<SessionPlannerTitleEdited>(_onTitleEdited);
-    on<SessionPlannerAudienceChanged>(_onAudienceChanged);
     on<SessionPlannerSessionDeleted>(_onDeleted);
     on<SessionPlannerSessionSubmitted>(_onSubmitted);
   }
@@ -66,7 +64,6 @@ class SessionPlannerBloc
         sheetsUnavailable: options is Err,
         groups: groups,
         date: event.today,
-        audience: group?.audience ?? event.audience,
         selectedGroup: group?.id,
         selectedSheet:
             preselected != null && loaded.any((o) => o.id == preselected)
@@ -83,8 +80,8 @@ class SessionPlannerBloc
     emit(state.copyWith(selectedSheet: event.sheetId));
   }
 
-  /// Règle : le public suit le groupe choisi ; sans groupe, il reste celui
-  /// déjà choisi.
+  /// Règle : le groupe choisi doit être proposable ; son public est celui de
+  /// la séance.
   void _onGroupSelected(
     SessionPlannerGroupSelected event,
     Emitter<SessionPlannerState> emit,
@@ -92,13 +89,7 @@ class SessionPlannerBloc
     final group = state.groups
         .where((candidate) => candidate.id == event.groupId)
         .firstOrNull;
-    emit(
-      state.copyWith(
-        selectedGroup: group?.id,
-        audience: group?.audience ?? state.audience,
-        failure: null,
-      ),
-    );
+    emit(state.copyWith(selectedGroup: group?.id, failure: null));
   }
 
   void _onDateChanged(
@@ -127,13 +118,6 @@ class SessionPlannerBloc
     emit(state.copyWith(title: event.title, titleInvalid: false));
   }
 
-  void _onAudienceChanged(
-    SessionPlannerAudienceChanged event,
-    Emitter<SessionPlannerState> emit,
-  ) {
-    emit(state.copyWith(audience: event.audience));
-  }
-
   Future<void> _onDeleted(
     SessionPlannerSessionDeleted event,
     Emitter<SessionPlannerState> emit,
@@ -152,7 +136,6 @@ class SessionPlannerBloc
       await _planSession(
         title: state.title,
         date: date,
-        audience: state.audience,
         sheetId: state.selectedSheet,
         groupId: state.selectedGroup,
       );

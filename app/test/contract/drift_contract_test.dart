@@ -19,6 +19,7 @@ import 'acknowledgement_contract.dart';
 import 'acquisition_contract.dart';
 import 'backup_contract.dart';
 import 'backup_marker_contract.dart';
+import 'planning_contract.dart';
 import 'repository_contract.dart';
 import 'repository_harness.dart';
 import 'run_progress_contract.dart';
@@ -47,6 +48,17 @@ Future<RepositoryHarness> _open() async {
 }
 
 void main() {
+  planningContract('drift (SQLite)', () async {
+    final db = openMemoryDatabase();
+    final clock = TickingClock();
+    return (
+      seasons: DriftSeasonRepository(db, clock),
+      groups: DriftGroupRepository(db, clock),
+      sessions: DriftSessionRepository(db, clock),
+      records: DriftSessionRecordRepository(db, clock),
+      close: db.close,
+    );
+  });
   repositoryContract('drift (SQLite)', _open);
   backupContract('drift (SQLite)', _open);
   acquisitionContract('drift (SQLite)', () async {

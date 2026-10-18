@@ -9,7 +9,7 @@ import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
 /// Séances planifiées persistées dans SQLite (drift).
-@LazySingleton(as: SessionRepository, env: [Environment.prod])
+@LazySingleton(env: [Environment.prod])
 class DriftSessionRepository implements SessionRepository {
   DriftSessionRepository(this._db, this._clock);
 

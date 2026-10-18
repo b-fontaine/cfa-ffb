@@ -288,6 +288,56 @@ List<Object?> _list(Map<String, Object?> document, String key) =>
 Map<String, Object?> _first(Map<String, Object?> document, String key) =>
     _list(document, key).first! as Map<String, Object?>;
 
+/// Avec le stockage Firestore, l'import d'une sauvegarde n'est PAS supporté
+/// avant FB7 (une saisie se crée par une transaction, impossible dans le lot
+/// atomique d'une unité de travail) : il échoue par un `ServiceFailure`
+/// explicite (jamais une exception hors `Failure`) et **n'écrit rien**, ni
+/// côté Firestore ni côté drift.
+void backupImportUnsupportedContract(
+  String label,
+  Future<RepositoryHarness> Function() openSource,
+  Future<RepositoryHarness> Function() openTarget,
+) {
+  group('$label : import de sauvegarde non supporté (avant FB7)', () {
+    late RepositoryHarness source;
+    late RepositoryHarness target;
+
+    setUp(() async {
+      source = await openSource();
+      target = await openTarget();
+      await _seed(source);
+    });
+    tearDown(() async {
+      await source.close();
+      await target.close();
+    });
+
+    test(
+      'is refused with an explicit service failure and writes nothing',
+      () async {
+        final result = await _import(target)(await _exported(source));
+
+        switch (result) {
+          case Ok(:final value):
+            fail('import accepté : $value');
+          case Err(:final failure):
+            expect(failure, isA<ServiceFailure>());
+            expect(
+              (failure as ServiceFailure).code,
+              ServiceFailureCode.unsupported,
+            );
+        }
+        expect(await target.students.all(), isEmpty);
+        expect(await target.seasons.all(), isEmpty);
+        expect(await target.groups.all(), isEmpty);
+        expect(await target.sessionRecords.all(), isEmpty);
+        expect(await target.attempts.all(), isEmpty);
+        expect(await target.sessions.getAll(), isEmpty);
+      },
+    );
+  });
+}
+
 /// Suite d'export/import exécutée contre chaque implémentation de repository :
 /// aller-retour, idempotence, fusion et refus sans écriture partielle.
 void backupContract(String label, Future<RepositoryHarness> Function() open) {

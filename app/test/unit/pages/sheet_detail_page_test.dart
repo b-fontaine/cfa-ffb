@@ -32,7 +32,7 @@ void main() {
     WidgetTester tester, {
     VoidCallback? onBack,
     VoidCallback? onHome,
-    ValueChanged<Audience>? onPlan,
+    VoidCallback? onPlan,
     ValueChanged<Audience>? onLaunch,
     ValueChanged<Audience>? onExport,
     String backLabel = 'Session catalogue',
@@ -48,7 +48,7 @@ void main() {
           backLabel: backLabel,
           onBack: onBack ?? () {},
           onHome: onHome ?? () {},
-          onPlan: onPlan ?? (_) {},
+          onPlan: onPlan ?? () {},
           onLaunch: onLaunch ?? (_) {},
           onExport: onExport ?? (_) {},
         ),
@@ -335,18 +335,18 @@ void main() {
       });
     });
 
-    testWidgets('plans the session for the audience on screen', (tester) async {
-      final planned = <Audience>[];
+    testWidgets('plans the session of the sheet', (tester) async {
+      var planned = 0;
       whenListen(
         bloc,
         const Stream<SheetDetailState>.empty(),
         initialState: ready(Audience.adults),
       );
-      await pump(tester, onPlan: planned.add);
+      await pump(tester, onPlan: () => planned++);
 
       await tester.tap(find.text('Plan this session'));
 
-      expect(planned, [Audience.adults]);
+      expect(planned, 1);
     });
 
     testWidgets('launches the guided session for the audience on screen', (

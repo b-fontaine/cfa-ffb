@@ -46,7 +46,7 @@ class SuggestedSessionPage extends StatelessWidget {
   final void Function(SheetId id, Audience audience, GroupId group) onLaunch;
 
   /// `id` nul : notion sans séance du catalogue.
-  final void Function(SheetId? id, Audience audience) onPlan;
+  final void Function(SheetId? id, GroupId? group) onPlan;
   final VoidCallback onAddStudents;
 
   @override
@@ -174,7 +174,7 @@ class SuggestedSessionPage extends StatelessWidget {
                     onOpenSheet: (id) => onOpenSheet(id, plan.audience),
                     onLaunch: (id) =>
                         onLaunch(id, plan.audience, state.groupId!),
-                    onPlan: (id) => onPlan(id, plan.audience),
+                    onPlan: (id) => onPlan(id, state.groupId),
                   );
               }
             },

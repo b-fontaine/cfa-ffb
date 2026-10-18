@@ -36,6 +36,7 @@ void main() {
   late _MockPlan plan;
   var back = 0;
   SheetId? plannerSheet;
+  GroupId? plannerGroup;
 
   setUpAll(() {
     registerFallbackValue(const GroupId('g'));
@@ -50,6 +51,7 @@ void main() {
     plan = _MockPlan();
     back = 0;
     plannerSheet = null;
+    plannerGroup = null;
     when(
       () => next.load(
         groupId: any(named: 'groupId'),
@@ -60,7 +62,6 @@ void main() {
       () => plan.plan(
         title: any(named: 'title'),
         date: any(named: 'date'),
-        audience: any(named: 'audience'),
         sheetId: any(named: 'sheetId'),
         groupId: any(named: 'groupId'),
       ),
@@ -149,7 +150,10 @@ void main() {
           onOpenRecord: (_) {},
           onEnterResults: (_) {},
           onOpenStudent: (_) {},
-          onOpenPlanner: (sheet, _) => plannerSheet = sheet,
+          onOpenPlanner: (sheet, group) {
+            plannerSheet = sheet;
+            plannerGroup = group;
+          },
           onOpenPlanned: () {},
         ),
       ),
@@ -255,7 +259,6 @@ void main() {
       () => plan.plan(
         title: 'Posture, session 2/2',
         date: DateTime(2026, 10, 19),
-        audience: Audience.children,
         sheetId: SheetId('posture-2'),
         groupId: const GroupId('g1'),
       ),
@@ -362,5 +365,6 @@ void main() {
     await tester.ensureVisible(find.text('Open the planner'));
     await tester.tap(find.text('Open the planner'));
     expect(plannerSheet, SheetId('posture-2'));
+    expect(plannerGroup, review().record.groupId);
   });
 }

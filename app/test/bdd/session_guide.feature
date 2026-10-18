@@ -308,7 +308,8 @@ Feature: Guided session
 
   Scenario: A planned session leads back to the planner when it ends
     Given the app is running
-    And je planifie la séance {'Cours'} pour les {'adultes'} avec la séance du catalogue {'demi-bille-2'}
+    And the club has the student {'Hugo'} in the {'adults'} audience
+    And a session {'Cours'} is planned for the group {'Adults group'} on {'2026-10-12'} with the catalogue session {'demi-bille-2'}
     When I tap {'Plan a session'} text
     And I tap {'Launch'} text
     And I end the guided session
@@ -318,7 +319,8 @@ Feature: Guided session
 
   Scenario: A planned session keeps its counters and audience through the presentation
     Given the app is running
-    And je planifie la séance {'Cours'} pour les {'adultes'} avec la séance du catalogue {'demi-bille-2'}
+    And the club has the student {'Hugo'} in the {'adults'} audience
+    And a session {'Cours'} is planned for the group {'Adults group'} on {'2026-10-12'} with the catalogue session {'demi-bille-2'}
     When I tap {'Plan a session'} text
     And I tap {'Launch'} text
     And I open the guide outline
@@ -363,7 +365,8 @@ Feature: Guided session
 
   Scenario: A planned session launches with its audience
     Given the app is running
-    And je planifie la séance {'Cours'} pour les {'adultes'} avec la séance du catalogue {'demi-bille-2'}
+    And the club has the student {'Hugo'} in the {'adults'} audience
+    And a session {'Cours'} is planned for the group {'Adults group'} on {'2026-10-12'} with the catalogue session {'demi-bille-2'}
     When I tap {'Plan a session'} text
     And I tap {'Launch'} text
     Then I see the session audience {'Adults · 120 min'}
@@ -455,7 +458,8 @@ Feature: Guided session
   # U4 (lot 2, solde de U-9) : le retour du guide mène à son origine.
   Scenario: A planned session launched from Planned leads back to Planned
     Given the app is running
-    And je planifie la séance {'Cours'} pour les {'adultes'} avec la séance du catalogue {'demi-bille-2'}
+    And the club has the student {'Hugo'} in the {'adults'} audience
+    And a session {'Cours'} is planned for the group {'Adults group'} on {'2026-10-12'} with the catalogue session {'demi-bille-2'}
     When I tap {'Plan a session'} text
     And I tap {'Launch'} text
     And I tap the back button

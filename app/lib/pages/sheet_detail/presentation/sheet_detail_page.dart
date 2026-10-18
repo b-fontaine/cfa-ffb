@@ -41,8 +41,9 @@ class SheetDetailPage extends StatelessWidget {
   final String backLabel;
   final VoidCallback onHome;
 
-  /// Planifie cette séance du catalogue, pour le public affiché.
-  final ValueChanged<Audience> onPlan;
+  /// Planifie cette séance du catalogue ; le public sera celui du groupe
+  /// choisi.
+  final VoidCallback onPlan;
 
   /// Lance la séance guidée, pour le public affiché.
   final ValueChanged<Audience> onLaunch;
@@ -92,7 +93,7 @@ class SheetDetailPage extends StatelessWidget {
                     label: Text(l10n.guideLaunch),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () => onPlan(state.audience),
+                    onPressed: onPlan,
                     icon: const Icon(Icons.event_available_outlined),
                     label: Text(l10n.sheetPlan),
                   ),

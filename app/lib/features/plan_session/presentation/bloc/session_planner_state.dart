@@ -22,15 +22,13 @@ abstract class SessionPlannerState with _$SessionPlannerState {
     /// Séance du catalogue choisie pour la prochaine séance planifiée.
     SheetId? selectedSheet,
 
-    /// Groupe choisi pour la prochaine séance planifiée ; `null` : sans
-    /// groupe, le public se choisit à la main.
+    /// Groupe choisi pour la prochaine séance planifiée (obligatoire : sans
+    /// lui, la planification est refusée, `sessionNeedsGroup`). Son public est
+    /// celui de la séance.
     GroupId? selectedGroup,
 
     /// Jour de la prochaine séance planifiée (le jour courant à l'ouverture).
     DateTime? date,
-
-    /// Public de la prochaine séance planifiée (celui du groupe choisi).
-    @Default(Audience.children) Audience audience,
 
     /// Titre en cours de saisie.
     @Default('') String title,

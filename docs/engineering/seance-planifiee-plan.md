@@ -28,6 +28,7 @@ la séance du catalogue suivie.
 
 ## 2. Décisions (reprises de l'ADR 0007)
 
+*(Amendé le 2026-10-18 : le groupe est obligatoire, voir l'ADR 0007, décision 1.)*
 1. `Session` porte une **date obligatoire** (jour) et un **groupe facultatif**
    (`GroupId?`). Avec un groupe, le public est celui du groupe et la date doit
    tomber dans sa saison (`seasonOutsidePeriod`, même règle que l'ouverture de

@@ -53,7 +53,8 @@
     }
   },
   "plannerGroupField": "Groupe",
-  "plannerGroupNone": "Aucun groupe (public au choix)",
+  "plannerGroupToChoose": "Choisir un groupe",
+  "plannerNoGroup": "Créez d'abord un groupe pour planifier une séance.",
   "plannerGroupPickerTitle": "Choisir un groupe",
   "plannerGroupOption": "{group} · {audience}",
   "@plannerGroupOption": {
@@ -3832,8 +3833,19 @@
   "accessDeniedTitle": "Accès refusé à vos clubs",
   "accessDeniedBody": "Le serveur refuse de lire vos clubs : votre accès ou la configuration du service est en cause, et réessayer ne changera rien. Déconnectez-vous, puis reconnectez-vous avec le bon compte, ou contactez l’administrateur.",
   "failNameTooLong": "Ce nom est trop long.",
+  "failTooManyPresent": "Une séance compte {max} élèves présents au plus.",
+  "@failTooManyPresent": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "failSessionNeedsGroup": "Choisissez un groupe pour planifier cette séance.",
+  "failSessionReferenceTooLong": "Cette séance ne peut pas être ouverte : son identifiant est trop long.",
   "failServiceUnavailable": "Le service ne répond pas. Vérifiez votre connexion puis réessayez.",
   "failServiceDenied": "Vous n’avez pas le droit de faire cela.",
+  "failServiceUnsupported": "Cette opération n’est pas encore disponible avec le stockage en ligne : l’importation d’une sauvegarde viendra plus tard.",
   "failActionNotAllowed": "Votre rôle ne permet pas cette action.",
   "failAgeConfirmationRequired": "Confirmez que cet élève a 15 ans ou plus, ou invitez plutôt un parent.",
   "failStudentChoiceRequired": "Choisissez d’abord l’élève.",

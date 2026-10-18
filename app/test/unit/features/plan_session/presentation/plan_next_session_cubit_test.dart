@@ -35,7 +35,6 @@ void main() {
       () => planSession(
         title: any(named: 'title'),
         date: any(named: 'date'),
-        audience: any(named: 'audience'),
         sheetId: any(named: 'sheetId'),
         groupId: any(named: 'groupId'),
       ),
@@ -45,7 +44,6 @@ void main() {
   Future<void> plan(PlanNextSessionCubit cubit) => cubit.plan(
     title: planned.title,
     date: date,
-    audience: Audience.children,
     sheetId: SheetId('demi-bille-2'),
     groupId: const GroupId('g1'),
   );
@@ -63,7 +61,6 @@ void main() {
       () => planSession(
         title: 'Quantité demi-bille, séance 2/2',
         date: date,
-        audience: Audience.children,
         sheetId: SheetId('demi-bille-2'),
         groupId: const GroupId('g1'),
       ),
@@ -116,7 +113,6 @@ void main() {
       () => planSession(
         title: any(named: 'title'),
         date: any(named: 'date'),
-        audience: any(named: 'audience'),
         sheetId: any(named: 'sheetId'),
         groupId: any(named: 'groupId'),
       ),

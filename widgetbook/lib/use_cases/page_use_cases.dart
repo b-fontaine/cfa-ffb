@@ -193,7 +193,7 @@ Widget buildPlannerFromSheetUseCase(BuildContext context) => WorldScope(
     create: (_) => buildPlannerBloc(
       _options(),
       preselected: SheetId('demi-bille-2'),
-      audience: Audience.adults,
+      group: const GroupId('g2'),
     ),
     child: SessionPlannerPage(
       onOpenSheet: (_, _) {},

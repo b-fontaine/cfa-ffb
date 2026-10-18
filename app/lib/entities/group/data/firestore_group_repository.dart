@@ -38,15 +38,18 @@ class FirestoreGroupRepository implements GroupRepository {
   Future<void> save(Group group) => guardStore(() async {
     final paths = _club.paths;
     final groupPath = paths.group(group.id);
-    final existing = await _club.documents.get(groupPath);
+    final existing = await _club.get(groupPath);
     final stored = await _membershipsOf(group.id);
     final fields = GroupDocument.encode(group);
 
+    // Un groupe inchangé n'est pas réécrit : l'enseignant qui inscrit un élève
+    // enregistre le groupe sans avoir le droit d'y écrire (règles), seules les
+    // appartenances de la fiche neuve passent.
     final writes = <WriteOp>[
-      if (existing != null)
-        UpdateOp(groupPath, fields)
-      else
-        SetOp(groupPath, {...fields, ...GroupDocument.creationOnly()}),
+      if (existing == null)
+        SetOp(groupPath, {...fields, ...GroupDocument.creationOnly()})
+      else if (!_sameFields(existing.fields, fields, only: fields.keys))
+        UpdateOp(groupPath, fields),
     ];
 
     final wanted = <String, Fields>{
@@ -79,7 +82,7 @@ class FirestoreGroupRepository implements GroupRepository {
 
   @override
   Future<Group?> byId(GroupId id) => guardStore(() async {
-    final document = await _club.documents.get(_club.paths.group(id));
+    final document = await _club.get(_club.paths.group(id));
     if (document == null) return null;
     return GroupDocument.decode(document, await _membershipsOf(id));
   });
@@ -105,7 +108,7 @@ class FirestoreGroupRepository implements GroupRepository {
   });
 
   Future<Group?> _decodeIfPresent(String path, GroupId id) async {
-    final document = await _club.documents.get(path);
+    final document = await _club.get(path);
     if (document == null) return null;
     return GroupDocument.decode(document, await _membershipsOf(id));
   }
@@ -170,7 +173,7 @@ class FirestoreGroupRepository implements GroupRepository {
     final writes = <WriteOp>[];
     for (final id in students) {
       final path = _club.paths.student(id);
-      final document = await _club.documents.get(path);
+      final document = await _club.get(path);
       if (document == null) continue;
       final groups = [
         for (final item in DocumentValues(
@@ -201,10 +204,12 @@ class FirestoreGroupRepository implements GroupRepository {
         _ => null,
       };
 
-  static bool _sameFields(Fields a, Fields b) {
-    if (a.length != b.length) return false;
-    for (final entry in a.entries) {
-      if (!b.containsKey(entry.key) || b[entry.key] != entry.value) {
+  /// [a] et [b] portent les mêmes valeurs ; avec [only], seulement sur ces
+  /// champs ([a] peut en porter d'autres : `teacherUids`, `createdAt`).
+  static bool _sameFields(Fields a, Fields b, {Iterable<String>? only}) {
+    if (only == null && a.length != b.length) return false;
+    for (final key in only ?? a.keys) {
+      if (a[key] != b[key] || a.containsKey(key) != b.containsKey(key)) {
         return false;
       }
     }

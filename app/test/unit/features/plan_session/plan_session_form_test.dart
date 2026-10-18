@@ -189,27 +189,12 @@ void main() {
     ).called(1);
   });
 
-  testWidgets('shows and changes the audience through the bloc', (
+  testWidgets('has no audience choice: it is the audience of the group', (
     tester,
   ) async {
-    await pump(
-      tester,
-      SessionPlannerState(sheetOptions: options, audience: Audience.adults),
-    );
-    final selected = tester
-        .widget<SegmentedButton<Audience>>(
-          find.byType(SegmentedButton<Audience>),
-        )
-        .selected;
-    expect(selected, {Audience.adults});
+    await pump(tester, SessionPlannerState(sheetOptions: options));
 
-    await tester.tap(find.text('Children'));
-
-    verify(
-      () => bloc.add(
-        const SessionPlannerEvent.audienceChanged(audience: Audience.children),
-      ),
-    ).called(1);
+    expect(find.byType(SegmentedButton<Audience>), findsNothing);
   });
 
   testWidgets('submits the session held by the bloc', (tester) async {
@@ -258,21 +243,18 @@ void main() {
       ),
     ];
 
-    testWidgets('lists the groups and asks the bloc to select one or none', (
+    testWidgets('lists the groups and asks the bloc to select one', (
       tester,
     ) async {
       await pump(tester, SessionPlannerState(groups: groups));
 
       await tester.tap(find.byKey(const ValueKey('planner-group-field')));
       await tester.pumpAndSettle();
-      expect(find.text('Choose a group'), findsOneWidget);
+      // Le champ (valeur à choisir) et le titre de la feuille.
+      expect(find.text('Choose a group'), findsNWidgets(2));
       expect(find.text('Jeunes · Children'), findsOneWidget);
       expect(find.text('Adultes · Adults'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('group-option:g2')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('planner-group-field')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('group-option:none')));
       await tester.pumpAndSettle();
 
       verify(
@@ -280,28 +262,24 @@ void main() {
           const SessionPlannerEvent.groupSelected(groupId: GroupId('g2')),
         ),
       ).called(1);
-      verify(() => bloc.add(const SessionPlannerEvent.groupSelected()))
-          .called(1);
     });
 
-    testWidgets('shows the chosen group and locks the audience on its own', (
-      tester,
-    ) async {
+    testWidgets('offers no way to plan without a group', (tester) async {
+      await pump(tester, SessionPlannerState(groups: groups));
+      await tester.tap(find.byKey(const ValueKey('planner-group-field')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('group-option:none')), findsNothing);
+      expect(find.byKey(const ValueKey('group-option:g2')), findsOneWidget);
+    });
+
+    testWidgets('shows the chosen group with its audience', (tester) async {
       await pump(
         tester,
-        SessionPlannerState(
-          groups: groups,
-          selectedGroup: const GroupId('g2'),
-          audience: Audience.adults,
-        ),
+        SessionPlannerState(groups: groups, selectedGroup: const GroupId('g2')),
       );
 
       expect(find.text('Adultes · Adults'), findsOneWidget);
-      final segmented = tester.widget<SegmentedButton<Audience>>(
-        find.byType(SegmentedButton<Audience>),
-      );
-      expect(segmented.selected, {Audience.adults});
-      expect(segmented.onSelectionChanged, isNull);
     });
 
     testWidgets('disables the picker when the club has no group', (
@@ -312,8 +290,11 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('planner-group-field')));
       await tester.pumpAndSettle();
 
-      expect(find.text('No group (choose the audience)'), findsOneWidget);
-      expect(find.text('Choose a group'), findsNothing);
+      expect(
+        find.text('Create a group first to plan a session.'),
+        findsOneWidget,
+      );
+      expect(find.byType(BottomSheet), findsNothing);
     });
   });
 

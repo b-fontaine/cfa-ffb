@@ -3,6 +3,7 @@ import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
+import 'package:billard_cfa/entities/session_record/domain/sitting_id.dart';
 import 'package:billard_cfa/features/record_results/domain/resolve_sheet_blocks.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/id_generator.dart';
@@ -15,6 +16,12 @@ import 'package:injectable/injectable.dart';
 /// Avec une séance du catalogue `sheetId`, la notion principale et le rappel
 /// de résultats **non fournis** en sont dérivés (`SheetBlocks.resolve`, ADR
 /// 0007).
+///
+/// Identité (ADR 0016 amendé, ADR 0024 décision 18) : une saisie liée à une
+/// séance du catalogue reçoit l'identifiant déterministe `sittingId` ; une
+/// saisie libre, un UUID. Si cette saisie existe déjà (même un autre appareil
+/// l'ouvre au même moment), elle est reprise : ses étiquettes et ses blocs
+/// restent, les présents s'ajoutent (`SessionRecordRepository.open`).
 @injectable
 class OpenSession {
   OpenSession(
@@ -41,6 +48,7 @@ class OpenSession {
     String? recallBlockId,
     SheetId? sheetId,
   }) => runGuarded(() async {
+    requirePresentFit(present);
     final group = await _groups.byId(groupId);
     if (group == null) throw NotFound('group', groupId.value);
     final season = await _seasons.byId(group.seasonId);
@@ -61,8 +69,11 @@ class OpenSession {
     if (blocks.any((id) => catalogue.blockById(id) == null)) {
       throw const InvariantViolation(InvariantCode.unknownBlock);
     }
+    final id = sheetId == null
+        ? SessionId(_ids.next())
+        : sittingId(groupId, date, sheetId);
     final session = SessionRecord(
-      id: SessionId(_ids.next()),
+      id: id,
       groupId: groupId,
       seasonId: season.id,
       date: date,
@@ -72,7 +83,9 @@ class OpenSession {
       recallBlockId: recall,
       sheetId: sheetId,
     );
-    await _sessions.save(session);
-    return session;
+    // Création si l'identifiant est libre, sinon reprise sans rien effacer :
+    // un autre appareil a pu ouvrir la même séance entre-temps (décision 18),
+    // le dépôt tranche de façon atomique.
+    return await _sessions.open(session);
   });
 }

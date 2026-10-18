@@ -269,7 +269,7 @@ void main() {
       expect(world.documents.read('clubs/c1/students/s1')!['groupIds'], ['g9']);
     });
 
-    test('an unchanged student sheet is not rewritten', () async {
+    test('an unchanged group and student sheet write nothing at all', () async {
       student('s1', ['g1']);
       final group = _admit(_group('g1'), 's1', sept);
       await repository.save(group);
@@ -277,8 +277,20 @@ void main() {
 
       await repository.save(group);
 
-      expect(world.documents.commits, 1);
+      expect(world.documents.commits, 0);
       expect(world.documents.read('clubs/c1/students/s1')!['groupIds'], ['g1']);
+    });
+
+    test('a renamed group is written, the other fields are kept', () async {
+      student('s1', ['g1']);
+      final group = _admit(_group('g1'), 's1', sept);
+      await repository.save(group);
+
+      await repository.save(group.rename('Nouveau'));
+
+      final stored = world.documents.read('clubs/c1/groups/g1')!;
+      expect(stored['name'], 'Nouveau');
+      expect(stored['teacherUids'], <String>[]);
     });
 
     test('a student with no sheet yet is skipped, not an error', () async {
@@ -497,6 +509,10 @@ class _Recording implements DocumentStore {
     required String field,
     required Object? equalTo,
   }) => _inner.collectionGroup(collectionId, field: field, equalTo: equalTo);
+
+  @override
+  Future<bool> createIfAbsent(String path, Fields fields) =>
+      _inner.createIfAbsent(path, fields);
 
   @override
   Future<void> commit(List<WriteOp> operations) {

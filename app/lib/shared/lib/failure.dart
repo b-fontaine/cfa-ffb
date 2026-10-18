@@ -64,6 +64,18 @@ enum InvariantCode {
   /// règles du serveur acceptent.
   nameTooLong,
 
+  /// Plus de `maxPresentStudents` élèves présents à une séance (borne de
+  /// `recordShape`).
+  tooManyPresent,
+
+  /// Une séance planifiée doit avoir un groupe (décision du 2026-10-18 ; les
+  /// règles de `sessions` lisent son `groupId`).
+  sessionNeedsGroup,
+
+  /// L'identifiant d'une saisie (groupe, jour, séance du catalogue) dépasse la
+  /// référence de séance des règles (`maxSessionReferenceLength`).
+  sessionReferenceTooLong,
+
   /// Une invitation ne respecte pas la forme que les règles du serveur
   /// acceptent (rôle, groupes, fiches).
   invalidInvitation,
@@ -124,6 +136,10 @@ enum ServiceFailureCode {
   /// Les règles du serveur refusent l'opération (rôle insuffisant, club
   /// différent, invitation non valable).
   denied,
+
+  /// L'opération n'est pas encore possible avec le stockage en ligne : l'import
+  /// d'une sauvegarde (ADR 0024, notes FB4b : lots reprenables de FB7).
+  unsupported,
 
   /// Toute autre erreur du service.
   other,

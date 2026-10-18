@@ -58,6 +58,17 @@ service cloud.firestore {
     // Lecture d'un document d'un groupe : gestionnaires, enseignant du groupe.
     function staffReadsGroup(c, g) { return manages(c) || teachesGroup(c, g); }
 
+    // Lecture d'un document ABSENT (un appareil lit avant de créer ; `resource` est nul). Les
+    // identifiants déterministes `groupe_AAAAMMJJ_séance` seraient un oracle d'existence (« le
+    // groupe g1 a-t-il tenu une séance ce jour-là ? ») : un gestionnaire lit tout, un enseignant
+    // seulement un identifiant ALÉATOIRE (sans `_`, un UUID : rien à deviner) ou un identifiant
+    // dont le groupe (avant le premier `_`) est l'un des siens. Les identifiants de groupe sont des
+    // UUID : ils ne contiennent jamais `_`.
+    function mayProbeAbsent(c, id) {
+      return manages(c) || (isTeacher(c)
+        && (!id.matches('.*_.*') || id.split('_')[0] in me(c).groupIds));
+    }
+
     // Élève ou parent : un groupe de son member (séances planifiées, groupes).
     function familyInGroup(c, g) { return isFamily(c) && g in me(c).groupIds; }
 
@@ -381,7 +392,30 @@ service cloud.firestore {
       // ── Appartenances datées (id `studentId_from`) ──
       match /memberships/{membershipId} {
         allow get, list: if staffReadsGroup(clubId, resource.data.groupId);
-        allow create: if manages(clubId) && studentOwned() && membershipShape();
+        // L'enseignant n'écrit une appartenance que pour inscrire un élève NEUF dans son groupe : la
+        // fiche n'existe pas avant le lot (`exists`) et le lot la crée avec ce groupe (`getAfter`,
+        // dont les règles de `students` bornent déjà `groupIds` à ceux de l'enseignant). Aucune
+        // appartenance sur une fiche existante, aucune mise à jour ni suppression (FB4, partie 2).
+        // Et l'appartenance est LIÉE À SON CONTENU : identifiant `groupId_studentId_from` (la forme
+        // de l'application), `from` = le jour d'entrée, début de l'historique de la fiche neuve
+        // (donc une seule période par fiche et par groupe : pas d'autre `from`), période ouverte,
+        // saison = celle du groupe. `d.from` doit être un texte : `+` échoue sur un horodatage.
+        // Limite assumée : un enseignant du groupe peut recréer une fiche sous le même identifiant
+        // après sa suppression par le directeur (les données gardées sous cet identifiant restent).
+        function teacherEnrolls(c) {
+          let d = request.resource.data;
+          return teachesGroup(c, d.groupId)
+            && membershipId == d.groupId + '_' + d.studentId + '_' + d.from
+            && d.get('to', null) == null
+            && !exists(/databases/$(database)/documents/clubs/$(c)/students/$(d.studentId))
+            && getAfter(/databases/$(database)/documents/clubs/$(c)/students/$(d.studentId))
+                 .data.groupIds.hasAny([d.groupId])
+            && getAfter(/databases/$(database)/documents/clubs/$(c)/students/$(d.studentId))
+                 .data.audienceHistory[0].effectiveFrom == d.from
+            && get(/databases/$(database)/documents/clubs/$(c)/groups/$(d.groupId))
+                 .data.seasonId == d.seasonId;
+        }
+        allow create: if studentOwned() && membershipShape() && (manages(clubId) || teacherEnrolls(clubId));
         allow update: if manages(clubId) && studentOwned() && sameOwnership() && membershipShape();
         allow delete: if manages(clubId);
       }
@@ -440,7 +474,11 @@ service cloud.firestore {
 
       // ── Séances planifiées : lisibles aussi par élève et parent de leurs groupes ──
       match /sessions/{sessionId} {
-        allow get, list: if staffReadsGroup(clubId, resource.data.groupId)
+        // Document ABSENT (lecture avant écriture) : `resource` est nul, voir `mayProbeAbsent`.
+        allow get: if resource == null ? mayProbeAbsent(clubId, sessionId)
+                                       : (staffReadsGroup(clubId, resource.data.groupId)
+                                          || familyInGroup(clubId, resource.data.groupId));
+        allow list: if staffReadsGroup(clubId, resource.data.groupId)
           || familyInGroup(clubId, resource.data.groupId);
         allow create: if groupOwned() && sessionShape()
           && mayWriteGroupData(clubId, request.resource.data.groupId);
@@ -451,10 +489,21 @@ service cloud.firestore {
 
       // ── Saisies de séance (assiduité, étiquettes) : jamais lisibles par élève ou parent ──
       match /records/{recordId} {
-        allow get, list: if staffReadsGroup(clubId, resource.data.groupId);
+        // Lecture d'un document ABSENT (un appareil qui ouvre une saisie lit avant de créer) : pour
+        // un document absent `resource` est nul et `resource.data` ferait échouer la règle ; voir
+        // `mayProbeAbsent` (jamais la famille, jamais l'existence d'une saisie d'un autre groupe).
+        allow get: if resource == null ? mayProbeAbsent(clubId, recordId)
+                                       : staffReadsGroup(clubId, resource.data.groupId);
+        allow list: if staffReadsGroup(clubId, resource.data.groupId);
+        // `createdAt` est posé par la CRÉATION (date du serveur, exigée) et n'apparaît JAMAIS dans
+        // le diff d'une mise à jour : deux appareils qui ouvrent la même saisie (même identifiant)
+        // convergent (le second crée en échouant à l'existence, puis réunit les présents) sans
+        // qu'aucun puisse réécrire la date d'une saisie qu'il n'a pas créée.
         allow create: if groupOwned() && recordShape()
+          && request.resource.data.get('createdAt', null) == request.time
           && mayWriteGroupData(clubId, request.resource.data.groupId);
         allow update: if groupOwned() && recordShape() && sameGroupAndSeason()
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdAt'])
           && mayWriteGroupData(clubId, resource.data.groupId);
         allow delete: if staffReadsGroup(clubId, resource.data.groupId);
       }

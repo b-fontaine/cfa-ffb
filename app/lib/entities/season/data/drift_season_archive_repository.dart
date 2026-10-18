@@ -9,7 +9,7 @@ import 'package:injectable/injectable.dart';
 
 /// Archives de saisons persistées dans SQLite (drift, ADR 0019) : deux tables
 /// d'agrégats, remplacées en bloc par saison.
-@LazySingleton(as: SeasonArchiveRepository, env: [Environment.prod])
+@LazySingleton(env: [Environment.prod])
 class DriftSeasonArchiveRepository implements SeasonArchiveRepository {
   DriftSeasonArchiveRepository(this._db);
 

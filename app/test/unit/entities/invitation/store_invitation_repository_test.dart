@@ -303,6 +303,10 @@ class _VanishingStore implements DocumentStore {
   }) => _inner.collectionGroup(id, field: field, equalTo: equalTo);
 
   @override
+  Future<bool> createIfAbsent(String path, Fields fields) =>
+      _inner.createIfAbsent(path, fields);
+
+  @override
   Future<void> commit(List<WriteOp> operations) => _inner.commit(operations);
 }
 
@@ -330,6 +334,10 @@ class _FailingCommitStore implements DocumentStore {
     required String field,
     required Object? equalTo,
   }) => _inner.collectionGroup(id, field: field, equalTo: equalTo);
+
+  @override
+  Future<bool> createIfAbsent(String path, Fields fields) =>
+      _inner.createIfAbsent(path, fields);
 
   @override
   Future<void> commit(List<WriteOp> operations) =>

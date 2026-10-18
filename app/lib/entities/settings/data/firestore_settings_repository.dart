@@ -18,7 +18,7 @@ class FirestoreSettingsRepository implements SettingsRepository {
 
   @override
   Future<ClubSettings> load() => guardStore(() async {
-    final document = await _club.documents.get(_club.paths.settings);
+    final document = await _club.get(_club.paths.settings);
     return document == null
         ? ClubSettings.defaults
         : SettingsDocument.decode(document);
@@ -26,13 +26,12 @@ class FirestoreSettingsRepository implements SettingsRepository {
 
   @override
   Future<void> save(ClubSettings settings) => guardStore(
-    () => _club.documents.commit([
+    () => _club.commit([
       SetOp(_club.paths.settings, SettingsDocument.encode(settings)),
     ]),
   );
 
   @override
-  Future<void> reset() => guardStore(
-    () => _club.documents.commit([DeleteOp(_club.paths.settings)]),
-  );
+  Future<void> reset() =>
+      guardStore(() => _club.commit([DeleteOp(_club.paths.settings)]));
 }

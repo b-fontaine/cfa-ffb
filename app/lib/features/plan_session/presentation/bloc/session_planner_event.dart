@@ -5,23 +5,20 @@ sealed class SessionPlannerEvent with _$SessionPlannerEvent {
   /// [today] : date proposée pour la prochaine séance et jour de référence
   /// des groupes de la saison en cours. [sheetId] présélectionne une séance
   /// du catalogue (lien profond depuis le détail d'une séance) ; ignorée si
-  /// le catalogue ne la connaît pas. [audience] reprend le public choisi dans
-  /// ce détail. [groupId] présélectionne le groupe choisi dans le catalogue
-  /// (son public l'emporte sur [audience]) ; ignoré s'il n'est pas planifiable.
+  /// le catalogue ne la connaît pas. [groupId] présélectionne le groupe choisi
+  /// dans le catalogue ; ignoré s'il n'est pas planifiable.
   const factory SessionPlannerEvent.started({
     required DateTime today,
     SheetId? sheetId,
     GroupId? groupId,
-    @Default(Audience.children) Audience audience,
   }) = SessionPlannerStarted;
 
   /// Choix de la séance du catalogue ; `null` pour une séance libre.
   const factory SessionPlannerEvent.sheetSelected({SheetId? sheetId}) =
       SessionPlannerSheetSelected;
 
-  /// Choix du groupe ; `null` pour une séance sans groupe. Le public suit
-  /// celui du groupe choisi.
-  const factory SessionPlannerEvent.groupSelected({GroupId? groupId}) =
+  /// Choix du groupe de la séance (obligatoire). Le public est celui du groupe.
+  const factory SessionPlannerEvent.groupSelected({required GroupId groupId}) =
       SessionPlannerGroupSelected;
 
   /// L'animateur a choisi le jour de la séance.
@@ -38,18 +35,13 @@ sealed class SessionPlannerEvent with _$SessionPlannerEvent {
   const factory SessionPlannerEvent.titleEdited({required String title}) =
       SessionPlannerTitleEdited;
 
-  /// L'animateur a choisi le public de la séance à planifier (sans groupe).
-  const factory SessionPlannerEvent.audienceChanged({
-    required Audience audience,
-  }) = SessionPlannerAudienceChanged;
-
   /// Retire la séance planifiée [sessionId].
   const factory SessionPlannerEvent.sessionDeleted({
     required String sessionId,
   }) = SessionPlannerSessionDeleted;
 
-  /// Planifie la séance avec le titre, la date, le groupe, le public et la
-  /// séance du catalogue de l'état.
+  /// Planifie la séance avec le titre, la date, le groupe et la séance du
+  /// catalogue de l'état.
   const factory SessionPlannerEvent.sessionSubmitted() =
       SessionPlannerSessionSubmitted;
 }

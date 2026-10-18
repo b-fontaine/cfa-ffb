@@ -46,6 +46,10 @@ final class StoredDocument {
 
 /// Pourquoi une opération du stock de documents a échoué.
 enum StoreFailureCode {
+  /// L'opération demandée n'existe pas dans ce contexte (une création
+  /// conditionnelle dans une unité de travail : voir `ClubStore`).
+  unsupported,
+
   /// Les règles du serveur refusent l'opération.
   permissionDenied,
 
@@ -56,6 +60,10 @@ enum StoreFailureCode {
 
   /// Le document à mettre à jour n'existe pas.
   notFound,
+
+  /// Plus de [maxBatchWrites] écritures dans un lot atomique : refusé avant
+  /// toute écriture (un lot de Firestore en accepte 500 au plus).
+  batchTooLarge,
 
   /// Réseau ou service injoignable.
   unavailable,
@@ -158,6 +166,27 @@ abstract interface class DocumentStore {
     required Object? equalTo,
   });
 
-  /// Applique toutes les écritures ou aucune.
+  /// Crée le document [path] **s'il est absent**, atomiquement côté serveur
+  /// (lecture et écriture d'une même transaction) ; rend `false`, sans rien
+  /// écrire, s'il existe déjà. C'est la seule façon d'écrire une date de
+  /// création sans risque : une écriture qui peut être une mise à jour ne
+  /// l'envoie jamais (les règles figent `createdAt`).
+  Future<bool> createIfAbsent(String path, Fields fields);
+
+  /// Applique toutes les écritures ou aucune ; au plus [maxBatchWrites] :
+  /// au-delà, [StoreFailureCode.batchTooLarge] sans rien écrire.
   Future<void> commit(List<WriteOp> operations);
+}
+
+/// Écritures d'un lot au plus (limite de Firestore).
+const int maxBatchWrites = 500;
+
+/// Refuse un lot de plus de [maxBatchWrites] écritures.
+void checkBatchSize(List<WriteOp> operations) {
+  if (operations.length > maxBatchWrites) {
+    throw StoreFailure(
+      StoreFailureCode.batchTooLarge,
+      '${operations.length} writes > $maxBatchWrites',
+    );
+  }
 }

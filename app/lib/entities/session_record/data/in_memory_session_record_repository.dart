@@ -14,6 +14,30 @@ class InMemorySessionRecordRepository implements SessionRecordRepository {
   Future<void> save(SessionRecord session) async =>
       _sessions.journaledPut(session.id, session);
 
+  // Ni `await` ni lecture asynchrone entre la lecture et l'écriture : deux
+  // ouvertures simultanées ne s'entrelacent pas (comme la transaction drift).
+  @override
+  Future<SessionRecord> open(SessionRecord candidate) async {
+    final existing = _sessions[candidate.id];
+    final stored = existing == null
+        ? candidate
+        : existing.copyWith(
+            present: {...existing.present, ...candidate.present},
+          );
+    _sessions.journaledPut(stored.id, stored);
+    return stored;
+  }
+
+  @override
+  Future<SessionRecord> resume(SessionRecord record) async {
+    final existing = _sessions[record.id];
+    final stored = existing == null
+        ? record
+        : record.copyWith(present: record.present, tags: existing.tags);
+    _sessions.journaledPut(stored.id, stored);
+    return stored;
+  }
+
   @override
   Future<SessionRecord?> byId(SessionId id) async => _sessions[id];
 

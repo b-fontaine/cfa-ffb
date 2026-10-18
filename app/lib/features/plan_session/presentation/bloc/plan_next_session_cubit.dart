@@ -1,7 +1,6 @@
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/features/plan_session/domain/invalid_session_title.dart';
 import 'package:billard_cfa/features/plan_session/domain/plan_session.dart';
-import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
@@ -35,7 +34,6 @@ class PlanNextSessionCubit extends Cubit<PlanNextSessionState> {
   Future<void> plan({
     required String title,
     required DateTime date,
-    required Audience audience,
     required SheetId? sheetId,
     required GroupId groupId,
   }) async {
@@ -46,7 +44,6 @@ class PlanNextSessionCubit extends Cubit<PlanNextSessionState> {
       final session = await _plan(
         title: title,
         date: date,
-        audience: audience,
         sheetId: sheetId,
         groupId: groupId,
       );

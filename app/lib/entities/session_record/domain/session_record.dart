@@ -1,5 +1,6 @@
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/field_limits.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
@@ -40,4 +41,14 @@ abstract class SessionRecord with _$SessionRecord {
 
   /// Durée prévue : dérivée du public `[U]` (90 min enfants, 120 min adultes).
   int get plannedDurationMinutes => audience.sessionDuration.inMinutes;
+}
+
+/// Refuse plus de [maxPresentStudents] élèves présents (borne de `recordShape`
+/// : une règle ne parcourt pas une liste plus longue). Appelée quand
+/// l'animateur **saisit** les présents (ouverture ou reprise d'une séance), pas
+/// à la construction : une saisie déjà enregistrée reste lisible.
+void requirePresentFit(Set<StudentId> present) {
+  if (present.length > maxPresentStudents) {
+    throw const InvariantViolation(InvariantCode.tooManyPresent);
+  }
 }

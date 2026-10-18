@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/club_paths.dart';
 import 'package:billard_cfa/shared/persistence/document_store.dart';
+import 'package:billard_cfa/shared/persistence/pending_writes.dart';
 import 'package:injectable/injectable.dart';
 
 /// Le [DocumentStore] vu depuis le club actif : les dépôts Firestore y
@@ -39,11 +42,32 @@ final class ClubStore {
     return ClubPaths(club);
   }
 
-  /// Applique [operations] par lots de [maxBatchWrites] (limite de Firestore).
-  /// Un lot est atomique ; au-delà, les lots se suivent et une coupure laisse
-  /// un état partiel : les écritures des dépôts sont **idempotentes** (mêmes
-  /// identifiants), la reprise rejoue l'ensemble (ADR 0024, décision 19).
+  /// Les écritures en attente de l'unité de travail en cours (même zone),
+  /// `null` hors unité.
+  PendingWrites? get _pending => Zone.current[_unitKey] as PendingWrites?;
+
+  /// Lit [path] ; dans une unité de travail, avec **ses propres écritures**
+  /// (un dépôt relit ce qu'il vient d'écrire dans la même unité).
+  Future<StoredDocument?> get(String path) async {
+    final stored = await documents.get(path);
+    final pending = _pending;
+    if (pending == null) return stored;
+    final fields = pending.overlay(path, stored?.fields);
+    return fields == null ? null : StoredDocument(path, fields);
+  }
+
+  /// Écrit [operations]. Dans une unité de travail ([atomically]), elles
+  /// attendent le lot unique de sa fin. Hors unité, elles partent par lots de
+  /// [maxBatchWrites] : un lot est atomique ; au-delà, les lots se suivent et
+  /// une coupure laisse un état partiel : les écritures des dépôts sont
+  /// **idempotentes** (mêmes identifiants), la reprise rejoue l'ensemble (ADR
+  /// 0024, décision 19).
   Future<void> commit(List<WriteOp> operations) async {
+    final pending = _pending;
+    if (pending != null) {
+      operations.forEach(pending.add);
+      return;
+    }
     for (var i = 0; i < operations.length; i += maxBatchWrites) {
       final end = i + maxBatchWrites;
       await documents.commit(
@@ -54,7 +78,38 @@ final class ClubStore {
       );
     }
   }
+
+  /// Crée [path] s'il est absent (atomique côté serveur, voir
+  /// `DocumentStore.createIfAbsent`) ; `false` s'il existe déjà. Réservé aux
+  /// écritures **hors** unité de travail : une création conditionnelle ne peut
+  /// pas attendre le lot de la fin : dans une unité, `StoreFailure`
+  /// `unsupported` (donc `ServiceFailure` `unsupported` sorti d'un dépôt),
+  /// jamais une exception hors `Failure`. C'est ce qui rend l'import d'une
+  /// sauvegarde
+  /// explicitement non supporté avec Firestore avant FB7.
+  Future<bool> createIfAbsent(String path, Fields fields) async {
+    if (_pending != null) {
+      throw const StoreFailure(
+        StoreFailureCode.unsupported,
+        'createIfAbsent hors unité de travail seulement',
+      );
+    }
+    return await documents.createIfAbsent(path, fields);
+  }
+
+  /// Exécute [body] ; toutes les écritures qu'il demande à [commit] partent
+  /// en **un seul lot atomique** à sa fin (au plus [maxBatchWrites], sinon
+  /// `StoreFailure(batchTooLarge)` sans rien écrire), ou aucune si [body]
+  /// échoue. Une unité imbriquée rejoint l'unité englobante.
+  Future<T> atomically<T>(Future<T> Function() body) async {
+    if (_pending != null) return await body();
+    final pending = PendingWrites();
+    final result = await runZoned(body, zoneValues: {_unitKey: pending});
+    final operations = pending.operations;
+    if (operations.isNotEmpty) await documents.commit(operations);
+    return result;
+  }
 }
 
-/// Écritures par lot au plus (limite de Firestore).
-const int maxBatchWrites = 500;
+/// Clé de zone de l'unité de travail en cours.
+final Object _unitKey = Object();

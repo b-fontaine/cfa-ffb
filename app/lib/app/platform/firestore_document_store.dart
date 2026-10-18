@@ -31,6 +31,11 @@ abstract interface class FirestoreAccess {
   /// Applique les écritures en **un seul lot** ; les champs sont déjà au
   /// format du SDK.
   Future<void> writeBatch(List<RawWrite> writes);
+
+  /// Crée le document dans **une transaction** (lecture, puis écriture s'il
+  /// est absent) ; `false` s'il existe déjà. Un lot ne sait pas « créer » :
+  /// il écrit par-dessus, ce qui est une mise à jour pour les règles.
+  Future<bool> createDocument(String path, Map<String, Object?> data);
 }
 
 /// Une écriture déjà traduite : `set`, `setMerge`, `update` (champs) ou
@@ -112,6 +117,15 @@ class FirestoreSdkAccess implements FirestoreAccess {
     await batch.commit();
   }
 
+  @override
+  Future<bool> createDocument(String path, Map<String, Object?> data) =>
+      _firestore().runTransaction((transaction) async {
+        final reference = _firestore().doc(path);
+        if ((await transaction.get(reference)).exists) return false;
+        transaction.set(reference, data);
+        return true;
+      });
+
   static List<RawDocument> _raw(QuerySnapshot<Map<String, dynamic>> snapshot) =>
       [
         for (final document in snapshot.docs)
@@ -171,8 +185,13 @@ class FirestoreDocumentStore implements DocumentStore {
   );
 
   @override
-  Future<void> commit(List<WriteOp> operations) => _guard(
-    () => _access.writeBatch([
+  Future<bool> createIfAbsent(String path, Fields fields) =>
+      _guard(() => _access.createDocument(path, encodeFields(fields)));
+
+  @override
+  Future<void> commit(List<WriteOp> operations) => _guard(() {
+    checkBatchSize(operations);
+    return _access.writeBatch([
       for (final operation in operations)
         switch (operation) {
           SetOp(:final path, :final fields, :final merge) => (
@@ -191,8 +210,8 @@ class FirestoreDocumentStore implements DocumentStore {
             data: null,
           ),
         },
-    ]),
-  );
+    ]);
+  });
 
   static List<StoredDocument> _documents(List<RawDocument> raw) => [
     for (final document in raw)

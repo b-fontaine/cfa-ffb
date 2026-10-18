@@ -17,6 +17,7 @@ import 'acknowledgement_contract.dart';
 import 'acquisition_contract.dart';
 import 'backup_contract.dart';
 import 'backup_marker_contract.dart';
+import 'planning_contract.dart';
 import 'repository_contract.dart';
 import 'repository_harness.dart';
 import 'run_progress_contract.dart';
@@ -41,6 +42,16 @@ Future<RepositoryHarness> _open() async => RepositoryHarness(
 );
 
 void main() {
+  planningContract(
+    'en mémoire',
+    () async => (
+      seasons: InMemorySeasonRepository(),
+      groups: InMemoryGroupRepository(),
+      sessions: InMemorySessionRepository(),
+      records: InMemorySessionRecordRepository(),
+      close: () async {},
+    ),
+  );
   repositoryContract('en mémoire', _open);
   backupContract('en mémoire', _open);
   acquisitionContract(

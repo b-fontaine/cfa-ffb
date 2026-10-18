@@ -10,7 +10,9 @@ Future<T> guardStore<T>(Future<T> Function() body) async {
     throw ServiceFailure(switch (failure.code) {
       StoreFailureCode.unavailable => ServiceFailureCode.unavailable,
       StoreFailureCode.permissionDenied => ServiceFailureCode.denied,
+      StoreFailureCode.unsupported => ServiceFailureCode.unsupported,
       StoreFailureCode.notFound ||
+      StoreFailureCode.batchTooLarge ||
       StoreFailureCode.failedPrecondition ||
       StoreFailureCode.other => ServiceFailureCode.other,
     }, failure.detail);

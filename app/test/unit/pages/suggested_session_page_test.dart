@@ -1,12 +1,17 @@
+import 'package:billard_cfa/entities/exercise_catalog/domain/exercise_spec.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/manage_students/domain/club_overview.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/students_bloc.dart';
+import 'package:billard_cfa/features/suggest_session/domain/exercise_sheet.dart';
+import 'package:billard_cfa/features/suggest_session/domain/session_plan.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/suggested_session_bloc.dart';
 import 'package:billard_cfa/pages/suggested_session/presentation/suggested_session_page.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/default_session_shapes.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/ui/loading_view.dart';
 import 'package:billard_cfa/widgets/roster_picker/presentation/roster_selection_cubit.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -14,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../support/fixtures.dart';
 import '../shared/ui/pump_ui.dart';
 
 class _MockStudents extends MockBloc<StudentsEvent, StudentsState>
@@ -51,7 +57,11 @@ void main() {
     unassigned: const [],
   );
 
-  Future<void> pump(WidgetTester tester, SuggestedSessionState state) async {
+  Future<void> pump(
+    WidgetTester tester,
+    SuggestedSessionState state, {
+    void Function(SheetId?, GroupId?)? onPlan,
+  }) async {
     final students = _MockStudents();
     final suggested = _MockSuggested();
     whenListen(
@@ -85,7 +95,7 @@ void main() {
           onRecord: (_, _, _, _) {},
           onOpenSheet: (_, _) {},
           onLaunch: (_, _, _) {},
-          onPlan: (_, _) {},
+          onPlan: onPlan ?? (_, _) {},
           onAddStudents: () {},
         ),
       ),
@@ -99,6 +109,39 @@ void main() {
     );
 
     expect(find.byType(LoadingView), findsOneWidget);
+  });
+
+  testWidgets('planning from a proposal without sheet keeps the group', (
+    tester,
+  ) async {
+    final planned = <(SheetId?, GroupId?)>[];
+    await pump(
+      tester,
+      SuggestedSessionState(
+        status: SuggestedStatus.ready,
+        groupId: const GroupId('g1'),
+        exercises: [
+          ExerciseSheet(
+            block: block('a', 1),
+            spec: ExerciseSpec(ref: ref('a', 1), rate: rate()),
+          ),
+        ],
+        plan: SessionPlan(
+          audience: Audience.children,
+          durationMinutes: 90,
+          mainBlockId: 'a',
+          exercises: [ref('a', 1)],
+          phases: defaultSessionShapes[Audience.children]!.phases,
+          maxPassesPerExercise: 2,
+        ),
+      ),
+      onPlan: (sheet, group) => planned.add((sheet, group)),
+    );
+
+    await tester.ensureVisible(find.text('Plan a session'));
+    await tester.tap(find.text('Plan a session'));
+
+    expect(planned, [(null, const GroupId('g1'))]);
   });
 
   testWidgets('shows the failure, such as an unreadable sheet catalogue', (

@@ -30,6 +30,7 @@ class CreateGroup {
     if (season.isClosed) {
       throw const InvariantViolation(InvariantCode.seasonClosed);
     }
+    requireGroupNameFits(name);
     final group = Group(
       id: GroupId(_ids.next()),
       seasonId: seasonId,

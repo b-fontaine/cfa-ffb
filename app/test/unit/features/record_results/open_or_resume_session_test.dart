@@ -72,6 +72,18 @@ void main() {
     },
   );
 
+  test('resuming replaces the presents: a student can be unticked', () async {
+    ok(await call(present: {'s1', 's2'}));
+
+    final second = ok(await call(present: {'s1'}));
+
+    expect(second.present, {const StudentId('s1')});
+    expect(
+      (await world.sessions.forGroup(const GroupId('g1'))).single.present,
+      {const StudentId('s1')},
+    );
+  });
+
   test('resuming keeps the recorded passes of the session', () async {
     final first = ok(await call());
     await world.attempts.add(

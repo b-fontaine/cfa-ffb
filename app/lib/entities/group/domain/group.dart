@@ -1,5 +1,6 @@
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/field_limits.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -84,13 +85,16 @@ abstract class Group with _$Group {
   }
 
   /// Le même groupe sous un autre nom (membres et public inchangés).
-  Group rename(String newName) => Group(
-    id: id,
-    seasonId: seasonId,
-    name: newName.trim(),
-    audience: audience,
-    memberships: memberships,
-  );
+  Group rename(String newName) {
+    requireGroupNameFits(newName);
+    return Group(
+      id: id,
+      seasonId: seasonId,
+      name: newName.trim(),
+      audience: audience,
+      memberships: memberships,
+    );
+  }
 
   /// Clôt l'appartenance ouverte de l'élève à la date [to].
   Group release({required StudentId studentId, required DateTime to}) {
@@ -110,5 +114,16 @@ abstract class Group with _$Group {
           if (i == open) memberships[i].copyWith(to: to) else memberships[i],
       ],
     );
+  }
+}
+
+/// Refuse un nom de groupe plus long que les règles du serveur n'en acceptent
+/// ([maxGroupNameLength]). Appelée à la **saisie** d'un nom (création,
+/// renommage, groupe créé à l'inscription ou au changement de public), pas à la
+/// construction : un groupe déjà enregistré sous un nom plus long (drift, avant
+/// la borne) reste lisible.
+void requireGroupNameFits(String name) {
+  if (name.trim().length > maxGroupNameLength) {
+    throw const InvariantViolation(InvariantCode.nameTooLong);
   }
 }
