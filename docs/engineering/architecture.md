@@ -151,7 +151,8 @@ app/
 │       │                              # FB3 : InvitationCode, Capability/RolePolicy, ClubSession, field_limits
 │       ├── persistence/               # base drift (SQLite) : tables, AppDatabase,
 │       │                              # ouverture natif/web, unité de travail ; FB3 : DocumentStore (port Firestore),
-│       │                              # InMemoryDocumentStore, guardStore
+│       │                              # InMemoryDocumentStore, guardStore ; FB4 : ClubPaths, ClubStore (club résolu à chaque appel),
+│       │                              # DocumentValues (lecture des champs), DocumentStore.query
 │       ├── ui/                        # design system (voir design-system.md)
 │       │   ├── theme/                 # ColorScheme, extensions billes/statuts, typo, AppTheme
 │       │   └── *.dart                 # ScoreIndicator, BallChip, SectionCard, PageHeader…
@@ -781,6 +782,9 @@ Détail : [auth-plan.md](auth-plan.md). L'essentiel de l'architecture :
 
 Détail et tableaux : [clubs-roles-plan.md](clubs-roles-plan.md). L'essentiel de l'architecture :
 
+- **Dépôts Firestore par club (FB4)** : `ClubStore` (`shared/persistence`) relit `ActiveClubScope` **à chaque appel** et refuse l'accès sans club ; `ClubPaths` nomme tous les chemins
+  (aucun dépôt n'en compose un). Chaque dépôt a son codec (`*_document.dart`, dates en ISO 8601, champs de la liste blanche des règles) et choisit sa requête selon le rôle (les règles
+  n'autorisent pas la même à tous). `DataBackendModule` (`app/di`) aiguille drift (défaut) ou Firestore par `--dart-define=DATA_BACKEND`. Voir [repositories-firestore-plan.md](repositories-firestore-plan.md).
 - **Un port minuscule pour Firestore** : `DocumentStore` (`shared/persistence`) ne connaît ni collection typée ni SDK : `get`, `list`, requête de groupe de collections sur un
   champ, **lot atomique** (`SetOp`, `UpdateOp`, `DeleteOp`, date du serveur `serverTimestamp`). `app/platform/firestore_document_store.dart` l'implémente sur
   `cloud_firestore` (règle 9) en deux étages : `FirestoreSdkAccess` (quatre appels directs au SDK) et `FirestoreDocumentStore` (traduction des valeurs et des échecs, testée sur

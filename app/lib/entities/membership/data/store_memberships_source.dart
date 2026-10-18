@@ -61,7 +61,7 @@ class StoreMembershipsSource implements MembershipsSource {
       }
       return List.unmodifiable(byClub.values);
     } on StoreFailure catch (failure) {
-      throw MembershipsUnavailable(failure.toString());
+      throw _translate(failure);
     }
   }
 
@@ -70,9 +70,17 @@ class StoreMembershipsSource implements MembershipsSource {
     try {
       return await _isAdmin(user);
     } on StoreFailure catch (failure) {
-      throw MembershipsUnavailable(failure.toString());
+      throw _translate(failure);
     }
   }
+
+  /// Refus du serveur (règle, index) ou service injoignable : l'écran de
+  /// l'application n'est pas le même (ADR 0024, notes FB4a).
+  static Exception _translate(StoreFailure failure) => switch (failure.code) {
+    StoreFailureCode.permissionDenied ||
+    StoreFailureCode.failedPrecondition => MembershipsDenied(failure.code.name),
+    _ => MembershipsUnavailable(failure.toString()),
+  };
 
   Future<bool> _isAdmin(UserId user) async =>
       await _store.get('admins/${user.value}') != null;

@@ -1,5 +1,6 @@
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/field_limits.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -31,6 +32,14 @@ abstract class Student with _$Student {
   Student._() {
     if (firstName.trim().isEmpty) {
       throw const InvariantViolation(InvariantCode.blankName);
+    }
+    // Les règles comptent des caractères (points de code), pas des unités
+    // UTF-16.
+    if (firstName.runes.length > maxFirstNameLength) {
+      throw const InvariantViolation(InvariantCode.nameTooLong);
+    }
+    if (audienceHistory.length > maxAudienceHistory) {
+      throw const InvariantViolation(InvariantCode.audienceHistoryTooLong);
     }
     if (audienceHistory.isEmpty) {
       throw const InvariantViolation(InvariantCode.emptyAudienceHistory);

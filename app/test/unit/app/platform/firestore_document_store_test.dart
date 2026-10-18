@@ -30,6 +30,18 @@ class _FakeAccess implements FirestoreAccess {
   }
 
   @override
+  Future<List<RawDocument>> readQuery(
+    String path,
+    String field, {
+    required bool contains,
+    required Object? value,
+  }) async {
+    calls.add('query $path $field ${contains ? 'any' : '='} $value');
+    _maybeFail();
+    return collection;
+  }
+
+  @override
   Future<List<RawDocument>> readGroup(
     String collectionId,
     String field,
@@ -84,6 +96,28 @@ void main() {
         DateTime.utc(2026),
       );
       expect(access.calls, ['doc clubs/c1']);
+    });
+
+    test('a query goes to the SDK with its encoded filter', () async {
+      access.collection = [
+        (path: 'a/1', data: {'x': 1}),
+      ];
+
+      final byValue = await store.query(
+        'clubs/c1/memberships',
+        FieldEquals('groupId', DateTime.utc(2026)),
+      );
+      final byList = await store.query(
+        'clubs/c1/students',
+        const FieldArrayContainsAny('groupIds', ['g1', 'g2']),
+      );
+
+      expect([for (final d in byValue) d.path], ['a/1']);
+      expect(byList, hasLength(1));
+      expect(access.calls, [
+        'query clubs/c1/memberships groupId = ${Timestamp.fromDate(DateTime.utc(2026))}',
+        'query clubs/c1/students groupIds any [g1, g2]',
+      ]);
     });
 
     test('a missing document is null', () async {
@@ -157,6 +191,31 @@ void main() {
       },
     );
 
+    test('a merging set is sent as a merging set', () async {
+      await store.commit([
+        const SetOp('a/1', {'n': 1}, merge: true),
+        const SetOp('a/2', {'n': 1}),
+      ]);
+
+      expect(access.written!.map((w) => w.kind), [
+        RawWriteKind.setMerge,
+        RawWriteKind.set,
+      ]);
+    });
+
+    test('array union and removal become the SDK sentinels', () async {
+      await store.commit([
+        const UpdateOp('a/1', {
+          'ids': ArrayUnion(['x']),
+          'old': ArrayRemove(['y']),
+        }),
+      ]);
+      final data = access.written!.single.data!;
+      expect(data['ids'], isA<FieldValue>());
+      expect(data['old'], isA<FieldValue>());
+      expect(data['ids'], isNot(equals(data['old'])));
+    });
+
     test('encoding then decoding returns the same plain values', () {
       final fields = {
         'at': DateTime.utc(2026, 10, 12),
@@ -186,6 +245,7 @@ void main() {
     test('translates the codes of the SDK, whatever the operation', () async {
       for (final (sdk, expected) in [
         ('permission-denied', StoreFailureCode.permissionDenied),
+        ('failed-precondition', StoreFailureCode.failedPrecondition),
         ('not-found', StoreFailureCode.notFound),
         ('unavailable', StoreFailureCode.unavailable),
         ('deadline-exceeded', StoreFailureCode.unavailable),

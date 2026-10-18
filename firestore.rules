@@ -386,11 +386,35 @@ service cloud.firestore {
         allow delete: if manages(clubId);
       }
 
-      // ── Fiches élèves : prénom, initiale, public, groupes courants ──
+      // Élément i de l'historique de public : absent, ou { audience, effectiveFrom } (rien d'autre).
+      function changeAt(l, i) {
+        return l.size() <= i
+          || (l[i] is map && l[i].keys().toSet() == ['audience', 'effectiveFrom'].toSet()
+              && l[i].audience in ['children', 'adults']
+              && (l[i].effectiveFrom is timestamp
+                  || (l[i].effectiveFrom is string && l[i].effectiveFrom.size() <= 40)));
+      }
+
+      // Historique daté du public (FB4) : au plus 10 changements, contrôlés un à un (une règle ne
+      // boucle pas ; dix changements acceptés dans bounds.test.mjs : le budget d'expressions tient). Liste embarquée dans la fiche
+      // (dernier écrit gagne par document, ADR 0024 décision 15) : écart assumé à « documents
+      // ajoutés » pour ne pas ouvrir une collection de plus ; seul un gestionnaire change le public.
+      function audienceHistoryOk(d) {
+        return !('audienceHistory' in d)
+          || (d.audienceHistory is list && d.audienceHistory.size() >= 1 && d.audienceHistory.size() <= 10
+              && changeAt(d.audienceHistory, 0) && changeAt(d.audienceHistory, 1)
+              && changeAt(d.audienceHistory, 2) && changeAt(d.audienceHistory, 3)
+              && changeAt(d.audienceHistory, 4) && changeAt(d.audienceHistory, 5)
+              && changeAt(d.audienceHistory, 6) && changeAt(d.audienceHistory, 7)
+              && changeAt(d.audienceHistory, 8) && changeAt(d.audienceHistory, 9));
+      }
+
+      // ── Fiches élèves : prénom, initiale, public, historique du public, groupes courants ──
       function studentShape() {
         let d = request.resource.data;
-        return d.keys().hasOnly(['firstName', 'initial', 'audience', 'groupIds', 'createdAt',
-                                 'erasing', 'expireOn'])
+        return d.keys().hasOnly(['firstName', 'initial', 'audience', 'audienceHistory', 'groupIds',
+                                 'createdAt', 'erasing', 'expireOn'])
+          && audienceHistoryOk(d)
           && d.keys().hasAll(['firstName', 'groupIds'])
           && d.firstName is string && d.firstName.size() >= 1 && d.firstName.size() <= 40
           && (!('initial' in d) || (d.initial is string && d.initial.matches('\\pL')))

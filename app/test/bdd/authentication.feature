@@ -191,7 +191,7 @@ Feature: Account access
   Scenario: The service being unavailable is shown with a retry
     Given the account service is unavailable
     And the app is running
-    Then I see {'Service unavailable'} text
+    Then I see {'Service unreachable'} text
     And I do not see {'Sign out'} text
     When the account service is available again
     And I tap {'Retry'} text
@@ -212,7 +212,7 @@ Feature: Account access
     When I enter {'coach@example.org'} into {0} input field
     And I enter {'correct-horse-battery'} into {1} input field
     And I tap {'Sign in'} text
-    Then I see {'Service unavailable'} text
+    Then I see {'Service unreachable'} text
 
   Scenario: A signed-in account whose clubs cannot be read can sign out
     Given the clubs of the account cannot be read
@@ -223,9 +223,36 @@ Feature: Account access
     When I enter {'coach@example.org'} into {0} input field
     And I enter {'correct-horse-battery'} into {1} input field
     And I tap {'Sign in'} text
-    Then I see {'Service unavailable'} text
+    Then I see {'Service unreachable'} text
     When I tap {'Sign out'} text
     Then I see {'Sign in to the app'} text
+
+  Scenario: Clubs refused by the server say so, without a misleading retry
+    Given the clubs of the account are refused by the server
+    And nobody is signed in on the device
+    And the account {'coach@example.org'} exists with the password {'correct-horse-battery'}
+    And {'coach@example.org'} is a {'director'} of the club {'Club Nice'}
+    And the app is running
+    When I enter {'coach@example.org'} into {0} input field
+    And I enter {'correct-horse-battery'} into {1} input field
+    And I tap {'Sign in'} text
+    Then I see {'Access to your clubs refused'} text
+    And I do not see {'Retry'} text
+    And I do not see {'Service unreachable'} text
+    When I tap {'Sign out'} text
+    Then I see {'Sign in to the app'} text
+
+  Scenario: A missing server index is also an access error, not a network error
+    Given the clubs of the account lack a server index
+    And nobody is signed in on the device
+    And the account {'coach@example.org'} exists with the password {'correct-horse-battery'}
+    And {'coach@example.org'} is a {'director'} of the club {'Club Nice'}
+    And the app is running
+    When I enter {'coach@example.org'} into {0} input field
+    And I enter {'correct-horse-battery'} into {1} input field
+    And I tap {'Sign in'} text
+    Then I see {'Access to your clubs refused'} text
+    And I do not see {'Retry'} text
 
   Scenario: Sign-up needs an invitation code and creates only the account
     Given nobody is signed in on the device

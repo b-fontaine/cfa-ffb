@@ -292,6 +292,10 @@ class _VanishingStore implements DocumentStore {
       _inner.list(collection);
 
   @override
+  Future<List<StoredDocument>> query(String collection, QueryFilter filter) =>
+      _inner.query(collection, filter);
+
+  @override
   Future<List<StoredDocument>> collectionGroup(
     String id, {
     required String field,
@@ -315,6 +319,10 @@ class _FailingCommitStore implements DocumentStore {
   @override
   Future<List<StoredDocument>> list(String collection) =>
       _inner.list(collection);
+
+  @override
+  Future<List<StoredDocument>> query(String collection, QueryFilter filter) =>
+      _inner.query(collection, filter);
 
   @override
   Future<List<StoredDocument>> collectionGroup(

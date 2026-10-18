@@ -21,6 +21,9 @@ class InMemoryDocumentStore implements DocumentStore {
   int reads = 0;
   int commits = 0;
 
+  /// Les filtres des requêtes demandées, dans l'ordre (assertions).
+  final List<QueryFilter> queryLog = [];
+
   /// Les documents, par chemin (assertions et amorçage des scénarios).
   Map<String, Fields> get documents => {
     for (final entry in _documents.entries) entry.key: _copy(entry.value),
@@ -28,7 +31,7 @@ class InMemoryDocumentStore implements DocumentStore {
 
   /// Écrit directement un document (amorçage), sans passer par un lot.
   void seed(String path, Fields fields) =>
-      _documents[path] = _resolve(_copy(fields));
+      _documents[path] = _resolve(_copy(fields), const {});
 
   /// Supprime directement un document (amorçage), sans passer par un lot.
   void remove(String path) => _documents.remove(path);
@@ -72,6 +75,32 @@ class InMemoryDocumentStore implements DocumentStore {
   }
 
   @override
+  Future<List<StoredDocument>> query(
+    String collection,
+    QueryFilter filter,
+  ) async {
+    reads++;
+    queryLog.add(filter);
+    _check();
+    final prefix = '$collection/';
+    final paths = _documents.keys.where((path) {
+      if (!path.startsWith(prefix) ||
+          path.substring(prefix.length).contains('/')) {
+        return false;
+      }
+      final value = _documents[path]![filter.field];
+      return switch (filter) {
+        FieldEquals(value: final wanted) => value == wanted,
+        FieldArrayContainsAny(:final values) =>
+          value is List<Object?> && value.any(values.contains),
+      };
+    }).toList()..sort();
+    return [
+      for (final path in paths) StoredDocument(path, _copy(_documents[path]!)),
+    ];
+  }
+
+  @override
   Future<List<StoredDocument>> collectionGroup(
     String collectionId, {
     required String field,
@@ -98,14 +127,17 @@ class InMemoryDocumentStore implements DocumentStore {
     final staged = {..._documents};
     for (final operation in operations) {
       switch (operation) {
-        case SetOp(:final path, :final fields):
-          staged[path] = _resolve(_copy(fields));
+        case SetOp(:final path, :final fields, :final merge):
+          final current = merge
+              ? staged[path] ?? const {}
+              : const <String, Object?>{};
+          staged[path] = {...current, ..._resolve(_copy(fields), current)};
         case UpdateOp(:final path, :final fields):
           final current = staged[path];
           if (current == null) {
             throw StoreFailure(StoreFailureCode.notFound, path);
           }
-          staged[path] = {...current, ..._resolve(_copy(fields))};
+          staged[path] = {...current, ..._resolve(_copy(fields), current)};
         case DeleteOp(:final path):
           staged.remove(path);
       }
@@ -115,10 +147,25 @@ class InMemoryDocumentStore implements DocumentStore {
       ..addAll(staged);
   }
 
-  Fields _resolve(Fields fields) => {
+  Fields _resolve(Fields fields, Fields current) => {
     for (final entry in fields.entries)
-      entry.key: entry.value is ServerTimestamp ? serverNow() : entry.value,
+      entry.key: switch (entry.value) {
+        ServerTimestamp() => serverNow(),
+        ArrayUnion(:final values) => [
+          ..._listOf(current[entry.key]),
+          for (final value in values)
+            if (!_listOf(current[entry.key]).contains(value)) value,
+        ],
+        ArrayRemove(:final values) => [
+          for (final item in _listOf(current[entry.key]))
+            if (!values.contains(item)) item,
+        ],
+        final other => other,
+      },
   };
+
+  static List<Object?> _listOf(Object? value) =>
+      value is List<Object?> ? value : const [];
 
   static Fields _copy(Fields fields) => {
     for (final entry in fields.entries) entry.key: _copyValue(entry.value),

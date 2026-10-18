@@ -375,6 +375,106 @@ void main() {
     });
   });
 
+  group('clubs refused by the server', () {
+    late DebugPrintCallback previous;
+    late List<String> logged;
+
+    setUp(() {
+      previous = debugPrint;
+      logged = [];
+      debugPrint = (message, {wrapWidth}) => logged.add(message ?? '');
+    });
+
+    tearDown(() => debugPrint = previous);
+
+    test('are access denied, with no club active', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships
+        ..grant(coach.id, _nice)
+        ..denied = true;
+
+      await rig.cubit.start();
+      await settle();
+
+      expect(rig.cubit.state, const AuthAccessDenied());
+      expect(rig.scope.clubId, isNull);
+      expect(rig.cubit.hasSession, isTrue);
+    });
+
+    test('do not fall back on the club remembered on the device', () async {
+      await rig.memory.write(coach.id, _lyon);
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.denied = true;
+
+      await rig.cubit.start();
+      await settle();
+
+      expect(rig.cubit.state, const AuthAccessDenied());
+      expect(rig.scope.clubId, isNull);
+    });
+
+    test('are logged once, without any e-mail or uid', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.denied = true;
+
+      await rig.cubit.start();
+      await settle();
+
+      expect(logged, hasLength(1));
+      expect(logged.single, contains('MembershipsDenied'));
+      expect(logged.single, isNot(contains('coach@example.org')));
+      expect(logged.single, isNot(contains(coach.id.value)));
+    });
+
+    test('a refusal on a refresh clears the whole club scope', () async {
+      const teaching = ClubMembership(
+        clubId: ClubId('nice'),
+        clubName: 'Club Nice',
+        role: Role.teacher,
+        groupIds: [GroupId('g1')],
+      );
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.grant(coach.id, teaching);
+      await rig.cubit.start();
+      await settle();
+      expect(rig.scope.clubId, teaching.clubId);
+      expect(rig.scope.groupIds, [const GroupId('g1')]);
+
+      rig.memberships.denied = true;
+      await rig.cubit.refresh();
+
+      expect(rig.cubit.state, const AuthAccessDenied());
+      expect(rig.scope.clubId, isNull);
+      expect(rig.scope.role, isNull);
+      expect(rig.scope.groupIds, isEmpty);
+    });
+
+    test('a refresh once access is back opens the club', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships
+        ..grant(coach.id, _nice)
+        ..denied = true;
+      await rig.cubit.start();
+      await settle();
+
+      rig.memberships.denied = false;
+      await rig.cubit.refresh();
+
+      expect((rig.cubit.state as AuthReady).club, _nice);
+    });
+
+    test('signing out leaves the denied screen', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.denied = true;
+      await rig.cubit.start();
+      await settle();
+
+      await rig.cubit.signOut();
+
+      expect(rig.cubit.state, const AuthSignedOut());
+    });
+  });
+
   group('retry', () {
     test('after a failed start, tries the service again', () async {
       rig.startup.available = false;

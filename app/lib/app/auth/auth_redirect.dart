@@ -13,6 +13,7 @@ const Set<String> authPaths = {
   AppRoutes.register,
   AppRoutes.selectClub,
   AppRoutes.unavailable,
+  AppRoutes.accessDenied,
 };
 
 /// Vrai pour `/join` et `/join/<code>` (rejoindre un club avec un code).
@@ -81,6 +82,7 @@ String? authRedirect(AuthState state, Uri location) {
           : pendingInvitation != null && choices.isEmpty
           ? AppRoutes.joinWith(pendingInvitation.value)
           : to(AppRoutes.selectClub),
+    AuthAccessDenied() => to(AppRoutes.accessDenied),
     AuthIndisponible() => to(AppRoutes.unavailable),
     AuthReady() =>
       carriedOnSplash

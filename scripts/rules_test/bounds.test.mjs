@@ -60,6 +60,42 @@ describe('fiche élève : prénom et initiale (minimisation)', () => {
     assert.equal(await create(student(['g1'], { audience: 'seniors' })), false);
   });
 
+  describe('historique du public (FB4)', () => {
+    const change = (audience, effectiveFrom = '2026-09-01T00:00:00.000') => ({ audience, effectiveFrom });
+    const history = (n) =>
+      Array.from({ length: n }, (_, i) => change(i % 2 === 0 ? 'children' : 'adults', `2026-09-${String(i + 1).padStart(2, '0')}`));
+
+    test('de 1 à 10 changements, chacun { audience, effectiveFrom }', async () => {
+      assert.equal(await create(student(['g1'], { audienceHistory: history(1) })), true, '1');
+      assert.equal(await create(student(['g1'], { audienceHistory: history(10) })), true, '10');
+      assert.equal(await create(student(['g1'], { audienceHistory: history(11) })), false, '11');
+      assert.equal(await create(student(['g1'], { audienceHistory: [] })), false, 'vide');
+      assert.equal(await create(student(['g1'], { audienceHistory: 'children' })), false, 'pas une liste');
+    });
+
+    test('chaque élément est contrôlé, même le dixième', async () => {
+      const at = (i, bad) => history(10).map((c, j) => (j === i ? bad : c));
+      for (const i of [0, 4, 9]) {
+        assert.equal(await create(student(['g1'], { audienceHistory: at(i, change('seniors')) })), false, `public ${i}`);
+        assert.equal(await create(student(['g1'], { audienceHistory: at(i, { ...change('children'), note: 'x' }) })), false, `champ en trop ${i}`);
+        assert.equal(await create(student(['g1'], { audienceHistory: at(i, { audience: 'children' }) })), false, `sans date ${i}`);
+        assert.equal(await create(student(['g1'], { audienceHistory: at(i, 'x') })), false, `pas une table ${i}`);
+        assert.equal(await create(student(['g1'], { audienceHistory: at(i, change('children', 'x'.repeat(41))) })), false, `date longue ${i}`);
+      }
+    });
+
+    test('la date est un texte ISO court ou un horodatage', async () => {
+      assert.equal(await create(student(['g1'], { audienceHistory: [change('children', ts(now()))] })), true);
+      assert.equal(await create(student(['g1'], { audienceHistory: [change('children', 7)] })), false);
+    });
+
+    test('la mise à jour d\'une fiche publiée par FB3 ajoute l\'historique', async () => {
+      const db = dbOf(env, 'director');
+      assert.equal(await allowed(() => updateDoc(doc(db, 'clubs/c1/students/s1'), { audienceHistory: history(2) })), true);
+      assert.equal(await allowed(() => updateDoc(doc(db, 'clubs/c1/students/s1'), { audienceHistory: history(11) })), false);
+    });
+  });
+
   test('la mise à jour est soumise aux mêmes bornes', async () => {
     const db = dbOf(env, 'director');
     assert.equal(await allowed(() => updateDoc(doc(db, 'clubs/c1/students/s1'), { firstName: text(41) })), false);

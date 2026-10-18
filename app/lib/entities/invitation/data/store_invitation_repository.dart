@@ -109,10 +109,8 @@ class StoreInvitationRepository implements InvitationRepository {
           ServiceFailureCode.unavailable,
           failure.detail,
         ),
-        StoreFailureCode.other => ServiceFailure(
-          ServiceFailureCode.other,
-          failure.detail,
-        ),
+        StoreFailureCode.failedPrecondition || StoreFailureCode.other =>
+          ServiceFailure(ServiceFailureCode.other, failure.detail),
       };
     }
   }

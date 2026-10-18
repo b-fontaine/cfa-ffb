@@ -40,9 +40,14 @@ sealed class AuthState with _$AuthState {
     @Default(false) bool isAdmin,
   }) = AuthReady;
 
-  /// Le service de comptes est indisponible (initialisation échouée, ou clubs
+  /// Le service de comptes est injoignable (initialisation échouée, ou clubs
   /// illisibles sans club retenu sur l'appareil).
   const factory AuthState.indisponible() = AuthIndisponible;
+
+  /// Le serveur refuse la lecture des clubs du compte connecté (règle de
+  /// sécurité, index manquant) : écran « Accès refusé à vos clubs », avec
+  /// déconnexion et **sans** « Réessayer » (cela ne corrigerait rien).
+  const factory AuthState.accessDenied() = AuthAccessDenied;
 
   /// Plusieurs clubs : la bascule est proposée.
   bool get canSwitchClub => switch (this) {

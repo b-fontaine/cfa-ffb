@@ -27,6 +27,7 @@ enum InvariantCode {
   audienceMismatch,
   emptyAudienceHistory,
   audienceUnchanged,
+  audienceHistoryTooLong,
   audienceChangeNotChronological,
   membershipAlreadyOpen,
   membershipNotOpen,

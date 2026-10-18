@@ -13,6 +13,15 @@ abstract interface class FirestoreAccess {
 
   Future<List<RawDocument>> readCollection(String path);
 
+  /// Une collection filtrée sur un champ : égalité ([contains] faux, [value]
+  /// la valeur) ou « contient l'un de » ([contains] vrai, [value] la liste).
+  Future<List<RawDocument>> readQuery(
+    String path,
+    String field, {
+    required bool contains,
+    required Object? value,
+  });
+
   Future<List<RawDocument>> readGroup(
     String collectionId,
     String field,
@@ -24,7 +33,8 @@ abstract interface class FirestoreAccess {
   Future<void> writeBatch(List<RawWrite> writes);
 }
 
-/// Une écriture déjà traduite : `set`, `update` (champs) ou `delete` (sans
+/// Une écriture déjà traduite : `set`, `setMerge`, `update` (champs) ou
+/// `delete` (sans
 /// champs).
 typedef RawWrite = ({
   String path,
@@ -32,7 +42,7 @@ typedef RawWrite = ({
   Map<String, Object?>? data,
 });
 
-enum RawWriteKind { set, update, delete }
+enum RawWriteKind { set, setMerge, update, delete }
 
 /// Les appels directs au SDK `cloud_firestore` : seul code de l'application qui
 /// le touche (règle 9), volontairement minimal. N'est appelé qu'une fois
@@ -57,6 +67,20 @@ class FirestoreSdkAccess implements FirestoreAccess {
       _raw(await _firestore().collection(path).get());
 
   @override
+  Future<List<RawDocument>> readQuery(
+    String path,
+    String field, {
+    required bool contains,
+    required Object? value,
+  }) async {
+    final collection = _firestore().collection(path);
+    final query = contains
+        ? collection.where(field, arrayContainsAny: value! as List<Object?>)
+        : collection.where(field, isEqualTo: value);
+    return _raw(await query.get());
+  }
+
+  @override
   Future<List<RawDocument>> readGroup(
     String collectionId,
     String field,
@@ -77,6 +101,8 @@ class FirestoreSdkAccess implements FirestoreAccess {
       switch (write.kind) {
         case RawWriteKind.set:
           batch.set(reference, write.data!);
+        case RawWriteKind.setMerge:
+          batch.set(reference, write.data!, SetOptions(merge: true));
         case RawWriteKind.update:
           batch.update(reference, write.data!);
         case RawWriteKind.delete:
@@ -114,6 +140,27 @@ class FirestoreDocumentStore implements DocumentStore {
       _guard(() async => _documents(await _access.readCollection(collection)));
 
   @override
+  Future<List<StoredDocument>> query(String collection, QueryFilter filter) =>
+      _guard(() async {
+        final raw = switch (filter) {
+          FieldEquals(:final field, :final value) => await _access.readQuery(
+            collection,
+            field,
+            contains: false,
+            value: _encode(value),
+          ),
+          FieldArrayContainsAny(:final field, :final values) =>
+            await _access.readQuery(
+              collection,
+              field,
+              contains: true,
+              value: [for (final value in values) _encode(value)],
+            ),
+        };
+        return _documents(raw);
+      });
+
+  @override
   Future<List<StoredDocument>> collectionGroup(
     String collectionId, {
     required String field,
@@ -128,9 +175,9 @@ class FirestoreDocumentStore implements DocumentStore {
     () => _access.writeBatch([
       for (final operation in operations)
         switch (operation) {
-          SetOp(:final path, :final fields) => (
+          SetOp(:final path, :final fields, :final merge) => (
             path: path,
-            kind: RawWriteKind.set,
+            kind: merge ? RawWriteKind.setMerge : RawWriteKind.set,
             data: encodeFields(fields),
           ),
           UpdateOp(:final path, :final fields) => (
@@ -153,18 +200,25 @@ class FirestoreDocumentStore implements DocumentStore {
   ];
 
   /// Les champs au format du SDK : `DateTime` en `Timestamp`, [serverTimestamp]
-  /// en `FieldValue.serverTimestamp()`, listes et tables récursivement.
+  /// en `FieldValue.serverTimestamp()`, [ArrayUnion] et [ArrayRemove] en leurs
+  /// équivalents du SDK, listes et tables récursivement.
   static Map<String, Object?> encodeFields(Fields fields) => {
     for (final entry in fields.entries) entry.key: _encode(entry.value),
   };
 
   static Object? _encode(Object? value) => switch (value) {
     ServerTimestamp() => FieldValue.serverTimestamp(),
+    ArrayUnion(:final values) => FieldValue.arrayUnion(_encodeAll(values)),
+    ArrayRemove(:final values) => FieldValue.arrayRemove(_encodeAll(values)),
     final DateTime date => Timestamp.fromDate(date),
     final List<Object?> list => [for (final item in list) _encode(item)],
     final Map<String, Object?> map => encodeFields(map),
     _ => value,
   };
+
+  static List<Object?> _encodeAll(List<Object?> values) => [
+    for (final item in values) _encode(item),
+  ];
 
   /// Les champs du SDK en valeurs simples : `Timestamp` en `DateTime`, listes
   /// et tables récursivement.
@@ -189,6 +243,7 @@ class FirestoreDocumentStore implements DocumentStore {
 
   static StoreFailureCode _code(String code) => switch (code) {
     'permission-denied' => StoreFailureCode.permissionDenied,
+    'failed-precondition' => StoreFailureCode.failedPrecondition,
     'not-found' => StoreFailureCode.notFound,
     'unavailable' || 'deadline-exceeded' => StoreFailureCode.unavailable,
     _ => StoreFailureCode.other,

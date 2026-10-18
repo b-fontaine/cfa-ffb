@@ -64,6 +64,10 @@ const _expected = <InvariantCode, (String, String)>{
     'Balls potted cannot be negative.',
     'Le nombre de billes empochées ne peut pas être négatif.',
   ),
+  InvariantCode.audienceHistoryTooLong: (
+    'The audience history is limited to 10 entries.',
+    'L’historique de public est limité à 10 entrées.',
+  ),
   InvariantCode.audienceUnchanged: (
     'The student already follows this audience.',
     'L’élève suit déjà ce public.',

@@ -117,7 +117,7 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
   test('la directrice se connecte et voit l’équipe de son club dans « Mon club »', async () => {
     await signInAs(accounts.director.email);
 
-    // Ni « Aucun club » ni « Service indisponible » : l'application a lu ses appartenances.
+    // Ni « Aucun club » ni « Service injoignable » : l'application a lu ses appartenances.
     await see(/^Plus/);
     await goTo('Plus');
     await see('Mon club');
@@ -129,7 +129,7 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
     // Quatre membres à retirer (ni soi-même) : l'équipe et les familles viennent bien de Firestore.
     assert.equal(await page.getByText('Retirer l’accès').count(), 4);
     assert.equal(await page.getByText('Aucun club', { exact: true }).count(), 0);
-    assert.equal(await page.getByText('Service indisponible', { exact: true }).count(), 0);
+    assert.equal(await page.getByText('Service injoignable', { exact: true }).count(), 0);
   });
 
   test('le parent atterrit sur « Mes enfants » : ni l’animateur, ni « Mon club »', async () => {

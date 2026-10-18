@@ -71,6 +71,45 @@ void main() {
     });
   });
 
+  group('readQuery', () {
+    test('equality keeps the documents of that collection only', () async {
+      await firestore.doc('clubs/c1/memberships/a').set({'groupId': 'g1'});
+      await firestore.doc('clubs/c1/memberships/b').set({'groupId': 'g2'});
+      await firestore.doc('clubs/c2/memberships/c').set({'groupId': 'g1'});
+
+      final read = await access.readQuery(
+        'clubs/c1/memberships',
+        'groupId',
+        contains: false,
+        value: 'g1',
+      );
+
+      expect([for (final d in read) d.path], ['clubs/c1/memberships/a']);
+    });
+
+    test('array-contains-any matches one of several values', () async {
+      await firestore.doc('clubs/c1/students/s1').set({
+        'groupIds': ['g1'],
+      });
+      await firestore.doc('clubs/c1/students/s2').set({
+        'groupIds': ['g2', 'g3'],
+      });
+      await firestore.doc('clubs/c1/students/s3').set({'groupIds': <String>[]});
+
+      final read = await access.readQuery(
+        'clubs/c1/students',
+        'groupIds',
+        contains: true,
+        value: ['g1', 'g3'],
+      );
+
+      expect([for (final d in read) d.path]..sort(), [
+        'clubs/c1/students/s1',
+        'clubs/c1/students/s2',
+      ]);
+    });
+  });
+
   group('writeBatch', () {
     test('set replaces the document, update keeps the other fields', () async {
       await firestore.doc('a/set').set({'keep': 1, 'old': 1});
@@ -88,6 +127,32 @@ void main() {
         'new': 2,
       });
     });
+
+    test(
+      'a merging set keeps the other fields and creates if absent',
+      () async {
+        await firestore.doc('a/m').set({
+          'keep': 1,
+          'ids': ['x'],
+        });
+
+        await access.writeBatch([
+          (
+            path: 'a/m',
+            kind: RawWriteKind.setMerge,
+            data: {'new': 2, 'ids': FieldValue.arrayUnion(<String>[])},
+          ),
+          (path: 'a/n', kind: RawWriteKind.setMerge, data: {'new': 3}),
+        ]);
+
+        expect((await firestore.doc('a/m').get()).data(), {
+          'keep': 1,
+          'ids': ['x'],
+          'new': 2,
+        });
+        expect((await firestore.doc('a/n').get()).data(), {'new': 3});
+      },
+    );
 
     test('delete removes the document, and only that one', () async {
       await firestore.doc('a/gone').set({'x': 1});

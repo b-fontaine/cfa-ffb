@@ -7,7 +7,7 @@ import 'package:injectable/injectable.dart';
 
 /// Réglages persistés dans SQLite (drift) : une seule ligne (`id = 1`) ; sans
 /// ligne, les valeurs par défaut s'appliquent.
-@LazySingleton(as: SettingsRepository, env: [Environment.prod])
+@LazySingleton(env: [Environment.prod])
 class DriftSettingsRepository implements SettingsRepository {
   DriftSettingsRepository(this._db, this._clock);
 

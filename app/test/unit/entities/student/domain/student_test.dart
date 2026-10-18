@@ -35,6 +35,32 @@ void main() {
       );
     });
 
+    test('accepts a first name of 40 characters, refuses 41', () {
+      Student named(String name) => Student.enroll(
+        id: const StudentId('s'),
+        firstName: name,
+        audience: Audience.children,
+        since: day(1),
+      );
+
+      expect(named('é' * 40).firstName, hasLength(40));
+      expect(() => named('é' * 41), violation(InvariantCode.nameTooLong));
+    });
+
+    test('counts characters, not UTF-16 units, like the server rules', () {
+      final name = '😀' * 40;
+
+      expect(
+        Student.enroll(
+          id: const StudentId('s'),
+          firstName: name,
+          audience: Audience.children,
+          since: day(1),
+        ).firstName,
+        name,
+      );
+    });
+
     test('refuses an empty history', () {
       expect(
         () => Student(
@@ -83,6 +109,23 @@ void main() {
 
       expect(student.audienceHistory, hasLength(3));
       expect(student.currentAudience, Audience.children);
+    });
+
+    test('keeps at most 10 history entries, like the server rules', () {
+      var student = enrolled();
+      for (var i = 1; i < 10; i++) {
+        student = student.changeAudience(
+          i.isOdd ? Audience.adults : Audience.children,
+          day(1 + i * 10),
+        );
+      }
+      expect(student.audienceHistory, hasLength(10));
+
+      expect(
+        () => student.changeAudience(Audience.children, day(200)),
+        violation(InvariantCode.audienceHistoryTooLong),
+      );
+      expect(student.audienceHistory, hasLength(10));
     });
 
     test('refuses the audience already followed', () {

@@ -253,8 +253,41 @@ Copie des règles (`RULES_FILE=copie.rules`, jamais le fichier versionné), suit
 | `strList30` remplacé par `idList` (`teacherUids: [1]`) | tué : un enseignant doit être un texte (A27) |
 | `optString` élargi de 2 000 000 caractères | tué : champ connu de 900 Ko, commentaire à 501, archive |
 | note de bilan 1 à 5 au lieu de 1 à 4 | tué : types et bornes des valeurs |
+| (FB4) `audienceHistory.size() <= 10` passé à 11 | tué : `historique du public` (11 changements refusés) |
+| (FB4) dernier contrôle `changeAt(…, 9)` retiré | tué : « chaque élément est contrôlé, même le dixième » |
+| (FB4) public de l'historique non contrôlé (`true`) | tué : même test (`seniors` refusé, aux rangs 0, 4 et 9) |
+| (FB4) lecture des appartenances ouverte à tout membre (`staffReadsGroup` remplacé par `isMember`) | tué (3 cas de `repositories.test.mjs` : par groupe, par élève, liste du club) |
+| (FB4) l'enseignant liste toutes les fiches (`hasAny` remplacé par `isTeacher`) | tué : « l'enseignant interroge ses groupes, jamais ceux d'un autre » |
 
 Mutants M2 et M5 de la première série, qui n'ajoutaient qu'une valeur permise sans rien retirer, ne prouvaient rien : remplacés ci-dessus.
+
+## Dépôts Firestore (FB4, partie 1)
+
+- **Suite de contrat** : `student_group_contract.dart` (extraite de `repository_contract.dart`, qui la rejoue sur drift et la mémoire) et `settings_contract.dart`
+  tournent aussi sur les dépôts Firestore (`firestore_contract_test.dart`). Les autres ports n'ont pas encore de dépôt Firestore (partie 2).
+- **Pourquoi `fake_cloud_firestore` et pas l'émulateur pour le contrat Dart** : un test sur la VM Dart ne charge pas le plugin natif `cloud_firestore`.
+  Le chemin réel a été essayé : `flutter test --platform chrome` + émulateur Firestore à règles ouvertes (`firebase emulators:exec --config`). `-d chrome` ne
+  trouve aucun test ; avec `--platform chrome` il faut `TestWidgetsFlutterBinding.ensureInitialized()`, puis `Firebase.initializeApp` ne répond pas (arrêt
+  à 30 s : le SDK JavaScript se charge depuis `gstatic.com` dans la page du test). Non retenu faute de stabilité ; aucun test n'est ignoré.
+- **Ce que le contrat sur faux prouve** : les dépôts tiennent le même comportement que drift et la mémoire, avec la vraie traduction des valeurs
+  (`FirestoreDocumentStore` : dates, listes, date du serveur) et des requêtes (`FirestoreSdkAccess`). **Ce qu'il ne prouve PAS** : les règles de sécurité (le faux n'en
+  applique aucune), les index (idem, et l'émulateur non plus), les chemins réels côté serveur, les quotas, le hors ligne, le `permission-denied` réel, l'ordre
+  serveur des résultats. Un `StoreFailure` n'y est joué que par `InMemoryDocumentStore.failing`.
+- **Pendant contre l'émulateur** : `scripts/rules_test/repositories.test.mjs` (dans `rules_test.sh`, donc `check.sh --full`) joue les **mêmes opérations** que les
+  dépôts (mêmes chemins, mêmes champs, mêmes requêtes : égalité sur `groupId` et `studentId`, `array-contains-any` sur `groupIds`) avec les **vraies règles**, par rôle :
+  accepté pour le directeur, refusé pour l'enseignant d'un autre groupe, le parent, un autre club. Les formes de documents y sont copiées des tests Dart (« writes exactly the fields
+  firestore.rules allows ») : si un champ change d'un côté, l'autre échoue. Ce que ce test ne prouve pas non plus : que **le code Dart** envoie ces formes (c'est le test
+  Dart qui le fige) ; la jonction n'est donc faite que par ces deux jeux de littéraux identiques.
+- **Écarts de comportement assumés, testés** : l'ordre de `all()` (élèves par inscription puis identifiant ; groupes par identifiant ; appartenances par groupe, élève, début) ;
+  `delete` = suppression physique (le contrat n'exige que « invisible » et « réapparaît si on sauve à nouveau ») ; `byId` d'un groupe invisible pour un enseignant est un refus, pas `null`.
+- **Unitaires** : `club_store_test` (chemins, club résolu à chaque appel, sans club = `denied`, lots de 500), `firestore_*_repository_test` (champs écrits, `groupIds`
+  tenus par les groupes, `teacherUids` conservé, requêtes par rôle, documents mal formés, isolation entre clubs), `document_values_test`, `data_backend_test`
+  (défaut drift, valeur inconnue = erreur), `data_backend_module_test` (`DATA_BACKEND=firestore` câble les trois dépôts Firestore, `drift` rend les instances drift), `production_graph_test` (la production câble drift sans réglage). Concurrence : `groupIds` par `ArrayUnion`/`ArrayRemove` (stock qui écrit entre la lecture et le lot), fiche écrite par fusion même si la lecture ne la voit pas ; requêtes `array-contains-any` bornées à 30 valeurs (journal des requêtes du stock en mémoire, et l'émulateur refuse la 31e).
+- **Erreurs d'ouverture de session** : `authentication.feature` (« Clubs refused by the server… », « A missing server index… » : écran « Access to your clubs refused », ni
+  « Retry » ni « Service unreachable ») ; `auth_cubit_test` (état, aucun repli sur le club retenu, une seule ligne de journal sans e-mail ni uid, reprise après
+  `refresh`, déconnexion) ; `store_memberships_source_test` (`permission-denied` et `failed-precondition` = refus, `unavailable` et `other` = injoignable). Mutation : traduire
+  `failedPrecondition` en `MembershipsUnavailable` fait échouer le BDD « missing server index ».
+- **Index** : voir [quality-gates.md](quality-gates.md) (`check_indexes_test`, mutation incluse).
 
 ## Authentification (lot FB2)
 
@@ -284,7 +317,7 @@ Mutants M2 et M5 de la première série, qui n'ajoutaient qu'une valeur permise 
   piloté par `playwright-core`, renvoie les appels du SDK vers l'émulateur Auth et **refuse tout autre hôte** que localhost et
   `gstatic.com` : démarrage jusqu'à l'écran de connexion, mauvais mot de passe et adresse inconnue (même message), connexion
   d'un compte vérifié **jusqu'à l'accueil du club retenu sur l'appareil** (assertion de succès ; le club retenu est posé dans `localStorage`
-  parce que Firestore est refusé), session conservée au rechargement, déconnexion ; « Service indisponible » (sans club retenu) est un test
+  parce que Firestore est refusé), session conservée au rechargement, déconnexion ; « Service injoignable » (sans club retenu) est un test
   distinct du chemin d'échec, jamais le chemin nominal. Il a été écrit après un blocage sur l'écran de démarrage qu'aucun autre test ne pouvait voir.
 - **Application + émulateurs Auth et Firestore + graine** : `scripts/emulator_e2e.sh` (dans `check.sh --full` et la CI ; mêmes prérequis plus Flutter).
   `firebase emulators:exec` (projet `demo-cfa-ffb`), graine, `flutter run -d web-server --dart-define=FIREBASE_EMULATOR=true` (**mode debug** : release
@@ -298,7 +331,7 @@ Mutants M2 et M5 de la première série, qui n'ajoutaient qu'une valeur permise 
   le flux des comptes n'émet jamais. L'application reste alors sur l'écran de démarrage (constaté 2026-10-17, `flutter build
   web --profile`). En debug (`flutter run`, DDC) et en release (`scripts/build_web.sh`) le flux émet. Le build de production
   est un release : il atteint `#/sign-in`. L'`AuthCubit` borne en plus l'attente (`startupTimeout`, 20 s) : sans réponse, l'écran
-  « Service indisponible » et « Réessayer » remplacent un écran de démarrage éternel.
+  « Service injoignable » et « Réessayer » remplacent un écran de démarrage éternel.
 - **Contre l'émulateur Auth** : `scripts/rules_test/auth_emulator.test.mjs` (lancé avec les tests de règles, `scripts/rules_test.sh`).
   Il prouve les codes d'erreur et les courriels que le code Dart suppose (adresse non vérifiée à la création, mauvais mot de passe
   et adresse inconnue regroupés par l'application, 6 caractères seulement côté serveur, courriels de vérification et de

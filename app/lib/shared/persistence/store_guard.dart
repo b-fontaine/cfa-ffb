@@ -11,6 +11,7 @@ Future<T> guardStore<T>(Future<T> Function() body) async {
       StoreFailureCode.unavailable => ServiceFailureCode.unavailable,
       StoreFailureCode.permissionDenied => ServiceFailureCode.denied,
       StoreFailureCode.notFound ||
+      StoreFailureCode.failedPrecondition ||
       StoreFailureCode.other => ServiceFailureCode.other,
     }, failure.detail);
   }

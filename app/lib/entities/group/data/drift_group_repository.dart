@@ -8,7 +8,7 @@ import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
 /// Groupes persistés dans SQLite (drift).
-@LazySingleton(as: GroupRepository, env: [Environment.prod])
+@LazySingleton(env: [Environment.prod])
 class DriftGroupRepository implements GroupRepository {
   DriftGroupRepository(this._db, this._clock);
 

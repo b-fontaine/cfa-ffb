@@ -16,3 +16,9 @@ Feature: Passage enfants vers adultes
     When j'enregistre pour {'Hugo'} un bilan de concentration {4}, endurance {4}, frustration {3} le {'2026-10-10'}
     Then le bilan de maturité suggère le passage à titre d'aide
     And le public courant de {'Hugo'} est {'enfants'}
+
+  Scenario: L'historique de public est borné comme celui du serveur
+    Given le groupe {'Jeunes'} de public {'enfants'} compte l'élève {'Hugo'}
+    And {'Hugo'} a déjà {10} entrées dans son historique de public
+    Then le passage de {'Hugo'} en public {'enfants'} au {'2040-01-01'} est refusé avec le motif {'audienceHistoryTooLong'}
+    And l'historique de public de {'Hugo'} compte {10} entrées

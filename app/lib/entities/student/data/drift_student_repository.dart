@@ -9,7 +9,7 @@ import 'package:injectable/injectable.dart';
 
 /// Élèves persistés dans SQLite (drift) ; mêmes règles que la version en
 /// mémoire, vérifiées par la suite de contrat.
-@LazySingleton(as: StudentRepository, env: [Environment.prod])
+@LazySingleton(env: [Environment.prod])
 class DriftStudentRepository implements StudentRepository {
   DriftStudentRepository(this._db, this._clock);
 

@@ -16,6 +16,7 @@ import 'package:billard_cfa/pages/register/presentation/register_page.dart';
 import 'package:billard_cfa/pages/select_club/presentation/select_club_page.dart';
 import 'package:billard_cfa/pages/sign_in/presentation/sign_in_page.dart';
 import 'package:billard_cfa/pages/splash/presentation/splash_page.dart';
+import 'package:billard_cfa/pages/unavailable/presentation/access_denied_page.dart';
 import 'package:billard_cfa/pages/unavailable/presentation/unavailable_page.dart';
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
@@ -185,9 +186,17 @@ Widget buildSelectClubPageUseCase(BuildContext context) => SelectClubPage(
 );
 
 @widgetbook.UseCase(
-  name: 'Service indisponible',
+  name: 'Service injoignable',
   type: UnavailablePage,
   path: _path,
 )
 Widget buildUnavailablePageUseCase(BuildContext context) =>
     UnavailablePage(onRetry: () {});
+
+@widgetbook.UseCase(
+  name: 'Accès refusé aux clubs',
+  type: AccessDeniedPage,
+  path: _path,
+)
+Widget buildAccessDeniedPageUseCase(BuildContext context) =>
+    AccessDeniedPage(onSignOut: () {});

@@ -11,3 +11,6 @@ const int maxDisplayNameLength = 40;
 
 /// Prénom d'un élève (ADR 0024, décision 13 : minimisation).
 const int maxFirstNameLength = 40;
+
+/// Changements de public dans la fiche d'un élève (`audienceHistoryOk`).
+const int maxAudienceHistory = 10;

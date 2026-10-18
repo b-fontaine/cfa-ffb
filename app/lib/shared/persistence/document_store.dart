@@ -13,6 +13,23 @@ final class ServerTimestamp {
 /// L'unique valeur [ServerTimestamp].
 const ServerTimestamp serverTimestamp = ServerTimestamp();
 
+/// Valeur d'écriture : ajoute [values] à la liste du champ, sans doublon,
+/// **atomiquement côté serveur** (aucune lecture préalable, deux écritures
+/// concurrentes s'additionnent au lieu de s'écraser).
+final class ArrayUnion {
+  const ArrayUnion(this.values);
+
+  final List<Object?> values;
+}
+
+/// Valeur d'écriture : retire [values] de la liste du champ, atomiquement
+/// côté serveur (sans effet pour une valeur absente).
+final class ArrayRemove {
+  const ArrayRemove(this.values);
+
+  final List<Object?> values;
+}
+
 /// Un document lu : son chemin complet (`clubs/c1/members/u1`) et ses champs.
 final class StoredDocument {
   const StoredDocument(this.path, this.fields);
@@ -31,6 +48,11 @@ final class StoredDocument {
 enum StoreFailureCode {
   /// Les règles du serveur refusent l'opération.
   permissionDenied,
+
+  /// Le serveur exige une condition absente (`failed-precondition`) : le plus
+  /// souvent un index composite non déployé. Permanent tant que la
+  /// configuration ne change pas : réessayer n'y change rien.
+  failedPrecondition,
 
   /// Le document à mettre à jour n'existe pas.
   notFound,
@@ -64,11 +86,13 @@ sealed class WriteOp {
   final String path;
 }
 
-/// Crée ou remplace le document.
+/// Crée ou remplace le document ; avec [merge], crée le document ou fusionne
+/// [fields] dans celui qui existe (les autres champs sont conservés).
 final class SetOp extends WriteOp {
-  const SetOp(super.path, this.fields);
+  const SetOp(super.path, this.fields, {this.merge = false});
 
   final Fields fields;
+  final bool merge;
 }
 
 /// Fusionne [fields] dans un document qui existe ; échoue (`notFound`) sinon.
@@ -81,6 +105,30 @@ final class UpdateOp extends WriteOp {
 /// Supprime le document (sans effet s'il n'existe pas).
 final class DeleteOp extends WriteOp {
   const DeleteOp(super.path);
+}
+
+/// Filtre d'une requête sur une collection : un seul champ, un seul
+/// opérateur. Ni tri ni filtre composé : un index composite n'est donc jamais
+/// nécessaire (et `tool/check_indexes.dart` le garde).
+sealed class QueryFilter {
+  const QueryFilter(this.field);
+
+  final String field;
+}
+
+/// Le champ vaut [value].
+final class FieldEquals extends QueryFilter {
+  const FieldEquals(super.field, this.value);
+
+  final Object? value;
+}
+
+/// Le champ est une liste qui contient au moins une des [values] (Firestore
+/// accepte 30 valeurs au plus ; au-delà, l'appelant découpe).
+final class FieldArrayContainsAny extends QueryFilter {
+  const FieldArrayContainsAny(super.field, this.values);
+
+  final List<Object?> values;
 }
 
 /// Frontière de Firestore pour les dépôts : lire un document, une collection,
@@ -97,6 +145,10 @@ abstract interface class DocumentStore {
   /// Les documents directement sous [collection] (`clubs/c1/members`),
   /// triés par identifiant.
   Future<List<StoredDocument>> list(String collection);
+
+  /// Les documents directement sous [collection] qui satisfont [filter],
+  /// triés par identifiant. Sans index à déclarer (un seul champ).
+  Future<List<StoredDocument>> query(String collection, QueryFilter filter);
 
   /// Les documents de toute collection nommée [collectionId], quel que soit
   /// leur parent, dont le champ [field] vaut [equalTo].

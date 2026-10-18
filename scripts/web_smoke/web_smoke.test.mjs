@@ -12,7 +12,7 @@
 // - un compte vérifié se connecte ; Firestore n'étant PAS émulé ici, l'application, qui a bien
 //   interrogé Firestore (requête refusée), n'ouvre que sur un club déjà retenu sur l'appareil :
 //   avec un club retenu, la connexion aboutit à l'accueil (assertion de SUCCÈS) ; sans club
-//   retenu, elle affiche « Service indisponible » (chemin d'échec, éprouvé à part) ; la session
+//   retenu, elle affiche « Service injoignable » (chemin d'échec, éprouvé à part) ; la session
 //   survit à un rechargement et la déconnexion ramène à l'écran de connexion.
 //
 // Pourquoi Firestore n'est pas émulé : ses flux longs (WebChannel) ne passent pas par une
@@ -264,14 +264,16 @@ describe('build web compilé contre l’émulateur Auth', () => {
 
     await signInWith(email, 'not-the-password');
     await see('Adresse e-mail ou mot de passe incorrect.');
-    const wrongPassword = await page.getByText('Adresse e-mail ou mot de passe incorrect.').count();
+    // Le nombre de nœuds sémantiques qui portent le message varie (région vivante et libellé,
+    // selon l'instant de la capture) : on compare le texte, pas le compte.
+    const wrongPassword = await page.getByText('Adresse e-mail ou mot de passe incorrect.').first().textContent();
 
     await page.reload();
     await enableSemantics();
     await see('Connexion à l’application');
     await signInWith(unknownEmail, password);
     await see('Adresse e-mail ou mot de passe incorrect.');
-    const unknownAddress = await page.getByText('Adresse e-mail ou mot de passe incorrect.').count();
+    const unknownAddress = await page.getByText('Adresse e-mail ou mot de passe incorrect.').first().textContent();
 
     assert.equal(unknownAddress, wrongPassword);
   });
@@ -286,14 +288,14 @@ describe('build web compilé contre l’émulateur Auth', () => {
     assert.match(page.url(), /#\/register\?code=ABCDEFGHJKMN/);
   });
 
-  test('sans club retenu et Firestore injoignable : « Service indisponible » (chemin d’échec)', async () => {
+  test('sans club retenu et Firestore injoignable : « Service injoignable » (chemin d’échec)', async () => {
     await open();
     await see('Connexion à l’application');
 
     await signInWith(email, password);
     // L'application a bien tenté de lire les clubs du compte (adaptateur Firestore du build
     // compilé) ; sans club retenu sur l'appareil, elle ne peut que signaler l'indisponibilité.
-    await see('Service indisponible');
+    await see('Service injoignable');
     assert.ok(firestoreRefused.size > 0, 'le build compilé doit avoir interrogé Firestore');
 
     await page.getByRole('button', { name: 'Se déconnecter', exact: true }).click();
@@ -311,7 +313,7 @@ describe('build web compilé contre l’émulateur Auth', () => {
     // SUCCÈS : l'accueil du club retenu (directeur : onglets de l'animateur), pas une erreur.
     await see('Aujourd\'hui');
     await see('Plus');
-    assert.equal(await text('Service indisponible').count(), 0);
+    assert.equal(await text('Service injoignable').count(), 0);
     assert.equal(await text('Aucun club').count(), 0);
     assert.doesNotMatch(page.url(), /#\/(sign-in|splash|unavailable|select-club)/);
     assert.ok(firestoreRefused.size > 0, 'le build compilé doit avoir interrogé Firestore (refusé) pendant la connexion');
@@ -319,7 +321,7 @@ describe('build web compilé contre l’émulateur Auth', () => {
     await page.reload();
     await enableSemantics();
     await see('Aujourd\'hui');
-    assert.equal(await text('Service indisponible').count(), 0);
+    assert.equal(await text('Service injoignable').count(), 0);
 
     await page.getByText(/^Plus/).first().click();
     await page.getByRole('button', { name: 'Se déconnecter', exact: true }).click();

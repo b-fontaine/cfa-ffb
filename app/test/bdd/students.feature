@@ -37,6 +37,14 @@ Feature: Students
     And I tap {'Save'} text
     Then I see {'The first name is required.'} text
 
+  Scenario: A first name is at most 40 characters
+    Given the app is running
+    When I tap {'Students'} text
+    And I tap {'Add a student'} text
+    And I enter {'Abcdefghijklmnopqrstuvwxyzabcdefghijklmno'} into {0} input field
+    And I tap {'Save'} text
+    Then I see {'This name is too long.'} text
+
   Scenario: Correcting the first name of a student
     Given the club has the student {'Lea'} in the {'children'} audience
     And the app is running

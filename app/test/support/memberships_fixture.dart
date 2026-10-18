@@ -41,6 +41,19 @@ class MembershipsFixture {
   set unavailable(bool value) =>
       _store.failing = value ? StoreFailureCode.unavailable : null;
 
+  /// Le serveur refuse la lecture (règle) : `permission-denied`.
+  bool get denied => _store.failing == StoreFailureCode.permissionDenied;
+
+  set denied(bool value) =>
+      _store.failing = value ? StoreFailureCode.permissionDenied : null;
+
+  /// Le serveur exige un index absent : `failed-precondition`.
+  bool get missingIndex =>
+      _store.failing == StoreFailureCode.failedPrecondition;
+
+  set missingIndex(bool value) =>
+      _store.failing = value ? StoreFailureCode.failedPrecondition : null;
+
   /// Supprime tous les clubs et leurs membres, administrateurs compris.
   void clear() => _store.documents.keys
       .where((path) => path.startsWith('clubs/') || path.startsWith('admins/'))

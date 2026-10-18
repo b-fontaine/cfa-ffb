@@ -2,7 +2,7 @@
 # Point d'entrée UNIQUE des garde-fous déterministes (hooks, agent, CI).
 #
 #   scripts/check.sh --fast   catalogue + diagrammes + fiches + fichiers web drift + PWA (+ tests JS du service worker, Node) + format + analyse
-#                             + architecture + séances + validation des fiches
+#                             + architecture + index Firestore + séances + validation des fiches
 #   scripts/check.sh --full   --fast + l10n + règles Firestore (émulateurs : Node, Java, npm ci)
 #                             + fumée du build web compilé (build release + Chrome, émulateur Auth)
 #                             + parcours de bout en bout (application en mode debug + Chrome, émulateurs
@@ -70,6 +70,9 @@ step "Analyse des scripts Dart (même jeu de règles que l'application)"
 
 step "Architecture FSD + Clean"
 dart run tool/check_architecture.dart
+
+step "Index Firestore (chaque requête collectionGroup ou composée a son index déclaré)"
+dart run tool/check_indexes.dart
 
 step "Séances (front matter, durées, déroulé)"
 (cd "$ROOT" && dart run scripts/validate_seances.dart seances)

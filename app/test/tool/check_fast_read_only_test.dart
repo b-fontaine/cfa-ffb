@@ -39,6 +39,8 @@ void main() {
     _copy('$real/scripts', '${copy.path}/scripts');
     _copy('$real/docs/knowledge', '${copy.path}/docs/knowledge');
     _copy('$real/docs/sources', '${copy.path}/docs/sources');
+    File('$real/firestore.indexes.json')
+        .copySync('${copy.path}/firestore.indexes.json');
     _copy('$real/seances', '${copy.path}/seances');
 
     final probe = File('${copy.path}/app/test/tool/zz_unformatted_probe.dart')

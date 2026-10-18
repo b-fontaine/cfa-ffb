@@ -190,22 +190,25 @@ void main() {
       expect(world.doc('clubs/c1/students/s1')!['firstName'], 'Déjà');
     });
 
-    test(
-      'a first name longer than the server accepts is cut, not refused',
-      () async {
-        await world.local.students.save(
-          (await world.local.students.byId(s1))!.copyWith(firstName: 'é' * 60),
-        );
-        world.signIn(Role.director);
+    test('a first name longer than the server accepts cannot exist (the '
+        'directory still cuts one that arrives from older data)', () async {
+      final student = (await world.local.students.byId(s1))!;
 
-        ok(await issue()(role: Role.guardian, studentIds: {s1}));
-
-        expect(
-          world.doc('clubs/c1/students/s1')!['firstName'],
-          'é' * maxFirstNameLength,
-        );
-      },
-    );
+      expect(
+        () => student.copyWith(firstName: 'é' * (maxFirstNameLength + 20)),
+        throwsA(
+          isA<InvariantViolation>().having(
+            (v) => v.code,
+            'code',
+            InvariantCode.nameTooLong,
+          ),
+        ),
+      );
+      expect(
+        student.copyWith(firstName: 'é' * maxFirstNameLength).firstName,
+        hasLength(maxFirstNameLength),
+      );
+    });
 
     test('a student invitation needs the age confirmation', () async {
       world.signIn(Role.director);

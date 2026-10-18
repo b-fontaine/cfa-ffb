@@ -31,7 +31,9 @@ import 'package:injectable/injectable.dart';
 /// - `ready` avec club et rôle ; le club actif retenu sur l'appareil rouvre
 ///   l'application **hors ligne** (session persistée du SDK + club retenu) ;
 /// - `indisponible` si le service ne démarre pas, ou si les clubs sont
-///   illisibles sans club retenu.
+///   illisibles (réseau) sans club retenu ;
+/// - `accessDenied` si le serveur refuse la lecture des clubs (règle, index) :
+///   pas de « Réessayer », seulement la déconnexion.
 ///
 /// Un seul exemplaire pour toute l'application : c'est lui que le routeur
 /// écoute et qui écrit le [SessionScope] lu par les dépôts.
@@ -209,6 +211,17 @@ class AuthCubit extends Cubit<AuthState> {
         isAdmin = await _memberships.isAdmin(account.id);
       } on MembershipsUnavailable {
         memberships = null;
+      } on MembershipsDenied catch (denied) {
+        // Refus du serveur (règle, index) : réessayer ou rouvrir sur le club
+        // retenu n'y change rien. Cas attendu, donc pas d'erreur Flutter : le
+        // journal ne reçoit que le code technique, jamais d'e-mail ni
+        // d'identifiant de compte.
+        debugPrint('auth_cubit: clubs refused by the server ($denied)');
+        if (!isClosed && generation == _generation) {
+          _scope.deactivateClub();
+          emit(const AuthAccessDenied());
+        }
+        return;
       }
       final remembered = await _memory.read(account.id);
       final pending = await _pending.read(account.id);

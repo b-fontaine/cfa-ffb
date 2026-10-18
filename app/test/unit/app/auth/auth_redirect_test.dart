@@ -95,6 +95,17 @@ void main() {
     });
   });
 
+  group('access denied', () {
+    test('sends every path to the denied screen', () {
+      expect(_go(const AuthAccessDenied(), '/'), '/access-denied');
+      expect(_go(const AuthAccessDenied(), '/access-denied'), isNull);
+    });
+
+    test('the denied screen is not reachable otherwise', () {
+      expect(_go(const AuthSignedOut(), '/access-denied'), '/sign-in');
+    });
+  });
+
   group('unavailable', () {
     test('everything goes to the dedicated screen', () {
       expect(const AuthIndisponible().runtimeType, AuthIndisponible);

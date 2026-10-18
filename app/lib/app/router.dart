@@ -96,6 +96,7 @@ import 'package:billard_cfa/pages/student_sheet/presentation/student_sheet_page.
 import 'package:billard_cfa/pages/student_showcase/presentation/student_showcase_page.dart';
 import 'package:billard_cfa/pages/students/presentation/students_page.dart';
 import 'package:billard_cfa/pages/suggested_session/presentation/suggested_session_page.dart';
+import 'package:billard_cfa/pages/unavailable/presentation/access_denied_page.dart';
 import 'package:billard_cfa/pages/unavailable/presentation/unavailable_page.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
@@ -159,6 +160,7 @@ abstract final class AppRoutes {
   static const register = '/register';
   static const selectClub = '/select-club';
   static const unavailable = '/unavailable';
+  static const accessDenied = '/access-denied';
 
   /// Segments des sous-pages d'une séance du catalogue : chemin des routes ET
   /// des constructeurs d'adresse.
@@ -645,6 +647,11 @@ GoRouter buildRouter({
         onRetry: () => unawaited(auth.retry()),
         onSignOut: auth.hasSession ? () => unawaited(auth.signOut()) : null,
       ),
+    ),
+    GoRoute(
+      path: AppRoutes.accessDenied,
+      builder: (context, state) =>
+          AccessDeniedPage(onSignOut: () => unawaited(auth.signOut())),
     ),
     ShellRoute(
       builder: (context, state, child) => BlocProvider(

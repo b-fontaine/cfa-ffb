@@ -25,6 +25,7 @@ String failureMessage(AppLocalizations l10n, Failure failure) =>
         InvariantCode.totalOutOfRange => l10n.failTotalOutOfRange,
         InvariantCode.totalBelowSheet => l10n.failTotalBelowSheet,
         InvariantCode.negativePotted => l10n.failNegativePotted,
+        InvariantCode.audienceHistoryTooLong => l10n.failAudienceHistoryTooLong,
         InvariantCode.audienceUnchanged => l10n.failAudienceUnchanged,
         InvariantCode.audienceChangeNotChronological =>
           l10n.failAudienceNotChronological,

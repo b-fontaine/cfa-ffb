@@ -320,3 +320,41 @@ reste la référence des droits ; les noms de champs sont figés par `scripts/ru
   document de synthèse n'a pas d'élève nommé), écrites et supprimées par le seul directeur ou l'administrateur ; élèves et parents n'y ont pas accès. (c) Le **directeur crée
   un `member` sans invitation** (rôles `teacher`, `student`, `guardian`, jamais `director` ; `uid` égal à l'identifiant du document, `createdAt` du serveur) ; l'administrateur
   crée n'importe quel rôle. L'invitation reste la seule voie pour un compte **qui s'ajoute lui-même** (usage unique, e-mail vérifié).
+
+## Notes de réalisation du lot FB4a (2026-10-18, aucune décision nouvelle)
+
+Première partie de FB4 (détail : [repositories-firestore-plan.md](../repositories-firestore-plan.md)). Écarts et précisions :
+
+- **Erreurs d'ouverture de session** : `MembershipsDenied` (règle, `permission-denied`, ou index manquant, `failed-precondition`) est distinct de
+  `MembershipsUnavailable` (réseau). Le premier mène à l'état `AuthAccessDenied` (« Accès refusé à vos clubs », déconnexion seule, **pas** de
+  « Réessayer », **pas** de repli sur le club retenu sur l'appareil) ; le second garde « Service injoignable » avec « Réessayer ». Le journal reçoit le seul
+  code technique (jamais d'e-mail ni d'uid). `StoreFailureCode.failedPrecondition` est nouveau.
+- **Identifiant d'une appartenance (écart à la décision 14)** : `groupId_studentId_from` et non `studentId_from`. Les appartenances de tous les groupes
+  partagent la collection `clubs/{c}/memberships` ; un élève qui débute le même jour dans deux groupes écrasait l'autre appartenance (trouvé par la suite
+  de contrat). `from` est écrit en ISO 8601 (fuseau et microsecondes conservés).
+- **Historique du public (écart à la décision 15, « documents ajoutés »)** : `audienceHistory` est une **liste embarquée** dans la fiche (10 changements au plus,
+  chacun `{audience, effectiveFrom}` contrôlé élément par élément), pas une sous-collection : une collection de plus aurait demandé règles, matrice et tableau
+  pour une donnée que seul un gestionnaire change. Dernier écrit gagne par document. Règle `audienceHistoryOk` ajoutée à `studentShape` avec ses tests et ses
+  mutations (testing.md). Les autres champs de la fiche sont ceux de FB3 ; `initial` reste facultatif et **inutilisé** (le domaine n'a pas d'initiale).
+- **Même document que `StudentDirectory`** : `FirestoreStudentRepository.save` met à jour la fiche publiée (prénom, public, historique) sans toucher `groupIds` ni
+  `createdAt`, et la crée sans groupe courant. `groupIds` (dénormalisé, lu par les règles) est tenu par `FirestoreGroupRepository.save` / `delete` : il ajoute ou
+  retire le groupe sur les fiches concernées, dans le même lot ; une fiche absente est ignorée. Le retrait et l'ajout sont **atomiques côté serveur** (`ArrayUnion` /
+  `ArrayRemove` du port `DocumentStore`, sans relire ni réécrire la liste) : deux gestionnaires qui enregistrent deux groupes d'un même élève s'additionnent. La fiche est
+  écrite par fusion (`SetOp(merge: true)`, `groupIds: ArrayUnion([])`) : même si la lecture ne voit pas une fiche existante, `groupIds` n'est jamais remplacé ; seule `createdAt`
+  (informative) peut être réécrite dans ce cas. Le domaine refuse plus de 10 changements de public et un prénom de plus de 40 caractères (mêmes bornes que les règles).
+- **`teacherUids`** appartient au directeur : le dépôt de groupes ne l'écrit qu'à la création (vide, les règles l'exigent) et met à jour les autres champs sans le remplacer.
+- **Rôle et requêtes** : les règles n'autorisent pas la même requête à chaque rôle ; `all()` s'adapte (directeur et administrateur : liste ; enseignant :
+  `array-contains-any` sur `groupIds`, 30 valeurs par requête ; parent et élève : lecture des fiches et groupes liés un à un, sans appartenances). `idsEverContaining`
+  et `eraseStudent` (requête par élève) sont réservés aux gestionnaires par les règles.
+- **Ordre des listes** : élèves triés par inscription puis identifiant, groupes par identifiant, appartenances par (groupe, élève, début) : l'ordre de première sauvegarde
+  de la mémoire n'existe pas côté serveur.
+- **Club résolu à l'appel** (et non à la construction, décision 14 : « injecté à la construction ») : `ClubStore` relit `ActiveClubScope` avant chaque lecture ou écriture ;
+  un dépôt unique survit à un changement de club et sans club actif l'accès est refusé (`ServiceFailure` `denied`). Les signatures des interfaces sont inchangées.
+- **Suppression physique** (décision 15) de la fiche et du groupe ; la cascade des données de l'élève est FB8. Lots de 500 écritures au plus, idempotents ; l'atomicité
+  « tout ou rien » d'un `save` de groupe n'est garantie que sous 500 écritures.
+- **Réglages** : `clubs/{c}/settings/main` porte les cinq champs de `ClubSettings` (`backupReminderDays` reste facultatif jusqu'à FB5) ; les préférences d'appareil restent
+  dans le `KeyValueStore` local.
+- **Backend** : `--dart-define=DATA_BACKEND=firestore` (défaut `drift`, valeur inconnue = erreur). La bascule de production est la partie 3.
+- **Constat pour la partie 3** : `RulesStore` est chargé au démarrage depuis `SettingsRepository` ; avec Firestore, la lecture a lieu avant l'ouverture de session
+  (club absent, accès refusé) : il devra être rechargé à l'activation d'un club.
+

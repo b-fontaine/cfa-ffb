@@ -45,6 +45,51 @@ void main() {
     expect([for (final d in await store.list('clubs/a/members')) d.id], ['u1']);
   });
 
+  test('query filters one collection, direct children only, by id', () async {
+    store
+      ..seed('clubs/c1/memberships/b', {'groupId': 'g1'})
+      ..seed('clubs/c1/memberships/a', {'groupId': 'g1'})
+      ..seed('clubs/c1/memberships/c', {'groupId': 'g2'})
+      ..seed('clubs/c2/memberships/d', {'groupId': 'g1'})
+      ..seed('clubs/c1/memberships/a/deep/x', {'groupId': 'g1'});
+
+    final docs = await store.query(
+      'clubs/c1/memberships',
+      const FieldEquals('groupId', 'g1'),
+    );
+
+    expect([for (final d in docs) d.id], ['a', 'b']);
+  });
+
+  test('query array-contains-any needs a list sharing one value', () async {
+    store
+      ..seed('clubs/c1/students/s1', {
+        'groupIds': ['g1'],
+      })
+      ..seed('clubs/c1/students/s2', {
+        'groupIds': ['g2', 'g3'],
+      })
+      ..seed('clubs/c1/students/s3', {'groupIds': <String>[]})
+      ..seed('clubs/c1/students/s4', {'groupIds': 'g1'});
+
+    final docs = await store.query(
+      'clubs/c1/students',
+      const FieldArrayContainsAny('groupIds', ['g1', 'g3']),
+    );
+
+    expect([for (final d in docs) d.id], ['s1', 's2']);
+  });
+
+  test('query counts as a read and obeys the simulated failure', () async {
+    store.failing = StoreFailureCode.permissionDenied;
+
+    await expectLater(
+      store.query('a', const FieldEquals('x', 1)),
+      throwsA(isA<StoreFailure>()),
+    );
+    expect(store.reads, 1);
+  });
+
   test(
     'collectionGroup finds same-named collections anywhere, filtered',
     () async {
@@ -143,6 +188,60 @@ void main() {
       expect(store.read('a/1')!['at'], now.add(const Duration(hours: 1)));
     },
   );
+
+  test('array union and removal edit the stored list atomically', () async {
+    store.seed('a/1', {
+      'ids': ['x', 'y'],
+    });
+    await store.commit([
+      const UpdateOp('a/1', {
+        'ids': ArrayUnion(['y', 'z']),
+      }),
+    ]);
+    expect(store.read('a/1'), {
+      'ids': ['x', 'y', 'z'],
+    });
+
+    await store.commit([
+      const UpdateOp('a/1', {
+        'ids': ArrayRemove(['x', 'absent']),
+      }),
+    ]);
+    expect(store.read('a/1'), {
+      'ids': ['y', 'z'],
+    });
+  });
+
+  test('array union on a missing or absent field starts a list', () async {
+    store.seed('a/1', {'n': 1});
+    await store.commit([
+      const UpdateOp('a/1', {
+        'ids': ArrayUnion(['x']),
+      }),
+    ]);
+    expect(store.read('a/1'), {
+      'n': 1,
+      'ids': ['x'],
+    });
+  });
+
+  test('a merging set keeps the other fields, and creates if absent', () async {
+    store.seed('a/1', {
+      'keep': 1,
+      'ids': ['x'],
+    });
+    await store.commit([
+      const SetOp('a/1', {'n': 2, 'ids': ArrayUnion([])}, merge: true),
+      const SetOp('a/2', {'n': 3}, merge: true),
+    ]);
+
+    expect(store.read('a/1'), {
+      'keep': 1,
+      'n': 2,
+      'ids': ['x'],
+    });
+    expect(store.read('a/2'), {'n': 3});
+  });
 
   test('failing makes every operation fail with that code', () async {
     store

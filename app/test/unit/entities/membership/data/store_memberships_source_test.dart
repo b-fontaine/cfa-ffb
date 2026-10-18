@@ -139,6 +139,33 @@ void main() {
     },
   );
 
+  for (final (code, label) in [
+    (StoreFailureCode.permissionDenied, 'a rule refusal'),
+    (StoreFailureCode.failedPrecondition, 'a missing index'),
+  ]) {
+    test('$label is MembershipsDenied, not a network failure', () async {
+      store.failing = code;
+
+      await expectLater(
+        source.membershipsOf(alice),
+        throwsA(isA<MembershipsDenied>()),
+      );
+      await expectLater(
+        source.isAdmin(alice),
+        throwsA(isA<MembershipsDenied>()),
+      );
+    });
+  }
+
+  test('any other service error stays MembershipsUnavailable', () async {
+    store.failing = StoreFailureCode.other;
+
+    await expectLater(
+      source.membershipsOf(alice),
+      throwsA(isA<MembershipsUnavailable>()),
+    );
+  });
+
   test(
     'uses one group query, one read per club and one read of admins',
     () async {

@@ -40,6 +40,10 @@ void main() {
     );
   });
 
+  test('the audience history bound is the one of the rules', () {
+    expect(rules, contains('d.audienceHistory.size() <= $maxAudienceHistory'));
+  });
+
   test('the invitation code bounds are the ones of the rules', () {
     expect(
       rules,
