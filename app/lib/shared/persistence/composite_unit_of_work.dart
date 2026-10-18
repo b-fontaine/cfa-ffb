@@ -9,6 +9,13 @@ import 'package:billard_cfa/shared/lib/unit_of_work.dart';
 /// transaction drift ; s'il échoue, drift est annulé avec lui. Sans lot
 /// commun possible entre deux stockages, c'est le meilleur ordre : le seul
 /// écart restant est une panne de l'appareil entre les deux validations.
+///
+/// **Hors ligne** : le lot Firestore n'est **pas attendu jusqu'à l'accusé du
+/// serveur** (voir `FirestoreUnitOfWork`, `tracker`) : le SDK l'applique à son
+/// cache dès l'appel, la transaction drift se ferme aussitôt, aucune écriture
+/// locale n'est bloquée, et l'envoi est suivi à part (`SendStatus`). Un refus
+/// du serveur arrive donc **après** la validation de drift : il ne l'annule
+/// pas (écart assumé, signalé par `SendStatus.lastFailure`, FB5).
 class CompositeUnitOfWork implements UnitOfWork {
   CompositeUnitOfWork({required this.outer, required this.inner});
 

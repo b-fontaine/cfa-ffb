@@ -6,7 +6,7 @@ import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:injectable/injectable.dart';
 
 /// Cas d'usage : corriger en place les billes empochées et les tentatives
-/// d'un passage déjà saisi (ADR 0006). La date, l'index du passage, l'élève
+/// d'un passage déjà saisi (ADR 0006). La date, le rang du passage, l'élève
 /// et l'exercice ne changent pas ; les règles de la saisie s'appliquent.
 @injectable
 class CorrectAttempt {
@@ -33,7 +33,7 @@ class CorrectAttempt {
       throw const InvariantViolation(InvariantCode.totalBelowSheet);
     }
     final corrected = existing.copyWith(potted: potted, total: total);
-    await _attempts.add(corrected);
+    await _attempts.correct(corrected);
     return corrected;
   });
 }

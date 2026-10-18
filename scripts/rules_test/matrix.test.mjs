@@ -45,6 +45,8 @@ import {
   student,
   ts,
   owned,
+  uids,
+  complete,
 } from './support.mjs';
 
 let env;
@@ -467,8 +469,10 @@ const groupOwnedSuite = (name, options) => {
       test(`création dans le groupe ${g}`, () =>
         check({
           expectAllowed: writers(g),
-          run: (db) => setDoc(doc(db, `clubs/c1/${name}/nouveau`),
-            name === 'records' ? { ...bodyOf(g), createdAt: serverTimestamp() } : bodyOf(g)),
+          run: (db, actor) => setDoc(doc(db, `clubs/c1/${name}/nouveau`),
+            name === 'records' || name === 'attempts' ? { ...complete(name, bodyOf(g)), createdAt: serverTimestamp() }
+              : name === 'acknowledgements' ? { ...complete(name, bodyOf(g)), createdBy: uids[actor] ?? null }
+                : complete(name, bodyOf(g))),
           reset: () => remove(env, `clubs/c1/${name}/nouveau`),
         }));
 

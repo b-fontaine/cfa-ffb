@@ -8,7 +8,7 @@ import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
 /// Blocs acquis au positionnement persistés dans SQLite (drift).
-@LazySingleton(as: AcquisitionRepository, env: [Environment.prod])
+@LazySingleton(env: [Environment.prod])
 class DriftAcquisitionRepository implements AcquisitionRepository {
   DriftAcquisitionRepository(this._db, this._clock);
 

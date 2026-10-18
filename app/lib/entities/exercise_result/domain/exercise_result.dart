@@ -31,7 +31,9 @@ abstract class ExerciseResult with _$ExerciseResult {
   const ExerciseResult._();
 
   /// Dérive le résultat. [attempts] concerne uniquement cet élève et cet
-  /// exercice ; ils sont triés par (date, `passIndex`).
+  /// exercice, **dans l'ordre d'enregistrement** du dépôt ; ils sont triés par
+  /// date, l'ordre reçu départageant une même date (rang dérivé, ADR 0024
+  /// décision 17).
   ///
   /// R1/R2 : validé après `passesRequired` passages réussis (cumulés, pas
   /// forcément consécutifs) ; la validation est monotone. R4 : les échecs
@@ -43,11 +45,7 @@ abstract class ExerciseResult with _$ExerciseResult {
     required List<ExerciseAttempt> attempts,
     required RulesConfig config,
   }) {
-    final sorted = [...attempts]
-      ..sort((a, b) {
-        final byDate = a.date.compareTo(b.date);
-        return byDate != 0 ? byDate : a.passIndex.compareTo(b.passIndex);
-      });
+    final sorted = chronological(attempts);
     var passed = 0;
     var failures = 0;
     DateTime? validatedOn;
@@ -90,6 +88,14 @@ abstract class ExerciseResult with _$ExerciseResult {
   bool get hasActiveAlert => alert != AlertLevel.none;
 
   ExerciseAttempt? get lastAttempt => attempts.lastOrNull;
+
+  /// Rang dérivé du dernier passage parmi ceux de sa séance (à partir de 1) ;
+  /// 0 sans passage.
+  int get lastAttemptRank {
+    final last = lastAttempt;
+    if (last == null) return 0;
+    return attempts.where((a) => a.sessionId == last.sessionId).length;
+  }
 
   /// Vrai si le dernier passage n'a pas atteint le taux requis.
   bool get lastFailed {

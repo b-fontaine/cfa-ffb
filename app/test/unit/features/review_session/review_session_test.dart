@@ -34,14 +34,12 @@ void main() {
     String student,
     ExerciseRef exercise, {
     bool passed = true,
-    int passIndex = 1,
   }) => attempt(
     exercise,
     potted: passed ? 3 : 2,
     student: student,
     session: 'today',
     dayOfMonth: 12,
-    passIndex: passIndex,
     id: 't${ids++}',
   );
 
@@ -97,7 +95,7 @@ void main() {
         today('s1', b1),
         today('s1', a2, passed: false),
         today('s2', a2),
-        today('s2', a2, passIndex: 2),
+        today('s2', a2),
       ]);
 
       expect(outcome.totalPasses, 4);
@@ -152,7 +150,7 @@ void main() {
     test('lists it once when the record itself holds the passes', () {
       final outcome = review([
         today('s1', a1),
-        today('s1', a1, passIndex: 2),
+        today('s1', a1),
       ], config: RulesConfig(passesRequired: 2));
 
       expect(outcome.validations, hasLength(1));

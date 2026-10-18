@@ -70,7 +70,6 @@ String failureMessage(
     InvariantCode.invalidRange ||
     InvariantCode.invalidExerciseRef ||
     InvariantCode.successRateOutOfRange ||
-    InvariantCode.invalidPassIndex ||
     InvariantCode.unknownExercise ||
     InvariantCode.unknownBlock ||
     InvariantCode.unknownGroup ||

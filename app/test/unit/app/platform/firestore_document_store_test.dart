@@ -42,6 +42,17 @@ class _FakeAccess implements FirestoreAccess {
   }
 
   @override
+  Future<List<RawDocument>> readQueryAll(
+    String path,
+    Map<String, Object?> equalities,
+  ) async {
+    final clauses = [for (final e in equalities.entries) '${e.key}=${e.value}'];
+    calls.add('queryAll $path ${clauses.join(',')}');
+    _maybeFail();
+    return collection;
+  }
+
+  @override
   Future<List<RawDocument>> readGroup(
     String collectionId,
     String field,
@@ -168,6 +179,28 @@ void main() {
         'query clubs/c1/students groupIds any [g1, g2]',
       ]);
     });
+
+    test(
+      'a conjunction of equalities is one query with encoded values',
+      () async {
+        access.collection = [
+          (path: 'a/1', data: {'x': 1}),
+        ];
+
+        final found = await store.query(
+          'clubs/c1/attempts',
+          AllEqual(const [
+            FieldEquals('groupId', 'g1'),
+            FieldEquals('sessionId', 'x1'),
+          ]),
+        );
+
+        expect([for (final d in found) d.path], ['a/1']);
+        expect(access.calls, [
+          'queryAll clubs/c1/attempts groupId=g1,sessionId=x1',
+        ]);
+      },
+    );
 
     test('a missing document is null', () async {
       expect(await store.get('clubs/none'), isNull);

@@ -39,15 +39,8 @@ void main() {
     int potted, {
     required String id,
     int dayOfMonth = 2,
-    int passIndex = 1,
   }) => world.attempts.add(
-    attempt(
-      exercise,
-      potted: potted,
-      id: id,
-      dayOfMonth: dayOfMonth,
-      passIndex: passIndex,
-    ),
+    attempt(exercise, potted: potted, id: id, dayOfMonth: dayOfMonth),
   );
 
   test(
@@ -69,7 +62,7 @@ void main() {
 
   test('builds the curve of each practised exercise', () async {
     await pass(ref('a', 1), 4, id: 'p1');
-    await pass(ref('a', 1), 1, id: 'p2', passIndex: 2);
+    await pass(ref('a', 1), 1, id: 'p2');
     await pass(ref('b', 2), 5, id: 'p3', dayOfMonth: 3);
 
     final result = ok(await sheet(student));

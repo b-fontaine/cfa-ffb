@@ -64,7 +64,6 @@ class RecordAttempt {
       sessionId: sessionId,
       exercise: exercise,
       date: session.date,
-      passIndex: inSession + 1,
       potted: potted,
       total: total,
     );

@@ -51,6 +51,9 @@ class _FailingSecondAttempt implements AttemptRepository {
   }
 
   @override
+  Future<void> correct(ExerciseAttempt attempt) => _inner.correct(attempt);
+
+  @override
   Future<List<ExerciseAttempt>> all() => _inner.all();
 
   @override
@@ -111,7 +114,7 @@ void main() {
         ],
         attempts: [
           attempt(ref('a', 1), potted: 3),
-          attempt(ref('a', 1), potted: 4, id: 'a2', passIndex: 2),
+          attempt(ref('a', 1), potted: 4, id: 'a2'),
         ],
         blockAcquisitions: const [],
         seasonArchives: const [],
@@ -214,7 +217,7 @@ void main() {
             ],
             attempts: [
               attempt(ref('a', 1), potted: 3),
-              attempt(ref('a', 1), potted: 4, id: 'a2', passIndex: 2),
+              attempt(ref('a', 1), potted: 4, id: 'a2'),
             ],
             blockAcquisitions: const [],
             seasonArchives: const [],

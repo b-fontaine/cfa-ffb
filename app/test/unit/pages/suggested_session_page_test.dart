@@ -60,7 +60,7 @@ void main() {
   Future<void> pump(
     WidgetTester tester,
     SuggestedSessionState state, {
-    void Function(SheetId?, GroupId?)? onPlan,
+    void Function(SheetId?, GroupId)? onPlan,
   }) async {
     final students = _MockStudents();
     final suggested = _MockSuggested();

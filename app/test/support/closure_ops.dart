@@ -105,6 +105,9 @@ class _FailingErasure implements AttemptRepository {
   Future<void> add(ExerciseAttempt attempt) => _inner.add(attempt);
 
   @override
+  Future<void> correct(ExerciseAttempt attempt) => _inner.correct(attempt);
+
+  @override
   Future<List<ExerciseAttempt>> all() => _inner.all();
 
   @override

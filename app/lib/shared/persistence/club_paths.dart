@@ -53,4 +53,26 @@ final class ClubPaths {
   String get archives => '$root/archives';
 
   String archive(String id) => '$archives/$id';
+
+  /// Passages : **un document par passage** (ADR 0024, décision 17).
+  String get attempts => '$root/attempts';
+
+  String attempt(AttemptId id) => '$attempts/${id.value}';
+
+  /// Blocs acquis au positionnement.
+  String get acquisitions => '$root/acquisitions';
+
+  String acquisition(AcquisitionId id) => '$acquisitions/${id.value}';
+
+  /// Bilans de maturité (réservés aux animateurs).
+  String get assessments => '$root/assessments';
+
+  String assessment(AssessmentId id) => '$assessments/${id.value}';
+
+  /// Acquittements d'alertes (« Vu »), partagés par club (réservés aux
+  /// animateurs).
+  String get acknowledgements => '$root/acknowledgements';
+
+  String acknowledgement(AcknowledgementId id) =>
+      '$acknowledgements/${id.value}';
 }

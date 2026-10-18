@@ -5,17 +5,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../support/fixtures.dart';
 
-ExerciseAttempt build({int potted = 3, int total = 5, int passIndex = 1}) =>
-    ExerciseAttempt(
-      id: const AttemptId('a'),
-      studentId: const StudentId('s'),
-      sessionId: const SessionId('x'),
-      exercise: ref('a', 1),
-      date: day(1),
-      passIndex: passIndex,
-      potted: potted,
-      total: total,
-    );
+ExerciseAttempt build({int potted = 3, int total = 5}) => ExerciseAttempt(
+  id: const AttemptId('a'),
+  studentId: const StudentId('s'),
+  sessionId: const SessionId('x'),
+  exercise: ref('a', 1),
+  date: day(1),
+  potted: potted,
+  total: total,
+);
 
 void main() {
   group('invariants', () {
@@ -58,14 +56,6 @@ void main() {
         () => build(potted: 6),
         violation(InvariantCode.pottedExceedsTotal),
       );
-    });
-
-    test('refuses a pass index of 0 and accepts 1', () {
-      expect(
-        () => build(passIndex: 0),
-        violation(InvariantCode.invalidPassIndex),
-      );
-      expect(build().passIndex, 1);
     });
   });
 

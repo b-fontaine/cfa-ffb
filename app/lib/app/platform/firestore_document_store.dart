@@ -22,6 +22,12 @@ abstract interface class FirestoreAccess {
     required Object? value,
   });
 
+  /// Une collection filtrée par plusieurs égalités sur des champs différents.
+  Future<List<RawDocument>> readQueryAll(
+    String path,
+    Map<String, Object?> equalities,
+  );
+
   Future<List<RawDocument>> readGroup(
     String collectionId,
     String field,
@@ -82,6 +88,18 @@ class FirestoreSdkAccess implements FirestoreAccess {
     final query = contains
         ? collection.where(field, arrayContainsAny: value! as List<Object?>)
         : collection.where(field, isEqualTo: value);
+    return _raw(await query.get());
+  }
+
+  @override
+  Future<List<RawDocument>> readQueryAll(
+    String path,
+    Map<String, Object?> equalities,
+  ) async {
+    Query<Map<String, dynamic>> query = _firestore().collection(path);
+    for (final entry in equalities.entries) {
+      query = query.where(entry.key, isEqualTo: entry.value);
+    }
     return _raw(await query.get());
   }
 
@@ -170,6 +188,9 @@ class FirestoreDocumentStore implements DocumentStore {
               contains: true,
               value: [for (final value in values) _encode(value)],
             ),
+          AllEqual(:final clauses) => await _access.readQueryAll(collection, {
+            for (final clause in clauses) clause.field: _encode(clause.value),
+          }),
         };
         return _documents(raw);
       });

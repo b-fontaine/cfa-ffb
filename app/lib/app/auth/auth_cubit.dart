@@ -10,6 +10,7 @@ import 'package:billard_cfa/entities/invitation/domain/invitation_log.dart';
 import 'package:billard_cfa/entities/membership/domain/active_club_memory.dart';
 import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
 import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
+import 'package:billard_cfa/features/manage_settings/domain/reload_rules.dart';
 import 'package:billard_cfa/features/select_club/domain/choose_club.dart';
 import 'package:billard_cfa/features/select_club/domain/resolve_active_club.dart';
 import 'package:billard_cfa/features/sign_in/domain/pending_invitations.dart';
@@ -48,6 +49,7 @@ class AuthCubit extends Cubit<AuthState> {
     this._scope,
     this._pending,
     this._issued,
+    this._rules,
   ) : super(const AuthUnknown());
 
   final SessionStartup _startup;
@@ -58,6 +60,7 @@ class AuthCubit extends Cubit<AuthState> {
   final SessionScope _scope;
   final PendingInvitations _pending;
   final InvitationLog _issued;
+  final ReloadRules _rules;
 
   /// Délai au-delà duquel un démarrage resté sans réponse (SDK qui ne
   /// s'initialise pas, première session jamais livrée) mène à `indisponible`
@@ -127,7 +130,7 @@ class AuthCubit extends Cubit<AuthState> {
       return false;
     }
     _generation++;
-    _activate(account, club, choices, isAdmin: isAdmin);
+    await _activate(account, club, choices, isAdmin: isAdmin);
     return true;
   }
 
@@ -197,6 +200,7 @@ class AuthCubit extends Cubit<AuthState> {
   void _setSignedOut() {
     _account = null;
     _scope.signOut();
+    _rules.reset();
     if (!isClosed) emit(const AuthSignedOut());
   }
 
@@ -218,7 +222,7 @@ class AuthCubit extends Cubit<AuthState> {
         // d'identifiant de compte.
         debugPrint('auth_cubit: clubs refused by the server ($denied)');
         if (!isClosed && generation == _generation) {
-          _scope.deactivateClub();
+          _deactivateClub();
           emit(const AuthAccessDenied());
         }
         return;
@@ -231,10 +235,10 @@ class AuthCubit extends Cubit<AuthState> {
         // Clubs illisibles (hors ligne) : seul le club retenu sur l'appareil
         // permet d'ouvrir l'application.
         if (remembered == null) {
-          _scope.deactivateClub();
+          _deactivateClub();
           emit(const AuthIndisponible());
         } else {
-          _activate(account, remembered, [remembered]);
+          await _activate(account, remembered, [remembered]);
         }
         return;
       }
@@ -245,7 +249,7 @@ class AuthCubit extends Cubit<AuthState> {
         case NoClub():
           await _memory.clear(account.id);
           if (isClosed || generation != _generation) return;
-          _scope.deactivateClub();
+          _deactivateClub();
           emit(
             AuthNoClub(
               account: account,
@@ -255,7 +259,7 @@ class AuthCubit extends Cubit<AuthState> {
             ),
           );
         case MustChooseClub():
-          _scope.deactivateClub();
+          _deactivateClub();
           emit(
             AuthNoClub(
               account: account,
@@ -267,7 +271,7 @@ class AuthCubit extends Cubit<AuthState> {
         case ChosenClub(:final club):
           if (remembered != club) await _memory.write(account.id, club);
           if (isClosed || generation != _generation) return;
-          _activate(account, club, memberships, isAdmin: isAdmin);
+          await _activate(account, club, memberships, isAdmin: isAdmin);
       }
     } on Object catch (error, stackTrace) {
       FlutterError.reportError(
@@ -279,24 +283,37 @@ class AuthCubit extends Cubit<AuthState> {
         ),
       );
       if (!isClosed && generation == _generation) {
-        _scope.deactivateClub();
+        _deactivateClub();
         emit(const AuthIndisponible());
       }
     }
   }
 
-  void _activate(
+  /// Retire le club actif et les règles de ce club.
+  void _deactivateClub() {
+    _scope.deactivateClub();
+    _rules.reset();
+  }
+
+  /// Active [club] : la portée d'abord, puis ses réglages (un document par
+  /// club, illisible avant), **avant** d'émettre `ready` : les écrans lisent
+  /// les règles du club, pas celles du précédent ni les valeurs par défaut.
+  Future<void> _activate(
     Account account,
     ClubMembership club,
     List<ClubMembership> choices, {
     bool isAdmin = false,
-  }) {
+  }) async {
+    final generation = _generation;
     _scope.activate(
       club.clubId,
       club.role,
       groupIds: club.groupIds,
       studentIds: club.studentIds,
     );
+    await _rules(isCurrent: () => !isClosed && generation == _generation);
+    // Une résolution plus récente (autre compte, déconnexion) a repris la main.
+    if (isClosed || generation != _generation) return;
     emit(
       AuthReady(
         account: account,

@@ -5,7 +5,6 @@ import 'package:billard_cfa/features/record_results/domain/delete_attempt.dart';
 import 'package:billard_cfa/features/record_results/domain/record_attempt.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
-import 'package:billard_cfa/shared/persistence/in_memory_unit_of_work.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/domain_world.dart';
@@ -15,7 +14,7 @@ const _session = SessionId('x1');
 
 class Fixture {
   Fixture(this.world, {AttemptRepository? attempts})
-    : delete = DeleteAttempt(attempts ?? world.attempts, InMemoryUnitOfWork());
+    : delete = DeleteAttempt(attempts ?? world.attempts);
 
   final DomainWorld world;
   final DeleteAttempt delete;
@@ -23,9 +22,10 @@ class Fixture {
   Future<Result<void>> call(String attempt, {String session = 'x1'}) =>
       delete(sessionId: SessionId(session), attemptId: AttemptId(attempt));
 
-  Future<Map<String, int>> passIndexes() async => {
-    for (final attempt in await world.attempts.all())
-      attempt.id.value: attempt.passIndex,
+  /// Le rang dérivé de chaque passage restant (rien n'est stocké).
+  Future<Map<String, int>> ranks() async => {
+    for (final entry in passRanks(await world.attempts.all()).entries)
+      entry.key.value: entry.value,
   };
 }
 
@@ -38,7 +38,7 @@ Future<Fixture> fixture({AttemptRepository? attempts}) async {
   await world.session(id: 'x2', dayOfMonth: 2, present: {'s2'});
   final repository = attempts ?? world.attempts;
   await repository.add(attempt(ref('a', 1), potted: 2));
-  await repository.add(attempt(ref('a', 1), potted: 3, passIndex: 2, id: 'a2'));
+  await repository.add(attempt(ref('a', 1), potted: 3, id: 'a2'));
   await repository.add(attempt(ref('a', 2), potted: 3, id: 'a3'));
   await repository.add(
     attempt(ref('a', 1), potted: 3, student: 's2', session: 'x2', id: 'b1'),
@@ -46,14 +46,20 @@ Future<Fixture> fixture({AttemptRepository? attempts}) async {
   return Fixture(world, attempts: attempts);
 }
 
-/// Dépôt dont toute réécriture échoue (après la suppression).
-class _FailingRewrite extends InMemoryAttemptRepository {
-  bool armed = false;
+/// Dépôt qui compte les écritures : une suppression n'en fait aucune.
+class _CountingWrites extends InMemoryAttemptRepository {
+  int writes = 0;
 
   @override
   Future<void> add(ExerciseAttempt attempt) {
-    if (armed) throw StateError('écriture refusée');
+    writes++;
     return super.add(attempt);
+  }
+
+  @override
+  Future<void> correct(ExerciseAttempt attempt) {
+    writes++;
+    return super.correct(attempt);
   }
 }
 
@@ -69,22 +75,40 @@ void main() {
   });
 
   test(
-    'renumbers the remaining passes of the same student and exercise',
+    'does not renumber the remaining passes: their rank is derived',
     () async {
       final f = await fixture();
+      expect(await f.ranks(), {'a1': 1, 'a2': 2, 'a3': 1, 'b1': 1});
 
       ok(await f('a1'));
 
-      expect(await f.passIndexes(), {'a2': 1, 'a3': 1, 'b1': 1});
+      // `a2` passe au rang 1 sans qu'aucun document soit réécrit (ADR 0024,
+      // décision 17 : le rang n'est plus stocké).
+      expect(await f.ranks(), {'a2': 1, 'a3': 1, 'b1': 1});
+      expect(
+        (await f.world.attempts.forSession(_session))
+            .firstWhere((a) => a.id.value == 'a2'),
+        attempt(ref('a', 1), potted: 3, id: 'a2'),
+      );
     },
   );
+
+  test('writes nothing but the deletion', () async {
+    final repository = _CountingWrites();
+    final f = await fixture(attempts: repository);
+    repository.writes = 0;
+
+    ok(await f('a1'));
+
+    expect(repository.writes, 0);
+  });
 
   test('leaves the other passes untouched when the last one goes', () async {
     final f = await fixture();
 
     ok(await f('a2'));
 
-    expect(await f.passIndexes(), {'a1': 1, 'a3': 1, 'b1': 1});
+    expect(await f.ranks(), {'a1': 1, 'a3': 1, 'b1': 1});
   });
 
   test('lets a new pass be recorded in the freed slot', () async {
@@ -109,7 +133,12 @@ void main() {
       ),
     );
 
-    expect(recorded.attempt.passIndex, 2);
+    expect(
+      passRanks([
+        ...await f.world.attempts.forSession(_session),
+      ])[recorded.attempt.id],
+      2,
+    );
   });
 
   test('leaves the session empty when its only pass goes', () async {
@@ -121,7 +150,7 @@ void main() {
     ok(await f('a3'));
 
     expect(await f.world.attempts.forSession(_session), isEmpty);
-    expect(await f.passIndexes(), {'b1': 1});
+    expect(await f.ranks(), {'b1': 1});
   });
 
   test('refuses a pass that is not in the session', () async {
@@ -137,22 +166,5 @@ void main() {
     final f = await fixture();
 
     expect(err(await f('nope')), isA<NotFound>());
-  });
-
-  test('restores the pass when the renumbering fails', () async {
-    final repository = _FailingRewrite();
-    final f = await fixture(attempts: repository);
-    repository.armed = true;
-
-    await expectLater(f('a1'), throwsStateError);
-
-    final ids = (await repository.forSession(_session)).map((a) => a.id.value);
-    expect(ids, containsAll(['a1', 'a2', 'a3']));
-    expect(
-      (await repository.forSession(_session))
-          .firstWhere((a) => a.id.value == 'a2')
-          .passIndex,
-      2,
-    );
   });
 }

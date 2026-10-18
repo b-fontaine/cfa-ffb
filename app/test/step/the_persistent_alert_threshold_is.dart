@@ -15,6 +15,9 @@ Future<void> thePersistentAlertThresholdIs(
 ) async {
   await UiWorld.prepare(tester);
   final store = getIt<RulesStore>();
+  // Une règle qui n'est pas un réglage du club : elle fait partie de la base,
+  // que le rechargement des réglages d'un club conserve.
+  store.base = store.base.copyWith(persistentAlertThreshold: threshold.toInt());
   store.current = store.current.copyWith(
     persistentAlertThreshold: threshold.toInt(),
   );

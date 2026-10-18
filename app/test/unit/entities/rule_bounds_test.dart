@@ -99,7 +99,7 @@ void main() {
     // saisie, une saisie cite sa séance planifiée.
     expect(
       rules,
-      contains("optString(d, 'sessionId', $maxSessionReferenceLength)"),
+      contains("presString(d, 'sessionId', $maxSessionReferenceLength)"),
     );
     expect(
       rules,

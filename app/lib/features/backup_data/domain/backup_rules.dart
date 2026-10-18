@@ -72,22 +72,21 @@ class BackupRules {
 
   void _checkAttempts(BackupSnapshot snapshot, ExerciseCatalogue catalogue) {
     final sessions = {for (final s in snapshot.sessionRecords) s.id: s};
-    final indexes = <(String, String, ExerciseRef), Set<int>>{};
+    final counts = <(String, String, ExerciseRef), int>{};
     for (final attempt in snapshot.attempts) {
       if (catalogue.exercise(attempt.exercise) == null) throw _inconsistent;
       final session = sessions[attempt.sessionId];
       if (session == null) throw _inconsistent;
       if (!session.present.contains(attempt.studentId)) throw _inconsistent;
+      // Le rang d'un passage est dérivé (ADR 0024, décision 17) : seule reste
+      // la borne du nombre de passages par élève, exercice et séance.
       final key = (
         attempt.sessionId.value,
         attempt.studentId.value,
         attempt.exercise,
       );
-      final taken = indexes.putIfAbsent(key, () => {});
-      if (attempt.passIndex > _config.maxPassesPerExercisePerSession ||
-          !taken.add(attempt.passIndex)) {
-        throw _invalid;
-      }
+      final count = counts.update(key, (n) => n + 1, ifAbsent: () => 1);
+      if (count > _config.maxPassesPerExercisePerSession) throw _invalid;
     }
   }
 

@@ -155,7 +155,6 @@ Widget buildStudentPassRowResumedUseCase(BuildContext context) => WorldScope(
       sessionId: const SessionId('apercu-seance'),
       exercise: spec.ref,
       date: world.today,
-      passIndex: 1,
       potted: spec.rate.successes,
       total: spec.rate.attempts,
     );
@@ -219,7 +218,6 @@ Widget buildStudentPassRowLimitUseCase(BuildContext context) => WorldScope(
       sessionId: const SessionId('apercu-seance'),
       exercise: spec.ref,
       date: world.today,
-      passIndex: index,
       potted: spec.rate.successes,
       total: spec.rate.attempts,
     );

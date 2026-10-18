@@ -1,4 +1,5 @@
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/persistence/document_store.dart';
 
 /// Lecture tolérante des champs d'un document : une valeur du mauvais type est
 /// une [ServiceFailure] (`other`) qui nomme le champ, jamais une exception
@@ -51,7 +52,7 @@ final class DocumentValues {
     if (value is DateTime) return value;
     if (value is String) {
       final parsed = DateTime.tryParse(value);
-      if (parsed != null) return parsed;
+      if (parsed != null && _keepsCalendar(value)) return parsed;
     }
     throw ServiceFailure(
       ServiceFailureCode.other,
@@ -59,7 +60,50 @@ final class DocumentValues {
     );
   }
 
+  /// `DateTime.tryParse` CORRIGE une date fausse (30 février -> 2 mars) : on
+  /// contrôle donc les composantes du texte (jour du mois, heure, minute,
+  /// seconde), sans repasser par un `DateTime` local, dont la relecture
+  /// dépendrait du fuseau de l'appareil (heure inexistante au changement
+  /// d'heure).
+  static bool _keepsCalendar(String text) {
+    final match = _calendar.firstMatch(text);
+    if (match == null) return true;
+    final year = int.parse(match.group(1)!);
+    final month = int.parse(match.group(2)!);
+    final day = int.parse(match.group(3)!);
+    if (month < 1 || month > 12) return false;
+    if (day < 1 || day > DateTime.utc(year, month + 1, 0).day) return false;
+    if (match.group(4) == null) return true;
+    return int.parse(match.group(4)!) <= 23 &&
+        int.parse(match.group(5)!) <= 59 &&
+        int.parse(match.group(6)!) <= 59;
+  }
+
+  static final RegExp _calendar = RegExp(
+    r'^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}):(\d{2}))?',
+  );
+
   /// Écriture d'une date : ISO 8601, qui garde le fuseau (UTC ou local) et les
-  /// microsecondes ; les règles acceptent ce texte (`optStamp`, 40 caractères).
+  /// microsecondes ; les règles n'acceptent que ce texte (`isoText` : plages du
+  /// calendrier comprises, 40 caractères au plus).
   static String encodeDate(DateTime date) => date.toIso8601String();
+}
+
+/// Décode [documents] en **écartant** ceux qui sont malformés (une
+/// [ServiceFailure] `other` du décodeur) : un seul document mal formé (créé
+/// avant les règles, ou par un autre client) ne doit pas rendre illisible toute
+/// la liste d'un élève, d'un groupe ou d'un club. Les autres échecs remontent.
+List<T> decodeValid<T>(
+  Iterable<StoredDocument> documents,
+  T Function(StoredDocument document) decode,
+) {
+  final decoded = <T>[];
+  for (final document in documents) {
+    try {
+      decoded.add(decode(document));
+    } on ServiceFailure catch (failure) {
+      if (failure.code != ServiceFailureCode.other) rethrow;
+    }
+  }
+  return decoded;
 }

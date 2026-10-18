@@ -133,18 +133,7 @@ void main() {
       expect(await _codeOf(snapshot), InvariantCode.backupInconsistent);
     });
 
-    test('accepts two passes with distinct indexes', () async {
-      final snapshot = _snapshot(
-        attempts: [
-          attempt(ref('a', 1), potted: 3),
-          attempt(ref('a', 1), potted: 4, id: 'a2', passIndex: 2),
-        ],
-      );
-
-      expect(await _codeOf(snapshot), isNull);
-    });
-
-    test('refuses the same pass index twice', () async {
+    test('accepts two passes of one exercise in a session', () async {
       final snapshot = _snapshot(
         attempts: [
           attempt(ref('a', 1), potted: 3),
@@ -152,12 +141,16 @@ void main() {
         ],
       );
 
-      expect(await _codeOf(snapshot), InvariantCode.backupInvalid);
+      expect(await _codeOf(snapshot), isNull);
     });
 
-    test('refuses a pass index beyond the limit per session', () async {
+    test('refuses more passes than allowed in one session', () async {
       final snapshot = _snapshot(
-        attempts: [attempt(ref('a', 1), potted: 3, passIndex: 3)],
+        attempts: [
+          attempt(ref('a', 1), potted: 3),
+          attempt(ref('a', 1), potted: 4, id: 'a2'),
+          attempt(ref('a', 1), potted: 4, id: 'a3'),
+        ],
       );
 
       expect(await _codeOf(snapshot), InvariantCode.backupInvalid);

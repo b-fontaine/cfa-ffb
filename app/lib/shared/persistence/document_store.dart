@@ -139,6 +139,17 @@ final class FieldArrayContainsAny extends QueryFilter {
   final List<Object?> values;
 }
 
+/// Plusieurs égalités sur des champs **différents**, toutes exigées. Sans
+/// tri ni inégalité : Firestore sert ces requêtes par fusion des index à
+/// champ unique, **aucun index composite** n'est à déclarer. Sert à prouver
+/// aux règles le groupe d'un passage (`groupId`) tout en le restreignant à un
+/// élève ou à une séance.
+final class AllEqual extends QueryFilter {
+  AllEqual(this.clauses) : super(clauses.first.field);
+
+  final List<FieldEquals> clauses;
+}
+
 /// Frontière de Firestore pour les dépôts : lire un document, une collection,
 /// une collection de même nom partout (requête de groupe de collections),
 /// écrire un **lot atomique**.

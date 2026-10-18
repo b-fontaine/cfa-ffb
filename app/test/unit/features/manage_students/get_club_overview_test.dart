@@ -56,13 +56,7 @@ void main() {
     await world.seedClub(studentNames: ['s1', 's2']);
     for (var pass = 0; pass < 5; pass++) {
       await world.attempts.add(
-        attempt(
-          ref('a', 1),
-          potted: 4,
-          id: 'v$pass',
-          passIndex: 1 + pass % 2,
-          dayOfMonth: 2 + pass,
-        ),
+        attempt(ref('a', 1), potted: 4, id: 'v$pass', dayOfMonth: 2 + pass),
       );
     }
     for (var pass = 0; pass < 3; pass++) {

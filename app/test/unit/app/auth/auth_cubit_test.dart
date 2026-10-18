@@ -185,6 +185,7 @@ void main() {
         rig.scope,
         rig.pending,
         rig.issued,
+        rig.reloadRules,
       );
       addTearDown(cubit.close);
       final reported = <FlutterErrorDetails>[];
@@ -544,6 +545,7 @@ void main() {
           rig.scope,
           rig.pending,
           rig.issued,
+          rig.reloadRules,
         );
         addTearDown(cubit.close);
         await cubit.start();
@@ -587,6 +589,7 @@ void main() {
       rig.scope,
       rig.pending,
       rig.issued,
+      rig.reloadRules,
     );
     addTearDown(cubit.close);
     final other = rig.auth.seed(email: 'other@example.org', password: 'pw');
@@ -656,6 +659,7 @@ void main() {
           rig.scope,
           rig.pending,
           rig.issued,
+          rig.reloadRules,
         );
         addTearDown(cubit.close);
 
@@ -686,6 +690,7 @@ void main() {
           rig.scope,
           rig.pending,
           rig.issued,
+          rig.reloadRules,
         );
         addTearDown(cubit.close);
 
@@ -711,6 +716,7 @@ void main() {
         rig.scope,
         rig.pending,
         rig.issued,
+        rig.reloadRules,
       );
       addTearDown(cubit.close);
       return cubit;

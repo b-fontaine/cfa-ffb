@@ -1,5 +1,7 @@
 # Historique des séances saisies et correction des passages : plan
 
+> **Amendé par l'[ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) (décision 17, réalisée en FB4c)** : le rang d'un passage est **dérivé** de l'ordre d'enregistrement ; `passIndex` n'existe plus et la suppression **ne renumérote plus**. Les passages ci-dessous sur `passIndex` et la renumérotation sont conservés tels que livrés.
+
 Statut : **livré** (lot 5 de la [roadmap](roadmap.md) ; conception validée
 par l'utilisateur et lots H1 à H5 réalisés le 2026-10-14, `scripts/check.sh
 --full` vert, revues `architecte-fsd` et `testeur-bdd` prises en compte).

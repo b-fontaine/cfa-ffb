@@ -168,21 +168,52 @@ void main() {
   });
 
   group('ordering and last pass', () {
-    test('sorts passes by date then by pass index', () {
+    test('sorts passes by date, keeping the recorded order on a tie', () {
       final result = ExerciseResult.derive(
         studentId: const StudentId('s1'),
         exercise: _exercise,
         rate: rate(),
         attempts: [
-          attempt(_exercise, potted: 3, dayOfMonth: 2, passIndex: 2, id: 'd'),
-          attempt(_exercise, potted: 2, dayOfMonth: 2, id: 'c'),
+          attempt(_exercise, potted: 2, dayOfMonth: 2, id: 'z'),
+          attempt(_exercise, potted: 3, dayOfMonth: 2, id: 'a'),
           attempt(_exercise, potted: 4, id: 'b'),
         ],
         config: RulesConfig(),
       );
 
-      expect(result.attempts.map((a) => a.id.value), ['b', 'c', 'd']);
-      expect(result.lastAttempt!.id.value, 'd');
+      // Le rang est dérivé : à égalité de date, l'ordre d'enregistrement du
+      // dépôt (jamais l'identifiant) tranche ; le tri est stable.
+      expect(result.attempts.map((a) => a.id.value), ['b', 'z', 'a']);
+      expect(result.lastAttempt!.id.value, 'a');
+    });
+
+    test('the rank of the last pass counts the passes of its session', () {
+      final result = ExerciseResult.derive(
+        studentId: const StudentId('s1'),
+        exercise: _exercise,
+        rate: rate(),
+        attempts: [
+          attempt(_exercise, potted: 2, id: 'p1'),
+          attempt(_exercise, potted: 3, id: 'p2'),
+          attempt(_exercise, potted: 4, id: 'p3', session: 'x2', dayOfMonth: 2),
+        ],
+        config: RulesConfig(),
+      );
+
+      expect(result.lastAttemptRank, 1);
+      expect(
+        ExerciseResult.derive(
+          studentId: const StudentId('s1'),
+          exercise: _exercise,
+          rate: rate(),
+          attempts: [
+            attempt(_exercise, potted: 2, id: 'p1'),
+            attempt(_exercise, potted: 3, id: 'p2'),
+          ],
+          config: RulesConfig(),
+        ).lastAttemptRank,
+        2,
+      );
     });
 
     test('lastFailed is true when the last pass missed the rate', () {

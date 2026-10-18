@@ -1,7 +1,19 @@
 import 'package:billard_cfa/app/data_backend.dart';
+import 'package:billard_cfa/entities/exercise_result/data/drift_acknowledgement_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/data/drift_acquisition_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/data/firestore_acknowledgement_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/data/firestore_acquisition_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/data/firestore_attempt_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acknowledgement_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/data/drift_group_repository.dart';
 import 'package:billard_cfa/entities/group/data/firestore_group_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
+import 'package:billard_cfa/entities/maturity_assessment/data/drift_assessment_repository.dart';
+import 'package:billard_cfa/entities/maturity_assessment/data/firestore_assessment_repository.dart';
+import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repository.dart';
 import 'package:billard_cfa/entities/season/data/drift_season_archive_repository.dart';
 import 'package:billard_cfa/entities/season/data/drift_season_repository.dart';
 import 'package:billard_cfa/entities/season/data/firestore_season_archive_repository.dart';
@@ -20,11 +32,13 @@ import 'package:billard_cfa/entities/settings/domain/settings_repository.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
 import 'package:billard_cfa/entities/student/data/firestore_student_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
+import 'package:billard_cfa/shared/lib/current_user.dart';
 import 'package:billard_cfa/shared/lib/unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/club_store.dart';
 import 'package:billard_cfa/shared/persistence/composite_unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/firestore_unit_of_work.dart';
+import 'package:billard_cfa/shared/persistence/send_status.dart';
 import 'package:injectable/injectable.dart';
 
 /// Aiguillage des dépôts de données entre drift (défaut) et Firestore (ADR
@@ -115,17 +129,66 @@ abstract class DataBackendModule {
     firestore: () => FirestoreSessionRecordRepository(club),
   );
 
+  @Environment(Environment.prod)
+  @lazySingleton
+  AttemptRepository attemptRepository(
+    DataBackendChoice choice,
+    DriftAttemptRepository drift,
+    ClubStore club,
+  ) => choice.backend.choose(
+    drift: () => drift,
+    firestore: () => FirestoreAttemptRepository(club),
+  );
+
+  @Environment(Environment.prod)
+  @lazySingleton
+  AcquisitionRepository acquisitionRepository(
+    DataBackendChoice choice,
+    DriftAcquisitionRepository drift,
+    ClubStore club,
+  ) => choice.backend.choose(
+    drift: () => drift,
+    firestore: () => FirestoreAcquisitionRepository(club),
+  );
+
+  @Environment(Environment.prod)
+  @lazySingleton
+  AssessmentRepository assessmentRepository(
+    DataBackendChoice choice,
+    DriftAssessmentRepository drift,
+    ClubStore club,
+  ) => choice.backend.choose(
+    drift: () => drift,
+    firestore: () => FirestoreAssessmentRepository(club),
+  );
+
+  @Environment(Environment.prod)
+  @lazySingleton
+  AcknowledgementRepository acknowledgementRepository(
+    DataBackendChoice choice,
+    DriftAcknowledgementRepository drift,
+    ClubStore club,
+    CurrentUser user,
+  ) => choice.backend.choose(
+    drift: () => drift,
+    firestore: () => FirestoreAcknowledgementRepository(club, user),
+  );
+
   /// Unité de travail : celle de drift ; avec Firestore, drift enveloppe le lot
-  /// Firestore (voir [CompositeUnitOfWork]).
+  /// Firestore, validé localement **sans attendre le serveur** (voir
+  /// [CompositeUnitOfWork] ; l'envoi est suivi par `SendStatus`).
   @Environment(Environment.prod)
   @lazySingleton
   UnitOfWork unitOfWork(
     DataBackendChoice choice,
     DriftUnitOfWork drift,
     ClubStore club,
+    SendTracker tracker,
   ) => choice.backend.choose(
     drift: () => drift,
-    firestore: () =>
-        CompositeUnitOfWork(outer: drift, inner: FirestoreUnitOfWork(club)),
+    firestore: () => CompositeUnitOfWork(
+      outer: drift,
+      inner: FirestoreUnitOfWork(club, tracker: tracker),
+    ),
   );
 }

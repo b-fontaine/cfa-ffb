@@ -27,7 +27,6 @@ ExerciseAttempt attempt(
   required int potted,
   int total = 5,
   int dayOfMonth = 1,
-  int passIndex = 1,
   String student = 's1',
   String session = 'x1',
   String id = 'a1',
@@ -37,7 +36,6 @@ ExerciseAttempt attempt(
   sessionId: SessionId(session),
   exercise: exercise,
   date: day(dayOfMonth),
-  passIndex: passIndex,
   potted: potted,
   total: total,
 );

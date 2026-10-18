@@ -1,7 +1,7 @@
 # Plan : dépôts Firestore (lot FB4)
 
-Statut : **parties 1 et 2 livrées sur 3** (2026-10-18), sous émulateurs et doubles seulement. **Aucune base de production touchée.** Décisions :
-[ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) (décisions 14, 15, 17 à 19, 28 ; note de réalisation FB4a pour les écarts). Deux décisions de l'utilisateur du 2026-10-18 (décision 18 amendée, groupe obligatoire : notes FB4b de l'ADR 0024, ADR 0007 amendé).
+Statut : **parties 1, 2 et 3 livrées** (2026-10-18), sous émulateurs et doubles seulement. **Aucune base de production touchée.** **La bascule de production n'a PAS lieu dans FB4** (décision de l'utilisateur, 2026-10-18) : `DATA_BACKEND` reste `drift` par défaut jusqu'à ce que **FB7** soit livré ; la bascule est un **lot dédié après FB7**. Décisions :
+[ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) (décisions 14, 15, 17 à 19, 28 ; notes de réalisation FB4a, FB4b, FB4c pour les écarts). Deux décisions de l'utilisateur du 2026-10-18 (décision 18 amendée, groupe obligatoire : notes FB4b de l'ADR 0024, ADR 0007 amendé).
 
 ## Découpage en trois parties
 
@@ -9,7 +9,7 @@ Statut : **parties 1 et 2 livrées sur 3** (2026-10-18), sous émulateurs et dou
 |---|---|---|
 | 1 | Erreurs d'ouverture de session ; garde-fou d'index ; fondation (chemins, club résolu à l'appel, requêtes, sélecteur de backend) ; suite de contrat sur Firestore ; dépôts **settings**, **student**, **group (+ appartenances)** ; règle `audienceHistory` | **fait** |
 | 2 | `UnitOfWork` Firestore (lot) ; création d'élève par un enseignant ; dépôts **saisons, archives, séances planifiées, saisies** ; identifiant déterministe d'une saisie liée ; bornes du domaine | **fait** (2026-10-18) |
-| 3 | Passages, acquisitions, acquittements, bilans ; bascule de production ; contrat complet ; sauvegarde et effacement ; parcours navigateur | à faire |
+| 3 | Passages (rang dérivé), acquisitions, acquittements, bilans ; `CompositeUnitOfWork` non bloquant hors ligne ; `RulesStore` rechargé par club ; contrat complet sur Firestore | **fait** (2026-10-18) ; **bascule de production : lot dédié après FB7** ; sauvegarde et effacement : FB7 et FB8 |
 
 ## Ce que la partie 1 pose
 
@@ -86,12 +86,38 @@ Budget de lectures : `GroupRepository.save` lit le groupe, les appartenances du 
 - **Suppression** : physique pour les quatre dépôts (décision 15) ; les passages d'une saisie supprimée sont du lot suivant ; `idsEverPresent` et `idsOfGroups` ne voient plus
   les éléments supprimés (drift gardait les suppressions logiques pour le droit à l'effacement).
 - **Ordre des listes** : saisons par début, séances planifiées et saisies par jour puis identifiant, archives par saison (l'ordre de première sauvegarde n'existe pas côté serveur).
-- **Mélange de backends** : avec `DATA_BACKEND=firestore`, passages, acquisitions, acquittements et bilans restent sur drift jusqu'à la partie 3 ; le réglage ne sert donc encore
-  qu'au développement et aux tests, pas à un club réel.
+- **Mélange de backends** (partie 2) : passages, acquisitions, acquittements et bilans restaient sur drift ; **ils ont migré en partie 3** (ci-dessous). Reste local avec `DATA_BACKEND=firestore` : `run_progress` (ADR 0020) et le marqueur de sauvegarde ; le réglage ne sert qu'au développement et aux tests, jusqu'au lot de bascule après FB7.
 
-## Reste pour la partie 3
+## Ce que la partie 3 pose
 
-Dépôts `AttemptRepository` (un document par passage, `passIndex` **dérivé** : décision 17, qui change `ExerciseAttempt` et `ExerciseResult.derive`), `AcquisitionRepository`,
-`AcknowledgementRepository` (partagé par club, `uid` du « Vu »), `AssessmentRepository` ; contrat complet (`RepositoryHarness` sur Firestore) ; bascule (`DATA_BACKEND=firestore`
-par défaut en production) ; `RulesStore` rechargé à l'activation d'un club (aujourd'hui chargé au démarrage, avant la session) ; sauvegarde (`backup_codec`) et `StudentEraser` côté
-serveur (FB7, FB8) ; parcours navigateur application + émulateurs avec les dépôts Firestore ; décision de l'écart « saison courante » ci-dessus (séance sans groupe et transfert d'une saisie libre sont tranchés) ; reprise des séances sans groupe de drift (FB7) ; **bloquants de bascule** : clôture hors `UnitOfWork` (lots reprenables, 500 écritures au plus par lot) et **import de sauvegarde non supporté avec Firestore avant FB7** (`ServiceFailure` `unsupported` localisé, rien d'écrit, contrat `backupImportUnsupportedContract`) et stratégie hors ligne du lot Firestore dans `CompositeUnitOfWork` (ADR 0024, notes FB4b) ; déploiement des règles et des index par l'utilisateur (rien n'est déployé).
+- **Passage = un document** (`clubs/{c}/attempts/{id}`, ajout seul) ; le **rang est dérivé** (décision 17, ADR 0006 amendé) : `ExerciseAttempt` perd `passIndex`, `passRanks` et `chronological` (`exercise_attempt.dart`) le calculent d'après l'**ordre d'enregistrement** que rendent les dépôts (Firestore : `createdAt` du serveur, puis `recordedAt`, puis identifiant ; drift et mémoire : insertion). Supprimer ou corriger un passage ne renumérote rien. Schéma drift **v12** (colonne retirée) ; sauvegarde v5 inchangée (rang dérivé écrit, ignoré à la lecture).
+- **Dépôts** (même méthode : codec à liste blanche, contrat sur drift + mémoire + Firestore faux, `progress.test.mjs` contre les vraies règles par rôle) :
+
+| Port | Document(s) | Écriture | Lecture par rôle |
+|---|---|---|---|
+| `AttemptRepository` | `clubs/{c}/attempts/{id}` (groupe et saison de la séance, `createdAt` serveur) | enseignant de son groupe, gestionnaire ; correction : billes seulement | gestionnaire : liste ; enseignant : un groupe à la fois (avec élève ou séance) ; **parent, élève : la fiche liée** |
+| `AcquisitionRepository` | `clubs/{c}/acquisitions/{id}` (groupe de la fiche) | enseignant de son groupe, gestionnaire | idem passages ; **la famille lit les blocs acquis de sa fiche liée** |
+| `AssessmentRepository` | `clubs/{c}/assessments/{id}` | idem | gestionnaire, enseignant du groupe ; **famille : rien** (B2) |
+| `AcknowledgementRepository` | `clubs/{c}/acknowledgements/{id}` (`createdBy` = uid) | idem (`createdBy` = son uid) | gestionnaire, enseignant du groupe ; **famille : rien** (B2) ; **« Vu » partagé par club** |
+
+  Budget de lectures : `AttemptRepository.add` 1 lecture (la séance), `correct` 1 ; bloc acquis, bilan, acquittement : 1 (le document) + `1 + 2n` pour un document neuf (fiche, `n` groupes et leurs saisons) ; un acquittement lit d'abord le dernier passage acquitté ; lectures : une requête (gestionnaire), une par groupe (enseignant) ou par fiche liée (famille). Écritures : un document par passage.
+- **Index** : aucun (égalités seulement, `AllEqual` : plusieurs égalités sur des champs différents, servies par fusion d'index à champ unique) ; `firestore.indexes.json` inchangé, `tool/check_indexes.dart` vert.
+- **`CompositeUnitOfWork`** : le lot Firestore est validé localement **sans attendre l'accusé du serveur** ; envoi suivi à part (`SendStatus`, lu en FB5). Voir l'ADR 0024 (notes FB4c) pour l'écart assumé (refus tardif du serveur).
+- **`RulesStore`** : `ReloadRules` à l'activation et à la bascule de club (`AuthCubit`) ; réglages du club séparés des préférences d'appareil.
+- **Contrat complet** : `repositoryContract` joué sur tous les dépôts de données Firestore (`ContractTraits`), plus `acquisitionContract`, `acknowledgementContract`, `planningContract`, etc. Voir testing.md pour ce que le faux ne prouve pas.
+
+## Écarts et limites de la partie 3
+
+- **Bascule de production reportée (décision de l'utilisateur, 2026-10-18)** : pas dans FB4 ; **lot dédié après FB7**. Tant que FB7 n'est pas livré, `DATA_BACKEND=firestore` reste réservé au développement et aux tests : aucune sauvegarde ne s'importe (avec saisie), aucun club existant ne migre.
+- **Ajout seul d'un passage** : sur Firestore, rejouer un identifiant est refusé ; une correction passe par `correct`. Hors ligne, `add` ne lit rien (pas de blocage) ; `correct` relit le passage (en cache, déjà listé).
+- **Fiche sans groupe** : ne peut recevoir ni bloc acquis, ni bilan, ni acquittement (`ServiceFailure` `other`) ; une fiche d'enseignant hors de ses groupes est refusée.
+- **Ordre à date égale** : deux passages enregistrés au même instant du serveur sont ordonnés par identifiant ; la borne de passages par séance est un compte, pas une garantie entre deux appareils simultanés.
+- **Écritures hors unité de travail** : elles attendent encore l'accusé du serveur (FB5) ; la création d'une saisie (transaction) échoue hors ligne (FB5).
+- **Import** : sans aucune saisie, supporté (atomique, figé par un test) mais refuse une séance planifiée sans groupe ; avec saisie, `unsupported` jusqu'à FB7. **Sauvegarde et `StudentEraser` côté serveur** : FB7 et FB8 (lots reprenables, marqueur `erasing`) ; `eraseStudent` des dépôts n'est qu'une requête par élève, réservée aux gestionnaires.
+
+## Reste après FB4
+
+- **Lot de bascule de production, après FB7** (décision du 2026-10-18) : défaut `DATA_BACKEND=firestore`, retrait de `CompositeUnitOfWork` et des dépôts drift de données (FB7), parcours navigateur application + émulateurs avec les dépôts Firestore, déploiement des règles et des index **par l'utilisateur** (rien n'est déployé).
+- **FB5** : `watch…` sur les dépôts lus par plusieurs appareils ; pastille « envoi en attente » (`SendStatus.pending`, `lastFailure`) ; écritures hors unité de travail non bloquantes hors ligne ; création d'une saisie hors ligne (aujourd'hui une transaction) ; SDK web servi localement ; écran de positionnement et fiche sans groupe.
+- **FB7** : import d'une sauvegarde avec saisie (l'import doit écrire `recordedAt` **strictement croissant dans l'ordre du fichier** : `createdAt == request.time` est exigé même d'un directeur ou d'un administrateur, donc tous les passages importés ont la même date serveur et seul `recordedAt` (puis l'identifiant) fixe leur ordre), clôture reprenable (lots de 500 avec marqueur), reprise des séances sans groupe de drift, saison courante du club (écrite par l'administrateur seulement).
+- **FB8** : `StudentEraser` côté serveur, effacement par lots reprenables.

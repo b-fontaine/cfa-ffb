@@ -243,7 +243,6 @@ class BackupDecoder {
       number: _read.integer(json['exerciseNumber']),
     ),
     date: _read.dateTime(json['date']),
-    passIndex: _read.integer(json['passIndex']),
     potted: _read.integer(json['potted']),
     total: _read.integer(json['total']),
   );

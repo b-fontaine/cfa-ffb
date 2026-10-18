@@ -26,14 +26,15 @@ ExerciseResult? latestBlockResult(
   return ([...results]..sort(compareLastAttempt)).last;
 }
 
-/// Ordre chronologique des derniers passages : date, puis `passIndex`, puis
+/// Ordre chronologique des derniers passages : date, puis rang dérivé du
+/// passage dans sa séance (`lastAttemptRank`), puis
 /// numéro d'exercice (dans une séance, on enchaîne les exercices dans l'ordre).
 int compareLastAttempt(ExerciseResult a, ExerciseResult b) {
   final x = a.lastAttempt!;
   final y = b.lastAttempt!;
   final byDate = x.date.compareTo(y.date);
   if (byDate != 0) return byDate;
-  final byPass = x.passIndex.compareTo(y.passIndex);
+  final byPass = a.lastAttemptRank.compareTo(b.lastAttemptRank);
   return byPass != 0 ? byPass : a.exercise.number.compareTo(b.exercise.number);
 }
 

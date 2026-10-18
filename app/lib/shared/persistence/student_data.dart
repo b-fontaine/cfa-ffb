@@ -1,0 +1,118 @@
+import 'package:billard_cfa/shared/lib/active_club_scope.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/persistence/club_paths.dart';
+import 'package:billard_cfa/shared/persistence/club_store.dart';
+import 'package:billard_cfa/shared/persistence/data_owner.dart';
+import 'package:billard_cfa/shared/persistence/document_store.dart';
+import 'package:billard_cfa/shared/persistence/document_values.dart';
+
+/// Lecture et écriture d'une collection de **données d'élève** du club actif
+/// (blocs acquis, bilans, acquittements) : documents portant `groupId`,
+/// `seasonId` et `studentId` (ADR 0024, décision 14).
+///
+/// Lecture selon le rôle, avec les seules requêtes que les règles acceptent :
+/// - directeur et administrateur : le club (liste, ou égalité sur
+///   `studentId`) ;
+/// - enseignant : **un groupe à la fois** (égalité sur `groupId`, avec
+///   `studentId` pour une fiche) ;
+/// - parent et élève : la **fiche liée** (égalité sur `studentId`) si
+///   [familyMayRead], sinon rien (bilans et alertes exclus, B2) ; jamais
+///   une requête que les règles refuseraient.
+final class StudentData {
+  const StudentData(
+    this._club,
+    this._collection, {
+    required this.familyMayRead,
+  });
+
+  final ClubStore _club;
+  final String Function(ClubPaths paths) _collection;
+
+  /// Un parent ou un élève lit-il cette collection pour sa fiche liée ?
+  final bool familyMayRead;
+
+  String get _path => _collection(_club.paths);
+
+  Future<List<StoredDocument>> forStudent(StudentId student) async {
+    if (_club.manages) {
+      return await _club.documents.query(
+        _path,
+        FieldEquals('studentId', student.value),
+      );
+    }
+    if (_club.role == Role.teacher) {
+      return [
+        for (final group in _club.groupIds)
+          ...await _club.documents.query(
+            _path,
+            AllEqual([
+              FieldEquals('groupId', group.value),
+              FieldEquals('studentId', student.value),
+            ]),
+          ),
+      ];
+    }
+    if (!familyMayRead || !_club.studentIds.contains(student)) return const [];
+    return await _club.documents.query(
+      _path,
+      FieldEquals('studentId', student.value),
+    );
+  }
+
+  Future<List<StoredDocument>> all() async {
+    if (_club.manages) return await _club.documents.list(_path);
+    if (_club.role == Role.teacher) {
+      return [
+        for (final group in _club.groupIds)
+          ...await _club.documents.query(
+            _path,
+            FieldEquals('groupId', group.value),
+          ),
+      ];
+    }
+    if (!familyMayRead) return const [];
+    return [
+      for (final student in _club.studentIds)
+        ...await _club.documents.query(
+          _path,
+          FieldEquals('studentId', student.value),
+        ),
+    ];
+  }
+
+  /// Les documents de l'élève, à effacer (réservé aux gestionnaires).
+  Future<void> eraseStudent(StudentId student) async {
+    final documents = await _club.documents.query(
+      _path,
+      FieldEquals('studentId', student.value),
+    );
+    await _club.commit([
+      for (final document in documents) DeleteOp(document.path),
+    ]);
+  }
+
+  /// Écrit [path] : **remplace** le document s'il existe (le propriétaire,
+  /// groupe et saison, reste celui du document : les règles le figent), sinon
+  /// le crée chez le propriétaire rendu par [resolve] ; [fields] sait si le
+  /// document existe déjà. Fusion : un champ vidé (`null`) est écrit, les
+  /// champs inconnus restent.
+  Future<void> upsert(
+    String path,
+    Fields Function(DataOwner owner, {required bool exists}) fields,
+    Future<DataOwner> Function() resolve,
+  ) async {
+    final existing = await _club.get(path);
+    final owner = existing == null
+        ? await resolve()
+        : () {
+            final values = DocumentValues(existing.path, existing.fields);
+            return DataOwner(
+              GroupId(values.string('groupId')),
+              SeasonId(values.string('seasonId')),
+            );
+          }();
+    await _club.commit([
+      SetOp(path, fields(owner, exists: existing != null), merge: true),
+    ]);
+  }
+}

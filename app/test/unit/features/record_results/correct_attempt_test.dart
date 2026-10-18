@@ -54,20 +54,16 @@ void main() {
     expect(await f.stored(), corrected);
   });
 
-  test(
-    'keeps the date, the pass index, the student and the exercise',
-    () async {
-      final f = await fixture();
+  test('keeps the date, the student and the exercise', () async {
+    final f = await fixture();
 
-      final corrected = ok(await f(potted: 3));
+    final corrected = ok(await f(potted: 3));
 
-      expect(corrected.date, day(1));
-      expect(corrected.passIndex, 1);
-      expect(corrected.studentId, const StudentId('s1'));
-      expect(corrected.exercise, ref('a', 1));
-      expect(corrected.sessionId, _session);
-    },
-  );
+    expect(corrected.date, day(1));
+    expect(corrected.studentId, const StudentId('s1'));
+    expect(corrected.exercise, ref('a', 1));
+    expect(corrected.sessionId, _session);
+  });
 
   test('refuses a pass that is not in the session', () async {
     final f = await fixture();
@@ -116,9 +112,7 @@ void main() {
 
   test('refuses a pass whose exercise left the catalogue', () async {
     final f = await fixture();
-    await f.world.attempts.add(
-      attempt(ref('zzz', 1), potted: 2, passIndex: 2, id: 'a2'),
-    );
+    await f.world.attempts.add(attempt(ref('zzz', 1), potted: 2, id: 'a2'));
 
     expect(
       codeOf(await f(attempt: const AttemptId('a2'))),

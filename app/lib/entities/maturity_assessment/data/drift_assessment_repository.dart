@@ -7,7 +7,7 @@ import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
 /// Bilans de maturité persistés dans SQLite (drift).
-@LazySingleton(as: AssessmentRepository, env: [Environment.prod])
+@LazySingleton(env: [Environment.prod])
 class DriftAssessmentRepository implements AssessmentRepository {
   DriftAssessmentRepository(this._db, this._clock);
 

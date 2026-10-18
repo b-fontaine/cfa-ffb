@@ -22,7 +22,6 @@ ExerciseAttempt pass(
   String exercise, {
   required bool passed,
   required int dayOfMonth,
-  int passIndex = 1,
 }) {
   final parts = exercise.split(' ');
   return attempt(
@@ -30,7 +29,6 @@ ExerciseAttempt pass(
     potted: passed ? 3 : 2,
     student: student,
     dayOfMonth: dayOfMonth,
-    passIndex: passIndex,
     id: 'p${_ids++}',
   );
 }
@@ -128,17 +126,22 @@ void main() {
       expect(result, isNull);
     });
 
-    test('uses the pass index to order two passes of the same day', () {
+    test('uses the derived rank to order passes of the same day', () {
+      // Le rang d'un passage est celui de son ordre d'enregistrement dans la
+      // séance : le deuxième passage de `a 2` est postérieur au premier de
+      // `a 1`, même jour (ADR 0024, décision 17).
       final failedLast = select({
         's1': [
           pass('s1', 'a 1', passed: true, dayOfMonth: 1),
-          pass('s1', 'a 2', passed: false, dayOfMonth: 1, passIndex: 2),
+          pass('s1', 'a 2', passed: true, dayOfMonth: 1),
+          pass('s1', 'a 2', passed: false, dayOfMonth: 1),
         ],
       });
       final passedLast = select({
         's1': [
+          pass('s1', 'a 1', passed: true, dayOfMonth: 1),
           pass('s1', 'a 2', passed: false, dayOfMonth: 1),
-          pass('s1', 'a 1', passed: true, dayOfMonth: 1, passIndex: 2),
+          pass('s1', 'a 1', passed: true, dayOfMonth: 1),
         ],
       });
 
@@ -166,11 +169,12 @@ void main() {
       expect(failedLast!.exercise, ref('a', 2));
     });
 
-    test('a later pass index wins over a later exercise number', () {
+    test('a later derived rank wins over a later exercise number', () {
       final result = select({
         's1': [
           pass('s1', 'a 2', passed: true, dayOfMonth: 1),
-          pass('s1', 'a 1', passed: false, dayOfMonth: 1, passIndex: 2),
+          pass('s1', 'a 1', passed: false, dayOfMonth: 1),
+          pass('s1', 'a 1', passed: false, dayOfMonth: 1),
         ],
       });
 

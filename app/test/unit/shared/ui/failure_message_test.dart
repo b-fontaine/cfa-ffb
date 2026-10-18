@@ -207,7 +207,6 @@ const _expected = <InvariantCode, (String, String)>{
   InvariantCode.invalidRange: (_genericEn, _genericFr),
   InvariantCode.invalidExerciseRef: (_genericEn, _genericFr),
   InvariantCode.successRateOutOfRange: (_genericEn, _genericFr),
-  InvariantCode.invalidPassIndex: (_genericEn, _genericFr),
   InvariantCode.unknownExercise: (_genericEn, _genericFr),
   InvariantCode.unknownBlock: (_genericEn, _genericFr),
   InvariantCode.unknownGroup: (_genericEn, _genericFr),
@@ -321,6 +320,6 @@ void main() {
         if (entry.value.$1 == _genericEn) entry.key,
     };
 
-    expect(generic, hasLength(15));
+    expect(generic, hasLength(14));
   });
 }

@@ -117,7 +117,6 @@ Widget buildAttemptEditDialogUseCase(BuildContext context) => WorldScope(
       sessionId: world.sessionId,
       exercise: PreviewWorld.struggling,
       date: world.today,
-      passIndex: 1,
       potted: 5,
       total: 9,
     ),

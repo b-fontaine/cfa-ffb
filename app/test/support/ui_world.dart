@@ -301,6 +301,42 @@ class UiWorld {
     });
   }
 
+  /// Une séance (la suivante des séances amorcées) où l'élève fait un passage
+  /// par valeur de [potted], dans cet ordre, sur [exercise].
+  static Future<void> seedPassesInOneSession(
+    WidgetTester tester,
+    String name,
+    ExerciseRef exercise,
+    List<int> potted,
+  ) async {
+    await prepare(tester);
+    await tester.runAsync(() async {
+      final student = await studentNamed(name);
+      final groups = await getIt<GroupRepository>().all();
+      final group = groups.firstWhere((g) => g.isMemberOn(student.id, today));
+      final catalogue = await getIt<CatalogueRepository>().load();
+      final total = catalogue.exercise(exercise)!.rate.attempts;
+      final session = _value(
+        await getIt<OpenSession>()(
+          groupId: group.id,
+          date: DateTime(2026, 9, 12).add(Duration(days: _seededDays++)),
+          present: {student.id},
+        ),
+      );
+      for (final balls in potted) {
+        _value(
+          await getIt<RecordAttempt>()(
+            sessionId: session.id,
+            studentId: student.id,
+            exercise: exercise,
+            potted: balls,
+            total: total,
+          ),
+        );
+      }
+    });
+  }
+
   static Future<void> seedValidatedBlock(
     WidgetTester tester,
     String name,

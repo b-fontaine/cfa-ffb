@@ -8,6 +8,12 @@ part 'exercise_attempt.freezed.dart';
 
 /// Un passage d'un élève sur un exercice : une colonne « essai » de la fiche
 /// résultats `[S]` (`potted` billes empochées sur `total`).
+///
+/// Le **rang** d'un passage (« passage 2 de la séance ») n'est ni saisi ni
+/// stocké : il se dérive de l'ordre chronologique (date, puis ordre
+/// d'enregistrement du dépôt : `createdAt` du serveur, puis identifiant ;
+/// ADR 0024, décision 17, qui amende l'ADR 0006). Supprimer ou corriger un
+/// passage ne renumérote donc rien.
 @freezed
 abstract class ExerciseAttempt with _$ExerciseAttempt {
   factory ExerciseAttempt({
@@ -16,7 +22,6 @@ abstract class ExerciseAttempt with _$ExerciseAttempt {
     required SessionId sessionId,
     required ExerciseRef exercise,
     required DateTime date,
-    required int passIndex,
     required int potted,
     required int total,
   }) = _ExerciseAttempt;
@@ -31,9 +36,6 @@ abstract class ExerciseAttempt with _$ExerciseAttempt {
     if (potted > total) {
       throw const InvariantViolation(InvariantCode.pottedExceedsTotal);
     }
-    if (passIndex < 1) {
-      throw const InvariantViolation(InvariantCode.invalidPassIndex);
-    }
   }
 
   double get ratio => potted / total;
@@ -45,4 +47,30 @@ abstract class ExerciseAttempt with _$ExerciseAttempt {
   /// Vrai si le total saisi diffère des tentatives du catalogue `[Prop]` :
   /// l'évaluation se fait alors à la proportion.
   bool hasCustomTotal(SuccessRate rate) => total != rate.attempts;
+}
+
+/// Les [attempts] triés par date. À égalité de date, l'**ordre reçu** est
+/// conservé (tri stable) : les dépôts rendent les passages dans l'ordre
+/// d'enregistrement (`createdAt` puis identifiant), c'est le rang dérivé.
+List<ExerciseAttempt> chronological(Iterable<ExerciseAttempt> attempts) {
+  final indexed = attempts.toList().indexed.toList()
+    ..sort((a, b) {
+      final byDate = a.$2.date.compareTo(b.$2.date);
+      return byDate != 0 ? byDate : a.$1.compareTo(b.$1);
+    });
+  return [for (final (_, attempt) in indexed) attempt];
+}
+
+/// Le rang (à partir de 1) de chaque passage parmi ceux de **sa séance, de son
+/// élève et de son exercice**, dans l'ordre reçu (celui des dépôts).
+Map<AttemptId, int> passRanks(Iterable<ExerciseAttempt> attempts) {
+  final counts = <(SessionId, StudentId, ExerciseRef), int>{};
+  return {
+    for (final attempt in attempts)
+      attempt.id: counts.update(
+        (attempt.sessionId, attempt.studentId, attempt.exercise),
+        (count) => count + 1,
+        ifAbsent: () => 1,
+      ),
+  };
 }

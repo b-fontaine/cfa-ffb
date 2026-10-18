@@ -101,12 +101,29 @@ final class ClubStore {
   /// en **un seul lot atomique** à sa fin (au plus [maxBatchWrites], sinon
   /// `StoreFailure(batchTooLarge)` sans rien écrire), ou aucune si [body]
   /// échoue. Une unité imbriquée rejoint l'unité englobante.
-  Future<T> atomically<T>(Future<T> Function() body) async {
+  ///
+  /// Avec [onSend], le lot est **envoyé sans être attendu** : le SDK l'applique
+  /// au cache local dès l'appel, l'accusé du serveur (jamais, hors ligne) est
+  /// confié à [onSend] (`SendTracker.track`), pas à l'appelant : une
+  /// transaction locale qui enveloppe l'unité ne reste pas ouverte.
+  Future<T> atomically<T>(
+    Future<T> Function() body, {
+    void Function(Future<void> send)? onSend,
+  }) async {
     if (_pending != null) return await body();
     final pending = PendingWrites();
     final result = await runZoned(body, zoneValues: {_unitKey: pending});
     final operations = pending.operations;
-    if (operations.isNotEmpty) await documents.commit(operations);
+    if (operations.isEmpty) return result;
+    // Taille vérifiée AVANT l'envoi : un envoi non attendu ne peut plus la
+    // refuser à l'appelant.
+    checkBatchSize(operations);
+    final send = documents.commit(operations);
+    if (onSend == null) {
+      await send;
+    } else {
+      onSend(send);
+    }
     return result;
   }
 }

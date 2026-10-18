@@ -61,7 +61,7 @@ ExerciseAttempt _pass(
   int exercise = 1,
   int potted = 3,
   int total = 5,
-  int passIndex = 1,
+  int nth = 1,
   String block = 'a',
 }) => attempt(
   ref(block, exercise),
@@ -69,8 +69,7 @@ ExerciseAttempt _pass(
   total: total,
   student: student,
   session: session,
-  passIndex: passIndex,
-  id: 'p-$student-$session-$block-$exercise-$passIndex',
+  id: 'p-$student-$session-$block-$exercise-$nth',
 );
 
 SeasonArchive _build({
@@ -208,7 +207,7 @@ void main() {
         sessions: sessionFor(['a', 'b', 'c']),
         attempts: [
           _pass('a', 's1'),
-          _pass('a', 's1', passIndex: 2),
+          _pass('a', 's1', nth: 2),
           _pass('b', 's1'),
         ],
       );
@@ -221,7 +220,7 @@ void main() {
         sessions: sessionFor(['a', 'b', 'c']),
         attempts: [
           _pass('a', 's1', potted: 2),
-          _pass('a', 's1', potted: 4, passIndex: 2),
+          _pass('a', 's1', potted: 4, nth: 2),
           _pass('b', 's1', potted: 1),
           _pass('c', 's1', potted: 5),
         ],

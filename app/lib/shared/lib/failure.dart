@@ -16,7 +16,6 @@ enum InvariantCode {
   totalBelowSheet,
   negativePotted,
   pottedExceedsTotal,
-  invalidPassIndex,
   passesLimitReached,
   studentNotPresent,
   studentNotInGroup,

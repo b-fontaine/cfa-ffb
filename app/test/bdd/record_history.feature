@@ -75,6 +75,29 @@ Feature: Recorded sessions history
     When I tap {'Results'} text
     Then I see {'1 pass'} text
 
+  # ADR 0024, décision 17 : le rang d'un passage est dérivé de l'ordre
+  # d'enregistrement, ni saisi ni renuméroté.
+  Scenario: The passes of a session keep their recording order
+    Given {'Léa'} has recorded the passes {'8 of 9, 6 of 9'} on {'puissance 1'}
+    And the app is running
+    When I tap {'Results'} text
+    And I open the recorded session of {'Sep 12'}
+    Then I see {'Pass 1: 8 of 9'} text
+    And I see {'Pass 2: 6 of 9'} text
+
+  Scenario: Deleting the first pass leaves the other one in the curves as the first attempt
+    Given {'Léa'} has recorded the passes {'6 of 9, 8 of 9'} on {'puissance 1'}
+    And the app is running
+    When I tap {'Results'} text
+    And I open the recorded session of {'Sep 12'}
+    And I delete the pass {'6 of 9'} of {'Léa'}
+    And I tap {'Confirm'} text
+    Then I see {'Pass 1: 8 of 9'} text
+    And the club keeps {1} passes in total
+    When I open the sheet of {'Léa'}
+    And I tap {'Performance curves'} text
+    Then I see {'Attempt 1: 8 of 9'} text
+
   Scenario: Cancelling a deletion keeps the pass
     Given {'Léa'} has {2} successful passes on {'puissance 1'}
     And the app is running

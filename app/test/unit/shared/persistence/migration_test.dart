@@ -307,12 +307,42 @@ void main() {
     expect(stored.data['step'], 3);
   });
 
-  test('a fresh database matches the committed v11 snapshot', () async {
-    final connection = await verifier.startAt(11);
+  test('a fresh database matches the committed v12 snapshot', () async {
+    final connection = await verifier.startAt(12);
     final db = AppDatabase(connection);
     addTearDown(db.close);
 
-    await verifier.migrateAndValidate(db, 11);
+    await verifier.migrateAndValidate(db, 12);
+  });
+
+  test('upgrading v11 to v12 drops the stored pass index and keeps every '
+      'pass, in recording order', () async {
+    final schema = await verifier.schemaAt(11);
+    // Insérés dans l'ordre d'enregistrement ; les rangs stockés (1, 2) ne sont
+    // plus lus : le rang se dérive de l'ordre d'enregistrement (`seq`).
+    for (final (id, index, potted) in [('a2', 1, 4), ('a1', 2, 6)]) {
+      schema.rawDatabase.execute(
+        'INSERT INTO attempts (id, created_at, updated_at, student_id, '
+        'session_id, block_id, exercise_number, date, pass_index, potted, '
+        'total) '
+        "VALUES ('$id', '2026-10-01T00:00:00.000Z', "
+        "'2026-10-01T00:00:00.000Z', 's1', 'x1', 'puissance', 2, "
+        "'2026-10-05T00:00:00.000', $index, $potted, 9)",
+      );
+    }
+    final db = AppDatabase(schema.newConnection());
+    addTearDown(db.close);
+
+    await verifier.migrateAndValidate(db, 12);
+
+    final attempts = await DriftAttemptRepository(
+      db,
+      TickingClock(),
+    ).forStudent(const StudentId('s1'));
+    expect(
+      [for (final a in attempts) (a.id.value, a.potted, a.total)],
+      [('a2', 4, 9), ('a1', 6, 9)],
+    );
   });
 
   test('upgrading v10 to v11 gives existing sessions and running sessions no '
@@ -547,7 +577,7 @@ void main() {
   test('refuses to open a database written by a newer version', () async {
     final db = AppDatabase(
       NativeDatabase.memory(
-        setup: (raw) => raw.execute('PRAGMA user_version = 12'),
+        setup: (raw) => raw.execute('PRAGMA user_version = 13'),
       ),
     );
     addTearDown(db.close);
@@ -556,9 +586,9 @@ void main() {
       db.customSelect('SELECT 1').get(),
       throwsA(
         isA<DowngradeNotSupported>()
-            .having((e) => e.from, 'from', 12)
-            .having((e) => e.to, 'to', 11)
-            .having((e) => e.toString(), 'message', contains('version 12')),
+            .having((e) => e.from, 'from', 13)
+            .having((e) => e.to, 'to', 12)
+            .having((e) => e.toString(), 'message', contains('version 13')),
       ),
     );
   });

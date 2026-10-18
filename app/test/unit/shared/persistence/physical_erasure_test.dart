@@ -91,7 +91,7 @@ void main() {
       ),
     );
     await attempts.add(attempt(ref('a', 1), potted: 3));
-    await attempts.add(attempt(ref('a', 1), potted: 3, id: 'a2', passIndex: 2));
+    await attempts.add(attempt(ref('a', 1), potted: 3, id: 'a2'));
     await attempts.delete(const AttemptId('a2'));
     await assessments.add(
       MaturityAssessment(

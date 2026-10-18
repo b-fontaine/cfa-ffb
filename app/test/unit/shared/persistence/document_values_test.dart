@@ -60,4 +60,47 @@ void main() {
       expect(decoded.isUtc, date.isUtc);
     }
   });
+
+  test('a calendar-invalid text is rejected, never silently corrected', () {
+    for (final bad in [
+      '2026-02-30T00:00:00.000',
+      '2026-02-30',
+      '2027-02-29T00:00:00',
+      '2026-13-45T99:99:99',
+      '2026-04-31T10:00:00Z',
+      '2026-10-03T24:00:00',
+      '2026-10-03T10:60:00',
+      '2026-10-03T10:00:60',
+    ]) {
+      expect(
+        () => DocumentValues.decodeDate(bad, 'p', 'f'),
+        failureNaming('f'),
+        reason: bad,
+      );
+    }
+  });
+
+  test('a text is judged on its own fields, whatever the device zone', () {
+    // 02:30 existe dans certains fuseaux et pas dans d'autres (changement
+    // d'heure) : le texte reste valide, seule sa forme calendaire compte.
+    expect(
+      DocumentValues.decodeDate('2026-03-29T02:30:00', 'p', 'f'),
+      isNotNull,
+    );
+    expect(
+      DocumentValues.decodeDate('2026-12-31T23:59:59.999999Z', 'p', 'f'),
+      isNotNull,
+    );
+  });
+
+  test('a leap day and a text without fraction are still read', () {
+    expect(
+      DocumentValues.decodeDate('2028-02-29T10:00:00', 'p', 'f'),
+      DateTime(2028, 2, 29, 10),
+    );
+    expect(
+      DocumentValues.decodeDate('2026-09-01', 'p', 'f'),
+      DateTime(2026, 9),
+    );
+  });
 }

@@ -152,7 +152,9 @@ app/
 │       ├── persistence/               # base drift (SQLite) : tables, AppDatabase,
 │       │                              # ouverture natif/web, unité de travail ; FB3 : DocumentStore (port Firestore),
 │       │                              # InMemoryDocumentStore, guardStore ; FB4 : ClubPaths, ClubStore (club résolu à chaque appel),
-│       │                              # DocumentValues (lecture des champs), DocumentStore.query
+│       │                              # DocumentValues (lecture des champs), DocumentStore.query (égalité, AllEqual, array-contains-any),
+│       │                              # FB4c : OwnerResolver / StudentData (groupe et saison dénormalisés, lecture par rôle),
+│       │                              # SendStatus / SendTracker (envoi des lots, FB5)
 │       ├── ui/                        # design system (voir design-system.md)
 │       │   ├── theme/                 # ColorScheme, extensions billes/statuts, typo, AppTheme
 │       │   └── *.dart                 # ScoreIndicator, BallChip, SectionCard, PageHeader…
@@ -248,7 +250,8 @@ widgetbook/                            # projet séparé : catalogue du design s
   mais une fabrique qui lit `RulesStore.current` (`shared/lib`, initialisé au
   lancement par `app/di/rules_module.dart`) ; `SaveSettings` valide par
   `RulesConfig`, écrit (table `app_settings`, schéma v7), puis remplace la
-  valeur courante. `SettingsField` (domaine de la feature) porte les bornes et
+  valeur courante ; depuis FB4c, `ReloadRules` (feature `manage_settings`, appelé par `AuthCubit`) la recharge **à l'activation et à la bascule de club**
+  (les réglages sont un document par club) et la remet aux valeurs par défaut à la déconnexion. `SettingsField` (domaine de la feature) porte les bornes et
   le pas d'écran, sous-ensemble des bornes de `RulesConfig`. Les réglages
   voyagent dans la sauvegarde JSON (format 2, clé `data.settings` facultative).
   `BackupReminder.evaluate` reçoit `staleAfterDays` (`backupReminderDays`).
@@ -784,7 +787,7 @@ Détail et tableaux : [clubs-roles-plan.md](clubs-roles-plan.md). L'essentiel de
 
 - **Dépôts Firestore par club (FB4)** : `ClubStore` (`shared/persistence`) relit `ActiveClubScope` **à chaque appel** et refuse l'accès sans club ; `ClubPaths` nomme tous les chemins
   (aucun dépôt n'en compose un). Chaque dépôt a son codec (`*_document.dart`, dates en ISO 8601, champs de la liste blanche des règles) et choisit sa requête selon le rôle (les règles
-  n'autorisent pas la même à tous). `DataBackendModule` (`app/di`) aiguille drift (défaut) ou Firestore par `--dart-define=DATA_BACKEND`. Voir [repositories-firestore-plan.md](repositories-firestore-plan.md).
+  n'autorisent pas la même à tous). `DataBackendModule` (`app/di`) aiguille drift (défaut) ou Firestore par `--dart-define=DATA_BACKEND` pour **tous** les dépôts de données (réglages, élèves, groupes, saisons, archives, séances planifiées, saisies, **passages, blocs acquis, bilans, acquittements** ; seuls `run_progress` et le marqueur de sauvegarde restent locaux). **Le défaut reste drift jusqu'à FB7** : la bascule de production est un lot dédié après FB7 (décision de l'utilisateur, 2026-10-18). Avec Firestore, l'unité de travail est `CompositeUnitOfWork` : le lot Firestore est validé localement **sans attendre le serveur** et son envoi est suivi par `SendStatus` (FB5). Un passage est **un document** (`clubs/{c}/attempts/{id}`, ajout seul) dont le rang se dérive (`createdAt` du serveur, puis `recordedAt` de l'appareil, puis identifiant). Voir [repositories-firestore-plan.md](repositories-firestore-plan.md).
 - **Un port minuscule pour Firestore** : `DocumentStore` (`shared/persistence`) ne connaît ni collection typée ni SDK : `get`, `list`, requête de groupe de collections sur un
   champ, **lot atomique** (`SetOp`, `UpdateOp`, `DeleteOp`, date du serveur `serverTimestamp`). `app/platform/firestore_document_store.dart` l'implémente sur
   `cloud_firestore` (règle 9) en deux étages : `FirestoreSdkAccess` (quatre appels directs au SDK) et `FirestoreDocumentStore` (traduction des valeurs et des échecs, testée sur

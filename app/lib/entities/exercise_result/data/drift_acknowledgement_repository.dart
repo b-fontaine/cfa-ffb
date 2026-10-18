@@ -8,7 +8,7 @@ import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
 /// Acquittements d'alertes persistés dans SQLite (drift, ADR 0013).
-@LazySingleton(as: AcknowledgementRepository, env: [Environment.prod])
+@LazySingleton(env: [Environment.prod])
 class DriftAcknowledgementRepository implements AcknowledgementRepository {
   DriftAcknowledgementRepository(this._db, this._clock);
 

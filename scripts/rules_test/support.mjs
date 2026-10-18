@@ -68,6 +68,21 @@ export const actors = {
 
 export const actorNames = Object.keys(actors);
 
+/** L'uid de chaque acteur (les acquittements enregistrent `createdBy` = uid du compte, B5). */
+export const uids = {
+  student: 'u-student',
+  guardian: 'u-guardian',
+  guardian2: 'u-guardian2',
+  teacherA: 'u-teacher-a',
+  teacherB: 'u-teacher-b',
+  teacherC2: 'u-teacher-c2',
+  director: 'u-dir',
+  directorOther: 'u-dir2',
+  admin: 'u-admin',
+  invited: 'u-invited',
+  unverified: 'u-dir',
+};
+
 function verifiedContext(env, uid) {
   return env.authenticatedContext(uid, { email: `${uid}@example.org`, email_verified: true });
 }
@@ -101,6 +116,24 @@ export const owned = (groupId, studentId, extra = {}) => ({
   ...extra,
 });
 
+/**
+ * Complète un document de donnée d'élève avec les champs que les codecs de l'application lisent
+ * et que les règles exigent à la CRÉATION (un document minimal rendrait la lecture de toute la
+ * liste impossible). Les champs fournis l'emportent ; une autre collection est rendue telle quelle.
+ */
+const REQUIRED_AT_CREATION = {
+  attempts: () => ({
+    sessionId: 'x1', blockId: 'puissance', exerciseNumber: 1, date: '2026-10-03T00:00:00.000',
+    potted: 4, total: 5, recordedAt: Timestamp.fromMillis(Date.now()),
+  }),
+  acquisitions: () => ({ blockId: 'puissance', date: '2026-09-15T00:00:00.000', source: 'placement' }),
+  assessments: () => ({ date: '2026-10-05T00:00:00.000', concentration: 3, endurance: 2, frustration: 4 }),
+  acknowledgements: () => ({
+    blockId: 'puissance', exerciseNumber: 1, lastAttemptId: 'a1', date: '2026-10-05T00:00:00.000',
+  }),
+};
+export const complete = (name, data) => ({ ...(REQUIRED_AT_CREATION[name]?.() ?? {}), ...data });
+
 export const invitation = (extra = {}) => ({
   clubId: 'c1',
   role: 'teacher',
@@ -131,8 +164,8 @@ export const seedDocs = () => [
   ['clubs/c1/seasons/se1', { label: '2026-2027' }],
   ['clubs/c1/groups/g1', { seasonId: 'se1', name: 'Mardi', audience: 'children', teacherUids: ['u-teacher-a'] }],
   ['clubs/c1/groups/g2', { seasonId: 'se1', name: 'Jeudi', audience: 'adults', teacherUids: ['u-teacher-b'] }],
-  ['clubs/c1/memberships/s1_2026-09-01', owned('g1', 's1', { from: '2026-09-01' })],
-  ['clubs/c1/memberships/s2_2026-09-01', owned('g2', 's2', { from: '2026-09-01' })],
+  ['clubs/c1/memberships/s1_2026-09-01', owned('g1', 's1', { from: '2026-09-01T00:00:00.000' })],
+  ['clubs/c1/memberships/s2_2026-09-01', owned('g2', 's2', { from: '2026-09-01T00:00:00.000' })],
   ['clubs/c1/students/s1', student(['g1'])],
   ['clubs/c1/students/s2', student(['g2'], { firstName: 'Tom' })],
   ['clubs/c1/sessions/ss-g1', owned('g1')],

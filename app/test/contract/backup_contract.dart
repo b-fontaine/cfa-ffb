@@ -173,10 +173,10 @@ Future<void> _seed(RepositoryHarness r) async {
       ),
     );
   }
-  for (final (id, student, session, passIndex) in [
-    ('a1', 's1', 'x1', 1),
-    ('a2', 's1', 'x1', 2),
-    ('a3', 's2', 'x2', 1),
+  for (final (id, student, session) in [
+    ('a1', 's1', 'x1'),
+    ('a2', 's1', 'x1'),
+    ('a3', 's2', 'x2'),
   ]) {
     await r.attempts.add(
       ExerciseAttempt(
@@ -185,7 +185,6 @@ Future<void> _seed(RepositoryHarness r) async {
         sessionId: SessionId(session),
         exercise: ExerciseRef(blockId: 'puissance', number: 1),
         date: DateTime(2026, 10, 3),
-        passIndex: passIndex,
         potted: 4,
         total: 5,
       ),
@@ -335,6 +334,101 @@ void backupImportUnsupportedContract(
         expect(await target.sessions.getAll(), isEmpty);
       },
     );
+  });
+}
+
+/// Avec le stockage Firestore, l'import d'une sauvegarde **sans aucune saisie**
+/// (donc sans passage ni acquittement, qui en dépendent) est supporté : fiches,
+/// saisons, groupes, séances planifiées, blocs acquis et bilans partent dans le
+/// lot de l'unité de travail, atomiquement. C'est la seule frontière de
+/// l'import avant FB7 : la moindre saisie le rend `unsupported` (voir
+/// `backupImportUnsupportedContract`). Comportement figé ici pour qu'un
+/// changement de la création des saisies (transaction `createIfAbsent`) ne le
+/// déplace pas sans qu'on le voie.
+void backupImportWithoutSittingContract(
+  String label,
+  Future<RepositoryHarness> Function() openSource,
+  Future<RepositoryHarness> Function() openTarget,
+) {
+  group("$label : import d'une sauvegarde sans saisie", () {
+    late RepositoryHarness source;
+    late RepositoryHarness target;
+    late String withoutSittings;
+    late String withoutSittingsAndGroupless;
+
+    setUp(() async {
+      source = await openSource();
+      target = await openTarget();
+      await _seed(source);
+      final document = _parse(await _exported(source));
+      final data = document['data']! as Map<String, Object?>;
+      for (final key in [
+        'sessionRecords',
+        'attempts',
+        'alertAcknowledgements',
+      ]) {
+        data[key] = <Object?>[];
+      }
+      withoutSittings = jsonEncode(document);
+      // La séance planifiée sans groupe (d'avant la règle) : écartée ici, son
+      // cas est celui du second test.
+      final planned = (data['plannedSessions']! as List<Object?>)
+          .cast<Map<String, Object?>>();
+      data['plannedSessions'] = [
+        for (final session in planned)
+          if (session['groupId'] != null) session,
+      ];
+      withoutSittingsAndGroupless = jsonEncode(document);
+    });
+    tearDown(() async {
+      await source.close();
+      await target.close();
+    });
+
+    test(
+      'is accepted and writes everything that does not need a sitting',
+      () async {
+        final result = await _import(target)(withoutSittingsAndGroupless);
+
+        switch (result) {
+          case Err(:final failure):
+            fail('import refusé : $failure');
+          case Ok(:final value):
+            expect(value.sessionRecords, 0);
+            expect(value.attempts, 0);
+            expect(value.students, 2);
+            expect(value.groups, 1);
+            expect(value.seasons, 1);
+            expect(value.plannedSessions, 1);
+            expect(value.blockAcquisitions, 1);
+        }
+        expect(await target.students.all(), hasLength(2));
+        expect(await target.seasons.all(), hasLength(1));
+        expect(await target.groups.all(), hasLength(1));
+        expect(await target.sessions.getAll(), isNotEmpty);
+        expect(await target.acquisitions.all(), hasLength(1));
+        expect(await target.assessments.all(), hasLength(1));
+        expect(await target.sessionRecords.all(), isEmpty);
+        expect(await target.attempts.all(), isEmpty);
+      },
+    );
+
+    test('is refused, writing nothing, when a planned session has no group '
+        '(those of drift before the rule are taken over at FB7)', () async {
+      final result = await _import(target)(withoutSittings);
+
+      switch (result) {
+        case Ok(:final value):
+          fail('import accepté : $value');
+        case Err(:final failure):
+          expect(failure, isA<ServiceFailure>());
+      }
+      expect(await target.students.all(), isEmpty);
+      expect(await target.seasons.all(), isEmpty);
+      expect(await target.groups.all(), isEmpty);
+      expect(await target.sessions.getAll(), isEmpty);
+      expect(await target.acquisitions.all(), isEmpty);
+    });
   });
 }
 
@@ -704,6 +798,29 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
       expect(await target.attempts.all(), hasLength(3));
     });
 
+    test('writes the derived rank of each pass and reads the file in its '
+        'recording order, whatever the ranks it carries', () async {
+      final document = _parse(backup);
+      final attempts = _list(document, 'attempts').cast<Map<String, Object?>>();
+      // Rang dérivé de l'ordre d'enregistrement (ADR 0024, décision 17).
+      expect(
+        [for (final a in attempts) (a['id'], a['passIndex'])],
+        [('a1', 1), ('a2', 2), ('a3', 1)],
+      );
+
+      // Un fichier des formats 1 à 5 porte un rang stocké que la lecture
+      // ignore : l'ordre du fichier est l'ordre d'enregistrement.
+      for (final attempt in attempts) {
+        attempt['passIndex'] = 99;
+      }
+      await _imported(target, jsonEncode(document));
+
+      expect(
+        [for (final a in await target.attempts.all()) a.id.value],
+        ['a1', 'a2', 'a3'],
+      );
+    });
+
     test('merges into existing data and replaces by id', () async {
       await target.students.save(
         Student.enroll(
@@ -923,8 +1040,6 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
           d,
           'attempts',
         ).add({..._first(d, 'attempts'), 'id': 'a4', 'passIndex': 3}),
-        'the same pass index twice': (d) =>
-            (_list(d, 'attempts')[1]! as Map<String, Object?>)['passIndex'] = 1,
         'a session outside its season': (d) =>
             _first(d, 'sessionRecords')['date'] = '2020-01-01T00:00:00.000',
         'a session whose audience differs from its group': (d) =>

@@ -32,13 +32,7 @@ Widget _row({
   spec: rate == null ? _spec : ExerciseSpec(ref: ref('a', 1), rate: rate),
   passes: [
     for (final (i, (potted, total)) in passes.indexed)
-      attempt(
-        ref('a', 1),
-        potted: potted,
-        total: total,
-        passIndex: i + 1,
-        id: 'p$i',
-      ),
+      attempt(ref('a', 1), potted: potted, total: total, id: 'p$i'),
   ],
   passedCount: passed,
   maxPasses: 2,
@@ -51,7 +45,7 @@ Widget _row({
 
 /// Retour d'un passage de 6 sur 6 qui valide l'exercice.
 RecordedAttempt _validatingFeedback() {
-  final last = attempt(ref('a', 1), potted: 6, total: 6, passIndex: 2);
+  final last = attempt(ref('a', 1), potted: 6, total: 6);
   return RecordedAttempt(
     attempt: last,
     result: ExerciseResult.derive(

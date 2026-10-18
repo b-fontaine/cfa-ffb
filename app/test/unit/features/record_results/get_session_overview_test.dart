@@ -43,7 +43,7 @@ void main() {
       attempt(ref('a', 1), potted: 4, student: 'zoe', id: 'p1'),
     );
     await world.attempts.add(
-      attempt(ref('a', 1), potted: 2, student: 'zoe', id: 'p2', passIndex: 2),
+      attempt(ref('a', 1), potted: 2, student: 'zoe', id: 'p2'),
     );
     await world.attempts.add(
       attempt(ref('b', 2), potted: 3, student: 'abel', id: 'p3'),
@@ -82,7 +82,6 @@ void main() {
         student: 'zoe',
         id: 'miss',
         session: 'x0',
-        passIndex: 2,
       ),
     );
     await world.attempts.add(
@@ -109,13 +108,7 @@ void main() {
       ),
     );
     await world.attempts.add(
-      attempt(
-        ref('a', 1),
-        potted: rate.successes,
-        student: 'zoe',
-        id: 'b2',
-        passIndex: 2,
-      ),
+      attempt(ref('a', 1), potted: rate.successes, student: 'zoe', id: 'b2'),
     );
 
     final result = ok(await overview(const SessionId('x1')));

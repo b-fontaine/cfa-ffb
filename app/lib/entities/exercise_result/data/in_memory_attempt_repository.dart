@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
+import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_journal.dart';
 import 'package:injectable/injectable.dart';
@@ -13,6 +14,16 @@ class InMemoryAttemptRepository implements AttemptRepository {
   @override
   Future<void> add(ExerciseAttempt attempt) async =>
       _attempts.journaledPut(attempt.id, attempt);
+
+  @override
+  Future<void> correct(ExerciseAttempt attempt) async {
+    final existing = _attempts[attempt.id];
+    if (existing == null) throw NotFound('attempt', attempt.id.value);
+    _attempts.journaledPut(
+      attempt.id,
+      existing.copyWith(potted: attempt.potted, total: attempt.total),
+    );
+  }
 
   @override
   Future<List<ExerciseAttempt>> forStudent(StudentId studentId) async => [

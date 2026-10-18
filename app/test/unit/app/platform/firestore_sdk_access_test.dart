@@ -110,6 +110,34 @@ void main() {
     });
   });
 
+  group('readQueryAll', () {
+    test('every equality must hold, in that collection only', () async {
+      await firestore.doc('clubs/c1/attempts/a').set({
+        'groupId': 'g1',
+        'sessionId': 'x1',
+      });
+      await firestore.doc('clubs/c1/attempts/b').set({
+        'groupId': 'g1',
+        'sessionId': 'x2',
+      });
+      await firestore.doc('clubs/c1/attempts/c').set({
+        'groupId': 'g2',
+        'sessionId': 'x1',
+      });
+      await firestore.doc('clubs/c2/attempts/d').set({
+        'groupId': 'g1',
+        'sessionId': 'x1',
+      });
+
+      final read = await access.readQueryAll('clubs/c1/attempts', {
+        'groupId': 'g1',
+        'sessionId': 'x1',
+      });
+
+      expect([for (final d in read) d.path], ['clubs/c1/attempts/a']);
+    });
+  });
+
   group('writeBatch', () {
     test('set replaces the document, update keeps the other fields', () async {
       await firestore.doc('a/set').set({'keep': 1, 'old': 1});

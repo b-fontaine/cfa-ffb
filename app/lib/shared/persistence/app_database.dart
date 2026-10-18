@@ -35,7 +35,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Version du schéma SQL. Elle est indépendante de la version du format de
   /// sauvegarde JSON (`BackupCodec.currentVersion`).
-  static const currentSchemaVersion = 11;
+  static const currentSchemaVersion = 12;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -126,6 +126,13 @@ class AppDatabase extends _$AppDatabase {
             schema.runProgressEntries,
             schema.runProgressEntries.tagsJson,
           );
+        },
+        // Version 12 (ADR 0024, décision 17) : le rang d'un passage est
+        // dérivé de l'ordre d'enregistrement (`seq`, conservé), la colonne
+        // `pass_index` disparaît. Aucune donnée n'est transformée : la table
+        // est recréée sans la colonne, les lignes gardent leur ordre.
+        from11To12: (m, schema) async {
+          await m.alterTable(TableMigration(schema.attempts));
         },
       )(migrator, from, to);
     },

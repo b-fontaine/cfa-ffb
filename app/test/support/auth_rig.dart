@@ -7,11 +7,16 @@ import 'package:billard_cfa/entities/membership/data/key_value_active_club_memor
 import 'package:billard_cfa/entities/membership/domain/active_club_memory.dart';
 import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
 import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
+import 'package:billard_cfa/entities/settings/data/in_memory_settings_repository.dart';
+import 'package:billard_cfa/entities/settings/domain/settings_repository.dart';
+import 'package:billard_cfa/features/manage_settings/domain/reload_rules.dart';
 import 'package:billard_cfa/features/select_club/domain/choose_club.dart';
 import 'package:billard_cfa/features/sign_in/data/key_value_pending_invitations.dart';
 import 'package:billard_cfa/shared/lib/club_switch_guard.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/key_value_store.dart';
+import 'package:billard_cfa/shared/lib/rules_config.dart';
+import 'package:billard_cfa/shared/lib/rules_store.dart';
 
 import 'in_memory_memberships_source.dart';
 
@@ -24,7 +29,12 @@ class FakeClubSwitchGuard implements ClubSwitchGuard {
 /// Un `AuthCubit` assemblé avec des doubles en mémoire, et ces doubles : tout
 /// ce qu'il faut pour le tester sans graphe `get_it`.
 class AuthRig {
-  AuthRig() {
+  AuthRig({SettingsRepository Function(SessionScope scope)? settings}) {
+    rules = RulesStore(RulesConfig());
+    reloadRules = ReloadRules(
+      settings?.call(scope) ?? InMemorySettingsRepository(),
+      rules,
+    );
     memory = KeyValueActiveClubMemory(store);
     chooseClub = ChooseClub(memory, guard);
     pending = KeyValuePendingInvitations(store);
@@ -38,6 +48,7 @@ class AuthRig {
       scope,
       pending,
       issued,
+      reloadRules,
     );
   }
 
@@ -51,6 +62,8 @@ class AuthRig {
   late final ChooseClub chooseClub;
   late final KeyValuePendingInvitations pending;
   late final KeyValueInvitationLog issued;
+  late final RulesStore rules;
+  late final ReloadRules reloadRules;
   late final AuthCubit cubit;
 }
 

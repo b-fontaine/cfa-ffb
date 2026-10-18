@@ -130,8 +130,6 @@ class Attempts extends Table with AuditColumns {
 
   TextColumn get date => text().map(const IsoDateTimeConverter())();
 
-  IntColumn get passIndex => integer()();
-
   IntColumn get potted => integer()();
 
   IntColumn get total => integer()();

@@ -2,13 +2,14 @@ import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.d
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
+import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
 /// Passages persistés dans SQLite (drift).
-@LazySingleton(as: AttemptRepository, env: [Environment.prod])
+@LazySingleton(env: [Environment.prod])
 class DriftAttemptRepository implements AttemptRepository {
   DriftAttemptRepository(this._db, this._clock);
 
@@ -28,7 +29,6 @@ class DriftAttemptRepository implements AttemptRepository {
             blockId: attempt.exercise.blockId,
             exerciseNumber: attempt.exercise.number,
             date: attempt.date,
-            passIndex: attempt.passIndex,
             potted: attempt.potted,
             total: attempt.total,
             createdAt: now,
@@ -41,7 +41,6 @@ class DriftAttemptRepository implements AttemptRepository {
               blockId: Value(attempt.exercise.blockId),
               exerciseNumber: Value(attempt.exercise.number),
               date: Value(attempt.date),
-              passIndex: Value(attempt.passIndex),
               potted: Value(attempt.potted),
               total: Value(attempt.total),
               updatedAt: Value(now),
@@ -50,6 +49,22 @@ class DriftAttemptRepository implements AttemptRepository {
             target: [_db.attempts.id],
           ),
         );
+  }
+
+  @override
+  Future<void> correct(ExerciseAttempt attempt) async {
+    final updated =
+        await (_db.update(_db.attempts)..where(
+              (a) => a.id.equals(attempt.id.value) & a.deletedAt.isNull(),
+            ))
+            .write(
+              AttemptsCompanion(
+                potted: Value(attempt.potted),
+                total: Value(attempt.total),
+                updatedAt: Value(_clock.now()),
+              ),
+            );
+    if (updated == 0) throw NotFound('attempt', attempt.id.value);
   }
 
   @override
@@ -93,7 +108,6 @@ class DriftAttemptRepository implements AttemptRepository {
             number: row.exerciseNumber,
           ),
           date: row.date,
-          passIndex: row.passIndex,
           potted: row.potted,
           total: row.total,
         ),

@@ -137,8 +137,10 @@ page publique a aussi un use case Widgetbook
 
 `app/test/contract/` contient **une seule** suite (`repository_contract.dart`,
 `backup_contract.dart`) exécutée contre chaque implémentation : en mémoire
-(`in_memory_contract_test.dart`) et drift sur `NativeDatabase.memory()`
-(`drift_contract_test.dart`). Toute nouvelle implémentation de port s'ajoute en
+(`in_memory_contract_test.dart`), drift sur `NativeDatabase.memory()`
+(`drift_contract_test.dart`) et, depuis FB4, **Firestore** sur un faux en mémoire
+(`firestore_contract_test.dart`, écarts dits dans la section « Dépôts Firestore (FB4,
+partie 3) »). Toute nouvelle implémentation de port s'ajoute en
 fournissant un `RepositoryHarness` ; aucune règle de repository ne se teste en
 double. Les spécificités drift (horodatages, suppression logique physique,
 rollback, migrations, ouverture fichier) sont dans `test/unit/shared/persistence/`.
@@ -282,7 +284,7 @@ Mutants M2 et M5 de la première série, qui n'ajoutaient qu'une valeur permise 
   `delete` = suppression physique (le contrat n'exige que « invisible » et « réapparaît si on sauve à nouveau ») ; `byId` d'un groupe invisible pour un enseignant est un refus, pas `null`.
 - **Unitaires** : `club_store_test` (chemins, club résolu à chaque appel, sans club = `denied`, lots de 500), `firestore_*_repository_test` (champs écrits, `groupIds`
   tenus par les groupes, `teacherUids` conservé, requêtes par rôle, documents mal formés, isolation entre clubs), `document_values_test`, `data_backend_test`
-  (défaut drift, valeur inconnue = erreur), `data_backend_module_test` (`DATA_BACKEND=firestore` câble les trois dépôts Firestore, `drift` rend les instances drift), `production_graph_test` (la production câble drift sans réglage). Concurrence : `groupIds` par `ArrayUnion`/`ArrayRemove` (stock qui écrit entre la lecture et le lot), fiche écrite par fusion même si la lecture ne la voit pas ; requêtes `array-contains-any` bornées à 30 valeurs (journal des requêtes du stock en mémoire, et l'émulateur refuse la 31e).
+  (défaut drift, valeur inconnue = erreur), `data_backend_module_test` (pour `firestore` puis `drift`, **les 11 dépôts de données** et `UnitOfWork` : `firestore` rend les dépôts Firestore et un `CompositeUnitOfWork` (drift dehors, `FirestoreUnitOfWork` dedans), `drift` rend les instances drift ; mutation : câbler `drift` à la place de `FirestoreAcquisitionRepository`, ou `drift` comme lot intérieur du composite, fait échouer le test du dépôt et celui de l'unité de travail), `production_graph_test` (la production câble drift sans réglage). Concurrence : `groupIds` par `ArrayUnion`/`ArrayRemove` (stock qui écrit entre la lecture et le lot), fiche écrite par fusion même si la lecture ne la voit pas ; requêtes `array-contains-any` bornées à 30 valeurs (journal des requêtes du stock en mémoire, et l'émulateur refuse la 31e).
 - **Erreurs d'ouverture de session** : `authentication.feature` (« Clubs refused by the server… », « A missing server index… » : écran « Access to your clubs refused », ni
   « Retry » ni « Service unreachable ») ; `auth_cubit_test` (état, aucun repli sur le club retenu, une seule ligne de journal sans e-mail ni uid, reprise après
   `refresh`, déconnexion) ; `store_memberships_source_test` (`permission-denied` et `failed-precondition` = refus, `unavailable` et `other` = injoignable). Mutation : traduire
@@ -346,6 +348,40 @@ Copie des règles (`RULES_FILE=copie.rules`), `repositories.test.mjs` (A-C) ou `
 | (P) `mayProbeAbsent` : l'enseignant ne lit qu'un identifiant aléatoire (le test sur le groupe de l'identifiant retiré) | tué : « ATTAQUE… » (sessions et saisies), « deux appareils ouvrent la même saisie », « la reprise… REMPLACE les présents » |
 | (Q) `mayProbeAbsent` : l'enseignant ne lit qu'un identifiant portant son groupe (la branche « identifiant aléatoire » retirée) | tué : « un enseignant lit une saisie/séance ABSENTE de son club » et les deux « ATTAQUE… » (un enseignant ne pourrait plus créer une saisie libre ni une séance planifiée, à identifiant UUID) |
 | (R) `mayProbeAbsent` revenu à `manages \|\| isTeacher` (le comportement avant resserrage) | tué : « ATTAQUE : lire une séance/saisie ABSENTE à identifiant déterministe d'un autre groupe est refusé » (un enseignant de g2 apprenait si g1 avait tenu une séance) |
+
+## Dépôts Firestore (FB4, partie 3)
+
+- **Rang dérivé (décision 17)** : `exercise_attempt_test` / `exercise_result_test` (tri par date, ordre reçu à égalité, `lastAttemptRank`), `delete_attempt_test` (**aucune** écriture que la suppression, rangs recalculés, plus d'`UnitOfWork`), `record_attempt_test`, `correct_attempt_test`,
+  `recall_selector_test` (le rang dérivé départage deux exercices du même jour). BDD : `record_history.feature` (deux scénarios : les passages d'une séance gardent l'ordre d'enregistrement ; la suppression du premier laisse le second « Passage 1 » dans les courbes) ;
+  les scénarios existants n'ont **pas** été modifiés. Sauvegarde : l'aller-retour (`backup_contract`, drift et mémoire) écrit le rang dérivé et lit le fichier dans son ordre quel que soit le `passIndex` qu'il porte ; l'ancien test « même rang deux fois refusé » est retiré (la règle n'existe plus), « plus de passages que permis » le remplace.
+  Migration : `migration_test` (v11 vers v12 : colonne retirée, passages et ordre conservés ; schéma v12 = instantané).
+- **Contrat complet sur Firestore** : `repositoryContract` (tous les dépôts de données du `RepositoryHarness`) est joué sur le faux Firestore avec le **montage de production** (`DataBackendModule` : unité composite drift + Firestore, `runProgress` local) ; `acquisitionContract`,
+  `acknowledgementContract`, `planningContract`, `seasonArchiveContract`, `settingsContract`, `studentGroupContract`, `unitOfWorkContract` aussi. **Écarts dits, jamais ignorés** (`ContractTraits`) : (1) les listes y sont en ordre canonique (jour puis identifiant ; passages : `createdAt` puis identifiant), pas en ordre de première sauvegarde ;
+  (2) la saison, les groupes et les fiches doivent exister d'abord (groupe et saison dénormalisés) : les tests du groupe `passages`, `bilans` et `séances planifiées` les créent (`seedOwners`) pour toutes les implémentations ; (3) une séance planifiée sans groupe n'existe pas (les cas « sans groupe » ne sont pas enregistrés pour Firestore) ;
+  (4) rejouer l'identifiant d'un passage le remplace sur drift et en mémoire, pas sur Firestore (ajout seul : `correct`). Un test d'**ordre à date serveur égale** et de **deux appareils** (deux dépôts sur les mêmes documents) est dans `firestore_progress_repositories_test`.
+- **Ce que le faux ne prouve pas** : les règles de sécurité, les index, les chemins réels, les quotas, le hors ligne, l'isolation des transactions ; l'**application immédiate** d'un lot au cache : `fake_cloud_firestore` l'applique en quelques tours de la file d'événements, le SDK dès l'appel. Le harnais (`_SettlingUnitOfWork`) laisse donc la file se vider
+  après l'unité composite, qui n'attend plus le serveur ; sans lui, une lecture immédiate pourrait manquer le lot. Un **refus tardif du serveur** (règles, quota) n'est pas joué : le faux n'en émet pas ; `SendTracker` est testé à part (`send_tracker_test`).
+- **Hors contrat Firestore, et pourquoi** : la **sauvegarde** (`backupContract` : export complet, import) : l'import d'une sauvegarde **avec** saisie est `unsupported` (une saisie se crée par transaction, impossible dans un lot) jusqu'à **FB7** (lots reprenables, `backupImportUnsupportedContract` rejoué avec le montage de production) ;
+  **sans** aucune saisie il est supporté et atomique, mais refuse une séance planifiée sans groupe (`backupImportWithoutSittingContract`, figé) ; `StudentEraser` côté serveur : **FB8** (`eraseStudent` des dépôts est testé, mais l'enchaînement de l'effacement, le marqueur `erasing` et les lots reprenables ne sont pas écrits).
+- **Unité de travail hors ligne** : `offline_unit_of_work_test` (un store dont le commit **ne se termine jamais**, comme le serveur hors ligne : l'unité composite se termine, la transaction drift se ferme, une écriture locale suivante n'est pas bloquée, l'envoi reste « en attente » sur `SendStatus`, 501 écritures refusées avant l'envoi). **Rouge vu** : avec l'ancienne attente de l'accusé, les deux premiers tests expirent (`TimeoutException`). `send_tracker_test`.
+- **`RulesStore` par club** : `auth_rules_reload_test` (réglages du club à l'activation, à la bascule, retour aux valeurs par défaut sans document, refus de lecture sans blocage de l'ouverture, déconnexion, préférences d'appareil intactes). **Rouge vu** : sans l'appel de `ReloadRules`, les tests d'activation, de bascule et de déconnexion échouent. Les règles qui ne sont pas des réglages du club (`RulesStore.base`) survivent à la bascule (test dédié) ; les étapes BDD « the passes required are set to » (enregistre le réglage, comme l'application) et « the persistent alert threshold is » (règle de base) en tiennent compte.
+- **Unitaires** : `firestore_progress_repositories_test` (champs écrits = liste blanche des règles ; aucun `passIndex` ; `add` sans lecture et par `set` simple ; correction = billes seulement ; ordre `createdAt` puis identifiant, passage sans date serveur dernier ; **requêtes par rôle** enregistrées : un enseignant prouve toujours `groupId`, la famille `studentId`, un parent n'envoie aucune requête de bilan ;
+  propriétaire d'un bloc acquis (saison ouverte, puis identifiant ; groupes de l'enseignant ; fiche sans groupe refusée) ; acquittement : `createdBy` = uid, conservé au remplacement, groupe du dernier passage acquitté). Mutation : tri par date serveur neutralisé, fait échouer l'ordre. `identifier_shape_test` (forme des identifiants).
+  `firestore_document_store_test` et `firestore_sdk_access_test` (`AllEqual`, `readQueryAll`).
+- **Contre l'émulateur** : `scripts/rules_test/progress.test.mjs` joue les **mêmes opérations** par rôle (copiées des tests Dart) : création d'un passage (enseignant du groupe, élève du groupe, directeur ; `createdAt` serveur exigé, ni absent ni antidaté ; plus de `passIndex`), ajout seul (rejouer un identifiant refusé), correction limitée à `potted` et `total`,
+  requêtes autorisées et **refusées** par rôle (un enseignant sur l'élève seul ou la séance seule ; la famille par groupe ; une autre fiche), deux passages écrits dans le même lot au même instant (même `createdAt`, l'identifiant seul les ordonne), suppression sans réécriture des autres, blocs acquis (lus par la famille de la fiche liée), bilans et acquittements (jamais lus par la famille),
+  `createdBy` = uid. `matrix.test.mjs` et `bounds.test.mjs` mis à jour (`createdAt` d'un passage, `createdBy` d'un acquittement). **Aucun index composite** : égalités seulement ; `firestore.indexes.json` inchangé et `tool/check_indexes.dart` vert.
+- **Routeur** : `planner_route.feature` (trois scénarios, un par page d'origine : le groupe arrive dans l'adresse `/planner?group=…`). **Mutation vue** : retirer le groupe des trois appels du routeur fait échouer les trois scénarios.
+
+### Mutations à la main (FB4, partie 3)
+
+Copie des règles (`RULES_FILE=copie.rules`), `progress.test.mjs`. Les trois mutants ont été posés **ensemble** (quatre tests tués) ; l'attribution se lit dans le contenu des tests.
+
+| Mutant | Résultat |
+|---|---|
+| (S) `createdAt == request.time` retiré de la création d'un passage | tué : « `createdAt` est la date du SERVEUR, exigée : ni absente, ni antidatée » |
+| (T) mise à jour d'un passage sans `affectedKeys().hasOnly(['potted', 'total', 'updatedAt'])` | tué : « la correction en place ne change que `potted` et `total` » et « ajout seul : rejouer un identifiant existant… » |
+| (U) `createdBy == request.auth.uid` retiré de la création d'un acquittement | tué : « création : `createdBy` est l'uid du compte, pas celui d'un collègue » |
 
 ## Authentification (lot FB2)
 
@@ -415,3 +451,24 @@ flutter test test/bdd              # comportement
 flutter test test/unit             # unitaires
 flutter test --coverage            # tout + lcov
 ```
+
+### Mutations de la relecture FB4c (2026-10-18)
+
+- Retirer `attemptComplete()` et `noFieldLost()` de la copie des règles fait échouer `progress.test.mjs` (passage minimal, champ supprimé ou vidé, bloc acquis / bilan / « Vu » minimal).
+- Remplacer le départage `a.id.compareTo(b.id)` de `AttemptDocument.compare` par `return 0` fait échouer le test direct de `compare` (le test d'égalité sur le faux store ne le voyait pas : le faux trie par chemin).
+- Faire écrire `_store.current` par `ReloadRules` sans `isCurrent` fait échouer les deux tests de `auth_rules_reload_test.dart` (chargements finissant à l'envers, déconnexion pendant le chargement).
+
+### Mutations du troisième tour de relecture FB4c (2026-10-18)
+
+- Remplacer `isoText(l[i].effectiveFrom)` par « texte de 40 caractères au plus » dans `changeAt` fait échouer `bounds.test.mjs` (« chaque date est un texte ISO exact (calendrier compris), même la dixième » : `'pas une date'`, mois 13, jour 32, heure 24, au rang 0, 4 et 9). Avec dix éléments, `isoText` joué dix fois reste dans le budget d'expressions (`bounds.test.mjs`, 10 changements acceptés ; `budget.test.mjs` vert).
+- Retirer les plages du motif `isoText` (mois, jour, heure, minute, seconde en `[0-9]{2}`) fait échouer `bounds.test.mjs` et `progress.test.mjs` (« `date` : ISO 8601… ») ainsi que « dates : le texte exact des codecs ».
+- Faire que `DocumentValues._keepsCalendar` rende toujours `true` fait échouer `document_values_test` (« a calendar-invalid text is rejected… » : 30 février, 31 avril, `2026-13-45T99:99:99`).
+
+### Mutations du second tour de relecture FB4c (2026-10-18)
+
+- Retirer `&& current()` du chemin d'échec de `ReloadRules` fait échouer les deux nouveaux tests de `auth_rules_reload_test.dart` (chargement tardif en échec après bascule de club, puis après déconnexion).
+- Retirer `noFieldLost()` de la mise à jour des **bilans** ou des **acquittements** fait échouer `progress.test.mjs` (« une mise à jour ne supprime ni ne vide un champ d'un bilan ou d'un « Vu » »).
+- `presInt(d, 'total', 1, 17)` fait échouer `progress.test.mjs` (`potted: 5, total: 17` refusé). `presInt(d, 'potted', 0, 100)` est un mutant **équivalent** (`potted <= total <= 16`), voir l'ADR 0024.
+- Remplacer `isoText` par « texte de 1 à 40 caractères » dans `presStamp` fait échouer `progress.test.mjs` (dates `'zz'`, date sans heure, fuseau décalé, fraction trop longue) ; dans `optStamp`, `bounds.test.mjs` (saison avec `startDate: 'zz'` ou `closedOn` sans heure).
+- Trier avant de décoder (`_ordered`) fait échouer « attempts with a malformed sort field keep the rest » (`firestore_progress_repositories_test`).
+- `_byDate(recordedAt…, nullLast: false → true)` fait échouer « compare: a pass without device stamp comes before… ».

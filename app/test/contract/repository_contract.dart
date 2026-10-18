@@ -7,6 +7,7 @@ import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
+import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
@@ -61,14 +62,12 @@ ExerciseAttempt _attempt(
   String student = 's1',
   String session = 'x1',
   int potted = 3,
-  int passIndex = 1,
 }) => ExerciseAttempt(
   id: AttemptId(id),
   studentId: StudentId(student),
   sessionId: SessionId(session),
   exercise: ExerciseRef(blockId: 'puissance', number: 2),
   date: DateTime(2026, 10, 3),
-  passIndex: passIndex,
   potted: potted,
   total: 5,
 );
@@ -89,18 +88,72 @@ MaturityAssessment _assessment(
   comment: comment,
 );
 
+/// Ce qui distingue honnêtement les implémentations sur Firestore (ADR 0024) ;
+/// les valeurs par défaut sont celles de drift et de la mémoire. Chaque écart
+/// est dit dans `docs/engineering/testing.md` (section FB4, partie 3).
+class ContractTraits {
+  const ContractTraits({
+    this.insertionOrder = true,
+    this.requiresOwners = false,
+    this.sessionsNeedGroup = false,
+    this.addReplaces = true,
+  });
+
+  /// Les listes rendent l'ordre de première sauvegarde (drift, mémoire) ;
+  /// Firestore n'en a pas : ordre canonique (jour, identifiant ; passages :
+  /// `createdAt` du serveur puis identifiant).
+  final bool insertionOrder;
+
+  /// Les données d'un élève (passages, bilans) et les séances planifiées
+  /// portent le groupe et la saison **dénormalisés** (ADR 0024, décision 14) :
+  /// la saison, les groupes, les fiches et les séances doivent exister
+  /// d'abord (Firestore), ce que ni drift ni la mémoire n'exigent.
+  final bool requiresOwners;
+
+  /// Une séance planifiée **sans groupe** n'existe pas (décision du
+  /// 2026-10-18) ; drift garde celles d'avant la règle.
+  final bool sessionsNeedGroup;
+
+  /// Rejouer l'identifiant d'un passage le **remplace** (drift, mémoire : ce
+  /// qui rend l'import idempotent) ; Firestore est en ajout seul (la
+  /// correction passe par `correct`).
+  final bool addReplaces;
+}
+
 /// Suite de contrat unique des repositories : exécutée contre chaque
-/// implémentation (mémoire, drift) pour garantir un comportement identique
-/// (ADR 0001).
+/// implémentation (mémoire, drift, Firestore sur un faux) pour garantir un
+/// comportement identique (ADR 0001), aux écarts de [ContractTraits] près.
 void repositoryContract(
   String label,
-  Future<RepositoryHarness> Function() open,
-) {
+  Future<RepositoryHarness> Function() open, {
+  ContractTraits traits = const ContractTraits(),
+}) {
   group('$label : contrat des repositories', () {
     late RepositoryHarness repos;
 
     setUp(() async => repos = await open());
     tearDown(() => repos.close());
+
+    /// La saison, les groupes `g1` à `g3` et les fiches `s1`, `s2` (dans
+    /// `g1`) : ce que Firestore exige avant toute donnée dénormalisée.
+    Future<void> seedOwners() async {
+      await repos.seasons.save(_season('season'));
+      await repos.students.save(_student('s1', 'Léa'));
+      await repos.students.save(_student('s2', 'Théo'));
+      for (final id in ['g1', 'g2', 'g3']) {
+        var group = _group(id, name: 'Groupe $id');
+        if (id == 'g1') {
+          for (final student in ['s1', 's2']) {
+            group = group.admit(
+              studentId: StudentId(student),
+              studentAudience: Audience.children,
+              from: DateTime(2026, 9),
+            );
+          }
+        }
+        await repos.groups.save(group);
+      }
+    }
 
     group('saisons', () {
       test('round-trips, replaces and lists in order', () async {
@@ -338,11 +391,12 @@ void repositoryContract(
               .map((s) => s.id.value),
           ['early', 'other'],
         );
-        expect((await repos.sessionRecords.all()).map((s) => s.id.value), [
-          'late',
-          'early',
-          'other',
-        ]);
+        expect(
+          (await repos.sessionRecords.all()).map((s) => s.id.value),
+          traits.insertionOrder
+              ? ['late', 'early', 'other']
+              : ['early', 'other', 'late'],
+        );
       });
 
       test('finds the sessions a student attended', () async {
@@ -386,9 +440,20 @@ void repositoryContract(
     });
 
     group('passages', () {
+      setUp(() async {
+        if (!traits.requiresOwners) return;
+        // Un passage appartient au groupe et à la saison de sa séance.
+        await seedOwners();
+        for (final id in ['x1', 'x2']) {
+          await repos.sessionRecords.save(
+            _record(id, date: DateTime(2026, 10, 3), present: {'s1', 's2'}),
+          );
+        }
+      });
+
       test('round-trips and filters by student and session', () async {
         final first = _attempt('a1');
-        final second = _attempt('a2', session: 'x2', passIndex: 2);
+        final second = _attempt('a2', session: 'x2');
         final other = _attempt('a3', student: 's2');
 
         await repos.attempts.add(first);
@@ -407,14 +472,58 @@ void repositoryContract(
         expect(await repos.attempts.forStudent(const StudentId('zz')), isEmpty);
       });
 
-      test('is idempotent: adding the same id replaces the attempt', () async {
-        await repos.attempts.add(_attempt('a1', potted: 1));
-        await repos.attempts.add(_attempt('a2'));
-        await repos.attempts.add(_attempt('a1', potted: 4));
+      if (traits.addReplaces) {
+        test(
+          'is idempotent: adding the same id replaces the attempt',
+          () async {
+            await repos.attempts.add(_attempt('a1', potted: 1));
+            await repos.attempts.add(_attempt('a2'));
+            await repos.attempts.add(_attempt('a1', potted: 4));
 
-        final all = await repos.attempts.all();
-        expect(all.map((a) => a.id.value), ['a1', 'a2']);
-        expect(all.first.potted, 4);
+            final all = await repos.attempts.all();
+            expect(all.map((a) => a.id.value), ['a1', 'a2']);
+            expect(all.first.potted, 4);
+          },
+        );
+      }
+
+      test(
+        'corrects the balls in place, keeping the recording order',
+        () async {
+          await repos.attempts.add(_attempt('a1', potted: 1));
+          await repos.attempts.add(_attempt('a2'));
+
+          await repos.attempts.correct(_attempt('a1', potted: 4));
+
+          final all = await repos.attempts.all();
+          expect(all.map((a) => a.id.value), ['a1', 'a2']);
+          expect(all.first.potted, 4);
+          expect(all.first.total, 5);
+        },
+      );
+
+      test('refuses to correct an unknown pass', () async {
+        await expectLater(
+          repos.attempts.correct(_attempt('unknown')),
+          throwsA(isA<NotFound>()),
+        );
+      });
+
+      test('derives the rank from the recording order: deleting a pass '
+          'renumbers nothing', () async {
+        await repos.attempts.add(_attempt('a1', potted: 1));
+        await repos.attempts.add(_attempt('a2', potted: 2));
+        await repos.attempts.add(_attempt('a3', session: 'x2'));
+        expect(passRanks(await repos.attempts.all()).values, [1, 2, 1]);
+
+        await repos.attempts.delete(const AttemptId('a1'));
+
+        final remaining = await repos.attempts.all();
+        expect(remaining.map((a) => (a.id.value, a.potted)), [
+          ('a2', 2),
+          ('a3', 3),
+        ]);
+        expect(passRanks(remaining).values, [1, 1]);
       });
 
       test('hides a deleted attempt and ignores unknown deletions', () async {
@@ -433,6 +542,10 @@ void repositoryContract(
     });
 
     group('bilans de maturité', () {
+      setUp(() async {
+        if (traits.requiresOwners) await seedOwners();
+      });
+
       test('lists a student from oldest to newest', () async {
         final newer = _assessment(
           'b1',
@@ -454,7 +567,10 @@ void repositoryContract(
           older,
           newer,
         ]);
-        expect(await repos.assessments.all(), [newer, older, other]);
+        expect(
+          await repos.assessments.all(),
+          traits.insertionOrder ? [newer, older, other] : [older, other, newer],
+        );
       });
 
       test('keeps the comment and replaces it by id', () async {
@@ -489,6 +605,10 @@ void repositoryContract(
     });
 
     group('séances planifiées', () {
+      setUp(() async {
+        if (traits.requiresOwners) await seedOwners();
+      });
+
       test(
         'lists the planned sessions of some groups, and only those',
         () async {
@@ -502,7 +622,9 @@ void repositoryContract(
           await repos.sessions.add(planned('p1', 'g1'));
           await repos.sessions.add(planned('p2', 'g2'));
           await repos.sessions.add(planned('p3', 'g3'));
-          await repos.sessions.add(planned('p4', null));
+          if (!traits.sessionsNeedGroup) {
+            await repos.sessions.add(planned('p4', null));
+          }
 
           expect(
             await repos.sessions.idsOfGroups({
@@ -521,6 +643,7 @@ void repositoryContract(
           title: 'Rebond',
           date: DateTime(2026, 10, 12),
           audience: Audience.children,
+          groupId: traits.sessionsNeedGroup ? const GroupId('g1') : null,
         );
         final second = Session(
           id: 'p2',
@@ -554,6 +677,7 @@ void repositoryContract(
           title: 'Demi-bille',
           date: DateTime(2026, 10, 12),
           audience: Audience.adults,
+          groupId: traits.sessionsNeedGroup ? const GroupId('g1') : null,
           sheetId: SheetId('demi-bille-2'),
         );
         final unknown = linked.copyWith(sheetId: SheetId('inconnue-9'));
@@ -569,21 +693,24 @@ void repositoryContract(
         expect(await repos.sessions.getAll(), [free]);
       });
 
-      test('keeps the group, replaced or cleared by add', () async {
-        final planned = Session(
-          id: 'p1',
-          title: 'Cours',
-          date: DateTime(2026, 10, 12),
-          audience: Audience.children,
-          groupId: const GroupId('g1'),
-        );
+      // Une séance sans groupe n'existe pas sur Firestore (groupe obligatoire).
+      if (!traits.sessionsNeedGroup) {
+        test('keeps the group, replaced or cleared by add', () async {
+          final planned = Session(
+            id: 'p1',
+            title: 'Cours',
+            date: DateTime(2026, 10, 12),
+            audience: Audience.children,
+            groupId: const GroupId('g1'),
+          );
 
-        await repos.sessions.add(planned);
-        expect(await repos.sessions.getAll(), [planned]);
+          await repos.sessions.add(planned);
+          expect(await repos.sessions.getAll(), [planned]);
 
-        await repos.sessions.add(planned.copyWith(groupId: null));
-        expect((await repos.sessions.getAll()).single.groupId, isNull);
-      });
+          await repos.sessions.add(planned.copyWith(groupId: null));
+          expect((await repos.sessions.getAll()).single.groupId, isNull);
+        });
+      }
 
       test('exposes an unmodifiable snapshot', () async {
         final sessions = await repos.sessions.getAll();
@@ -623,7 +750,7 @@ void repositoryContract(
           _record('x1', date: DateTime(2026, 10, 3), present: {'s1', 's2'}),
         );
         await repos.attempts.add(_attempt('a1'));
-        await repos.attempts.add(_attempt('a2', passIndex: 2));
+        await repos.attempts.add(_attempt('a2'));
         await repos.attempts.add(_attempt('a3', student: 's2'));
         await repos.assessments.add(
           _assessment('b1', date: DateTime(2026, 10, 5)),

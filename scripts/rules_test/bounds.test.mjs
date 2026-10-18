@@ -7,7 +7,7 @@ import { after, before, beforeEach, describe, test } from 'node:test';
 
 import { doc, serverTimestamp, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
 
-import { allowed, createEnv, dbOf, invitation, member, now, owned, put, remove, seed, student, ts } from './support.mjs';
+import { allowed, complete, createEnv, dbOf, invitation, member, now, owned, put, remove, seed, student, ts } from './support.mjs';
 
 let env;
 before(async () => {
@@ -63,7 +63,7 @@ describe('fiche élève : prénom et initiale (minimisation)', () => {
   describe('historique du public (FB4)', () => {
     const change = (audience, effectiveFrom = '2026-09-01T00:00:00.000') => ({ audience, effectiveFrom });
     const history = (n) =>
-      Array.from({ length: n }, (_, i) => change(i % 2 === 0 ? 'children' : 'adults', `2026-09-${String(i + 1).padStart(2, '0')}`));
+      Array.from({ length: n }, (_, i) => change(i % 2 === 0 ? 'children' : 'adults', `2026-09-${String(i + 1).padStart(2, '0')}T00:00:00.000`));
 
     test('de 1 à 10 changements, chacun { audience, effectiveFrom }', async () => {
       assert.equal(await create(student(['g1'], { audienceHistory: history(1) })), true, '1');
@@ -84,7 +84,18 @@ describe('fiche élève : prénom et initiale (minimisation)', () => {
       }
     });
 
-    test('la date est un texte ISO court ou un horodatage', async () => {
+    test('chaque date est un texte ISO exact (calendrier compris), même la dixième', async () => {
+      const at = (i, bad) => history(10).map((c, j) => (j === i ? bad : c));
+      const bads = ['pas une date', '2026-09-01', '2026-13-01T00:00:00', '2026-00-10T00:00:00', '2026-09-32T00:00:00',
+        '2026-09-00T00:00:00', '2026-09-01T24:00:00', '2026-09-01T00:60:00', '2026-09-01T00:00:60', '2026-09-01T00:00:00+02:00'];
+      for (const i of [0, 4, 9]) {
+        for (const bad of bads) {
+          assert.equal(await create(student(['g1'], { audienceHistory: at(i, change('children', bad)) })), false, `${bad} ${i}`);
+        }
+      }
+    });
+
+    test('la date est un texte ISO complet ou un horodatage', async () => {
       assert.equal(await create(student(['g1'], { audienceHistory: [change('children', ts(now()))] })), true);
       assert.equal(await create(student(['g1'], { audienceHistory: [change('children', 7)] })), false);
     });
@@ -189,8 +200,13 @@ describe('données de groupe : identifiants dénormalisés et taille', () => {
   const director = () => dbOf(env, 'director');
   const create = (collectionName, data) =>
     allowed(() => setDoc(doc(director(), `clubs/c1/${collectionName}/n1`),
-      // La création d'une saisie exige `createdAt == request.time` (ouverture concurrente).
-      collectionName === 'records' ? { createdAt: serverTimestamp(), ...data } : data));
+      // La création d'une saisie ou d'un passage exige `createdAt == request.time` (ouverture
+      // concurrente, ordre d'enregistrement) ; celle d'un acquittement, `createdBy` = uid (B5).
+      collectionName === 'records' || collectionName === 'attempts'
+        ? { createdAt: serverTimestamp(), ...complete(collectionName, data) }
+        : collectionName === 'acknowledgements'
+          ? { createdBy: 'u-dir', ...complete(collectionName, data) }
+          : complete(collectionName, data)));
 
   test('groupId et seasonId sont obligatoires, en texte non vide', async () => {
     for (const name of ['sessions', 'records']) {
@@ -259,7 +275,7 @@ describe('données de groupe : identifiants dénormalisés et taille', () => {
 
   test('passages et bilans : types et bornes des valeurs', async () => {
     const attempt = (extra) => create('attempts', { ...owned('g1', 's1'), ...extra });
-    assert.equal(await attempt({ potted: 100, total: 100, exerciseNumber: 1000 }), true, 'bornes hautes');
+    assert.equal(await attempt({ potted: 16, total: 16, exerciseNumber: 1000 }), true, 'bornes hautes');
     await remove(env, 'clubs/c1/attempts/n1');
     assert.equal(await attempt({ potted: 101 }), false, 'potted 101');
     assert.equal(await attempt({ potted: '3' }), false, 'potted texte');
@@ -273,20 +289,24 @@ describe('données de groupe : identifiants dénormalisés et taille', () => {
 
   test('un enseignant ne crée de donnée que sur un élève de SON groupe (A1)', async () => {
     const db = dbOf(env, 'teacherA');
-    const write = (name, data) => allowed(() => setDoc(doc(db, `clubs/c1/${name}/inj`), data));
+    const stamped = (name, data) =>
+      name === 'attempts' ? { createdAt: serverTimestamp(), ...complete(name, data) }
+        : name === 'acknowledgements' ? { createdBy: 'u-teacher-a', ...complete(name, data) } : complete(name, data);
+    const write = (name, data) => allowed(() => setDoc(doc(db, `clubs/c1/${name}/inj`), stamped(name, data)));
     for (const name of ['attempts', 'acquisitions', 'assessments', 'acknowledgements']) {
       assert.equal(await write(name, owned('g1', 's2')), false, `${name} : s2 est du seul groupe g2`);
       assert.equal(await write(name, owned('g1', 's1')), true, `${name} : s1 est du groupe g1`);
       await remove(env, `clubs/c1/${name}/inj`);
     }
     // L'enseignant du groupe g2 ne peut pas non plus écrire pour s1 (hors de son groupe).
-    assert.equal(await allowed(() => setDoc(doc(dbOf(env, 'teacherB'), 'clubs/c1/attempts/inj'), owned('g2', 's1'))), false, 'teacherB sur s1');
+    assert.equal(await allowed(() => setDoc(doc(dbOf(env, 'teacherB'), 'clubs/c1/attempts/inj'), { createdAt: serverTimestamp(), ...complete('attempts', owned('g2', 's1')) })), false, 'teacherB sur s1');
   });
 
   test('le directeur crée une donnée sur une fiche existante (import d\'historique) mais pas sur une fiche absente', async () => {
     const db = dbOf(env, 'director');
-    assert.equal(await allowed(() => setDoc(doc(db, 'clubs/c1/attempts/inj'), owned('g1', 's2'))), true, 'fiche existante');
-    assert.equal(await allowed(() => setDoc(doc(db, 'clubs/c1/attempts/inj2'), owned('g1', 'absent'))), false, 'fiche absente');
+    const stamped = (data) => ({ createdAt: serverTimestamp(), ...complete('attempts', data) });
+    assert.equal(await allowed(() => setDoc(doc(db, 'clubs/c1/attempts/inj'), stamped(owned('g1', 's2')))), true, 'fiche existante');
+    assert.equal(await allowed(() => setDoc(doc(db, 'clubs/c1/attempts/inj2'), stamped(owned('g1', 'absent')))), false, 'fiche absente');
   });
 
   test('le commentaire d\'évaluation est facultatif et borné à 500 caractères', async () => {
@@ -327,7 +347,9 @@ describe('bornes complémentaires : saisons, groupes, archives, réglages, club'
 
   test('une saison n\'accepte que ses champs (liste blanche) et des dates courtes', async () => {
     const write = (extra) => allowed(() => setDoc(doc(director(), 'clubs/c1/seasons/se9'), { label: 'x', ...extra }));
-    assert.equal(await write({ startDate: '2026-09-01', endDate: '2027-06-30', closedOn: null }), true, 'champs connus');
+    assert.equal(await write({ startDate: '2026-09-01T00:00:00.000', endDate: '2027-06-30T00:00:00.000', closedOn: null }), true, 'champs connus');
+    assert.equal(await write({ startDate: 'zz' }), false, 'date illisible (écartée sans bruit par le décodeur)');
+    assert.equal(await write({ closedOn: '2026-09-01' }), false, 'date sans heure : pas le texte des codecs');
     assert.equal(await write({ notes: 'x' }), false, 'champ inconnu');
     assert.equal(await write({ startDate: 'x'.repeat(900 * 1024) }), false, 'date de 900 Ko');
   });

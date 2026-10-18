@@ -10,38 +10,44 @@ import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/settings/domain/club_settings.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/session_tag.dart';
 
 /// Écrit le contenu d'une sauvegarde (section `data`) en structures JSON.
 class BackupEncoder {
   const BackupEncoder();
 
-  Map<String, Object?> encode(BackupSnapshot snapshot) => {
-    'seasons': [for (final s in snapshot.seasons) _encodeSeason(s)],
-    'students': [for (final s in snapshot.students) _encodeStudent(s)],
-    'groups': [for (final g in snapshot.groups) _encodeGroup(g)],
-    'sessionRecords': [
-      for (final s in snapshot.sessionRecords) _encodeSessionRecord(s),
-    ],
-    'attempts': [for (final a in snapshot.attempts) _encodeAttempt(a)],
-    'assessments': [for (final a in snapshot.assessments) _encodeAssessment(a)],
-    'plannedSessions': [
-      for (final s in snapshot.plannedSessions) _encodePlanned(s),
-    ],
-    'blockAcquisitions': [
-      for (final a in snapshot.blockAcquisitions) _encodeAcquisition(a),
-    ],
-    'alertAcknowledgements': [
-      for (final a
-          in snapshot.alertAcknowledgements ?? const <AlertAcknowledgement>[])
-        _encodeAcknowledgement(a),
-    ],
-    'seasonArchives': [
-      for (final a in snapshot.seasonArchives) _encodeArchive(a),
-    ],
-    if (snapshot.settings case final settings?)
-      'settings': _encodeSettings(settings),
-  };
+  Map<String, Object?> encode(BackupSnapshot snapshot) {
+    final ranks = passRanks(snapshot.attempts);
+    return {
+      'seasons': [for (final s in snapshot.seasons) _encodeSeason(s)],
+      'students': [for (final s in snapshot.students) _encodeStudent(s)],
+      'groups': [for (final g in snapshot.groups) _encodeGroup(g)],
+      'sessionRecords': [
+        for (final s in snapshot.sessionRecords) _encodeSessionRecord(s),
+      ],
+      'attempts': [for (final a in snapshot.attempts) _encodeAttempt(a, ranks)],
+      'assessments': [
+        for (final a in snapshot.assessments) _encodeAssessment(a),
+      ],
+      'plannedSessions': [
+        for (final s in snapshot.plannedSessions) _encodePlanned(s),
+      ],
+      'blockAcquisitions': [
+        for (final a in snapshot.blockAcquisitions) _encodeAcquisition(a),
+      ],
+      'alertAcknowledgements': [
+        for (final a
+            in snapshot.alertAcknowledgements ?? const <AlertAcknowledgement>[])
+          _encodeAcknowledgement(a),
+      ],
+      'seasonArchives': [
+        for (final a in snapshot.seasonArchives) _encodeArchive(a),
+      ],
+      if (snapshot.settings case final settings?)
+        'settings': _encodeSettings(settings),
+    };
+  }
 
   Map<String, Object?> _encodeSettings(ClubSettings settings) => {
     'passesRequired': settings.passesRequired,
@@ -129,14 +135,19 @@ class BackupEncoder {
     'tags': sessionTagCodes(record.tags),
   };
 
-  Map<String, Object?> _encodeAttempt(ExerciseAttempt attempt) => {
+  Map<String, Object?> _encodeAttempt(
+    ExerciseAttempt attempt,
+    Map<AttemptId, int> ranks,
+  ) => {
     'id': attempt.id.value,
     'studentId': attempt.studentId.value,
     'sessionId': attempt.sessionId.value,
     'blockId': attempt.exercise.blockId,
     'exerciseNumber': attempt.exercise.number,
     'date': _date(attempt.date),
-    'passIndex': attempt.passIndex,
+    // Rang dérivé (ADR 0024, décision 17), écrit pour qu'une version qui le
+    // lit encore (format 5) reste compatible ; le décodeur l'ignore.
+    'passIndex': ranks[attempt.id],
     'potted': attempt.potted,
     'total': attempt.total,
   };

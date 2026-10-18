@@ -89,11 +89,15 @@ class InMemoryDocumentStore implements DocumentStore {
           path.substring(prefix.length).contains('/')) {
         return false;
       }
-      final value = _documents[path]![filter.field];
+      final fields = _documents[path]!;
+      final value = fields[filter.field];
       return switch (filter) {
         FieldEquals(value: final wanted) => value == wanted,
         FieldArrayContainsAny(:final values) =>
           value is List<Object?> && value.any(values.contains),
+        AllEqual(:final clauses) => clauses.every(
+          (clause) => fields[clause.field] == clause.value,
+        ),
       };
     }).toList()..sort();
     return [

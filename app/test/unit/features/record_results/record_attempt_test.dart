@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_result.dart';
 import 'package:billard_cfa/features/record_results/domain/record_attempt.dart';
 import 'package:billard_cfa/features/record_results/domain/recorded_attempt.dart';
@@ -70,7 +71,6 @@ void main() {
     );
 
     expect(recorded.passed, isTrue);
-    expect(recorded.attempt.passIndex, 1);
     expect(recorded.attempt.date, day(1));
     expect(recorded.attempt.id.value, 'id-1');
     expect(recorded.result.status, ExerciseStatus.inProgress);
@@ -177,8 +177,10 @@ void main() {
       ),
     );
 
-    expect(first.attempt.passIndex, 1);
-    expect(second.attempt.passIndex, 2);
+    // Le rang est dérivé de l'ordre d'enregistrement, jamais stocké.
+    final stored = await f.world.attempts.forSession(_session);
+    expect(stored.map((a) => a.id), [first.attempt.id, second.attempt.id]);
+    expect(passRanks(stored).values, [1, 2]);
   });
 
   test('refuses a third pass on the same exercise in a session', () async {
@@ -226,9 +228,7 @@ void main() {
         config: RulesConfig(maxPassesPerExercisePerSession: 1),
       );
       await f.world.attempts.add(attempt(ref('a', 1), potted: 3, id: 'old1'));
-      await f.world.attempts.add(
-        attempt(ref('a', 1), potted: 3, passIndex: 2, id: 'old2'),
-      );
+      await f.world.attempts.add(attempt(ref('a', 1), potted: 3, id: 'old2'));
 
       expect(codeOf(await f.record(3)), InvariantCode.passesLimitReached);
     },

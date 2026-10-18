@@ -33,9 +33,7 @@ void main() {
     final (world, list) = await fixture();
     await world.session(dayOfMonth: 3, present: {'s1', 's2'}, main: 'a');
     await world.attempts.add(attempt(ref('a', 1), potted: 3));
-    await world.attempts.add(
-      attempt(ref('a', 1), potted: 2, passIndex: 2, id: 'a2'),
-    );
+    await world.attempts.add(attempt(ref('a', 1), potted: 2, id: 'a2'));
 
     final summaries = ok(await list());
 

@@ -86,6 +86,26 @@ void main() {
     expect([for (final d in docs) d.id], ['a', 'b']);
   });
 
+  test(
+    'query with AllEqual keeps the documents that match every equality',
+    () async {
+      final store = InMemoryDocumentStore()
+        ..seed('c/a', {'groupId': 'g1', 'sessionId': 'x1'})
+        ..seed('c/b', {'groupId': 'g1', 'sessionId': 'x2'})
+        ..seed('c/d', {'groupId': 'g2', 'sessionId': 'x1'});
+
+      final docs = await store.query(
+        'c',
+        AllEqual(const [
+          FieldEquals('groupId', 'g1'),
+          FieldEquals('sessionId', 'x1'),
+        ]),
+      );
+
+      expect([for (final d in docs) d.id], ['a']);
+    },
+  );
+
   test('query array-contains-any needs a list sharing one value', () async {
     store
       ..seed('clubs/c1/students/s1', {
