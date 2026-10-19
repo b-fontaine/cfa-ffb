@@ -9,19 +9,46 @@ void main() {
     final FirebaseGateway gateway = FirebaseSdkGateway(
       initializeApp: (options) async =>
           calls.add('initializeApp ${options.projectId}'),
+      configureFirestore: (settings) => calls.add(
+        'settings persistence=${settings.persistenceEnabled} '
+        'tabs=${settings.webPersistentTabManager.runtimeType}',
+      ),
       useAuthEmulator: (host, port) async => calls.add('auth $host:$port'),
       useFirestoreEmulator: (host, port) => calls.add('firestore $host:$port'),
     );
 
     await gateway.initialize(emulator: false);
 
-    expect(calls, ['initializeApp animation-billard']);
+    // Persistance hors ligne activée explicitement, multi-onglets, APRÈS
+    // l'initialisation et avant tout usage de Firestore (ADR 0024, C4).
+    expect(calls, [
+      'initializeApp animation-billard',
+      'settings persistence=true tabs=WebPersistentMultipleTabManager',
+    ]);
+  });
+
+  test('the cache is configured before the emulators are targeted', () async {
+    final calls = <String>[];
+    final gateway = FirebaseSdkGateway(
+      initializeApp: (options) async => calls.add('initializeApp'),
+      configureFirestore: (settings) => calls.add('settings'),
+      useAuthEmulator: (host, port) async => calls.add('auth'),
+      useFirestoreEmulator: (host, port) => calls.add('firestore'),
+    );
+
+    await gateway.initialize(emulator: true);
+    await gateway.useEmulators(host: 'h', authPort: 1, firestorePort: 2);
+
+    // Sur le web, `useEmulator` crée l'instance Firestore : un réglage tardif
+    // serait ignoré et le cache resterait en mémoire.
+    expect(calls, ['initializeApp', 'settings', 'auth', 'firestore']);
   });
 
   test('against the emulators, the app takes the emulator project', () async {
     final projects = <String>[];
     final FirebaseGateway gateway = FirebaseSdkGateway(
       initializeApp: (options) async => projects.add(options.projectId),
+      configureFirestore: (settings) {},
       useAuthEmulator: (host, port) async {},
       useFirestoreEmulator: (host, port) {},
     );
@@ -39,6 +66,7 @@ void main() {
     final calls = <String>[];
     await FirebaseSdkGateway(
       initializeApp: (options) async {},
+      configureFirestore: (settings) {},
       useAuthEmulator: (host, port) async => calls.add('auth $host:$port'),
       useFirestoreEmulator: (host, port) => calls.add('firestore $host:$port'),
     ).useEmulators(host: '10.0.2.2', authPort: 9099, firestorePort: 8080);

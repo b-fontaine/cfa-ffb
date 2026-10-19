@@ -173,8 +173,28 @@ List<String> checkSources(Directory web) {
   final external = RegExp(
     r'''(?:src|href)\s*=\s*["']https?://|['"]https?://''',
   );
+  // La seule URL absolue de la page : les clés de la carte d'import du SDK
+  // Firebase (redirigées vers des copies locales, voir
+  // scripts/sync_firebase_sdk.dart). Elle est contrôlée à part puis retirée du
+  // texte examiné.
+  var indexWithoutMap = index;
+  if (index != null) {
+    final mapBlock = RegExp(
+      r'<script\s+type="importmap"\s*>(.*?)</script>',
+      dotAll: true,
+    ).firstMatch(index);
+    if (mapBlock == null) {
+      problems.add(
+        'index.html : carte d’import du SDK Firebase absente '
+        '(le SDK serait chargé depuis gstatic.com)',
+      );
+    } else {
+      indexWithoutMap = index.replaceFirst(mapBlock.group(0)!, '');
+      _checkImportMap(mapBlock.group(1)!, problems);
+    }
+  }
   for (final entry in {
-    'index.html': index,
+    'index.html': indexWithoutMap,
     'offline.js': offline,
     'offline_sw.js': worker,
     'flutter_bootstrap.js': bootstrap,
@@ -185,6 +205,38 @@ List<String> checkSources(Directory web) {
     }
   }
   return problems;
+}
+
+/// La carte d'import ne redirige que le SDK Firebase de gstatic.com, et
+/// uniquement vers des fichiers locaux.
+void _checkImportMap(String json, List<String> problems) {
+  Object? imports;
+  try {
+    final decoded = jsonDecode(json);
+    imports = decoded is Map ? decoded['imports'] : null;
+  } on FormatException {
+    imports = null;
+  }
+  if (imports is! Map) {
+    problems.add('index.html : carte d’import illisible (JSON invalide)');
+    return;
+  }
+  for (final entry in imports.entries) {
+    final key = '${entry.key}';
+    final value = '${entry.value}';
+    if (!key.startsWith('https://www.gstatic.com/firebasejs/')) {
+      problems.add(
+        'index.html : la carte d’import ne peut viser que le SDK Firebase '
+        '($key)',
+      );
+    }
+    if (!value.startsWith('./firebasejs/')) {
+      problems.add(
+        'index.html : la carte d’import doit rediriger vers ./firebasejs/ '
+        '($key vers $value)',
+      );
+    }
+  }
 }
 
 /// Contrat entre le pont JavaScript (`offline.js`) et sa liaison Dart
@@ -437,6 +489,7 @@ List<String> verifyBuild(Directory build) {
   for (final path in _required) {
     if (!listed.contains(path)) problems.add('précache : $path manquant');
   }
+  _requireFirebaseSdk(build, listed, problems);
   for (final prefix in _requiredPrefixes) {
     if (!listed.any((p) => p.startsWith(prefix))) {
       problems.add('précache : aucun fichier sous $prefix');
@@ -472,4 +525,30 @@ List<String> verifyBuild(Directory build) {
     );
   }
   return problems;
+}
+
+/// Le SDK web Firebase épinglé (app/web/firebasejs) est dans le build et dans
+/// le précache : sans lui, la première visite hors ligne n'initialiserait pas
+/// Firebase.
+void _requireFirebaseSdk(
+  Directory build,
+  List<String> listed,
+  List<String> problems,
+) {
+  final manifest = File('${build.path}/firebasejs/manifest.json');
+  if (!manifest.existsSync()) {
+    problems.add(
+      'build : firebasejs/manifest.json absent (SDK Firebase local)',
+    );
+    return;
+  }
+  final json = jsonDecode(manifest.readAsStringSync()) as Map<String, dynamic>;
+  final version = json['version'];
+  final files = ((json['sha256'] as Map<String, dynamic>?) ?? {}).keys;
+  if (files.isEmpty) problems.add('firebasejs/manifest.json : aucun fichier');
+  for (final name in files) {
+    if (!listed.contains('firebasejs/$version/$name')) {
+      problems.add('précache : firebasejs/$version/$name manquant');
+    }
+  }
 }

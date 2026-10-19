@@ -1,5 +1,8 @@
 import 'package:billard_cfa/app/router.dart';
 import 'package:billard_cfa/features/app_update/presentation/bloc/app_update_cubit.dart';
+import 'package:billard_cfa/features/sync_status/domain/sync_state.dart';
+import 'package:billard_cfa/features/sync_status/presentation/bloc/sync_status_cubit.dart';
+import 'package:billard_cfa/features/sync_status/presentation/ui/sync_status_chip.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/role_policy.dart';
@@ -8,6 +11,7 @@ import 'package:billard_cfa/shared/ui/app_tabs.dart';
 import 'package:billard_cfa/shared/ui/app_update_banner.dart';
 import 'package:billard_cfa/shared/ui/nav_icon.dart';
 import 'package:billard_cfa/shared/ui/responsive_body.dart';
+import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -167,9 +171,10 @@ class AppShell extends StatelessWidget {
 }
 
 /// Le contenu de la destination, surmonté de la bannière « nouvelle version »
-/// quand une version attend. Le contenu garde sa place dans l'arbre que la
-/// bannière soit là ou non : afficher ou masquer la bannière ne reconstruit
-/// pas l'écran (la saisie en cours est conservée).
+/// quand une version attend, puis de la pastille de synchronisation. Le
+/// contenu garde sa place dans l'arbre que la bannière soit là ou non :
+/// afficher ou masquer la bannière ne reconstruit pas l'écran (la saisie en
+/// cours est conservée).
 class _UpdateAwareBody extends StatelessWidget {
   const _UpdateAwareBody({required this.child});
 
@@ -178,6 +183,7 @@ class _UpdateAwareBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<AppUpdateCubit>();
+    final sync = context.read<SyncStatusCubit>();
     return BlocBuilder<AppUpdateCubit, AppUpdateState>(
       builder: (context, state) => Column(
         children: [
@@ -189,12 +195,33 @@ class _UpdateAwareBody extends StatelessWidget {
                 onLater: cubit.dismiss,
               ),
             ),
+          // Pastille de synchronisation (C4) : discrète, à droite, sous
+          // l'encoche (la bannière, quand elle est là, l'absorbe déjà).
+          SafeArea(
+            bottom: false,
+            top: !state.visible,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: AppSpacing.xs,
+              ),
+              child: Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: BlocBuilder<SyncStatusCubit, SyncState>(
+                  builder: (context, syncState) => SyncStatusChip(
+                    state: syncState,
+                    onAcknowledgeFailure: sync.acknowledgeFailure,
+                  ),
+                ),
+              ),
+            ),
+          ),
           Expanded(
-            // La bannière absorbe l'encoche : l'écran dessous ne la
-            // réserve plus.
+            // La bannière ou la pastille absorbe l'encoche : l'écran dessous
+            // ne la réserve plus.
             child: MediaQuery.removePadding(
               context: context,
-              removeTop: state.visible,
+              removeTop: true,
               child: child,
             ),
           ),

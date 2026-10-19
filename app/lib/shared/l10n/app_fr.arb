@@ -3980,5 +3980,20 @@
   "childrenTitleStudent": "Ma progression",
   "childrenEmpty": "Aucun élève n’est encore lié à votre compte.",
   "childrenShow": "Voir la progression",
-  "failNameRequired": "Un nom est obligatoire."
+  "failNameRequired": "Un nom est obligatoire.",
+  "signInSharedDevice": "Sur un appareil partagé, déconnectez-vous toujours en partant : les données du club conservées sur cet appareil pour le mode hors ligne sont effacées à la déconnexion.",
+  "signOutUnsentTitle": "Modifications pas encore envoyées",
+  "signOutUnsentBody": "Des modifications faites sans connexion n'ont pas encore été envoyées au serveur. Si vous vous déconnectez maintenant, elles sont perdues.",
+  "signOutUnsentConfirm": "Se déconnecter et les perdre",
+  "signInErasurePendingMessage": "Les données hors ligne de cet appareil n'ont pas pu être effacées : fermez les autres onglets puis réessayez.",
+  "signInErasurePendingRetry": "Réessayer l'effacement",
+  "syncStatusLabel": "Synchronisation",
+  "syncUpToDate": "À jour",
+  "syncPending": "Envoi en attente ({count})",
+  "@syncPending": {"placeholders": {"count": {"type": "int"}}},
+  "syncOffline": "Hors ligne",
+  "syncOfflinePending": "Hors ligne, envoi en attente ({count})",
+  "@syncOfflinePending": {"placeholders": {"count": {"type": "int"}}},
+  "syncFailureMessage": "Une modification n'a pas pu être enregistrée et a été annulée sur cet appareil.",
+  "syncFailureAction": "Compris"
 }

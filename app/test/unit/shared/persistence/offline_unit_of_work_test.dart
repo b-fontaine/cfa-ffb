@@ -12,6 +12,7 @@ import 'package:billard_cfa/shared/persistence/document_store.dart';
 import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/firestore_unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_document_store.dart';
+import 'package:billard_cfa/shared/persistence/pending_writes_probe.dart';
 import 'package:billard_cfa/shared/persistence/send_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -49,7 +50,7 @@ void main() {
     documents = _OfflineStore();
     final world = FirestoreWorld()..act('c1', Role.director);
     club = ClubStore(documents, world.scope);
-    tracker = SendTracker();
+    tracker = SendTracker(InMemoryPendingWritesProbe());
   });
 
   test('a Firestore commit that never ends does not hold the local '

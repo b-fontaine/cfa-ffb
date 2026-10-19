@@ -29,6 +29,21 @@ void main() {
   });
 
   test(
+    'peek reads the content without reads, failures or get overrides',
+    () async {
+      store.seed('clubs/a', {'n': 1});
+      final reads = store.reads;
+      store.failing = StoreFailureCode.unavailable;
+
+      final found = await store.peek('clubs/a');
+
+      expect(found!.fields, {'n': 1});
+      expect(await store.peek('clubs/absent'), isNull);
+      expect(store.reads, reads);
+    },
+  );
+
+  test(
     'createIfAbsent creates once and leaves an existing document alone',
     () async {
       expect(

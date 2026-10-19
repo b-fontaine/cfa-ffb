@@ -25,8 +25,8 @@
 // Le build de production n'accepte jamais l'émulateur (`FirebaseEnvironment`) : le test ne
 // le modifie pas. Il intercepte au niveau du navigateur les appels du SDK vers
 // `identitytoolkit.googleapis.com` et `securetoken.googleapis.com` et les renvoie à
-// l'émulateur local ; tout autre hôte que localhost et gstatic.com (qui sert le SDK web)
-// est refusé et fait échouer le test. Aucune requête n'atteint le projet réel.
+// l'émulateur local ; tout autre hôte que localhost est refusé et fait échouer le test
+// (gstatic.com compris : le SDK web est servi par l'application, FB5a). Aucune requête n'atteint le projet réel.
 //
 // Prérequis (échec explicite, jamais de saut) : Google Chrome installé, `app/build/web`
 // produit par `scripts/build_web.sh`, émulateur Auth lancé par `scripts/web_smoke.sh`.
@@ -98,6 +98,8 @@ const blocked = new Set();
 // règles et les dépôts sont éprouvés par scripts/rules_test/ et par les tests Dart.
 const firestoreRefused = new Set();
 const pageErrors = [];
+// Fichiers du SDK web demandés à l'application elle-même (et non à gstatic.com).
+const sdkFiles = new Set();
 let accountUid;
 
 const startServer = () =>
@@ -129,7 +131,8 @@ const route = async (r) => {
   const request = r.request();
   const url = new URL(request.url());
   if (url.hostname === '127.0.0.1' || url.hostname === 'localhost') return r.continue();
-  if (url.hostname === 'gstatic.com' || url.hostname.endsWith('.gstatic.com')) return r.continue();
+  // gstatic.com n'est PLUS joignable : le SDK web est servi en local (carte d'import de
+  // index.html, ADR 0024 décision 30). Un appel vers gstatic tombe dans `blocked` et échoue.
   // Le SDK web de Firestore appelle aussi une image de sonde de connectivité de Google
   // (WebChannel) : même traitement, et c'est consigné au registre des traitements.
   if (
@@ -197,6 +200,9 @@ const open = async () => {
 };
 
 const text = (name) => page.getByText(name);
+// Noms des bases IndexedDB de la page : le cache hors ligne de Firestore s'y appelle « firestore/… ».
+const indexedDbNames = () =>
+  page.evaluate(async () => (await indexedDB.databases()).map((database) => database.name ?? ''));
 // Échec lisible : on dit ce que la page affichait au lieu d'un simple délai dépassé.
 const see = async (name) => {
   try {
@@ -205,6 +211,19 @@ const see = async (name) => {
     const shown = await page.evaluate(() => document.body.innerText).catch(() => '(illisible)');
     throw new Error(`« ${name} » absent de ${page.url()} ; affiché : ${shown}`, { cause: error });
   }
+};
+
+// La page peut se recharger À TOUT MOMENT (autre onglet) : l'arbre sémantique se perd alors ;
+// on le réactive à chaque essai jusqu'à voir le texte.
+const seeAfterReload = async (name) => {
+  const deadline = Date.now() + 40_000;
+  while (Date.now() < deadline) {
+    await enableSemantics().catch(() => {});
+    if ((await text(name).count().catch(() => 0)) > 0) return;
+    await page.waitForTimeout(500);
+  }
+  const shown = await page.evaluate(() => document.body.innerText).catch(() => '(illisible)');
+  throw new Error(`« ${name} » absent de ${page.url()} ; affiché : ${shown}`);
 };
 
 // Flutter crée (et parfois recrée) l'élément de saisie quand le champ prend le focus, de
@@ -241,6 +260,10 @@ before(async () => {
   await context.route('**/*', route);
   page = await context.newPage();
   page.on('pageerror', (error) => pageErrors.push(error.message));
+  page.on('request', (request) => {
+    const match = /^https?:\/\/(?:127\.0\.0\.1|localhost):\d+\/(?:.*\/)?firebasejs\/[0-9.]+\/([\w.-]+\.js)$/.exec(request.url());
+    if (match) sdkFiles.add(match[1]);
+  });
   await fetch(`${emulator}/emulator/v1/projects/${projectId}/accounts`, { method: 'DELETE' });
   accountUid = await seedVerifiedAccount();
 });
@@ -298,8 +321,108 @@ describe('build web compilé contre l’émulateur Auth', () => {
     await see('Service injoignable');
     assert.ok(firestoreRefused.size > 0, 'le build compilé doit avoir interrogé Firestore');
 
+    // Persistance hors ligne ACTIVÉE (FB5a, C4) : le SDK a ouvert son cache IndexedDB.
+    assert.ok(
+      (await indexedDbNames()).some((name) => name.startsWith('firestore/')),
+      'la persistance hors ligne de Firestore doit être active (aucune base IndexedDB « firestore/ »)',
+    );
+
+    // La déconnexion vide le cache (terminate + clearPersistence du vrai SDK), puis la page se
+    // recharge : le SDK ne rouvre pas une instance terminée.
+    const reloaded = page.waitForEvent('load', { timeout: 60_000 });
     await page.getByRole('button', { name: 'Se déconnecter', exact: true }).click();
+    await reloaded;
+    await page.waitForSelector('flt-semantics-placeholder', { state: 'attached', timeout: 30_000 });
+    await enableSemantics();
     await see('Connexion à l’application');
+    assert.deepEqual(
+      (await indexedDbNames()).filter((name) => name.startsWith('firestore/')),
+      [],
+      'le cache de Firestore doit être vidé à la déconnexion',
+    );
+  });
+
+  test('deux onglets : la déconnexion de l’un vide la base partagée, l’autre se recharge et se reconnecte', async () => {
+    const tabA = page;
+    // Un onglet en arrière-plan ne peint plus (Flutter attend les images d'animation) : chaque
+    // changement d'onglet le ramène au premier plan.
+    let tabB;
+    try {
+      await open();
+      await see('Connexion à l’application');
+      await rememberClub(accountUid);
+      await signInWith(email, password);
+      await see('Aujourd\'hui');
+
+      // Le second onglet reprend la session persistée et ouvre le MÊME cache (multi-onglets).
+      tabB = await context.newPage();
+      tabB.on('pageerror', (error) => pageErrors.push(error.message));
+      page = tabB;
+      await open();
+      await see('Aujourd\'hui');
+      assert.ok(
+        (await indexedDbNames()).some((name) => name.startsWith('firestore/')),
+        'le cache Firestore doit être partagé par les deux onglets',
+      );
+
+      // Repère posé dans B : il disparaît quand B se recharge.
+      await page.evaluate(() => { window.__tabBBeforeReload = true; });
+
+      // Déconnexion dans A : la suppression de la base ne doit pas rester bloquée par B.
+      page = tabA;
+      await page.bringToFront();
+      await page.getByText(/^Plus/).first().click();
+      const reloaded = page.waitForEvent('load', { timeout: 60_000 });
+      await page.getByRole('button', { name: 'Se déconnecter', exact: true }).click();
+      await reloaded;
+      await page.waitForSelector('flt-semantics-placeholder', { state: 'attached', timeout: 30_000 });
+      await enableSemantics();
+      await see('Connexion à l’application');
+      assert.deepEqual(
+        (await indexedDbNames()).filter((name) => name.startsWith('firestore/')),
+        [],
+        'la base du cache doit être absente après la déconnexion dans l’autre onglet',
+      );
+
+      // B a perdu sa session et son instance Firestore est terminée : il se recharge seul.
+      page = tabB;
+      await page.bringToFront();
+      // L'écran de connexion s'affiche AVANT le rechargement : on attend le rechargement lui-même
+      // (le repère disparaît), sans quoi la saisie serait effacée par lui.
+      await page.waitForFunction(() => !window.__tabBBeforeReload, undefined, { timeout: 40_000 });
+      await page.waitForSelector('flt-semantics-placeholder', { state: 'attached', timeout: 30_000 });
+      await seeAfterReload('Connexion à l’application');
+
+      // La reconnexion dans B aboutit à l'accueil (pas d'instance terminée, pas d'« injoignable »).
+      await rememberClub(accountUid);
+      await signInWith(email, password);
+      await see('Aujourd\'hui');
+      assert.equal(await text('Service injoignable').count(), 0);
+      assert.ok(
+        (await indexedDbNames()).some((name) => name.startsWith('firestore/')),
+        'la reconnexion doit rouvrir le cache',
+      );
+
+      await page.getByText(/^Plus/).first().click();
+      const closed = page.waitForEvent('load', { timeout: 60_000 });
+      await page.getByRole('button', { name: 'Se déconnecter', exact: true }).click();
+      try {
+        await closed;
+      } catch (error) {
+        const shown = await page.evaluate(() => document.body.innerText).catch(() => '(illisible)');
+        throw new Error(`pas de rechargement après la déconnexion de B ; affiché : ${shown}`, { cause: error });
+      }
+
+      // A (reconnecté par la session partagée de B) suit la déconnexion de B : on l'attend,
+      // pour que le test suivant parte d'une session fermée.
+      page = tabA;
+      await page.bringToFront();
+      await seeAfterReload('Connexion à l’application');
+    } finally {
+      page = tabA;
+      await tabB?.close();
+      await page.bringToFront();
+    }
   });
 
   test('un compte vérifié se connecte et ouvre son club retenu ; la session survit au rechargement, la déconnexion la ferme', async () => {
@@ -324,12 +447,21 @@ describe('build web compilé contre l’émulateur Auth', () => {
     assert.equal(await text('Service injoignable').count(), 0);
 
     await page.getByText(/^Plus/).first().click();
+    const reloaded = page.waitForEvent('load', { timeout: 60_000 });
     await page.getByRole('button', { name: 'Se déconnecter', exact: true }).click();
+    // La déconnexion recharge la page (cache de Firestore vidé).
+    await reloaded;
+    await page.waitForSelector('flt-semantics-placeholder', { state: 'attached', timeout: 30_000 });
+    await enableSemantics();
     await see('Connexion à l’application');
     assert.match(page.url(), /#\/sign-in/);
   });
 
-  test('aucun appel vers un autre hôte que localhost, gstatic, Firestore (refusé) et le SDK d’authentification', () => {
+  test('le SDK web est servi par l’application, aucun appel vers un autre hôte que localhost, Firestore (refusé) et le SDK d’authentification', () => {
+    assert.deepEqual(
+      [...sdkFiles].sort(),
+      ['firebase-app.js', 'firebase-auth.js', 'firebase-firestore-pipelines.js'],
+    );
     assert.deepEqual([...blocked], []);
     assert.deepEqual(pageErrors, []);
   });

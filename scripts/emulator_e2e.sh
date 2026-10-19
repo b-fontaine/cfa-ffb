@@ -8,7 +8,7 @@
 # (`flutter run -d web-server --dart-define=FIREBASE_EMULATOR=true`, projet de l'émulateur) puis
 # joue scripts/emulator_e2e/e2e.test.mjs dans Chrome : la directrice se connecte et lit son club
 # sous les règles, un parent atterrit sur « Mes enfants ». Aucune requête n'atteint un projet
-# Firebase réel : émulateurs seuls, projet « demo-… », hôtes autres que localhost et gstatic refusés.
+# Firebase réel : émulateurs seuls, projet « demo-… », hôtes autres que localhost refusés (SDK web servi en local).
 #
 # Pourquoi le mode debug : la release refuse l'émulateur (FirebaseEnvironment) et le build
 # `--profile` est inutilisable avec firebase_auth_web 6.x (voir le test pour la cause).

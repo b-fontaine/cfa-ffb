@@ -1,4 +1,5 @@
 import 'package:billard_cfa/app/auth/auth_cubit.dart';
+import 'package:billard_cfa/app/auth/local_data_guard.dart';
 import 'package:billard_cfa/app/session_startup.dart';
 import 'package:billard_cfa/entities/account/data/in_memory_auth_repository.dart';
 import 'package:billard_cfa/entities/account/domain/session_scope.dart';
@@ -17,6 +18,9 @@ import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/key_value_store.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:billard_cfa/shared/lib/rules_store.dart';
+import 'package:billard_cfa/shared/persistence/local_data_cache.dart';
+import 'package:billard_cfa/shared/persistence/pending_writes_probe.dart';
+import 'package:billard_cfa/shared/persistence/send_status.dart';
 
 import 'in_memory_memberships_source.dart';
 
@@ -39,6 +43,13 @@ class AuthRig {
     chooseClub = ChooseClub(memory, guard);
     pending = KeyValuePendingInvitations(store);
     issued = KeyValueInvitationLog(store);
+    local = LocalDataGuard.withTiming(
+      cache,
+      store,
+      sends,
+      clearedElsewhereWithin: const Duration(milliseconds: 150),
+      pollEvery: const Duration(milliseconds: 10),
+    );
     cubit = AuthCubit(
       startup,
       auth,
@@ -49,6 +60,7 @@ class AuthRig {
       pending,
       issued,
       reloadRules,
+      local,
     );
   }
 
@@ -57,11 +69,14 @@ class AuthRig {
   final InMemoryKeyValueStore store = InMemoryKeyValueStore();
   final InMemorySessionStartup startup = InMemorySessionStartup();
   final FakeClubSwitchGuard guard = FakeClubSwitchGuard();
+  final InMemoryLocalDataCache cache = InMemoryLocalDataCache();
+  final SendTracker sends = SendTracker(InMemoryPendingWritesProbe());
   final SessionScope scope = SessionScope();
   late final ActiveClubMemory memory;
   late final ChooseClub chooseClub;
   late final KeyValuePendingInvitations pending;
   late final KeyValueInvitationLog issued;
+  late final LocalDataGuard local;
   late final RulesStore rules;
   late final ReloadRules reloadRules;
   late final AuthCubit cubit;

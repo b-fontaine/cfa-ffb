@@ -23,6 +23,13 @@ class _FakeAccess implements FirestoreAccess {
   }
 
   @override
+  Future<Map<String, dynamic>?> peekDocument(String path) async {
+    calls.add('peek $path');
+    _maybeFail();
+    return document;
+  }
+
+  @override
   Future<List<RawDocument>> readCollection(String path) async {
     calls.add('collection $path');
     _maybeFail();
@@ -156,6 +163,19 @@ void main() {
         DateTime.utc(2026),
       );
       expect(access.calls, ['doc clubs/c1']);
+    });
+
+    test('peek reads the local cache only and decodes like get', () async {
+      access.document = {'at': Timestamp.fromDate(DateTime.utc(2026))};
+
+      final found = (await store.peek('clubs/c1'))!;
+
+      expect((found.fields['at']! as DateTime).toUtc(), DateTime.utc(2026));
+      expect(access.calls, ['peek clubs/c1']);
+    });
+
+    test('peek of a document the cache does not know is null', () async {
+      expect(await store.peek('clubs/c1'), isNull);
     });
 
     test('a query goes to the SDK with its encoded filter', () async {
@@ -336,6 +356,7 @@ void main() {
         access.error = _failure(sdk);
         for (final operation in <Future<Object?> Function()>[
           () => store.get('a/1'),
+          () => store.peek('a/1'),
           () => store.list('a'),
           () => store.collectionGroup('a', field: 'x', equalTo: 1),
           () => store.commit([const DeleteOp('a/1')]),

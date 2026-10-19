@@ -3980,5 +3980,20 @@
   "childrenTitleStudent": "My progress",
   "childrenEmpty": "No student is linked to your account yet.",
   "childrenShow": "See the progress",
-  "failNameRequired": "A name is required."
+  "failNameRequired": "A name is required.",
+  "signInSharedDevice": "On a shared device, always sign out when you leave: the club data kept on this device for offline use is deleted when you sign out.",
+  "signOutUnsentTitle": "Changes not sent yet",
+  "signOutUnsentBody": "Some changes made without a connection have not been sent to the server yet. If you sign out now, they are lost.",
+  "signOutUnsentConfirm": "Sign out and lose them",
+  "signInErasurePendingMessage": "The offline data on this device could not be deleted: close the other tabs, then try again.",
+  "signInErasurePendingRetry": "Retry deletion",
+  "syncStatusLabel": "Synchronization",
+  "syncUpToDate": "Up to date",
+  "syncPending": "Waiting to send ({count})",
+  "@syncPending": {"placeholders": {"count": {"type": "int"}}},
+  "syncOffline": "Offline",
+  "syncOfflinePending": "Offline, waiting to send ({count})",
+  "@syncOfflinePending": {"placeholders": {"count": {"type": "int"}}},
+  "syncFailureMessage": "A change could not be saved and was undone on this device.",
+  "syncFailureAction": "Got it"
 }

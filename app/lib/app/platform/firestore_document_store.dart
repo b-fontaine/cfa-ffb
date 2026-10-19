@@ -11,6 +11,10 @@ typedef RawDocument = ({String path, Map<String, dynamic> data});
 abstract interface class FirestoreAccess {
   Future<Map<String, dynamic>?> readDocument(String path);
 
+  /// Comme [readDocument], **dans le cache local seulement** : `null` si le
+  /// document n'y est pas, sans attendre le réseau ni échouer hors ligne.
+  Future<Map<String, dynamic>?> peekDocument(String path);
+
   Future<List<RawDocument>> readCollection(String path);
 
   /// Une collection filtrée sur un champ : égalité ([contains] faux, [value]
@@ -62,16 +66,35 @@ enum RawWriteKind { set, setMerge, update, delete }
 /// collections) est vérifié contre l'émulateur par `scripts/rules_test/`, qui
 /// joue les mêmes opérations avec le SDK web.
 class FirestoreSdkAccess implements FirestoreAccess {
-  FirestoreSdkAccess({FirebaseFirestore Function()? firestore})
-    : _firestore = firestore ?? (() => FirebaseFirestore.instance);
+  FirestoreSdkAccess({
+    FirebaseFirestore Function()? firestore,
+    this._readFromCache,
+  }) : _firestore = firestore ?? (() => FirebaseFirestore.instance);
 
   final FirebaseFirestore Function() _firestore;
+  final Future<DocumentSnapshot<Map<String, dynamic>>> Function(String path)?
+  _readFromCache;
 
   @override
   Future<Map<String, dynamic>?> readDocument(String path) async {
     final snapshot = await _firestore().doc(path).get();
     return snapshot.exists ? snapshot.data() : null;
   }
+
+  @override
+  Future<Map<String, dynamic>?> peekDocument(String path) async {
+    try {
+      final snapshot = await (_readFromCache ?? _cacheRead)(path);
+      return snapshot.exists ? snapshot.data() : null;
+    } on FirebaseException catch (error) {
+      // Absent du cache : le SDK le dit par `unavailable`, comme hors ligne.
+      if (error.code == 'unavailable') return null;
+      rethrow;
+    }
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> _cacheRead(String path) =>
+      _firestore().doc(path).get(const GetOptions(source: Source.cache));
 
   @override
   Future<List<RawDocument>> readCollection(String path) async =>
@@ -164,6 +187,12 @@ class FirestoreDocumentStore implements DocumentStore {
   @override
   Future<StoredDocument?> get(String path) => _guard(() async {
     final data = await _access.readDocument(path);
+    return data == null ? null : StoredDocument(path, decodeFields(data));
+  });
+
+  @override
+  Future<StoredDocument?> peek(String path) => _guard(() async {
+    final data = await _access.peekDocument(path);
     return data == null ? null : StoredDocument(path, decodeFields(data));
   });
 

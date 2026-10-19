@@ -21,13 +21,18 @@ import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/app_update_source.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
+import 'package:billard_cfa/shared/lib/connectivity_status.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/fullscreen_controller.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/key_value_store.dart';
+import 'package:billard_cfa/shared/lib/send_status.dart';
 import 'package:billard_cfa/shared/persistence/document_store.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_document_store.dart';
+import 'package:billard_cfa/shared/persistence/local_data_cache.dart';
+import 'package:billard_cfa/shared/persistence/pending_writes_probe.dart';
+import 'package:billard_cfa/shared/persistence/send_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' show Environment;
 
@@ -110,6 +115,20 @@ class UiWorld {
   /// Le stockage local de l'appareil du scénario en cours.
   static InMemoryKeyValueStore get store =>
       getIt<KeyValueStore>() as InMemoryKeyValueStore;
+
+  /// Le cache local des données du club du scénario en cours (double).
+  static InMemoryLocalDataCache get localCache =>
+      getIt<LocalDataCache>() as InMemoryLocalDataCache;
+
+  /// Le réseau de l'appareil du scénario en cours (double).
+  static InMemoryConnectivityStatus get network =>
+      getIt<ConnectivityStatus>() as InMemoryConnectivityStatus;
+
+  /// Le suivi des envois vers le serveur du scénario en cours.
+  static InMemoryPendingWritesProbe get sdkQueue =>
+      getIt<PendingWritesProbe>() as InMemoryPendingWritesProbe;
+
+  static SendTracker get sends => getIt<SendStatus>() as SendTracker;
 
   /// Identifiant de club dérivé du nom (`Club Nice` devient `club-nice`).
   static ClubId clubIdOf(String name) =>

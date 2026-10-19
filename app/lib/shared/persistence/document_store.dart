@@ -161,6 +161,15 @@ final class AllEqual extends QueryFilter {
 abstract interface class DocumentStore {
   Future<StoredDocument?> get(String path);
 
+  /// Lit [path] **dans le cache local seulement** : jamais d'attente du
+  /// réseau, et `null` si le document n'y est pas (même s'il existe sur le
+  /// serveur). C'est la lecture des écritures **hors ligne** : lire d'abord un
+  /// document absent du cache échoue hors ligne (`unavailable`) alors que
+  /// l'écriture, elle, réussit (FB5, ADR 0024 décision 1). Une réponse `null`
+  /// n'affirme donc jamais l'absence : l'invariant d'une écriture qui s'appuie
+  /// dessus est porté par les règles, pas par cette lecture.
+  Future<StoredDocument?> peek(String path);
+
   /// Les documents directement sous [collection] (`clubs/c1/members`),
   /// triés par identifiant.
   Future<List<StoredDocument>> list(String collection);

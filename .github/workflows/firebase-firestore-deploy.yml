@@ -1,0 +1,153 @@
+# Déploiement des règles et des index Firestore (décision de l'utilisateur du
+# 2026-10-18, ADR 0024). Étapes à faire une fois côté Google Cloud et GitHub :
+# docs/engineering/deploiement-firestore.md.
+#
+# Ce workflow est APPELÉ par firebase-hosting-merge.yml (`workflow_call`), dont
+# le déploiement de l'hébergement l'attend (`needs`) : les règles et les index
+# sont publiés AVANT la version de l'application qui les suppose, et jamais
+# après. Un déclencheur `push` propre à ce fichier ne permettrait pas cet
+# ordre (deux workflows lancés ensemble, sans attente de l'un sur l'autre).
+# Déploiement **idempotent, à chaque exécution** : aucune comparaison avec le
+# push précédent. Le workflow Hosting ne garde qu'UNE exécution en attente par
+# groupe de concurrence : un push remplacé par un suivant (sans changement de
+# règles) aurait un diff vide et ses règles ne partiraient jamais, alors que
+# l'application suivante les suppose. La CLI ne publie que ce qui diffère.
+#
+# - jamais depuis une pull request : aucun déclencheur `pull_request`, et le
+#   job de déploiement refuse tout autre événement que `push` sur main (ou le
+#   lancement manuel depuis main) ;
+# - tests d'abord (index déclarés, règles contre les émulateurs) : le
+#   déploiement en dépend (`needs`) ;
+# - authentification par fédération d'identité de charge de travail (WIF) :
+#   aucune clé JSON de compte de service dans GitHub ;
+# - variables manquantes : échec explicite, avant toute authentification.
+
+name: Déployer les règles et index Firestore
+
+on:
+  workflow_call:
+  # Re-déploiement manuel (par exemple juste après avoir configuré WIF) ; refusé
+  # hors de main par le job de déploiement.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Un lancement manuel et un push ne déploient jamais en même temps : le
+# lancement manuel entre dans le groupe du workflow Hosting
+# (firebase-hosting-merge.yml), sans annuler l'exécution en cours. Appelé, ce
+# workflow voit l'événement de l'appelant (`push`) : son groupe est alors propre
+# à l'exécution, car un groupe identique à celui de l'appelant ferait annuler
+# l'appelé ; la sérialisation du push est déjà celle de l'appelant.
+concurrency:
+  group: ${{ github.event_name == 'workflow_dispatch' && 'firebase-hosting-live' || format('firestore-deploy-{0}', github.run_id) }}
+  cancel-in-progress: false
+
+env:
+  # Versions épinglées : alignées sur ci.yml.
+  FLUTTER_VERSION: "3.47.7"
+  NODE_VERSION: "24"
+  JAVA_VERSION: "21"
+  # Projet Firebase de .firebaserc.
+  FIREBASE_PROJECT: animation-billard
+
+jobs:
+  tests:
+    name: Tests des règles et des index
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - name: Dépendances Node (versions épinglées)
+        run: npm ci
+      - name: Index déclarés (chaque requête composée a son index)
+        working-directory: app
+        run: |
+          flutter pub get
+          dart run tool/check_indexes.dart
+      # Même script que dans check.sh --full : refus par défaut, matrice des
+      # rôles, dépôts, contre l'émulateur et les vraies règles.
+      - name: Règles Firestore (émulateurs)
+        run: scripts/rules_test.sh
+
+  deploy:
+    name: Déploiement des index puis des règles
+    needs: tests
+    runs-on: ubuntu-latest
+    # Jamais depuis une pull request ni depuis une autre branche que main.
+    # `github.ref` est celui de l'appelant (push) ou du lancement manuel.
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      WIF_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      WIF_SERVICE_ACCOUNT: ${{ vars.GCP_FIRESTORE_DEPLOY_SERVICE_ACCOUNT }}
+    steps:
+      - name: Refuser tout contexte autre que main
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+        run: |
+          if [[ "$REF" != "refs/heads/main" || "$EVENT_NAME" == "pull_request" || "$EVENT_NAME" == "pull_request_target" ]]; then
+            echo "::error title=Déploiement refusé::Les règles et les index ne se déploient que depuis main (événement « $EVENT_NAME », référence « $REF »)."
+            exit 1
+          fi
+      - name: Vérifier la configuration de l'authentification
+        run: |
+          missing=0
+          if [[ -z "$WIF_PROVIDER" ]]; then
+            echo "::error title=Variable GitHub manquante::GCP_WORKLOAD_IDENTITY_PROVIDER n'est pas définie (Settings > Secrets and variables > Actions > Variables). Voir docs/engineering/deploiement-firestore.md, étape 4."
+            missing=1
+          fi
+          if [[ -z "$WIF_SERVICE_ACCOUNT" ]]; then
+            echo "::error title=Variable GitHub manquante::GCP_FIRESTORE_DEPLOY_SERVICE_ACCOUNT n'est pas définie (Settings > Secrets and variables > Actions > Variables). Voir docs/engineering/deploiement-firestore.md, étape 4."
+            missing=1
+          fi
+          exit "$missing"
+      # Le jeton GitHub n'est pas laissé dans .git : le job qui reçoit
+      # `id-token: write` n'exécute que la CLI épinglée.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      # --ignore-scripts : aucun script d'installation des dépendances (re2,
+      # protobufjs…) ne s'exécute dans le job qui détient l'identité ; vérifié
+      # avec firebase-tools 15.34.0 (la CLI démarre sans, `re2` n'est utile
+      # qu'aux Functions). À revérifier à chaque montée de version.
+      - name: Dépendances Node (versions épinglées, sans scripts)
+        run: npm ci --ignore-scripts
+      # Jeton court échangé contre l'identité du compte de service dédié : pas
+      # de clé JSON. La CLI Firebase lit les identifiants par défaut
+      # (GOOGLE_APPLICATION_CREDENTIALS, écrit par l'action).
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.WIF_SERVICE_ACCOUNT }}
+      # Les index d'abord : une règle ou une requête de la nouvelle version peut
+      # en dépendre. Sans --force, la CLI ne supprime aucun index absent du
+      # fichier (non interactif).
+      - name: Déployer les index
+        run: node_modules/.bin/firebase deploy --only firestore:indexes --project "$FIREBASE_PROJECT" --non-interactive
+        env:
+          FIREBASE_CLI_DISABLE_UPDATE_CHECK: "true"
+      - name: Déployer les règles
+        run: node_modules/.bin/firebase deploy --only firestore:rules --project "$FIREBASE_PROJECT" --non-interactive
+        env:
+          FIREBASE_CLI_DISABLE_UPDATE_CHECK: "true"

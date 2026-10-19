@@ -1,3 +1,4 @@
+import 'package:billard_cfa/shared/lib/send_status.dart';
 import 'package:billard_cfa/shared/persistence/send_status.dart';
 import 'package:injectable/injectable.dart';
 

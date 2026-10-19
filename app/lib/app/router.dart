@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:billard_cfa/app/auth/auth_cubit.dart';
 import 'package:billard_cfa/app/auth/auth_redirect.dart';
 import 'package:billard_cfa/app/auth/auth_state.dart';
+import 'package:billard_cfa/app/auth/sign_out_flow.dart';
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/app/record_screens.dart';
 import 'package:billard_cfa/app/record_sheet.dart';
@@ -57,6 +58,7 @@ import 'package:billard_cfa/features/suggest_session/presentation/bloc/group_jou
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/next_sheet_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/student_recall_bloc.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/suggested_session_bloc.dart';
+import 'package:billard_cfa/features/sync_status/presentation/bloc/sync_status_cubit.dart';
 import 'package:billard_cfa/features/track_group/presentation/bloc/group_alerts_cubit.dart';
 import 'package:billard_cfa/features/track_group/presentation/bloc/group_overview_cubit.dart';
 import 'package:billard_cfa/features/track_progress/presentation/bloc/student_sheet_bloc.dart';
@@ -514,7 +516,7 @@ Widget _joinPage(BuildContext context, AuthCubit auth, String? code) {
     child: JoinPage(
       initialCode: code,
       onBack: ready ? () => router.go(AppRoutes.more) : null,
-      onSignOut: ready ? null : () => unawaited(auth.signOut()),
+      onSignOut: ready ? null : () => unawaited(requestSignOut(context, auth)),
       onJoined: () => unawaited(() async {
         await auth.refresh();
         router.go(AppRoutes.home);
@@ -550,11 +552,22 @@ GoRouter buildRouter({
         final from = state.uri.queryParameters['from'];
         return BlocProvider(
           create: (_) => getIt<SignInCubit>(),
-          child: SignInPage(
-            onForgotPassword: () =>
-                context.go(AppRoutes.withFrom(AppRoutes.forgotPassword, from)),
-            onRegister: () =>
-                context.go(AppRoutes.withFrom(AppRoutes.register, from)),
+          // L'état de session dit si l'effacement du cache local de la
+          // déconnexion précédente a échoué (message et nouvel essai).
+          child: BlocBuilder<AuthCubit, AuthState>(
+            bloc: auth,
+            builder: (context, session) => SignInPage(
+              onForgotPassword: () => context.go(
+                AppRoutes.withFrom(AppRoutes.forgotPassword, from),
+              ),
+              onRegister: () =>
+                  context.go(AppRoutes.withFrom(AppRoutes.register, from)),
+              erasurePending: switch (session) {
+                AuthSignedOut(:final erasurePending) => erasurePending,
+                _ => false,
+              },
+              onRetryErasure: () => unawaited(auth.retryErasure()),
+            ),
           ),
         );
       },
@@ -601,7 +614,7 @@ GoRouter buildRouter({
           choices: choices,
           onChoose: (club) => unawaited(auth.chooseClub(club)),
           onRefresh: () => unawaited(auth.refresh()),
-          onSignOut: () => unawaited(auth.signOut()),
+          onSignOut: () => unawaited(requestSignOut(context, auth)),
           onJoin: () => context.go(AppRoutes.join),
           onAdministration: isAdmin
               ? () => context.go(AppRoutes.administration)
@@ -644,17 +657,23 @@ GoRouter buildRouter({
       path: AppRoutes.unavailable,
       builder: (context, state) => UnavailablePage(
         onRetry: () => unawaited(auth.retry()),
-        onSignOut: auth.hasSession ? () => unawaited(auth.signOut()) : null,
+        onSignOut: auth.hasSession
+            ? () => unawaited(requestSignOut(context, auth))
+            : null,
       ),
     ),
     GoRoute(
       path: AppRoutes.accessDenied,
-      builder: (context, state) =>
-          AccessDeniedPage(onSignOut: () => unawaited(auth.signOut())),
+      builder: (context, state) => AccessDeniedPage(
+        onSignOut: () => unawaited(requestSignOut(context, auth)),
+      ),
     ),
     ShellRoute(
-      builder: (context, state, child) => BlocProvider(
-        create: (_) => getIt<AppUpdateCubit>(),
+      builder: (context, state, child) => MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => getIt<AppUpdateCubit>()),
+          BlocProvider(create: (_) => getIt<SyncStatusCubit>()),
+        ],
         child: AppShell(
           location: state.uri.path,
           role: switch (auth.state) {
@@ -1212,7 +1231,7 @@ GoRouter buildRouter({
                       roleLabel: session.club.role.label(
                         AppLocalizations.of(context),
                       ),
-                      onSignOut: () => unawaited(auth.signOut()),
+                      onSignOut: () => unawaited(requestSignOut(context, auth)),
                     )
                   : null,
               onSwitchClub: session is AuthReady && session.canSwitchClub
@@ -1292,7 +1311,7 @@ GoRouter buildRouter({
                   context.go(AppRoutes.home);
                 }
               },
-              onSignOut: () => unawaited(auth.signOut()),
+              onSignOut: () => unawaited(requestSignOut(context, auth)),
               onBack: () => context.go(AppRoutes.more),
             );
           },

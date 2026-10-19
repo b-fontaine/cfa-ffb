@@ -21,7 +21,9 @@ import 'package:billard_cfa/shared/persistence/student_data.dart';
 /// - **réservés aux animateurs** (B2 : alertes exclues pour la famille) : un
 ///   parent ou un élève reçoit des listes vides ;
 /// - groupe et saison dénormalisés : ceux du **dernier passage** acquitté s'il
-///   existe (l'alerte est celle de ce groupe), sinon un groupe de la fiche ;
+///   existe (l'alerte est celle de ce groupe ; lu au cache, puis au serveur),
+///   sinon un groupe de la fiche (aussi quand le serveur est injoignable :
+///   l'acquittement s'écrit **hors ligne**) ;
 ///   rejouer un identifiant connu **remplace** l'acquittement chez le même
 ///   propriétaire, sans changer qui l'a donné ;
 /// - `delete` est physique (décision 15) ; `eraseAll` supprime ceux du club
@@ -61,9 +63,15 @@ class FirestoreAcknowledgementRepository implements AcknowledgementRepository {
   /// Le groupe du dernier passage acquitté (même élève), sinon un groupe de la
   /// fiche.
   Future<DataOwner> _ownerOf(AlertAcknowledgement acknowledgement) async {
-    final attempt = await _club.get(
-      _club.paths.attempt(acknowledgement.lastAttemptId),
-    );
+    final path = _club.paths.attempt(acknowledgement.lastAttemptId);
+    // Le cache d'abord ; à défaut, le serveur, et hors ligne le groupe de la
+    // fiche : l'acquittement s'écrit sans réseau (FB5).
+    StoredDocument? attempt;
+    try {
+      attempt = await _club.cachedOrGet(path);
+    } on StoreFailure catch (failure) {
+      if (failure.code != StoreFailureCode.unavailable) rethrow;
+    }
     if (attempt != null) {
       final values = DocumentValues(attempt.path, attempt.fields);
       if (values.string('studentId') == acknowledgement.studentId.value) {

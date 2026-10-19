@@ -317,6 +317,24 @@ describe('séances données : clubs/{c}/records/{id}', () => {
     assert.deepEqual((await getDoc(doc(a, `${C}/records/n1`))).data().createdAt, before);
   });
 
+  // FB5 : `FirestoreSessionRecordRepository._create` crée une saisie LIBRE par une écriture simple
+  // (fusion, `createdAt` du serveur) quand le cache local ne la connaît pas, sans lire le serveur : hors
+  // ligne c'est la seule voie. Si le document existait en fait sur le serveur, c'est une mise à jour
+  // qui change `createdAt` : les règles la refusent, la date d'origine reste.
+  test('création à l\'aveugle d\'une saisie libre déjà présente : refusée, la date d\'origine reste', async () => {
+    const a = dbOf(env, 'teacherA');
+    assert.equal(await allowed(() => setDoc(doc(a, `${C}/records/n2`), recordDoc(), merge)), true, 'création à l\'aveugle');
+    const before = (await getDoc(doc(a, `${C}/records/n2`))).data().createdAt;
+    assert.equal(
+      await allowed(() => setDoc(doc(dbOf(env, 'director'), `${C}/records/n2`), recordDoc({ presentStudentIds: ['s9'] }), merge)),
+      false,
+      'deuxième création à l\'aveugle',
+    );
+    const stored = (await getDoc(doc(a, `${C}/records/n2`))).data();
+    assert.deepEqual(stored.createdAt, before);
+    assert.equal(stored.presentStudentIds.includes('s9'), false);
+  });
+
   test('un enseignant lit une saisie ABSENTE de son club (lecture avant création), pas la famille', async () => {
     assert.equal(await allowed(() => getDoc(doc(dbOf(env, 'teacherA'), `${C}/records/absent`))), true);
     assert.equal(await allowed(() => getDoc(doc(dbOf(env, 'teacherB'), `${C}/records/absent`))), true);

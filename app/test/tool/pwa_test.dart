@@ -156,6 +156,47 @@ void main() {
       expect('${result.stderr}', contains('index.html : ressource externe'));
     });
 
+    test('fails when the Firebase SDK import map is gone', () {
+      final index = file('app/web/index.html');
+      index.writeAsStringSync(
+        index.readAsStringSync().replaceAll(
+          RegExp('<script type="importmap">.*?</script>', dotAll: true),
+          '',
+        ),
+      );
+
+      expect('${run(['check']).stderr}', contains('carte d’import'));
+    });
+
+    test('fails when the import map targets anything but the local SDK', () {
+      replaceIn(
+        'app/web/index.html',
+        './firebasejs/12.19.0/firebase-app.js',
+        'https://cdn.example.com/firebase-app.js',
+      );
+      replaceIn(
+        'app/web/index.html',
+        '"https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js"',
+        '"https://cdn.example.com/auth.js"',
+      );
+
+      final stderr = '${run(['check']).stderr}';
+
+      expect(stderr, contains('rediriger vers ./firebasejs/'));
+      expect(stderr, contains('ne peut viser que le SDK Firebase'));
+    });
+
+    test('still forbids an external script next to the import map', () {
+      const src = 'https://www.gstatic.com/firebasejs/12.19.0/x.js';
+      replaceIn(
+        'app/web/index.html',
+        '<title>',
+        '<script src="$src"></script><title>',
+      );
+
+      expect('${run(['check']).stderr}', contains('ressource externe'));
+    });
+
     test('fails when the Flutter service worker would be registered', () {
       replaceIn(
         'app/web/flutter_bootstrap.js',
@@ -252,6 +293,8 @@ void main() {
       'assets/assets/fiches/s.md',
       'canvaskit/canvaskit.js',
       'canvaskit/canvaskit.wasm',
+      'firebasejs/manifest.json',
+      'firebasejs/12.19.0/firebase-app.js',
     ];
 
     File built(String relative) => file('app/build/web/$relative');
@@ -264,6 +307,9 @@ void main() {
           ..createSync(recursive: true)
           ..writeAsStringSync('contenu de $name');
       }
+      built('firebasejs/manifest.json').writeAsStringSync(
+        '{"version":"12.19.0","sha256":{"firebase-app.js":"x"}}',
+      );
       built('flutter_bootstrap.js').writeAsStringSync(
         'x._flutter.buildConfig = {"useLocalCanvasKit":true};\n'
         '_flutter.loader.load();\n',
@@ -308,6 +354,23 @@ void main() {
 
       expect(result.exitCode, 0, reason: '${result.stderr}');
       expect('${result.stdout}', contains('Build web hors ligne OK'));
+    });
+
+    test('verify fails when the local Firebase SDK is not in the build', () {
+      built('firebasejs/12.19.0/firebase-app.js').deleteSync();
+      run(['stamp']);
+
+      expect(
+        '${run(['verify']).stderr}',
+        contains('précache : firebasejs/12.19.0/firebase-app.js manquant'),
+      );
+    });
+
+    test('verify fails when the build has no Firebase SDK manifest', () {
+      built('firebasejs/manifest.json').deleteSync();
+      run(['stamp']);
+
+      expect('${run(['verify']).stderr}', contains('firebasejs/manifest.json'));
     });
 
     test('the version changes with the content and is stable otherwise', () {

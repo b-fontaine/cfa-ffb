@@ -23,6 +23,10 @@ final class DataOwner {
 ///   parmi **ses** groupes (les règles exigent qu'il écrive dans l'un des
 ///   siens) ; puis la saison **ouverte** la plus récente, puis l'identifiant.
 ///
+/// Chaque lecture passe d'abord par le **cache local**
+/// (`ClubStore.cachedOrGet`) : hors ligne, les documents que l'animateur a
+/// sous les yeux suffisent, et l'écriture n'attend pas le réseau (FB5).
+///
 /// Budget de lectures : une (séance) ; ou la fiche, ses groupes et leurs
 /// saisons (`1 + 2n`, `n` petit : une fiche est dans un ou deux groupes).
 final class OwnerResolver {
@@ -34,7 +38,7 @@ final class OwnerResolver {
   /// n'existe pas (les passages ne naissent que d'une séance ouverte).
   Future<DataOwner> ofSession(SessionId id) async {
     final path = _club.paths.record(id);
-    final document = await _club.get(path);
+    final document = await _club.cachedOrGet(path);
     if (document == null) throw StoreFailure(StoreFailureCode.notFound, path);
     return _owner(document);
   }
@@ -42,7 +46,7 @@ final class OwnerResolver {
   /// Le propriétaire des données de l'élève [id] hors séance.
   Future<DataOwner> ofStudent(StudentId id) async {
     final paths = _club.paths;
-    final student = await _club.get(paths.student(id));
+    final student = await _club.cachedOrGet(paths.student(id));
     if (student == null) {
       throw StoreFailure(StoreFailureCode.notFound, paths.student(id));
     }
@@ -64,12 +68,12 @@ final class OwnerResolver {
     }
     final candidates = <({DataOwner owner, bool open, DateTime start})>[];
     for (final raw in groups) {
-      final group = await _club.get(paths.group(GroupId(raw)));
+      final group = await _club.cachedOrGet(paths.group(GroupId(raw)));
       if (group == null) continue;
       final season = SeasonId(
         DocumentValues(group.path, group.fields).string('seasonId'),
       );
-      final document = await _club.get(paths.season(season));
+      final document = await _club.cachedOrGet(paths.season(season));
       final values = document == null
           ? null
           : DocumentValues(document.path, document.fields);

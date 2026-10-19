@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:billard_cfa/app/auth/auth_state.dart';
+import 'package:billard_cfa/app/auth/local_data_guard.dart';
 import 'package:billard_cfa/app/session_startup.dart';
 import 'package:billard_cfa/entities/account/domain/account.dart';
 import 'package:billard_cfa/entities/account/domain/auth_failure.dart';
@@ -17,6 +18,21 @@ import 'package:billard_cfa/features/sign_in/domain/pending_invitations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+
+/// Issue d'une demande de déconnexion.
+enum SignOutResult {
+  /// Déconnecté ; le cache local est vidé.
+  signedOut,
+
+  /// Refusée : des écritures faites sans réseau n'ont pas encore été envoyées
+  /// et la déconnexion les perdrait. L'utilisateur confirme, puis l'appel est
+  /// refait avec `discardUnsent`.
+  unsentWrites,
+
+  /// Le service d'authentification a refusé de fermer la session : rien n'a
+  /// changé.
+  refused,
+}
 
 /// Chef d'orchestre de la session (ADR 0024, décision 31).
 ///
@@ -50,6 +66,7 @@ class AuthCubit extends Cubit<AuthState> {
     this._pending,
     this._issued,
     this._rules,
+    this._local,
   ) : super(const AuthUnknown());
 
   final SessionStartup _startup;
@@ -61,6 +78,7 @@ class AuthCubit extends Cubit<AuthState> {
   final PendingInvitations _pending;
   final InvitationLog _issued;
   final ReloadRules _rules;
+  final LocalDataGuard _local;
 
   /// Délai au-delà duquel un démarrage resté sans réponse (SDK qui ne
   /// s'initialise pas, première session jamais livrée) mène à `indisponible`
@@ -76,6 +94,11 @@ class AuthCubit extends Cubit<AuthState> {
 
   /// Un compte de plus à traiter rend caduque la résolution précédente.
   int _generation = 0;
+  bool _signingOut = false;
+
+  /// L'effacement du cache local, demandé par une déconnexion, n'a pas abouti :
+  /// l'état `signedOut` le porte à l'écran de connexion.
+  bool _erasurePending = false;
 
   /// Vrai quand un compte vérifié est connecté (même si ses clubs sont
   /// illisibles) : « Se déconnecter » a alors un sens.
@@ -135,24 +158,93 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   /// Déconnecte : la session du SDK est fermée, puis le club retenu sur
-  /// l'appareil est effacé (ADR 0024, décision 22) et l'état passe à
-  /// `signedOut`. Si le SDK refuse de fermer la session, rien ne change :
-  /// l'utilisateur reste connecté, dans son club, avec sa mémoire intacte
-  /// (jamais « session ouverte mais club oublié »).
-  Future<void> signOut() async {
+  /// l'appareil est effacé (ADR 0024, décision 22), le **cache local des
+  /// données du club** est vidé (C4) et l'état passe à `signedOut`. Si le SDK
+  /// refuse de fermer la session, rien ne change : l'utilisateur reste
+  /// connecté, dans son club, avec sa mémoire intacte (jamais « session
+  /// ouverte mais club oublié »).
+  ///
+  /// Des écritures hors ligne encore **non envoyées** seraient perdues avec le
+  /// cache : sans [discardUnsent], la déconnexion est refusée
+  /// ([SignOutResult.unsentWrites]) pour que l'interface le demande.
+  Future<SignOutResult> signOut({bool discardUnsent = false}) async {
+    if (!discardUnsent && await _local.hasUnsentWrites()) {
+      return SignOutResult.unsentWrites;
+    }
     final user = _account?.id ?? _scope.id;
+    _signingOut = true;
     try {
       await _auth.signOut();
     } on AuthFailure {
-      return;
+      _signingOut = false;
+      return SignOutResult.refused;
     }
     if (user != null) {
       await _memory.clear(user);
       await _issued.clear(user);
     }
+    try {
+      await _local.release();
+      _erasurePending = false;
+    } on Object catch (error, stackTrace) {
+      // Cache non vidé (disque, autre onglet) : l'utilisateur est tout de même
+      // déconnecté, mais l'échec est **traité**, pas seulement journalisé : le
+      // repère « effacement en attente » reste consigné sur l'appareil (il est
+      // retenté au démarrage suivant et avant toute lecture d'un compte), et
+      // l'écran de connexion le dit avec « Réessayer l'effacement ».
+      _erasurePending = true;
+      _report(error, stackTrace, 'while clearing the local data cache');
+    }
     // Sans attendre le flux (SDK lent) : l'interface ne montre plus de club.
     _generation++;
     _setSignedOut();
+    // Web : la page se recharge (instance Firestore terminée) ; ne rend pas la
+    // main si elle recharge.
+    _signingOut = false;
+    await _local.reopen();
+    return SignOutResult.signedOut;
+  }
+
+  /// « Réessayer l'effacement » de l'écran de connexion : retente l'effacement
+  /// du cache local resté en attente. En cas de nouvel échec, le message reste.
+  Future<void> retryErasure() async {
+    try {
+      final cleared = await _local.settleErasure();
+      _erasurePending = false;
+      if (state is AuthSignedOut && !isClosed) emit(const AuthSignedOut());
+      // Web : la page se recharge (instance Firestore terminée) ; ne rend pas
+      // la main si elle recharge.
+      if (cleared) await _local.reopen();
+    } on Object catch (error, stackTrace) {
+      _report(error, stackTrace, 'while retrying the local data erasure');
+    }
+  }
+
+  /// Retente, au démarrage, un effacement resté en attente : **avant** toute
+  /// lecture de compte, donc avant qu'une session (la même ou une autre) ne
+  /// touche au cache. Un échec laisse le message à l'écran de connexion ; si un
+  /// compte est tout de même connecté, `claim` retente et, en cas d'échec,
+  /// l'application est `indisponible` plutôt que de servir le cache.
+  Future<void> _settleErasureAtStartup() async {
+    try {
+      final cleared = await _local.settleErasure();
+      _erasurePending = false;
+      if (cleared) await _local.reopen();
+    } on Object catch (error, stackTrace) {
+      _erasurePending = true;
+      _report(error, stackTrace, 'while settling the local data erasure');
+    }
+  }
+
+  void _report(Object error, StackTrace stackTrace, String context) {
+    FlutterError.reportError(
+      FlutterErrorDetails(
+        exception: error,
+        stack: stackTrace,
+        library: 'auth_cubit',
+        context: ErrorDescription(context),
+      ),
+    );
   }
 
   Future<void> _boot(Future<bool> ready) async {
@@ -170,6 +262,8 @@ class AuthCubit extends Cubit<AuthState> {
       emit(const AuthIndisponible());
       return;
     }
+    await _settleErasureAtStartup();
+    if (isClosed || generation != _generation) return;
     _stopWatching();
     _accounts = _auth.watchAccount().listen(
       (account) => unawaited(_onAccount(account)),
@@ -191,22 +285,47 @@ class AuthCubit extends Cubit<AuthState> {
     _startupDeadline?.cancel();
     final generation = ++_generation;
     if (account == null || !account.emailVerified) {
+      final wasSignedIn = _account != null && !_signingOut;
       _setSignedOut();
+      // Session perdue ailleurs : si un autre onglet vide le cache, ce
+      // onglet-ci a une instance Firestore terminée : on le recharge (sinon
+      // la reconnexion n'y trouverait aucun propriétaire, donc aucune remise
+      // en service). Un cache qui reste (jeton révoqué) garde ses écritures.
+      if (wasSignedIn) unawaited(_reloadIfClearedElsewhere(generation));
       return;
     }
     await _resolve(account, generation);
+  }
+
+  Future<void> _reloadIfClearedElsewhere(int generation) async {
+    // Une seule défense contre un compte revenu entre-temps : `stop`, que le
+    // garde consulte avant et après chaque lecture ; pas de seconde
+    // vérification ici.
+    final cleared = await _local.clearedElsewhere(
+      stop: () => isClosed || generation != _generation,
+    );
+    if (cleared) await _local.reopen();
   }
 
   void _setSignedOut() {
     _account = null;
     _scope.signOut();
     _rules.reset();
-    if (!isClosed) emit(const AuthSignedOut());
+    if (!isClosed) emit(AuthSignedOut(erasurePending: _erasurePending));
   }
 
   Future<void> _resolve(Account account, int generation) async {
     try {
       _account = account;
+      // Le cache local appartient à UN compte : celui d'un autre est vidé
+      // avant toute lecture (un échec lève : `indisponible`, jamais de donnée
+      // servie au mauvais compte).
+      if (await _local.claim(account.id.value)) {
+        // Web : recharge la page (la session persistée la reprend, le cache
+        // est alors à ce compte) ; ne rend pas la main si elle recharge.
+        await _local.reopen();
+      }
+      if (isClosed || generation != _generation) return;
       _scope.signIn(account.id);
       List<ClubMembership>? memberships;
       var isAdmin = false;

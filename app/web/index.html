@@ -9,6 +9,24 @@
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
+
+  <!--
+    SDK web Firebase servi en local (ADR 0024, décision 30). `firebase_core_web`
+    charge le SDK par import() depuis les URL absolues de
+    gstatic.com/firebasejs/<version>/ ; cette carte d'import redirige ces URL vers les copies épinglées de
+    firebasejs/ (octet pour octet celles de gstatic ; voir
+    scripts/sync_firebase_sdk.dart). Elle doit précéder tout autre script. Un
+    navigateur sans cartes d'import (Safari avant 16.4) retombe sur gstatic.
+  -->
+  <script type="importmap">
+  {
+    "imports": {
+      "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js": "./firebasejs/12.19.0/firebase-app.js",
+      "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js": "./firebasejs/12.19.0/firebase-auth.js",
+      "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-pipelines.js": "./firebasejs/12.19.0/firebase-firestore-pipelines.js"
+    }
+  }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="Assistant de préparation de séances de billard">
   <meta name="theme-color" content="#1964AF">

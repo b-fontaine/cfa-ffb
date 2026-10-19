@@ -33,7 +33,9 @@ node scripts/seed_emulator.mjs
 # `flutter run` lit l'entrée standard (commandes interactives) : un tube la garde ouverte.
 mkfifo "$FIFO"
 exec 3<>"$FIFO"
-(cd app && flutter run -d web-server --web-port "$E2E_PORT" --no-pub \
+# `--no-web-resources-cdn` : le moteur (CanvasKit) est servi en local, comme dans le build de
+# production : le parcours n'a besoin d'aucun hôte autre que localhost (FB5a).
+(cd app && flutter run -d web-server --web-port "$E2E_PORT" --no-pub --no-web-resources-cdn \
   --dart-define=FIREBASE_EMULATOR=true <"$FIFO" >"$LOG" 2>&1) &
 APP_PID=$!
 

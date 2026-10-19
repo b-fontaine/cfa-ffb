@@ -28,8 +28,22 @@ class _Spy extends InMemoryDocumentStore {
   /// lecture d'un document **absent** échoue (`unavailable`).
   bool offline = false;
 
+  /// Cache froid (après une connexion ou un changement de compte) : le cache
+  /// ne connaît rien, mais le serveur répond.
+  bool coldCache = false;
+
+  /// Lecture serveur qui échoue, par chemin (refus des règles, erreur du
+  /// service).
+  final Map<String, StoreFailureCode> getFailures = {};
+
+  @override
+  Future<StoredDocument?> peek(String path) async =>
+      coldCache ? null : await super.peek(path);
+
   @override
   Future<StoredDocument?> get(String path) async {
+    final failure = getFailures[path];
+    if (failure != null) throw StoreFailure(failure, 'simulé');
     final found = await super.get(path);
     if (offline && found == null) {
       throw const StoreFailure(StoreFailureCode.unavailable, 'hors ligne');
@@ -545,40 +559,178 @@ void main() {
     });
   });
 
-  group('offline (known limit, FB5): a creation reads its target first', () {
-    // `StudentData.upsert` lit le document cible avant d'écrire (propriétaire
-    // conservé, auteur du « Vu » conservé) : hors ligne, un document absent ne
-    // se lit pas, la création échoue. ADR 0024, notes FB4c ; roadmap FB5.
-    Matcher unavailable() => throwsA(
-      isA<ServiceFailure>().having(
-        (f) => f.code,
-        'code',
-        ServiceFailureCode.unavailable,
-      ),
-    );
+  group('offline (FB5): a creation never reads an absent document', () {
+    // `StudentData.upsert` ne lit le document cible que dans le cache
+    // (`peek`) et le propriétaire vient de documents déjà là (fiche, groupes,
+    // séance) : hors ligne, où la lecture d'un document absent échoue, un bloc
+    // acquis, un bilan et un « Vu » se créent. L'invariant de propriétaire est
+    // porté par les règles (`sameOwnership`, `createdBy` figé).
+    test('a marker, an assessment and a « Vu » are created offline', () async {
+      documents.offline = true;
+
+      await FirestoreAcquisitionRepository(club).add(_acquisition('q1'));
+      await FirestoreAssessmentRepository(club).add(_assessment('b1'));
+      await FirestoreAcknowledgementRepository(
+        club,
+        scope,
+      ).add(_acknowledgement('k1'));
+
+      expect(documents.read('clubs/c1/acquisitions/q1'), isNotNull);
+      expect(documents.read('clubs/c1/assessments/b1'), isNotNull);
+      expect(
+        documents.read('clubs/c1/acknowledgements/k1')!['createdBy'],
+        'u-dir',
+      );
+      expect(documents.sent, hasLength(3));
+    });
+
+    test('replacing a document known to the cache keeps its owner, offline '
+        'too', () async {
+      await FirestoreAcquisitionRepository(club)
+          .add(_acquisition('q1', student: 's3'));
+      documents
+        ..offline = true
+        ..seed('clubs/c1/students/s3', {
+          'groupIds': ['g2'],
+        });
+
+      await FirestoreAcquisitionRepository(club)
+          .add(_acquisition('q1', student: 's3'));
+
+      expect(documents.read('clubs/c1/acquisitions/q1')!['groupId'], 'g1');
+    });
+
+    test('replacing a « Vu » offline keeps who gave it first', () async {
+      final repository = FirestoreAcknowledgementRepository(club, scope);
+      await repository.add(_acknowledgement('k1', lastAttempt: 'p1'));
+      scope
+        ..signIn(const UserId('u-other'))
+        ..activate(const ClubId('c1'), Role.director);
+      documents.offline = true;
+
+      await repository.add(_acknowledgement('k1', lastAttempt: 'p2'));
+
+      final stored = documents.read('clubs/c1/acknowledgements/k1')!;
+      expect(stored['createdBy'], 'u-dir');
+      expect(stored['lastAttemptId'], 'p2');
+    });
+
+    test('a cold cache, online, still sees the existing « Vu »: replaying it '
+        'succeeds and keeps who gave it first', () async {
+      final repository = FirestoreAcknowledgementRepository(club, scope);
+      await repository.add(_acknowledgement('k1', lastAttempt: 'p1'));
+      scope
+        ..signIn(const UserId('u-other'))
+        ..activate(const ClubId('c1'), Role.director);
+      documents.coldCache = true;
+
+      await repository.add(_acknowledgement('k1', lastAttempt: 'p2'));
+
+      final stored = documents.read('clubs/c1/acknowledgements/k1')!;
+      expect(stored['createdBy'], 'u-dir');
+      expect(stored['lastAttemptId'], 'p2');
+    });
 
     test(
-      'a marker, an assessment and a « Vu » are refused, nothing written',
+      'a cold cache, online, keeps the stored owner of an acquisition',
       () async {
-        documents.offline = true;
+        await FirestoreAcquisitionRepository(club)
+            .add(_acquisition('q1', student: 's3'));
+        documents
+          ..coldCache = true
+          ..seed('clubs/c1/students/s3', {
+            'groupIds': ['g2'],
+          });
+
+        await FirestoreAcquisitionRepository(club)
+            .add(_acquisition('q1', student: 's3'));
+
+        expect(documents.read('clubs/c1/acquisitions/q1')!['groupId'], 'g1');
+      },
+    );
+
+    test('a cold cache, online, takes the group of the last pass from the '
+        'server, not a group of the sheet', () async {
+      // s3 est dans g1 et g2 : sans le passage, le « Vu » irait en g1.
+      documents
+        ..seed('clubs/c1/attempts/a1', {
+          'groupId': 'g2',
+          'seasonId': 'se1',
+          'studentId': 's3',
+        })
+        ..coldCache = true;
+
+      await FirestoreAcknowledgementRepository(
+        club,
+        scope,
+      ).add(_acknowledgement('k1', student: 's3'));
+
+      expect(documents.read('clubs/c1/acknowledgements/k1')!['groupId'], 'g2');
+    });
+
+    for (final code in [
+      StoreFailureCode.permissionDenied,
+      StoreFailureCode.other,
+    ]) {
+      test('a ${code.name} read of the target document is not taken for an '
+          'absent one: nothing is written', () async {
+        documents
+          ..coldCache = true
+          ..getFailures['clubs/c1/acquisitions/q1'] = code;
+
         await expectLater(
           FirestoreAcquisitionRepository(club).add(_acquisition('q1')),
-          unavailable(),
+          throwsA(isA<ServiceFailure>()),
         );
-        await expectLater(
-          FirestoreAssessmentRepository(club).add(_assessment('b1')),
-          unavailable(),
-        );
+        expect(documents.sent, isEmpty);
+      });
+
+      test('a ${code.name} read of the last pass is not taken for an absent '
+          'one: the « Vu » is not written', () async {
+        documents
+          ..coldCache = true
+          ..getFailures['clubs/c1/attempts/a1'] = code;
+
         await expectLater(
           FirestoreAcknowledgementRepository(
             club,
             scope,
           ).add(_acknowledgement('k1')),
-          unavailable(),
+          throwsA(isA<ServiceFailure>()),
         );
         expect(documents.sent, isEmpty);
-      },
-    );
+      });
+    }
+
+    test('a « Vu » whose pass is not in the cache falls back to a group of '
+        'the student, offline', () async {
+      documents.offline = true;
+
+      await FirestoreAcknowledgementRepository(
+        club,
+        scope,
+      ).add(_acknowledgement('k1', lastAttempt: 'inconnu'));
+
+      expect(documents.read('clubs/c1/acknowledgements/k1')!['groupId'], 'g1');
+    });
+
+    test('a student missing from the cache is still refused offline: the '
+        'owner needs the student sheet', () async {
+      documents.offline = true;
+
+      await expectLater(
+        FirestoreAcquisitionRepository(club)
+            .add(_acquisition('q1', student: 's9')),
+        throwsA(
+          isA<ServiceFailure>().having(
+            (f) => f.code,
+            'code',
+            ServiceFailureCode.unavailable,
+          ),
+        ),
+      );
+      expect(documents.sent, isEmpty);
+    });
 
     test(
       'a pass is still added offline: no read of an absent document',

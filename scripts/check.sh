@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Point d'entrée UNIQUE des garde-fous déterministes (hooks, agent, CI).
 #
-#   scripts/check.sh --fast   catalogue + diagrammes + fiches + fichiers web drift + PWA (+ tests JS du service worker, Node) + format + analyse
+#   scripts/check.sh --fast   catalogue + diagrammes + fiches + fichiers web drift + SDK web Firebase local + PWA (+ tests JS du service worker, Node) + format + analyse
 #                             + architecture + index Firestore + séances + validation des fiches
-#   scripts/check.sh --full   --fast + l10n + règles Firestore (émulateurs : Node, Java, npm ci)
+#   scripts/check.sh --full   ports des émulateurs libres (échec immédiat sinon) + --fast + l10n + règles Firestore (émulateurs : Node, Java, npm ci)
 #                             + fumée du build web compilé (build release + Chrome, émulateur Auth)
 #                             + parcours de bout en bout (application en mode debug + Chrome, émulateurs
 #                               Auth et Firestore + graine : connexion de la directrice, lecture de son club)
@@ -27,6 +27,13 @@ esac
 
 step() { printf '\n▶ %s\n' "$1"; }
 
+if [[ "$MODE" == "--full" ]]; then
+  # Échec précoce : un émulateur résiduel tient les ports, les étapes lourdes
+  # (build, règles, fumée) échoueraient longtemps après sur « port taken ».
+  step "Ports des émulateurs libres"
+  "$ROOT/scripts/check_ports_free.sh"
+fi
+
 cd "$ROOT/app"
 
 # Le code généré n'est pas versionné : le produire s'il manque (ou en --full).
@@ -47,6 +54,9 @@ step "Fiches de séance (assets identiques à docs/knowledge)"
 
 step "Fichiers web drift (sqlite3.wasm, drift_worker.js)"
 (cd "$ROOT" && dart run scripts/sync_web_assets.dart --check)
+
+step "SDK web Firebase local (version du plugin, empreintes SHA-256, carte d'import)"
+(cd "$ROOT" && dart run scripts/sync_firebase_sdk.dart --check)
 
 step "PWA (manifeste, service worker hors ligne, icônes, aucune ressource externe)"
 (cd "$ROOT" && dart run scripts/pwa.dart check && dart run scripts/generate_pwa_icons.dart --check)

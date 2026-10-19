@@ -20,10 +20,11 @@ import 'package:billard_cfa/shared/persistence/store_guard.dart';
 ///   concurrente de la même saisie) réunit les présents par `ArrayUnion`,
 ///   `resume` (retour de l'animateur sur une saisie existante) les
 ///   **remplace** : décocher un élève coché par erreur reste possible ;
-/// - **`createdAt`** : posé par la **création** seulement, une transaction
-///   `createIfAbsent` (jamais « lu absent puis écrit » : deux appareils
-///   concurrents feraient une mise à jour qui change la date, refusée par les
-///   règles) ;
+/// - **`createdAt`** : posé par la **création** seulement ; saisie liée : une
+///   transaction `createIfAbsent` (jamais « lu absent puis écrit » : deux
+///   appareils concurrents feraient une mise à jour qui change la date,
+///   refusée par les règles) ; saisie libre : écriture simple, possible hors
+///   ligne (voir `_create`) ;
 /// - **lecture** : un parent ou un élève ne lit **aucune** saisie (règles) :
 ///   ces rôles reçoivent des listes vides. Le directeur et l'administrateur
 ///   interrogent le club ; un enseignant, **un groupe à la fois** (égalité sur
@@ -50,20 +51,18 @@ class FirestoreSessionRecordRepository implements SessionRecordRepository {
   Future<void> save(SessionRecord session) => guardStore(() async {
     final path = _club.paths.record(session.id);
     final fields = SessionRecordDocument.encode(session);
-    final created = await _club.createIfAbsent(path, {
-      ...fields,
-      ...SessionRecordDocument.creationOnly(),
-    });
+    final created = await _create(session, path, fields);
     if (!created) await _club.commit([SetOp(path, fields, merge: true)]);
   });
 
   @override
   Future<SessionRecord> open(SessionRecord candidate) => guardStore(() async {
     final path = _club.paths.record(candidate.id);
-    final created = await _club.createIfAbsent(path, {
-      ...SessionRecordDocument.encode(candidate),
-      ...SessionRecordDocument.creationOnly(),
-    });
+    final created = await _create(
+      candidate,
+      path,
+      SessionRecordDocument.encode(candidate),
+    );
     if (!created) await _unionPresent(path, candidate);
     return await _stored(candidate);
   });
@@ -71,10 +70,11 @@ class FirestoreSessionRecordRepository implements SessionRecordRepository {
   @override
   Future<SessionRecord> resume(SessionRecord record) => guardStore(() async {
     final path = _club.paths.record(record.id);
-    final created = await _club.createIfAbsent(path, {
-      ...SessionRecordDocument.encode(record),
-      ...SessionRecordDocument.creationOnly(),
-    });
+    final created = await _create(
+      record,
+      path,
+      SessionRecordDocument.encode(record),
+    );
     if (!created) {
       await _club.commit([
         UpdateOp(path, SessionRecordDocument.encodeResumed(record)),
@@ -82,6 +82,29 @@ class FirestoreSessionRecordRepository implements SessionRecordRepository {
     }
     return await _stored(record);
   });
+
+  /// Crée [record] avec sa date de création, `false` s'il existe déjà.
+  ///
+  /// - saisie **liée** à une séance du catalogue (identifiant déterministe,
+  ///   deux appareils peuvent la créer ensemble) : transaction
+  ///   `createIfAbsent`, atomique côté serveur, donc **impossible hors ligne**
+  ///   (limite connue, reste de FB5b : voir hors-ligne-plan.md) ;
+  /// - saisie **libre** (identifiant UUID : aucun autre appareil ne peut la
+  ///   créer en même temps) : création **par écriture simple** si le cache
+  ///   local ne connaît pas le document, **possible hors ligne**. Si le
+  ///   document existait pourtant sur le serveur sans être au cache, c'est une
+  ///   mise à jour qui change `createdAt` : les règles la refusent et le refus
+  ///   remonte par `SendStatus.hasFailure` (détail :
+  ///   `SendTracker.lastFailure`).
+  Future<bool> _create(SessionRecord record, String path, Fields fields) async {
+    final creation = {...fields, ...SessionRecordDocument.creationOnly()};
+    if (record.sheetId != null) {
+      return await _club.createIfAbsent(path, creation);
+    }
+    if (await _club.peek(path) != null) return false;
+    await _club.commit([SetOp(path, creation, merge: true)]);
+    return true;
+  }
 
   /// Réunit les présents de [candidate] à ceux du document, côté serveur
   /// (`ArrayUnion`) : la liste n'est ni lue ni réécrite. Les règles refusent
@@ -115,7 +138,7 @@ class FirestoreSessionRecordRepository implements SessionRecordRepository {
   }
 
   Future<SessionRecord> _stored(SessionRecord fallback) async {
-    final document = await _club.get(_club.paths.record(fallback.id));
+    final document = await _club.cachedOrGet(_club.paths.record(fallback.id));
     return document == null ? fallback : SessionRecordDocument.decode(document);
   }
 

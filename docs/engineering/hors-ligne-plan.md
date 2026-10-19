@@ -19,7 +19,7 @@ service workers).
 | Service worker | `flutter_service_worker.js` généré par Flutter 3.47.7 : un **résidu qui se désinscrit lui-même** (« Flutter's service worker is deprecated »), aucun cache | **Aucun usage hors ligne** : au rechargement sans réseau, la page ne se charge pas |
 | CanvasKit | `useLocalCanvasKit` absent de `flutter_bootstrap.js` : le moteur est chargé depuis `www.gstatic.com/flutter-canvaskit/<révision>/` | Dépendance CDN à l'exécution : l'application ne démarre pas sans réseau, même avec un cache de fichiers locaux |
 | Polices | Exo2 (OFL) et MaterialIcons locales (`assets/assets/fonts`, `assets/fonts`) ; Roboto de repli **absente** du build par défaut (récupérée sur `fonts.gstatic.com`) | Texte de repli manquant hors ligne |
-| SDK Firebase web | `Firebase.initializeApp` est **attendu dans `main()`** (commit « Initialiser Firebase au démarrage ») ; `firebase_core_web` injecte `https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js` | **Peut empêcher le démarrage hors ligne** (échec du chargement du script ; comportement exact non mesuré avant la correction) alors que rien n'utilise encore Firebase |
+| SDK Firebase web | `Firebase.initializeApp` est **attendu dans `main()`** (commit « Initialiser Firebase au démarrage ») ; `firebase_core_web` injecte `https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js` | **Peut empêcher le démarrage hors ligne** (échec du chargement du script ; comportement exact non mesuré avant la correction) alors que rien n'utilise encore Firebase. **Corrigé en FB5a** : voir « SDK Firebase web servi en local (FB5a) » |
 | drift web | `sqlite3.wasm` (3.5.2) et `drift_worker.js` servis par l'application (`web/`), ouverture paresseuse, `DriftStorageStatus` (durable ou mémoire) | Fonctionne hors ligne **si** ces deux fichiers sont en cache ; stockage OPFS ou IndexedDB selon le navigateur, non effacé par la coupure du réseau |
 | Catalogue, diagrammes, fiches | assets Flutter (`assets/assets/catalogue`, `diagrammes`, `fiches`), lus **à la demande** par l'application | Un cache « à l'usage » ne suffirait pas : une séance jamais ouverte avant la coupure serait absente |
 | `manifest.json` | Modèle Flutter : nom « billard_cfa », couleur `#0175C2` (bleu Flutter), `portrait-primary`, icônes **par défaut de Flutter** | Installable mais au mauvais nom, mauvaise couleur, **orientation bloquée en portrait** (incompatible avec le plein écran d'U3 en paysage), mauvaise icône |
@@ -81,18 +81,66 @@ service workers).
    (sans effet là où l'API est absente). Le `DriftStorageStatus` existant
    continue d'avertir quand la base n'est qu'en mémoire.
 
-**Firebase (ne pas contredire H5).** Aujourd'hui `Firebase.initializeApp`
-n'alimente rien. `main()` le lance désormais **sans l'attendre** et absorbe son
-échec (`startFirebase`, testé) : hors ligne, l'application s'ouvre. En ligne,
-le SDK est toujours chargé depuis `gstatic.com` (seule ressource externe
-restante, constatée par Playwright) : **ce n'est pas une ressource utilisée par
-l'application**, mais FB1 et FB5 devront décider de la servir eux-mêmes (copie
-épinglée du SDK dans `web/`, `window.flutterfire_web_sdk_version`, précache) ou
-de s'appuyer sur la persistance hors ligne de Firestore, et remplacer
-l'initialisation non bloquante par un état « synchronisé / en attente /
-hors-ligne » (FB5). Le garde-fou `pwa.dart check` interdit toute URL externe
-dans `index.html`, `offline.js`, `offline_sw.js` et `flutter_bootstrap.js`, pas
+**Firebase (ne pas contredire H5).** `main()` lance `Firebase.initializeApp`
+**sans l'attendre** et absorbe son échec (`startFirebase`, testé) ; depuis FB2
+c'est l'`AuthCubit` qui attend `FirebaseStartup.ready`. Le SDK web n'est plus
+chargé depuis `gstatic.com` depuis FB5a (section suivante). Le garde-fou
+`pwa.dart check` interdit toute URL externe dans `index.html` (hors les clés de
+la carte d'import), `offline.js`, `offline_sw.js` et `flutter_bootstrap.js`, pas
 dans le code Dart.
+
+### SDK Firebase web servi en local (FB5a, 2026-10-19, B7 levé)
+
+- **Mécanisme** : `firebase_core_web` charge le SDK par
+  `import(<URL absolue gstatic>)` ; l'URL est écrite en dur dans le plugin
+  (seule la version est réglable) et les bundles s'importent entre eux par
+  cette même URL. Une **carte d'import** (`<script type="importmap">` de
+  `web/index.html`, avant tout autre script) redirige les trois URL
+  (`firebase-app.js`, `firebase-auth.js`, `firebase-firestore-pipelines.js`)
+  vers `web/firebasejs/<version>/`. Aucun fork ni modification du plugin.
+- **Copies épinglées** : octet pour octet celles de gstatic (paquet npm
+  `firebase@<version>`), `web/firebasejs/manifest.json` (version, SHA-256).
+  Précachées par le service worker comme tout fichier de `web/` (le build
+  ajoute environ 1 Mo non compressé).
+- **Garde-fous** : `dart run scripts/sync_firebase_sdk.dart --check` (dans
+  `check.sh --fast`, hors ligne) : version = celle de `supportedFirebaseJsSdkVersion`
+  du plugin résolu, empreintes, carte exacte, aucun import interne non couvert ;
+  `dart run scripts/sync_firebase_sdk.dart` met à jour (a besoin de `npm`).
+  `pwa.dart check` (clés de la carte = URL du SDK, valeurs locales) et `verify`
+  (fichiers au build et au précache). La fumée du build compilé
+  (`scripts/web_smoke.sh`) et le parcours navigateur refusent `gstatic.com` et
+  exigent que les trois fichiers soient servis par l'application.
+- **Liste blanche réseau** (hôtes du navigateur hors l'application) :
+  `identitytoolkit.googleapis.com`, `securetoken.googleapis.com` (Auth),
+  `firestore.googleapis.com`, `www.google.com/images/cleardot.gif` (Firestore).
+- **Limites** : navigateur sans cartes d'import (Safari avant 16.4) : retombe sur
+  gstatic.com en ligne ; non exercé ici. Une mise à jour de `firebase_core_web`
+  change la version attendue : `--check` échoue jusqu'à la synchronisation.
+
+### Persistance hors ligne de Firestore, cache et pastille (FB5a)
+
+- Persistance **activée explicitement** (`Settings(persistenceEnabled: true,
+  webPersistentTabManager: WebPersistentMultipleTabManager())`, après
+  l'initialisation et avant `useEmulators`) : le web ne la fournit pas par défaut.
+- **Cache vidé** à la déconnexion voulue et quand un autre compte se connecte
+  (`LocalDataGuard`, `LocalDataCache`) ; la page se recharge ensuite (web).
+  Déconnexion refusée tant que des envois sont en attente, sauf confirmation.
+  Session perdue autrement : cache conservé (écritures hors ligne possibles).
+- **Déconnexion et envois non envoyés** : la garde interroge le **SDK** (`waitForPendingWrites` borné), pas un compteur en mémoire : une écriture
+  hors ligne survit à la fermeture de l'application, et la pastille la montre à la réouverture.
+- **Effacement raté** (autre onglet qui tient IndexedDB, disque) : la déconnexion aboutit mais le repère « effacement en attente » reste sur
+  l'appareil ; l'écran de connexion le dit avec « Réessayer l'effacement », le démarrage suivant et toute connexion (même compte compris)
+  retentent avant de lire quoi que ce soit.
+- **Plusieurs onglets** : la suppression du cache est bornée (5 s) ; l'onglet qui perd sa session quand un autre a vidé le cache se recharge.
+- **Natif non prouvé** : `terminate` puis `clearPersistence` puis lecture n'est exercé par aucun test (pas d'appareil dans les garde-fous) ;
+  `reopen` réapplique les réglages. À éprouver à la main sur Android et iOS avant la bascule.
+- **Pastille** « À jour / Envoi en attente (n) / Hors ligne » (`SyncStatusCubit`
+  sur `SendStatus` et `ConnectivityStatus`). Le réseau n'est connu que sur le web
+  (`navigator.onLine`) ; natif : toujours « en ligne ».
+- **Écritures hors ligne** : cache d'abord, serveur ensuite (`cachedOrGet`) ; seul « hors ligne » vaut « absent du cache » ; pour
+  les blocs acquis, bilans et « Vu » ; saisie **libre** créée hors ligne ; saisie
+  **liée** à une séance du catalogue : impossible hors ligne (transaction), reste
+  de FB5b. Détail : ADR 0024, notes FB5a.
 
 **Risques résiduels.**
 

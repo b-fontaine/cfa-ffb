@@ -408,8 +408,8 @@ Copie des règles (`RULES_FILE=copie.rules`), `progress.test.mjs`. Les trois mut
   l'état local d'un écran est remis à zéro quand le club change, conservé quand il reste le même.
 - **Fumée du build web compilé** : `scripts/web_smoke.sh` (dans `check.sh --full` et la CI ; prérequis Node, Java, `npm ci`
   et Google Chrome, échec explicite sinon). Il charge `app/build/web` (build **release** de `scripts/build_web.sh`) dans Chrome
-  piloté par `playwright-core`, renvoie les appels du SDK vers l'émulateur Auth et **refuse tout autre hôte** que localhost et
-  `gstatic.com` : démarrage jusqu'à l'écran de connexion, mauvais mot de passe et adresse inconnue (même message), connexion
+  piloté par `playwright-core`, renvoie les appels du SDK vers l'émulateur Auth et **refuse tout autre hôte** que localhost (`gstatic.com` compris, FB5a :
+  le SDK web est servi par l'application, le test exige les trois fichiers de `firebasejs/`) : démarrage jusqu'à l'écran de connexion, mauvais mot de passe et adresse inconnue (même message), connexion
   d'un compte vérifié **jusqu'à l'accueil du club retenu sur l'appareil** (assertion de succès ; le club retenu est posé dans `localStorage`
   parce que Firestore est refusé), session conservée au rechargement, déconnexion ; « Service injoignable » (sans club retenu) est un test
   distinct du chemin d'échec, jamais le chemin nominal. Il a été écrit après un blocage sur l'écran de démarrage qu'aucun autre test ne pouvait voir.
@@ -472,3 +472,30 @@ flutter test --coverage            # tout + lcov
 - Remplacer `isoText` par « texte de 1 à 40 caractères » dans `presStamp` fait échouer `progress.test.mjs` (dates `'zz'`, date sans heure, fuseau décalé, fraction trop longue) ; dans `optStamp`, `bounds.test.mjs` (saison avec `startDate: 'zz'` ou `closedOn` sans heure).
 - Trier avant de décoder (`_ordered`) fait échouer « attempts with a malformed sort field keep the rest » (`firestore_progress_repositories_test`).
 - `_byDate(recordedAt…, nullLast: false → true)` fait échouer « compare: a pass without device stamp comes before… ».
+
+## Lot FB5a : hors ligne, cache local, pastille, SDK local (2026-10-19)
+
+- **SDK web local** : `sync_firebase_sdk_test.dart` (script rejoué dans un faux dépôt : version du plugin, fichier modifié, manquant ou en trop, carte
+  d'import absente, fausse, tardive, import interne non couvert, plugin qui ne charge plus Firestore comme prévu, vecteurs SHA-256 connus) ;
+  `pwa_test.dart` (carte d'import absente ou qui vise autre chose que `./firebasejs/`, script externe voisin, build sans SDK au précache) ;
+  `platform_privacy_test.dart` (la page n'a d'URL absolue que les clés de la carte) ; la fumée du build compilé et le parcours navigateur
+  refusent gstatic.com et exigent les trois fichiers servis en local. **Rouge vu** : les tests `pwa_test` de `verify` échouent sur l'ancien
+  `pwa.dart` (6 échecs) ; la fumée a été relancée verte avec gstatic refusé.
+- **Persistance** : `firebase_sdk_gateway_test.dart` (réglage persistant multi-onglets, ordre : initialisation, réglage, puis émulateurs).
+- **Cache local** : `local_data_guard_test.dart` (propriétaire, autre compte, échec d'effacement qui lève, déconnexion, envois en attente),
+  `firestore_local_data_cache_test.dart` (ordre `terminate` puis `clearPersistence`, rechargement séparé), `auth_cubit_test.dart` (groupe « local
+  data cache », dont la session perdue ailleurs qui ne vide pas), BDD `sync_and_local_data.feature` (déconnexion qui vide le cache, avec envois
+  en attente : confirmation d'abord, annulation, confirmation). **Couvert par le vrai SDK** : la fumée du build compilé (`web_smoke.test.mjs`) vérifie qu'une base IndexedDB `firestore/…` existe après la
+  connexion (persistance **active**), puis que la déconnexion recharge la page et qu'aucune base `firestore/…` ne subsiste (`terminate` +
+  `clearPersistence` réels). **Non couvert** : le natif ; le cache vidé d'écritures réellement en attente (aucun Firestore émulé dans la fumée).
+- **Pastille** : `sync_state_test.dart` (dérivation, priorités), `sync_status_cubit_test.dart` (écriture hors ligne puis retour du réseau, refus
+  tardif des règles), `sync_status_chip_test.dart` (libellés fr/en, région vive, bleu-tapis), BDD (à jour, hors ligne, en attente, retour,
+  refus), Widgetbook (`sync_status_use_cases.dart`). **Non couvert** : `navigator.onLine` réel (liaison web sans test, comme `offline.js`).
+- **Écritures hors ligne** : `firestore_progress_repositories_test.dart` (**rouge vu** : l'ancien test « limite connue » échoue dès que `upsert`
+  ne lit plus le serveur ; remplacé par : création hors ligne d'un bloc acquis, d'un bilan, d'un « Vu » avec un stock dont la lecture d'un
+  document absent échoue ; remplacement qui garde propriétaire et auteur du « Vu » hors ligne ; passage absent du cache ; fiche absente refusée),
+  `firestore_planning_repositories_test.dart` (saisie libre créée hors ligne, saisie liée refusée proprement), `peek` sur le double, le magasin
+  Firestore et l'accès au SDK (`unavailable` = absent du cache), `planning.test.mjs` (création à l'aveugle d'une saisie libre déjà présente :
+  refusée, date d'origine intacte). Aucune règle ne change : les tests d'attaque existants (`progress.test.mjs`) gardent propriétaire et auteur.
+- **Workflows** : `workflows_test.dart` (voir quality-gates.md).
+

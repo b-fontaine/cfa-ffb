@@ -56,6 +56,24 @@ final class ClubStore {
     return fields == null ? null : StoredDocument(path, fields);
   }
 
+  /// Comme [get], mais **depuis le cache local seulement** (voir
+  /// `DocumentStore.peek`) : sans attente du réseau, `null` si le document
+  /// n'y est pas. Dans une unité de travail, avec ses propres écritures.
+  Future<StoredDocument?> peek(String path) async {
+    final stored = await documents.peek(path);
+    final pending = _pending;
+    if (pending == null) return stored;
+    final fields = pending.overlay(path, stored?.fields);
+    return fields == null ? null : StoredDocument(path, fields);
+  }
+
+  /// Lit [path] dans le cache local, et à défaut seulement sur le serveur : la
+  /// lecture des documents qui **permettent d'écrire** (fiche, groupe, séance :
+  /// le propriétaire d'une donnée), rapide et possible hors ligne quand
+  /// l'animateur les a sous les yeux.
+  Future<StoredDocument?> cachedOrGet(String path) async =>
+      await peek(path) ?? await get(path);
+
   /// Écrit [operations]. Dans une unité de travail ([atomically]), elles
   /// attendent le lot unique de sa fin. Hors unité, elles partent par lots de
   /// [maxBatchWrites] : un lot est atomique ; au-delà, les lots se suivent et

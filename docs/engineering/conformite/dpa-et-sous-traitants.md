@@ -18,7 +18,7 @@ Statut : **projet, non validé** (2026-10-17). Sources Google : firebase.google.
 | **Firebase Authentication** (e-mail et mot de passe seul) | Adresse e-mail, mot de passe haché, identifiant, IP et agent utilisateur | **États-Unis seulement** : « run only from US data centers » ; IP conservées quelques semaines ; suppression des systèmes et sauvegardes sous 180 jours | Vérifié à la source |
 | **App Check** | Jetons d'attestation (7 jours au plus), attestation non conservée ; Play Integrity (Android), App Attest (iOS) | Non précisée | Vérifié à la source ; localisation `[à valider]` |
 | **reCAPTCHA** (fournisseur web d'App Check) | Adresse IP et signaux du navigateur | Non précisée | Non traité par la page Firebase : `[conditions reCAPTCHA à lire et valider]` |
-| **SDK web chargé depuis gstatic.com** | Adresse IP à chaque chargement (serveur Google) ; app inutilisable hors ligne à la première visite | Non précisée | Supprimé avant FB5 si le plugin accepte un SDK local (ADR 0024, B7) |
+| **SDK web chargé depuis gstatic.com** | Adresse IP à chaque chargement (serveur Google) ; app inutilisable hors ligne à la première visite | Non précisée | **Supprimé en FB5a (2026-10-19)** : SDK servi par l'application (carte d'import, ADR 0024 notes FB5a) ; limite : navigateur sans cartes d'import (Safari avant 16.4) |
 | **Firebase Hosting** (application web) | Journaux d'accès (IP) | Non précisée | Déjà utilisé ; `[à valider]` |
 
 Services **non utilisés** et à ne pas ajouter sans mise à jour du registre : Google Analytics, Crashlytics, Cloud Messaging, Google Sign-In (retiré de `firebase.json`), connexion anonyme (retirée), Phone Auth.

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:billard_cfa/app/auth/auth_cubit.dart';
 import 'package:billard_cfa/app/auth/auth_state.dart';
+import 'package:billard_cfa/app/auth/local_data_guard.dart';
 import 'package:billard_cfa/app/session_startup.dart';
 import 'package:billard_cfa/entities/account/data/in_memory_auth_repository.dart';
 import 'package:billard_cfa/entities/account/domain/account.dart';
@@ -186,6 +187,7 @@ void main() {
         rig.pending,
         rig.issued,
         rig.reloadRules,
+        rig.local,
       );
       addTearDown(cubit.close);
       final reported = <FlutterErrorDetails>[];
@@ -546,6 +548,7 @@ void main() {
           rig.pending,
           rig.issued,
           rig.reloadRules,
+          rig.local,
         );
         addTearDown(cubit.close);
         await cubit.start();
@@ -590,6 +593,7 @@ void main() {
       rig.pending,
       rig.issued,
       rig.reloadRules,
+      rig.local,
     );
     addTearDown(cubit.close);
     final other = rig.auth.seed(email: 'other@example.org', password: 'pw');
@@ -660,6 +664,7 @@ void main() {
           rig.pending,
           rig.issued,
           rig.reloadRules,
+          rig.local,
         );
         addTearDown(cubit.close);
 
@@ -691,6 +696,7 @@ void main() {
           rig.pending,
           rig.issued,
           rig.reloadRules,
+          rig.local,
         );
         addTearDown(cubit.close);
 
@@ -717,6 +723,7 @@ void main() {
         rig.pending,
         rig.issued,
         rig.reloadRules,
+        rig.local,
       );
       addTearDown(cubit.close);
       return cubit;
@@ -824,6 +831,363 @@ void main() {
       await rig.cubit.signOut();
 
       expect(rig.cubit.hasSession, isFalse);
+    });
+  });
+
+  group('local data cache (C4)', () {
+    test(
+      'the cache is claimed by the account before its clubs are read',
+      () async {
+        rig.auth.restoreSession('coach@example.org');
+        rig.memberships.grant(coach.id, _nice);
+
+        await rig.cubit.start();
+        await settle();
+
+        expect(rig.store.entries['firestore_cache_owner'], coach.id.value);
+        expect(rig.cache.clears, 0);
+        expect(rig.cubit.state, isA<AuthReady>());
+      },
+    );
+
+    test('another account on the device clears the previous cache and puts '
+        'the store back in service', () async {
+      final other = rig.auth.seed(email: 'other@example.org', password: 'pw');
+      rig.memberships
+        ..grant(coach.id, _nice)
+        ..grant(other.id, _lyon);
+      await rig.store.write('firestore_cache_owner', coach.id.value);
+      rig.auth.restoreSession('other@example.org');
+
+      await rig.cubit.start();
+      await settle();
+
+      expect(rig.cache.clears, 1);
+      expect(rig.cache.reopens, 1);
+      expect(rig.store.entries['firestore_cache_owner'], other.id.value);
+      expect((rig.cubit.state as AuthReady).club, _lyon);
+    });
+
+    test('a cache that cannot be cleared is unavailable, never served to '
+        'the new account', () async {
+      final other = rig.auth.seed(email: 'other@example.org', password: 'pw');
+      rig.memberships.grant(other.id, _lyon);
+      await rig.store.write('firestore_cache_owner', coach.id.value);
+      rig.cache.clearFailure = const FormatException('disque');
+      rig.auth.restoreSession('other@example.org');
+      final reported = <FlutterErrorDetails>[];
+      final previous = FlutterError.onError;
+      FlutterError.onError = reported.add;
+      addTearDown(() => FlutterError.onError = previous);
+
+      await rig.cubit.start();
+      await settle();
+
+      expect(rig.cubit.state, const AuthIndisponible());
+      expect(rig.scope.clubId, isNull);
+      expect(reported, hasLength(1));
+    });
+
+    test(
+      'signing out clears the cache, forgets its owner and reopens',
+      () async {
+        rig.auth.restoreSession('coach@example.org');
+        rig.memberships.grant(coach.id, _nice);
+        await rig.cubit.start();
+        await settle();
+
+        final result = await rig.cubit.signOut();
+        await settle();
+
+        expect(result, SignOutResult.signedOut);
+        expect(rig.cache.clears, 1);
+        expect(rig.cache.reopens, 1);
+        expect(rig.store.entries, isNot(contains('firestore_cache_owner')));
+        expect(rig.cubit.state, const AuthSignedOut());
+      },
+    );
+
+    test(
+      'signing out with unsent writes is refused, nothing changes',
+      () async {
+        rig.auth.restoreSession('coach@example.org');
+        rig.memberships.grant(coach.id, _nice);
+        await rig.cubit.start();
+        await settle();
+        rig.sends.track(Future<void>.delayed(const Duration(days: 1)));
+        final before = rig.cubit.state;
+
+        final result = await rig.cubit.signOut();
+        await settle();
+
+        expect(result, SignOutResult.unsentWrites);
+        expect(rig.cubit.state, before);
+        expect(rig.auth.current, isNotNull);
+        expect(rig.cache.clears, 0);
+      },
+    );
+
+    test(
+      'confirmed, signing out loses the unsent writes with the cache',
+      () async {
+        rig.auth.restoreSession('coach@example.org');
+        rig.memberships.grant(coach.id, _nice);
+        await rig.cubit.start();
+        await settle();
+        rig.sends.track(Future<void>.delayed(const Duration(days: 1)));
+
+        final result = await rig.cubit.signOut(discardUnsent: true);
+        await settle();
+
+        expect(result, SignOutResult.signedOut);
+        expect(rig.cache.clears, 1);
+        expect(rig.cubit.state, const AuthSignedOut());
+      },
+    );
+
+    test('a failed clearing still signs out, the owner stays recorded so the '
+        'next account clears first', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.grant(coach.id, _nice);
+      await rig.cubit.start();
+      await settle();
+      rig.cache.clearFailure = const FormatException('disque');
+      final reported = <FlutterErrorDetails>[];
+      final previous = FlutterError.onError;
+      FlutterError.onError = reported.add;
+      addTearDown(() => FlutterError.onError = previous);
+
+      final result = await rig.cubit.signOut();
+      await settle();
+
+      expect(result, SignOutResult.signedOut);
+      // L'échec est traité : l'état le dit (message de l'écran de connexion).
+      expect(rig.cubit.state, const AuthSignedOut(erasurePending: true));
+      expect(rig.store.entries['firestore_cache_owner'], coach.id.value);
+      expect(
+        rig.store.entries[LocalDataGuard.erasurePendingKey],
+        isNot(contains(coach.id.value)),
+      );
+      expect(await rig.local.erasurePending(), isTrue);
+      expect(reported, hasLength(1));
+    });
+
+    group('an erasure that failed at sign-out', () {
+      late List<FlutterErrorDetails> reported;
+
+      setUp(() {
+        reported = [];
+        final previous = FlutterError.onError;
+        FlutterError.onError = reported.add;
+        addTearDown(() => FlutterError.onError = previous);
+      });
+
+      Future<void> signOutWithFailingCache() async {
+        rig.auth.restoreSession('coach@example.org');
+        rig.memberships.grant(coach.id, _nice);
+        await rig.cubit.start();
+        await settle();
+        rig.cache.clearFailure = const FormatException('disque');
+        await rig.cubit.signOut();
+        await settle();
+      }
+
+      test('retrying after the cause is gone clears the cache and drops the '
+          'message', () async {
+        await signOutWithFailingCache();
+        rig.cache.clearFailure = null;
+
+        await rig.cubit.retryErasure();
+
+        expect(rig.cubit.state, const AuthSignedOut());
+        expect(rig.cache.clears, 1);
+        expect(rig.cache.reopens, 2);
+        expect(await rig.local.erasurePending(), isFalse);
+        expect(rig.store.entries, isNot(contains('firestore_cache_owner')));
+      });
+
+      test('retrying while it still fails keeps the message and the '
+          'mark', () async {
+        await signOutWithFailingCache();
+
+        await rig.cubit.retryErasure();
+
+        expect(rig.cubit.state, const AuthSignedOut(erasurePending: true));
+        expect(await rig.local.erasurePending(), isTrue);
+        expect(rig.cache.clears, 0);
+        expect(reported, hasLength(2));
+      });
+
+      test('the next start retries before anything is read: cleared, no '
+          'message', () async {
+        await signOutWithFailingCache();
+        final restarted = AuthRig();
+        for (final entry in rig.store.entries.entries) {
+          await restarted.store.write(entry.key, entry.value);
+        }
+        restarted.auth.seed(email: 'other@example.org', password: 'pw');
+
+        await restarted.cubit.start();
+        await settle();
+
+        expect(restarted.cubit.state, const AuthSignedOut());
+        expect(restarted.cache.clears, 1);
+        expect(restarted.cache.reopens, 1);
+        expect(await restarted.local.erasurePending(), isFalse);
+        await restarted.cubit.close();
+      });
+
+      test('the next start still failing shows the message on the sign-in '
+          'screen', () async {
+        await signOutWithFailingCache();
+        final restarted = AuthRig();
+        for (final entry in rig.store.entries.entries) {
+          await restarted.store.write(entry.key, entry.value);
+        }
+        restarted.cache.clearFailure = const FormatException('disque');
+
+        await restarted.cubit.start();
+        await settle();
+
+        expect(
+          restarted.cubit.state,
+          const AuthSignedOut(erasurePending: true),
+        );
+        await restarted.cubit.close();
+      });
+
+      test('another account signing in while the erasure keeps failing is '
+          'unavailable, with no club and no data served', () async {
+        await signOutWithFailingCache();
+        final restarted = AuthRig();
+        for (final entry in rig.store.entries.entries) {
+          await restarted.store.write(entry.key, entry.value);
+        }
+        final other = restarted.auth.seed(
+          email: 'other@example.org',
+          password: 'pw',
+        );
+        restarted.memberships.grant(other.id, _lyon);
+        restarted.auth.restoreSession('other@example.org');
+        restarted.cache.clearFailure = const FormatException('disque');
+
+        await restarted.cubit.start();
+        await settle();
+
+        expect(restarted.cubit.state, const AuthIndisponible());
+        expect(restarted.scope.clubId, isNull);
+        await restarted.cubit.close();
+      });
+
+      test('the SAME account signing in again after the failure gets a '
+          'cleared cache too', () async {
+        await signOutWithFailingCache();
+        rig.cache.clearFailure = null;
+
+        await rig.auth.signIn(email: 'coach@example.org', password: 'pw');
+        await settle();
+
+        expect(rig.cache.clears, 1);
+        expect(await rig.local.erasurePending(), isFalse);
+        expect(rig.cubit.state, isA<AuthReady>());
+      });
+    });
+
+    test('a session lost elsewhere keeps the cache: unsent writes may be in '
+        'it, the same account finds them again', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.grant(coach.id, _nice);
+      await rig.cubit.start();
+      await settle();
+
+      await rig.auth.signOut();
+      await settle();
+      // Plus longtemps que l'attente d'un effacement par un autre onglet.
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+
+      expect(rig.cubit.state, const AuthSignedOut());
+      expect(rig.cache.clears, 0);
+      expect(rig.cache.reopens, 0);
+      expect(rig.store.entries['firestore_cache_owner'], coach.id.value);
+    });
+
+    test(
+      'a session lost because another tab signed out and cleared the '
+      'cache reloads this one: its Firestore instance is terminated',
+      () async {
+        rig.auth.restoreSession('coach@example.org');
+        rig.memberships.grant(coach.id, _nice);
+        await rig.cubit.start();
+        await settle();
+        // L'autre onglet a vidé le cache et oublié son propriétaire.
+        await rig.store.remove('firestore_cache_owner');
+
+        await rig.auth.signOut();
+        await settle();
+
+        expect(rig.cubit.state, const AuthSignedOut());
+        expect(rig.cache.reopens, 1);
+      },
+    );
+
+    test('the other tab signs out first and clears the cache a moment later: '
+        'this one waits for it, then reloads', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.grant(coach.id, _nice);
+      await rig.cubit.start();
+      await settle();
+
+      // La session se ferme AVANT l'effacement de l'autre onglet.
+      await rig.auth.signOut();
+      await settle();
+      expect(rig.cache.reopens, 0);
+      await rig.store.remove('firestore_cache_owner');
+      await Future<void>.delayed(const Duration(milliseconds: 60));
+
+      expect(rig.cache.reopens, 1);
+    });
+
+    test('signing in again while waiting cancels the reload', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.grant(coach.id, _nice);
+      await rig.cubit.start();
+      await settle();
+      await rig.auth.signOut();
+      await settle();
+
+      await rig.auth.signIn(email: 'coach@example.org', password: 'pw');
+      await settle();
+      await rig.store.remove('firestore_cache_owner');
+      await Future<void>.delayed(const Duration(milliseconds: 60));
+
+      expect(rig.cache.reopens, 0);
+    });
+
+    test('signing out here reloads once even when another tab had already '
+        'forgotten the owner: the sign-out is not "a session lost '
+        'elsewhere"', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.grant(coach.id, _nice);
+      await rig.cubit.start();
+      await settle();
+      await rig.store.remove('firestore_cache_owner');
+
+      await rig.cubit.signOut();
+      await settle();
+
+      expect(rig.cache.reopens, 1);
+    });
+
+    test('signing out here reloads once, not twice', () async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.grant(coach.id, _nice);
+      await rig.cubit.start();
+      await settle();
+
+      await rig.cubit.signOut();
+      await settle();
+
+      expect(rig.cache.reopens, 1);
     });
   });
 

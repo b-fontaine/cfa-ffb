@@ -69,6 +69,6 @@ Les BDD existants s'exécutent **connectés** : `UiWorld.prepare` crée le compt
 
 - **Console Firebase** (rien n'a été fait) : vérifier que l'e-mail et mot de passe est le seul fournisseur actif ; **activer la protection contre l'énumération d'adresses e-mail** (elle fait renvoyer `invalid-credential`, le code l'attend déjà) ; contrôler les modèles de courriel de vérification et de réinitialisation (langue, expéditeur, lien) ; domaines autorisés pour le web ; `flutterfire configure` (reste de FB1).
 - ~~**FB3**~~ : livré (`StoreMembershipsSource`, consommation du code gardé, règles et leurs tests) ; voir [clubs-roles-plan.md](clubs-roles-plan.md).
-- **FB5** : SDK web servi localement (hors ligne sur le web : tant qu'il vient de `gstatic.com`, le web hors ligne s'ouvre en « indisponible » même avec une session persistée ; les plateformes natives s'ouvrent avec la session persistée et le club retenu).
+- **FB5** : SDK web servi localement (**fait en FB5a, 2026-10-19**) (hors ligne sur le web : tant qu'il venait de `gstatic.com`, le web hors ligne s'ouvre en « indisponible » même avec une session persistée ; les plateformes natives s'ouvrent avec la session persistée et le club retenu).
 - **Libellés fr/en** des écrans de session : projets `[Prop]`, à relire par l'animateur.
 - Appareil réel Android et iOS non exercés (aucun build natif n'a été lancé dans ce lot).

@@ -134,13 +134,42 @@ void main() {
       for (final root in ['lib', 'web']) {
         for (final entity in Directory(root).listSync(recursive: true)) {
           if (entity is! File || !_isSource(entity.path)) continue;
-          for (final host in unauthorizedHosts(entity.readAsStringSync())) {
+          for (final host in unauthorizedHosts(
+            _withoutImportMap(entity.readAsStringSync()),
+          )) {
             offenders.add('${entity.path}: $host');
           }
         }
       }
 
       expect(offenders, isEmpty);
+    });
+
+    test('the Firebase web SDK is served locally, never from gstatic.com', () {
+      final index = File('web/index.html').readAsStringSync();
+      final imports =
+          (jsonDecode(
+                RegExp(
+                  '<script type="importmap">(.*?)</script>',
+                  dotAll: true,
+                ).firstMatch(index)!.group(1)!,
+              ) as Map<String, dynamic>)['imports']
+              as Map<String, dynamic>;
+
+      // Seules URL absolues de la page : les clés redirigées vers des fichiers
+      // de l'application (ADR 0024, décision 30).
+      expect(imports, isNotEmpty);
+      for (final entry in imports.entries) {
+        expect(entry.key, startsWith('https://www.gstatic.com/firebasejs/'));
+        expect(entry.value, startsWith('./firebasejs/'));
+        expect(
+          File('web/${entry.value}').existsSync(),
+          isTrue,
+          reason: '${entry.value}',
+        );
+      }
+      expect(unauthorizedHosts(_withoutImportMap(index)), isEmpty);
+      expect(unauthorizedHosts(index).toSet(), {'www.gstatic.com'});
     });
 
     test('the scan flags any other domain', () {
@@ -209,5 +238,15 @@ bool _isSource(String path) {
     return false;
   }
   return const ['.dart', '.html', '.js', '.json'].any(path.endsWith) &&
-      !path.endsWith('drift_worker.js');
+      !path.endsWith('drift_worker.js') &&
+      // Copies épinglées du SDK Firebase (empreintes contrôlées par
+      // scripts/sync_firebase_sdk.dart) : leurs commentaires citent des URL.
+      !path.contains('web/firebasejs/');
 }
+
+/// Texte sans la carte d'import de `index.html` (ses clés sont les URL
+/// gstatic.com que la carte redirige vers des fichiers locaux).
+String _withoutImportMap(String text) => text.replaceAll(
+  RegExp('<script type="importmap">.*?</script>', dotAll: true),
+  '',
+);

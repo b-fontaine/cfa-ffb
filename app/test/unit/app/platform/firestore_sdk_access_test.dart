@@ -27,6 +27,42 @@ void main() {
     });
   });
 
+  group('peekDocument (local cache only)', () {
+    test(
+      'returns the fields of a document and null for a missing one',
+      () async {
+        await firestore.doc('clubs/c1').set({'name': 'Club un'});
+
+        expect(await access.peekDocument('clubs/c1'), {'name': 'Club un'});
+        expect(await access.peekDocument('clubs/absent'), isNull);
+      },
+    );
+
+    test('a document the cache does not know (« unavailable ») is null, any '
+        'other failure is raised', () async {
+      var code = 'unavailable';
+      final peeking = FirestoreSdkAccess(
+        firestore: () => firestore,
+        readFromCache: (path) =>
+            throw FirebaseException(plugin: 'cloud_firestore', code: code),
+      );
+
+      expect(await peeking.peekDocument('clubs/c1'), isNull);
+
+      code = 'permission-denied';
+      await expectLater(
+        peeking.peekDocument('clubs/c1'),
+        throwsA(
+          isA<FirebaseException>().having(
+            (e) => e.code,
+            'code',
+            'permission-denied',
+          ),
+        ),
+      );
+    });
+  });
+
   group('readCollection', () {
     test('returns each document with its full path and its fields', () async {
       await firestore.doc('clubs/c1/members/u1').set({'role': 'teacher'});

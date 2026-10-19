@@ -1,7 +1,11 @@
 # Déploiement de la version web sur Firebase Hosting (canal « live ») à chaque
 # push sur main. Généré par la CLI Firebase puis adapté : la recette de build
 # est celle du job build-web de ci.yml (Flutter épinglé, scripts/generate.sh).
-# Seul l'hébergement web est déployé ici (pas les règles Firestore).
+# Les règles et les index Firestore sont déployés AVANT l'hébergement par le
+# job `firestore` (workflow appelé firebase-firestore-deploy.yml, à chaque
+# exécution : un push en attente remplacé par un suivant ne doit jamais perdre
+# ses règles) ; si ce déploiement échoue, l'hébergement n'est pas déployé
+# (`needs`).
 
 name: Déployer sur Firebase Hosting (main)
 on:
@@ -21,8 +25,18 @@ env:
   FLUTTER_VERSION: "3.47.7"
 
 jobs:
+  firestore:
+    name: Règles et index Firestore (avant l'hébergement)
+    uses: ./.github/workflows/firebase-firestore-deploy.yml
+    # Le job de déploiement du workflow appelé a besoin du jeton d'identité
+    # (WIF) ; un workflow appelé ne peut pas dépasser les droits de l'appelant.
+    permissions:
+      contents: read
+      id-token: write
+
   build_and_deploy:
     name: Build web + déploiement live
+    needs: firestore
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

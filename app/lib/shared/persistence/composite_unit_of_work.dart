@@ -15,7 +15,7 @@ import 'package:billard_cfa/shared/lib/unit_of_work.dart';
 /// cache dès l'appel, la transaction drift se ferme aussitôt, aucune écriture
 /// locale n'est bloquée, et l'envoi est suivi à part (`SendStatus`). Un refus
 /// du serveur arrive donc **après** la validation de drift : il ne l'annule
-/// pas (écart assumé, signalé par `SendStatus.lastFailure`, FB5).
+/// pas (écart assumé, signalé par `SendStatus.hasFailure`, FB5).
 class CompositeUnitOfWork implements UnitOfWork {
   CompositeUnitOfWork({required this.outer, required this.inner});
 

@@ -15,7 +15,13 @@ sealed class AuthState with _$AuthState {
   const factory AuthState.unknown() = AuthUnknown;
 
   /// Personne n'est connecté (ou l'adresse n'est pas vérifiée).
-  const factory AuthState.signedOut() = AuthSignedOut;
+  ///
+  /// `erasurePending` : l'effacement du cache local des données du club,
+  /// demandé par la déconnexion, **n'a pas abouti** (autre onglet qui tient la
+  /// base, disque) : les données d'élèves restent sur l'appareil ; l'écran de
+  /// connexion le dit et propose de réessayer.
+  const factory AuthState.signedOut({@Default(false) bool erasurePending}) =
+      AuthSignedOut;
 
   /// Connecté (adresse vérifiée) mais sans club actif : `choices` est vide (le
   /// compte n'est dans aucun club) ou liste les clubs à choisir.

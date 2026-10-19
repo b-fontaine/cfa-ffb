@@ -13,7 +13,7 @@
 //
 // Prérequis : scripts/emulator_e2e.sh (émulateurs, graine, application servie, variable E2E_URL).
 // L'application et la graine visent le projet « demo-cfa-ffb » : aucune requête n'atteint un
-// projet réel (la graine refuse tout autre projet, et seuls localhost et gstatic sont joignables).
+// projet réel (la graine refuse tout autre projet, et seul localhost est joignable (le SDK web est servi en local)).
 import assert from 'node:assert/strict';
 import { after, before, describe, test } from 'node:test';
 
@@ -30,12 +30,19 @@ let context;
 let page;
 const blocked = new Set();
 const pageErrors = [];
+// Fichiers du SDK web demandés à l'application elle-même (et non à gstatic.com, FB5a).
+const sdkFiles = new Set();
 
 const route = (r) => {
   const url = new URL(r.request().url());
   const local = url.hostname === '127.0.0.1' || url.hostname === 'localhost';
-  const gstatic = url.hostname === 'gstatic.com' || url.hostname.endsWith('.gstatic.com');
-  if (local || gstatic) return r.continue();
+  // Pas de gstatic.com : le SDK web est servi en local (carte d'import de index.html) et le moteur
+  // aussi (`flutter run --no-web-resources-cdn`, serve_and_test.sh).
+  if (local) return r.continue();
+  // Seule exception, refusée sans faire échouer le test : la police de repli que le moteur de
+  // Flutter demande à `fonts.gstatic.com` en mode debug quand un glyphe manque (absente du build de
+  // production, la fumée le prouve). Rien n'est joignable : l'écran reste lisible avec Exo 2.
+  if (url.hostname === 'fonts.gstatic.com') return r.abort();
   blocked.add(url.hostname);
   return r.abort();
 };
@@ -50,6 +57,10 @@ const open = async () => {
   await context.route('**/*', route);
   page = await context.newPage();
   page.on('pageerror', (error) => pageErrors.push(error.message));
+  page.on('request', (request) => {
+    const match = /^https?:\/\/(?:127\.0\.0\.1|localhost):\d+\/(?:.*\/)?firebasejs\/[0-9.]+\/([\w.-]+\.js)$/.exec(request.url());
+    if (match) sdkFiles.add(match[1]);
+  });
   await page.goto(baseUrl);
   await page.waitForSelector('flt-semantics-placeholder', { state: 'attached', timeout: 180_000 });
   await enableSemantics();
@@ -152,7 +163,11 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
     assert.equal(await page.getByText('Équipe et familles').count(), 0);
   });
 
-  test('aucun appel vers un hôte autre que localhost et gstatic, aucune erreur de page', () => {
+  test('le SDK web est servi par l’application, aucun appel vers un hôte autre que localhost, aucune erreur de page', () => {
+    assert.deepEqual(
+      [...sdkFiles].sort(),
+      ['firebase-app.js', 'firebase-auth.js', 'firebase-firestore-pipelines.js'],
+    );
     assert.deepEqual([...blocked], []);
     assert.deepEqual(pageErrors, []);
   });

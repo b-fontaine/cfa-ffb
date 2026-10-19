@@ -34,6 +34,7 @@ import 'package:billard_cfa/shared/persistence/club_store.dart';
 import 'package:billard_cfa/shared/persistence/composite_unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/firestore_unit_of_work.dart';
+import 'package:billard_cfa/shared/persistence/pending_writes_probe.dart';
 import 'package:billard_cfa/shared/persistence/send_status.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -160,7 +161,10 @@ Future<RepositoryHarness> _openAll() async {
     unitOfWork: _SettlingUnitOfWork(
       CompositeUnitOfWork(
         outer: DriftUnitOfWork(db),
-        inner: FirestoreUnitOfWork(club, tracker: SendTracker()),
+        inner: FirestoreUnitOfWork(
+          club,
+          tracker: SendTracker(InMemoryPendingWritesProbe()),
+        ),
       ),
     ),
     close: db.close,

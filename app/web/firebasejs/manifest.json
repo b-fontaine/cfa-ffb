@@ -1,0 +1,9 @@
+{
+  "version": "12.19.0",
+  "source": "npm firebase@12.19.0, identique à https://www.gstatic.com/firebasejs/12.19.0/",
+  "sha256": {
+    "firebase-app.js": "39a50952b5def557337b2290069c7d7371f3515ad46c44a43b9c520f734d8d14",
+    "firebase-auth.js": "59f60ce3adcb4c85a5260e963fd14134eec088de5b18ddfb9e95771c72f65264",
+    "firebase-firestore-pipelines.js": "e9bb207298105253eb73336c2478a0c30bc31631960ea1bf7cb4b6c87ce05f05"
+  }
+}

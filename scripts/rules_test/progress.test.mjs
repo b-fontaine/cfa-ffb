@@ -417,6 +417,14 @@ describe('acquittements : clubs/{c}/acknowledgements/{id}, « Vu » partagé par
     assert.equal((await getDoc(doc(dbOf(env, 'teacherA'), `${C}/acknowledgements/k1`))).data().createdBy, 'u-teacher-a');
   });
 
+  test('rejeu par un autre compte (cache froid, en ligne) : le dépôt lit le document et n\'envoie pas `createdBy`', async () => {
+    await setDoc(doc(dbOf(env, 'teacherA'), `${C}/acknowledgements/k1`), acknowledgementDoc());
+    const { createdBy, ...replay } = acknowledgementDoc();
+    assert.equal(await allowed(() => setDoc(doc(dbOf(env, 'director'), `${C}/acknowledgements/k1`), replay, merge)), true, 'rejeu');
+    assert.equal(await allowed(() => setDoc(doc(dbOf(env, 'director'), `${C}/acknowledgements/k1`), replay, merge)), true, 'rejoué encore');
+    assert.equal((await getDoc(doc(dbOf(env, 'teacherA'), `${C}/acknowledgements/k1`))).data().createdBy, 'u-teacher-a');
+  });
+
   test('partagé par club : le directeur et l\'enseignant du groupe le lisent ; la famille jamais', async () => {
     await setDoc(doc(dbOf(env, 'teacherA'), `${C}/acknowledgements/k1`), acknowledgementDoc());
     assert.equal(await allowed(() => getDoc(doc(dbOf(env, 'director'), `${C}/acknowledgements/k1`))), true);

@@ -66,6 +66,7 @@ Registre au sens de l'article 30 du RGPD, modèle pour un club. Statut : **proje
 | Données | Copie locale des données du club accessibles à l'utilisateur (IndexedDB du navigateur sur web, stockage de l'appareil sur mobile) ; fichier JSON de sauvegarde (nominatif) |
 | Risque | Données en clair sur un appareil partagé ; fichiers exportés hors de portée de l'effacement |
 | Mesures | Vidage du cache à la déconnexion ; avertissement « appareil partagé » ; sauvegarde automatique Android et iCloud désactivées ; avertissement sur le contenu nominatif de l'export |
+| État réel (FB5a, 2026-10-19) | **Persistance hors ligne activée explicitement** (IndexedDB, multi-onglets) ; le cache a **un compte propriétaire** : vidé avant lecture si un autre compte se connecte, et à la **déconnexion voulue** (avec confirmation si des envois sont en attente : ils seraient perdus) ; **conservé** si la session se perd autrement (jeton révoqué, autre onglet : des écritures hors ligne peuvent y être), jusqu'à la prochaine connexion d'un autre compte ; l'effacement (`terminate` puis `clearPersistence`) **abandonne le stockage sans le réécrire** (le SDK le précise) : les données ne sont plus lisibles par l'application, pas détruites cryptographiquement ; avertissement « appareil partagé » à l'écran de connexion ; **SDK web servi par l'application** (plus de chargement depuis gstatic.com, plus d'adresse IP transmise à ce titre) ; natif : effacement et rechargement **non exercés** |
 
 ## Exercice des droits
 

@@ -38,6 +38,24 @@ class _Spy extends InMemoryDocumentStore {
   }
 }
 
+/// Hors ligne : seuls les documents du cache se lisent (la lecture d'un
+/// document **absent** échoue, `unavailable`) et la transaction de création
+/// ne peut pas se faire ; les écritures, elles, partent dans la file.
+class _OfflineSpy extends _Spy {
+  @override
+  Future<StoredDocument?> get(String path) async {
+    final found = await super.get(path);
+    if (found == null) {
+      throw const StoreFailure(StoreFailureCode.unavailable, 'hors ligne');
+    }
+    return found;
+  }
+
+  @override
+  Future<bool> createIfAbsent(String path, Fields fields) =>
+      throw const StoreFailure(StoreFailureCode.unavailable, 'hors ligne');
+}
+
 /// Rejoue le refus des règles : une liste de présents de plus de
 /// `maxPresentStudents` (`recordShape`) est refusée, sans message précis.
 class _BoundedSpy extends _Spy {
@@ -67,6 +85,7 @@ SessionRecord _record(
   String id, {
   String group = 'g1',
   Set<String> present = const {},
+  SheetId? sheet,
 }) => SessionRecord(
   id: SessionId(id),
   groupId: GroupId(group),
@@ -74,6 +93,7 @@ SessionRecord _record(
   date: DateTime(2026, 10, 3),
   audience: Audience.children,
   present: {for (final s in present) StudentId(s)},
+  sheetId: sheet,
 );
 
 void main() {
@@ -271,8 +291,12 @@ void main() {
       );
 
       await Future.wait([
-        records.open(_record('g1_20261003_p', present: {'s1'})),
-        records.open(_record('g1_20261003_p', present: {'s2'})),
+        records.open(
+          _record('g1_20261003_p', present: {'s1'}, sheet: SheetId('p')),
+        ),
+        records.open(
+          _record('g1_20261003_p', present: {'s2'}, sheet: SheetId('p')),
+        ),
       ]);
 
       final stored = spy.read('clubs/c1/records/g1_20261003_p')!;
@@ -321,6 +345,55 @@ void main() {
       expect(op.fields.containsKey('createdAt'), isFalse);
       expect(spy.read('clubs/c1/records/x1')!['presentStudentIds'], ['s2']);
     });
+
+    test(
+      'a free sitting is created offline, createdAt only with the creation',
+      () async {
+        final spy = _OfflineSpy();
+        final records = FirestoreSessionRecordRepository(
+          ClubStore(spy, world.scope),
+        );
+
+        final opened = await records.open(_record('x1', present: {'s1'}));
+        await records.save(_record('x1', present: {'s1', 's2'}));
+
+        expect(opened.id, const SessionId('x1'));
+        final first = spy.sent.first as SetOp;
+        expect(first.fields['createdAt'], isA<ServerTimestamp>());
+        expect(first.merge, isTrue);
+        final second = spy.sent.last as SetOp;
+        expect(second.fields.containsKey('createdAt'), isFalse);
+        expect(spy.read('clubs/c1/records/x1')!['presentStudentIds'], [
+          's1',
+          's2',
+        ]);
+      },
+    );
+
+    test(
+      'a sitting linked to a catalogue sheet cannot be created offline '
+      '(transaction): the failure is the domain one, nothing is written',
+      () async {
+        final spy = _OfflineSpy();
+        final records = FirestoreSessionRecordRepository(
+          ClubStore(spy, world.scope),
+        );
+
+        await expectLater(
+          records.open(
+            _record('g1_20261003_p', present: {'s1'}, sheet: SheetId('p')),
+          ),
+          throwsA(
+            isA<ServiceFailure>().having(
+              (f) => f.code,
+              'code',
+              ServiceFailureCode.unavailable,
+            ),
+          ),
+        );
+        expect(spy.sent, isEmpty);
+      },
+    );
 
     test('two devices whose presents together exceed the maximum are told so '
         'instead of a generic refusal', () async {

@@ -26,6 +26,7 @@ import 'package:billard_cfa/shared/lib/current_user.dart';
 import 'package:billard_cfa/shared/persistence/composite_unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/firestore_unit_of_work.dart';
+import 'package:billard_cfa/shared/persistence/pending_writes_probe.dart';
 import 'package:billard_cfa/shared/persistence/send_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -65,7 +66,7 @@ void main() {
   final module = _Module();
   final club = FirestoreWorld().club;
   final user = _User();
-  final tracker = SendTracker();
+  final tracker = SendTracker(InMemoryPendingWritesProbe());
   final drift = _DriftUnitOfWork();
 
   final settings = _DriftSettings();

@@ -170,7 +170,8 @@ figés par les tests de règles de FB3, pas par ce tableau. Le catalogue, les fi
 29. **Déploiement des règles (B6)** : tests de matrice complète (rôle × action) et de refus par défaut **obligatoires** ; déploiement par la
     CI protégé par ces tests, avec protection de branche, **après FB3** (compte de service élargi) ; manuel d'ici là.
 30. **SDK web (B7)** : chargé depuis `gstatic.com` en FB1 (non bloquant au démarrage), **servi localement, épinglé et précaché avant FB5**
-    si le plugin l'accepte (à vérifier en FB1) ; `--wasm` toujours non adopté, sans COOP ni COEP (ADR 0022).
+    si le plugin l'accepte. **Levé en FB5a (2026-10-19)** : le plugin l'accepte, sans fork, par une **carte d'import** (notes FB5a) ;
+    `--wasm` toujours non adopté, sans COOP ni COEP (ADR 0022).
 31. **Démarrage (B8)** : `AuthCubit` (`unknown`, `signedOut`, `noClub`, `ready`, `indisponible`) avec redirection `go_router` et écran de
     démarrage localisé ; initialisation Firebase attendue par `AuthCubit` ; `AuthFailureCode` distinct d'`InvariantCode`, messages
     génériques (anti-énumération) ; démarrage hors ligne seulement avec une session persistée.
@@ -216,7 +217,8 @@ figés par les tests de règles de FB3, pas par ce tableau. Le catalogue, les fi
   - **C3 (FB8)** App Check en surveillance puis strict ; fournisseur web à lister au registre (reCAPTCHA ajoute Google comme destinataire de
     l'IP) ; MFA pour directeur et admin à étudier.
   - **C4 (FB5)** persistance hors ligne activée partout, cache vidé à la déconnexion, avertissement appareil partagé, pastille discrète
-    « À jour / Envoi en attente (n) / Hors ligne ». **Libellés fr/en à valider : l'animateur.**
+    « À jour / Envoi en attente (n) / Hors ligne ». **Libellés fr/en à valider : l'animateur.** *FB5a (2026-10-19) : persistance, cache vidé,
+    avertissement et pastille livrés (notes FB5a) ; `watch…` et cubits abonnés : FB5b.*
   - **C5 (FB1)** Android signé pour FB8 ; iOS préparé sans distribution (PWA en repli) ; le web suffit de FB1 à FB7.
   - **C6 (FB3)** écran Administration minimal (clubs, directeurs, codes d'invitation de directeur), admins créés en console ; club « Démo »
     ordinaire avec compte de démonstration (mot de passe partagé, à faire tourner) ; textes rédigés par l'agent, **marqués « à valider »**.
@@ -429,10 +431,92 @@ Troisième et dernière partie de FB4 (détail : [repositories-firestore-plan.md
   - **Ordre des passages en attente** : `createdAt` est `null` à la lecture tant que le serveur n'a pas acquitté ; deux passages en attente se départageaient par un UUID aléatoire. Un champ **`recordedAt`** (horloge de l'appareil, **strictement croissante** par dépôt : +1 µs si l'horloge n'avance pas) est écrit à la création, exigé et figé par les règles. Ordre : `createdAt` (nul = après toute date connue), puis `recordedAt`, puis identifiant. `RecordAttempt` (le passage neuf en dernier) et la relecture serveur concordent donc. Limite : horloges d'appareils différents, seulement pour départager des dates serveur **égales** ou deux écritures **en attente** d'un même appareil. **Conséquence pour FB7** : l'import doit écrire `recordedAt` **strictement croissant dans l'ordre du fichier** : `createdAt == request.time` est exigé même d'un directeur ou d'un administrateur, donc tous les passages importés ont la même date serveur et seul `recordedAt` (puis l'identifiant) fixe leur ordre.
   - **Règles complètes à la création** : passages (`sessionId`, `blockId`, `exerciseNumber`, `date`, `potted`, `total`, `recordedAt`), blocs acquis (`blockId`, `date`, `source`), bilans (`date` et les trois notes), acquittements (`blockId`, `exerciseNumber`, `lastAttemptId`, `date`) : plus de document minimal que le codec ne sait pas lire. Un champ présent n'est jamais `null` ; une mise à jour **ne supprime aucun champ** (`noFieldLost`) ; `potted <= total`, `total` de 1 à 16 (bornes du domaine). Côté client, `decodeValid` **écarte** un document malformé (créé avant les règles ou par un autre client) au lieu de faire échouer la liste entière ; l'écart n'est pas signalé à l'utilisateur (à reprendre avec la pastille de FB5).
   - **Lecture d'un document absent** : `get` d'un passage, d'un bloc acquis, d'un bilan ou d'un « Vu » absent passe par `mayProbeAbsent` (directeur ; enseignant, identifiant aléatoire seulement ; jamais la famille). Un enseignant peut donc créer ces documents (lecture puis écriture), et `correct` d'un passage absent rend `NotFound` au lieu d'un refus.
-  - **Limite connue, bloquante pour la bascule (FB5)** : `StudentData.upsert` **lit** le document cible avant d'écrire (propriétaire et auteur du « Vu » conservés). Hors ligne, la lecture d'un document absent échoue : **créer un bloc acquis, un bilan ou un « Vu » est impossible hors ligne** (test `offline (known limit, FB5)`). Le passage (`add`), lui, s'écrit hors ligne. Deux appareils qui créent le même identifiant en même temps : le second est refusé par `sameOwnership` après coup. Levée prévue en FB5 : créer par `SetOp(merge: true)` avec le propriétaire résolu depuis le cache, l'invariant étant porté par les règles.
+  - **Limite connue, bloquante pour la bascule (FB5)** : **LEVÉE en FB5a (2026-10-19, notes FB5a).** Texte d'origine : `StudentData.upsert` **lit** le document cible avant d'écrire (propriétaire et auteur du « Vu » conservés). Hors ligne, la lecture d'un document absent échoue : **créer un bloc acquis, un bilan ou un « Vu » est impossible hors ligne** (test `offline (known limit, FB5)`). Le passage (`add`), lui, s'écrit hors ligne. Deux appareils qui créent le même identifiant en même temps : le second est refusé par `sameOwnership` après coup. Levée prévue en FB5 : créer par `SetOp(merge: true)` avec le propriétaire résolu depuis le cache, l'invariant étant porté par les règles.
   - **`ReloadRules`** n'écrit les règles que si le chargement est **toujours d'actualité** (`isCurrent`, la génération de l'`AuthCubit`) : un chargement tardif ne réinstalle ni les règles d'un club quitté, ni celles d'une session terminée (tests : deux chargements finissant à l'envers, déconnexion pendant le chargement).
 - **Relecture FB4c, second tour (2026-10-18)**
   - **Dates des règles** : `optStamp` / `presStamp` acceptent un horodatage ou le texte exact de `DateTime.toIso8601String` (`AAAA-MM-JJThh:mm:ss`, fraction de 1 à 6 chiffres facultative, `Z` facultatif), par un motif `matches` (`isoText`). Un texte quelconque (`'zz'`) était accepté puis écarté sans bruit par `decodeValid`. Le motif borne les plages (mois 01-12, jour 01-31, heure 00-23, minute et seconde 00-59) : `DateTime.tryParse` **corrige** une date fausse au lieu de la rejeter (`2026-13-45T99:99:99` devient le 18 février 2027), donc seules les règles l'arrêtent. **Limite** : le jour qui n'existe pas dans son mois (30 février, 31 avril) n'est pas bornable par une règle simple ; `DocumentValues.decodeDate` le **rejette** (une date relue puis réécrite au même format, jusqu'aux secondes, doit redonner le texte d'origine ; sinon `ServiceFailure` `other`) et `decodeValid` écarte alors le document. L'historique du public (`audienceHistory[i].effectiveFrom`) passe par le même `isoText`.
   - **Lecture d'une liste de passages** : `FirestoreAttemptRepository` décode (et écarte les documents illisibles, champs de tri `createdAt` / `recordedAt` compris) **avant** de trier ; un document malformé ne rend plus la liste illisible.
   - **`ReloadRules`** : le chemin d'échec respecte aussi la génération courante.
   - **Mutant équivalent** : `presInt(d, 'potted', 0, 100)` n'est pas tuable : `potted <= total <= 16` borne déjà `potted` (la création exige les deux champs, `noFieldLost` interdit de retirer `total`).
+
+## Notes de réalisation du lot FB5, partie A (2026-10-19, infrastructure ; `watch…` et cubits abonnés : partie B)
+
+Les règles et les index ont été **déployés sur le projet réel par l'utilisateur** avant ce lot ; aucun accès au projet réel n'a été pris
+(émulateurs `demo-cfa-ffb` et doubles).
+
+- **SDK web servi localement (B7 levé)** : `firebase_core_web` 3.12.0 charge `import("https://www.gstatic.com/firebasejs/<v>/firebase-<service>.js")` ;
+  l'URL est écrite en dur, seule la version se règle (`window.flutterfire_web_sdk_version`), et les bundles s'importent entre eux par cette
+  même URL absolue. **Méthode retenue : une carte d'import** (`<script type="importmap">` de `app/web/index.html`) qui redirige les trois URL
+  (`firebase-app.js`, `firebase-auth.js`, `firebase-firestore-pipelines.js`, le bundle que le plugin importe pour Firestore) vers
+  `app/web/firebasejs/<version>/`, des copies **octet pour octet** de celles de gstatic (paquet npm `firebase@<version>`, identique, vérifié à
+  l'épinglage). Aucun fork, aucune modification du plugin ; le service worker les précache comme tout fichier de `web/`. Écartées : `flutterfire_ignore_scripts` (désactive l'injection mais laisse à écrire soi-même l'import des modules dans les variables globales
+  que le plugin lit : on reproduit sa mécanique interne, fragile à chaque version) ; réécrire les imports des bundles (fichiers modifiés,
+  l'empreinte ne prouve plus rien). **Garde-fous** : `scripts/sync_firebase_sdk.dart --check` dans `check.sh --fast` (version = celle du plugin résolu,
+  empreintes SHA-256 du manifeste, carte d'import exacte et placée avant tout script, aucun import interne non couvert) ; `pwa.dart check` (seules
+  clés autorisées : l'URL gstatic du SDK, redirigées vers `./firebasejs/`) et `verify` (présence au build et au précache) ; la fumée du build
+  compilé et le parcours navigateur **refusent désormais gstatic.com** et exigent que les trois fichiers soient servis par l'application ;
+  `platform_privacy_test` exempte `web/firebasejs/`. **Limite** : un navigateur sans cartes d'import (Safari avant 16.4) ignore la carte et
+  retombe sur gstatic.com (en ligne seulement, adresse IP transmise) ; non exercé ici. Une mise à jour de `firebase_core_web` qui change la
+  version fait échouer `--check` jusqu'à `dart run scripts/sync_firebase_sdk.dart`. **Liste blanche réseau écrite** (hôtes joignables par le
+  navigateur, hors l'application elle-même) : `identitytoolkit.googleapis.com` et `securetoken.googleapis.com` (Auth), `firestore.googleapis.com`
+  et `www.google.com/images/cleardot.gif` (sonde de connectivité de Firestore) ; le test de fumée n'accepte rien d'autre.
+- **Persistance hors ligne (C4)** : `FirebaseSdkGateway.initialize` règle `Settings(persistenceEnabled: true, webPersistentTabManager:
+  WebPersistentMultipleTabManager())` **après** l'initialisation et **avant** `useEmulators` (sur le web, la connexion à l'émulateur crée
+  l'instance et figerait un cache en mémoire). Le cache est **multi-onglets** (sans cela deux onglets s'excluent).
+- **Cache local vidé (C4)** : port `LocalDataCache` (`clear` = `terminate()` puis `clearPersistence()`, `reopen` = rechargement de la page sur le
+  web ; sur natif le SDK recrée l'instance, **non exercé**) et `LocalDataGuard` : le cache a **un propriétaire** (uid dans `KeyValueStore`),
+  consigné **avant** toute lecture ; un **autre** compte le vide d'abord (un échec lève : `indisponible`, jamais de donnée servie au mauvais
+  compte) ; la **déconnexion voulue** le vide, oublie le propriétaire, puis recharge la page. Une session perdue autrement (jeton révoqué, autre
+  onglet) **ne vide pas** (des écritures hors ligne pourraient s'y trouver ; le même compte les retrouve, un autre compte déclenche l'effacement) :
+  choix assumé. **Une déconnexion avec des envois en attente les perdrait** : `AuthCubit.signOut` la refuse (`SignOutResult.unsentWrites`) et
+  l'interface demande confirmation (aucune donnée affichée). `clearPersistence` abandonne le stockage **sans le réécrire** (le SDK le dit) : le
+  registre de conformité le consigne. Avertissement « appareil partagé » dans l'écran de connexion (`SharedDeviceNote`, fr + en).
+- **Pastille de synchronisation** : `SendStatus` (port de lecture, déplacé dans `shared/lib` : la présentation ne peut pas importer
+  `shared/persistence`) expose `pending`, `pendingChanges`, `hasFailure`, `clearFailure` ; `SyncStatusCubit` le croise avec `ConnectivityStatus`
+  (web : `navigator.onLine` et événements `online` / `offline` ; **natif : toujours « en ligne »**, aucun plugin de réseau retenu : la pastille ne
+  dit jamais « Hors ligne » à tort, et ne le dit pas sur mobile) en `SyncState` (échec > en attente > hors ligne > à jour). `SyncStatusChip` :
+  bleu-tapis pour tous les états normaux, couleur d'attention seulement pour un envoi refusé (message sobre, action « Compris »), région vive,
+  aucun texte de donnée personnelle ; posée dans le cadre de navigation. **Libellés à valider par l'animateur** : fr « À jour », « Envoi en attente
+  (n) », « Hors ligne », « Hors ligne, envoi en attente (n) », « Une modification n'a pas
+  pu être enregistrée et a été annulée sur cet appareil. » (en : « Up to date », « Waiting to send (n) », « Offline », « Offline, waiting to
+  send (n) », « A change could not be saved and was undone on this device. »).
+- **Écritures hors ligne sans lecture du serveur** : nouveau `DocumentStore.peek` (cache local seulement : jamais d'attente du réseau, `null`
+  si absent du cache, jamais une affirmation d'absence). `StudentData.upsert` lit la cible dans le cache **puis sur le serveur** (`cachedOrGet`, corrigé après revue : un cache froid, vidé à chaque déconnexion, réécrivait en création, **en ligne**, un document existant, et les règles refusaient après coup) ; seul `unavailable` (hors ligne) vaut « absent » ; `OwnerResolver` et
+  `FirestoreAcknowledgementRepository._ownerOf` lisent le cache d'abord (`ClubStore.cachedOrGet`), le serveur ensuite, et **hors ligne** un « Vu »
+  dont le passage n'est pas au cache retombe sur un groupe de la fiche. **Aucune règle ne change** : `sameOwnership` et `createdBy` figé
+  portent l'invariant (déjà éprouvés : `progress.test.mjs`) ; si le document existait sur le serveur sans être au cache avec un autre
+  propriétaire **et que l'appareil est hors ligne**, l'écriture est refusée plus tard et remonte par la pastille (cas limite hors ligne seulement). Les tests « le remplacement garde le propriétaire » et « garde
+  l'auteur du Vu » sont inchangés et verts. **Reste hors ligne impossible** : une fiche d'élève absente du cache (propriétaire introuvable).
+- **Création d'une saisie hors ligne** : une saisie **libre** (identifiant UUID : aucun autre appareil ne peut la créer en même temps) se crée par
+  écriture simple si le cache ne la connaît pas (`createdAt` du serveur) ; si elle existait pourtant sur le serveur, la mise à jour qui changerait
+  `createdAt` est refusée par les règles (nouveau test d'attaque `planning.test.mjs`). Une saisie **liée** à une séance du catalogue
+  (identifiant déterministe, deux appareils peuvent la créer ensemble) garde la transaction `createIfAbsent` : **impossible hors ligne**,
+  limite précise, **reste de FB5b** (voie sûre à concevoir : la règle ne sait pas refuser une création concurrente sans transaction).
+- **Corrections de revue FB5a** : (1) **garde de déconnexion fondée sur le SDK** : `hasUnsentWrites` ne lit plus le seul compteur en mémoire
+  (perdu au rechargement alors que la file IndexedDB survit) ; le port `SendStatus` gagne `hasUnsentWrites()` et `refresh()`, alimentés par
+  `PendingWritesProbe` (`app/platform/firestore_pending_writes_probe.dart` : `waitForPendingWrites` borné à 800 ms ; l'attente sans borne
+  rend la file restaurée visible dans la pastille, comme un lot en attente) ; scénario BDD « écriture avant redémarrage, déconnexion →
+  confirmation » ; (2) **multi-onglets** : `clearPersistence` est borné (5 s, `TimeoutException`, propriétaire conservé, la déconnexion se
+  termine) ; un onglet qui perd sa session alors qu'un autre a vidé le cache (clé propriétaire disparue) se recharge ; fumée du build compilé à
+  deux onglets ; (3) `SyncState` est `@freezed` ; (4) **natif** : `reopen` réapplique les réglages du SDK après `terminate` (valeur inchangée :
+  l'hôte d'un émulateur reste) ; **non prouvé par un test natif** (aucun appareil dans les garde-fous : plugin absent sous `flutter test` et
+  sous Linux) : à éprouver à la main sur Android ou iOS (déconnexion, reconnexion, lecture) avant de basculer ; (5) `check.sh --full` échoue tôt
+  si un port d'émulateur est pris (`scripts/check_ports_free.sh`) ; (6) **déploiement des règles à chaque exécution** (plus de filtre sur le
+  diff d'un seul push : une exécution en attente remplacée par la suivante perdait ses règles).
+- **Corrections de revue FB5a (2e passe)** : (1) **effacement raté à la déconnexion, traité** (vie privée) : la session se ferme, mais un repère
+  « effacement en attente » (`firestore_cache_erase_pending`, valeur constante, aucune donnée personnelle) reste consigné ; il est retenté au
+  démarrage **avant toute lecture de compte** et dans `claim` (le **même** compte compris : le repère l'emporte sur le propriétaire) ; un échec
+  persistant rend l'application `indisponible` plutôt que de servir le cache ; l'écran de connexion dit « Les données hors ligne de cet appareil
+  n'ont pas pu être effacées : fermez les autres onglets puis réessayez » avec « Réessayer l'effacement » (`AuthSignedOut.erasurePending`) ;
+  (2) `StudentData.upsert` et `_ownerOf` : seul `unavailable` vaut « absent », `permissionDenied` et `other` remontent (tests à cache froid) ;
+  (3) la pastille de synchronisation nomme sa région vive (`syncStatusLabel`) ; (4) `scripts/check_ports_free.sh` sonde `127.0.0.1`, `::1` et
+  `0.0.0.0` ; (5) workflow de déploiement durci (`persist-credentials: false`, `npm ci --ignore-scripts`, concurrence partagée avec Hosting pour
+  le lancement manuel) ; (6) multi-onglets : `_signingOut` (session fermée ici) et `stop` du garde (compte revenu) sont les deux seules défenses,
+  chacune contrainte par un test qui tue sa mutation.
+- **Déploiement des règles et des index par la CI** : décision de l'utilisateur du 2026-10-18, [deploiement-firestore.md](../deploiement-firestore.md) :
+  workflow appelé par le workflow d'hébergement, **hébergement après règles et index** (`needs`), tests d'abord, fédération d'identité de
+  charge de travail sans clé JSON, jamais depuis une pull request ; étapes de l'utilisateur documentées, **jamais exécuté contre le projet réel**.
+- **Reste pour FB5b** : méthodes `watch…` (flux) sur les dépôts lus par plusieurs appareils et cubits abonnés ; règle de conflit documentée ;
+  scénario BDD « la fiche se met à jour sans rechargement » ; écritures hors unité de travail rendues non bloquantes ; saisie liée hors ligne ;
+  indice de réseau natif ; l'indicateur « prêt hors ligne » ; parcours navigateur hors ligne réel (Playwright `setOffline` sur l'application
+  compilée avec `DATA_BACKEND=firestore` et l'émulateur) ; Safari ancien sans carte d'import.

@@ -92,16 +92,34 @@ final class StudentData {
   }
 
   /// Écrit [path] : **remplace** le document s'il existe (le propriétaire,
-  /// groupe et saison, reste celui du document : les règles le figent), sinon
-  /// le crée chez le propriétaire rendu par [resolve] ; [fields] sait si le
-  /// document existe déjà. Fusion : un champ vidé (`null`) est écrit, les
-  /// champs inconnus restent.
+  /// groupe et saison, reste celui du document), sinon le crée chez le
+  /// propriétaire rendu par [resolve] ; [fields] sait si le document existe
+  /// déjà. Fusion : un champ vidé (`null`) est écrit, les champs inconnus
+  /// restent.
+  ///
+  /// **Possible hors ligne** (FB5) : le document cible se lit dans le cache
+  /// local, **puis sur le serveur** quand le cache ne l'a pas (cache froid
+  /// après une connexion ou un changement de compte : un document qui existe
+  /// ne doit jamais être réécrit comme une création, en ligne). Seul
+  /// `unavailable` (hors ligne) est traité comme « absent » : la création se
+  /// fait alors sans réseau, chez le propriétaire rendu par [resolve] (fiche,
+  /// groupes, séance que l'animateur a sous les yeux). Hors ligne, un
+  /// document du serveur absent du cache est donc écrit comme une création, par
+  /// fusion ; si son propriétaire diffère, les règles refusent la mise à jour
+  /// (`sameOwnership`) et le refus remonte par `SendStatus.hasFailure`
+  /// (détail : `SendTracker.lastFailure`).
   Future<void> upsert(
     String path,
     Fields Function(DataOwner owner, {required bool exists}) fields,
     Future<DataOwner> Function() resolve,
   ) async {
-    final existing = await _club.get(path);
+    StoredDocument? found;
+    try {
+      found = await _club.cachedOrGet(path);
+    } on StoreFailure catch (failure) {
+      if (failure.code != StoreFailureCode.unavailable) rethrow;
+    }
+    final existing = found;
     final owner = existing == null
         ? await resolve()
         : () {

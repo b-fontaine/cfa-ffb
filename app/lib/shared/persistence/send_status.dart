@@ -1,33 +1,18 @@
 import 'dart:async';
 
+import 'package:billard_cfa/shared/lib/send_status.dart';
 import 'package:billard_cfa/shared/persistence/document_store.dart';
+import 'package:billard_cfa/shared/persistence/pending_writes_probe.dart';
 import 'package:injectable/injectable.dart';
 
-/// État de l'**envoi** des écritures vers le serveur (ADR 0024, décisions 1 et
-/// 19 ; hors ligne, C4) : un lot est d'abord **validé localement** (le SDK
-/// Firestore l'applique à son cache dès l'appel), puis envoyé ; le serveur ne
-/// l'acquitte que lorsqu'il répond, parfois bien plus tard (hors ligne). Le
-/// lot validé n'attend donc pas ce port : l'interface (FB5, pastille « Envoi
-/// en attente ») le lit.
-abstract interface class SendStatus {
-  /// Lots validés localement et pas encore acquittés par le serveur.
-  int get pending;
-
-  /// Émet le nombre de lots en attente à chaque changement.
-  Stream<int> get pendingChanges;
-
-  /// Le dernier envoi refusé par le serveur (règles, quota), `null` sinon. Le
-  /// SDK annule alors la modification de son cache : l'interface doit le dire.
-  StoreFailure? get lastFailure;
-
-  /// Oublie [lastFailure] (l'animateur en a pris connaissance).
-  void clearFailure();
-}
-
-/// Suivi des envois : `FirestoreUnitOfWork` lui confie le `Future` du lot
-/// envoyé au lieu de l'attendre.
+/// Suivi des envois (implémente [SendStatus]) : `FirestoreUnitOfWork` lui
+/// confie le `Future` du lot envoyé au lieu de l'attendre.
 @LazySingleton()
 class SendTracker implements SendStatus {
+  SendTracker(this._probe);
+
+  final PendingWritesProbe _probe;
+  bool _restored = false;
   final StreamController<int> _changes = StreamController<int>.broadcast();
   int _pending = 0;
   StoreFailure? _lastFailure;
@@ -38,8 +23,27 @@ class SendTracker implements SendStatus {
   @override
   Stream<int> get pendingChanges => _changes.stream;
 
-  @override
+  /// Le dernier envoi refusé par le serveur (règles, quota), `null` sinon : le
+  /// SDK annule alors la modification de son cache.
   StoreFailure? get lastFailure => _lastFailure;
+
+  @override
+  Future<bool> hasUnsentWrites() async =>
+      _pending > 0 || await _probe.hasPending();
+
+  /// Les écritures **déjà en file dans le SDK** (écrites avant un
+  /// rechargement ou un redémarrage) comptent comme un lot en attente jusqu'à
+  /// ce que le SDK ait vidé sa file : le compteur en mémoire les ignore sinon.
+  @override
+  Future<void> refresh() async {
+    if (_restored || _pending > 0) return;
+    if (!await _probe.hasPending() || _restored) return;
+    _restored = true;
+    track(_probe.untilSent().whenComplete(() => _restored = false));
+  }
+
+  @override
+  bool get hasFailure => _lastFailure != null;
 
   @override
   void clearFailure() => _lastFailure = null;

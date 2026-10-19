@@ -26,7 +26,7 @@ import 'package:billard_cfa/shared/persistence/store_guard.dart';
 /// ferme, aucune écriture locale n'est bloquée) et l'envoi est suivi à part
 /// (`SendStatus`, ADR 0024, notes FB4c). La taille du lot est vérifiée avant
 /// l'envoi ; un refus du serveur arrive après coup dans
-/// `SendStatus.lastFailure`.
+/// `SendStatus.hasFailure` (détail : `SendTracker.lastFailure`).
 ///
 /// Les dépôts qui ne sont pas encore sur Firestore (drift) n'y participent
 /// pas : voir `CompositeUnitOfWork`.
