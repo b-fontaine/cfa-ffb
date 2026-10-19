@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/features/close_season/domain/get_closable_season.dart';
 import 'package:billard_cfa/features/close_season/presentation/bloc/closable_season_cubit.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../support/fixed_clock.dart';
@@ -40,4 +43,22 @@ void main() {
     act: (cubit) => cubit.load(),
     expect: () => <Season?>[null],
   );
+
+  test('a read that ends after the cubit is closed emits nothing', () async {
+    final find = _MockFind();
+    final answer = Completer<Season?>();
+    when(() => find(today: DateTime(2026, 10, 12)))
+        .thenAnswer((_) => answer.future);
+    final cubit = ClosableSeasonCubit(
+      find,
+      FixedClock(DateTime(2026, 10, 12, 9)),
+    );
+
+    final loading = cubit.load();
+    await cubit.close();
+    answer.complete(season);
+
+    await expectLater(loading, completes);
+    expect(cubit.state, isNull);
+  });
 }

@@ -650,3 +650,56 @@ défaut ; la bascule est le lot dédié après FB7.
   confirme ; « prêt hors ligne » après la bascule ; parcours navigateur hors ligne réel (Playwright `setOffline` sur le build compilé avec
   `DATA_BACKEND=firestore` et l'émulateur) ; indice de réseau natif ; Safari ancien sans carte d'import ; flux de l'écran de groupe
   (`GroupOverviewCubit`), de l'alerte de groupe et de la semaine, qui reposent sur les mêmes `watch…` mais n'ont pas été abonnés ici.
+
+## Notes de réalisation du lot FB6 (2026-10-19, espace élève et parent ; l'aiguillage de backend par rôle a été **écarté par l'utilisateur**)
+
+Comme aux lots précédents : **aucun accès au projet réel** (émulateurs `demo-cfa-ffb`, doubles, graine). Plan : [../clubs-roles-plan.md](../clubs-roles-plan.md) (section « Espace élève et parent »).
+
+- **Aiguillage de backend par rôle : écarté par l'utilisateur le 2026-10-19.** Raison : l'AIPD n'est pas faite et la mise en production reste conditionnée par le garde-fou de l'[ADR 0025](0025-comptes-et-donnees-de-mineurs-conformite.md) (décision 3 : aucun vrai élève sur le serveur avant la validation des documents de conformité) ; envoyer des lectures de mineurs au serveur avant la bascule la contournerait. L'agent coordinateur avait proposé que les comptes `student` et `guardian` lisent Firestore dès maintenant,
+  les animateurs restant sur drift (`DataBackendChoice.forRole`, six `RoleRouted…Repository`). L'utilisateur l'a refusé : **l'espace famille ne lit Firestore qu'avec `DATA_BACKEND=firestore`,
+  donc après la bascule ; aucune lecture de mineurs n'arrive au serveur avant.** Le code d'aiguillage est retiré ; `choice.backend.choose` redevient le seul choix, **drift par défaut pour
+  tous les rôles** tant que `DATA_BACKEND` n'est pas explicite (décision 28 amendée, inchangée). Le garde-fou de mise en production (A3, ADR 0025) reste celui d'avant. L'espace famille est
+  livré et testé avec `DATA_BACKEND=firestore` explicite (BDD sur Firestore en mémoire, contrat, règles, parcours navigateur sous émulateurs, lancé avec l'indicateur) ; sans l'indicateur,
+  un parent connecté voit l'espace sur le stock drift de son appareil (vide : « Aucun élève n'est encore lié »), jusqu'à la bascule. Tests : `data_backend_module_test` (défaut drift pour
+  tous les rôles ; `DATA_BACKEND=firestore` donne Firestore à tous) et `production_graph_test` (graphe exact).
+- **Ce qu'est l'espace** (décisions 16 et 26 mises en œuvre) : `/my-children` est l'accueil unique des deux rôles : sélecteur d'enfant (dès deux fiches liées, ordre du lien, prénoms
+  identiques numérotés), parcours de l'enfant choisi (`ShowcaseView`, ADR 0014, devenue la page) et au plus cinq prochaines séances **des groupes du compte** (titre, jour, nom du
+  groupe). Lecture seule : aucun bouton, deux destinations de menu, routes d'animateur refusées (`roleRedirect`, inchangé), aucune écriture permise par les règles. La route
+  `/students/<id>/show` reste ouverte aux fiches liées (garde de la décision 26) mais plus aucun écran n'y mène pour une famille. `LinkedStudentsCubit`, `ListLinkedStudents` et
+  `LinkedStudentsList` sont remplacés par `FamilySpaceCubit`, `GetFamilySpace`/`WatchFamilySpace` et `FamilySpaceView`.
+- **Isolation (B2) vérifiée à trois niveaux** (détail et mutation : [../testing.md](../testing.md)) : journal des demandes de l'appareil (BDD) ; égalité du journal avec
+  `scripts/rules_test/family_reads.json` (test Dart des vrais dépôts) ; la même liste jouée contre les **vraies règles** avec, en regard, la liste des lectures interdites (94 tests).
+  Constat : **les règles n'ont pas eu à changer** ; elles autorisaient déjà exactement ces lectures. Les `seasons` restent lisibles par tout membre (libellé et dates, aucune
+  donnée d'élève).
+- **Reçu sans être affiché (complétude, 2026-10-19)** : la liste champ par champ (fiche entière dont `audienceHistory`, passages réussis et manqués, acquis avec date et source, `settings/main`, groupes avec `teacherUids`, toutes les séances, propre `member` avec `invitationCode`, lectures de connexion `clubs/{club}`, `admins/{uid}`, requête de groupe `members`) est au registre (traitement 1 bis), contrôlée par `scripts/check_family_register.dart` (`check.sh --fast`). **Les alertes ne sont jamais stockées côté serveur : elles sont calculées sur l'appareil** (`StudentProgress.derive`, `techniqueSummary`, `BlockStatus.toReview`) à partir des passages et de `settings/main` reçus, même sans les « Vu » ; seuls les « Vu » ne sont jamais lus.
+- **Deux ports étroits, pour ne pas ouvrir de tuyau vers ce qu'on cache** : `GroupNames` (`entities/group`) donne le **nom** des groupes du périmètre, jamais l'agrégat `Group`
+  (ses appartenances sont les camarades) ; `OwnLinkSource` (`entities/membership`) lit le **propre `member`** du compte (rôle, fiches, groupes). Le garde de
+  `get_student_showcase_test` (« la tranche n'importe rien qui puisse fuiter ») est resserré : seul `entities/group/domain/group_names.dart` est admis.
+- **Lien retiré, constaté sur le vrai SDK navigateur (leçon)** : supprimer le `member` fait refuser l'écoute de **ce** document (`permission-denied`, mesuré à l'émulateur),
+  mais **les lectures des données continuent d'être servies** par les écoutes déjà ouvertes (le serveur ne renvoie rien pour un document qui n'a pas changé) : un écran qui
+  ne se fiait qu'à l'échec d'une lecture de données restait affiché (trouvé au parcours navigateur, invisible aux doubles). Règle retenue : **le lien se relit en premier** à chaque
+  rechargement ; un `member` absent, sans fiche liée ou refusé en lecture = **« Accès retiré »**, abonnement relâché, aucune donnée affichée (cache de l'appareil vidé à la déconnexion) ; un refus des données alors que le
+  lien existe encore = **« Accès refusé »** (message distinct de « service injoignable », décision FB4a ; pas de « Réessayer »). Un retrait **partiel** (une fiche sur deux) : le lien relu est
+  confronté aux fiches de la session (`CheckFamilyAccess`, domaine) ; une fiche déliée n'est plus lue (sinon son refus faisait passer tout l'espace à « Accès refusé » et
+  l'enfant encore lié disparaissait). Limite assumée : la portée de la session (`studentIds`, `groupIds`) n'est relue qu'à la connexion, et l'écoute temps réel de la fiche déliée
+  reste fermée jusqu'à la relecture de la portée (FB7/FB8).
+  **Limite précise pour les groupes** : `CheckFamilyAccess` ne confronte au serveur que les fiches (`studentIds`) ; `OwnLink` lit aussi `groupIds`, mais les séances et les noms de groupes passent par
+  `FirestoreSessionRepository` et `FirestoreGroupRepository`, qui parcourent `ActiveClubScope.groupIds`, **figé à la connexion** (port en lecture seule). Après le retrait d'un groupe du `member`, l'écran ne
+  peut donc ni cesser de le lire ni filtrer ses séances sans relire la portée : deux preuves de natures différentes. **(1) Côté serveur, durable** (mesuré à l'émulateur, SDK navigateur, vraies règles ; test `known limit` de `family.test.mjs` ; ne casse **pas** avec FB7, car c'est le comportement des règles) : au retrait du groupe, les écoutes déjà ouvertes (séances, document du groupe) ne reçoivent aucun refus ; une lecture faite par la **même instance** du client est servie par la cible de l'écoute déjà ouverte (une lecture depuis une autre instance est refusée) ; à la **prochaine modification d'une séance ou du document de ce groupe (un renommage suffit)**, l'écoute est refusée (`permission-denied`) ; toute lecture neuve du groupe est refusée, donc après reconnexion le groupe n'est plus lu. **(2) Côté client, destinée à casser avec FB7** : deux tests unitaires `known limit` avec **doubles** (pas des mesures à l'émulateur) : `check_family_access_test` (le lien relu sans le groupe reste `AccessGranted`, car `CheckFamilyAccess` ne regarde que `studentIds`) et `family_space_cubit_test` (l'écran garde les séances du groupe retiré). Ils fixent le comportement du code de l'application et casseront le jour où FB7 corrige. Même reste que pour les fiches : **relire la portée de session sans reconnexion (FB7)**, groupes compris. **Pas de coupure instantanée côté serveur** (mesuré à l'émulateur) : une écoute de données déjà ouverte ne reçoit pas
+  de refus au retrait du lien, seulement à la prochaine modification d'une séance ou du document de ce groupe (un renommage suffit), ou du document écouté ; le signal immédiat est l'écoute du `member` du compte (`OwnLinkSource.watch`), et
+  aucune donnée nouvelle n'est livrée après le retrait.
+- **Hors ligne** : les dernières données restent affichées (cache du SDK, vidé à la déconnexion, FB5a) avec la pastille de la barre ; si une lecture échoue faute de réseau
+  alors que des données sont affichées, elles restent avec la mention « Vous êtes hors ligne… » ; premier chargement injoignable = « Réessayer ».
+- **Textes (fr, en)** : sobres, sans jargon, **à valider** avec la notice ([../conformite/notice-information-familles.md](../conformite/notice-information-familles.md)), le registre
+  (traitement 1 bis) et l'AIPD. Les titres de séance sont un texte libre de l'animateur visible de toute la famille du groupe : consigne à porter au registre.
+  « Prénom + initiale » : le domaine n'a pas d'initiale du nom (champ facultatif de la fiche, inutilisé) ; le sélecteur montre l'initiale du **prénom** et numérote les homonymes.
+  Aucune donnée personnelle dans les journaux (le cubit n'écrit rien, les codes d'erreur sont techniques).
+- **Parcours navigateur réel** (`scripts/emulator_e2e.sh`, mode debug, graine étendue : séances planifiées dans deux jours et passages de Tom et de Marc) : un parent de deux
+  enfants voit ses deux enfants et seulement eux (ni Marc, ni Camille, ni la séance des adultes), aucune action d'animateur, adresses d'animateur tapées à la main ramenées à
+  « Mes enfants » ; la saisie d'un enseignant (client Node, vraies règles) apparaît **sans recharger** (même `performance.timeOrigin`) et les deux enfants ne se mélangent pas ;
+  l'élève de 15 ans voit sa progression seule ; le directeur retire le lien : « Accès retiré » apparaît sans recharger.
+- **Reste pour FB7 et FB8** : voir la roadmap (ligne FB6). Pour mémoire ici : relecture de la portée de session en cours de séance de travail
+  (retrait partiel, nouvel enfant lié sans reconnexion) ; sélecteur par enfant des **séances** (aujourd'hui l'union des groupes du compte) ; initiale du nom si l'AIPD l'admet ;
+  assiduité à rouvrir avec la fédération (B2) ; parcours navigateur **hors ligne réel** (coupure du réseau sur le build compilé) ; export des données d'un élève au parent
+  (droit d'accès, FB8) ; notification d'une saisie (hors périmètre : pas de Functions sur Spark).
+

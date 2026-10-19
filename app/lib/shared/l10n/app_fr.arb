@@ -3979,7 +3979,6 @@
   "childrenTitleGuardian": "Mes enfants",
   "childrenTitleStudent": "Ma progression",
   "childrenEmpty": "Aucun élève n’est encore lié à votre compte.",
-  "childrenShow": "Voir la progression",
   "failNameRequired": "Un nom est obligatoire.",
   "signInSharedDevice": "Sur un appareil partagé, déconnectez-vous toujours en partant : les données du club conservées sur cet appareil pour le mode hors ligne sont effacées à la déconnexion.",
   "signOutUnsentTitle": "Modifications pas encore envoyées",
@@ -3995,5 +3994,19 @@
   "syncOfflinePending": "Hors ligne, envoi en attente ({count})",
   "@syncOfflinePending": {"placeholders": {"count": {"type": "int"}}},
   "syncFailureMessage": "Une modification n'a pas pu être enregistrée et a été annulée sur cet appareil.",
-  "syncFailureAction": "Compris"
+  "syncFailureAction": "Compris",
+  "familyChildSelectorLabel": "Choisir un enfant",
+  "familyChildHomonym": "{name} ({rank})",
+  "@familyChildHomonym": {"placeholders": {"name": {"type": "String"}, "rank": {"type": "int"}}},
+  "familyUpcomingTitle": "Prochaines séances",
+  "familyUpcomingEmpty": "Aucune séance n’est prévue pour le moment.",
+  "familySessionLine": "{date} · {group}",
+  "@familySessionLine": {"placeholders": {"date": {"type": "String"}, "group": {"type": "String"}}},
+  "familyStaleNote": "Vous êtes hors ligne : ces informations sont les dernières reçues.",
+  "familyReadOnlyNote": "Vous consultez ces informations en lecture seule. Elles sont mises à jour par l’animateur.",
+  "familyDeniedTitle": "Accès refusé",
+  "familyDeniedBody": "Le service refuse de vous montrer ces informations. Déconnectez-vous puis reconnectez-vous. Si cela continue, contactez votre club.",
+  "familyRevokedTitle": "Accès retiré",
+  "familyRevokedBody": "Votre accès à ces informations a été retiré par le club. Si vous pensez que c’est une erreur, contactez votre club. Vous pouvez vous déconnecter depuis « {more} ».",
+  "@familyRevokedBody": {"placeholders": {"more": {"type": "String"}}}
 }

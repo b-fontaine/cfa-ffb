@@ -1,0 +1,52 @@
+{
+  "commentaire": "Les lectures EXACTES de l'espace d'un parent ou d'un élève (lot FB6, ADR 0024 décision 26). Une seule liste pour deux preuves : app/test/unit/features/student_showcase/get_family_space_test.dart exige que l'application ne demande RIEN d'autre (journal des demandes du double), family.test.mjs joue chacune contre les VRAIES règles, en parent et en élève, et joue les lectures interdites (autre fiche, listes, saisies, bilans, camarades). Format : `get <chemin>`, `query <collection> <champ>=<valeur>`, `watch document <chemin>`, `watch query <collection> <champ>=<valeur>` ; {club}, {student}, {group}, {uid} sont remplacés par le jeu de données du test.",
+  "famille": [
+    "get clubs/{club}/settings/main",
+    "get clubs/{club}/students/{student}",
+    "query clubs/{club}/attempts studentId={student}",
+    "query clubs/{club}/acquisitions studentId={student}",
+    "get clubs/{club}/groups/{group}",
+    "query clubs/{club}/sessions groupId={group}",
+    "watch document clubs/{club}/students/{student}",
+    "watch query clubs/{club}/attempts studentId={student}",
+    "watch query clubs/{club}/acquisitions studentId={student}",
+    "watch query clubs/{club}/sessions groupId={group}",
+    "watch document clubs/{club}/groups/{group}",
+    "watch document clubs/{club}/members/{uid}",
+    "get clubs/{club}/members/{uid}"
+  ],
+  "connexion": [
+    "group members uid={uid}",
+    "get clubs/{club}",
+    "get admins/{uid}"
+  ],
+  "interdit": [
+    "get clubs/{club}/students/{otherStudent}",
+    "list clubs/{club}/students",
+    "query clubs/{club}/students groupIds={group}",
+    "query clubs/{club}/attempts studentId={otherStudent}",
+    "list clubs/{club}/attempts",
+    "query clubs/{club}/acquisitions studentId={otherStudent}",
+    "list clubs/{club}/acquisitions",
+    "query clubs/{club}/sessions groupId={otherGroup}",
+    "list clubs/{club}/sessions",
+    "get clubs/{club}/groups/{otherGroup}",
+    "list clubs/{club}/groups",
+    "get clubs/{club}/records/r-g1",
+    "query clubs/{club}/records groupId={group}",
+    "list clubs/{club}/records",
+    "query clubs/{club}/assessments studentId={student}",
+    "get clubs/{club}/assessments/as-g1",
+    "query clubs/{club}/acknowledgements studentId={student}",
+    "get clubs/{club}/acknowledgements/k-g1",
+    "query clubs/{club}/memberships groupId={group}",
+    "query clubs/{club}/memberships studentId={student}",
+    "list clubs/{club}/memberships",
+    "list clubs/{club}/archives",
+    "list clubs/{club}/members",
+    "get clubs/{club}/members/{otherUid}",
+    "list clubs/{otherClub}/students",
+    "get clubs/{otherClub}/students/{otherClubStudent}",
+    "get clubs/{otherClub}/settings/main"
+  ]
+}

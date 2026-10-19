@@ -552,3 +552,43 @@ flutter test --coverage            # tout + lcov
 - **Mutations à la main** : abonnement supprimé dans `StudentSheetBloc`, `StudentsBloc`, `UpcomingSessionsCubit` (5 scénarios BDD rouges) ;
   `stop` retiré de `StudentSheetBloc.close` (scénario de fuite rouge) ; rôle retiré de la clé de `ClubScoped` (test rouge).
 
+
+## Lot FB6 : espace élève et parent, lecture seule (2026-10-19)
+
+- **BDD d'abord, rouge consigné** : `test/bdd/family_space.feature` (12 scénarios, dont 10 écrits avant le code : arrivée du parent sur le parcours de son enfant et les séances de son groupe, parent
+  de deux enfants qui bascule sans mélanger, aucune action d'animateur et routes refusées, la saisie de l'animateur qui arrive sans recharger, une séance planifiée qui
+  arrive, requêtes limitées aux enfants liés, élève de 15 ans, écran passé en direct à « Accès retiré », refus du serveur distinct d'un service injoignable, hors ligne puis rattrapage) écrit
+  **avant** le code et joué sur l'application **d'avant le lot** (arbre de travail à part, `git worktree` du commit FB5 : 9 des 10 scénarios d'alors rouges, le seul vert étant
+  la garde de route, déjà en place) ; **les 2 autres** (« second enfant suivi en direct », « retrait d'un seul des deux liens ») ont été ajoutés ensuite et **n'ont pas été vus rouges** ; puis les 12 verts sur le code. Les scénarios tournent sur le serveur partagé de FB5b (`the club data lives on a server shared with
+  other devices`) : l'application est un **parent** (dépôts Firestore, comme avec `DATA_BACKEND=firestore`), l'animateur est **un autre appareil** du même club.
+- **Doubles ajoutés** : `DeviceDocumentStore.requests` (journal de **tout ce que l'appareil de la scène demande** au serveur : lectures, écoutes, écritures ; les autres
+  appareils n'y figurent pas, contrairement à `InMemoryDocumentStore.watchLog`) ; `FamilyWorld` (compte lié à des fiches et à leurs groupes du jour, retrait de l'accès).
+  Limites héritées : le double n'applique aucune règle (le retrait de l'accès est simulé par `revoke`, la preuve sous les vraies règles est `family.test.mjs` et le
+  parcours navigateur).
+- **Isolation, trois niveaux** : (1) BDD « requêtes limitées » : le journal de l'appareil ne contient l'identifiant ni de Marc ni de Tom, aucune écriture, aucune liste
+  (élèves, camarades, séances), rien de ce que les règles cachent ; (2) `get_family_space_test` sur les **vrais dépôts Firestore** du rôle : mêmes assertions, plus **l'égalité
+  du journal avec `scripts/rules_test/family_reads.json`** (toute demande hors liste ou toute entrée de la liste que l'application ne demande plus échoue) ;
+  (3) `scripts/rules_test/family.test.mjs` contre l'**émulateur et les vraies règles** (94 tests) : la liste `famille` et la liste `connexion` sont permises à un parent et à un élève ;
+  la liste `interdit` (autre fiche, autre groupe, autre club, listes, saisies, bilans, « Vu », appartenances, archives, membres) est refusée aux deux ; un parent de deux enfants
+  lit les deux fiches et pas un camarade du même groupe ; **aucune écriture** (14 tentatives par rôle, dont s'ajouter une fiche ou changer son rôle) ; un `member` supprimé
+  retire l'accès : les nouvelles lectures sont refusées, l'écoute ouverte ne reçoit `permission-denied` qu'à la modification suivante d'une séance ou du document de ce groupe (un renommage suffit) ou du document écouté ; le cache de l'appareil est vidé à la déconnexion ; une fiche retirée du lien est refusée, l'autre reste lisible ; **limite connue côté serveur** (« known limit », mesurée, durable : ne casse pas avec FB7) : un groupe retiré du lien reste servi à l'écoute ouverte et à la relecture faite sur la même instance du client (témoin : la même lecture depuis une autre instance est refusée), refusé à la modification suivante d'une de ses séances, refusé à toute lecture neuve ; un passage saisi par l'animateur arrive à l'écoute du parent.
+  **Mutation** : `linkedTo` rendue vraie pour tout parent ou élève sur une copie des règles : 13 tests rouges, restaurée.
+- **Unitaires** : `get_family_space_test` (ordre du lien, séances des groupes du compte de la veille (exclue) au lendemain (inclus), à 23:59 comme à 9:30, triées par date quel que soit l'ordre des identifiants ou du dépôt, plafonnées à 5 avec les bornes 4, 5 et 6 contre la valeur littérale, fiche absente ou déliée ignorée, enseignant refusé,
+  refus du serveur ≠ injoignable, **le temps réel suit chacun des deux enfants** : mutation `take(1)` sur `WatchFamilySpace` = rouge) ; `check_family_access_test` (lien absent, vide ou sans fiche de la session = retiré ; retrait partiel = accès aux fiches restantes ; lien illisible faute de réseau = inchangé ; **« known limit »** : un groupe retiré du lien n'est pas vu par `CheckFamilyAccess` avant FB7, test de caractérisation à double qui doit casser à la correction, sans mesure à l'émulateur) ; `family_space_cubit_test` (**« known limit »** : l'écran garde les séances d'un groupe retiré du lien jusqu'à FB7, double du lien, à casser avec FB7 ; sélection conservée aux relectures et repliée si l'élève est délié, un seul abonnement, **refus avec lien
+  existant = refusé**, **accès retiré** (règle du domaine, simulée ici) avec l'abonnement relâché et aucune donnée affichée, plus aucune relecture ensuite, injoignable
+  avec données = dernières données **périmées** affichées, premier chargement injoignable = échec puis « Réessayer », libération à la fermeture) ; `family_space_view_test`
+  (pas d'action d'écriture : aucun bouton, champ ni interrupteur ; puces de 48 dp, sémantique « bouton sélectionné », prénoms identiques numérotés, écran étroit à texte
+  double) ; `my_children_page_test` (états, fr et en, « Accès refusé » distinct) ; `store_own_link_source_test` ; `data_backend_module_test` (le module ne reçoit aucun rôle : défaut drift vérifié, `DATA_BACKEND=firestore` donne Firestore à tous : [repositories-firestore-plan.md](repositories-firestore-plan.md)), `homonymRanks` (rang seulement, aucun texte) et l'erreur imprévue du cubit (état d'erreur, jamais une exception qui remonte). Le garde de `get_student_showcase_test` (« la tranche
+  n'importe rien qui puisse fuiter ») est **resserré, pas abaissé** : l'agrégat `Group` et son dépôt (les appartenances sont les camarades) restent interdits ; le seul import
+  de l'entité groupe permis est le port étroit `GroupNames` (noms seulement), vérifié ligne à ligne.
+- **Parcours navigateur** (`scripts/emulator_e2e.sh`, 7 tests dont 4 nouveaux, application en mode debug + émulateurs + graine étendue ; l'« autre appareil » est un client Node
+  connecté à l'émulateur Auth, **sous les vraies règles**) : parent de deux enfants (puces, séances de son groupe seulement, ni Marc ni Camille ni la séance des adultes, aucune
+  action d'animateur, cinq adresses d'animateur tapées à la main ramenées à `/my-children`) ; saisie d'un enseignant **sans recharger** (même `performance.timeOrigin`) et enfants
+  non mélangés ; élève de 15 ans ; retrait du lien par le directeur. **Rouge utile au premier passage** : « Accès retiré » ne venait pas, les lectures étant servies par les écoutes
+  ouvertes (ADR 0024 notes FB6) ; corrigé et rejoué vert. Les puces de choix n'ont qu'une **étiquette** d'accessibilité (`aria-label`), pas de texte : le test les cherche par étiquette
+  et lit « texte + étiquettes » pour affirmer ce qui est absent. Ne pas modifier `emulator_e2e.sh` pendant qu'il tourne (bash le relit en cours d'exécution).
+- **Piège d'outillage** : un test qui échoue dans un fichier de widgets peut laisser `flutter test` tourner à 100 % de processeur au lieu de rendre la main (`Bad state: Cannot close sink
+  while adding stream`) ; tuer le `flutter_tester` par son PID (jamais `pkill -f` d'un motif de sa propre ligne). Annuler l'abonnement d'un flux rend la main à la boucle **réelle** :
+  `await tester.runAsync(pumpEventQueue)` avant d'attendre l'état « accès retiré ».
+- **Widgetbook** : `family_space_use_cases.dart` (espace complet avec curseurs : élèves liés, séances, hors ligne ; sélecteur ; prochaines séances ; message d'accès) et la
+  page `MyChildrenPage` branchée sur le nouveau cubit.

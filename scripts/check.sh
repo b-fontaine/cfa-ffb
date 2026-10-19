@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # Point d'entrée UNIQUE des garde-fous déterministes (hooks, agent, CI).
 #
-#   scripts/check.sh --fast   catalogue + diagrammes + fiches + fichiers web drift + SDK web Firebase local + PWA (+ tests JS du service worker, Node) + format + analyse
+#   scripts/check.sh --fast   catalogue + diagrammes + fiches + registre des traitements (lectures famille) + fichiers web drift + SDK web Firebase local + PWA (+ tests JS du service worker, Node) + format + analyse
 #                             + architecture + index Firestore + séances + validation des fiches
 #   scripts/check.sh --full   ports des émulateurs libres (échec immédiat sinon) + --fast + l10n + règles Firestore (émulateurs : Node, Java, npm ci)
 #                             + fumée du build web compilé (build release + Chrome, émulateur Auth)
 #                             + parcours de bout en bout (application en mode debug + Chrome, émulateurs
-#                               Auth et Firestore + graine : connexion de la directrice, lecture de son club)
+#                               Auth et Firestore + graine : connexion de la directrice, lecture de son club ;
+#                               espace parent et élève, saisie en direct, retrait du lien : FB6)
 #                             + tests + couverture + Widgetbook (génération, format, analyse, use cases)
 #                             --fast reste inchangé : il n'exige ni Java ni node_modules.
 #
@@ -83,6 +84,9 @@ dart run tool/check_architecture.dart
 
 step "Index Firestore (chaque requête collectionGroup ou composée a son index déclaré)"
 dart run tool/check_indexes.dart
+
+step "Registre des traitements (chaque chemin lu par un parent ou un élève y est nommé)"
+(cd "$ROOT" && dart run scripts/check_family_register.dart)
 
 step "Séances (front matter, durées, déroulé)"
 (cd "$ROOT" && dart run scripts/validate_seances.dart seances)

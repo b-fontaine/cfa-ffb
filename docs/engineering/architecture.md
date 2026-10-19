@@ -106,6 +106,9 @@ app/
 │   ├── features/track_progress/           # ExerciseCurve, BlockProgress (R3), StudentSheet, SheetHeader, PathRow ; PathList, SheetHeaderCard
 │   ├── features/acknowledge_alert/        # AcknowledgeAlert, RestoreAlert (ADR 0013) ; AcknowledgementBloc
 │   ├── features/student_showcase/         # GetStudentShowcase (prénom et parcours seulement) ; ShowcaseCubit, ShowcaseView
+│   │                                      # espace famille (FB6) : domaine GetFamilySpace, WatchFamilySpace, CheckFamilyAccess (AccessGranted / AccessRevoked),
+│   │                                      # FamilySpace, FamilyChild, FamilySession, homonymRanks ; présentation FamilySpaceCubit (FamilyStatus), FamilySpaceView,
+│   │                                      # ChildSelector, UpcomingFamilySessions, FamilyNotice ; ports étroits entities/group GroupNames et entities/membership OwnLinkSource
 │   ├── features/track_group/              # groupAttendance, groupFailureAlerts, GetGroupOverview ; GroupHeatMap, GroupAlertsCard
 │   ├── entities/session/
 │   │   ├── domain/                    # Session (freezed), SessionRepository

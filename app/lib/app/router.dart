@@ -51,7 +51,7 @@ import 'package:billard_cfa/features/sign_in/presentation/bloc/join_cubit.dart';
 import 'package:billard_cfa/features/sign_in/presentation/bloc/register_cubit.dart';
 import 'package:billard_cfa/features/sign_in/presentation/bloc/sign_in_cubit.dart';
 import 'package:billard_cfa/features/sign_in/presentation/ui/account_section.dart';
-import 'package:billard_cfa/features/student_showcase/presentation/bloc/linked_students_cubit.dart';
+import 'package:billard_cfa/features/student_showcase/presentation/bloc/family_space_cubit.dart';
 import 'package:billard_cfa/features/student_showcase/presentation/bloc/showcase_cubit.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/exercise_sheet_bloc.dart';
 import 'package:billard_cfa/features/suggest_session/presentation/bloc/group_journey_cubit.dart';
@@ -1244,7 +1244,7 @@ GoRouter buildRouter({
           path: AppRoutes.myChildren,
           builder: (context, state) => BlocProvider(
             create: (_) {
-              final cubit = getIt<LinkedStudentsCubit>();
+              final cubit = getIt<FamilySpaceCubit>();
               unawaited(cubit.load());
               return cubit;
             },
@@ -1254,7 +1254,6 @@ GoRouter buildRouter({
                       ? (auth.state as AuthReady).club.role
                       : null) ==
                   Role.student,
-              onShow: (id) => context.go(AppRoutes.showcase(id)),
             ),
           ),
         ),

@@ -24,10 +24,35 @@ Pour un élève : prénom, initiale du nom, public (enfants ou adultes), groupes
 
 ### Qui voit quoi ?
 
-- **Vous (parent) ou votre enfant** : la fiche de progression de l'enfant et les prochaines séances de son groupe. Pas les autres élèves, pas les présences.
+- **Vous (parent) ou votre enfant** : la fiche de progression de l'enfant et les prochaines séances des groupes de vos enfants. Pas les autres élèves. L'appareil reçoit toutefois plus que ce qu'il affiche (voir plus bas).
 - **Les enseignants** : les élèves de leurs groupes. **Le directeur** : tout le club.
 - **Les administrateurs de l'application** (un à deux comptes) peuvent techniquement lire les données de tous les clubs, y compris les prénoms d'élèves, pour l'assistance et la purge.
 - **Google** (Firebase) héberge les données.
+
+### Ce que montre l'espace famille *(texte de projet, à valider)*
+
+Quand vous vous connectez en tant que parent, ou que votre enfant de 15 ans et plus se connecte, l'application ouvre directement l'espace famille, **en lecture seule** :
+
+- le **prénom** et le **parcours** de votre enfant : les techniques, les exercices réussis, l'exercice en cours ; si vous avez plusieurs enfants, vous en choisissez un à la fois, et jamais deux ne s'affichent mélangés ;
+- les **prochaines séances** (cinq au plus) des groupes de vos enfants : titre, jour et nom du groupe ;
+- **rien d'autre à l'écran** : ni les autres élèves du groupe, ni les présences, ni les passages manqués, ni les alertes ou commentaires des animateurs, ni le bilan de l'enfant. Vous ne pouvez rien modifier : le parcours est mis à jour par l'animateur et s'affiche chez vous dès qu'il le saisit, sans recharger la page.
+
+**Ce que votre appareil reçoit sans l'afficher.** Pour que l'écran fonctionne, l'appareil reçoit et garde en mémoire plus de données qu'il n'en montre :
+
+- la **fiche complète de l'enfant**, alors que seul son prénom est affiché : son public (enfants ou adultes), l'historique daté de ses changements de public, ses groupes actuels et la date de création de la fiche ;
+- **tous les passages** de l'enfant, réussis et manqués, avec leur date, leur séance et leur groupe (on peut en déduire à quelles séances l'enfant était présent) ;
+- les **exercices acquis** de l'enfant, avec leur date et leur origine (par exemple « acquis par placement ») ;
+- l'ensemble des **réglages du club** ;
+- la **fiche de chaque groupe** de l'enfant, qui contient les identifiants de compte des enseignants du groupe (des données qui les concernent) ;
+- **toutes les séances** de ces groupes, passées comprises, alors que seules les cinq prochaines sont affichées ;
+- **votre propre fiche de membre** : votre nom affiché, votre rôle, vos groupes, les enfants qui vous sont liés et le code d'invitation que vous avez utilisé ;
+- à la connexion : le **nom du club** et sa saison en cours, le fait que votre compte soit ou non celui d'un administrateur de l'application, et la liste de vos rattachements à des clubs.
+
+**Les alertes.** Aucune alerte n'est enregistrée sur le serveur : l'appareil les **calcule lui-même** à partir des passages et des réglages reçus (par exemple « technique à revoir »). Ce calcul se fait même si l'écran ne les montre pas : une technique à revoir y apparaît simplement « en cours ». Seuls les « Vu » des animateurs (la mention qu'une alerte a été regardée) ne sont jamais reçus par votre appareil. Il ne reçoit pas non plus les autres élèves, ni les saisies de séance, ni les bilans.
+
+*(Phrase à valider par la fédération ou un DPO.)*
+
+Si le club retire votre accès, l'écran passe aussitôt à « Accès retiré » et n'affiche plus rien ; les données gardées sur l'appareil sont effacées à la déconnexion. Sans connexion, les dernières informations reçues restent visibles sur votre appareil, avec la mention « Hors ligne ».
 
 ### Où sont-elles ?
 
@@ -69,10 +94,35 @@ For a student: first name, initial of the surname, audience (children or adults)
 
 ### Who sees what?
 
-- **You (parent) or your child**: the child's progress record and the next sessions of their group. No other students, no attendance.
+- **You (parent) or your child**: the child's progress record and the next sessions of your children's groups. No other students. The device does, however, receive more than it displays (see below).
 - **Teachers**: the students in their groups. **The club director**: the whole club.
 - **The application's administrators** (one or two accounts) can technically read the data of all clubs, including students' first names, for support and purging.
 - **Google** (Firebase) hosts the data.
+
+### What the family space shows *(draft text, to be validated)*
+
+When you sign in as a parent, or your child aged 15 or over signs in, the application opens the family space directly, **read-only**:
+
+- your child's **first name** and **progress**: the techniques, the exercises passed, the current exercise; with several children you pick one at a time, and two are never shown mixed together;
+- the **next sessions** (five at most) of your children's groups: title, day and group name;
+- **nothing else on screen**: no other students in the group, no attendance, no missed attempts, no instructor alerts or comments, no assessment of your child. You cannot change anything: the instructor updates the progress and it appears on your screen as soon as it is entered, without reloading the page.
+
+**What your device receives without displaying it.** For the screen to work, the device receives and keeps in memory more data than it shows:
+
+- the child's **full record**, although only the first name is displayed: their group type (children or adults), the dated history of changes to it, their current groups and the date the record was created;
+- **every attempt** by the child, passed and missed, with its date, its session and its group (attendance at sessions can be inferred from them);
+- the child's **acquired exercises**, with their date and origin (for example "acquired by placement");
+- all of the club's **settings**;
+- the **record of each of the child's groups**, which holds the account identifiers of the group's teachers (data about them);
+- **all the sessions** of those groups, past ones included, although only the next five are displayed;
+- **your own member record**: your display name, your role, your groups, the children linked to you and the invitation code you used;
+- when you sign in: the **club's name** and its current season, whether or not your account is an administrator of the application, and the list of your club memberships.
+
+**Alerts.** No alert is stored on the server: the device **works them out itself** from the attempts and settings it receives (for example "technique to review"). This calculation happens even though the screen does not show alerts: a technique to review simply appears "in progress". Only the instructors' "Seen" marks (the note that an alert has been looked at) are never received by your device. It does not receive other students, session entries or assessments either.
+
+*(Sentence to be validated by the federation or a DPO.)*
+
+If the club removes your access, the screen immediately changes to "Access removed" and shows nothing; the data kept on the device is erased at sign-out. Without a connection, the latest information received stays visible on your device, marked "Offline".
 
 ### Where is it?
 

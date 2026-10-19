@@ -21,13 +21,10 @@ import 'package:billard_cfa/features/manage_club/presentation/bloc/invite_cubit.
 import 'package:billard_cfa/features/sign_in/data/key_value_pending_invitations.dart';
 import 'package:billard_cfa/features/sign_in/domain/accept_invitation.dart';
 import 'package:billard_cfa/features/sign_in/presentation/bloc/join_cubit.dart';
-import 'package:billard_cfa/features/student_showcase/domain/list_linked_students.dart';
-import 'package:billard_cfa/features/student_showcase/presentation/bloc/linked_students_cubit.dart';
 import 'package:billard_cfa/pages/administration/presentation/administration_page.dart';
 import 'package:billard_cfa/pages/club/presentation/club_page.dart';
 import 'package:billard_cfa/pages/invite_member/presentation/invite_member_page.dart';
 import 'package:billard_cfa/pages/join/presentation/join_page.dart';
-import 'package:billard_cfa/pages/my_children/presentation/my_children_page.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
@@ -480,90 +477,6 @@ void main() {
           home: BlocProvider.value(
             value: cubit,
             child: AdministrationPage(onBack: () {}),
-          ),
-        ),
-      );
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    });
-  });
-
-  group('MyChildrenPage', () {
-    LinkedStudentsCubit cubit({bool load = true}) {
-      final cubit = LinkedStudentsCubit(
-        ListLinkedStudents(world.local.students, world.scope, world.scope),
-      );
-      if (load) unawaited(cubit.load());
-      return cubit;
-    }
-
-    testWidgets(
-      'a parent sees their children, each leading to their progress',
-      (tester) async {
-        world.signIn(
-          Role.guardian,
-          user: const UserId('u-anne'),
-          studentIds: [const StudentId('s1'), const StudentId('s2')],
-        );
-        final shown = <StudentId>[];
-        await pump(
-          tester,
-          cubit(),
-          MyChildrenPage(studentOwnAccount: false, onShow: shown.add),
-        );
-
-        expect(find.text('My children'), findsOneWidget);
-        expect(find.text('Léa'), findsOneWidget);
-        expect(find.text('Tom'), findsOneWidget);
-        expect(find.text('Marc'), findsNothing);
-        await tester.tap(find.text('Léa'));
-        expect(shown, [const StudentId('s1')]);
-      },
-    );
-
-    testWidgets('a student sees "My progress"', (tester) async {
-      world.signIn(
-        Role.student,
-        user: const UserId('u-lea'),
-        studentIds: [const StudentId('s1')],
-      );
-      await pump(
-        tester,
-        cubit(),
-        MyChildrenPage(studentOwnAccount: true, onShow: (_) {}),
-      );
-      expect(find.text('My progress'), findsOneWidget);
-      expect(find.text('Léa'), findsOneWidget);
-    });
-
-    testWidgets(
-      'an account that cannot see children gets an error and a retry',
-      (tester) async {
-        world.signIn(Role.director);
-        await pump(
-          tester,
-          cubit(),
-          MyChildrenPage(studentOwnAccount: false, onShow: (_) {}),
-        );
-        expect(
-          find.text('Your role does not allow this action.'),
-          findsOneWidget,
-        );
-        expect(find.text('Retry'), findsOneWidget);
-      },
-    );
-
-    testWidgets('shows a wait while loading', (tester) async {
-      world.signIn(Role.guardian, user: const UserId('u-anne'));
-      final c = cubit(load: false);
-      addTearDown(c.close);
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light(),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: BlocProvider.value(
-            value: c,
-            child: MyChildrenPage(studentOwnAccount: false, onShow: (_) {}),
           ),
         ),
       );

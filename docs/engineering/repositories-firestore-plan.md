@@ -170,3 +170,15 @@ Limites sans règle sûre : L1 agrégat de groupe périmé, L2 fiche supprimée 
 ### Écritures non bloquantes hors ligne
 
 `ClubStore.commit` (hors unité de travail) n'attend l'accusé du serveur que `ackGrace` (1,5 s), puis confie l'envoi au suivi (`SendTracker`) ; il n'attend pas du tout si le réseau est connu coupé ou si un envoi attend déjà. Un refus dans le délai reste l'échec de l'appelant ; un refus tardif arrive à la pastille. Les écritures qui parlent à `DocumentStore` sans `ClubStore` (clubs, invitations, membres, publication de la fiche à l'invitation) restent volontairement en ligne et **attendent encore** hors ligne (reste de FB6/FB7).
+
+## Ce que FB6 ajoute (2026-10-19) : aucun aiguillage par rôle
+
+**Décision de l'utilisateur du 2026-10-19** (ADR 0024, notes FB6) : **pas d'aiguillage de backend par rôle**. Une proposition d'aiguiller les comptes `student` et `guardian` vers Firestore avant la bascule (`DataBackendChoice.forRole`, `RoleRoute`, six `RoleRouted…Repository`) a été écartée : l'espace famille ne lit Firestore qu'avec `DATA_BACKEND=firestore` explicite, donc après la bascule, et **drift reste le défaut pour tous les rôles**. Aucune lecture de mineurs n'arrive au serveur avant.
+
+| Élément | Rôle |
+|---|---|
+| `DataBackendChoice(backend)` et `DataBackendModule` | inchangés : `choice.backend.choose`, le dépôt choisi par le réglage du build, l'autre n'est pas construit ; aucun rôle n'intervient |
+| Tests, dans les deux sens | `data_backend_module_test.dart` : sans `DATA_BACKEND`, les onze dépôts et l'unité de travail sont drift (le module ne reçoit aucun rôle : défaut drift vérifié, identique pour tout compte) ; `DATA_BACKEND=firestore` donne Firestore à tous ; `production_graph_test.dart` : graphe de production exact (drift) |
+| Parcours navigateur | `scripts/emulator_e2e/serve_and_test.sh` lance l'application avec `--dart-define=DATA_BACKEND=firestore` |
+
+**Ce que lit un parent ou un élève** (liste exacte : `scripts/rules_test/family_reads.json`) : le document de **chaque fiche liée** (`get` et écoute), ses passages et ses blocs acquis (égalité sur `studentId`), les séances de **ses groupes** (égalité sur `groupId`), le document de **chaque groupe** (jamais ses appartenances), le réglage du club (`settings/main` **en entier**, pas seulement les règles de validation) et **son propre `member`**. L'appareil **reçoit et met en cache sans l'afficher** : tous les passages de la fiche liée, réussis et manqués, avec leur date, leur séance et leur groupe (la présence s'en déduit), le document de chaque groupe (il porte `teacherUids`, identifiants de compte des enseignants : données d'un tiers) et toutes les séances de ces groupes, passées comprises (cinq affichées). Ni liste d'élèves, ni appartenances, ni saisies, bilans, « Vu », archives. Le test Dart du cas d'usage compare le journal des demandes de l'appareil à cette liste, le test de règles joue la liste contre les vraies règles et joue les lectures interdites.

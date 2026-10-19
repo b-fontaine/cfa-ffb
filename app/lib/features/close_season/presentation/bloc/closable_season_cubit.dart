@@ -13,5 +13,9 @@ class ClosableSeasonCubit extends Cubit<Season?> {
   final GetClosableSeason _find;
   final Clock _clock;
 
-  Future<void> load() async => emit(await _find(today: _clock.today()));
+  Future<void> load() async {
+    final season = await _find(today: _clock.today());
+    // Page quittée pendant la lecture (lente sur le serveur) : rien à dire.
+    if (!isClosed) emit(season);
+  }
 }

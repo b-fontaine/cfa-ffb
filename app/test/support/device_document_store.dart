@@ -27,6 +27,12 @@ class DeviceDocumentStore implements DocumentStore {
   /// Le serveur partagé.
   final InMemoryDocumentStore server;
 
+  /// Tout ce que **cet appareil** a demandé au serveur, dans l'ordre (les
+  /// autres appareils n'y figurent pas) : `get <chemin>`, `list <collection>`,
+  /// `query <collection> <filtre>`, `group <collection> <champ>=<valeur>`,
+  /// `watch …` et `write <chemin>` (assertions d'isolation d'un rôle).
+  final List<String> requests = [];
+
   var _online = true;
   final List<List<WriteOp>> _queued = [];
   final List<_Gate<Object?>> _gates = [];
@@ -62,6 +68,7 @@ class DeviceDocumentStore implements DocumentStore {
 
   @override
   Future<StoredDocument?> get(String path) async {
+    requests.add('get $path');
     _requireOnline();
     return await server.get(path);
   }
@@ -71,6 +78,7 @@ class DeviceDocumentStore implements DocumentStore {
 
   @override
   Future<List<StoredDocument>> list(String collection) async {
+    requests.add('list $collection');
     _requireOnline();
     return await server.list(collection);
   }
@@ -80,6 +88,7 @@ class DeviceDocumentStore implements DocumentStore {
     String collection,
     QueryFilter filter,
   ) async {
+    requests.add('query $collection ${_describe(filter)}');
     _requireOnline();
     return await server.query(collection, filter);
   }
@@ -90,6 +99,7 @@ class DeviceDocumentStore implements DocumentStore {
     required String field,
     required Object? equalTo,
   }) async {
+    requests.add('group $collectionId $field=$equalTo');
     _requireOnline();
     return await server.collectionGroup(
       collectionId,
@@ -107,21 +117,35 @@ class DeviceDocumentStore implements DocumentStore {
   @override
   Future<void> commit(List<WriteOp> operations) async {
     checkBatchSize(operations);
+    requests.addAll([for (final op in operations) 'write ${op.path}']);
     if (_online) return await server.commit(operations);
     _queued.add(List.of(operations));
   }
 
   @override
-  Stream<DocumentUpdate> watchDocument(String path) =>
-      _gated(server.watchDocument(path));
+  Stream<DocumentUpdate> watchDocument(String path) {
+    requests.add('watch document $path');
+    return _gated(server.watchDocument(path));
+  }
 
   @override
-  Stream<CollectionUpdate> watchCollection(String collection) =>
-      _gated(server.watchCollection(collection));
+  Stream<CollectionUpdate> watchCollection(String collection) {
+    requests.add('watch collection $collection');
+    return _gated(server.watchCollection(collection));
+  }
 
   @override
-  Stream<CollectionUpdate> watchQuery(String collection, QueryFilter filter) =>
-      _gated(server.watchQuery(collection, filter));
+  Stream<CollectionUpdate> watchQuery(String collection, QueryFilter filter) {
+    requests.add('watch query $collection ${_describe(filter)}');
+    return _gated(server.watchQuery(collection, filter));
+  }
+
+  static String _describe(QueryFilter filter) => switch (filter) {
+    FieldEquals(:final field, :final value) => '$field=$value',
+    FieldArrayContainsAny(:final field, :final values) =>
+      '$field any ${values.join('|')}',
+    AllEqual(:final clauses) => clauses.map(_describe).join(','),
+  };
 
   Stream<T> _gated<T>(Stream<T> source) {
     final gate = _Gate<T>(source, () => _online, _gates.remove);

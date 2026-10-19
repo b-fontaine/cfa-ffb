@@ -20,10 +20,10 @@ Le découpage retenu :
 | Équipe et familles du club | liste des membres (directeur, administrateur), retrait d'accès, nom du club | affectation des groupes d'un membre existant (aujourd'hui : le code porte les groupes) |
 | Groupes et élèves du club | **restent dans « Élèves » (drift)** : « Mon club » n'en gère pas ; ils servent à **choisir** pour qui inviter (enseignant : groupes ; élève, parent : fiche) | dépôts Firestore, listes serveur, écrans par groupe filtrés par rôle |
 | Fiche d'un élève lié | **publication minimale** à la première invitation (`StudentDirectory` : prénom, public, groupes courants, identifiant local) : les règles exigent que la fiche existe | le dépôt Firestore des élèves écrit le même document (même identifiant) |
-| Vue du parent et de l'élève | « Mes enfants » / « Ma progression » : les fiches liées lues **sur l'appareil**, puis la fiche en parcours existante | la même vue sur des données serveur (sans quoi un parent sur son propre appareil ne voit rien de plus que le prénom) |
+| Vue du parent et de l'élève | **Périmé** (remplacé par FB6, voir « Espace élève et parent » plus bas) : « Mes enfants » / « Ma progression » : les fiches liées lues **sur l'appareil**, puis la fiche en parcours existante | **Périmé** : la même vue sur des données serveur (livré par FB6 : « Espace élève et parent ») |
 | Visibilité de l'enseignant | formulaire d'invitation et « Mon club » limités à **ses groupes** (cas d'usage) ; **règles : tout son périmètre** | listes et saisies limitées par les requêtes Firestore (`array-contains`, `in`) |
 
-Conséquence assumée et écrite : tant que FB4 n'est pas livré, un parent ou un élève qui rejoint un club sur **son** appareil arrive sur
+**Périmé depuis FB4 et FB6** (voir « Espace élève et parent » plus bas : un parent lit désormais Firestore). Conséquence assumée et écrite : tant que FB4 n'est pas livré, un parent ou un élève qui rejoint un club sur **son** appareil arrive sur
 « Mes enfants » **sans données locales** (la liste est vide : ses fiches liées n'existent que sur l'appareil de l'animateur). Les scénarios
 BDD le montrent sur l'appareil de l'animateur (même graphe en mémoire). C'est cohérent avec le garde-fou : aucun vrai élève avant FB4 et
 l'AIPD (roadmap, « Garde-fou de mise en production »).
@@ -36,13 +36,13 @@ l'AIPD (roadmap, « Garde-fou de mise en production »).
 | `shared/persistence` | `DocumentStore` (port minuscule : `get`, `list`, requête de groupe de collections, **lot atomique**), `InMemoryDocumentStore` (double des tests, **sans** règles), `guardStore` |
 | `shared/ui` | `InvitationCodeCard` (code, date limite, copie du code et du lien), `InvitationRow` |
 | `entities/club` | `Club`, `ClubRepository`, `StoreClubRepository` |
-| `entities/membership` | `Member`, `MemberRepository`, `ClubMembership` (rôle et périmètre), `MembershipsSource` (+ `isAdmin`), `StoreMembershipsSource` (requête de groupe `members` filtrée sur `uid`) |
+| `entities/membership` | **FB6** : `OwnLink`, `OwnLinkSource`, `StoreOwnLinkSource` (le propre `member` du compte) ; `Member`, `MemberRepository`, `ClubMembership` (rôle et périmètre), `MembershipsSource` (+ `isAdmin`), `StoreMembershipsSource` (requête de groupe `members` filtrée sur `uid`) |
 | `entities/invitation` | `Invitation` (forme par rôle, `InvitationPolicy` : 48 h / 7 j, qui invite qui), `InvitationRepository` (créer, trouver, révoquer, **accepter par lot**), `InvitationLog` (journal local par compte et club), `IssuedInvitations`, `InvitationCodeSource` (sécurisé en production, séquentiel en test) |
 | `entities/student` | `StudentDirectory` (publication de la fiche minimale), `StoreStudentDirectory` |
 | `features/manage_club` | `ListMembers`, `RemoveMember`, `RenameClub`, `ListInvitableStudents`, `ListInvitableGroups`, `IssueInvitation`, `ListIssuedInvitations`, `RevokeInvitation` ; `ClubCubit`, `InviteCubit` ; `ClubMembersCard`, `IssuedInvitationsCard`, `InviteForm`, dialogue de renommage |
 | `features/administration` | `ListClubs`, `CreateClub`, `InviteDirector`, `ListDirectorInvitations`, `RevokeDirectorInvitation` ; `AdministrationCubit` ; `AdministeredClubCard`, dialogue de création |
 | `features/sign_in` | `AcceptInvitation` (consomme le code), `JoinCubit`, `JoinForm` |
-| `features/student_showcase` | `ListLinkedStudents`, `LinkedStudentsCubit`, `LinkedStudentsList` |
+| `features/student_showcase` | `GetStudentShowcase` ; **FB6** : `GetFamilySpace`, `WatchFamilySpace`, `CheckFamilyAccess`, `FamilySpace` / `FamilyChild` / `FamilySession`, `FamilySpaceCubit` ; `ShowcaseView`, `FamilySpaceView`, `ChildSelector`, `UpcomingFamilySessions`, `FamilyNotice` (remplacent `ListLinkedStudents`, `LinkedStudentsCubit`, `LinkedStudentsList`) |
 | `pages` | `club`, `invite_member`, `join`, `administration`, `my_children` ; `more` (entrées par rôle), `select_club` (« J'ai un code », « Administration ») |
 | `app` | `AuthCubit` (administrateur, code gardé, groupes et fiches de la portée), `authRedirect` + `roleRedirect` (garde de route), `AppShell` (deux destinations pour un élève ou un parent), routes ; `platform/firestore_document_store.dart` (**seul** importeur de `cloud_firestore` avec la passerelle de démarrage, règle 9) |
 
@@ -131,6 +131,38 @@ un parent n'a que « Mes enfants », « Plus » et la fiche en parcours de **ses
 compte sans club mais administrateur atteint `/administration` depuis l'écran « Aucun club ». Le club « Démo » est un club **ordinaire** (C6) : aucun mode sans compte, aucun code
 particulier ; il est créé par la graine des émulateurs ou, en production, par l'administrateur.
 
+## Espace élève et parent (lot FB6, 2026-10-19)
+
+Un parent ou un élève de 15 ans et plus connecté arrive sur `/my-children` (le garde de rôle y ramène toute autre adresse) : **une seule page, en lecture seule**.
+
+| Zone | Contenu | Source (rôle `guardian` ou `student`) |
+|---|---|---|
+| Sélecteur d'enfant | une puce par fiche liée (`members.studentIds`, ordre du lien) : initiale et prénom ; deux prénoms identiques sont numérotés (« Léa (1) », « Léa (2) »). Absent avec un seul enfant. Le choix survit aux mises à jour ; chaque parcours est lu et gardé **par élève** (aucun état partagé entre deux enfants) | `StudentRepository.byId` par fiche liée |
+| Parcours de l'élève choisi | la vue « à montrer à l'élève » (ADR 0014, `ShowcaseView`) : devenue la page ; exercice en cours, cases, jamais un échec | `AttemptRepository.forStudent`, `AcquisitionRepository.forStudent` (égalité sur `studentId`) |
+| Prochaines séances | au plus 5, à partir d'aujourd'hui, des groupes **du compte** : titre, jour, nom du groupe | `SessionRepository` (égalité sur `groupId`, un groupe à la fois) et `GroupNames` (document du groupe, **jamais** ses appartenances) |
+| Messages | chargement ; « Aucun élève n'est encore lié » ; aucune séance prévue ; **hors ligne** (dernières données + pastille de la barre) ; **Accès refusé** (distinct de « service injoignable », ADR 0024 notes FB4a) ; **Accès retiré** | `FamilyStatus` |
+
+**Aucune écriture** : pas de bouton (Noter, Planifier, Saisir, Inviter, « Terminé »), menu réduit à deux destinations, routes d'animateur refusées par `roleRedirect`, règles qui n'autorisent aucune écriture à ces rôles. **Jamais lus** : autres fiches, liste des camarades (appartenances), saisies, **« Vu »** (acquittements), bilans, étiquettes, archives. **Alertes : calculées, jamais stockées** : aucune alerte n'existe côté serveur ; elle est **calculée sur l'appareil** (`StudentProgress.derive` puis `techniqueSummary` produisent `BlockStatus.toReview`) à partir des passages et de `settings/main` reçus, **même sans les « Vu »** ; elle n'est masquée qu'à l'affichage (une technique « à revoir » est montrée « en cours »). **Structure « affiché / reçu sans être affiché »** (point à porter à l'AIPD, fait foi : `scripts/rules_test/family_reads.json`, contrôlé par `scripts/check_family_register.dart` contre le registre) :
+
+| Lecture | Affiché | Reçu sans être affiché |
+|---|---|---|
+| `students/{student}` | prénom | la fiche entière : `audience`, `audienceHistory` (changements de public datés), `groupIds` courants, `createdAt` |
+| `attempts` | parcours (passages réussis) | **tous** les passages, réussis **et manqués**, avec date, séance, groupe (la **présence** s'en déduit) |
+| `acquisitions` | parcours (blocs validés) | date et source (`placement`) des blocs acquis |
+| `settings/main` | rien directement | le document **en entier** (sert au calcul du parcours et des alertes) |
+| `groups/{group}` | nom du groupe | le document, dont `teacherUids` (**données d'un tiers**) |
+| `sessions` | cinq prochaines : titre, jour, nom du groupe | **toutes** les séances des groupes, passées comprises, avec leur public |
+| `members/{uid}` (le propre) | rien directement | `displayName`, `role`, `groupIds`, `studentIds`, `invitationCode` |
+| connexion : `clubs/{club}`, `admins/{uid}`, requête de groupe `members` `uid=` | nom du club | nom, `currentSeasonId` ; existence du document `admins/{uid}` ; rattachements du compte |
+
+**Temps réel** : un seul abonnement `WatchFamilySpace` (fiche, passages et acquis de chaque fiche liée, séances, groupes, et **son propre `member`**) ; l'écran se recharge en place par `GetFamilySpace` (même `LiveReload` que les autres écrans). **Lien retiré** : le `member` supprimé fait refuser l'écoute de ce document (et elle seule) ; les écoutes de données déjà ouvertes ne le sont qu'à la modification suivante ; l'écran relit son lien (`OwnLinkSource.read`) : plus de `member` (ou plus de fiche liée, ou lecture refusée) = **Accès retiré** : l'écran passe en direct à cet état (écoute du `member`), l'abonnement est relâché, plus aucune donnée n'est affichée. Côté serveur, les nouvelles lectures sont refusées et une écoute déjà ouverte n'est refusée qu'à la prochaine modification d'une séance ou du document de ce groupe (un renommage suffit), ou du document écouté ; le cache de l'appareil est vidé à la déconnexion ; un lien qui existe encore mais dont la lecture est refusée = **Accès refusé** (réessayer n'y change rien). Un retrait **partiel** (une fiche sur deux) : `CheckFamilyAccess` rend `AccessGranted` avec les fiches restantes seulement ; la fiche déliée n'est plus lue et l'enfant encore lié reste affiché. **Limite pour les groupes** : le retrait d'un **groupe** n'est pas géré de la même façon. `OwnLink` lit `groupIds`, mais les séances et les noms de groupes passent par les dépôts Firestore, qui parcourent `ActiveClubScope.groupIds`, figé à la connexion (port en lecture seule) : sans relire la portée de session, l'écran ne peut ni cesser de lire ce groupe ni filtrer ses séances. Deux preuves de natures différentes : (1) **côté serveur, durable** (`family.test.mjs`, « known limit », SDK navigateur, vraies règles, émulateur ; ne casse **pas** avec FB7, c'est le comportement des règles) : au retrait du groupe, les écoutes ouvertes ne reçoivent aucun refus, une lecture faite **par la même instance du client** est servie par la cible de l'écoute déjà ouverte (une lecture depuis une **autre** instance est refusée), à la **prochaine modification d'une séance ou du document de ce groupe (un renommage suffit)** l'écoute est refusée, toute lecture neuve est refusée ; (2) **côté client, destinée à casser avec FB7** : tests unitaires avec **doubles** (`check_family_access_test`, « known limit » : le lien relu sans le groupe reste `AccessGranted` ; `family_space_cubit_test`, « known limit » : l'écran garde les séances du groupe retiré) ; ce ne sont **pas** des mesures à l'émulateur, ils fixent le comportement du code de l'application. Reste pour FB7 : relire la portée sans reconnexion, fiches et groupes.
+
+**Pas d'aiguillage de backend par rôle (écarté par l'utilisateur le 2026-10-19)** : l'espace famille ne lit Firestore qu'avec `DATA_BACKEND=firestore` explicite, donc après la bascule ; drift reste le défaut pour **tous** les rôles et aucune lecture de mineurs n'arrive au serveur avant. Le parcours navigateur sous émulateurs est lancé avec l'indicateur. Détail : [repositories-firestore-plan.md](repositories-firestore-plan.md).
+
+**Textes** (fr et en) : sobres, pour des familles, **à valider** par la fédération ou le DPO avec la notice ([conformite/notice-information-familles.md](conformite/notice-information-familles.md)). Les titres de séance sont du texte libre de l'animateur, visible de toutes les familles du groupe : consigne de n'y mettre aucun nom d'élève.
+
+**Prénom + initiale** : le domaine `Student` n'a ni initiale ni nom de famille (l'initiale du nom reste un champ facultatif de la fiche, inutilisé) : le sélecteur affiche l'**initiale du prénom** dans la pastille et numérote les prénoms identiques. Ajouter l'initiale du nom serait une donnée de plus sur un mineur (décision à prendre avec l'AIPD).
+
 ## Tests
 
 | Niveau | Où |
@@ -155,6 +187,16 @@ particulier ; il est créé par la graine des émulateurs ou, en production, par
 | Étapes écrites sur le stock de documents brut (`UiWorld`, sans dépendre des cas d'usage ni des pages), application **sans** le lot | exécution : `+0 -14` aux 14 premiers scénarios (**aucun ne passe** ; la sortie affichée s'arrête là, 23 scénarios au total) : « Léa » absente de l'écran, « Inscription sur invitation » absente du lien, « Rejoindre un club » absente, adresse `/students/…/show` ouverte à un élève au lieu de `/my-children` |
 | Corrections de relecture (2026-10-18) : deux scénarios de démarrage à froid sur un lien (`When the app is opened on the address`) | **rouge vu** avant le correctif : `authRedirect(AuthUnknown, /join/<code>)` donnait `/splash?from=%2Fjoin%2F<code>`, puis la connexion ; scénarios : « Inscription sur invitation » et « Rejoindre un club » absents ; tests unitaires de la chaîne : 6 échecs sur 8 ; vert après `invitationCodeOf` et `splashWith` |
 | Vert | les 23 scénarios passent après les cubits, les pages, le garde de route et le routeur ; les scénarios d'authentification (FB2) et tous les autres restent verts (`flutter test` complet) |
+
+### Journal du rouge FB6 (BDD d'abord)
+
+| Étape | Constat |
+|---|---|
+| `family_space.feature` (10 scénarios à l'origine, 12 aujourd'hui) et étapes écrits **avant** le code | étapes ne dépendant que de l'existant (`UiWorld`, `DeviceDocumentStore`, serveur partagé de FB5b) |
+| Joué sur l'application **d'avant le lot** (`git worktree` du commit FB5, journal `fb6-bdd-red.log` du dossier de travail) | `+1 -9` sur les 10 scénarios d'alors : 9 scénarios rouges (pas de sélecteur, pas de séances, pas de « Accès refusé » ni « Accès retiré », le parcours n'apparaît pas dans « Mes enfants », « My children » en double), le seul vert étant la garde de route (déjà en place) |
+| Non vus rouges | les 2 scénarios ajoutés après (« second enfant suivi en direct », « retrait d'un seul des deux liens ») n'ont **pas** été joués sur l'application d'avant le lot : leur rouge n'est pas établi |
+| Vert | les 12 scénarios passent avec `FamilySpaceCubit`, le sélecteur, les séances et les messages (sur Firestore en mémoire, `DATA_BACKEND=firestore` explicite) |
+| Parcours navigateur (premier passage) | **rouge utile** : « Accès retiré » ne venait pas (les lectures étaient servies par les écoutes ouvertes ; voir ADR 0024 notes FB6) ; les puces de choix n'ont qu'une étiquette d'accessibilité (pas de texte) : le parcours les cherche par étiquette |
 
 ## Limites assumées
 

@@ -35,8 +35,9 @@ mkfifo "$FIFO"
 exec 3<>"$FIFO"
 # `--no-web-resources-cdn` : le moteur (CanvasKit) est servi en local, comme dans le build de
 # production : le parcours n'a besoin d'aucun hôte autre que localhost (FB5a).
+# `DATA_BACKEND=firestore` explicite : l'espace famille ne lit Firestore qu'avec ce réglage (FB6).
 (cd app && flutter run -d web-server --web-port "$E2E_PORT" --no-pub --no-web-resources-cdn \
-  --dart-define=FIREBASE_EMULATOR=true <"$FIFO" >"$LOG" 2>&1) &
+  --dart-define=FIREBASE_EMULATOR=true --dart-define=DATA_BACKEND=firestore <"$FIFO" >"$LOG" 2>&1) &
 APP_PID=$!
 
 printf 'Compilation de l'"'"'application (mode debug)…\n'

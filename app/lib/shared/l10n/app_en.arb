@@ -3979,7 +3979,6 @@
   "childrenTitleGuardian": "My children",
   "childrenTitleStudent": "My progress",
   "childrenEmpty": "No student is linked to your account yet.",
-  "childrenShow": "See the progress",
   "failNameRequired": "A name is required.",
   "signInSharedDevice": "On a shared device, always sign out when you leave: the club data kept on this device for offline use is deleted when you sign out.",
   "signOutUnsentTitle": "Changes not sent yet",
@@ -3995,5 +3994,19 @@
   "syncOfflinePending": "Offline, waiting to send ({count})",
   "@syncOfflinePending": {"placeholders": {"count": {"type": "int"}}},
   "syncFailureMessage": "A change could not be saved and was undone on this device.",
-  "syncFailureAction": "Got it"
+  "syncFailureAction": "Got it",
+  "familyChildSelectorLabel": "Choose a child",
+  "familyChildHomonym": "{name} ({rank})",
+  "@familyChildHomonym": {"placeholders": {"name": {"type": "String"}, "rank": {"type": "int"}}},
+  "familyUpcomingTitle": "Next sessions",
+  "familyUpcomingEmpty": "No session is planned for now.",
+  "familySessionLine": "{date} · {group}",
+  "@familySessionLine": {"placeholders": {"date": {"type": "String"}, "group": {"type": "String"}}},
+  "familyStaleNote": "You are offline: this is the latest information received.",
+  "familyReadOnlyNote": "You are viewing this information read-only. The coach keeps it up to date.",
+  "familyDeniedTitle": "Access denied",
+  "familyDeniedBody": "The service refuses to show you this information. Sign out, then sign in again. If this keeps happening, contact your club.",
+  "familyRevokedTitle": "Access removed",
+  "familyRevokedBody": "Your access to this information has been removed by the club. If you think this is a mistake, contact your club. You can sign out from “{more}”.",
+  "@familyRevokedBody": {"placeholders": {"more": {"type": "String"}}}
 }

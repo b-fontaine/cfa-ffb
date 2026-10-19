@@ -11,6 +11,9 @@ final class ClubPaths {
 
   String get root => 'clubs/${club.value}';
 
+  /// Le `member` d'un compte (rôle et périmètre) : `members/{uid}`.
+  String member(UserId user) => '$root/members/${user.value}';
+
   /// Réglages du club : document unique.
   String get settings => '$root/settings/main';
 

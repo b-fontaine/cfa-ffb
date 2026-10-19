@@ -210,7 +210,10 @@ void main() {
     final forbidden = [
       'maturity_assessment',
       'session_record',
-      'entities/group',
+      // Ni l'agrégat du groupe (ses appartenances sont les camarades) ni son
+      // dépôt : seul le port étroit des noms de groupes (voir ci-dessous).
+      'group_repository',
+      'group/domain/group.dart',
       'acknowledg',
       'watch_list',
       'track_progress',
@@ -232,6 +235,13 @@ void main() {
           .join('\n');
       for (final word in forbidden) {
         expect(imports, isNot(contains(word)), reason: '${file.path} : $word');
+      }
+      // Les seuls imports de l'entité groupe : le port des noms.
+      final groupImports = imports
+          .split('\n')
+          .where((line) => line.contains('entities/group'));
+      for (final line in groupImports) {
+        expect(line, contains('entities/group/domain/group_names.dart'));
       }
     }
   });

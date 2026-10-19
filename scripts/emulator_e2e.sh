@@ -5,9 +5,11 @@
 #
 # Lance `firebase emulators:exec` (Auth + Firestore, projet « demo-cfa-ffb », ports de
 # firebase.json), pose la graine (scripts/seed_emulator.mjs), sert l'application en MODE DEBUG
-# (`flutter run -d web-server --dart-define=FIREBASE_EMULATOR=true`, projet de l'émulateur) puis
+# (`flutter run -d web-server --dart-define=FIREBASE_EMULATOR=true --dart-define=DATA_BACKEND=firestore`, projet de l'émulateur) puis
 # joue scripts/emulator_e2e/e2e.test.mjs dans Chrome : la directrice se connecte et lit son club
-# sous les règles, un parent atterrit sur « Mes enfants ». Aucune requête n'atteint un projet
+# sous les règles ; (FB6) un parent de deux enfants voit ses enfants et seulement eux, sans action d'animateur,
+# voit la saisie d'un animateur (autre appareil, vraies règles) apparaître sans recharger, un élève de 15 ans voit sa
+# progression seule, et le retrait du lien par le directeur coupe l'accès en direct. Aucune requête n'atteint un projet
 # Firebase réel : émulateurs seuls, projet « demo-… », hôtes autres que localhost refusés (SDK web servi en local).
 #
 # Pourquoi le mode debug : la release refuse l'émulateur (FirebaseEnvironment) et le build

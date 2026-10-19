@@ -15,7 +15,9 @@
 //
 // Contenu : un administrateur, un directeur, deux enseignants, un parent de deux enfants, un
 // élève de 15 ans avec son propre compte, le club « Démo » avec deux groupes, ses fiches
-// d'élèves et un code d'invitation d'enseignant valable.
+// d'élèves et un code d'invitation d'enseignant valable ; pour l'espace élève (FB6) : deux séances
+// planifiées dans deux jours (l'une pour les enfants, l'autre pour les adultes) et des passages
+// réussis de Tom (enfants) et de Marc (adulte), Léa n'en ayant aucun.
 import { pathToFileURL } from 'node:url';
 
 import { initializeTestEnvironment } from '@firebase/rules-unit-testing';
@@ -51,6 +53,24 @@ export const accounts = {
   },
   teen: { email: 'ado@demo.test', role: 'student', name: 'Camille', groups: ['g-enfants'], students: ['s-camille'] },
 };
+
+/**
+ * Un passage réussi de « puissance 1 » (7 billes sur 9) ou de « puissance 2 » (5 sur 10) tel que l'application l'écrit. Exporté :
+ * le parcours navigateur s'en sert pour jouer la saisie d'un animateur.
+ */
+export const passingAttempt = (student, group, id, createdAt = Timestamp.now(), exercise = 1) => ({
+  groupId: group,
+  seasonId: 'saison',
+  studentId: student,
+  sessionId: `x-${id}`,
+  blockId: 'puissance',
+  exerciseNumber: exercise,
+  date: '2026-10-03T00:00:00.000',
+  potted: exercise === 1 ? 7 : 5,
+  total: exercise === 1 ? 9 : 10,
+  createdAt,
+  recordedAt: Timestamp.now(),
+});
 
 const localHost = /^(127\.0\.0\.1|localhost|\[::1\]):\d+$/;
 
@@ -173,6 +193,35 @@ export const seedEmulators = async (environment = environmentFrom()) => {
           studentIds: account.students ?? [],
           createdAt: now,
         });
+      }
+      // Séances planifiées dans deux jours (le parcours navigateur suit l'horloge réelle).
+      const inTwoDays = new Date();
+      inTwoDays.setHours(0, 0, 0, 0);
+      inTwoDays.setDate(inTwoDays.getDate() + 2);
+      const plannedDate = `${inTwoDays.getFullYear()}-${String(inTwoDays.getMonth() + 1).padStart(2, '0')}-${String(inTwoDays.getDate()).padStart(2, '0')}T00:00:00.000`;
+      await put(`clubs/${demoClubId}/sessions/s-rebond`, {
+        groupId: 'g-enfants',
+        seasonId: 'saison',
+        title: 'Rebond au centre',
+        date: plannedDate,
+        audience: 'children',
+        sheetId: null,
+        createdAt: now,
+      });
+      await put(`clubs/${demoClubId}/sessions/s-adultes`, {
+        groupId: 'g-adultes',
+        seasonId: 'saison',
+        title: 'Séance des adultes',
+        date: plannedDate,
+        audience: 'adults',
+        sheetId: null,
+        createdAt: now,
+      });
+      // Cinq passages réussis (7 billes sur 9, taux de « puissance 1 ») valident l'exercice.
+      for (const [student, group] of [['s-tom', 'g-enfants'], ['s-marc', 'g-adultes']]) {
+        for (let n = 1; n <= 5; n++) {
+          await put(`clubs/${demoClubId}/attempts/a-${student}-${n}`, passingAttempt(student, group, `${student}-${n}`, now));
+        }
       }
       await put(`invitations/${demoInvitationCode}`, {
         clubId: demoClubId,

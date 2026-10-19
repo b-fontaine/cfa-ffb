@@ -27,6 +27,10 @@ void main() {
     File('$real/firestore.indexes.json')
         .copySync('${copy.path}/firestore.indexes.json');
     _copy('$real/seances', '${copy.path}/seances');
+    _copy(
+      '$real/docs/engineering/conformite',
+      '${copy.path}/docs/engineering/conformite',
+    );
 
     // Corrompre la fiche à la source ET dans l'asset : l'étape de synchro
     // reste verte, seule l'étape de validation des fiches peut échouer.

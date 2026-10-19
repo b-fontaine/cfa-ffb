@@ -9,7 +9,6 @@ import 'package:billard_cfa/entities/invitation/domain/invitation.dart';
 import 'package:billard_cfa/entities/invitation/domain/invitation_log.dart';
 import 'package:billard_cfa/entities/invitation/domain/issued_invitations.dart';
 import 'package:billard_cfa/entities/membership/domain/member.dart';
-import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/features/administration/presentation/bloc/administration_cubit.dart';
 import 'package:billard_cfa/features/administration/presentation/bloc/administration_state.dart';
 import 'package:billard_cfa/features/administration/presentation/ui/administered_club_card.dart';
@@ -23,8 +22,7 @@ import 'package:billard_cfa/features/manage_club/presentation/ui/issued_invitati
 import 'package:billard_cfa/features/sign_in/presentation/bloc/join_cubit.dart';
 import 'package:billard_cfa/features/sign_in/presentation/bloc/join_state.dart';
 import 'package:billard_cfa/features/sign_in/presentation/ui/join_form.dart';
-import 'package:billard_cfa/features/student_showcase/presentation/bloc/linked_students_cubit.dart';
-import 'package:billard_cfa/features/student_showcase/presentation/ui/linked_students_list.dart';
+import 'package:billard_cfa/features/student_showcase/presentation/bloc/family_space_cubit.dart';
 import 'package:billard_cfa/pages/administration/presentation/administration_page.dart';
 import 'package:billard_cfa/pages/club/presentation/club_page.dart';
 import 'package:billard_cfa/pages/invite_member/presentation/invite_member_page.dart';
@@ -341,22 +339,6 @@ Widget buildAdministeredClubCardUseCase(BuildContext context) => _padded(
   ),
 );
 
-@widgetbook.UseCase(
-  name: 'Élèves liés au compte',
-  type: LinkedStudentsList,
-  path: _path,
-)
-Widget buildLinkedStudentsListUseCase(BuildContext context) => WorldScope(
-  builder: (context, world) => _padded(
-    LinkedStudentsList(
-      students: context.knobs.boolean(label: 'Aucun élève lié')
-          ? const <Student>[]
-          : [world.children, world.classmate],
-      onShow: (_) {},
-    ),
-  ),
-);
-
 @widgetbook.UseCase(name: 'Mon club', type: ClubPage, path: _path)
 Widget buildClubPageUseCase(BuildContext context) {
   final role = _role(
@@ -451,11 +433,11 @@ Widget buildMyChildrenPageUseCase(BuildContext context) {
     role: student ? Role.student : Role.guardian,
     builder: (context) => BlocProvider(
       create: (_) {
-        final cubit = getIt<LinkedStudentsCubit>();
+        final cubit = getIt<FamilySpaceCubit>();
         unawaited(cubit.load());
         return cubit;
       },
-      child: MyChildrenPage(studentOwnAccount: student, onShow: (_) {}),
+      child: MyChildrenPage(studentOwnAccount: student),
     ),
   );
 }
