@@ -38,6 +38,27 @@ class FirestoreSessionRepository implements SessionRepository {
     return List.unmodifiable(sessions);
   });
 
+  /// Suit [getAll] : le directeur et l'administrateur la collection ; les
+  /// autres, une requête par groupe (égalité sur `groupId`).
+  @override
+  Stream<List<Session>> watchAll() => guardStoreStream(() {
+    final sessions = _club.paths.sessions;
+    return _club
+        .watchSources([
+          if (_club.manages)
+            ReadSource.collection(sessions)
+          else
+            for (final group in _club.groupIds)
+              ReadSource.query(sessions, FieldEquals('groupId', group.value)),
+        ])
+        .map((documents) {
+          final sessions = <Session>[
+            for (final document in documents) SessionDocument.decode(document),
+          ]..sort(SessionDocument.compare);
+          return List<Session>.unmodifiable(sessions);
+        });
+  });
+
   @override
   Future<void> add(Session session) => guardStore(() async {
     final group = session.groupId;

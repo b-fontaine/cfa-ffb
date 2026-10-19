@@ -5,6 +5,7 @@ import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
+import 'package:billard_cfa/shared/persistence/drift_watch.dart';
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
@@ -113,4 +114,16 @@ class DriftAttemptRepository implements AttemptRepository {
         ),
     ];
   }
+
+  @override
+  Stream<List<ExerciseAttempt>> watchForStudent(StudentId studentId) =>
+      _db.watchTables([_db.attempts], () => forStudent(studentId));
+
+  @override
+  Stream<List<ExerciseAttempt>> watchForSession(SessionId sessionId) =>
+      _db.watchTables([_db.attempts], () => forSession(sessionId));
+
+  @override
+  Stream<List<ExerciseAttempt>> watchAll() =>
+      _db.watchTables([_db.attempts], all);
 }

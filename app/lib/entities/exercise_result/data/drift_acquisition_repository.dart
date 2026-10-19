@@ -4,6 +4,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.da
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
+import 'package:billard_cfa/shared/persistence/drift_watch.dart';
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
@@ -83,4 +84,12 @@ class DriftAcquisitionRepository implements AcquisitionRepository {
         ),
     ];
   }
+
+  @override
+  Stream<List<BlockAcquisition>> watchForStudent(StudentId studentId) =>
+      _db.watchTables([_db.blockAcquisitions], () => forStudent(studentId));
+
+  @override
+  Stream<List<BlockAcquisition>> watchAll() =>
+      _db.watchTables([_db.blockAcquisitions], all);
 }

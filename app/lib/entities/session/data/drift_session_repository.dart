@@ -5,6 +5,7 @@ import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
+import 'package:billard_cfa/shared/persistence/drift_watch.dart';
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
@@ -86,4 +87,8 @@ class DriftSessionRepository implements SessionRepository {
       (_db.update(_db.plannedSessions)..where((s) => s.id.equals(id))).write(
         PlannedSessionsCompanion(deletedAt: Value(_clock.now())),
       );
+
+  @override
+  Stream<List<Session>> watchAll() =>
+      _db.watchTables([_db.plannedSessions], getAll);
 }

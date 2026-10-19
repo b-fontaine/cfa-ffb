@@ -23,4 +23,24 @@ abstract interface class StudentRepository {
   /// l'effacement) : aucune trace ne subsiste, y compris d'une suppression
   /// logique antérieure ; sans effet s'il n'existe pas.
   Future<void> erase(StudentId id);
+
+  /// Suit une fiche (FB5b) : son état courant, puis un état à chaque
+  /// changement, de cet appareil ou d'un autre ; `null` quand elle n'existe
+  /// pas (ou plus). Ajout **ciblé** : les `Future` ci-dessus restent.
+  ///
+  /// Contrat commun des `watch…` des dépôts : l'état courant d'abord ; un état
+  /// à chaque changement, jamais deux fois le même de suite ; une erreur
+  /// (`ServiceFailure`, par exemple `denied` quand le membre perd ses droits)
+  /// arrive sur le flux, sans toucher les autres flux. **Firestore** ferme le
+  /// flux après l'erreur (une écoute terminée ne reprend pas : l'abonné la
+  /// rouvre, voir `LiveReload`) ; **mémoire et drift** le laissent ouvert (une
+  /// lecture qui échoue est livrée en erreur, la suivante peut réussir) : un
+  /// abonné ne présume pas de la fermeture et rouvre dans tous les cas ;
+  /// annuler l'abonnement libère l'écoute ; chaque flux se lit sous le rôle
+  /// et le club où il a été ouvert (il se ferme en erreur si ceux-ci
+  /// changent).
+  Stream<Student?> watchById(StudentId id);
+
+  /// Suit la liste que renvoie [all].
+  Stream<List<Student>> watchAll();
 }

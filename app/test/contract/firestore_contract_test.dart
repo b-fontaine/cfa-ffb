@@ -46,6 +46,7 @@ import 'backup_contract.dart';
 import 'planning_contract.dart';
 import 'repository_contract.dart';
 import 'repository_harness.dart';
+import 'repository_watch_contract.dart';
 import 'season_archive_contract.dart';
 import 'settings_contract.dart';
 import 'student_group_contract.dart';
@@ -182,6 +183,8 @@ void main() {
       addReplaces: false,
     ),
   );
+
+  repositoryWatchContract('Firestore (faux en mémoire)', _openAll);
 
   backupImportUnsupportedContract(
     'Firestore (faux en mémoire, montage de production)',

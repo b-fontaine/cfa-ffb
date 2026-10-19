@@ -96,7 +96,8 @@ Le plan **Spark** (gratuit) impose : pas de Cloud Functions (donc ni claims pers
 figés par les tests de règles de FB3, pas par ce tableau. Le catalogue, les fiches et les diagrammes restent des **assets**.
 15. **Conflits (B5)** : dernier écrit gagne **par document** pour les scalaires (nom, réglages, titre) ; les listes datées
     (`audienceHistory`, appartenances) sont des **documents ajoutés, sans réécriture** ; suppression **physique** par défaut ;
-    `deletedAt` seulement s'il a un sens métier ; l'acquittement « Vu » est **partagé par club** et enregistre l'`uid`. Les méthodes
+    `deletedAt` seulement s'il a un sens métier ; l'acquittement « Vu » est **partagé par club** et enregistre l'`uid`.
+    *Table document → règle, un test par ligne, et limites : notes FB5b.* Les méthodes
     `idsEver*` de l'effacement par lien (ADR 0020) sont à réexpliquer sur les appartenances closes. `backupReminderDays` est retiré en
     FB5 pour les clubs synchronisés. Les **réglages du club** (`RulesConfig`) sont séparés des **préférences d'appareil** (A11).
 
@@ -218,7 +219,7 @@ figés par les tests de règles de FB3, pas par ce tableau. Le catalogue, les fi
     l'IP) ; MFA pour directeur et admin à étudier.
   - **C4 (FB5)** persistance hors ligne activée partout, cache vidé à la déconnexion, avertissement appareil partagé, pastille discrète
     « À jour / Envoi en attente (n) / Hors ligne ». **Libellés fr/en à valider : l'animateur.** *FB5a (2026-10-19) : persistance, cache vidé,
-    avertissement et pastille livrés (notes FB5a) ; `watch…` et cubits abonnés : FB5b.*
+    avertissement et pastille livrés (notes FB5a) ; `watch…` et cubits abonnés livrés en FB5b (notes FB5b).*
   - **C5 (FB1)** Android signé pour FB8 ; iOS préparé sans distribution (PWA en repli) ; le web suffit de FB1 à FB7.
   - **C6 (FB3)** écran Administration minimal (clubs, directeurs, codes d'invitation de directeur), admins créés en console ; club « Démo »
     ordinaire avec compte de démonstration (mot de passe partagé, à faire tourner) ; textes rédigés par l'agent, **marqués « à valider »**.
@@ -491,7 +492,7 @@ Les règles et les index ont été **déployés sur le projet réel par l'utilis
   écriture simple si le cache ne la connaît pas (`createdAt` du serveur) ; si elle existait pourtant sur le serveur, la mise à jour qui changerait
   `createdAt` est refusée par les règles (nouveau test d'attaque `planning.test.mjs`). Une saisie **liée** à une séance du catalogue
   (identifiant déterministe, deux appareils peuvent la créer ensemble) garde la transaction `createIfAbsent` : **impossible hors ligne**,
-  limite précise, **reste de FB5b** (voie sûre à concevoir : la règle ne sait pas refuser une création concurrente sans transaction).
+  limite précise, **levée en FB5b** (écriture simple refusée par les règles si la saisie existe, puis reprise : notes FB5b, E).
 - **Corrections de revue FB5a** : (1) **garde de déconnexion fondée sur le SDK** : `hasUnsentWrites` ne lit plus le seul compteur en mémoire
   (perdu au rechargement alors que la file IndexedDB survit) ; le port `SendStatus` gagne `hasUnsentWrites()` et `refresh()`, alimentés par
   `PendingWritesProbe` (`app/platform/firestore_pending_writes_probe.dart` : `waitForPendingWrites` borné à 800 ms ; l'attente sans borne
@@ -516,7 +517,136 @@ Les règles et les index ont été **déployés sur le projet réel par l'utilis
 - **Déploiement des règles et des index par la CI** : décision de l'utilisateur du 2026-10-18, [deploiement-firestore.md](../deploiement-firestore.md) :
   workflow appelé par le workflow d'hébergement, **hébergement après règles et index** (`needs`), tests d'abord, fédération d'identité de
   charge de travail sans clé JSON, jamais depuis une pull request ; étapes de l'utilisateur documentées, **jamais exécuté contre le projet réel**.
-- **Reste pour FB5b** : méthodes `watch…` (flux) sur les dépôts lus par plusieurs appareils et cubits abonnés ; règle de conflit documentée ;
+- **Reste pour FB5b** *(traité : voir les notes FB5b ; ce qui reste y est listé)* : méthodes `watch…` (flux) sur les dépôts lus par plusieurs appareils et cubits abonnés ; règle de conflit documentée ;
   scénario BDD « la fiche se met à jour sans rechargement » ; écritures hors unité de travail rendues non bloquantes ; saisie liée hors ligne ;
   indice de réseau natif ; l'indicateur « prêt hors ligne » ; parcours navigateur hors ligne réel (Playwright `setOffline` sur l'application
   compilée avec `DATA_BACKEND=firestore` et l'émulateur) ; Safari ancien sans carte d'import.
+
+## Notes de réalisation du lot FB5, partie B (2026-10-19, temps réel, règle de conflit, hors ligne des écritures ; aucune décision nouvelle)
+
+Comme en partie A : **aucun accès au projet réel** (émulateurs `demo-cfa-ffb`, doubles et faux Firestore). `DATA_BACKEND` reste `drift` par
+défaut ; la bascule est le lot dédié après FB7.
+
+- **Flux du port `DocumentStore`** : `watchDocument`, `watchCollection`, `watchQuery` (mêmes filtres que les lectures : une égalité, un
+  `array-contains-any`, plusieurs égalités sur des champs différents, **aucun index composite**, `check_indexes` inchangé). Un état complet à
+  chaque changement (jamais un delta), trié par identifiant, **un lot arrive en un seul état** (prouvé contre l'émulateur ; le faux Firestore le
+  livre document par document). Métadonnées `UpdateMetadata` (`fromCache`, `hasPendingWrites`) portées par chaque état (`DocumentUpdate`,
+  `CollectionUpdate`) : le SDK n'est pas appelé avec `includeMetadataChanges`, donc aucun état « pour rien » ; les dépôts ne s'en servent pas
+  (la pastille dit déjà l'envoi en attente), le port les offre pour les écrans à venir. **Erreur** : un `StoreFailure` (`permissionDenied`
+  d'abord) arrive sur le flux, qui **se ferme** (une écoute Firestore est terminée après une erreur) ; les autres flux ne sont pas touchés ;
+  **annuler** l'abonnement annule l'écoute du SDK (`relayStream`, testé). Le SDK n'est touché que dans `app/platform/firestore_document_store.dart`
+  (`FirestoreAccess.watch…`).
+- **Flux liés à la portée** : `ClubStore.watch…` mémorise club, rôle, groupes et fiches à l'ouverture ; si la session change (autre club, autre
+  rôle, autre périmètre, déconnexion), le flux livre `permissionDenied` (`scope-changed`) et se ferme **en relâchant l'écoute**, au lieu de
+  servir des documents d'un périmètre perdu. **La fermeture est immédiate** : `ActiveClubScope.changes` (signal synchrone à chaque écriture de la
+  portée) fait réévaluer la portée à chaque flux épinglé (`relayStream`, `recheck`), qui se ferme et relâche son écoute sans attendre un
+  événement du serveur (test `activeWatchers == 0` juste après `deactivateClub()`). La clé de portée est **triée** (groupes, fiches) : le même
+  ensemble relu dans un autre ordre ne ferme rien. **`ClubScoped` ne referme pas les blocs des pages ouvertes** : il est posé dans
+  `MaterialApp.builder` et le `Navigator` de go_router (clé globale) survit à sa reconstruction ; il ne reconstruit que ce qui est sous lui. Les
+  défenses réelles sont donc : (1) `ClubStore._pinned` ferme les flux épinglés (`permissionDenied` `scope-changed`), (2) `LiveReload` relit
+  puis **rouvre** le flux après l'erreur (une seule fois sans donnée entre-temps, pas de boucle ; `restart` repart de zéro) et rouvre ainsi
+  l'écoute sous la nouvelle portée, (3) `ClubScoped` (clé `(club, rôle, groupes, fiches)`) reconstruit ce qui est sous lui. Scénario BDD
+  « A screen keeps following the data when the scope of the account changes ». Limites assumées (FB5b) : (a) les blocs à transformateur
+  concurrent (`StudentSheetBloc`) peuvent émettre le résultat d'une relecture plus ancienne après un plus récent (`LiveReload` ne sérialise pas
+  les relectures des événements `changed` et `started`) ; la relecture suivante corrige l'écran ; (b) un enseignant peut ajouter par `arrayUnion`
+  l'identifiant d'un élève d'un **autre** groupe aux présents d'une saisie de son groupe (attaque jouée à l'émulateur, antérieure à FB5 : les
+  règles ne bornent pas l'appartenance des présents au groupe, faute de budget de `get()`) ; (c) contrat `watch…` : Firestore ferme le flux après
+  une erreur, mémoire et drift le laissent ouvert (le port le dit par backend) ; l'abonné rouvre dans tous les cas.
+  `ClubStore.watchSources`
+  décrit une lecture par rôle (collection, requête, document) et les combine (`combineLatest`) : l'état est toujours celui de **toutes** les
+  sources, une erreur d'une source ferme l'ensemble et libère toutes les écoutes.
+- **`watch…` des dépôts (ajout ciblé, les `Future` sont conservés)** : `StudentRepository.watchById/watchAll`, `GroupRepository.watchAll/watchById`
+  (groupe + appartenances), `SessionRepository.watchAll`, `SessionRecordRepository.watchForGroup/watchForStudent/watchAll`,
+  `AttemptRepository.watchForStudent/watchForSession/watchAll`, `AcquisitionRepository.watchForStudent/watchAll`,
+  `AcknowledgementRepository.watchForStudent/watchAll` (« Vu » partagé : l'acquittement d'un collègue arrive), `AssessmentRepository.watchForStudent`.
+  **Liste minimale** : celle que lisent la fiche d'un élève, la liste des groupes et la séance du jour ; les saisons, les archives et les
+  réglages ne se suivent pas (ils changent par une action de cet appareil ou rarement ; le club n'est pas relu en cours de séance). Chaque dépôt
+  Firestore suit **les mêmes requêtes que sa lecture** par rôle (gestionnaire : la collection ; enseignant : un groupe à la fois ;
+  parent et élève : la fiche liée ; aucune écoute pour ce que les règles cachent : saisies, bilans, « Vu » rendent un flux d'une liste vide) :
+  tests par rôle (`firestore_watch_roles_test`, journal des écoutes du double) et contre les vraies règles (`watch.test.mjs`). Mémoire et
+  drift implémentent le même contrat : mémoire par `ObservedMap` (annonces **retenues jusqu'à la fin d'une unité de travail, annulation
+  comprise** : un abonné ne voit jamais un état à moitié appliqué), drift par `tableUpdates` (qui n'annonce qu'à la validation).
+- **Écrans abonnés (lecture seule d'abord)** : `StudentSheetBloc` (fiche), `StudentsBloc` (liste des groupes et des élèves, partagée par
+  trois pages), `UpcomingSessionsCubit` (séance du jour de l'accueil). Le temps réel ne réécrit **aucune règle de calcul** : les cas d'usage
+  `WatchStudentSheet`, `WatchClubOverview`, `WatchUpcomingSessions` fondent les flux des dépôts en un flux de **changements** (`changesOf` : le
+  premier état de chaque source est l'état de départ, ignoré) et l'écran se **recharge en place** par son cas d'usage habituel, sans état de
+  chargement. `LiveReload` tient les règles : **un seul abonnement** (démarrer deux fois n'en ouvre pas un second), jamais deux relectures en
+  parallèle (les changements qui arrivent pendant une relecture se fondent en une), une erreur du flux déclenche aussi une relecture (elle
+  reproduit l'échec par le chemin normal : refus affiché comme à un chargement, localisé), « Réessayer » **rouvre** l'écoute fermée par
+  l'erreur, la fermeture du bloc la relâche. Le guide « Mener » n'est **pas** concerné : il tourne sur le catalogue (assets) et la progression
+  locale de l'appareil (ADR 0020), aucune donnée partagée. Effet de bord assumé : un écran qui se met à jour peut déplacer un bouton sous le
+  doigt ; quatre scénarios BDD existants plaçaient leurs `Given` après le lancement et sont réordonnés (données d'abord, application ensuite).
+- **Règle de conflit (B5), table document → règle.** Une ligne, un test (`C1` à `C13`) sur le faux Firestore **et** sur le double du stock
+  (`conflict_contract.dart`, deux appareils, `Future.wait`) et contre l'émulateur avec les vraies règles et deux clients
+  (`conflicts.test.mjs`). Quand la règle est « dernier écrit gagne », le test vérifie ce qui est vrai quel que soit l'ordre : le résultat est
+  **l'une des deux écritures, entière** (jamais un mélange) et les deux appareils lisent la même chose.
+
+  | # | Document | Règle de conflit | Mécanisme |
+  |---|---|---|---|
+  | C1 | `students/{id}` (prénom, public, historique) | **dernier écrit gagne par document** ; `groupIds` jamais réécrit par un enregistrement de la fiche | `SetOp(merge)` + `ArrayUnion([])` |
+  | C2 | `students/{id}.groupIds` | **réunion** commutative : deux groupes ajoutés ou retirés en même temps s'additionnent | `ArrayUnion` / `ArrayRemove` côté serveur |
+  | C3 | `groups/{id}` | nom et public : dernier écrit gagne ; appartenances de deux élèves différents : **réunies** | `UpdateOp` + un document par appartenance |
+  | C4 | `memberships/{groupe_élève_début}` | identifiant **déterministe** : deux écritures identiques sont un seul document ; contenu différent : dernier écrit gagne | identifiant lié au contenu |
+  | C5 | `records/{groupe_jour_séance}` (saisie liée) | **une création**, présents **réunis**, date de création et blocs du premier | `createIfAbsent` (transaction) puis `ArrayUnion` ; hors ligne : voir E |
+  | C6 | `records/{id}` (enregistrer) | remplacement en bloc, dernier écrit gagne ; `resume` remplace les présents, `open` les réunit | fusion `SetOp` sans `createdAt` |
+  | C7 | `records/{id}.tags` | liste remplacée **en bloc**, dernier écrit gagne | `UpdateOp` |
+  | C8 | `attempts/{id}` (passages) | **ajout seul**, un document par passage : jamais de conflit ; rejouer un identifiant est **refusé** par les règles ; ordre `createdAt` serveur, `recordedAt`, identifiant | `SetOp` ; règle de création |
+  | C9 | `attempts/{id}` (correction) | dernier écrit gagne sur `potted`/`total` **seulement** (toute autre modification est refusée) | `UpdateOp` ; règle de mise à jour |
+  | C10 | `acquisitions/{id}` | un document par marquage : les doublons sont **fusionnés par le calcul** (dernier par bloc), indépendamment de l'ordre | `StudentProgress.derive` |
+  | C11 | `acknowledgements/{id}` (« Vu » partagé) | un document par acquittement, `createdBy` = uid de son auteur (jamais au nom d'un collègue) ; le calcul garde le dernier par exercice | règle `createdBy`, `derive` |
+  | C12 | `sessions/{id}` (planifiées) | un document par séance : deux appareils qui planifient s'additionnent | UUID |
+  | C13 | tous : suppression et documents uniques | suppression **physique** idempotente ; une mise à jour (`update`) d'un document supprimé échoue, elle ne le recrée pas ; réglages du club : une écriture entière gagne | `DeleteOp`, `UpdateOp` |
+
+  **Cas sans règle sûre, listés comme limites (tests de caractérisation `L1` à `L4`, `conflict_contract.dart`) :**
+  - **L1** `GroupRepository.save` écrit l'agrégat entier : une **copie périmée** d'un groupe supprime l'appartenance ajoutée entre-temps par un
+    autre appareil (les flux réduisent la fenêtre, ils ne la ferment pas ; une vraie correction demande des opérations d'appartenance, pas
+    l'agrégat : à traiter avec FB7/FB8).
+  - **L2** `StudentRepository.save` écrit par fusion : enregistrer une fiche supprimée ailleurs la **recrée** (`set merge`, prouvé contre
+    l'émulateur) ; une mise à jour pure (`update`) ne la recrée pas.
+  - **L3** l'historique du public est une liste embarquée **remplacée en bloc** (écart assumé à la décision 15, notes FB4a) : un changement de
+    public fait sur un appareil est perdu si un autre enregistre ensuite une fiche lue avant ; seul un gestionnaire change le public.
+  - **L4** étiquettes et présents d'un `save`/`resume` sont des listes remplacées en bloc : un ajout fait ailleurs entre-temps est perdu (les
+    présents d'une **ouverture** sont réunis, voir C5).
+  - **L5** la reprise d'une création de saisie hors ligne ne survit pas à la fermeture de l'application (voir E).
+- **E. Saisie liée à une séance du catalogue hors ligne** : la transaction `createIfAbsent` est impossible hors ligne ; **voie sûre
+  implémentée sans toucher aux règles** : identifiant déterministe + **écriture simple** `createdAt` du serveur. Les règles l'acceptent si la
+  saisie n'existe pas (création) et la **refusent** si elle existe (elle changerait `createdAt`, figé : la règle existante, pas une règle
+  affaiblie) ; le refus déclenche la **reprise** : les présents sont réunis (`ArrayUnion`, comme `open` en ligne). `ClubStore.mayAwaitServer`
+  décide (réseau non connu coupé et aucun envoi en attente : la transaction ; sinon, ou si elle ne répond pas dans `ackGrace`, l'écriture
+  simple). **Convergence prouvée** contre l'émulateur avec le vrai SDK hors ligne (`disableNetwork`/`enableNetwork`) : `conflicts.test.mjs`
+  `E1` à `E4` (création acceptée ; saisie créée entre-temps : refus puis union ; deux appareils hors ligne : le premier reconnecté crée, le
+  second est refusé puis réunit ; borne de 60 présents tenue) ; tests Dart avec un double qui rejoue la règle. **Limite précise (L5)** : la
+  reprise vit avec l'application ; si elle est fermée avant la reconnexion, le SDK rejoue l'écriture mise en file au démarrage suivant **sans
+  reprise** et, si la saisie existe alors, le refus est signalé par la pastille (« annulée sur cet appareil ») ; rouvrir la saisie réunit les
+  présents. Aucune donnée n'est perdue en silence.
+- **F. Écritures hors unité de travail non bloquantes** : inventaire (grep des `commit` hors `UnitOfWork`) : **cas d'usage** `RecordAttempt`,
+  `CorrectAttempt`, `DeleteAttempt`, `OpenSession`/`OpenOrResumeSession`, `SetSessionTags`, `RecordAssessment`, `PlanSession`, `DeleteSession`,
+  `CreateGroup`, `RenameGroup`, `DeleteGroup`, `RenameStudent`, `SaveSettings` : tous passent par `ClubStore.commit`, dont le `Future` du SDK
+  n'est achevé **qu'à l'accusé du serveur** (donc jamais hors ligne : l'interface restait suspendue, par exemple à la saisie d'un passage).
+  **Corrigé en un point** : `ClubStore.commit` n'attend plus l'accusé que `ackGrace` (1,5 s), pas du tout si le réseau est connu coupé ou si
+  un envoi attend déjà (les accusés arrivent dans l'ordre), puis confie l'envoi au `SendTracker` (pastille, refus tardif). **Un refus dans le
+  délai reste l'échec de l'appelant** (la traduction `tooManyPresent` est conservée) ; un refus tardif arrive à la pastille et annule
+  l'écriture sur l'appareil, comme pour les lots d'unité de travail (FB4c). Sans suivi (tests unitaires des dépôts), l'écriture est attendue
+  comme avant. **Restent bloquants hors ligne, volontairement en ligne** : création et renommage de club, émission et révocation d'une
+  invitation, retrait d'un membre, publication de la fiche à l'invitation (`StoreClubRepository`, `StoreInvitationRepository`,
+  `StoreMemberRepository`, `StoreStudentDirectory`, qui parlent à `DocumentStore` sans passer par `ClubStore`) : une invitation émise hors
+  ligne n'est utilisable qu'à l'envoi ; leur donner une erreur franche (`unavailable`) plutôt qu'une attente est un reste de FB6/FB7 (le
+  réseau natif n'est pas connu).
+- **G. Indicateur « prêt hors ligne » : reporté, décision motivée.** Définir « prêt » demande deux signaux qu'on n'a pas encore : le service
+  worker actif et son précache complet (pont JavaScript à ajouter) et un cache de données **complet** pour l'usage hors ligne, que le SDK ne
+  sait pas affirmer (il sait si un document est au cache, pas si le club l'est) : afficher « prêt » à tort rassurerait faussement un
+  animateur dont la fiche d'un élève n'a jamais été ouverte. Tant que `DATA_BACKEND=drift`, les données sont locales et l'application
+  hors ligne depuis le lot 15 (sans indicateur) ; la pastille dit déjà « Hors ligne » et « Envoi en attente ». À reprendre **après la
+  bascule**, avec la définition suivante : service worker actif et précache complet **et** premier état confirmé par le serveur
+  (`fromCache` faux, désormais porté par `UpdateMetadata`) pour chaque flux de la session.
+- **Doubles de test** : `DeviceDocumentStore` (un appareil devant un serveur partagé : coupure du réseau, flux retenus puis rattrapés,
+  écritures mises en file, sans cache local ni règles ; limites dites dans `testing.md`) et `OtherDevice` (un graphe complet de plus, autre
+  session, mêmes dépôts Firestore) servent aux scénarios BDD multi-appareils (`live_sync.feature`, 6 scénarios : la fiche suit un passage
+  saisi ailleurs, la liste suit une fiche créée ailleurs, l'accueil suit une séance planifiée ailleurs, aucun abonnement ne reste après
+  une page quittée, l'accès retiré ferme les écoutes et le dit, un appareil hors ligne rattrape à la reconnexion). **Rouge vu** : sans
+  abonnement, 5 de ces 6 scénarios échouent ; sans libération à la fermeture, le sixième.
+- **Reste pour FB6 et au-delà** : espace élève (lecture seule, mêmes flux filtrés par la fiche liée) ; erreur franche pour les écritures
+  volontairement en ligne ; opérations d'appartenance atomiques (L1) ; reprise durable d'une création hors ligne (L5) si le besoin se
+  confirme ; « prêt hors ligne » après la bascule ; parcours navigateur hors ligne réel (Playwright `setOffline` sur le build compilé avec
+  `DATA_BACKEND=firestore` et l'émulateur) ; indice de réseau natif ; Safari ancien sans carte d'import ; flux de l'écran de groupe
+  (`GroupOverviewCubit`), de l'alerte de groupe et de la semaine, qui reposent sur les mêmes `watch…` mais n'ont pas été abonnés ici.

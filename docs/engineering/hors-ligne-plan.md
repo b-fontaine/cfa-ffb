@@ -139,8 +139,45 @@ dans le code Dart.
   (`navigator.onLine`) ; natif : toujours « en ligne ».
 - **Écritures hors ligne** : cache d'abord, serveur ensuite (`cachedOrGet`) ; seul « hors ligne » vaut « absent du cache » ; pour
   les blocs acquis, bilans et « Vu » ; saisie **libre** créée hors ligne ; saisie
-  **liée** à une séance du catalogue : impossible hors ligne (transaction), reste
-  de FB5b. Détail : ADR 0024, notes FB5a.
+  **liée** à une séance du catalogue : voir la section FB5b ci-dessous. Détail :
+  ADR 0024, notes FB5a.
+
+### Écritures et flux hors ligne (FB5b, 2026-10-19)
+
+- **Aucune écriture de données ne suspend l'interface hors ligne** : le `Future`
+  d'un lot du SDK n'est achevé qu'à l'accusé du serveur ; `ClubStore.commit`
+  n'attend plus que 1,5 s (pas du tout si le réseau est connu coupé ou si un envoi
+  attend déjà), puis le suivi des envois (pastille) prend le relais. Un refus
+  tardif annule l'écriture sur l'appareil et le dit par la pastille. Restent en
+  attente hors ligne, volontairement en ligne : création de club, invitations,
+  retrait d'un membre, publication de la fiche à l'invitation.
+- **Saisie liée à une séance du catalogue** : la transaction étant impossible
+  hors ligne, écriture simple `createdAt` du serveur ; les règles la refusent si
+  la saisie existe (elle changerait la date figée) ; le refus déclenche la
+  reprise (union des présents). Prouvé avec le vrai SDK hors ligne (émulateur).
+  **Limite** : la reprise vit avec l'application ; fermée avant la
+  reconnexion, la file du SDK est rejouée au démarrage sans reprise et le refus
+  éventuel est signalé par la pastille.
+- **Flux à la reconnexion** : un écran abonné garde son dernier état hors ligne
+  et reçoit l'état courant du serveur à la reconnexion (prouvé par
+  `watch.test.mjs` : `disableNetwork` / `enableNetwork`), sans rechargement.
+- **Changement de portée (club, rôle, groupes, fiches)** : `ClubStore` ferme les
+  flux épinglés dès l'écriture de la portée (`permissionDenied`
+  `scope-changed`, écoute relâchée sans attendre un événement du serveur).
+  `ClubScoped` **ne referme pas** les blocs des pages ouvertes (posé dans
+  `MaterialApp.builder`, le `Navigator` de go_router a une clé globale) : c'est
+  `LiveReload` qui relit puis rouvre l'écoute après l'erreur, sous la nouvelle
+  portée ; `ClubScoped` reconstruit ce qui est sous lui. Limites assumées
+  (ADR 0024, notes FB5b) : relectures concurrentes d'un bloc pouvant livrer un
+  état plus ancien après un plus récent ; `arrayUnion` d'un enseignant sur les
+  présents d'une saisie ; Firestore ferme un flux après une erreur, mémoire et
+  drift le laissent ouvert.
+- **« Prêt hors ligne »** : reporté après la bascule. Le service worker sait dire
+  « précache complet » (pont `window.cfaOffline` à étendre), mais le cache de
+  données ne sait pas se dire complet : un indicateur rassurerait à tort un
+  animateur dont la fiche d'un élève n'a jamais été ouverte. Définition à
+  reprendre : service worker actif et précache complet **et** premier état
+  confirmé par le serveur (`fromCache` faux) pour chaque flux de la session.
 
 **Risques résiduels.**
 

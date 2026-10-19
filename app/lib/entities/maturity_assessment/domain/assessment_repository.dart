@@ -20,4 +20,8 @@ abstract interface class AssessmentRepository {
   /// Efface physiquement tous les bilans de l'élève (droit à l'effacement),
   /// y compris ceux supprimés logiquement.
   Future<void> eraseStudent(StudentId studentId);
+
+  /// Suit les bilans d'un élève (voir [forStudent] ; contrat des `watch…` :
+  /// `StudentRepository.watchById`).
+  Stream<List<MaturityAssessment>> watchForStudent(StudentId studentId);
 }

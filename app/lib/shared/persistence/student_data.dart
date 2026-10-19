@@ -80,6 +80,41 @@ final class StudentData {
     ];
   }
 
+  /// Suit [forStudent] : les mêmes requêtes, par rôle, en flux.
+  Stream<List<StoredDocument>> watchForStudent(StudentId student) {
+    final path = _path;
+    return _club.watchSources([
+      if (_club.manages)
+        ReadSource.query(path, FieldEquals('studentId', student.value))
+      else if (_club.role == Role.teacher)
+        for (final group in _club.groupIds)
+          ReadSource.query(
+            path,
+            AllEqual([
+              FieldEquals('groupId', group.value),
+              FieldEquals('studentId', student.value),
+            ]),
+          )
+      else if (familyMayRead && _club.studentIds.contains(student))
+        ReadSource.query(path, FieldEquals('studentId', student.value)),
+    ]);
+  }
+
+  /// Suit [all] : les mêmes requêtes, par rôle, en flux.
+  Stream<List<StoredDocument>> watchAll() {
+    final path = _path;
+    return _club.watchSources([
+      if (_club.manages)
+        ReadSource.collection(path)
+      else if (_club.role == Role.teacher)
+        for (final group in _club.groupIds)
+          ReadSource.query(path, FieldEquals('groupId', group.value))
+      else if (familyMayRead)
+        for (final student in _club.studentIds)
+          ReadSource.query(path, FieldEquals('studentId', student.value)),
+    ]);
+  }
+
   /// Les documents de l'élève, à effacer (réservé aux gestionnaires).
   Future<void> eraseStudent(StudentId student) async {
     final documents = await _club.documents.query(

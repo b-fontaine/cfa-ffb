@@ -34,13 +34,16 @@ import 'package:billard_cfa/shared/persistence/local_data_cache.dart';
 import 'package:billard_cfa/shared/persistence/pending_writes_probe.dart';
 import 'package:billard_cfa/shared/persistence/send_status.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart' show Environment;
 
+import 'device_document_store.dart';
 import 'fake_app_update_source.dart';
 import 'fake_fullscreen_controller.dart';
 import 'fake_pdf_files.dart';
 import 'fixed_clock.dart';
 import 'memberships_fixture.dart';
+import 'shared_server.dart';
 
 /// Monde des scénarios d'interface : graphe get_it réel (dépôts en mémoire,
 /// catalogue de l'asset, horloge figée) et amorçage du club par les cas
@@ -103,7 +106,38 @@ class UiWorld {
   /// Le stock de documents en mémoire du scénario en cours (ce que serait
   /// Firestore).
   static InMemoryDocumentStore get documents =>
-      getIt<DocumentStore>() as InMemoryDocumentStore;
+      _server ?? getIt<DocumentStore>() as InMemoryDocumentStore;
+
+  /// Le serveur partagé entre les appareils du scénario, quand il y en a
+  /// plusieurs ([shareServer]).
+  static InMemoryDocumentStore? _server;
+
+  /// La connexion de l'appareil de la scène à ce serveur (couper, rétablir).
+  static DeviceDocumentStore? _device;
+
+  /// Le nombre d'écoutes ouvertes noté par un scénario.
+  static int notedSubscriptions = 0;
+
+  /// Un autre appareil du même club, sur le même serveur.
+  static OtherDevice? _other;
+
+  /// L'appareil de la scène devant le serveur partagé.
+  static DeviceDocumentStore get device =>
+      _device ?? (throw StateError("le serveur n'est pas partagé"));
+
+  /// L'autre appareil du scénario.
+  static OtherDevice get otherDevice =>
+      _other ?? (throw StateError("le serveur n'est pas partagé"));
+
+  /// Le graphe qui sert à amorcer les données : celui de l'autre appareil
+  /// quand le serveur est partagé (l'appareil de la scène n'a pas encore de
+  /// session avant le lancement), le graphe de la scène sinon.
+  static GetIt get seedGraph => _other?.graph ?? getIt;
+
+  /// Après une écriture de l'autre appareil, laisse la scène la recevoir.
+  static Future<void> settleIfShared(WidgetTester tester) async {
+    if (_other != null) await settle(tester);
+  }
 
   /// Les clubs et les membres des scénarios, écrits dans [documents].
   static MembershipsFixture get memberships => MembershipsFixture(documents);
@@ -198,6 +232,48 @@ class UiWorld {
     });
   }
 
+  /// Fait vivre les données du club sur un **serveur partagé** (FB5b) : les
+  /// dépôts de la scène sont ceux de Firestore, posés sur un `DocumentStore`
+  /// qui peut perdre la connexion ([device]), et un **autre appareil**
+  /// ([otherDevice], un graphe complet de plus, directeur du même club) écrit
+  /// sur le même serveur. Les `Given` d'amorçage passent par cet autre
+  /// appareil : la scène n'a pas de session avant son lancement.
+  static Future<void> shareServer(WidgetTester tester) async {
+    await prepare(tester);
+    if (_server != null) return;
+    final server = getIt<DocumentStore>() as InMemoryDocumentStore;
+    _server = server;
+    final device = DeviceDocumentStore(server);
+    _device = device;
+    await tester.runAsync(() async {
+      await getIt.unregister<DocumentStore>();
+      getIt.registerSingleton<DocumentStore>(device);
+      await useFirestoreRepositories(getIt);
+      _other = await OtherDevice.open(
+        server: server,
+        clock: _clock,
+        user: 'u-other-device',
+        club: clubIdOf(defaultClub),
+      );
+    });
+    addTearDown(() async {
+      _server = null;
+      _device = null;
+      final other = _other;
+      _other = null;
+      await other?.close();
+    });
+  }
+
+  /// Laisse arriver ce que l'autre appareil vient d'écrire : le serveur
+  /// partagé le livre aux flux de la scène, qui rechargent leur écran.
+  static Future<void> settle(WidgetTester tester) async {
+    for (var i = 0; i < 4; i++) {
+      await tester.runAsync(() => pumpEventQueue(times: 100));
+      await tester.pumpAndSettle();
+    }
+  }
+
   /// Fait avancer « aujourd'hui » sans reconstruire les écrans ouverts.
   static void advanceDays(int days) => _clock.advance(Duration(days: days));
 
@@ -221,7 +297,7 @@ class UiWorld {
   }
 
   static Future<Student> studentNamed(String name) async {
-    final students = await getIt<StudentRepository>().all();
+    final students = await seedGraph<StudentRepository>().all();
     return students.firstWhere((student) => student.firstName == name);
   }
 
@@ -233,7 +309,7 @@ class UiWorld {
     await prepare(tester);
     await tester.runAsync(() async {
       _value(
-        await getIt<EnrollStudent>()(
+        await seedGraph<EnrollStudent>()(
           firstName: name,
           audience: audience,
           today: DateTime(today.year, today.month, today.day),
@@ -244,6 +320,7 @@ class UiWorld {
         ),
       );
     });
+    await settleIfShared(tester);
   }
 
   /// Crée un groupe de plus pour [audience] dans la saison en cours (la saison
@@ -256,22 +333,23 @@ class UiWorld {
   ) async {
     await prepare(tester);
     await tester.runAsync(() async {
-      final seasons = await getIt<SeasonRepository>().all();
+      final seasons = await seedGraph<SeasonRepository>().all();
       final season = seasons.firstWhere((s) => s.isOpenOn(today));
       _value(
-        await getIt<CreateGroup>()(
+        await seedGraph<CreateGroup>()(
           seasonId: season.id,
           name: name,
           audience: audience,
         ),
       );
     });
+    await settleIfShared(tester);
   }
 
   /// Le nom du groupe où [student] est membre aujourd'hui.
   static Future<String?> groupNameOf(String student) async {
     final id = (await studentNamed(student)).id;
-    final groups = await getIt<GroupRepository>().all();
+    final groups = await seedGraph<GroupRepository>().all();
     for (final group in groups) {
       if (group.isMemberOn(id, DateTime(today.year, today.month, today.day))) {
         return group.name;
@@ -292,14 +370,14 @@ class UiWorld {
     await prepare(tester);
     await tester.runAsync(() async {
       final student = await studentNamed(name);
-      final groups = await getIt<GroupRepository>().all();
+      final groups = await seedGraph<GroupRepository>().all();
       final group = groups.firstWhere((g) => g.isMemberOn(student.id, today));
-      final catalogue = await getIt<CatalogueRepository>().load();
+      final catalogue = await seedGraph<CatalogueRepository>().load();
       final rate = catalogue.exercise(exercise)!.rate;
       var remaining = count;
       while (remaining > 0) {
         final session = _value(
-          await getIt<OpenSession>()(
+          await seedGraph<OpenSession>()(
             groupId: group.id,
             date: DateTime(2026, 9, 12).add(Duration(days: _seededDays++)),
             present: {student.id},
@@ -307,7 +385,7 @@ class UiWorld {
         );
         for (var pass = 0; pass < 2 && remaining > 0; pass++, remaining--) {
           _value(
-            await getIt<RecordAttempt>()(
+            await seedGraph<RecordAttempt>()(
               sessionId: session.id,
               studentId: student.id,
               exercise: exercise,
@@ -318,6 +396,7 @@ class UiWorld {
         }
       }
     });
+    await settleIfShared(tester);
   }
 
   /// Une séance (la suivante des séances amorcées) où l'élève fait un passage
@@ -331,12 +410,12 @@ class UiWorld {
     await prepare(tester);
     await tester.runAsync(() async {
       final student = await studentNamed(name);
-      final groups = await getIt<GroupRepository>().all();
+      final groups = await seedGraph<GroupRepository>().all();
       final group = groups.firstWhere((g) => g.isMemberOn(student.id, today));
-      final catalogue = await getIt<CatalogueRepository>().load();
+      final catalogue = await seedGraph<CatalogueRepository>().load();
       final total = catalogue.exercise(exercise)!.rate.attempts;
       final session = _value(
-        await getIt<OpenSession>()(
+        await seedGraph<OpenSession>()(
           groupId: group.id,
           date: DateTime(2026, 9, 12).add(Duration(days: _seededDays++)),
           present: {student.id},
@@ -344,7 +423,7 @@ class UiWorld {
       );
       for (final balls in potted) {
         _value(
-          await getIt<RecordAttempt>()(
+          await seedGraph<RecordAttempt>()(
             sessionId: session.id,
             studentId: student.id,
             exercise: exercise,
@@ -354,6 +433,7 @@ class UiWorld {
         );
       }
     });
+    await settleIfShared(tester);
   }
 
   static Future<void> seedValidatedBlock(
@@ -363,7 +443,7 @@ class UiWorld {
   ) async {
     await prepare(tester);
     final catalogue = await tester.runAsync(
-      () => getIt<CatalogueRepository>().load(),
+      () => seedGraph<CatalogueRepository>().load(),
     );
     for (final spec in catalogue!.blockById(blockId)!.exercises) {
       await seedPasses(tester, name, spec.ref, 5, passed: true);
@@ -381,7 +461,7 @@ class UiWorld {
     await tester.runAsync(() async {
       final student = await studentNamed(name);
       _value(
-        await getIt<MarkBlockAcquired>()(
+        await seedGraph<MarkBlockAcquired>()(
           studentId: student.id,
           blockId: blockId,
           date: date,
@@ -389,13 +469,14 @@ class UiWorld {
         ),
       );
     });
+    await settleIfShared(tester);
   }
 
   /// Les groupes où l'élève est membre aujourd'hui.
   static Future<List<String>> currentGroupIdsOf(StudentId student) async {
     final day = DateTime(today.year, today.month, today.day);
     return [
-      for (final group in await getIt<GroupRepository>().all())
+      for (final group in await seedGraph<GroupRepository>().all())
         if (group.isMemberOn(student, day)) group.id.value,
     ];
   }
@@ -446,6 +527,6 @@ class UiWorld {
 
   static Future<int> attemptCountOf(String name) async {
     final student = await studentNamed(name);
-    return (await getIt<AttemptRepository>().forStudent(student.id)).length;
+    return (await seedGraph<AttemptRepository>().forStudent(student.id)).length;
   }
 }

@@ -1,13 +1,15 @@
 import 'package:billard_cfa/entities/exercise_result/domain/acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/persistence/change_feed.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_journal.dart';
 import 'package:injectable/injectable.dart';
 
 /// Implémentation en mémoire (tests, BDD).
 @LazySingleton(as: AcquisitionRepository, env: [Environment.test])
 class InMemoryAcquisitionRepository implements AcquisitionRepository {
-  final Map<AcquisitionId, BlockAcquisition> _acquisitions = {};
+  final ObservedMap<AcquisitionId, BlockAcquisition> _acquisitions =
+      ObservedMap();
 
   @override
   Future<void> add(BlockAcquisition acquisition) async =>
@@ -34,4 +36,11 @@ class InMemoryAcquisitionRepository implements AcquisitionRepository {
       }
     }
   }
+
+  @override
+  Stream<List<BlockAcquisition>> watchForStudent(StudentId studentId) =>
+      _acquisitions.watch(() => forStudent(studentId));
+
+  @override
+  Stream<List<BlockAcquisition>> watchAll() => _acquisitions.watch(all);
 }

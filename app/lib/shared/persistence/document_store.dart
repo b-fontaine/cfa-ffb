@@ -150,6 +150,49 @@ final class AllEqual extends QueryFilter {
   final List<FieldEquals> clauses;
 }
 
+/// D'où vient un instantané reçu en flux (FB5b).
+///
+/// - [fromCache] : l'état vient du cache local de l'appareil, que le serveur
+///   n'a pas (encore) confirmé : l'appareil est hors ligne, ou le serveur n'a
+///   pas encore répondu ;
+/// - [hasPendingWrites] : l'état contient une écriture de **cet** appareil que
+///   le serveur n'a pas encore acceptée (envoi en attente).
+///
+/// Les dépôts n'en font rien d'autre que le diagnostic : la pastille de
+/// synchronisation (`SendStatus`) dit déjà l'envoi en attente. Un double qui
+/// ne modélise aucun cache rend toujours `fromCache` faux.
+final class UpdateMetadata {
+  const UpdateMetadata({this.fromCache = false, this.hasPendingWrites = false});
+
+  final bool fromCache;
+  final bool hasPendingWrites;
+
+  @override
+  String toString() =>
+      'UpdateMetadata(fromCache: $fromCache, '
+      'hasPendingWrites: $hasPendingWrites)';
+}
+
+/// L'état d'un document suivi en flux : `null` s'il n'existe pas (ou plus).
+final class DocumentUpdate {
+  const DocumentUpdate(this.document, [this.metadata = const UpdateMetadata()]);
+
+  final StoredDocument? document;
+  final UpdateMetadata metadata;
+}
+
+/// L'état d'une collection ou d'une requête suivie en flux : tous les
+/// documents, triés par identifiant (jamais un delta).
+final class CollectionUpdate {
+  const CollectionUpdate(
+    this.documents, [
+    this.metadata = const UpdateMetadata(),
+  ]);
+
+  final List<StoredDocument> documents;
+  final UpdateMetadata metadata;
+}
+
 /// Frontière de Firestore pour les dépôts : lire un document, une collection,
 /// une collection de même nom partout (requête de groupe de collections),
 /// écrire un **lot atomique**.
@@ -185,6 +228,29 @@ abstract interface class DocumentStore {
     required String field,
     required Object? equalTo,
   });
+
+  /// Suit le document [path] : son état courant d'abord, puis un état à
+  /// chaque changement (création, mise à jour, suppression : `document` nul).
+  ///
+  /// Contrat commun des trois flux `watch…` (FB5b) :
+  /// - **chaque flux est indépendant** : le refus ou l'échec de l'un
+  ///   n'interrompt aucun autre ;
+  /// - une **erreur** arrive en [StoreFailure] (`permissionDenied` quand les
+  ///   règles refusent, y compris quand l'appareil perd ses droits en cours
+  ///   de route) et **termine** le flux : Firestore ferme l'écoute après une
+  ///   erreur, l'appelant se réabonne s'il le veut ;
+  /// - **annuler** l'abonnement libère l'écoute côté serveur : aucun appel
+  ///   après l'annulation, aucune fuite ;
+  /// - un lot atomique arrive **en un seul état** (jamais à moitié appliqué).
+  Stream<DocumentUpdate> watchDocument(String path);
+
+  /// Suit les documents directement sous [collection], triés par identifiant.
+  /// Contrat : voir [watchDocument].
+  Stream<CollectionUpdate> watchCollection(String collection);
+
+  /// Suit les documents directement sous [collection] qui satisfont [filter].
+  /// Contrat : voir [watchDocument].
+  Stream<CollectionUpdate> watchQuery(String collection, QueryFilter filter);
 
   /// Crée le document [path] **s'il est absent**, atomiquement côté serveur
   /// (lecture et écriture d'une même transaction) ; rend `false`, sans rien

@@ -93,6 +93,14 @@ class FirestoreAcknowledgementRepository implements AcknowledgementRepository {
       guardStore(() async => _sorted(await _data.all()));
 
   @override
+  Stream<List<AlertAcknowledgement>> watchForStudent(StudentId studentId) =>
+      guardStoreStream(() => _data.watchForStudent(studentId).map(_sorted));
+
+  @override
+  Stream<List<AlertAcknowledgement>> watchAll() =>
+      guardStoreStream(() => _data.watchAll().map(_sorted));
+
+  @override
   Future<void> delete(AcknowledgementId id) => guardStore(
     () => _club.commit([DeleteOp(_club.paths.acknowledgement(id))]),
   );

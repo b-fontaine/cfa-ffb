@@ -269,4 +269,10 @@ class _FailingOnSave implements GroupRepository {
   @override
   Future<Set<GroupId>> idsEverContaining(StudentId studentId) =>
       _inner.idsEverContaining(studentId);
+
+  @override
+  Stream<List<Group>> watchAll() => _inner.watchAll();
+
+  @override
+  Stream<Group?> watchById(GroupId id) => _inner.watchById(id);
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:billard_cfa/app/platform/firestore_document_store.dart';
 import 'package:billard_cfa/shared/persistence/document_store.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -75,6 +77,42 @@ class _FakeAccess implements FirestoreAccess {
     calls.add('batch');
     _maybeFail();
     written = writes;
+  }
+
+  /// Les écoutes ouvertes, par nom (`doc a/1`, `collection a`, …).
+  final Map<String, StreamController<Object?>> watches = {};
+  final List<String> cancelled = [];
+
+  Stream<T> _watch<T>(String name) {
+    late final StreamController<T> controller;
+    controller = StreamController<T>(onCancel: () => cancelled.add(name));
+    watches[name] = controller as StreamController<Object?>;
+    calls.add('watch $name');
+    return controller.stream;
+  }
+
+  @override
+  Stream<RawDocumentEvent> watchDocument(String path) => _watch('doc $path');
+
+  @override
+  Stream<RawCollectionEvent> watchCollection(String path) =>
+      _watch('collection $path');
+
+  @override
+  Stream<RawCollectionEvent> watchQuery(
+    String path,
+    String field, {
+    required bool contains,
+    required Object? value,
+  }) => _watch('query $path $field ${contains ? 'any' : '='} $value');
+
+  @override
+  Stream<RawCollectionEvent> watchQueryAll(
+    String path,
+    Map<String, Object?> equalities,
+  ) {
+    final clauses = [for (final e in equalities.entries) '${e.key}=${e.value}'];
+    return _watch('queryAll $path ${clauses.join(',')}');
   }
 
   bool created = true;
@@ -377,6 +415,149 @@ void main() {
     test('an exception that is not the SDK’s is not swallowed', () async {
       access.error = const FormatException('autre chose');
       await expectLater(store.get('a/1'), throwsFormatException);
+    });
+  });
+
+  group('watches', () {
+    const clean = (fromCache: false, hasPendingWrites: false);
+
+    test('a document watch decodes the data and keeps the metadata', () async {
+      final updates = <DocumentUpdate>[];
+      final subscription = store.watchDocument('clubs/c1').listen(updates.add);
+      access.watches['doc clubs/c1']!
+        ..add((
+          data: {'at': Timestamp.fromDate(DateTime.utc(2026))},
+          metadata: (fromCache: true, hasPendingWrites: true),
+        ))
+        ..add((data: null, metadata: clean));
+      await pumpEventQueue();
+
+      expect(
+        (updates.first.document!.fields['at']! as DateTime).toUtc(),
+        DateTime.utc(2026),
+      );
+      expect(updates.first.metadata.fromCache, isTrue);
+      expect(updates.first.metadata.hasPendingWrites, isTrue);
+      expect(updates.last.document, isNull);
+      expect(updates.last.metadata.fromCache, isFalse);
+      await subscription.cancel();
+    });
+
+    test('a collection watch sorts by id and keeps each path', () async {
+      final updates = <CollectionUpdate>[];
+      final subscription = store
+          .watchCollection('clubs/c1/students')
+          .listen(updates.add);
+      access.watches['collection clubs/c1/students']!.add((
+        documents: [
+          (path: 'clubs/c1/students/s2', data: {'n': 2}),
+          (path: 'clubs/c1/students/s1', data: {'n': 1}),
+        ],
+        metadata: clean,
+      ));
+      await pumpEventQueue();
+
+      expect([for (final d in updates.single.documents) d.id], ['s1', 's2']);
+      await subscription.cancel();
+    });
+
+    test(
+      'each filter opens the matching SDK query with encoded values',
+      () async {
+        final subscriptions = [
+          store
+              .watchQuery('c/a', FieldEquals('d', DateTime.utc(2026)))
+              .listen((_) {}),
+          store
+              .watchQuery('c/b', const FieldArrayContainsAny('ids', ['g1']))
+              .listen((_) {}),
+          store
+              .watchQuery(
+                'c/c',
+                AllEqual(const [FieldEquals('a', 1), FieldEquals('b', 2)]),
+              )
+              .listen((_) {}),
+        ];
+
+        expect(access.calls, [
+          'watch query c/a d = ${Timestamp.fromDate(DateTime.utc(2026))}',
+          'watch query c/b ids any [g1]',
+          'watch queryAll c/c a=1,b=2',
+        ]);
+        for (final subscription in subscriptions) {
+          await subscription.cancel();
+        }
+      },
+    );
+
+    test(
+      'a refusal arrives as a StoreFailure and ends only that watch',
+      () async {
+        final refused = <Object>[];
+        var refusedDone = false;
+        final other = <DocumentUpdate>[];
+        final first = store
+            .watchDocument('clubs/c1/a')
+            .listen(
+              (_) {},
+              onError: refused.add,
+              onDone: () => refusedDone = true,
+            );
+        final second = store.watchDocument('clubs/c1/b').listen(other.add);
+
+        access.watches['doc clubs/c1/a']!.addError(
+          _failure('permission-denied'),
+        );
+        access.watches['doc clubs/c1/b']!.add((
+          data: {'n': 1},
+          metadata: clean,
+        ));
+        await pumpEventQueue();
+
+        expect(
+          refused.single,
+          isA<StoreFailure>().having(
+            (e) => e.code,
+            'code',
+            StoreFailureCode.permissionDenied,
+          ),
+        );
+        expect(refusedDone, isTrue);
+        expect(other, hasLength(1));
+        await first.cancel();
+        await second.cancel();
+      },
+    );
+
+    test(
+      'a network error is translated like any other and ends the watch',
+      () async {
+        final errors = <Object>[];
+        var done = false;
+        final subscription = store
+            .watchCollection('a')
+            .listen((_) {}, onError: errors.add, onDone: () => done = true);
+        access.watches['collection a']!.addError(_failure('unavailable'));
+        await pumpEventQueue();
+
+        expect(
+          errors.single,
+          isA<StoreFailure>().having(
+            (e) => e.code,
+            'code',
+            StoreFailureCode.unavailable,
+          ),
+        );
+        expect(done, isTrue);
+        await subscription.cancel();
+      },
+    );
+
+    test('cancelling releases the SDK listener', () async {
+      final subscription = store.watchDocument('clubs/c1').listen((_) {});
+      await subscription.cancel();
+
+      expect(access.cancelled, ['doc clubs/c1']);
     });
   });
 }

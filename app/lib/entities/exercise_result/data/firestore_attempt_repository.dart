@@ -117,6 +117,92 @@ class FirestoreAttemptRepository implements AttemptRepository {
         return _ordered(documents);
       });
 
+  /// Suit [forStudent] : les mêmes requêtes, par rôle, en flux.
+  @override
+  Stream<List<ExerciseAttempt>> watchForStudent(StudentId studentId) =>
+      guardStoreStream(() {
+        final attempts = _club.paths.attempts;
+        return _club
+            .watchSources([
+              if (_club.manages)
+                ReadSource.query(
+                  attempts,
+                  FieldEquals('studentId', studentId.value),
+                )
+              else if (_club.role == Role.teacher)
+                for (final group in _club.groupIds)
+                  ReadSource.query(
+                    attempts,
+                    AllEqual([
+                      FieldEquals('groupId', group.value),
+                      FieldEquals('studentId', studentId.value),
+                    ]),
+                  )
+              else if (_club.studentIds.contains(studentId))
+                ReadSource.query(
+                  attempts,
+                  FieldEquals('studentId', studentId.value),
+                ),
+            ])
+            .map(_ordered);
+      });
+
+  /// Suit [forSession] : les mêmes requêtes, par rôle, en flux.
+  @override
+  Stream<List<ExerciseAttempt>> watchForSession(SessionId sessionId) =>
+      guardStoreStream(() {
+        final attempts = _club.paths.attempts;
+        return _club
+            .watchSources([
+              if (_club.manages)
+                ReadSource.query(
+                  attempts,
+                  FieldEquals('sessionId', sessionId.value),
+                )
+              else if (_club.role == Role.teacher)
+                for (final group in _club.groupIds)
+                  ReadSource.query(
+                    attempts,
+                    AllEqual([
+                      FieldEquals('groupId', group.value),
+                      FieldEquals('sessionId', sessionId.value),
+                    ]),
+                  )
+              else
+                for (final student in _club.studentIds)
+                  ReadSource.query(
+                    attempts,
+                    AllEqual([
+                      FieldEquals('studentId', student.value),
+                      FieldEquals('sessionId', sessionId.value),
+                    ]),
+                  ),
+            ])
+            .map(_ordered);
+      });
+
+  /// Suit [all] : le club pour un gestionnaire, un groupe à la fois pour un
+  /// enseignant, une fiche liée à la fois pour un parent ou un élève.
+  @override
+  Stream<List<ExerciseAttempt>> watchAll() => guardStoreStream(() {
+    final attempts = _club.paths.attempts;
+    return _club
+        .watchSources([
+          if (_club.manages)
+            ReadSource.collection(attempts)
+          else if (_club.role == Role.teacher)
+            for (final group in _club.groupIds)
+              ReadSource.query(attempts, FieldEquals('groupId', group.value))
+          else
+            for (final student in _club.studentIds)
+              ReadSource.query(
+                attempts,
+                FieldEquals('studentId', student.value),
+              ),
+        ])
+        .map(_ordered);
+  });
+
   @override
   Future<List<ExerciseAttempt>> all() => guardStore(() async {
     final documents = _club.manages

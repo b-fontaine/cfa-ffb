@@ -1,11 +1,24 @@
 import 'package:billard_cfa/shared/persistence/document_store.dart';
+import 'package:billard_cfa/shared/persistence/relay_stream.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Un document tel que le SDK le rend : son chemin et ses champs bruts
 /// (`Timestamp` compris).
 typedef RawDocument = ({String path, Map<String, dynamic> data});
 
-/// Les quatre appels que `FirestoreDocumentStore` fait au SDK, sur des types
+/// D'où vient un instantané du SDK (`SnapshotMetadata` de cloud_firestore).
+typedef RawMetadata = ({bool fromCache, bool hasPendingWrites});
+
+/// L'état d'un document suivi en flux : `data` nul s'il n'existe pas.
+typedef RawDocumentEvent = ({Map<String, dynamic>? data, RawMetadata metadata});
+
+/// L'état d'une collection ou d'une requête suivie en flux.
+typedef RawCollectionEvent = ({
+  List<RawDocument> documents,
+  RawMetadata metadata,
+});
+
+/// Les appels que `FirestoreDocumentStore` fait au SDK, sur des types
 /// simples : de quoi tester tout le reste (traduction des valeurs et des
 /// échecs) sans plugin ni réseau.
 abstract interface class FirestoreAccess {
@@ -36,6 +49,27 @@ abstract interface class FirestoreAccess {
     String collectionId,
     String field,
     Object? equalTo,
+  );
+
+  /// Les écoutes temps réel (`snapshots()`) : l'état courant puis un état par
+  /// changement. Une erreur du SDK (`FirebaseException`) arrive sur le flux ;
+  /// l'écoute est alors terminée côté serveur.
+  Stream<RawDocumentEvent> watchDocument(String path);
+
+  Stream<RawCollectionEvent> watchCollection(String path);
+
+  /// Comme [readQuery], en flux.
+  Stream<RawCollectionEvent> watchQuery(
+    String path,
+    String field, {
+    required bool contains,
+    required Object? value,
+  });
+
+  /// Comme [readQueryAll], en flux.
+  Stream<RawCollectionEvent> watchQueryAll(
+    String path,
+    Map<String, Object?> equalities,
   );
 
   /// Applique les écritures en **un seul lot** ; les champs sont déjà au
@@ -139,6 +173,64 @@ class FirestoreSdkAccess implements FirestoreAccess {
   );
 
   @override
+  Stream<RawDocumentEvent> watchDocument(String path) => _firestore()
+      .doc(path)
+      .snapshots()
+      .map(
+        (snapshot) => (
+          data: snapshot.exists ? snapshot.data() : null,
+          metadata: _metadata(snapshot.metadata),
+        ),
+      );
+
+  @override
+  Stream<RawCollectionEvent> watchCollection(String path) =>
+      _events(_firestore().collection(path).snapshots());
+
+  @override
+  Stream<RawCollectionEvent> watchQuery(
+    String path,
+    String field, {
+    required bool contains,
+    required Object? value,
+  }) {
+    final collection = _firestore().collection(path);
+    return _events(
+      (contains
+              ? collection.where(
+                  field,
+                  arrayContainsAny: value! as List<Object?>,
+                )
+              : collection.where(field, isEqualTo: value))
+          .snapshots(),
+    );
+  }
+
+  @override
+  Stream<RawCollectionEvent> watchQueryAll(
+    String path,
+    Map<String, Object?> equalities,
+  ) {
+    Query<Map<String, dynamic>> query = _firestore().collection(path);
+    for (final entry in equalities.entries) {
+      query = query.where(entry.key, isEqualTo: entry.value);
+    }
+    return _events(query.snapshots());
+  }
+
+  static Stream<RawCollectionEvent> _events(
+    Stream<QuerySnapshot<Map<String, dynamic>>> snapshots,
+  ) => snapshots.map(
+    (snapshot) =>
+        (documents: _raw(snapshot), metadata: _metadata(snapshot.metadata)),
+  );
+
+  static RawMetadata _metadata(SnapshotMetadata metadata) => (
+    fromCache: metadata.isFromCache,
+    hasPendingWrites: metadata.hasPendingWrites,
+  );
+
+  @override
   Future<void> writeBatch(List<RawWrite> writes) async {
     final firestore = _firestore();
     final batch = firestore.batch();
@@ -232,6 +324,68 @@ class FirestoreDocumentStore implements DocumentStore {
   }) => _guard(
     () async =>
         _documents(await _access.readGroup(collectionId, field, equalTo)),
+  );
+
+  @override
+  Stream<DocumentUpdate> watchDocument(String path) =>
+      _guardStream(_access.watchDocument(path), (event) {
+        final data = event.data;
+        return DocumentUpdate(
+          data == null ? null : StoredDocument(path, decodeFields(data)),
+          _snapshotMetadata(event.metadata),
+        );
+      });
+
+  @override
+  Stream<CollectionUpdate> watchCollection(String collection) =>
+      _guardStream(_access.watchCollection(collection), _collectionUpdate);
+
+  @override
+  Stream<CollectionUpdate> watchQuery(String collection, QueryFilter filter) =>
+      _guardStream(switch (filter) {
+        FieldEquals(:final field, :final value) => _access.watchQuery(
+          collection,
+          field,
+          contains: false,
+          value: _encode(value),
+        ),
+        FieldArrayContainsAny(:final field, :final values) =>
+          _access.watchQuery(
+            collection,
+            field,
+            contains: true,
+            value: [for (final value in values) _encode(value)],
+          ),
+        AllEqual(:final clauses) => _access.watchQueryAll(collection, {
+          for (final clause in clauses) clause.field: _encode(clause.value),
+        }),
+      }, _collectionUpdate);
+
+  static CollectionUpdate _collectionUpdate(RawCollectionEvent event) =>
+      CollectionUpdate(
+        // Triés par identifiant, comme le serveur (le faux ne le garantit pas).
+        _documents(event.documents)..sort((a, b) => a.path.compareTo(b.path)),
+        _snapshotMetadata(event.metadata),
+      );
+
+  static UpdateMetadata _snapshotMetadata(RawMetadata metadata) =>
+      UpdateMetadata(
+        fromCache: metadata.fromCache,
+        hasPendingWrites: metadata.hasPendingWrites,
+      );
+
+  /// Traduit un flux du SDK : valeurs en types simples, `FirebaseException`
+  /// en [StoreFailure]. **Une erreur termine le flux** (l'écoute du SDK est
+  /// déjà fermée côté serveur) ; annuler l'abonnement annule l'écoute du SDK.
+  static Stream<R> _guardStream<E, R>(
+    Stream<E> source,
+    R Function(E) convert,
+  ) => relayStream<E, R>(
+    source,
+    data: convert,
+    error: (error) => error is FirebaseException
+        ? StoreFailure(_code(error.code), '${error.code}: ${error.message}')
+        : error,
   );
 
   @override

@@ -1,13 +1,14 @@
 import 'package:billard_cfa/entities/session/domain/session.dart';
 import 'package:billard_cfa/entities/session/domain/session_repository.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/persistence/change_feed.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_journal.dart';
 import 'package:injectable/injectable.dart';
 
 /// Implémentation en mémoire (tests, BDD).
 @LazySingleton(as: SessionRepository, env: [Environment.test])
 class InMemorySessionRepository implements SessionRepository {
-  final Map<String, Session> _sessions = {};
+  final ObservedMap<String, Session> _sessions = ObservedMap();
 
   @override
   Future<List<Session>> getAll() async => List.unmodifiable(_sessions.values);
@@ -24,4 +25,7 @@ class InMemorySessionRepository implements SessionRepository {
 
   @override
   Future<void> delete(String id) async => _sessions.journaledRemove(id);
+
+  @override
+  Stream<List<Session>> watchAll() => _sessions.watch(getAll);
 }

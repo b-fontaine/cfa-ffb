@@ -2,6 +2,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.d
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/persistence/change_feed.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_journal.dart';
 import 'package:injectable/injectable.dart';
 
@@ -9,7 +10,7 @@ import 'package:injectable/injectable.dart';
 /// vit derrière le même port (ADR 0001).
 @LazySingleton(as: AttemptRepository, env: [Environment.test])
 class InMemoryAttemptRepository implements AttemptRepository {
-  final Map<AttemptId, ExerciseAttempt> _attempts = {};
+  final ObservedMap<AttemptId, ExerciseAttempt> _attempts = ObservedMap();
 
   @override
   Future<void> add(ExerciseAttempt attempt) async =>
@@ -49,4 +50,15 @@ class InMemoryAttemptRepository implements AttemptRepository {
       if (attempt.studentId == studentId) _attempts.journaledRemove(attempt.id);
     }
   }
+
+  @override
+  Stream<List<ExerciseAttempt>> watchForStudent(StudentId studentId) =>
+      _attempts.watch(() => forStudent(studentId));
+
+  @override
+  Stream<List<ExerciseAttempt>> watchForSession(SessionId sessionId) =>
+      _attempts.watch(() => forSession(sessionId));
+
+  @override
+  Stream<List<ExerciseAttempt>> watchAll() => _attempts.watch(all);
 }

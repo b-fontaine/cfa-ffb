@@ -8,6 +8,7 @@ import 'package:billard_cfa/entities/session_record/data/firestore_session_recor
 import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/connectivity_status.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/field_limits.dart';
@@ -17,6 +18,8 @@ import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/persistence/club_store.dart';
 import 'package:billard_cfa/shared/persistence/document_store.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_document_store.dart';
+import 'package:billard_cfa/shared/persistence/pending_writes_probe.dart';
+import 'package:billard_cfa/shared/persistence/send_status.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/firestore_world.dart';
@@ -56,6 +59,40 @@ class _OfflineSpy extends _Spy {
       throw const StoreFailure(StoreFailureCode.unavailable, 'hors ligne');
 }
 
+/// Rejoue la règle de création des saisies : un `set` qui écrit `createdAt`
+/// (date du serveur) sur un document qui **existe** change la date, donc est
+/// refusé ; le reste est accepté. `denyAll` refuse tout (membre sans droit).
+class _RulesLikeSpy extends _OfflineSpy {
+  int refused = 0;
+  bool denyAll = false;
+
+  /// Le cache de l'appareil ne connaît rien (cache froid) : `peek` rend `null`
+  /// même quand le serveur a le document.
+  bool coldCache = false;
+
+  @override
+  Future<StoredDocument?> peek(String path) async =>
+      coldCache ? null : await super.peek(path);
+
+  @override
+  Future<StoredDocument?> get(String path) async => await super.peek(path);
+
+  @override
+  Future<void> commit(List<WriteOp> operations) {
+    for (final op in operations) {
+      final recreates =
+          op is SetOp &&
+          op.fields['createdAt'] is ServerTimestamp &&
+          read(op.path) != null;
+      if (denyAll || recreates) {
+        refused++;
+        throw const StoreFailure(StoreFailureCode.permissionDenied);
+      }
+    }
+    return super.commit(operations);
+  }
+}
+
 /// Rejoue le refus des règles : une liste de présents de plus de
 /// `maxPresentStudents` (`recordShape`) est refusée, sans message précis.
 class _BoundedSpy extends _Spy {
@@ -73,6 +110,20 @@ class _BoundedSpy extends _Spy {
     return super.commit(operations);
   }
 }
+
+/// Une saison donnée telle que le serveur la stocke.
+Fields _storedSitting(List<String> present) => {
+  'groupId': 'g1',
+  'seasonId': 'se1',
+  'date': '2026-10-03T00:00:00.000',
+  'audience': 'children',
+  'mainBlockId': null,
+  'recallBlockId': null,
+  'sheetId': 'p',
+  'tags': <String>[],
+  'presentStudentIds': present,
+  'createdAt': DateTime(2026, 10, 3, 18),
+};
 
 Season _season() => Season(
   id: const SeasonId('se1'),
@@ -370,30 +421,162 @@ void main() {
       },
     );
 
-    test(
-      'a sitting linked to a catalogue sheet cannot be created offline '
-      '(transaction): the failure is the domain one, nothing is written',
-      () async {
+    group('a sitting linked to a catalogue sheet, created offline', () {
+      const path = 'clubs/c1/records/g1_20261003_p';
+
+      ClubStore offlineClub(
+        _Spy spy, {
+        required InMemoryConnectivityStatus network,
+        required SendTracker sends,
+      }) => ClubStore(
+        spy,
+        world.scope,
+        sends: sends,
+        network: network,
+        ackGrace: const Duration(milliseconds: 20),
+      );
+
+      late InMemoryConnectivityStatus network;
+      late SendTracker sends;
+
+      setUp(() {
+        network = InMemoryConnectivityStatus();
+        sends = SendTracker(InMemoryPendingWritesProbe());
+      });
+
+      SessionRecord linked(Set<String> present) =>
+          _record('g1_20261003_p', present: present, sheet: SheetId('p'));
+
+      test('with the network down, no transaction is tried: one plain write, '
+          'createdAt from the server', () async {
+        network.setOnline(value: false);
         final spy = _OfflineSpy();
         final records = FirestoreSessionRecordRepository(
-          ClubStore(spy, world.scope),
+          offlineClub(spy, network: network, sends: sends),
         );
 
-        await expectLater(
-          records.open(
-            _record('g1_20261003_p', present: {'s1'}, sheet: SheetId('p')),
-          ),
-          throwsA(
-            isA<ServiceFailure>().having(
-              (f) => f.code,
-              'code',
-              ServiceFailureCode.unavailable,
-            ),
+        final opened = await records.open(linked({'s1'}));
+
+        expect(opened.present, {const StudentId('s1')});
+        expect(spy.created, isEmpty);
+        final write = spy.sent.single as SetOp;
+        expect(write.path, path);
+        expect(write.merge, isTrue);
+        expect(write.fields['createdAt'], isA<ServerTimestamp>());
+        expect(write.fields['presentStudentIds'], ['s1']);
+      });
+
+      test('the transaction is tried when the network is not known down, '
+          'and an unreachable server falls back to the plain write', () async {
+        final spy = _OfflineSpy();
+        final records = FirestoreSessionRecordRepository(
+          offlineClub(spy, network: network, sends: sends),
+        );
+
+        await records.open(linked({'s1'}));
+
+        expect(spy.sent.single, isA<SetOp>());
+        expect(spy.read(path)!['presentStudentIds'], ['s1']);
+      });
+
+      test('online it is still the transaction, and nothing else', () async {
+        final spy = _Spy();
+        final records = FirestoreSessionRecordRepository(
+          offlineClub(spy, network: network, sends: sends),
+        );
+
+        await records.open(linked({'s1'}));
+
+        expect(spy.created, [path]);
+        expect(spy.sent, isEmpty);
+      });
+
+      test(
+        'another device created the sitting meanwhile: the plain write is '
+        'refused, the presents are united instead, nothing is reported',
+        () async {
+          network.setOnline(value: false);
+          final spy = _RulesLikeSpy()
+            ..coldCache = true
+            ..seed(path, _storedSitting(['s2']));
+          final records = FirestoreSessionRecordRepository(
+            offlineClub(spy, network: network, sends: sends),
+          );
+
+          await records.open(linked({'s1'}));
+          await pumpEventQueue();
+
+          expect(spy.refused, 1);
+          expect((spy.read(path)!['presentStudentIds']! as List).toSet(), {
+            's1',
+            's2',
+          });
+          expect(spy.read(path)!['createdAt'], DateTime(2026, 10, 3, 18));
+          expect(sends.hasFailure, isFalse);
+          expect(sends.pending, 0);
+        },
+      );
+
+      test('both devices create it offline: whoever arrives second is '
+          'united, in any order', () async {
+        network.setOnline(value: false);
+        final spy = _RulesLikeSpy();
+        final first = FirestoreSessionRecordRepository(
+          offlineClub(spy, network: network, sends: sends),
+        );
+        final second = FirestoreSessionRecordRepository(
+          offlineClub(
+            spy,
+            network: network,
+            sends: SendTracker(InMemoryPendingWritesProbe()),
           ),
         );
-        expect(spy.sent, isEmpty);
-      },
-    );
+
+        await Future.wait([
+          first.open(linked({'s1'})),
+          second.open(linked({'s2'})),
+        ]);
+        await pumpEventQueue();
+
+        expect((spy.read(path)!['presentStudentIds']! as List).toSet(), {
+          's1',
+          's2',
+        });
+        expect(spy.created, isEmpty);
+      });
+
+      test(
+        'a sitting the cache already knows is united, never re-created',
+        () async {
+          network.setOnline(value: false);
+          final spy = _OfflineSpy()..seed(path, _storedSitting(['s2']));
+          final records = FirestoreSessionRecordRepository(
+            offlineClub(spy, network: network, sends: sends),
+          );
+
+          await records.open(linked({'s1'}));
+
+          final write = spy.sent.single as UpdateOp;
+          expect(write.fields.keys, ['presentStudentIds']);
+          expect(write.fields['presentStudentIds'], isA<ArrayUnion>());
+        },
+      );
+
+      test('a genuine refusal (not a member of the group) is reported, the '
+          'union is refused too', () async {
+        network.setOnline(value: false);
+        final spy = _RulesLikeSpy()..denyAll = true;
+        final records = FirestoreSessionRecordRepository(
+          offlineClub(spy, network: network, sends: sends),
+        );
+
+        await records.open(linked({'s1'}));
+        await pumpEventQueue();
+
+        expect(sends.hasFailure, isTrue);
+        expect(sends.lastFailure!.code, StoreFailureCode.permissionDenied);
+      });
+    });
 
     test('two devices whose presents together exceed the maximum are told so '
         'instead of a generic refusal', () async {

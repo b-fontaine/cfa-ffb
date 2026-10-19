@@ -6,6 +6,7 @@ import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/session_tag.dart';
 import 'package:billard_cfa/shared/lib/sheet_id.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
+import 'package:billard_cfa/shared/persistence/drift_watch.dart';
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
@@ -185,4 +186,21 @@ class DriftSessionRecordRepository implements SessionRecordRepository {
         ),
     ];
   }
+
+  @override
+  Stream<List<SessionRecord>> watchForGroup(GroupId groupId) => _db.watchTables(
+    [_db.sessionRecords, _db.sessionPresences],
+    () => forGroup(groupId),
+  );
+
+  @override
+  Stream<List<SessionRecord>> watchForStudent(StudentId studentId) =>
+      _db.watchTables([
+        _db.sessionRecords,
+        _db.sessionPresences,
+      ], () => forStudent(studentId));
+
+  @override
+  Stream<List<SessionRecord>> watchAll() =>
+      _db.watchTables([_db.sessionRecords, _db.sessionPresences], all);
 }

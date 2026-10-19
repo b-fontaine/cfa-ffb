@@ -24,4 +24,12 @@ abstract interface class AcknowledgementRepository {
   /// Efface physiquement tous les acquittements du club (import d'une
   /// sauvegarde d'un format qui ne les connaît pas, ADR 0013).
   Future<void> eraseAll();
+
+  /// Suit les « Vu » d'un élève (voir [forStudent] ; contrat des `watch…` :
+  /// `StudentRepository.watchById`). Partagé par club : l'acquittement d'un
+  /// animateur arrive chez les autres.
+  Stream<List<AlertAcknowledgement>> watchForStudent(StudentId studentId);
+
+  /// Suit tous les « Vu » du club (voir [all]).
+  Stream<List<AlertAcknowledgement>> watchAll();
 }

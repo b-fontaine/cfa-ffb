@@ -51,6 +51,10 @@ class FirestoreAssessmentRepository implements AssessmentRepository {
       guardStore(() async => _sorted(await _data.all()));
 
   @override
+  Stream<List<MaturityAssessment>> watchForStudent(StudentId studentId) =>
+      guardStoreStream(() => _data.watchForStudent(studentId).map(_sorted));
+
+  @override
   Future<void> delete(AssessmentId id) =>
       guardStore(() => _club.commit([DeleteOp(_club.paths.assessment(id))]));
 

@@ -23,4 +23,11 @@ abstract interface class GroupRepository {
   /// supprimés logiquement compris : de quoi retrouver tout ce qui s'y
   /// rattache pour l'effacer (droit à l'effacement).
   Future<Set<GroupId>> idsEverContaining(StudentId studentId);
+
+  /// Suit la liste que renvoie [all] (contrat des `watch…` : voir
+  /// `StudentRepository.watchById`).
+  Stream<List<Group>> watchAll();
+
+  /// Suit un groupe et ses appartenances ; `null` s'il n'existe pas (ou plus).
+  Stream<Group?> watchById(GroupId id);
 }

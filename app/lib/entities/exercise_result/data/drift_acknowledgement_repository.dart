@@ -4,6 +4,7 @@ import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
+import 'package:billard_cfa/shared/persistence/drift_watch.dart';
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
@@ -95,4 +96,12 @@ class DriftAcknowledgementRepository implements AcknowledgementRepository {
         ),
     ];
   }
+
+  @override
+  Stream<List<AlertAcknowledgement>> watchForStudent(StudentId studentId) =>
+      _db.watchTables([_db.alertAcknowledgements], () => forStudent(studentId));
+
+  @override
+  Stream<List<AlertAcknowledgement>> watchAll() =>
+      _db.watchTables([_db.alertAcknowledgements], all);
 }

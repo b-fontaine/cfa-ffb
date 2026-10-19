@@ -35,4 +35,14 @@ abstract interface class AttemptRepository {
   /// Efface physiquement tous les passages de l'élève (droit à l'effacement),
   /// y compris ceux supprimés logiquement.
   Future<void> eraseStudent(StudentId studentId);
+
+  /// Suit les passages d'un élève (voir [forStudent] ; contrat des `watch…` :
+  /// `StudentRepository.watchById`).
+  Stream<List<ExerciseAttempt>> watchForStudent(StudentId studentId);
+
+  /// Suit les passages d'une séance donnée (voir [forSession]).
+  Stream<List<ExerciseAttempt>> watchForSession(SessionId sessionId);
+
+  /// Suit la liste que renvoie [all].
+  Stream<List<ExerciseAttempt>> watchAll();
 }

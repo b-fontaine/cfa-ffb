@@ -3,6 +3,7 @@ import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessm
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
+import 'package:billard_cfa/shared/persistence/drift_watch.dart';
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
@@ -87,4 +88,8 @@ class DriftAssessmentRepository implements AssessmentRepository {
         ),
     ];
   }
+
+  @override
+  Stream<List<MaturityAssessment>> watchForStudent(StudentId studentId) =>
+      _db.watchTables([_db.assessments], () => forStudent(studentId));
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/current_user.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
@@ -11,6 +13,10 @@ class SessionScope implements CurrentUser, ActiveClubScope {
   Role? _role;
   List<GroupId> _groups = const [];
   List<StudentId> _students = const [];
+  final _changes = StreamController<void>.broadcast(sync: true);
+
+  @override
+  Stream<void> get changes => _changes.stream;
 
   @override
   UserId? get id => _user;
@@ -46,6 +52,7 @@ class SessionScope implements CurrentUser, ActiveClubScope {
     _role = role;
     _groups = List.unmodifiable(groupIds);
     _students = List.unmodifiable(studentIds);
+    _changes.add(null);
   }
 
   void deactivateClub() {
@@ -53,6 +60,7 @@ class SessionScope implements CurrentUser, ActiveClubScope {
     _role = null;
     _groups = const [];
     _students = const [];
+    _changes.add(null);
   }
 
   void signOut() {

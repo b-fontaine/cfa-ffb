@@ -86,9 +86,22 @@ class FirestoreSessionRecordRepository implements SessionRecordRepository {
   /// Crée [record] avec sa date de création, `false` s'il existe déjà.
   ///
   /// - saisie **liée** à une séance du catalogue (identifiant déterministe,
-  ///   deux appareils peuvent la créer ensemble) : transaction
-  ///   `createIfAbsent`, atomique côté serveur, donc **impossible hors ligne**
-  ///   (limite connue, reste de FB5b : voir hors-ligne-plan.md) ;
+  ///   deux appareils peuvent la créer ensemble) :
+  ///   - **en ligne** (le réseau n'est pas connu coupé et rien n'attend
+  ///     l'envoi), la transaction `createIfAbsent` : atomique côté serveur ;
+  ///   - **hors ligne** (ou si la transaction ne répond pas, `unavailable`),
+  ///     une **écriture simple** `createdAt` du serveur : les règles
+  ///     l'acceptent si le document **n'existe pas** (création) et la
+  ///     **refusent** s'il existe (elle changerait `createdAt`, figé) ; le
+  ///     refus déclenche la **reprise** : les présents sont réunis
+  ///     (`ArrayUnion`, sans `createdAt`), comme `open` le fait en ligne. Deux
+  ///     appareils qui créent la même saisie hors ligne convergent donc : la
+  ///     première écriture crée, la seconde réunit. **Limite** : la reprise
+  ///     vit avec l'application ; si elle est fermée avant la reconnexion, le
+  ///     SDK rejoue l'écriture mise en file au démarrage suivant **sans
+  ///     reprise** et, si la saisie existe alors, le refus est signalé par la
+  ///     pastille (« annulée sur cet appareil ») : l'animateur rouvre la
+  ///     saisie, ce qui réunit les présents ;
   /// - saisie **libre** (identifiant UUID : aucun autre appareil ne peut la
   ///   créer en même temps) : création **par écriture simple** si le cache
   ///   local ne connaît pas le document, **possible hors ligne**. Si le
@@ -98,12 +111,32 @@ class FirestoreSessionRecordRepository implements SessionRecordRepository {
   ///   `SendTracker.lastFailure`).
   Future<bool> _create(SessionRecord record, String path, Fields fields) async {
     final creation = {...fields, ...SessionRecordDocument.creationOnly()};
-    if (record.sheetId != null) {
-      return await _club.createIfAbsent(path, creation);
+    final linked = record.sheetId != null;
+    if (linked && _club.mayAwaitServer) {
+      try {
+        return await _club.createIfAbsent(path, creation);
+      } on StoreFailure catch (failure) {
+        if (failure.code != StoreFailureCode.unavailable) rethrow;
+      }
     }
     if (await _club.peek(path) != null) return false;
-    await _club.commit([SetOp(path, creation, merge: true)]);
+    await _club.commit([
+      SetOp(path, creation, merge: true),
+    ], ifRefused: linked ? () => _unionAfterRefusal(path, record) : null);
     return true;
+  }
+
+  /// La reprise d'une création refusée parce que la saisie existe : réunir les
+  /// présents, comme `open` en ligne.
+  Future<void> _unionAfterRefusal(String path, SessionRecord record) async {
+    if (record.present.isEmpty) return;
+    await _club.commit([
+      UpdateOp(path, {
+        'presentStudentIds': ArrayUnion(
+          SessionRecordDocument.encodePresent(record.present),
+        ),
+      }),
+    ]);
   }
 
   /// Réunit les présents de [candidate] à ceux du document, côté serveur
@@ -155,6 +188,71 @@ class FirestoreSessionRecordRepository implements SessionRecordRepository {
   @override
   Future<List<SessionRecord>> forStudent(StudentId studentId) =>
       guardStore(() async => _sorted(await _presentDocuments(studentId)));
+
+  /// Suit [forGroup] (rien pour un parent ou un élève : les règles ne leur
+  /// montrent aucune séance donnée).
+  @override
+  Stream<List<SessionRecord>> watchForGroup(GroupId groupId) =>
+      guardStoreStream(() {
+        if (!_readable) return Stream.value(const <SessionRecord>[]);
+        return _club
+            .watchSources([
+              ReadSource.query(
+                _club.paths.records,
+                FieldEquals('groupId', groupId.value),
+              ),
+            ])
+            .map(_sorted);
+      });
+
+  /// Suit [forStudent] : un gestionnaire interroge `presentStudentIds`, un
+  /// enseignant suit ses groupes et garde les séances où l'élève est présent.
+  @override
+  Stream<List<SessionRecord>> watchForStudent(StudentId studentId) =>
+      guardStoreStream(() {
+        if (!_readable) return Stream.value(const <SessionRecord>[]);
+        final records = _club.paths.records;
+        final stream = _club.manages
+            ? _club.watchSources([
+                ReadSource.query(
+                  records,
+                  FieldArrayContainsAny('presentStudentIds', [studentId.value]),
+                ),
+              ])
+            : _club
+                  .watchSources([
+                    for (final group in _club.groupIds)
+                      ReadSource.query(
+                        records,
+                        FieldEquals('groupId', group.value),
+                      ),
+                  ])
+                  .map(
+                    (documents) => [
+                      for (final document in documents)
+                        if (SessionRecordDocument.presentOf(document)
+                            .contains(studentId.value))
+                          document,
+                    ],
+                  );
+        return stream.map(_sorted);
+      });
+
+  /// Suit [all] (rien pour un parent ou un élève).
+  @override
+  Stream<List<SessionRecord>> watchAll() => guardStoreStream(() {
+    if (!_readable) return Stream.value(const <SessionRecord>[]);
+    final records = _club.paths.records;
+    return _club
+        .watchSources([
+          if (_club.manages)
+            ReadSource.collection(records)
+          else
+            for (final group in _club.groupIds)
+              ReadSource.query(records, FieldEquals('groupId', group.value)),
+        ])
+        .map(_sorted);
+  });
 
   @override
   Future<Set<SessionId>> idsEverPresent(StudentId studentId) =>

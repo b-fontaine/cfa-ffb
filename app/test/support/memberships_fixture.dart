@@ -29,6 +29,11 @@ class MembershipsFixture {
     });
   }
 
+  /// Retire [user] du club [club] (son document `members`) : il n'en est plus
+  /// membre, ses abonnements au club ne sont plus autorisés par les règles.
+  void remove(UserId user, ClubId club) =>
+      _store.remove('clubs/${club.value}/members/${user.value}');
+
   /// Le club existe (sans aucun membre).
   void club(ClubId id, String name) => _store.seed('clubs/${id.value}', {
     'name': name,

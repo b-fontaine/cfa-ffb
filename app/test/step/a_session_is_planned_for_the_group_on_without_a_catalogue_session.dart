@@ -1,4 +1,3 @@
-import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/features/plan_session/domain/plan_session.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,13 +16,14 @@ Future<void> aSessionIsPlannedForTheGroupOnWithoutACatalogueSession(
   String date,
 ) async {
   await UiWorld.prepare(tester);
-  final groups = await getIt<GroupRepository>().all();
+  final groups = await UiWorld.seedGraph<GroupRepository>().all();
   final group = groups.firstWhere((candidate) => candidate.name == groupName);
   await tester.runAsync(
-    () => getIt<PlanSession>()(
+    () => UiWorld.seedGraph<PlanSession>()(
       title: title,
       date: DateTime.parse(date),
       groupId: group.id,
     ),
   );
+  await UiWorld.settleIfShared(tester);
 }

@@ -2,6 +2,8 @@ import 'package:billard_cfa/shared/persistence/document_store.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_document_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/stream_log.dart';
+
 void main() {
   late InMemoryDocumentStore store;
   final now = DateTime(2026, 10, 12, 9, 30);
@@ -351,6 +353,145 @@ void main() {
     expect(
       const StoreFailure(StoreFailureCode.permissionDenied, 'x').toString(),
       'StoreFailure(permissionDenied: x)',
+    );
+  });
+
+  group('watches', () {
+    test(
+      'a batch reaches a watcher as ONE state, never half applied',
+      () async {
+        final log = StreamLog(store.watchCollection('clubs/c1/students'));
+        await log.settle();
+
+        await store.commit([
+          const SetOp('clubs/c1/students/s1', {'n': 1}),
+          const SetOp('clubs/c1/students/s2', {'n': 2}),
+        ]);
+        await log.settle();
+
+        expect(
+          [
+            for (final u in log.values) [for (final d in u.documents) d.id],
+          ],
+          [
+            <String>[],
+            ['s1', 's2'],
+          ],
+        );
+        await log.cancel();
+      },
+    );
+
+    test(
+      'a write that changes nothing the watcher sees emits nothing',
+      () async {
+        store.seed('clubs/c1/students/s1', {'n': 1});
+        final log = StreamLog(store.watchDocument('clubs/c1/students/s1'));
+        await log.settle();
+
+        await store.commit([
+          const SetOp('clubs/c1/students/s1', {'n': 1}),
+        ]);
+        await log.settle();
+
+        expect(log.values, hasLength(1));
+        await log.cancel();
+      },
+    );
+
+    test('seed and remove reach the watchers too', () async {
+      final log = StreamLog(store.watchDocument('clubs/c1/students/s1'));
+      await log.settle();
+
+      store.seed('clubs/c1/students/s1', {'n': 1});
+      await log.settle();
+      store.remove('clubs/c1/students/s1');
+      await log.settle();
+
+      expect(
+        [for (final u in log.values) u.document?.fields['n']],
+        [null, 1, null],
+      );
+      await log.cancel();
+    });
+
+    test('cancelling leaves no watcher behind', () async {
+      final a = StreamLog(store.watchDocument('clubs/c1/students/s1'));
+      final b = StreamLog(store.watchCollection('clubs/c1/students'));
+      final c = StreamLog(
+        store.watchQuery('clubs/c1/students', const FieldEquals('n', 1)),
+      );
+      await a.settle();
+      expect(store.activeWatchers, 3);
+
+      await a.cancel();
+      await b.cancel();
+      await c.cancel();
+
+      expect(store.activeWatchers, 0);
+    });
+
+    test('a failing store refuses the watch and closes it', () async {
+      store.failing = StoreFailureCode.unavailable;
+
+      final log = StreamLog(store.watchDocument('clubs/c1/students/s1'));
+      await log.settle();
+
+      expect(log.values, isEmpty);
+      expect(log.errors.single, isA<StoreFailure>());
+      expect(log.done, isTrue);
+      expect(store.activeWatchers, 0);
+    });
+
+    test(
+      'revoking access fails and closes the watchers under the path',
+      () async {
+        final under = StreamLog(store.watchCollection('clubs/c1/students'));
+        final other = StreamLog(store.watchCollection('clubs/c2/students'));
+        await under.settle();
+
+        store.revoke('clubs/c1/');
+        await under.settle();
+
+        expect(
+          under.errors.single,
+          isA<StoreFailure>().having(
+            (e) => e.code,
+            'code',
+            StoreFailureCode.permissionDenied,
+          ),
+        );
+        expect(under.done, isTrue);
+        expect(other.done, isFalse);
+        expect(store.activeWatchers, 1);
+        await other.cancel();
+      },
+    );
+
+    test(
+      'a revoked path stays refused for reads and new watches until restored',
+      () async {
+        store.revoke('clubs/c1/');
+
+        await expectLater(
+          store.get('clubs/c1/students/s1'),
+          throwsA(isA<StoreFailure>()),
+        );
+        await expectLater(
+          store.list('clubs/c1/students'),
+          throwsA(isA<StoreFailure>()),
+        );
+        final refused = StreamLog(store.watchCollection('clubs/c1/students'));
+        await refused.settle();
+        expect(refused.errors, hasLength(1));
+
+        store.restore('clubs/c1/');
+        expect(await store.list('clubs/c1/students'), isEmpty);
+        final back = StreamLog(store.watchCollection('clubs/c1/students'));
+        await back.settle();
+        expect(back.values, hasLength(1));
+        await back.cancel();
+      },
     );
   });
 }

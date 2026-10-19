@@ -12,10 +12,26 @@ class InMemoryJournal {
 
   final List<void Function()> _undo = [];
 
+  /// Annonces retenues jusqu'à la fin de l'unité, par table.
+  final Map<Object, void Function()> _deferred = {};
+
   /// Inscrit [undo] dans l'unité de travail en cours (sans effet hors unité).
   static void record(void Function() undo) {
     final journal = Zone.current[_zoneKey] as InMemoryJournal?;
     journal?._undo.add(undo);
+  }
+
+  /// Annonce une modification de [owner] (une table observée) : aussitôt hors
+  /// unité de travail, **à la fin de l'unité** dans une unité (une seule fois
+  /// par table, annulation comprise), pour qu'un abonné ne voie jamais un état
+  /// à moitié appliqué.
+  static void announce(Object owner, void Function() emit) {
+    final journal = Zone.current[_zoneKey] as InMemoryJournal?;
+    if (journal == null) {
+      emit();
+    } else {
+      journal._deferred[owner] = emit;
+    }
   }
 
   /// Exécute [body] ; en cas d'échec, annule ses écritures et propage.
@@ -29,10 +45,25 @@ class InMemoryJournal {
       for (final undo in _undo.reversed) {
         undo();
       }
+      _release(outer);
       rethrow;
     }
     outer?._undo.addAll(_undo);
+    _release(outer);
     return value;
+  }
+
+  /// Passe les annonces retenues à l'unité englobante, ou les émet si c'est
+  /// la plus extérieure.
+  void _release(InMemoryJournal? outer) {
+    if (outer != null) {
+      outer._deferred.addAll(_deferred);
+    } else {
+      for (final emit in _deferred.values) {
+        emit();
+      }
+    }
+    _deferred.clear();
   }
 }
 

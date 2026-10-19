@@ -1,8 +1,9 @@
 /// Où vivent les données d'un club : l'appareil (drift) ou Firestore.
 ///
 /// Réglage de **build** : `--dart-define=DATA_BACKEND=firestore`. Sans réglage
-/// (ou `drift`), l'application reste sur SQLite : la bascule de production se
-/// fait à la fin du lot FB4, jamais par défaut avant (roadmap). Une valeur
+/// (ou `drift`), l'application reste sur SQLite : la bascule de production est
+/// décidée dans un lot dédié, après FB7 (2026-10-18), jamais par défaut avant
+/// (roadmap). Une valeur
 /// inconnue est une erreur de configuration, pas un repli silencieux sur drift
 /// (un club qui croit écrire sur le serveur écrirait sur l'appareil).
 enum DataBackend {

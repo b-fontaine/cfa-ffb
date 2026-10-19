@@ -22,6 +22,7 @@ import 'backup_marker_contract.dart';
 import 'planning_contract.dart';
 import 'repository_contract.dart';
 import 'repository_harness.dart';
+import 'repository_watch_contract.dart';
 import 'run_progress_contract.dart';
 import 'season_archive_contract.dart';
 import 'settings_contract.dart';
@@ -60,6 +61,7 @@ void main() {
     );
   });
   repositoryContract('drift (SQLite)', _open);
+  repositoryWatchContract('drift (SQLite)', _open);
   backupContract('drift (SQLite)', _open);
   acquisitionContract('drift (SQLite)', () async {
     final db = openMemoryDatabase();

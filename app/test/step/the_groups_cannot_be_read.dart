@@ -28,6 +28,14 @@ class _UnreadableGroups implements GroupRepository {
   @override
   Future<Set<GroupId>> idsEverContaining(StudentId studentId) async =>
       throw const NotFound('group', 'illisible');
+
+  @override
+  Stream<List<Group>> watchAll() =>
+      Stream.error(const NotFound('group', 'illisible'));
+
+  @override
+  Stream<Group?> watchById(GroupId id) =>
+      Stream.error(const NotFound('group', 'illisible'));
 }
 
 /// Usage: the groups cannot be read

@@ -3,6 +3,7 @@ import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/persistence/club_paths.dart';
 import 'package:billard_cfa/shared/persistence/club_store.dart';
 import 'package:billard_cfa/shared/persistence/document_store.dart';
 import 'package:billard_cfa/shared/persistence/document_values.dart';
@@ -106,6 +107,72 @@ class FirestoreGroupRepository implements GroupRepository {
         ?await _decodeIfPresent(paths.group(id), id),
     ]..sort((a, b) => a.id.value.compareTo(b.id.value));
   });
+
+  /// Les mêmes lectures que [all], par rôle, suivies en flux : un gestionnaire
+  /// suit les groupes et toutes les appartenances ; un enseignant le document
+  /// de chacun de ses groupes et les appartenances de ce groupe (égalité sur
+  /// `groupId`) ; un parent ou un élève le document des groupes de son
+  /// périmètre (les règles leur refusent les appartenances).
+  @override
+  Stream<List<Group>> watchAll() => guardStoreStream(() {
+    final paths = _club.paths;
+    final sources = _club.manages
+        ? [
+            ReadSource.collection(paths.groups),
+            ReadSource.collection(paths.memberships),
+          ]
+        : [for (final id in _club.groupIds) ..._groupSources(paths, id)];
+    return _club
+        .watchSources(sources)
+        .map(
+          (documents) =>
+              _decodeGroups(documents, groupPrefix: '${paths.groups}/')
+                ..sort((a, b) => a.id.value.compareTo(b.id.value)),
+        );
+  });
+
+  @override
+  Stream<Group?> watchById(GroupId id) => guardStoreStream(() {
+    final paths = _club.paths;
+    return _club
+        .watchSources(_groupSources(paths, id))
+        .map(
+          (documents) => _decodeGroups(
+            documents,
+            groupPrefix: '${paths.groups}/',
+          ).firstOrNull,
+        );
+  });
+
+  /// Le document du groupe [id] et, sauf pour un parent ou un élève, ses
+  /// appartenances.
+  List<ReadSource> _groupSources(ClubPaths paths, GroupId id) => [
+    ReadSource.document(paths.group(id)),
+    if (_club.role != Role.student && _club.role != Role.guardian)
+      ReadSource.query(paths.memberships, FieldEquals('groupId', id.value)),
+  ];
+
+  /// Les groupes des [documents] mêlés (groupes et appartenances).
+  static List<Group> _decodeGroups(
+    List<StoredDocument> documents, {
+    required String groupPrefix,
+  }) {
+    final groups = [
+      for (final document in documents)
+        if (document.path.startsWith(groupPrefix)) document,
+    ];
+    final memberships = [
+      for (final document in documents)
+        if (!document.path.startsWith(groupPrefix)) document,
+    ];
+    return [
+      for (final group in groups)
+        GroupDocument.decode(group, [
+          for (final doc in memberships)
+            if (doc.fields['groupId'] == group.id) doc,
+        ]),
+    ];
+  }
 
   Future<Group?> _decodeIfPresent(String path, GroupId id) async {
     final document = await _club.get(path);

@@ -91,4 +91,93 @@ void main() {
 
     expect(find.text('count 1'), findsOneWidget);
   });
+
+  testWidgets('a new role in the same club resets the screen', (tester) async {
+    await pumpScoped(tester);
+    await tester.tap(find.text('count 0'));
+    await tester.pump();
+
+    // Le directeur du club Nice devient enseignant : mêmes clubs, autre
+    // rôle.
+    final coach = rig.auth.current!;
+    rig.memberships
+      ..revokeAll(coach.id)
+      ..grant(
+        coach.id,
+        const ClubMembership(
+          clubId: ClubId('nice'),
+          clubName: 'Club Nice',
+          role: Role.teacher,
+        ),
+      );
+    await tester.runAsync(rig.cubit.refresh);
+    await tester.pump();
+
+    expect(find.text('count 0'), findsOneWidget);
+    expect(find.text('count 1'), findsNothing);
+  });
+
+  testWidgets('new groups for the same role reset the screen', (tester) async {
+    await pumpScoped(tester);
+    await tester.tap(find.text('count 0'));
+    await tester.pump();
+
+    // L'enseignant reçoit un groupe : même club, même rôle, autre périmètre.
+    final coach = rig.auth.current!;
+    rig.memberships
+      ..revokeAll(coach.id)
+      ..grant(
+        coach.id,
+        const ClubMembership(
+          clubId: ClubId('nice'),
+          clubName: 'Club Nice',
+          role: Role.director,
+          groupIds: [GroupId('g1')],
+          studentIds: [StudentId('s1')],
+        ),
+      );
+    await tester.runAsync(rig.cubit.refresh);
+    await tester.pump();
+
+    expect(find.text('count 0'), findsOneWidget);
+    expect(find.text('count 1'), findsNothing);
+  });
+
+  testWidgets('the same groups and students in another order keep the screen', (
+    tester,
+  ) async {
+    final coach = rig.auth.current!;
+    rig.memberships
+      ..revokeAll(coach.id)
+      ..grant(
+        coach.id,
+        const ClubMembership(
+          clubId: ClubId('nice'),
+          clubName: 'Club Nice',
+          role: Role.guardian,
+          groupIds: [GroupId('g1'), GroupId('g2')],
+          studentIds: [StudentId('s1'), StudentId('s2')],
+        ),
+      );
+    await pumpScoped(tester);
+    await tester.tap(find.text('count 0'));
+    await tester.pump();
+
+    rig.memberships
+      ..revokeAll(coach.id)
+      ..grant(
+        coach.id,
+        const ClubMembership(
+          clubId: ClubId('nice'),
+          clubName: 'Club Nice',
+          role: Role.guardian,
+          groupIds: [GroupId('g2'), GroupId('g1')],
+          studentIds: [StudentId('s2'), StudentId('s1')],
+        ),
+      );
+    await tester.runAsync(rig.cubit.refresh);
+    await tester.pump();
+
+    expect(find.text('count 1'), findsOneWidget);
+  });
 }

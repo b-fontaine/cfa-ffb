@@ -522,4 +522,16 @@ class _Recording implements DocumentStore {
     sent.addAll(operations);
     return _inner.commit(operations);
   }
+
+  @override
+  Stream<DocumentUpdate> watchDocument(String path) =>
+      _inner.watchDocument(path);
+
+  @override
+  Stream<CollectionUpdate> watchCollection(String collection) =>
+      _inner.watchCollection(collection);
+
+  @override
+  Stream<CollectionUpdate> watchQuery(String collection, QueryFilter filter) =>
+      _inner.watchQuery(collection, filter);
 }

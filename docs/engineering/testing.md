@@ -405,7 +405,7 @@ Copie des règles (`RULES_FILE=copie.rules`), `progress.test.mjs`. Les trois mut
 - **Bornes** : la longueur minimale du mot de passe est fixée par des littéraux (9 refusé, 10 et 11 acceptés) dans
   `use_cases_test.dart` et par un scénario BDD à 10 caractères, pas seulement par la constante.
 - **Changement de club** : `ClubScoped` (reconstruction de toute l'interface) est testé à part (`club_scoped_test.dart`) :
-  l'état local d'un écran est remis à zéro quand le club change, conservé quand il reste le même.
+  l'état local d'un écran est remis à zéro quand le club change, conservé quand il reste le même (y compris quand les mêmes groupes et fiches sont relus dans un autre ordre). Il ne referme **pas** les blocs des pages ouvertes : la fermeture des écoutes est testée dans `club_store_test` (`activeWatchers == 0` juste après le changement de portée, sans événement semé ; même ensemble dans un autre ordre : rien ne ferme) et `relay_stream_test` (`recheck`), la réouverture dans `live_reload_test` (une mutation sur chacune des règles du garde anti-boucle : sans garde, garde jamais remis à zéro par une donnée, jamais remis à zéro par `restart`).
 - **Fumée du build web compilé** : `scripts/web_smoke.sh` (dans `check.sh --full` et la CI ; prérequis Node, Java, `npm ci`
   et Google Chrome, échec explicite sinon). Il charge `app/build/web` (build **release** de `scripts/build_web.sh`) dans Chrome
   piloté par `playwright-core`, renvoie les appels du SDK vers l'émulateur Auth et **refuse tout autre hôte** que localhost (`gstatic.com` compris, FB5a :
@@ -498,4 +498,57 @@ flutter test --coverage            # tout + lcov
   Firestore et l'accès au SDK (`unavailable` = absent du cache), `planning.test.mjs` (création à l'aveugle d'une saisie libre déjà présente :
   refusée, date d'origine intacte). Aucune règle ne change : les tests d'attaque existants (`progress.test.mjs`) gardent propriétaire et auteur.
 - **Workflows** : `workflows_test.dart` (voir quality-gates.md).
+
+## Lot FB5b : flux temps réel, règle de conflit, hors ligne des écritures (2026-10-19)
+
+- **Flux du port** : `document_store_watch_contract.dart` (un état courant puis un état par changement pour un document, une collection, une requête
+  par égalité, `array-contains-any` ou plusieurs égalités ; indépendance des flux ; annulation ; lot final complet) joué sur le double en mémoire et
+  sur le vrai `FirestoreDocumentStore` devant un faux Firestore. **Rouge vu** : les méthodes n'existaient pas (échec de compilation du contrat).
+  Spécificités : le double (`in_memory_document_store_test` : un lot en **un seul** état, aucun état si rien ne change, `seed`/`remove` notifient,
+  `activeWatchers` revient à zéro à l'annulation, `revoke` ferme en `permissionDenied` et refuse les lectures et écoutes suivantes jusqu'à
+  `restore`, `failing` refuse l'ouverture) ; le magasin Firestore (`firestore_document_store_test`, accès scripté : décodage et métadonnées,
+  tri par identifiant, chaque filtre ouvre la bonne requête, une erreur est un `StoreFailure` qui ferme **ce** flux seulement, l'annulation relâche
+  l'écoute) ; `relay_stream_test`, `combine_latest_test`, `changes_test`, `live_reload_test`, `change_feed_test` (briques : erreur livrée une fois puis
+  fermeture, annulation propagée, pause, états identiques écartés, relectures fondues, annonces d'une unité de travail retenues jusqu'à sa fin, annulation
+  comprise).
+- **Faux Firestore : ce que le contrat des flux ne prouve PAS** (dit une fois ici) : il livre un lot **document par document** (le SDK réel en un seul état :
+  prouvé par l'émulateur) ; il ne trie pas les collections suivies (le magasin les trie) ; ses métadonnées sont celles d'un serveur toujours joint
+  (`fromCache` faux, `hasPendingWrites` faux) ; il n'applique aucune règle (aucun `permission-denied`, d'où `InMemoryDocumentStore.revoke`) ; il n'a
+  ni cache hors ligne ni reconnexion ; il n'isole pas les transactions (`isolatedTransactions: false` dans la règle de conflit).
+- **Contrat des dépôts** : `repository_watch_contract.dart` (élèves, groupes avec leurs appartenances, séances planifiées, séances données, passages,
+  blocs acquis, « Vu », bilans ; tout le club et par élève ou groupe ; jamais deux états égaux de suite ; deux abonnés ; annulation) sur mémoire, drift et
+  Firestore (faux). **Par rôle** : `firestore_watch_roles_test` lit le **journal des écoutes** du double (`watchLog`) : un gestionnaire suit les
+  collections, un enseignant ses groupes un par un (`array-contains-any` par tranches de 30), un parent ses fiches liées et **aucune** écoute de ce que les
+  règles cachent ; un refus ferme ce flux seulement ; sans club actif, `denied` sans chemin deviné ; un flux se ferme quand le club ou le rôle change.
+- **Contre l'émulateur** (`scripts/rules_test/watch.test.mjs`, deux clients, vraies règles, dans `rules_test.sh`) : un client écrit, l'autre reçoit ; un
+  enseignant ne reçoit que son groupe ; un lot arrive en un état ; entrée et sortie d'une fiche du groupe (`array-contains-any`) ; `permission-denied`
+  sur le flux qui se ferme, sans toucher les autres flux du client ; un membre **retiré** perd ses écoutes (sur l'émulateur, immédiatement ; le service
+  réel peut tarder : non éprouvé) ; annulation ; `hasPendingWrites` puis confirmation ; `disableNetwork`/`enableNetwork` : état conservé hors ligne,
+  rattrapage à la reconnexion, écriture mise en file reçue par l'autre client.
+- **Règle de conflit** : `conflict_contract.dart` (une ligne de la table de l'ADR par test, `C1` à `C13`, plus les limites `L1` à `L4` en tests de
+  **caractérisation**), joué sur le faux Firestore et sur le double du stock avec **deux appareils** (deux `ClubStore`, deux sessions) ; `conflicts.test.mjs`
+  contre l'émulateur avec deux clients (`Promise.all`) : dernier écrit gagne = l'une des deux écritures, entière ; unions atomiques ; rejeu d'un passage
+  refusé ; « Vu » au nom d'un collègue refusé ; `set merge` recrée un document supprimé (limite) ; `E1` à `E4` pour la saisie liée hors ligne avec le vrai
+  SDK déconnecté. Les assertions `anyOf` des « dernier écrit gagne » sont voulues : l'ordre d'arrivée au serveur n'est pas déterministe.
+- **Écritures non bloquantes** : `club_store_test` (accusé dans le délai, hors délai confié au suivi, réseau connu coupé ou envoi en attente : pas
+  d'attente, refus tardif vers la pastille, refus dans le délai pour l'appelant, reprise `ifRefused` et son échec, `mayAwaitServer`, transaction sans
+  réponse = `unavailable`, sans suivi : comportement d'avant) ; `firestore_planning_repositories_test` (saisie liée : réseau coupé, transaction qui échoue,
+  en ligne inchangé, saisie créée entre-temps → refus → union, deux appareils hors ligne, cache qui connaît la saisie, refus véritable signalé). **Rouge vu** :
+  les tests de `ClubStore` échouaient à la compilation (paramètres absents) et les 6 tests de saisie liée à l'exécution.
+- **BDD multi-appareils** (`live_sync.feature`, 6 scénarios) : `Given the club data lives on a server shared with other devices` branche les dépôts
+  Firestore sur un serveur en mémoire que partagent l'appareil de l'écran (`DeviceDocumentStore`) et **un autre appareil** (`OtherDevice` : second graphe
+  get_it complet, autre session, mêmes dépôts) ; les `Given` d'amorçage et les étapes « un autre appareil écrit » passent par cet autre appareil.
+  **Rouge vu** : sans abonnement dans les trois blocs, 5 scénarios sur 6 échouent ; sans libération dans `close`, « Leaving a screen leaves no
+  subscription behind » échoue. `DeviceDocumentStore` (testé : `device_document_store_test`) : **hors ligne**, les lectures du serveur échouent en
+  `unavailable`, les flux retiennent leur dernier événement jusqu'à la reconnexion, les lots sont mis en file dans l'ordre ; **limites du double** : pas de cache
+  local (une écriture hors ligne n'est visible qu'à la reconnexion), aucune règle, coupure tout ou rien ; le vrai SDK hors ligne est éprouvé par
+  `watch.test.mjs` et `conflicts.test.mjs`.
+- **Interface** : `club_scoped_test` (un nouveau rôle dans le même club reconstruit l'écran ; **mutation** : clé sans rôle, le test échoue) ; trois
+  tests de bloc ou de cubit par écran abonné (abonnement une seule fois, relecture en place sans état de chargement, rafale fondue en une relecture,
+  refus affiché puis repris, « Réessayer » qui rouvre l'écoute, fermeture).
+- **Effets sur les tests existants** : quatre scénarios (`screen_navigation.feature` : suppression et retour d'une séance planifiée ; `session_guide.feature`
+  : retour au planificateur) lançaient l'application **avant** d'y amorcer une séance ; l'accueil se met désormais à jour et déplaçait le bouton
+  « Plan a session » sous la barre de navigation de la fenêtre de test. Les `Given` passent avant « the app is running ».
+- **Mutations à la main** : abonnement supprimé dans `StudentSheetBloc`, `StudentsBloc`, `UpcomingSessionsCubit` (5 scénarios BDD rouges) ;
+  `stop` retiré de `StudentSheetBloc.close` (scénario de fuite rouge) ; rôle retiré de la clé de `ClubScoped` (test rouge).
 

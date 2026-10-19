@@ -20,6 +20,7 @@ import 'backup_marker_contract.dart';
 import 'planning_contract.dart';
 import 'repository_contract.dart';
 import 'repository_harness.dart';
+import 'repository_watch_contract.dart';
 import 'run_progress_contract.dart';
 import 'season_archive_contract.dart';
 import 'settings_contract.dart';
@@ -53,6 +54,7 @@ void main() {
     ),
   );
   repositoryContract('en mémoire', _open);
+  repositoryWatchContract('en mémoire', _open);
   backupContract('en mémoire', _open);
   acquisitionContract(
     'en mémoire',

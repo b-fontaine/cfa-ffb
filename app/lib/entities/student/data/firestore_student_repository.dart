@@ -65,6 +65,68 @@ class FirestoreStudentRepository implements StudentRepository {
       ..sort(StudentDocument.compare);
   });
 
+  @override
+  Stream<Student?> watchById(StudentId id) => guardStoreStream(
+    () => _club
+        .watchDocument(_club.paths.student(id))
+        .map(
+          (update) => update.document == null
+              ? null
+              : StudentDocument.decode(update.document!),
+        ),
+  );
+
+  /// Les mêmes lectures que [all], par rôle (les règles n'autorisent pas la
+  /// même requête à tous), suivies en flux : un gestionnaire suit la
+  /// collection, un enseignant les fiches de ses groupes
+  /// (`array-contains-any`, par tranches de 30), un parent ou un élève ses
+  /// fiches liées une à une.
+  @override
+  Stream<List<Student>> watchAll() => guardStoreStream(() {
+    final collection = _club.paths.students;
+    return _club
+        .watchSources(_sources(collection))
+        .map(
+          (documents) => [
+            for (final document in {
+              for (final document in documents) document.path: document,
+            }.values)
+              StudentDocument.decode(document),
+          ]..sort(StudentDocument.compare),
+        );
+  });
+
+  List<ReadSource> _sources(String collection) {
+    if (_club.manages) return [ReadSource.collection(collection)];
+    return switch (_club.role) {
+      Role.teacher => [
+        for (final chunk in _chunks([
+          for (final id in _club.groupIds) id.value,
+        ]))
+          ReadSource.query(
+            collection,
+            FieldArrayContainsAny('groupIds', chunk),
+          ),
+      ],
+      Role.student || Role.guardian => [
+        for (final id in _club.studentIds)
+          ReadSource.document('$collection/${id.value}'),
+      ],
+      Role.director || Role.admin || null => const [],
+    };
+  }
+
+  static Iterable<List<String>> _chunks(List<String> values) sync* {
+    for (var i = 0; i < values.length; i += _maxContainsAny) {
+      yield values.sublist(
+        i,
+        i + _maxContainsAny > values.length
+            ? values.length
+            : i + _maxContainsAny,
+      );
+    }
+  }
+
   Future<List<StoredDocument>> _scoped(String collection) async {
     switch (_club.role) {
       case Role.teacher:

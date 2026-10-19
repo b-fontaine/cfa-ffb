@@ -2,13 +2,14 @@ import 'package:billard_cfa/entities/session_record/domain/session_record.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/session_tag.dart';
+import 'package:billard_cfa/shared/persistence/change_feed.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_journal.dart';
 import 'package:injectable/injectable.dart';
 
 /// Implémentation en mémoire (tests, BDD).
 @LazySingleton(as: SessionRecordRepository, env: [Environment.test])
 class InMemorySessionRecordRepository implements SessionRecordRepository {
-  final Map<SessionId, SessionRecord> _sessions = {};
+  final ObservedMap<SessionId, SessionRecord> _sessions = ObservedMap();
 
   @override
   Future<void> save(SessionRecord session) async =>
@@ -81,4 +82,15 @@ class InMemorySessionRecordRepository implements SessionRecordRepository {
 
   List<SessionRecord> _byDate(Iterable<SessionRecord> sessions) =>
       sessions.toList()..sort((a, b) => a.date.compareTo(b.date));
+
+  @override
+  Stream<List<SessionRecord>> watchForGroup(GroupId groupId) =>
+      _sessions.watch(() => forGroup(groupId));
+
+  @override
+  Stream<List<SessionRecord>> watchForStudent(StudentId studentId) =>
+      _sessions.watch(() => forStudent(studentId));
+
+  @override
+  Stream<List<SessionRecord>> watchAll() => _sessions.watch(all);
 }

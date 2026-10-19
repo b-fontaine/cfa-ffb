@@ -1,13 +1,14 @@
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/persistence/change_feed.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_journal.dart';
 import 'package:injectable/injectable.dart';
 
 /// Implémentation en mémoire (tests, BDD).
 @LazySingleton(as: GroupRepository, env: [Environment.test])
 class InMemoryGroupRepository implements GroupRepository {
-  final Map<GroupId, Group> _groups = {};
+  final ObservedMap<GroupId, Group> _groups = ObservedMap();
 
   @override
   Future<void> save(Group group) async => _groups.journaledPut(group.id, group);
@@ -42,4 +43,10 @@ class InMemoryGroupRepository implements GroupRepository {
       );
     }
   }
+
+  @override
+  Stream<List<Group>> watchAll() => _groups.watch(all);
+
+  @override
+  Stream<Group?> watchById(GroupId id) => _groups.watch(() => byId(id));
 }

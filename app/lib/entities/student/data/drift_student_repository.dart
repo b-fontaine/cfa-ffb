@@ -4,6 +4,7 @@ import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
+import 'package:billard_cfa/shared/persistence/drift_watch.dart';
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
@@ -108,4 +109,14 @@ class DriftStudentRepository implements StudentRepository {
         ),
     ];
   }
+
+  @override
+  Stream<Student?> watchById(StudentId id) => _db.watchTables([
+    _db.students,
+    _db.studentAudienceChanges,
+  ], () => byId(id));
+
+  @override
+  Stream<List<Student>> watchAll() =>
+      _db.watchTables([_db.students, _db.studentAudienceChanges], all);
 }

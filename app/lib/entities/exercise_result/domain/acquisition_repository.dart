@@ -21,4 +21,11 @@ abstract interface class AcquisitionRepository {
   /// Efface physiquement tous les marqueurs de l'élève (droit à
   /// l'effacement), y compris ceux supprimés logiquement.
   Future<void> eraseStudent(StudentId studentId);
+
+  /// Suit les blocs acquis d'un élève (voir [forStudent] ; contrat des
+  /// `watch…` : `StudentRepository.watchById`).
+  Stream<List<BlockAcquisition>> watchForStudent(StudentId studentId);
+
+  /// Suit la liste que renvoie [all].
+  Stream<List<BlockAcquisition>> watchAll();
 }

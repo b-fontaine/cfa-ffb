@@ -16,4 +16,8 @@ abstract interface class SessionRepository {
   /// logiquement comprises (droit à l'effacement : une séance supprimée de ses
   /// groupes reste en base jusqu'à sa purge).
   Future<Set<String>> idsOfGroups(Set<GroupId> groups);
+
+  /// Suit la liste que renvoie [getAll] (contrat des `watch…` : voir
+  /// `StudentRepository.watchById`).
+  Stream<List<Session>> watchAll();
 }

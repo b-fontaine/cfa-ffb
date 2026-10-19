@@ -4,6 +4,7 @@ import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/persistence/app_database.dart';
+import 'package:billard_cfa/shared/persistence/drift_watch.dart';
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
@@ -123,4 +124,12 @@ class DriftGroupRepository implements GroupRepository {
         ),
     ];
   }
+
+  @override
+  Stream<List<Group>> watchAll() =>
+      _db.watchTables([_db.groups, _db.groupMemberships], all);
+
+  @override
+  Stream<Group?> watchById(GroupId id) =>
+      _db.watchTables([_db.groups, _db.groupMemberships], () => byId(id));
 }

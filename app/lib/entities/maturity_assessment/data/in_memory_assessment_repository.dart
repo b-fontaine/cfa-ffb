@@ -1,13 +1,15 @@
 import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/persistence/change_feed.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_journal.dart';
 import 'package:injectable/injectable.dart';
 
 /// Implémentation en mémoire (tests, BDD).
 @LazySingleton(as: AssessmentRepository, env: [Environment.test])
 class InMemoryAssessmentRepository implements AssessmentRepository {
-  final Map<AssessmentId, MaturityAssessment> _assessments = {};
+  final ObservedMap<AssessmentId, MaturityAssessment> _assessments =
+      ObservedMap();
 
   @override
   Future<void> add(MaturityAssessment assessment) async =>
@@ -34,4 +36,8 @@ class InMemoryAssessmentRepository implements AssessmentRepository {
       }
     }
   }
+
+  @override
+  Stream<List<MaturityAssessment>> watchForStudent(StudentId studentId) =>
+      _assessments.watch(() => forStudent(studentId));
 }

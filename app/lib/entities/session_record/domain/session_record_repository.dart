@@ -54,4 +54,14 @@ abstract interface class SessionRecordRepository {
   /// Efface physiquement la présence de l'élève dans toutes les séances
   /// (droit à l'effacement) ; les séances elles-mêmes restent.
   Future<void> eraseStudent(StudentId studentId);
+
+  /// Suit les séances données d'un groupe (voir [forGroup] ; contrat des
+  /// `watch…` : `StudentRepository.watchById`).
+  Stream<List<SessionRecord>> watchForGroup(GroupId groupId);
+
+  /// Suit les séances données où l'élève est présent (voir [forStudent]).
+  Stream<List<SessionRecord>> watchForStudent(StudentId studentId);
+
+  /// Suit la liste que renvoie [all].
+  Stream<List<SessionRecord>> watchAll();
 }

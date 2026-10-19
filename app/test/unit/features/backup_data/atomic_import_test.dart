@@ -70,6 +70,17 @@ class _FailingSecondAttempt implements AttemptRepository {
   @override
   Future<void> eraseStudent(StudentId studentId) =>
       _inner.eraseStudent(studentId);
+
+  @override
+  Stream<List<ExerciseAttempt>> watchAll() => _inner.watchAll();
+
+  @override
+  Stream<List<ExerciseAttempt>> watchForStudent(StudentId studentId) =>
+      _inner.watchForStudent(studentId);
+
+  @override
+  Stream<List<ExerciseAttempt>> watchForSession(SessionId sessionId) =>
+      _inner.watchForSession(sessionId);
 }
 
 void main() {

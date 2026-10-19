@@ -1,6 +1,6 @@
 # Plan : dépôts Firestore (lot FB4)
 
-Statut : **parties 1, 2 et 3 livrées** (2026-10-18), sous émulateurs et doubles seulement. **Aucune base de production touchée.** **La bascule de production n'a PAS lieu dans FB4** (décision de l'utilisateur, 2026-10-18) : `DATA_BACKEND` reste `drift` par défaut jusqu'à ce que **FB7** soit livré ; la bascule est un **lot dédié après FB7**. Décisions :
+Statut : **parties 1, 2 et 3 livrées** (2026-10-18) puis **FB5b** (2026-10-19, section en fin de document), sous émulateurs et doubles seulement. **Aucune base de production touchée.** **La bascule de production n'a PAS lieu dans FB4** (décision de l'utilisateur, 2026-10-18) : `DATA_BACKEND` reste `drift` par défaut jusqu'à ce que **FB7** soit livré ; la bascule est un **lot dédié après FB7**. Décisions :
 [ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) (décisions 14, 15, 17 à 19, 28 ; notes de réalisation FB4a, FB4b, FB4c pour les écarts). Deux décisions de l'utilisateur du 2026-10-18 (décision 18 amendée, groupe obligatoire : notes FB4b de l'ADR 0024, ADR 0007 amendé).
 
 ## Découpage en trois parties
@@ -30,6 +30,8 @@ Statut : **parties 1, 2 et 3 livrées** (2026-10-18), sous émulateurs et double
 | `SettingsRepository` | `clubs/{c}/settings/main` | directeur, administrateur | tout membre |
 | `StudentRepository` | `clubs/{c}/students/{id}` (même document que `StudentDirectory`) | gestionnaire (l'enseignant crée avec un groupe : partie 2) | gestionnaire : liste ; enseignant : `array-contains-any` ; parent, élève : fiches liées |
 | `GroupRepository` | `clubs/{c}/groups/{g}` + `clubs/{c}/memberships/{…}` + `groupIds` des fiches | gestionnaire | gestionnaire : liste ; enseignant : ses groupes et leurs appartenances ; parent, élève : groupe sans appartenances |
+
+Portée et réouverture : `ClubStore` ferme les flux épinglés dès l'écriture de la portée (club, rôle, groupes et fiches triés ; `permissionDenied` `scope-changed`, écoute relâchée sans attendre un événement) ; `ClubScoped` ne referme pas les blocs des pages ouvertes (le `Navigator` de go_router survit), c'est `LiveReload` qui rouvre l'écoute après l'erreur, sous la nouvelle portée. Contrat : Firestore ferme un flux après une erreur, mémoire et drift le laissent ouvert. Limites assumées : voir l'ADR 0024 (notes FB5b, a à c), dont l'`arrayUnion` d'un enseignant sur les présents d'une saisie.
 
 Budget de lectures : `GroupRepository.save` lit le groupe, les appartenances du groupe et chaque fiche concernée ; `all()` d'un gestionnaire : 2 lectures de collection ;
 `StudentRepository.save` : 1 lecture. Écritures : un lot par `save` (500 au plus par lot).
@@ -118,6 +120,53 @@ Budget de lectures : `GroupRepository.save` lit le groupe, les appartenances du 
 ## Reste après FB4
 
 - **Lot de bascule de production, après FB7** (décision du 2026-10-18) : défaut `DATA_BACKEND=firestore`, retrait de `CompositeUnitOfWork` et des dépôts drift de données (FB7), parcours navigateur application + émulateurs avec les dépôts Firestore, déploiement des règles et des index **par l'utilisateur** (rien n'est déployé).
-- **FB5** : `watch…` sur les dépôts lus par plusieurs appareils ; pastille « envoi en attente » (`SendStatus.pending`, `lastFailure`) ; écritures hors unité de travail non bloquantes hors ligne ; création d'une saisie hors ligne (aujourd'hui une transaction) ; SDK web servi localement ; écran de positionnement et fiche sans groupe.
+- **FB5** : **fait** (parties A et B, 2026-10-19) : `watch…`, pastille, écritures non bloquantes hors ligne, création de saisie hors ligne, SDK web local ; voir la section suivante. Reste hors FB5 : écran de positionnement et fiche sans groupe.
 - **FB7** : import d'une sauvegarde avec saisie (l'import doit écrire `recordedAt` **strictement croissant dans l'ordre du fichier** : `createdAt == request.time` est exigé même d'un directeur ou d'un administrateur, donc tous les passages importés ont la même date serveur et seul `recordedAt` (puis l'identifiant) fixe leur ordre), clôture reprenable (lots de 500 avec marqueur), reprise des séances sans groupe de drift, saison courante du club (écrite par l'administrateur seulement).
 - **FB8** : `StudentEraser` côté serveur, effacement par lots reprenables.
+
+## Ce que FB5b ajoute (2026-10-19)
+
+Détail et décisions : [ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md), notes FB5b.
+
+### Flux (`watch…`) : même cartographie que les lectures
+
+Chaque flux suit **les mêmes requêtes que la lecture `Future` du même rôle** (les règles n'autorisent pas la même requête à tous), jamais la collection entière pour un enseignant ou un parent.
+
+| Port | Flux | Gestionnaire | Enseignant | Parent, élève |
+|---|---|---|---|---|
+| `StudentRepository` | `watchById`, `watchAll` | collection | `array-contains-any` sur ses groupes (30 par requête) | ses fiches liées, un document chacune |
+| `GroupRepository` | `watchAll`, `watchById` | groupes + appartenances | document de chaque groupe + appartenances (`groupId`) | documents des groupes, **sans** appartenances |
+| `SessionRepository` | `watchAll` | collection | une requête par groupe | une requête par groupe |
+| `SessionRecordRepository` | `watchForGroup`, `watchForStudent`, `watchAll` | collection ou `array-contains-any` | une requête par groupe (filtre en mémoire pour l'élève) | **aucune écoute** (liste vide) |
+| `AttemptRepository` | `watchForStudent`, `watchForSession`, `watchAll` | égalité sur l'élève / la séance | groupe + élève (ou séance) | la fiche liée |
+| `AcquisitionRepository` | `watchForStudent`, `watchAll` | idem | groupe + élève | la fiche liée |
+| `AcknowledgementRepository` | `watchForStudent`, `watchAll` | idem | groupe + élève | **aucune écoute** |
+| `AssessmentRepository` | `watchForStudent` | idem | groupe + élève | **aucune écoute** |
+
+Budget de lectures : une écoute facture les documents de son premier état puis chaque document modifié ; une écoute rouverte après une erreur ou un « Réessayer » relit son premier état (depuis le cache s'il est chaud). Un écran abonné ouvre : fiche d'un élève 7 sources, liste des groupes 5, séance du jour 3 (chacune fermée avec l'écran). Aucun index composite.
+
+### Règle de conflit (B5) : table document → règle
+
+Texte complet et limites dans l'ADR (notes FB5b). Un test par ligne : `app/test/contract/conflict_contract.dart` (faux Firestore et double du stock, deux appareils) et `scripts/rules_test/conflicts.test.mjs` (émulateur, deux clients, vraies règles).
+
+| # | Document | Règle |
+|---|---|---|
+| C1 | fiche élève | dernier écrit gagne par document ; `groupIds` jamais réécrit |
+| C2 | `groupIds` d'une fiche | réunion commutative (`ArrayUnion` / `ArrayRemove`) |
+| C3 | groupe | nom et public : dernier écrit gagne ; appartenances d'élèves différents réunies |
+| C4 | appartenance | identifiant déterministe : écritures identiques = un document |
+| C5 | saisie liée à une séance | une création, présents réunis, date et blocs du premier ; hors ligne : écriture simple puis reprise |
+| C6 | saisie (enregistrer) | remplacement en bloc, dernier écrit gagne ; `open` réunit, `resume` remplace |
+| C7 | étiquettes | liste remplacée en bloc |
+| C8 | passages | ajout seul, un document par passage ; rejeu d'un identifiant refusé |
+| C9 | correction d'un passage | dernier écrit gagne sur les billes seulement |
+| C10 | blocs acquis | un document par marquage, doublons fusionnés par le calcul |
+| C11 | « Vu » partagé | un document par acquittement, à son auteur ; le calcul garde le dernier |
+| C12 | séances planifiées | un document par séance |
+| C13 | suppression physique, réglages | suppression idempotente, `update` ne recrée pas, réglages : une écriture entière gagne |
+
+Limites sans règle sûre : L1 agrégat de groupe périmé, L2 fiche supprimée recréée par fusion, L3 historique du public remplacé en bloc, L4 listes de présents et d'étiquettes remplacées en bloc, L5 reprise de création hors ligne non durable.
+
+### Écritures non bloquantes hors ligne
+
+`ClubStore.commit` (hors unité de travail) n'attend l'accusé du serveur que `ackGrace` (1,5 s), puis confie l'envoi au suivi (`SendTracker`) ; il n'attend pas du tout si le réseau est connu coupé ou si un envoi attend déjà. Un refus dans le délai reste l'échec de l'appelant ; un refus tardif arrive à la pastille. Les écritures qui parlent à `DocumentStore` sans `ClubStore` (clubs, invitations, membres, publication de la fiche à l'invitation) restent volontairement en ligne et **attendent encore** hors ligne (reste de FB6/FB7).

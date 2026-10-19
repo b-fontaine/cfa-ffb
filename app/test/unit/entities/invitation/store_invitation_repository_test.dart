@@ -311,6 +311,18 @@ class _VanishingStore implements DocumentStore {
 
   @override
   Future<void> commit(List<WriteOp> operations) => _inner.commit(operations);
+
+  @override
+  Stream<DocumentUpdate> watchDocument(String path) =>
+      _inner.watchDocument(path);
+
+  @override
+  Stream<CollectionUpdate> watchCollection(String collection) =>
+      _inner.watchCollection(collection);
+
+  @override
+  Stream<CollectionUpdate> watchQuery(String collection, QueryFilter filter) =>
+      _inner.watchQuery(collection, filter);
 }
 
 /// Un stock dont les lots échouent avec [code] (lectures normales).
@@ -348,4 +360,16 @@ class _FailingCommitStore implements DocumentStore {
   @override
   Future<void> commit(List<WriteOp> operations) =>
       throw StoreFailure(code, 'test');
+
+  @override
+  Stream<DocumentUpdate> watchDocument(String path) =>
+      _inner.watchDocument(path);
+
+  @override
+  Stream<CollectionUpdate> watchCollection(String collection) =>
+      _inner.watchCollection(collection);
+
+  @override
+  Stream<CollectionUpdate> watchQuery(String collection, QueryFilter filter) =>
+      _inner.watchQuery(collection, filter);
 }
