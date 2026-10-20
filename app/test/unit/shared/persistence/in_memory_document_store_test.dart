@@ -45,6 +45,22 @@ void main() {
     },
   );
 
+  test('getFromServer reads the content, counts a read and fails like get, '
+      'whatever a subclass does to get', () async {
+    store.seed('clubs/a', {'n': 1});
+    final reads = store.reads;
+
+    expect((await store.getFromServer('clubs/a'))!.fields, {'n': 1});
+    expect(await store.getFromServer('clubs/absent'), isNull);
+    expect(store.reads, reads + 2);
+
+    store.failing = StoreFailureCode.unavailable;
+    await expectLater(
+      store.getFromServer('clubs/a'),
+      throwsA(isA<StoreFailure>()),
+    );
+  });
+
   test(
     'createIfAbsent creates once and leaves an existing document alone',
     () async {

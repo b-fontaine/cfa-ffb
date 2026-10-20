@@ -1,0 +1,273 @@
+{
+  "format": "billard-cfa-backup",
+  "schemaVersion": 4,
+  "exportedAt": "2026-10-12T08:00:00.000Z",
+  "data": {
+    "seasons": [
+      {
+        "id": "season",
+        "label": "2026-2027",
+        "startDate": "2026-09-01T00:00:00.000",
+        "endDate": "2027-06-30T00:00:00.000"
+      },
+      {
+        "id": "season-old",
+        "label": "2025-2026",
+        "startDate": "2025-09-01T00:00:00.000",
+        "endDate": "2026-06-30T00:00:00.000",
+        "closedOn": "2026-06-30T00:00:00.000"
+      }
+    ],
+    "students": [
+      {
+        "id": "s-g1-1",
+        "firstName": "Élève11",
+        "audienceHistory": [
+          {
+            "audience": "children",
+            "effectiveFrom": "2026-09-01T00:00:00.000"
+          }
+        ]
+      },
+      {
+        "id": "s-g1-2",
+        "firstName": "Élève12",
+        "audienceHistory": [
+          {
+            "audience": "children",
+            "effectiveFrom": "2026-09-01T00:00:00.000"
+          }
+        ]
+      }
+    ],
+    "groups": [
+      {
+        "id": "g1",
+        "seasonId": "season",
+        "name": "Groupe 1",
+        "audience": "children",
+        "memberships": [
+          {
+            "studentId": "s-g1-1",
+            "from": "2026-09-01T00:00:00.000",
+            "to": null
+          },
+          {
+            "studentId": "s-g1-2",
+            "from": "2026-09-01T00:00:00.000",
+            "to": null
+          }
+        ]
+      }
+    ],
+    "sessionRecords": [
+      {
+        "id": "g1_20260908_demi-bille-1",
+        "groupId": "g1",
+        "seasonId": "season",
+        "date": "2026-09-08T00:00:00.000",
+        "audience": "children",
+        "present": [
+          "s-g1-1",
+          "s-g1-2"
+        ],
+        "mainBlockId": "puissance",
+        "recallBlockId": null,
+        "sheetId": "demi-bille-1"
+      },
+      {
+        "id": "r-g1-2",
+        "groupId": "g1",
+        "seasonId": "season",
+        "date": "2026-09-15T00:00:00.000",
+        "audience": "children",
+        "present": [
+          "s-g1-1",
+          "s-g1-2"
+        ],
+        "mainBlockId": "puissance",
+        "recallBlockId": null,
+        "sheetId": null
+      }
+    ],
+    "attempts": [
+      {
+        "id": "a-g1-1-1-0",
+        "studentId": "s-g1-1",
+        "sessionId": "g1_20260908_demi-bille-1",
+        "blockId": "puissance",
+        "exerciseNumber": 1,
+        "date": "2026-09-08T00:00:00.000",
+        "passIndex": 1,
+        "potted": 3,
+        "total": 5
+      },
+      {
+        "id": "a-g1-1-1-1",
+        "studentId": "s-g1-1",
+        "sessionId": "g1_20260908_demi-bille-1",
+        "blockId": "puissance",
+        "exerciseNumber": 1,
+        "date": "2026-09-08T00:00:00.000",
+        "passIndex": 2,
+        "potted": 4,
+        "total": 5
+      },
+      {
+        "id": "a-g1-1-2-0",
+        "studentId": "s-g1-2",
+        "sessionId": "g1_20260908_demi-bille-1",
+        "blockId": "puissance",
+        "exerciseNumber": 1,
+        "date": "2026-09-08T00:00:00.000",
+        "passIndex": 1,
+        "potted": 3,
+        "total": 5
+      },
+      {
+        "id": "a-g1-1-2-1",
+        "studentId": "s-g1-2",
+        "sessionId": "g1_20260908_demi-bille-1",
+        "blockId": "puissance",
+        "exerciseNumber": 1,
+        "date": "2026-09-08T00:00:00.000",
+        "passIndex": 2,
+        "potted": 4,
+        "total": 5
+      },
+      {
+        "id": "a-g1-2-1-0",
+        "studentId": "s-g1-1",
+        "sessionId": "r-g1-2",
+        "blockId": "puissance",
+        "exerciseNumber": 1,
+        "date": "2026-09-15T00:00:00.000",
+        "passIndex": 1,
+        "potted": 3,
+        "total": 5
+      },
+      {
+        "id": "a-g1-2-1-1",
+        "studentId": "s-g1-1",
+        "sessionId": "r-g1-2",
+        "blockId": "puissance",
+        "exerciseNumber": 1,
+        "date": "2026-09-15T00:00:00.000",
+        "passIndex": 2,
+        "potted": 4,
+        "total": 5
+      },
+      {
+        "id": "a-g1-2-2-0",
+        "studentId": "s-g1-2",
+        "sessionId": "r-g1-2",
+        "blockId": "puissance",
+        "exerciseNumber": 1,
+        "date": "2026-09-15T00:00:00.000",
+        "passIndex": 1,
+        "potted": 3,
+        "total": 5
+      },
+      {
+        "id": "a-g1-2-2-1",
+        "studentId": "s-g1-2",
+        "sessionId": "r-g1-2",
+        "blockId": "puissance",
+        "exerciseNumber": 1,
+        "date": "2026-09-15T00:00:00.000",
+        "passIndex": 2,
+        "potted": 4,
+        "total": 5
+      }
+    ],
+    "assessments": [
+      {
+        "id": "as-g1-1",
+        "studentId": "s-g1-1",
+        "date": "2026-09-20T00:00:00.000",
+        "concentration": 3,
+        "endurance": 2,
+        "frustration": 4,
+        "comment": "Progresse bien"
+      },
+      {
+        "id": "as-g1-2",
+        "studentId": "s-g1-2",
+        "date": "2026-09-20T00:00:00.000",
+        "concentration": 3,
+        "endurance": 2,
+        "frustration": 4,
+        "comment": null
+      }
+    ],
+    "plannedSessions": [
+      {
+        "id": "p-g1",
+        "title": "Séance du groupe 1",
+        "date": "2026-11-05T00:00:00.000",
+        "audience": "children",
+        "groupId": "g1",
+        "sheetId": "demi-bille-1"
+      }
+    ],
+    "blockAcquisitions": [
+      {
+        "id": "q-g1-1",
+        "studentId": "s-g1-1",
+        "blockId": "puissance",
+        "date": "2026-09-15T00:00:00.000",
+        "source": "placement"
+      },
+      {
+        "id": "q-g1-2",
+        "studentId": "s-g1-2",
+        "blockId": "puissance",
+        "date": "2026-09-15T00:00:00.000",
+        "source": "placement"
+      }
+    ],
+    "alertAcknowledgements": [
+      {
+        "id": "k-g1",
+        "studentId": "s-g1-1",
+        "blockId": "puissance",
+        "exerciseNumber": 1,
+        "lastAttemptId": "a-g1-1-1-0",
+        "date": "2026-10-05T00:00:00.000"
+      }
+    ],
+    "seasonArchives": [
+      {
+        "seasonId": "season-old",
+        "audiences": [
+          {
+            "audience": "children",
+            "sessionCount": 10,
+            "presenceCount": 40,
+            "possiblePresenceCount": 50,
+            "studentCount": 5,
+            "attemptCount": 30
+          }
+        ],
+        "exercises": [
+          {
+            "audience": "children",
+            "blockId": "puissance",
+            "exerciseNumber": 1,
+            "studentCount": 4,
+            "attemptCount": 12,
+            "potted": 40,
+            "total": 60
+          }
+        ]
+      }
+    ],
+    "settings": {
+      "passesRequired": 5,
+      "alertThreshold": 3,
+      "recallStaleSessions": 4,
+      "groupFailureSharePercent": 50,
+      "backupReminderDays": 30
+    }
+  }
+}

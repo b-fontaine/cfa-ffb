@@ -554,6 +554,109 @@ suite('archives', 'clubs/{c}/archives/{id}', () => {
   });
 });
 
+// ───────────────────────── Marqueurs d'import (FB7) ─────────────────────────
+suite('imports', 'clubs/{c}/imports/{fileId}_{uid}', () => {
+  const FILE = 'a'.repeat(64);
+  const PLAN = 'b'.repeat(64);
+  const importers = ['teacherA', 'teacherB', 'director', 'admin'];
+  const roleOf = (actor) => (actor.startsWith('teacher') ? 'teacher' : actor === 'admin' ? 'admin' : 'director');
+  // Le marqueur de [actor] : son identifiant porte l'empreinte du fichier ET l'uid de l'auteur.
+  const mine = (actor) => `clubs/c1/imports/${FILE}_${uids[actor]}`;
+  const pathOf = (uid) => `clubs/c1/imports/${FILE}_${uid}`;
+  const created = (role, createdBy = 'u-inconnu', extra = {}) => ({
+    fileId: FILE, planId: PLAN, lots: 3, done: 1, writes: 700, restored: 0, role, createdBy, state: 'running',
+    startedAt: serverTimestamp(), updatedAt: serverTimestamp(), ...extra,
+  });
+  const stored = (role, createdBy, extra = {}) =>
+    created(role, createdBy, { startedAt: ts(now() - 1000), updatedAt: ts(now() - 1000), ...extra });
+  const reset = async () => {
+    for (const uid of Object.values(uids)) await remove(env, pathOf(uid));
+    await remove(env, `clubs/c1/imports/${FILE}`);
+  };
+  /** Un marqueur déjà là pour chacun des importateurs, à son nom. */
+  const seedMarkers = async (extra = {}) => {
+    await reset();
+    for (const actor of importers) await put(env, mine(actor), stored(roleOf(actor), uids[actor], extra));
+  };
+  const advance = (extra = {}) => ({ done: 2, state: 'running', updatedAt: serverTimestamp(), ...extra });
+
+  test('création (premier lot) de SON marqueur : le directeur, l\'administrateur et l\'enseignant, avec LEUR rôle', async () => {
+    await check({
+      expectAllowed: importers,
+      run: (db, actor) => setDoc(doc(db, mine(actor)), created(roleOf(actor), uids[actor])),
+      reset,
+    });
+  });
+  test('création : un rôle qui n\'est pas celui de l\'auteur, un `done` autre que 1, un champ en trop sont refusés', async () => {
+    await check({ expectAllowed: [], run: (db, actor) => setDoc(doc(db, mine(actor)), created(roleOf(actor) === 'teacher' ? 'director' : 'teacher', uids[actor])), reset });
+    await check({ expectAllowed: [], run: (db, actor) => setDoc(doc(db, mine(actor)), created(roleOf(actor), 'u-autre')), reset });
+    await check({ expectAllowed: [], run: (db, actor) => setDoc(doc(db, mine(actor)), created(roleOf(actor), uids[actor], { createdBy: 7 })), reset });
+    await check({ expectAllowed: [], run: (db, actor) => setDoc(doc(db, mine(actor)), created(roleOf(actor), uids[actor], { done: 2 })), reset });
+    await check({ expectAllowed: [], run: (db, actor) => setDoc(doc(db, mine(actor)), created(roleOf(actor), uids[actor], { fileId: 'c'.repeat(64) })), reset });
+    await check({ expectAllowed: [], run: (db, actor) => setDoc(doc(db, mine(actor)), created(roleOf(actor), uids[actor], { extra: 1 })), reset });
+  });
+  test('ATTAQUE : personne ne crée un marqueur au nom d\'un autre auteur, ni sous l\'empreinte seule', async () => {
+    // Seul le directeur pose un marqueur sous l'identifiant du directeur : tout autre (enseignant, administrateur),
+    // même avec un marqueur formé comme le sien, est refusé. Idem pour l'identifiant d'un enseignant.
+    const clearOf = (uid) => async () => remove(env, pathOf(uid));
+    await check({ expectAllowed: ['director'], run: (db, actor) => setDoc(doc(db, pathOf(uids.director)), created(roleOf(actor), uids[actor])), reset: clearOf(uids.director) });
+    await check({ expectAllowed: ['director'], run: (db, actor) => setDoc(doc(db, pathOf(uids.director)), created('director', uids.director)), reset: clearOf(uids.director) });
+    await check({ expectAllowed: ['teacherA'], run: (db, actor) => setDoc(doc(db, pathOf(uids.teacherA)), created(roleOf(actor), uids[actor])), reset: clearOf(uids.teacherA) });
+    // Ni sous l'ancien identifiant (l'empreinte seule), qui bloquerait tout le monde.
+    await check({ expectAllowed: [], run: (db, actor) => setDoc(doc(db, `clubs/c1/imports/${FILE}`), created(roleOf(actor), uids[actor])), reset });
+    // Un marqueur forgé par un enseignant (état « terminé », autre plan) est refusé : le directeur crée le sien.
+    await reset();
+    assert.equal(await allowed(() => setDoc(doc(dbOf(env, 'teacherA'), pathOf(uids.director)), created('teacher', uids.teacherA, { planId: 'd'.repeat(64), lots: 1, state: 'done' }))), false);
+    assert.equal(await allowed(() => setDoc(doc(dbOf(env, 'director'), mine('director')), created('director', uids.director))), true);
+    await reset();
+  });
+  test('get (même d\'un document absent) : son propre marqueur seulement, par ceux qui importent ; list : le directeur et l\'administrateur', async () => {
+    await check({ expectAllowed: importers, run: (db, actor) => getDoc(doc(db, mine(actor))) });
+    await seedMarkers();
+    await check({ expectAllowed: importers, run: (db, actor) => getDoc(doc(db, mine(actor))) });
+    // Le marqueur d'un autre ne se lit pas (pas même un gestionnaire) : seul son auteur lit le sien.
+    await check({ expectAllowed: ['teacherA'], run: (db) => getDoc(doc(db, pathOf(uids.teacherA))) });
+    await check({ expectAllowed: ['director'], run: (db) => getDoc(doc(db, pathOf(uids.director))) });
+    await check({ expectAllowed: MGR, run: (db) => getDocs(collection(db, 'clubs/c1/imports')) });
+    await reset();
+  });
+  test('avancement de SON marqueur : d\'exactement un lot ; rejeu, saut ou champ changé refusés', async () => {
+    const mark = () => seedMarkers();
+    await mark();
+    await check({ expectAllowed: importers, run: (db, actor) => updateDoc(doc(db, mine(actor)), advance()), reset: mark });
+    await check({ expectAllowed: [], run: (db, actor) => updateDoc(doc(db, mine(actor)), advance({ createdBy: uids.director === uids[actor] ? uids.teacherA : uids.director })), reset: mark });
+    await check({ expectAllowed: [], run: (db, actor) => updateDoc(doc(db, mine(actor)), advance({ done: 1 })), reset: mark });
+    await check({ expectAllowed: [], run: (db, actor) => updateDoc(doc(db, mine(actor)), advance({ done: 3, state: 'done' })), reset: mark });
+    await check({ expectAllowed: [], run: (db, actor) => updateDoc(doc(db, mine(actor)), advance({ planId: 'd'.repeat(64) })), reset: mark });
+    await check({ expectAllowed: [], run: (db, actor) => updateDoc(doc(db, mine(actor)), advance({ lots: 4 })), reset: mark });
+    await check({ expectAllowed: [], run: (db, actor) => updateDoc(doc(db, mine(actor)), advance({ role: roleOf(actor) === 'admin' ? 'director' : 'admin' })), reset: mark });
+    await check({ expectAllowed: [], run: (db, actor) => updateDoc(doc(db, mine(actor)), advance({ fileId: 'c'.repeat(64) })), reset: mark });
+    await check({ expectAllowed: [], run: (db, actor) => updateDoc(doc(db, mine(actor)), advance({ startedAt: serverTimestamp() })), reset: mark });
+    await check({ expectAllowed: [], run: (db, actor) => updateDoc(doc(db, mine(actor)), advance({ state: 'done' })), reset: mark });
+    await reset();
+  });
+  test('avancement du marqueur d\'un AUTRE : refusé pour tous, gestionnaires compris', async () => {
+    await seedMarkers();
+    const mark = () => seedMarkers();
+    // Seul le titulaire avance son marqueur : tout autre acteur, gestionnaires compris, est refusé.
+    await check({ expectAllowed: ['teacherA'], run: (db) => updateDoc(doc(db, mine('teacherA')), advance()), reset: mark });
+    await check({ expectAllowed: ['director'], run: (db) => updateDoc(doc(db, mine('director')), advance()), reset: mark });
+    await check({ expectAllowed: ['admin'], run: (db) => updateDoc(doc(db, mine('admin')), advance()), reset: mark });
+    await reset();
+  });
+  test('un import terminé n\'avance plus', async () => {
+    const done = () => seedMarkers({ lots: 2, done: 2, state: 'done' });
+    await done();
+    await check({ expectAllowed: [], run: (db, actor) => updateDoc(doc(db, mine(actor)), advance({ done: 3 })), reset: done });
+    await reset();
+  });
+  test('suppression : personne, pas même l\'administrateur', async () => {
+    await seedMarkers();
+    await check({ expectAllowed: [], run: (db, actor) => deleteDoc(doc(db, mine(actor))), reset: () => seedMarkers() });
+    await reset();
+  });
+});
+
 // ───────────────────────── Sensibilité de la grille ─────────────────────────
 test('preuve de sensibilité : l\'administrateur lit bien chaque club, la grille ne refuse pas tout', async () => {
   const db = dbOf(env, 'admin');

@@ -1,4 +1,5 @@
 import 'package:billard_cfa/app/data_backend.dart';
+import 'package:billard_cfa/app/firestore_club_import_store.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_acknowledgement_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
@@ -32,6 +33,8 @@ import 'package:billard_cfa/entities/settings/domain/settings_repository.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
 import 'package:billard_cfa/entities/student/data/firestore_student_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
+import 'package:billard_cfa/features/backup_data/domain/club_import/club_import_runner.dart';
+import 'package:billard_cfa/features/backup_data/domain/club_import/unsupported_club_import_store.dart';
 import 'package:billard_cfa/shared/lib/current_user.dart';
 import 'package:billard_cfa/shared/lib/unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/club_store.dart';
@@ -172,6 +175,21 @@ abstract class DataBackendModule {
   ) => choice.backend.choose(
     drift: () => drift,
     firestore: () => FirestoreAcknowledgementRepository(club, user),
+  );
+
+  /// L'import d'une sauvegarde dans le club (FB7) : n'écrit que dans Firestore.
+  /// Avec drift (le défaut), tous les dépôts lisent drift : l'import est refusé
+  /// (`unsupported`) plutôt que d'écrire des données que l'application ne
+  /// relirait pas.
+  @Environment(Environment.prod)
+  @lazySingleton
+  ClubImportStore clubImportStore(
+    DataBackendChoice choice,
+    ClubStore club,
+    CurrentUser user,
+  ) => choice.backend.choose(
+    drift: () => const UnsupportedClubImportStore(),
+    firestore: () => FirestoreClubImportStore(club, user),
   );
 
   /// Unité de travail : celle de drift ; avec Firestore, drift enveloppe le lot

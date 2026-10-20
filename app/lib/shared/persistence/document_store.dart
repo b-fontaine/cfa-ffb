@@ -213,6 +213,14 @@ abstract interface class DocumentStore {
   /// dessus est porté par les règles, pas par cette lecture.
   Future<StoredDocument?> peek(String path);
 
+  /// Lit [path] **au serveur, jamais dans le cache local** : l'état que le
+  /// serveur a aujourd'hui, ou `unavailable` (hors ligne, réseau muet) ; jamais
+  /// une valeur périmée. C'est la lecture d'un fait que le cache ne peut pas
+  /// affirmer (le marqueur d'un import : un cache en retard le ferait croire
+  /// plus ou moins avancé qu'il n'est). `null` : le serveur dit que le
+  /// document n'existe pas.
+  Future<StoredDocument?> getFromServer(String path);
+
   /// Les documents directement sous [collection] (`clubs/c1/members`),
   /// triés par identifiant.
   Future<List<StoredDocument>> list(String collection);

@@ -28,6 +28,10 @@ abstract interface class FirestoreAccess {
   /// document n'y est pas, sans attendre le réseau ni échouer hors ligne.
   Future<Map<String, dynamic>?> peekDocument(String path);
 
+  /// Comme [readDocument], **au serveur seulement** : jamais le cache, et
+  /// `unavailable` hors ligne (au lieu de la valeur du cache).
+  Future<Map<String, dynamic>?> readDocumentFromServer(String path);
+
   Future<List<RawDocument>> readCollection(String path);
 
   /// Une collection filtrée sur un champ : égalité ([contains] faux, [value]
@@ -103,11 +107,14 @@ class FirestoreSdkAccess implements FirestoreAccess {
   FirestoreSdkAccess({
     FirebaseFirestore Function()? firestore,
     this._readFromCache,
+    this._readFromServer,
   }) : _firestore = firestore ?? (() => FirebaseFirestore.instance);
 
   final FirebaseFirestore Function() _firestore;
   final Future<DocumentSnapshot<Map<String, dynamic>>> Function(String path)?
   _readFromCache;
+  final Future<DocumentSnapshot<Map<String, dynamic>>> Function(String path)?
+  _readFromServer;
 
   @override
   Future<Map<String, dynamic>?> readDocument(String path) async {
@@ -126,6 +133,15 @@ class FirestoreSdkAccess implements FirestoreAccess {
       rethrow;
     }
   }
+
+  @override
+  Future<Map<String, dynamic>?> readDocumentFromServer(String path) async {
+    final snapshot = await (_readFromServer ?? _serverRead)(path);
+    return snapshot.exists ? snapshot.data() : null;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> _serverRead(String path) =>
+      _firestore().doc(path).get(const GetOptions(source: Source.server));
 
   Future<DocumentSnapshot<Map<String, dynamic>>> _cacheRead(String path) =>
       _firestore().doc(path).get(const GetOptions(source: Source.cache));
@@ -279,6 +295,12 @@ class FirestoreDocumentStore implements DocumentStore {
   @override
   Future<StoredDocument?> get(String path) => _guard(() async {
     final data = await _access.readDocument(path);
+    return data == null ? null : StoredDocument(path, decodeFields(data));
+  });
+
+  @override
+  Future<StoredDocument?> getFromServer(String path) => _guard(() async {
+    final data = await _access.readDocumentFromServer(path);
     return data == null ? null : StoredDocument(path, decodeFields(data));
   });
 

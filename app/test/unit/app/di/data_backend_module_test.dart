@@ -1,5 +1,6 @@
 import 'package:billard_cfa/app/data_backend.dart';
 import 'package:billard_cfa/app/di/data_backend_module.dart';
+import 'package:billard_cfa/app/firestore_club_import_store.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_acknowledgement_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_acquisition_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
@@ -22,7 +23,10 @@ import 'package:billard_cfa/entities/settings/data/drift_settings_repository.dar
 import 'package:billard_cfa/entities/settings/data/firestore_settings_repository.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
 import 'package:billard_cfa/entities/student/data/firestore_student_repository.dart';
+import 'package:billard_cfa/features/backup_data/domain/club_import/unsupported_club_import_store.dart';
+import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/current_user.dart';
+import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/persistence/composite_unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/firestore_unit_of_work.dart';
@@ -32,6 +36,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../support/firestore_world.dart';
+import '../../../support/import_world.dart';
+import '../../../support/realistic_backup.dart';
 
 class _Module extends DataBackendModule;
 
@@ -159,6 +165,13 @@ void main() {
       });
     }
 
+    test('the club import writes to Firestore', () {
+      expect(
+        module.clubImportStore(choice, club, user),
+        isA<FirestoreClubImportStore>(),
+      );
+    });
+
     test('the unit of work wraps the Firestore batch in the drift one', () {
       final work = module.unitOfWork(choice, drift, club, tracker);
 
@@ -181,6 +194,32 @@ void main() {
     test('the unit of work is the very drift one', () {
       expect(module.unitOfWork(choice, drift, club, tracker), same(drift));
     });
+
+    // Tous les dépôts lisent drift : un import qui écrirait dans Firestore des
+    // données que l'application ne relirait pas est refusé, sans rien écrire.
+    test(
+      'the club import is unsupported: nothing is prepared or written',
+      () async {
+        final store = module.clubImportStore(choice, club, user);
+        expect(store, isA<UnsupportedClubImportStore>());
+        final world = ImportWorld.open()..act(Role.director);
+        final result = await world.prepareUseCaseWith(store)(
+          RealisticBackup().content,
+        );
+        expect(
+          result,
+          isA<Err<Object>>().having(
+            (e) => e.failure,
+            'failure',
+            isA<ServiceFailure>().having(
+              (f) => f.code,
+              'code',
+              ServiceFailureCode.unsupported,
+            ),
+          ),
+        );
+      },
+    );
   });
 
   group('without DATA_BACKEND (default of the production build)', () {

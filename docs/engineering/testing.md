@@ -592,3 +592,59 @@ flutter test --coverage            # tout + lcov
   `await tester.runAsync(pumpEventQueue)` avant d'attendre l'état « accès retiré ».
 - **Widgetbook** : `family_space_use_cases.dart` (espace complet avec curseurs : élèves liés, séances, hors ligne ; sélecteur ; prochaines séances ; message d'accès) et la
   page `MyChildrenPage` branchée sur le nouveau cubit.
+
+## Lot FB7, partie A : moteur d'import vers un club Firestore (2026-10-20)
+
+Voir l'[ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) (notes FB7a) et le [plan des dépôts](repositories-firestore-plan.md). Le moteur est du **domaine pur** (`features/backup_data/domain/club_import/`) ; ses tests ne touchent aucun SDK Firebase et aucun projet réel : faux stock en mémoire, `fake_cloud_firestore`, émulateurs `demo-cfa-ffb`.
+
+**BDD d'abord, rouge vu.** `app/test/bdd/club_import.feature` (12 scénarios, dont « reprendre avec un autre rattachement de groupes est refusé car le plan a changé » (`planChanged`, marqueur inchangé) ; premiers 8 : import complet par le directeur, reprise après coupure = import complet, rejeu du même fichier, séance sans groupe, enseignant hors périmètre, fusion de groupes sans choix, élèves effacés, plafond quotidien) a été écrit et généré **avant** tout code : `flutter test test/bdd/club_import_test.dart` → **8 échecs** (`UnimplementedError` des étapes générées), le 2026-10-20 ; les étapes (`test/step/…`) puis le moteur ont fait passer les 8 au vert. Monde des scénarios : `test/support/import_world.dart` (`ImportWorld`) sur `RulesLiteStore`, un **faux serveur** qui applique ce que les règles imposent au moteur (marqueur : création avec `done == 1`, avancement d'exactement un ; aucun écrasement ; un marqueur par lot ; au plus 400 écritures et 18 fiches distinctes ; `createdAt` = date du serveur **du lot**) et simule les coupures (réseau coupé avant un lot, accusé perdu après un lot appliqué).
+
+**Tests unitaires et de contrat** (`test/unit/features/backup_data/domain/club_import/`, `test/unit/app/`, `test/unit/shared/`) :
+
+| Fichier | Prouve |
+|---|---|
+| `club_import_planner_test.dart` (51 ; `club_import_planner_visibility_test.dart` : reprise d'un enseignant alors qu'une fiche hors de ses groupes est apparue entre-temps = même plan, reprise au lot suivant, le lot fautif est refusé par les règles et signalé par le moteur) | écritures par catégorie, identifiants conservés, lots (≤ 399 écritures, unités atomiques, fiche avant ses données, ≤ 18 fiches distinctes), `recordedAt` strictement croissant dans l'ordre du fichier, déterminisme et indépendance vis-à-vis de l'existant, correspondance des groupes (identité, association, identifiant de saisie qui suit le groupe, fusion refusée puis confirmée, public, saison close, date hors saison, saison rouverte), séances et élèves sans groupe (choix, ignorer, choix invalide), droits (enseignant : pas de groupe créé, pas hors périmètre, fiche à appartenance fermée ou décalée refusée **avec ses passages**), élèves effacés (détection, confirmation exacte, fichier plus récent, effacement en cours, import en cours non redemandé), marqueur (terminé, reprise, autre plan), coût (jours, avertissements), rapport sans prénom |
+| `import_integrity_test.dart` (14) | doublons de chaque collection (et des appartenances), références (groupe, saison, séance, présent, passage orphelin, archive d'une saison ouverte), bornes du domaine et des règles (nom, titre, présents, caractères et non unités UTF-16, identifiants, date refusée par le serveur, numéro d'exercice), aucune donnée personnelle |
+| `club_import_runner_test.dart` (15) | ordre des lots, création puis avancement du marqueur, coupure puis reprise = import complet, **accusé perdu d'un lot appliqué : jamais écrit deux fois**, lot refusé car le marqueur a avancé = succès, refus des règles, budget du jour (arrêt avant le lot qui dépasse, reprise un autre jour, un lot au moins), plan non exécutable, autre plan, import terminé |
+| `prepare_club_import_test.dart` (13) | fichier illisible, version inconnue, valeur invalide, trop grand : **plan bloqué, jamais une erreur** ; intégrité en entier puis catalogue ; rôle et club ; empreinte = SHA-256 du fichier |
+| `club_import_formats_test.dart` (13) | les cinq fichiers `app/test/fixtures/backup/club-small-v1…v5.json` (fictifs) sont **ce que le code courant écrit** (format d'export inchangé, `UPDATE_FIXTURES=1` les réécrit), chacun est lu, planifié et écrit |
+| `firestore_club_import_store_test.dart` (20) | champs **exacts** de chaque document écrit, acquittement signé de l'auteur, marqueur sans donnée personnelle, jamais d'écrasement (fiche existante : seuls les groupes manquants), second fichier sur un club qui en contient un autre, lecture du club par rôle (liste pour le gestionnaire, un groupe à la fois pour l'enseignant, rien de personnel), refus et absence de réponse, et **un import complet sur le vrai `FirestoreDocumentStore` (faux Firestore), relu par les vrais dépôts et comparé au fichier** |
+| `import_report_text_test.dart` (6), `sha256_test.dart` (5), `document_ids_test.dart` (3), `field_limits_test.dart` (+2) | textes fr + en de chaque code, SHA-256 (vecteurs de référence, **aussi sous dart2js**), identifiants communs avec les dépôts, bornes et expression de date égales à `firestore.rules` |
+
+**Règles contre l'émulateur** (`scripts/rules_test/`) : `matrix.test.mjs` (suite `imports`, 9 tests : création de **son** marqueur, attaque (marqueur au nom d'un autre), relecture de son seul marqueur, avancement par son auteur seul, suppression par rôle) et `import.test.mjs` (56 tests : dont la course de deux lots simultanés (30 essais, 0 écrasement), l'uid à métacaractères, une séance et un groupe préexistants hors visibilité de l'enseignant,  l'absence d'écrasement par collection et le marqueur lié à son auteur). `scripts/rules_test.sh` appelle d'abord `app/tool/import_plan_fixture.dart` (le **planificateur de l'application** sur des sauvegardes fictives, mêmes codecs que l'application : `ClubImportOperations`) dans un dossier temporaire (`IMPORT_PLAN_DIR`) : rien n'est versionné, rien ne peut dériver. `import.test.mjs` joue : un fichier de **1992 écritures** (10 lots) par le directeur puis par l'administrateur, relu en entier et comparé au plan, passages relus dans l'ordre du fichier, `createdAt` du lot ; l'enseignant dans son groupe (66 écritures ; 30 fiches neuves en deux lots), refusé hors périmètre, pour les saisons et groupes, et sur le rôle du marqueur ; le **miroir du plan** (12 écritures permises acceptées, 48 refusées refusées une à une et acceptées du directeur) ; la **convergence** (rejeu, saut, rejeu par un autre appareil, reprise après N lots par le même compte (autre appareil), import terminé, passage non écrasé) ; la limite des **20 documents lus par lot** (17 fiches neuves d'un enseignant passent, 18 sont refusées).
+
+**Limites dites.** (1) Les doubles en mémoire n'ont ni cache local ni hors ligne : la coupure est tout ou rien ; le hors ligne réel est du parcours navigateur (partie B). (2) `RulesLiteStore` est **plus strict** que les règles (aucun écrasement) et ne rejoue pas leur grammaire : la vérité sur les règles est l'émulateur. (3) L'émulateur met un temps considérable à **refuser** un lot de 400 créations : les refus se prouvent sur un extrait (documenté dans `import.test.mjs`) ; les lots acceptés et les rejeux de documents existants sont instantanés. (4) Les 20 lectures par lot ont été **mesurées à l'émulateur** (directeur 19 fiches, administrateur et enseignant 18) ; la production applique la même limite documentée par Firebase.
+
+### Mutations à la main (FB7, partie A, 2026-10-20)
+
+Chaque mutation est appliquée à une copie, la suite visée doit échouer, puis le fichier est restauré (aucune n'est conservée).
+
+| Mutation | Test qui échoue |
+|---|---|
+| plan : retirer le budget de fiches distinctes d'un lot | `club_import_planner_test` « a lot cites 18 distinct students at most » |
+| plan : `recordedAt` constant | « attempts keep the file order, recordedAt strictly increasing » |
+| plan : les passages d'une fiche refusée restent permis | « a teacher cannot import a shifted student, nor his data » (et, contre les règles, `import.test.mjs` « ce que le plan permet… ») |
+| plan : fusion de groupes sans confirmation | « two file groups on one club group are refused without a merge choice » |
+| exécution : repartir du lot 0 au lieu de `done` | `club_import_runner_test` « an unacknowledged lot… not written twice » |
+| exécution : ignorer le budget du jour | « a budget smaller than one lot still writes one lot per run » |
+| écriture : réécrire un document existant | `firestore_club_import_store_test` « a document that exists is left as it is » |
+| règle : `done == résultat + 1` devient `done > résultat` | `import.test.mjs` « un lot sauté est refusé… » |
+| règle : `importStampValid()` retirée d'une forme (ou rendue toujours vraie) | `import.test.mjs` « … n'est jamais écrasé » (la collection concernée) |
+| règle : l'avancement n'exige plus l'auteur du marqueur (identifiant sans `uid`) | `import.test.mjs` « le marqueur d'import est lié à son auteur » (T1, T2, T3) et `matrix.test.mjs` suite `imports` (ATTAQUE, avancement d'un autre) |
+| règle : le marqueur redevient `imports/{empreinte}` (création sous l'empreinte seule permise) | `import.test.mjs` T1 et `matrix.test.mjs` « ATTAQUE : personne ne crée un marqueur au nom d'un autre auteur » |
+| règle : `importStampValid()` sans `resource.data.importedAt < request.time` (marque égale acceptée en mise à jour) | `import.test.mjs` « deux lots simultanés sur les mêmes documents : jamais deux acceptés (30 essais) » (2 lots acceptés en parallèle) |
+| règle : lecture du marqueur par `markerId.matches('…_' + request.auth.uid)` (regex dynamique) | `import.test.mjs` « un compte dont l'uid est « .* » ne lit que son propre marqueur » (4 uid à métacaractères) |
+| planificateur : le contrôle `marker.planId != planId` retiré | scénario BDD « Reprendre avec un autre rattachement de groupes est refusé car le plan a changé » |
+| règle : `importStampValid()` laisse passer `importedAt: null` sur un document sans marque | `import.test.mjs` « une mise à jour ne pose pas importedAt, pas même à null » |
+| planificateur : `planId` sans le contenu des écritures ni les décisions | `club_import_planner_edges_test` « attaching the orphan session to another group changes the plan id », `club_import_planner_test` « the plan identity… » |
+| planificateur : les fiches invisibles d'un enseignant ne sont plus comptées | `club_import_planner_visibility_test`, `prepare_club_import_test` « a fiche of the file that exists outside her groups… » |
+| magasin : le marqueur relu par `get` (cache) au lieu de `getFromServer` | `firestore_club_import_store_test` « the marker is read from the server, never from the cache » |
+| runner : `spent + cost > limit` devient `>=` | `club_import_runner_test` « a lot that lands exactly on the ceiling is written » |
+| texte : séparateur « : » codé en dur | `import_report_text_test` (littéraux fr et en) |
+| runner : le compte du jour n'est plus lu (`spent = 0`) | `club_import_runner_test` « two runs the same day… » et le scénario « Reprendre le même jour n'ajoute aucune écriture » |
+| règle : retirer `done == 1` à la création | `matrix.test.mjs` suite `imports` (création avec `done` autre que 1) |
+| règle : suppression du marqueur permise au directeur | suite `imports` (suppression : personne) |
+| règle : `isFamily` ajouté à `mayImport` | suite `imports` (création, lecture, avancement) |
+| règle : `planId` non figé à l'avancement | suite `imports` (avancement : champ changé refusé) |
+
+La condition `resource.data.state == 'running'` de la règle d'avancement est **redondante** avec `done <= lots` : la retirer ne fait échouer aucun test ; elle est gardée en défense en profondeur.

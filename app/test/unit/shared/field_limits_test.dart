@@ -50,4 +50,25 @@ void main() {
       contains('[A-Z2-7]{$minInvitationCodeLength,$maxInvitationCodeLength}'),
     );
   });
+
+  test(
+    'the identifier and exercise number bounds are the ones of the rules',
+    () {
+      expect(rules, contains('d.groupId.size() <= $maxIdentifierLength'));
+      expect(rules, contains('d.seasonId.size() <= $maxIdentifierLength'));
+      expect(rules, contains('d.studentId.size() <= $maxIdentifierLength'));
+      expect(
+        rules,
+        contains("presInt(d, 'exerciseNumber', 0, $maxExerciseNumber)"),
+      );
+    },
+  );
+
+  test('the date text of the client is the one accepted by the rules', () {
+    // La règle écrit `\\` pour un `\` ; le motif du client est le même texte.
+    final ruleRegex = RegExp(r"v\.matches\('([^']+)'\)")
+        .firstMatch(rules.substring(rules.indexOf('function isoText')))!
+        .group(1)!;
+    expect(isoDateText.pattern, ruleRegex);
+  });
 }

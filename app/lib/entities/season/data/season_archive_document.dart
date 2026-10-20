@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/season/domain/season_archive.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/document_ids.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
@@ -14,14 +15,13 @@ import 'package:billard_cfa/shared/persistence/document_values.dart';
 /// champ `blockId`.
 abstract final class SeasonArchiveDocument {
   static String summaryId(SeasonId season, Audience audience) =>
-      '${season.value}_${audience.name}';
+      DocumentIds.archiveSummary(season, audience);
 
   static String exerciseId(
     SeasonId season,
     Audience audience,
     ExerciseRef exercise,
-  ) =>
-      '${season.value}_${audience.name}_${exercise.blockId}_${exercise.number}';
+  ) => DocumentIds.archiveExercise(season, audience, exercise);
 
   static Fields encodeAudience(SeasonId season, AudienceArchive block) => {
     'seasonId': season.value,

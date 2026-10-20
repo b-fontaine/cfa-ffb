@@ -107,6 +107,16 @@ class InMemoryDocumentStore implements DocumentStore {
     return fields == null ? null : StoredDocument(path, _copy(fields));
   }
 
+  /// Le « serveur » d'un double, c'est son contenu : comme [get], sans la
+  /// surcharge que les tests en font pour simuler un cache ou le hors ligne.
+  @override
+  Future<StoredDocument?> getFromServer(String path) async {
+    reads++;
+    _check(path);
+    final fields = _documents[path];
+    return fields == null ? null : StoredDocument(path, _copy(fields));
+  }
+
   /// Le cache d'un double, c'est son contenu : la lecture ne passe PAS par
   /// [get] (que les tests surchargent pour simuler le hors ligne) ni par
   /// l'échec simulé.

@@ -17,7 +17,8 @@
     { "name": "acquisitions", "path": "clubs/{}/acquisitions/{}", "adr": "`clubs/{c}/acquisitions/{id}`" },
     { "name": "assessments", "path": "clubs/{}/assessments/{}", "adr": "`clubs/{c}/assessments/{id}`" },
     { "name": "acknowledgements", "path": "clubs/{}/acknowledgements/{}", "adr": "`acknowledgements/{id}`" },
-    { "name": "archives", "path": "clubs/{}/archives/{}", "adr": "`clubs/{c}/archives/{season_public}`" }
+    { "name": "archives", "path": "clubs/{}/archives/{}", "adr": "`clubs/{c}/archives/{season_public}`" },
+    { "name": "imports", "path": "clubs/{}/imports/{}", "adr": "`clubs/{c}/imports/{fileId}_{uid}`" }
   ],
   "speciaux": [
     { "name": "mes clubs (groupe de collections members)", "path": "{**}/members/{}" },

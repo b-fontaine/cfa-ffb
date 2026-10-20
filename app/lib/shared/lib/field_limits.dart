@@ -32,3 +32,19 @@ const int maxPresentStudents = 60;
 /// dans `attemptShape` et `recordShape`. L'identifiant d'une saisie liée à une
 /// séance du catalogue (`sittingId`) la respecte.
 const int maxSessionReferenceLength = 64;
+
+/// Identifiant d'un groupe, d'une saison, d'un élève ou d'un bloc cité par une
+/// donnée (`groupOwned`, `studentOwned`, `attemptShape` : `size() <= 64`) ;
+/// l'import (FB7) refuse un fichier dont un identifiant dépasse la borne.
+const int maxIdentifierLength = 64;
+
+/// Numéro d'exercice d'un passage ou d'un acquittement (`presInt(d,
+/// 'exerciseNumber', 0, 1000)`).
+const int maxExerciseNumber = 1000;
+
+/// Texte ISO 8601 que `DocumentValues.encodeDate` écrit et que `isoText` des
+/// règles accepte : l'import vérifie chaque date du fichier avant d'écrire.
+final RegExp isoDateText = RegExp(
+  '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])'
+  r'T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]([.][0-9]{1,6})?Z?$',
+);

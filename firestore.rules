@@ -196,11 +196,32 @@ service cloud.firestore {
     // ── Formes des documents de données ──
     function dateOk(d) { return optStamp(d, 'createdAt') && optStamp(d, 'updatedAt') && optStamp(d, 'deletedAt'); }
 
+    // Marque d'import (FB7, ADR 0024 décision 19) : `importedAt` est posé à la CRÉATION seulement,
+    // avec la date du serveur ; il ne prouve PAS l'origine d'import (n'importe quel animateur peut
+    // le poser sur une création ordinaire). Une mise à jour ne le pose ni ne le change : la clé ne
+    // peut y figurer que si le document la portait déjà, avec la MÊME valeur (par fusion, ou en
+    // renvoyant le document entier) ET une marque STRICTEMENT antérieure à la requête ; elle peut
+    // être ôtée. Un `importedAt: null` sur un document sans marque est refusé (sans cela,
+    // `null == resource.data.get('importedAt', null)` le laissait passer). La marque strictement
+    // antérieure ferme la course : deux lots qui créent les mêmes documents à la même milliseconde
+    // de serveur voyaient le second comme une « mise à jour » du premier (marque égale) et
+    // l'écrasaient. Une écriture d'import sur un document DÉJÀ présent (créé entre la lecture de
+    // l'inventaire et le lot, par une saisie, une clôture ou un autre import) est refusée en bloc
+    // par les règles, sans dépendre d'une lecture périmée.
+    function importStampValid() {
+      return !('importedAt' in request.resource.data)
+        || (resource == null
+            ? request.resource.data.importedAt == request.time
+            : ('importedAt' in resource.data
+               && request.resource.data.importedAt == resource.data.importedAt
+               && resource.data.importedAt < request.time));
+    }
+
     function sessionShape() {
       let d = request.resource.data;
       return d.keys().hasOnly(['groupId', 'seasonId', 'title', 'date', 'audience', 'sheetId',
-                               'createdAt', 'updatedAt', 'deletedAt'])
-        && optString(d, 'title', 120) && optStamp(d, 'date') && optOneOf(d, 'audience', ['children', 'adults'])
+                               'createdAt', 'updatedAt', 'deletedAt', 'importedAt'])
+        && importStampValid() && optString(d, 'title', 120) && optStamp(d, 'date') && optOneOf(d, 'audience', ['children', 'adults'])
         && optString(d, 'sheetId', 64) && dateOk(d);
     }
 
@@ -242,8 +263,8 @@ service cloud.firestore {
     function acquisitionShape() {
       let d = request.resource.data;
       return d.keys().hasOnly(['groupId', 'seasonId', 'studentId', 'blockId', 'date', 'source',
-                               'createdAt', 'updatedAt', 'deletedAt'])
-        && presString(d, 'blockId', 64) && presStamp(d, 'date') && optOneOf(d, 'source', ['placement'])
+                               'createdAt', 'updatedAt', 'deletedAt', 'importedAt'])
+        && importStampValid() && presString(d, 'blockId', 64) && presStamp(d, 'date') && optOneOf(d, 'source', ['placement'])
         && (!('source' in d) || d.source != null)
         && dateOk(d);
     }
@@ -257,8 +278,8 @@ service cloud.firestore {
     function assessmentShape() {
       let d = request.resource.data;
       return d.keys().hasOnly(['groupId', 'seasonId', 'studentId', 'date', 'concentration', 'endurance',
-                               'frustration', 'comment', 'createdAt', 'updatedAt', 'deletedAt'])
-        && presStamp(d, 'date') && presInt(d, 'concentration', 1, 4) && presInt(d, 'endurance', 1, 4)
+                               'frustration', 'comment', 'createdAt', 'updatedAt', 'deletedAt', 'importedAt'])
+        && importStampValid() && presStamp(d, 'date') && presInt(d, 'concentration', 1, 4) && presInt(d, 'endurance', 1, 4)
         && presInt(d, 'frustration', 1, 4) && optString(d, 'comment', 500) && dateOk(d);
     }
 
@@ -269,8 +290,9 @@ service cloud.firestore {
     function acknowledgementShape() {
       let d = request.resource.data;
       return d.keys().hasOnly(['groupId', 'seasonId', 'studentId', 'blockId', 'exerciseNumber',
-                               'lastAttemptId', 'date', 'createdBy', 'createdAt', 'updatedAt', 'deletedAt'])
-        && presString(d, 'blockId', 64) && presInt(d, 'exerciseNumber', 0, 1000)
+                               'lastAttemptId', 'date', 'createdBy', 'createdAt', 'updatedAt', 'deletedAt',
+                               'importedAt'])
+        && importStampValid() && presString(d, 'blockId', 64) && presInt(d, 'exerciseNumber', 0, 1000)
         && presString(d, 'lastAttemptId', 64) && presStamp(d, 'date') && optString(d, 'createdBy', 128)
         && dateOk(d);
     }
@@ -281,8 +303,9 @@ service cloud.firestore {
 
     function membershipShape() {
       let d = request.resource.data;
-      return d.keys().hasOnly(['groupId', 'seasonId', 'studentId', 'from', 'to', 'createdAt', 'updatedAt'])
-        && optStamp(d, 'from') && optStamp(d, 'to') && optStamp(d, 'createdAt') && optStamp(d, 'updatedAt');
+      return d.keys().hasOnly(['groupId', 'seasonId', 'studentId', 'from', 'to', 'createdAt', 'updatedAt',
+                               'importedAt'])
+        && importStampValid() && optStamp(d, 'from') && optStamp(d, 'to') && optStamp(d, 'createdAt') && optStamp(d, 'updatedAt');
     }
 
     // ───────────────────────── Administrateurs ─────────────────────────
@@ -408,7 +431,8 @@ service cloud.firestore {
       function seasonShape() {
         let d = request.resource.data;
         return d.keys().hasOnly(['label', 'startDate', 'endDate', 'closedOn', 'createdAt', 'updatedAt',
-                                 'deletedAt'])
+                                 'deletedAt', 'importedAt'])
+          && importStampValid()
           && d.keys().hasAll(['label'])
           && d.label is string && d.label.size() >= 1 && d.label.size() <= 80
           && optStamp(d, 'startDate') && optStamp(d, 'endDate') && optStamp(d, 'closedOn') && dateOk(d);
@@ -424,7 +448,8 @@ service cloud.firestore {
       function groupShape() {
         let d = request.resource.data;
         return d.keys().hasOnly(['seasonId', 'name', 'audience', 'teacherUids', 'createdAt', 'updatedAt',
-                                 'deletedAt'])
+                                 'deletedAt', 'importedAt'])
+          && importStampValid()
           && d.keys().hasAll(['seasonId', 'name', 'teacherUids'])
           && d.seasonId is string && d.seasonId.size() >= 1 && d.seasonId.size() <= 64
           && d.name is string && d.name.size() >= 1 && d.name.size() <= 80
@@ -496,7 +521,8 @@ service cloud.firestore {
       function studentShape() {
         let d = request.resource.data;
         return d.keys().hasOnly(['firstName', 'initial', 'audience', 'audienceHistory', 'groupIds',
-                                 'createdAt', 'erasing', 'expireOn'])
+                                 'createdAt', 'erasing', 'expireOn', 'importedAt'])
+          && importStampValid()
           && audienceHistoryOk(d)
           && d.keys().hasAll(['firstName', 'groupIds'])
           && d.firstName is string && d.firstName.size() >= 1 && d.firstName.size() <= 40
@@ -626,7 +652,8 @@ service cloud.firestore {
         let d = request.resource.data;
         return d.keys().hasOnly(['seasonId', 'public', 'sessionCount', 'presenceCount',
                                  'possiblePresenceCount', 'studentCount', 'attemptCount', 'blockId',
-                                 'exerciseNumber', 'potted', 'total', 'createdAt'])
+                                 'exerciseNumber', 'potted', 'total', 'createdAt', 'importedAt'])
+          && importStampValid()
           && d.keys().hasAll(['seasonId'])
           && d.seasonId is string && d.seasonId.size() >= 1 && d.seasonId.size() <= 64
           && optOneOf(d, 'public', ['children', 'adults'])
@@ -641,6 +668,74 @@ service cloud.firestore {
         allow get, list: if isTeacher(clubId) || manages(clubId);
         allow create, update: if manages(clubId) && archiveShape();
         allow delete: if manages(clubId);
+      }
+
+      // ── Marqueurs d'import d'une sauvegarde (FB7, ADR 0024 décision 19 et C2) ──
+      // Un document par FICHIER ET PAR AUTEUR : son identifiant est `{empreinte SHA-256 du fichier}_{uid
+      // de l'auteur}`, donc le marqueur appartient à celui qui l'a créé PAR CONSTRUCTION : personne ne
+      // crée, ne lit pour agir ni n'avance le marqueur d'un autre, et un enseignant ne peut pas bloquer
+      // l'import du directeur en posant un marqueur au nom d'un fichier. SANS donnée personnelle :
+      // empreintes, compteurs, rôle, deux dates du serveur. Il fait de chaque lot d'import un lot « une
+      // seule fois » : le premier lot le CRÉE avec `done == 1`, chaque lot suivant l'AVANCE d'exactement
+      // un (`done == avant + 1`) DANS LE MÊME lot atomique que ses écritures. Un lot rejoué (coupure,
+      // file du SDK, deuxième appareil du même compte) voit un `done` déjà avancé : les règles le
+      // refusent en bloc, rien n'est écrit deux fois. Jamais supprimé (console seule). Entre deux
+      // auteurs, l'idempotence ne vient pas du marqueur : un document déjà présent n'est jamais écrasé
+      // (`importedAt`, identifiants du fichier) et le plan du second voit l'inventaire. Le directeur,
+      // l'administrateur et l'enseignant (qui n'écrit que dans ses groupes, par les règles des données)
+      // importent.
+      function mayImport(c) { return manages(c) || isTeacher(c); }
+
+      // Le rôle écrit au marqueur est celui de l'auteur du premier lot.
+      function importRoleMatches(c, role) {
+        return (role == 'teacher' && isTeacher(c)) || (role == 'director' && isDirector(c))
+          || (role == 'admin' && adminOk());
+      }
+
+      function importMarkerShape(markerId) {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['fileId', 'planId', 'lots', 'done', 'writes', 'restored', 'role', 'createdBy',
+                                 'state', 'startedAt', 'updatedAt'])
+          && d.keys().hasAll(['fileId', 'planId', 'lots', 'done', 'writes', 'restored', 'role', 'createdBy',
+                              'state', 'startedAt', 'updatedAt'])
+          && d.createdBy is string && d.createdBy.size() >= 1 && d.createdBy.size() <= 128
+          && d.fileId is string && d.fileId.matches('[0-9a-f]{64}')
+          && markerId == d.fileId + '_' + request.auth.uid
+          && d.planId is string && d.planId.matches('[0-9a-f]{64}')
+          && d.lots is int && d.lots >= 1 && d.lots <= 1000
+          && d.done is int && d.done >= 1 && d.done <= d.lots
+          && d.writes is int && d.writes >= 0 && d.writes <= 400000
+          && d.restored is int && d.restored >= 0 && d.restored <= 100000
+          && d.role in ['teacher', 'director', 'admin']
+          && d.state == (d.done == d.lots ? 'done' : 'running')
+          && d.updatedAt == request.time;
+      }
+
+      match /imports/{markerId} {
+        // Un document absent se lit aussi (« ai-je déjà importé ce fichier ? ») : on ne lit que le sien.
+        // Comparaison de chaînes, sans regex construite depuis l'uid (un uid « .* » en serait un motif).
+        allow get: if mayImport(clubId) && markerId.matches('[0-9a-f]{64}_.+')
+          && markerId[65:] == request.auth.uid;
+        allow list: if manages(clubId);
+        allow create: if mayImport(clubId) && importMarkerShape(markerId)
+          && request.resource.data.done == 1
+          && request.resource.data.startedAt == request.time
+          && request.resource.data.createdBy == request.auth.uid
+          && importRoleMatches(clubId, request.resource.data.role);
+        // L'identifiant porte l'uid : seul l'AUTEUR avance son marqueur (`importMarkerShape` le lie à
+        // `request.auth.uid`) ; le rôle d'un gestionnaire n'y change rien.
+        allow update: if mayImport(clubId) && importMarkerShape(markerId)
+          && request.resource.data.createdBy == resource.data.createdBy
+          && request.resource.data.fileId == resource.data.fileId
+          && resource.data.state == 'running'
+          && request.resource.data.done == resource.data.done + 1
+          && request.resource.data.planId == resource.data.planId
+          && request.resource.data.lots == resource.data.lots
+          && request.resource.data.writes == resource.data.writes
+          && request.resource.data.restored == resource.data.restored
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.startedAt == resource.data.startedAt;
+        allow delete: if false;
       }
     }
 

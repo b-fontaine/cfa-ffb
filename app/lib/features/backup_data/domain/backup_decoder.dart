@@ -43,12 +43,19 @@ class BackupDecoder {
   /// 0023) ; la clé y est obligatoire sur chaque saisie, et refusée dans un
   /// fichier des formats 1 à 4 (les saisies décodées n'ont alors aucune
   /// étiquette).
+  ///
+  /// [checkConsistency] `false` : ni doublon ni référence orpheline ne sont
+  /// refusés ici. L'import vers un club synchronisé (FB7) les **collecte** pour
+  /// en faire un rapport complet (`ClubImportPlanner`) au lieu de s'arrêter à
+  /// la première erreur ; la forme, les types et les invariants de chaque
+  /// entité restent vérifiés (le premier manquement refuse le fichier).
   BackupSnapshot decode(
     Object? data, {
     bool withSettings = true,
     bool withAcknowledgements = true,
     bool withArchives = true,
     bool withTags = true,
+    bool checkConsistency = true,
   }) {
     try {
       final object = _read.object(data);
@@ -68,7 +75,7 @@ class BackupDecoder {
         withArchives: withArchives,
         withTags: withTags,
       );
-      const BackupConsistency().check(snapshot);
+      if (checkConsistency) const BackupConsistency().check(snapshot);
       return snapshot;
     } on InvariantViolation catch (violation) {
       // Un invariant métier violé par une entité du fichier = fichier invalide.

@@ -25,6 +25,13 @@ class _FakeAccess implements FirestoreAccess {
   }
 
   @override
+  Future<Map<String, dynamic>?> readDocumentFromServer(String path) async {
+    calls.add('server $path');
+    _maybeFail();
+    return document;
+  }
+
+  @override
   Future<Map<String, dynamic>?> peekDocument(String path) async {
     calls.add('peek $path');
     _maybeFail();
@@ -212,6 +219,19 @@ void main() {
       expect(access.calls, ['peek clubs/c1']);
     });
 
+    test('getFromServer asks the server only and decodes like get', () async {
+      access.document = {'at': Timestamp.fromDate(DateTime.utc(2026))};
+
+      final found = (await store.getFromServer('clubs/c1'))!;
+
+      expect((found.fields['at']! as DateTime).toUtc(), DateTime.utc(2026));
+      expect(access.calls, ['server clubs/c1']);
+    });
+
+    test('getFromServer of a missing document is null', () async {
+      expect(await store.getFromServer('clubs/c1'), isNull);
+    });
+
     test('peek of a document the cache does not know is null', () async {
       expect(await store.peek('clubs/c1'), isNull);
     });
@@ -395,6 +415,7 @@ void main() {
         for (final operation in <Future<Object?> Function()>[
           () => store.get('a/1'),
           () => store.peek('a/1'),
+          () => store.getFromServer('a/1'),
           () => store.list('a'),
           () => store.collectionGroup('a', field: 'x', equalTo: 1),
           () => store.commit([const DeleteOp('a/1')]),

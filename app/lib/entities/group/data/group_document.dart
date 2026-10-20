@@ -25,9 +25,17 @@ abstract final class GroupDocument {
   /// Les champs d'une appartenance : le groupe, la saison et l'élève sont
   /// dénormalisés (une règle ne parcourt pas de liste), `to` absent tant
   /// qu'elle est ouverte.
-  static Fields encodeMembership(Group group, Membership membership) => {
-    'groupId': group.id.value,
-    'seasonId': group.seasonId.value,
+  static Fields encodeMembership(Group group, Membership membership) =>
+      encodeMembershipOf(group.id, group.seasonId, membership);
+
+  /// Comme [encodeMembership], sans le groupe entier (l'import, FB7).
+  static Fields encodeMembershipOf(
+    GroupId group,
+    SeasonId season,
+    Membership membership,
+  ) => {
+    'groupId': group.value,
+    'seasonId': season.value,
     'studentId': membership.studentId.value,
     'from': DocumentValues.encodeDate(membership.from),
     'to': membership.to == null

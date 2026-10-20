@@ -115,13 +115,13 @@ Budget de lectures : `GroupRepository.save` lit le groupe, les appartenances du 
 - **Fiche sans groupe** : ne peut recevoir ni bloc acquis, ni bilan, ni acquittement (`ServiceFailure` `other`) ; une fiche d'enseignant hors de ses groupes est refusée.
 - **Ordre à date égale** : deux passages enregistrés au même instant du serveur sont ordonnés par identifiant ; la borne de passages par séance est un compte, pas une garantie entre deux appareils simultanés.
 - **Écritures hors unité de travail** : elles attendent encore l'accusé du serveur (FB5) ; la création d'une saisie (transaction) échoue hors ligne (FB5).
-- **Import** : sans aucune saisie, supporté (atomique, figé par un test) mais refuse une séance planifiée sans groupe ; avec saisie, `unsupported` jusqu'à FB7. **Sauvegarde et `StudentEraser` côté serveur** : FB7 et FB8 (lots reprenables, marqueur `erasing`) ; `eraseStudent` des dépôts n'est qu'une requête par élève, réservée aux gestionnaires.
+- **Import** : `ImportBackup` (drift) reste `unsupported` avec une saisie sous Firestore (une saisie se crée par transaction, impossible dans un lot) ; sans aucune saisie, il est supporté (atomique, figé par un test) mais refuse une séance planifiée sans groupe. **Le moteur d'import vers un club Firestore est livré en FB7, partie A (2026-10-20)** : voir la section « Import d'une sauvegarde (FB7, partie A) » ci-dessous. **Sauvegarde et `StudentEraser` côté serveur** : FB7 (clôture) et FB8 (lots reprenables, marqueur `erasing`) ; `eraseStudent` des dépôts n'est qu'une requête par élève, réservée aux gestionnaires.
 
 ## Reste après FB4
 
 - **Lot de bascule de production, après FB7** (décision du 2026-10-18) : défaut `DATA_BACKEND=firestore`, retrait de `CompositeUnitOfWork` et des dépôts drift de données (FB7), parcours navigateur application + émulateurs avec les dépôts Firestore, déploiement des règles et des index **par l'utilisateur** (rien n'est déployé).
 - **FB5** : **fait** (parties A et B, 2026-10-19) : `watch…`, pastille, écritures non bloquantes hors ligne, création de saisie hors ligne, SDK web local ; voir la section suivante. Reste hors FB5 : écran de positionnement et fiche sans groupe.
-- **FB7** : import d'une sauvegarde avec saisie (l'import doit écrire `recordedAt` **strictement croissant dans l'ordre du fichier** : `createdAt == request.time` est exigé même d'un directeur ou d'un administrateur, donc tous les passages importés ont la même date serveur et seul `recordedAt` (puis l'identifiant) fixe leur ordre), clôture reprenable (lots de 500 avec marqueur), reprise des séances sans groupe de drift, saison courante du club (écrite par l'administrateur seulement).
+- **FB7** : **partie A faite (2026-10-20)** : moteur d'import (plan, intégrité, droits, lots, marqueur, règles, tests émulateur). **Reste (partie B)** : écran d'import, choix des groupes et des séances sans groupe, confirmation des élèves effacés, avancement, reprise ; parcours navigateur ; **clôture reprenable** (lots de 500 avec marqueur) ; reprise des séances sans groupe de drift *(faite côté moteur : choix explicite par séance)* ; saison courante du club (écrite par l'administrateur seulement).
 - **FB8** : `StudentEraser` côté serveur, effacement par lots reprenables.
 
 ## Ce que FB5b ajoute (2026-10-19)
@@ -182,3 +182,19 @@ Limites sans règle sûre : L1 agrégat de groupe périmé, L2 fiche supprimée 
 | Parcours navigateur | `scripts/emulator_e2e/serve_and_test.sh` lance l'application avec `--dart-define=DATA_BACKEND=firestore` |
 
 **Ce que lit un parent ou un élève** (liste exacte : `scripts/rules_test/family_reads.json`) : le document de **chaque fiche liée** (`get` et écoute), ses passages et ses blocs acquis (égalité sur `studentId`), les séances de **ses groupes** (égalité sur `groupId`), le document de **chaque groupe** (jamais ses appartenances), le réglage du club (`settings/main` **en entier**, pas seulement les règles de validation) et **son propre `member`**. L'appareil **reçoit et met en cache sans l'afficher** : tous les passages de la fiche liée, réussis et manqués, avec leur date, leur séance et leur groupe (la présence s'en déduit), le document de chaque groupe (il porte `teacherUids`, identifiants de compte des enseignants : données d'un tiers) et toutes les séances de ces groupes, passées comprises (cinq affichées). Ni liste d'élèves, ni appartenances, ni saisies, bilans, « Vu », archives. Le test Dart du cas d'usage compare le journal des demandes de l'appareil à cette liste, le test de règles joue la liste contre les vraies règles et joue les lectures interdites.
+
+## Import d'une sauvegarde (FB7, partie A)
+
+Le moteur écrit une sauvegarde (formats 1 à 5) dans un club **sans passer par les dépôts** : les dépôts lisent le propriétaire d'une donnée dans le club et créent une saisie par transaction, ce qu'un lot ne permet pas. Il réutilise leurs **codecs** (`*_document.dart`, via `app/club_import_operations.dart`) : les documents écrits sont exactement les leurs, `ClubStore` n'étant pas utilisé pour l'écriture (`documents.commit` attend l'accusé du serveur, ce que le marqueur exige).
+
+| Pièce | Rôle | Où |
+|---|---|---|
+| `ClubImportPlanner` | plan avant toute écriture : intégrité, correspondance des groupes, choix explicites, droits du rôle, élèves effacés, lots | `features/backup_data/domain/club_import/` |
+| `ClubImportRunner` | écrit les lots à partir du marqueur ; budget du jour ; coupure et refus | idem |
+| `ClubImportStore` (port) | lire le club dans le périmètre du rôle, lire le marqueur, écrire un lot et le marqueur | idem |
+| `FirestoreClubImportStore` | le port sur `DocumentStore` (jamais d'écrasement ; accusé du serveur attendu) | `app/` |
+| marqueur `clubs/{c}/imports/{fileId}_{uid}` (propre à son auteur) | compare-and-swap de chaque lot ; reprise ; un fichier une fois | `firestore.rules`, `app/import_marker_document.dart` |
+
+Lecture du club (`inventory`) : un gestionnaire **liste** les collections du club ; un enseignant interroge **un groupe à la fois** (égalité sur `groupId`) et ses fiches par `groupIds` (`array-contains-any`, 30 valeurs). Coût : une lecture par document présent, zéro pour un club vide ; aucune donnée personnelle ne sort de l'inventaire. Aucun index à déclarer (`tool/check_indexes.dart` vert).
+
+Limites et écarts : voir les notes FB7a de l'[ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) (20 documents lus par lot par les règles, `recordedAt` et `createdAt`, élèves effacés non détectables, aucun import des réglages, aucun document existant modifié).

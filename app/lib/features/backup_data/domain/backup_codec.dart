@@ -4,7 +4,25 @@ import 'package:billard_cfa/features/backup_data/domain/backup_decoder.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_encoder.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
+import 'package:billard_cfa/shared/lib/sha256.dart';
 import 'package:injectable/injectable.dart';
+
+/// Une sauvegarde lue pour l'import (FB7) : son contenu, la version du format
+/// du fichier, sa date d'export (`null` si illisible) et l'empreinte SHA-256
+/// de son texte, qui l'identifie (marqueur d'import).
+final class DecodedBackup {
+  const DecodedBackup({
+    required this.snapshot,
+    required this.version,
+    required this.exportedAt,
+    required this.fingerprint,
+  });
+
+  final BackupSnapshot snapshot;
+  final int version;
+  final DateTime? exportedAt;
+  final String fingerprint;
+}
 
 /// Format de sauvegarde JSON versionné, indépendant du schéma SQL (ADR 0001).
 ///
@@ -41,7 +59,15 @@ class BackupCodec {
   }
 
   /// Lit et valide une sauvegarde ; aucune écriture n'a lieu ici.
-  BackupSnapshot decode(String content) {
+  BackupSnapshot decode(String content) => decodeForImport(content).snapshot;
+
+  /// Lit une sauvegarde pour l'import vers un club synchronisé (FB7) : le
+  /// contenu, sa version, sa date d'export et son **empreinte** (identifiant
+  /// du fichier), **sans** refuser les doublons ni les références orphelines
+  /// (voir `BackupDecoder.decode`, `checkConsistency`) : l'analyse d'import les
+  /// recense toutes. Le format lu est exactement celui de [decode] ; aucune
+  /// écriture n'a lieu ici.
+  DecodedBackup decodeForImport(String content, {bool collect = false}) {
     if (content.length > maxContentLength || _tooDeep(content)) {
       throw const InvariantViolation(InvariantCode.backupUnreadable);
     }
@@ -64,12 +90,20 @@ class BackupCodec {
     // (`data.seasonArchives`, ADR 0019), le format 5 les étiquettes de la note
     // de jeu (`data.sessionRecords[].tags`, ADR 0023). `seasons[].closedOn`
     // est facultatif dans les cinq formats.
-    return const BackupDecoder().decode(
+    final snapshot = const BackupDecoder().decode(
       parsed['data'],
       withSettings: version >= 2,
       withAcknowledgements: version >= 3,
       withArchives: version >= 4,
       withTags: version >= 5,
+      checkConsistency: !collect,
+    );
+    final exported = parsed['exportedAt'];
+    return DecodedBackup(
+      snapshot: snapshot,
+      version: version,
+      exportedAt: exported is String ? DateTime.tryParse(exported) : null,
+      fingerprint: sha256Hex(content),
     );
   }
 

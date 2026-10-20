@@ -1,3 +1,4 @@
+import 'package:billard_cfa/shared/lib/document_ids.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 
 /// Chemins des documents d'**un** club (ADR 0024, décision 14) : `clubId` se
@@ -35,7 +36,7 @@ final class ClubPaths {
   /// élève peut débuter le même jour dans deux groupes. [from] est lu en ISO
   /// 8601 (fuseau conservé, microsecondes comprises).
   String membership(GroupId group, StudentId student, DateTime from) =>
-      '$memberships/${group.value}_${student.value}_${from.toIso8601String()}';
+      '$memberships/${DocumentIds.membership(group, student, from)}';
 
   String get seasons => '$root/seasons';
 
@@ -56,6 +57,19 @@ final class ClubPaths {
   String get archives => '$root/archives';
 
   String archive(String id) => '$archives/$id';
+
+  /// Marqueurs d'import d'une sauvegarde (FB7, ADR 0024 décision 19) : un
+  /// document par fichier importé **et par auteur**, sans aucune donnée
+  /// personnelle (le compte n'est qu'un pseudonyme).
+  String get imports => '$root/imports';
+
+  /// Le marqueur de [author] pour le fichier d'empreinte [fileId] (SHA-256 en
+  /// hexadécimal) : `{fileId}_{uid}`. L'identifiant porte l'auteur, donc les
+  /// règles le lui réservent par construction : personne ne crée, ne lit ni
+  /// n'avance le marqueur d'un autre (un enseignant ne bloque pas le
+  /// directeur en posant un marqueur au nom d'un fichier).
+  String importMarker(String fileId, UserId author) =>
+      '$imports/${fileId}_${author.value}';
 
   /// Passages : **un document par passage** (ADR 0024, décision 17).
   String get attempts => '$root/attempts';

@@ -74,6 +74,13 @@ class DeviceDocumentStore implements DocumentStore {
   }
 
   @override
+  Future<StoredDocument?> getFromServer(String path) async {
+    requests.add('getFromServer $path');
+    _requireOnline();
+    return await server.getFromServer(path);
+  }
+
+  @override
   Future<StoredDocument?> peek(String path) async => null;
 
   @override

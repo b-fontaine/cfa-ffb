@@ -27,6 +27,40 @@ void main() {
     });
   });
 
+  group('readDocumentFromServer (never the cache)', () {
+    test('returns the fields, or null for a missing document', () async {
+      await firestore.doc('clubs/c1').set({'name': 'Club un'});
+
+      expect(await access.readDocumentFromServer('clubs/c1'), {
+        'name': 'Club un',
+      });
+      expect(await access.readDocumentFromServer('clubs/absent'), isNull);
+    });
+
+    test('asks for the server source, and offline is an error, not the '
+        'cache', () async {
+      final paths = <String>[];
+      final serving = FirestoreSdkAccess(
+        firestore: () => firestore,
+        readFromServer: (path) {
+          paths.add(path);
+          throw FirebaseException(
+            plugin: 'cloud_firestore',
+            code: 'unavailable',
+          );
+        },
+      );
+
+      await expectLater(
+        serving.readDocumentFromServer('clubs/c1'),
+        throwsA(
+          isA<FirebaseException>().having((e) => e.code, 'code', 'unavailable'),
+        ),
+      );
+      expect(paths, ['clubs/c1']);
+    });
+  });
+
   group('peekDocument (local cache only)', () {
     test(
       'returns the fields of a document and null for a missing one',

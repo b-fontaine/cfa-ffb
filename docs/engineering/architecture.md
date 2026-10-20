@@ -77,6 +77,10 @@ app/
 │   │   ├── auth/                      # lot FB2 : AuthCubit (unknown / signedOut / noClub / ready / indisponible), AuthState, authRedirect (pure), AuthRefresh, RunningSessionsClubSwitchGuard
 │   │   ├── session_startup.dart       # SessionStartup : ce que l'AuthCubit attend (FirebaseStartup en production, double en mémoire en test)
 │   │   ├── di/auth_module.dart        # SessionScope exposé par CurrentUser et ActiveClubScope ; KeyValueStore de production
+│   │   ├── di/data_backend_module.dart # aiguillage drift / Firestore des dépôts de données ET du port d'import (FB7) : `ClubImportStore` = FirestoreClubImportStore ou, avec drift, UnsupportedClubImportStore
+│   │   ├── firestore_club_import_store.dart  # FB7 : implémentation Firestore du port `ClubImportStore` (inventaire dans le périmètre du rôle, lot atomique avec le marqueur)
+│   │   ├── club_import_operations.dart       # FB7 : une écriture du plan -> les opérations Firestore (mêmes codecs que les dépôts, marque `importedAt`)
+│   │   ├── import_marker_document.dart       # FB7 : marqueur d'import <-> `clubs/{c}/imports/{empreinte}_{uid}` (propre à son auteur)
 │   │   ├── platform/firebase_auth_sdk.dart  # AuthSdk ; avec platform/firebase_sdk_gateway.dart, les deux seuls importeurs de firebase_auth (règle 9) ; platform/shared_preferences_key_value_store.dart : seul importeur de shared_preferences
 │   │   └── di/injection.dart          # @InjectableInit → injection.config.dart (généré)
 │   ├── pages/                         # une page par parcours, Bloc fourni par le routeur
@@ -144,14 +148,19 @@ app/
 │   │                                  # SettingsBloc, SettingsForm
 │   ├── features/backup_data/          # ExportBackup, ImportBackup, BackupCodec, BackupMarkerRepository,
 │   │                                  # CheckBackupReminder, RecordBackupDone ; BackupBloc, BackupView,
-│   │                                  # BackupReminderCubit, BackupReminderBanner
+│   │                                  # BackupReminderCubit, BackupReminderBanner ;
+│   │                                  # FB7, domain/club_import/ : PrepareClubImport, ClubImportPlanner (le plan),
+│   │                                  # ImportIntegrity, ClubImportRunner (lots), port ClubImportStore (implémenté dans
+│   │                                  # `app/`, voir ci-dessous), ImportDailyLedger (plafond quotidien, data :
+│   │                                  # KeyValueImportDailyLedger), UnsupportedClubImportStore (drift)
 │   └── shared/
 │       ├── lib/                       # noyau Dart pur : Audience, identifiants typés,
 │       │                              # ExerciseRef, SuccessRate, RulesConfig,
 │       │                              # Failure/Result, IdGenerator, Clock,
 │       │                              # UnitOfWork, StorageStatus, PdfFiles (sortie PDF),
 │       │                              # CurrentUser, ActiveClubScope (ClubId, Role), ClubSwitchGuard, KeyValueStore (FB2) ;
-│       │                              # FB3 : InvitationCode, Capability/RolePolicy, ClubSession, field_limits
+│       │                              # FB3 : InvitationCode, Capability/RolePolicy, ClubSession, field_limits ;
+│       │                              # FB7 : document_ids (identifiants déterministes partagés par ClubPaths et le plan), sha256
 │       ├── persistence/               # base drift (SQLite) : tables, AppDatabase,
 │       │                              # ouverture natif/web, unité de travail ; FB3 : DocumentStore (port Firestore),
 │       │                              # InMemoryDocumentStore, guardStore ; FB4 : ClubPaths, ClubStore (club résolu à chaque appel),
@@ -791,6 +800,12 @@ Détail et tableaux : [clubs-roles-plan.md](clubs-roles-plan.md). L'essentiel de
 - **Dépôts Firestore par club (FB4)** : `ClubStore` (`shared/persistence`) relit `ActiveClubScope` **à chaque appel** et refuse l'accès sans club ; `ClubPaths` nomme tous les chemins
   (aucun dépôt n'en compose un). Chaque dépôt a son codec (`*_document.dart`, dates en ISO 8601, champs de la liste blanche des règles) et choisit sa requête selon le rôle (les règles
   n'autorisent pas la même à tous). `DataBackendModule` (`app/di`) aiguille drift (défaut) ou Firestore par `--dart-define=DATA_BACKEND` pour **tous** les dépôts de données (réglages, élèves, groupes, saisons, archives, séances planifiées, saisies, **passages, blocs acquis, bilans, acquittements** ; seuls `run_progress` et le marqueur de sauvegarde restent locaux). **Le défaut reste drift jusqu'à FB7** : la bascule de production est un lot dédié après FB7 (décision de l'utilisateur, 2026-10-18). Avec Firestore, l'unité de travail est `CompositeUnitOfWork` : le lot Firestore est validé localement **sans attendre le serveur** et son envoi est suivi par `SendStatus` (FB5). Un passage est **un document** (`clubs/{c}/attempts/{id}`, ajout seul) dont le rang se dérive (`createdAt` du serveur, puis `recordedAt` de l'appareil, puis identifiant). Voir [repositories-firestore-plan.md](repositories-firestore-plan.md).
+- **Import d'une sauvegarde dans le club (FB7, ADR 0024 décision 19)** : le port `ClubImportStore` appartient au domaine de `features/backup_data` ; **son implémentation Firestore vit dans la couche `app/`**
+  (`firestore_club_import_store.dart`, `club_import_operations.dart`, `import_marker_document.dart`) et non dans la `data` de la slice, parce qu'elle réutilise les codecs `entities/*/data`
+  (`SeasonDocument`, `GroupDocument`, `StudentDocument`, `AttemptDocument`…), qu'une `data` de feature ne peut pas importer (règle FSD : jamais entre slices ; `check_architecture`) ; aucune
+  importation du SDK Firebase hors de `app/platform`. Le port est câblé **par `DataBackendModule`** comme les dépôts : avec Firestore, `FirestoreClubImportStore` ; avec drift (défaut),
+  `UnsupportedClubImportStore` (toute opération `unsupported`, jamais d'écriture dans des données que l'application ne relirait pas). Le plafond quotidien d'écritures est un état de l'appareil
+  (`ImportDailyLedger`, clé/valeur par compte : tenu **par appareil et par compte**, pas pour le projet). Nouvelle collection `clubs/{c}/imports/{empreinte}_{uid}` (marqueur, un par fichier et par auteur, relu au serveur par `DocumentStore.getFromServer`) et marque `importedAt` des documents créés par l'import : voir l'ADR 0024, note FB7a.
 - **Flux temps réel (FB5b)** : `DocumentStore` offre `watchDocument`, `watchCollection` et `watchQuery` (un état complet à chaque changement, métadonnées
   `fromCache` / `hasPendingWrites`, erreur = `StoreFailure` qui ferme **ce** flux, annulation sans fuite) ; `ClubStore.watch…` les lie à la portée (club, rôle,
   périmètre) et `watchSources` combine les lectures d'un rôle (`combineLatest`). Les dépôts ajoutent des `watch…` **ciblés** à leurs ports (les `Future`

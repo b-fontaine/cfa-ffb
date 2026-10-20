@@ -12,6 +12,10 @@
 # COPIE des règles (mutations à la main, docs/engineering/testing.md). Aucune requête n'atteint le projet Firebase
 # réel : projet « demo-… » (émulateurs seuls), jamais de déploiement.
 #
+# Les écritures de l'import d'une sauvegarde (FB7, `import.test.mjs`) viennent de l'application :
+# `app/tool/import_plan_fixture.dart` applique son planificateur à des sauvegardes FICTIVES et les
+# écrit dans un dossier temporaire (IMPORT_PLAN_DIR) ; rien n'est versionné, rien ne peut dériver.
+#
 # Prérequis (échec explicite, code 1, jamais de saut silencieux) : Node >= 24.12,
 # Java >= 21 (borne basse seule, imposée par firebase-tools 15 ; testé avec 27 en local, 21 en CI :
 # voir docs/engineering/quality-gates.md), dépendances npm installées (`npm ci`).
@@ -33,8 +37,17 @@ require_node
 require_java
 
 command -v npx >/dev/null 2>&1 || fail "npx introuvable (npm requis)."
+command -v dart >/dev/null 2>&1 || fail "dart introuvable (les écritures de l'import viennent de l'application)."
+
 require_firebase_cli
 require_npm_package @firebase/rules-unit-testing
+
+# Écritures du plan d'import (outil de l'application, sauvegardes fictives).
+IMPORT_PLAN_DIR="$(mktemp -d)"
+trap 'rm -rf "$IMPORT_PLAN_DIR"' EXIT
+(cd "$ROOT/app" && dart run tool/import_plan_fixture.dart "$IMPORT_PLAN_DIR" >/dev/null) \
+  || fail "l'outil app/tool/import_plan_fixture.dart a échoué."
+export IMPORT_PLAN_DIR
 
 # firebase-tools du paquet (version épinglée), jamais le binaire global.
 export PATH="$ROOT/node_modules/.bin:$PATH"

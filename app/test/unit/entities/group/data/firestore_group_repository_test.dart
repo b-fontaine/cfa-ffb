@@ -496,6 +496,10 @@ class _Recording implements DocumentStore {
   Future<StoredDocument?> get(String path) => _inner.get(path);
 
   @override
+  Future<StoredDocument?> getFromServer(String path) =>
+      _inner.getFromServer(path);
+
+  @override
   Future<StoredDocument?> peek(String path) => _inner.peek(path);
 
   @override

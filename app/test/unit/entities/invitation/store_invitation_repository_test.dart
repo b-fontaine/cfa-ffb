@@ -284,6 +284,10 @@ class _VanishingStore implements DocumentStore {
   Future<StoredDocument?> peek(String path) => _inner.peek(path);
 
   @override
+  Future<StoredDocument?> getFromServer(String path) =>
+      _inner.getFromServer(path);
+
+  @override
   Future<StoredDocument?> get(String path) async {
     final document = await _inner.get(path);
     if (path == _path) _inner.remove(path);
@@ -334,6 +338,10 @@ class _FailingCommitStore implements DocumentStore {
 
   @override
   Future<StoredDocument?> get(String path) => _inner.get(path);
+
+  @override
+  Future<StoredDocument?> getFromServer(String path) =>
+      _inner.getFromServer(path);
 
   @override
   Future<StoredDocument?> peek(String path) => _inner.peek(path);

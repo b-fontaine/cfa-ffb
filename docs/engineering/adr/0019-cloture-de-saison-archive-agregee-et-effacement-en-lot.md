@@ -78,3 +78,6 @@ les autres élèves, et pouvoir tenir plusieurs groupes par public et déplacer 
 - Garde-fous : contrat commun du dépôt d'archive ; test de migration v8 → v9 ; effacement physique étendu à la
   clôture ; parité d'effacement avec `EraseStudent` ; absence d'identifiant dans l'archive ; codec 1 à 4 ;
   import atomique ; scénarios BDD du plan § 7.
+
+> **Note FB7a (2026-10-20)** : la limite « importer un fichier antérieur à la clôture rétablit les élèves effacés » est **partiellement détectée** par l'import vers un club Firestore (saison close à la date d'export ou après, sauvegarde plus récente fournie) : le plan compte les élèves concernés et exige la confirmation de leur nombre exact ; le reste (effacement d'un seul élève hors clôture, club vide) **n'est pas détectable** sans trace nominative, ce que l'ADR 0019 interdit. Voir [ADR 0024](0024-firebase-source-de-verite-comptes-clubs-roles.md), notes FB7a.
+
