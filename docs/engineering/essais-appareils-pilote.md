@@ -1,16 +1,16 @@
 # Essais sur les appareils du club pilote
 
-Prérequis **P2** de [roadmap.md](roadmap.md) (« Avant la première invitation réelle »), qui **bloque la première invitation réelle** et non le déploiement ; il se joue à l'étape D7 de la mise en service, en parallèle du développement. Appareils retenus le 2026-10-21 : ordinateur Chrome ou Edge, Android (Chrome ou application web installée), iPhone ou iPad (Safari **et** application ajoutée à l'écran d'accueil). Les applications natives Android et iOS ne sont **pas** dans le pilote : elles ne seront publiées que lorsque le web sera adopté.
+Prérequis **P2** de [roadmap.md](roadmap.md) (« Avant la première invitation réelle »), qui **bloque la première invitation réelle** et non le déploiement ; il se joue à l'étape D7 de la mise en service, en parallèle du développement. Les essais qui exigent des données locales dépendent de la préparation ci-dessous, faite **avant D5** ou sur le canal manuel. Appareils retenus le 2026-10-21 : ordinateur Chrome ou Edge, Android (Chrome ou application web installée), iPhone ou iPad (Safari **et** application ajoutée à l'écran d'accueil). Les applications natives Android et iOS ne sont **pas** dans le pilote : elles ne seront publiées que lorsque le web sera adopté.
 
-À faire par l'animateur, sur chaque appareil, **sur l'URL déployée** (build `firestore`), avec des **données fictives** : aucun animateur réel n'est concerné et l'URL n'est partagée avec personne. Noter le résultat dans le tableau en bas ; un seul échec bloque la première invitation réelle pour cet appareil.
+À faire par l'animateur, sur chaque appareil, **sur l'URL déployée ou sur le canal `pilote`** (build `firestore`), avec des **données fictives** : aucun animateur réel n'est concerné. Le dépôt est public, l'adresse se déduit et les canaux sont publics : la protection est l'inscription fermée et les règles Firestore, pas le secret de l'URL, d'où des données fictives seulement. Noter le résultat dans le tableau en bas ; un seul échec bloque la première invitation réelle pour cet appareil.
 
 ## Préparation (une fois par appareil)
 
-1. **Avant le déploiement** (étape D4), tant que la version précédente (build qui garde les données en local) est celle qui est en ligne : l'ouvrir sur l'appareil, à l'adresse qui sera celle de l'essai. Après le déploiement, le build `firestore` n'écrit plus en local : les données fictives ne peuvent plus être créées.
+1. **Choisir la voie** (étape D4 de [roadmap.md](roadmap.md) ; le build `firestore` ne crée plus de données locales, elles doivent exister **avant** qu'il soit servi à l'origine de l'essai). **Voie 1, avant D5** : tant que la version précédente (build qui garde les données en local) est celle qui est en ligne, l'ouvrir sur l'appareil, à l'adresse de l'essai, et recommencer **dans chaque navigateur et chaque application installée** (stockages séparés) ; un stockage non préparé ne servira plus qu'à l'essai de la base vide. **Voie 2, canal manuel `pilote`** : le propriétaire construit le canal **d'abord en drift** ; les appareils l'ouvrent et créent leurs données ; il le **redéploie ensuite sur le même canal** en Firestore : même origine, même stockage, et c'est un vrai essai de la mise à jour du service worker (les essais 1 à 5 jouent alors l'arrivée du build Firestore). La production n'est pas touchée ; l'origine du canal n'est pas celle de la production.
 2. Saisir quelques données de test : 2 élèves fictifs, 1 groupe, 1 séance planifiée, 3 passages.
 3. Ne pas les supprimer : elles servent à l'essai de détection.
 
-## Essais (sur l'URL déployée, build `firestore`, même origine que la préparation)
+## Essais (build `firestore`, même origine que la préparation : URL déployée ou canal `pilote`)
 
 | N° | Essai | Résultat attendu |
 |----|-------|------------------|
