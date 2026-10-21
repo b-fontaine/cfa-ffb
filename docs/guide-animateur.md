@@ -537,9 +537,7 @@ assumée, signalée au DPO) ; chacun voit les compteurs et peut exporter le
 fichier complet (tous les groupes, prénoms d'enfants compris), donc ne laissez
 pas l'appareil ouvert.
 
-**Conduite pendant la migration** (points relevés par la contre-relecture, **pas
-encore tous résolus** : voir la liste « Prérequis bloquants avant la première invitation réelle »
-de la feuille de route).
+**Conduite pendant la migration.**
 - **Appareil partagé** : un enseignant n'importe que **ses** groupes. Ce qui
   appartient à un tiers n'est alors importé par personne, même si chacun a
   confirmé : le **directeur ou l'administrateur importe le fichier complet de
@@ -552,14 +550,18 @@ de la feuille de route).
   identifiants, donc **deux fiches** après deux imports, sans avertissement.
   Avant la migration, ne saisissez un enfant que dans **une seule** base ;
   après l'import, repérez les doublons.
-- **Entre le déploiement et votre import** : ne saisissez **pas** dans le club.
-  Notez sur papier, ou saisissez **après** l'import.
-- **Aucune clôture de saison dans le club** pendant la période de bascule : un
+- **Entre l'export et votre import** : ne saisissez **rien** sur l'appareil (cela
+  ne serait pas dans le fichier) ni dans le club. Notez sur papier, ou saisissez
+  **après** l'import.
+- **Aucune clôture de saison dans le club** pendant la période de migration : un
   fichier exporté depuis un ancien onglet resté ouvert serait daté après la
   clôture et passerait pour récent.
-- **iPhone** : l'export (Safari **et** application installée) n'a pas encore été
-  éprouvé sur un iPhone réel ; essayez-le tôt et vérifiez que le fichier est
-  bien dans vos téléchargements.
+- **iPhone** : Safari et l'application installée ont chacun leur stockage et
+  leur façon de télécharger ; exportez tôt et vérifiez que le fichier est bien
+  dans vos téléchargements.
+- **Un seul club à la fois** : la migration commence par un club pilote, un
+  animateur et un appareil ; le directeur recueille la confirmation de chaque
+  appareil avant que les autres animateurs migrent.
 
 **Avant d'importer : ne saisissez rien dans le club.** Un élève recréé à la
 main dans le club n'a pas le même identifiant que celui du fichier : l'import ne

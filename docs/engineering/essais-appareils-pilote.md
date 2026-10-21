@@ -1,16 +1,16 @@
 # Essais sur les appareils du club pilote
 
-Prérequis **bloquant** avant la première invitation réelle (la bascule du code, 2026-10-21, ne l'attend plus) (voir [roadmap.md](roadmap.md), « Prérequis bloquants avant la première invitation réelle », point 7). Appareils retenus le 2026-10-21 : ordinateur Chrome ou Edge, Android (Chrome ou application web installée), iPhone ou iPad (Safari **et** application ajoutée à l'écran d'accueil). Les applications natives Android et iOS ne sont **pas** dans le pilote : elles ne seront publiées que lorsque le web sera adopté.
+Prérequis **P2** de [roadmap.md](roadmap.md) (« Avant la première invitation réelle »), qui **bloque la première invitation réelle** et non le déploiement ; il se joue à l'étape D7 de la mise en service, en parallèle du développement. Appareils retenus le 2026-10-21 : ordinateur Chrome ou Edge, Android (Chrome ou application web installée), iPhone ou iPad (Safari **et** application ajoutée à l'écran d'accueil). Les applications natives Android et iOS ne sont **pas** dans le pilote : elles ne seront publiées que lorsque le web sera adopté.
 
-À faire par l'animateur, sur chaque appareil, **avant** de fusionner le lot de bascule, sur le **canal de prévisualisation** (autre origine : les données locales réelles n'y sont pas visibles, on y prépare donc des données de test). Noter le résultat dans le tableau en bas ; un seul échec bloque la bascule pour cet appareil.
+À faire par l'animateur, sur chaque appareil, **sur l'URL déployée** (build `firestore`), avec des **données fictives** : aucun animateur réel n'est concerné et l'URL n'est partagée avec personne. Noter le résultat dans le tableau en bas ; un seul échec bloque la première invitation réelle pour cet appareil.
 
 ## Préparation (une fois par appareil)
 
-1. Ouvrir la **version actuelle** (build qui garde les données en local) sur l'origine habituelle de l'appareil, ou sur le canal de prévisualisation de cette version si elle y est déployée.
+1. **Avant le déploiement** (étape D4), tant que la version précédente (build qui garde les données en local) est celle qui est en ligne : l'ouvrir sur l'appareil, à l'adresse qui sera celle de l'essai. Après le déploiement, le build `firestore` n'écrit plus en local : les données fictives ne peuvent plus être créées.
 2. Saisir quelques données de test : 2 élèves fictifs, 1 groupe, 1 séance planifiée, 3 passages.
 3. Ne pas les supprimer : elles servent à l'essai de détection.
 
-## Essais (sur le canal de prévisualisation du build `firestore`, même origine que l'étape 1)
+## Essais (sur l'URL déployée, build `firestore`, même origine que la préparation)
 
 | N° | Essai | Résultat attendu |
 |----|-------|------------------|
@@ -42,4 +42,4 @@ Prérequis **bloquant** avant la première invitation réelle (la bascule du cod
 |----------|-------------------|----------------|-------------------------|------|
 | | | | | |
 
-Quand tous les appareils du pilote ont réussi, cocher le point 7 de la liste des prérequis dans `roadmap.md` avec la date et le tableau ci-dessus.
+Quand tous les appareils du pilote ont réussi, noter le prérequis P2 comme levé dans `roadmap.md` (« Avant la première invitation réelle ») avec la date et le tableau ci-dessus.

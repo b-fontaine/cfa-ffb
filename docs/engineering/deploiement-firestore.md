@@ -59,7 +59,7 @@ workflows, sans `actionlint`) garde tout cela.
 **Conséquence à connaître** : le déploiement part **à chaque exécution** (et non
 sur le seul diff d'un push). Tant que les variables ci-dessous n'existent pas,
 **tout push sur `main`, qu'il touche ou non aux règles, fait échouer le job
-`deploy`, donc bloque l'hébergement de ce push**. Faire les sections 1 à 4 ci-dessous (étape 1 de la séquence) avant
+`deploy`, donc bloque l'hébergement de ce push**. Faire les sections 1 à 4 ci-dessous (étape D1) avant
 de fusionner quoi que ce soit sur `main`.
 
 **Durcissement du job `deploy`** (le seul qui reçoit `id-token: write`) :
@@ -73,25 +73,25 @@ il ne déploie jamais en même temps qu'un push.
 
 ## Séquence de mise en service
 
-**Séquence de mise en service (UNIQUE, dans cet ordre ; [roadmap.md](roadmap.md), « Procédure de mise en service sur Firestore », la reprend à l'identique).** Le build Firestore est en live **dès le déploiement** du lot : tout ce qui doit être prêt l'est **avant** l'étape 5.
+Mêmes étapes, mêmes numéros (D1 à D8) que [roadmap.md](roadmap.md), « Procédure de mise en service sur Firestore », qui porte aussi les prérequis P1 à P8 avant la première invitation réelle, la migration des données locales (étapes M1 à M6) et les règles R1 à R3. Le build Firestore est en live dès le déploiement : tout ce qui doit être prêt l'est avant l'étape D5. **Le déploiement est fait par l'animateur** (le propriétaire du projet) et **ne dépend ni des essais d'appareils ni de la validation de conformité**, qui bloquent la première invitation réelle. Tant qu'aucun animateur réel n'existe, l'URL n'est partagée à personne.
 
-1. **Avant de pousser sur `main`** : créer les variables GitHub `GCP_WORKLOAD_IDENTITY_PROVIDER` et `GCP_FIRESTORE_DEPLOY_SERVICE_ACCOUNT` (compte de service, rôles IAM minimaux, fédération d'identité : sections 1 à 4 ci-dessous), et activer la protection de la branche `main` (section 5 de ce document).
-2. **Tester le workflow de déploiement des règles** par `workflow_dispatch` (Actions, « Déployer les règles et index Firestore », sur `main`) : le job `deploy` doit être vert.
-3. **Contrôler la console Authentication AVANT le premier déploiement du lot** (le build Firestore est en live dès le déploiement) : domaines autorisés (dont l'URL live), protection contre l'énumération d'adresses, modèles d'e-mail (vérification, réinitialisation).
-4. **Données locales de test du propriétaire sur l'origine live** : les **exporter OU vider le stockage du site AVANT l'essai** ; sinon le build Firestore affiche le bandeau d'export (FB7c).
-5. **Déployer** : push sur `main` une fois la CI prête (le job `firestore` déploie règles et index, puis l'hébergement). Sinon, `firebase deploy --only hosting` **À LA MAIN** : cette voie **NE DÉPLOIE NI les règles NI les index** et **saute les tests** ; à n'utiliser que si règles et index sont déjà à jour, ce que `git log -- firestore.rules firestore.indexes.json` permet de vérifier (aucun commit postérieur au dernier déploiement des règles).
-6. **Vérifier** : connexion du compte administrateur du projet réel ; avec **ce compte**, écran « Plus » puis **Administration**, créer le **club de test** et le **directeur de test** ; inviter un compte de test.
-7. **Ne partager l'URL à personne.** Les canaux de prévisualisation de PR sont publics aussi : **aucune URL dans les commentaires de PR**. Changement de domaine futur : l'origine change, les données locales n'y suivent pas, et le nouveau domaine est à ajouter aux domaines autorisés d'Authentication.
-8. **Retour arrière** : revert du lot sur `main`, OU restauration de la version précédente dans la console Hosting (**la restauration Hosting n'est valable que si aucun push n'a suivi le lot ; sinon revert du lot sur `main`**). **Chaque push relance le job Firestore** (idempotent) ; une panne de la fédération d'identité (WIF) le bloque, donc bloque l'hébergement : lors d'un revert, si le job Firestore échoue, déployer l'hébergement **à la main** (`firebase deploy --only hosting`, mêmes réserves qu'à l'étape 5).
+- **D1. Avant de pousser sur `main`.** Créer les variables GitHub `GCP_WORKLOAD_IDENTITY_PROVIDER` et `GCP_FIRESTORE_DEPLOY_SERVICE_ACCOUNT` (compte de service, rôles IAM minimaux, fédération d'identité : sections 1 à 4 ci-dessous) et activer la protection de la branche `main` (section 5 de ce document). Sans les variables, tout push sur `main` fait échouer le job `firestore`, donc bloque l'hébergement.
+- **D2. Tester le workflow de déploiement des règles** par `workflow_dispatch` (Actions, « Déployer les règles et index Firestore », sur `main`) : le job `deploy` doit être vert.
+- **D3. Contrôler la console Authentication avant le premier déploiement** : domaines autorisés (dont l'URL live), protection contre l'énumération d'adresses, modèles d'e-mail (vérification, réinitialisation).
+- **D4. Préparer l'origine live avant le premier déploiement.** Tant que la version précédente (données en local) est la version en ligne : (a) les données locales de test du propriétaire sur l'origine live sont **exportées ou le stockage du site est vidé**, sinon le build Firestore affiche le bandeau d'export (FB7c) ; (b) sur chaque appareil du pilote, saisir les données fictives de la préparation de [essais-appareils-pilote.md](essais-appareils-pilote.md), qui serviront à l'étape D7 (après le déploiement, le build Firestore n'écrit plus en local).
+- **D5. Déployer.** Soit un **push sur `main`** une fois la CI de déploiement des règles prête (D1 et D2) : le job `firestore` déploie règles et index, puis l'hébergement. Soit, à défaut, `firebase deploy --only hosting` **à la main** après un `scripts/build_web.sh` sans drapeau : cette voie **ne déploie ni les règles ni les index** et **saute les tests** ; à n'utiliser que si règles et index sont déjà à jour (`git log -- firestore.rules firestore.indexes.json` : aucun commit postérieur au dernier déploiement des règles). Un canal lancé à la main se construit avec `scripts/build_web.sh --dart-define=DATA_BACKEND=drift` : sans drapeau, le build est Firestore, lit le projet réel et le canal est public.
+- **D6. Vérifier.** Connexion du compte administrateur du projet réel ; avec **ce compte**, écran « Plus » puis **Administration** : créer le **club de test** et le **directeur de test**, inviter un compte de test. Changement de domaine futur : l'origine change, les données locales n'y suivent pas, et le nouveau domaine est à ajouter aux domaines autorisés d'Authentication.
+- **D7. Essais des appareils du pilote, en parallèle du développement.** Le protocole [essais-appareils-pilote.md](essais-appareils-pilote.md) se joue sur l'URL déployée, avec les données fictives de l'étape D4. Il ne retarde pas le déploiement ; il est le prérequis P2 de [roadmap.md](roadmap.md) (« Avant la première invitation réelle »).
+- **D8. Retour arrière.** Revert du lot de bascule sur `main`, **ou** restauration de la version précédente dans la console Hosting, qui n'est valable **que si aucun push n'a suivi** le lot (sinon la « version précédente » est elle-même un build Firestore : revert). Chaque push relance le job `firestore` (idempotent) ; une panne de la fédération d'identité le bloque, donc bloque l'hébergement : lors d'un revert, si le job échoue, déployer l'hébergement à la main (`firebase deploy --only hosting`, mêmes réserves qu'à l'étape D5).
 
-Les sections numérotées 1 à 6 ci-dessous détaillent l'étape 1 (sections 1 à 5) et l'étape 2 (section 6) de cette séquence.
+Les sections numérotées 1 à 5 ci-dessous détaillent l'étape D1 et la section 6 l'étape D2.
 
 ## Ce que l'utilisateur doit faire (une fois)
 
 Remplacer `PROJECT_ID` par `animation-billard`, `OWNER/REPO` par le dépôt GitHub.
 Les rôles ci-dessous sont les minimaux connus de la documentation Firebase, **non
 éprouvés contre le projet réel** (voir « Limites ») ; les noms sont des propositions ; seuls les deux noms de **variables**
-GitHub (étape 4) sont attendus par le workflow.
+GitHub (section 4) sont attendus par le workflow.
 
 ### 1. Créer le compte de service dédié
 
@@ -211,7 +211,7 @@ index supprimé à la main dans la console n'est pas recréé tant que
 
 - Le workflow n'a jamais été exécuté contre le projet réel (aucun accès pris
   dans ce lot) : seul le test de forme et les tests de règles sur l'émulateur
-  le couvrent. Le premier passage réel est la section 6 (étape 2 de la séquence).
+  le couvrent. Le premier passage réel est la section 6 (étape D2).
 - Les index supprimés du fichier ne sont **pas** supprimés du projet (voulu :
   pas de `--force`) ; les supprimer reste une action de console.
 - Les index se construisent de façon asynchrone : le déploiement rend la main

@@ -1,6 +1,7 @@
-// Vérifie que chaque lien relatif de la documentation vers un fichier Markdown
-// de `docs/` (ou vers une ancre du même fichier) pointe vers un fichier et une
-// ancre qui existent.
+// Vérifie que chaque lien relatif de la documentation vers une ancre (`#titre`)
+// d'un fichier Markdown de `docs/` existant, ou du même fichier, pointe vers un
+// titre qui existe. Il ne vérifie PAS l'existence des fichiers : un lien vers
+// un fichier absent, ou sans ancre, est ignoré.
 //
 // Un titre renommé casse silencieusement les liens `fichier.md#ancre` : la
 // roadmap, les ADR et les plans se renvoient des ancres (« Procédure de mise
