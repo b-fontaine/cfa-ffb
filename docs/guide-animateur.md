@@ -647,10 +647,9 @@ plusieurs jours : le serveur limite les écritures par jour.
   exportables** : c'est exact, la mise à jour ne supprime rien.
 
 Si l'import ne convient pas, gardez votre fichier : la personne qui gère
-l'application peut remettre la version précédente en ligne tant que les données
-locales ne sont pas retirées (touchez **Mettre à jour** dans le bandeau pour la
-retrouver) ; vos données du navigateur y sont lisibles si le navigateur les a
-gardées, sinon votre fichier est le repli. Après un retour en arrière, un nouvel
+l'application met en ligne une version corrigée qui relit les données de
+l'appareil (retour arrière par revert) ; elles y sont lisibles si le navigateur
+les a gardées, sinon votre fichier est le repli. Après un retour en arrière, un nouvel
 export est traité comme un nouveau fichier : seuls les éléments **absents** du
 club sont ajoutés. Une correction faite après un premier import sur un élément
 déjà importé (passage corrigé, bilan modifié, prénom rectifié) n'est **pas**
