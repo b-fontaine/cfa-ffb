@@ -44,16 +44,17 @@ import 'package:billard_cfa/shared/persistence/firestore_unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/send_status.dart';
 import 'package:injectable/injectable.dart';
 
-/// Aiguillage des dépôts de données entre drift (défaut) et Firestore (ADR
-/// 0024, décision 28). Les dépôts migrés **un lot à la fois** y entrent ;
-/// les autres restent drift. Le réglage est `DATA_BACKEND` (voir
-/// [DataBackend]) ; les tests et les scénarios BDD (`Environment.test`)
-/// gardent leurs dépôts en mémoire et n'en dépendent pas.
+/// Aiguillage des dépôts de données entre Firestore (défaut depuis la bascule
+/// du 2026-10-21) et drift, explicite (ADR 0024, décision 28 amendée). Le
+/// réglage est `DATA_BACKEND` (voir [DataBackend]) ; les tests et les
+/// scénarios BDD (`Environment.test`) gardent leurs dépôts en mémoire et
+/// n'en dépendent pas (leur backend est fixé ici, pas le défaut du build).
 @module
 abstract class DataBackendModule {
   @Environment(Environment.prod)
   @singleton
-  DataBackendChoice dataBackend() => DataBackendChoice(DataBackend.fromBuild());
+  DataBackendChoice dataBackend(DataBackendRequest request) =>
+      DataBackendChoice(request.resolved);
 
   /// Les tests et les scénarios BDD tournent sur le backend local (les
   /// scénarios qui parlent à Firestore le remplacent, comme leurs dépôts).

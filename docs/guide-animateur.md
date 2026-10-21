@@ -497,7 +497,10 @@ disparaît dès qu'un export a été enregistré (un export annulé ne compte pa
 ## Exporter mes données locales, puis les migrer vers le club
 
 *(Version où les données du club sont sur le serveur ; textes à valider avec la
-notice d'information.)* Ce que vous avez saisi avant le passage au club **reste
+notice d'information.)* **Depuis le lot de bascule du 2026-10-21, l'adresse réelle
+de l'application sert le build Firestore** (le club est lu et écrit sur le
+serveur) ; les aperçus de pull request, eux, restent locaux. Cet export reste le
+chemin pour des données **locales déjà saisies** sur un appareil. Ce que vous avez saisi avant le passage au club **reste
 sur l'appareil** (dans le navigateur, ou dans l'application installée) : la
 nouvelle version **ne l'efface pas**, et elle permet de **l'exporter puis de
 l'importer dans le club**. Rien ne dépend d'une date : vous le faites quand vous
@@ -537,7 +540,7 @@ fichier complet (tous les groupes, prénoms d'enfants compris), donc ne laissez
 pas l'appareil ouvert.
 
 **Conduite pendant la migration** (points relevés par la contre-relecture, **pas
-encore tous résolus** : voir la liste « Prérequis bloquants avant la bascule »
+encore tous résolus** : voir la liste « Prérequis bloquants avant la première invitation réelle »
 de la feuille de route).
 - **Appareil partagé** : un enseignant n'importe que **ses** groupes. Ce qui
   appartient à un tiers n'est alors importé par personne, même si chacun a

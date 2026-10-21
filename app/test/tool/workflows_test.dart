@@ -274,6 +274,56 @@ void main() {
     );
   });
 
+  group('the data backend of each hosting build (ADR 0024, decision A1)', () {
+    // L'étape « Build web » d'un workflow : sa commande `run`.
+    String buildCommand(String name, String job) {
+      final steps = (_jobs(name)[job] as YamlMap)['steps'] as YamlList;
+      final builds = [
+        for (final step in steps)
+          if ((step as YamlMap)['name'] == 'Build web') '${step['run']}'.trim(),
+      ];
+      expect(builds, hasLength(1), reason: '$name : une seule étape de build');
+      return builds.single;
+    }
+
+    test('the live deployment builds the default backend, Firestore', () {
+      final command = buildCommand(
+        'firebase-hosting-merge.yml',
+        'build_and_deploy',
+      );
+
+      expect(command, 'scripts/build_web.sh');
+      expect(command, isNot(contains('DATA_BACKEND')));
+    });
+
+    test('the pull request previews stay on drift, explicitly', () {
+      final command = buildCommand(
+        'firebase-hosting-pull-request.yml',
+        'build_and_preview',
+      );
+
+      expect(command, contains('--dart-define=DATA_BACKEND=drift'));
+    });
+
+    test('the pull request preview says why it is not on Firestore', () {
+      expect(
+        _text('firebase-hosting-pull-request.yml'),
+        contains('previews de PR non connectées à Firestore'),
+      );
+    });
+
+    test('no workflow passes a redundant Firestore flag', () {
+      // Le défaut est Firestore : aucun drapeau firestore redondant.
+      for (final name in workflows) {
+        expect(
+          _text(name),
+          isNot(contains('DATA_BACKEND=firestore')),
+          reason: name,
+        );
+      }
+    });
+  });
+
   test('no other workflow can deploy rules or indexes', () {
     for (final name in workflows) {
       if (name == 'firebase-firestore-deploy.yml') continue;

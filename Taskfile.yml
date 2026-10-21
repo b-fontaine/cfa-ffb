@@ -110,7 +110,7 @@ tasks:
 
   # ── Exécution ───────────────────────────────────────────────────────────
   run:
-    desc: Lance l'application (DEVICE=chrome|<id> d'un appareil Android ou iOS)
+    desc: "Lance l'application, backend Firestore par défaut (DEVICE=chrome|<id> ; CLI_ARGS=--dart-define=DATA_BACKEND=drift pour les données locales)"
     dir: app
     deps: [generate]
     cmds:
@@ -278,7 +278,7 @@ tasks:
     dir: app
     deps: [generate]
     cmds:
-      - flutter build web --release --no-pub
+      - flutter build web --release --no-pub {{.CLI_ARGS}}
 
   build:widgetbook:
     desc: Build web de Widgetbook (release)

@@ -1,6 +1,6 @@
 # Essais sur les appareils du club pilote
 
-Prérequis **bloquant** de la bascule (voir [roadmap.md](roadmap.md), « Prérequis bloquants avant la bascule », point 7). Appareils retenus le 2026-10-21 : ordinateur Chrome ou Edge, Android (Chrome ou application web installée), iPhone ou iPad (Safari **et** application ajoutée à l'écran d'accueil). Les applications natives Android et iOS ne sont **pas** dans le pilote : elles ne seront publiées que lorsque le web sera adopté.
+Prérequis **bloquant** avant la première invitation réelle (la bascule du code, 2026-10-21, ne l'attend plus) (voir [roadmap.md](roadmap.md), « Prérequis bloquants avant la première invitation réelle », point 7). Appareils retenus le 2026-10-21 : ordinateur Chrome ou Edge, Android (Chrome ou application web installée), iPhone ou iPad (Safari **et** application ajoutée à l'écran d'accueil). Les applications natives Android et iOS ne sont **pas** dans le pilote : elles ne seront publiées que lorsque le web sera adopté.
 
 À faire par l'animateur, sur chaque appareil, **avant** de fusionner le lot de bascule, sur le **canal de prévisualisation** (autre origine : les données locales réelles n'y sont pas visibles, on y prépare donc des données de test). Noter le résultat dans le tableau en bas ; un seul échec bloque la bascule pour cet appareil.
 

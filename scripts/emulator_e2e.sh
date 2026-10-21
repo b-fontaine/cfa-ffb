@@ -5,7 +5,7 @@
 #
 # Lance `firebase emulators:exec` (Auth + Firestore, projet « demo-cfa-ffb », ports de
 # firebase.json), pose la graine (scripts/seed_emulator.mjs), sert l'application en MODE DEBUG
-# (`flutter run -d web-server --dart-define=FIREBASE_EMULATOR=true --dart-define=DATA_BACKEND=firestore`, projet de l'émulateur) puis
+# (`flutter run -d web-server --dart-define=FIREBASE_EMULATOR=true`, backend Firestore par défaut, projet de l'émulateur) puis
 # joue scripts/emulator_e2e/e2e.test.mjs dans Chrome : la directrice se connecte et lit son club
 # sous les règles ; (FB6) un parent de deux enfants voit ses enfants et seulement eux, sans action d'animateur,
 # voit la saisie d'un animateur (autre appareil, vraies règles) apparaître sans recharger, un élève de 15 ans voit sa

@@ -1,6 +1,6 @@
 # Plan : dépôts Firestore (lot FB4)
 
-Statut : **parties 1, 2 et 3 livrées** (2026-10-18) puis **FB5b** (2026-10-19, section en fin de document), sous émulateurs et doubles seulement. **Aucune base de production touchée.** **La bascule de production n'a PAS lieu dans FB4** (décision de l'utilisateur, 2026-10-18) : `DATA_BACKEND` reste `drift` par défaut jusqu'à ce que **FB7** soit livré ; la bascule est un **lot dédié après FB7**. Décisions :
+Statut : **parties 1, 2 et 3 livrées** (2026-10-18) puis **FB5b** (2026-10-19, section en fin de document), sous émulateurs et doubles seulement. **Aucune base de production touchée.** **La bascule de production n'a PAS lieu dans FB4** (décision de l'utilisateur, 2026-10-18) : `DATA_BACKEND` est resté `drift` par défaut jusqu'à ce que **FB7** soit livré ; la bascule a été un **lot dédié après FB7, livré le 2026-10-21** (défaut `firestore`, `drift` explicite ; ADR 0024, note « lot de bascule »). Décisions :
 [ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) (décisions 14, 15, 17 à 19, 28 ; notes de réalisation FB4a, FB4b, FB4c pour les écarts). Deux décisions de l'utilisateur du 2026-10-18 (décision 18 amendée, groupe obligatoire : notes FB4b de l'ADR 0024, ADR 0007 amendé).
 
 ## Découpage en trois parties
@@ -20,7 +20,7 @@ Statut : **parties 1, 2 et 3 livrées** (2026-10-18) puis **FB5b** (2026-10-19, 
   et `FirestoreSdkAccess`.
 - **Codecs** (`student_document`, `group_document`, `settings_document`, `document_values`) : dates en ISO 8601 (fuseau et microsecondes conservés, texte accepté par les règles), champs de la
   liste blanche seulement, document mal formé = `ServiceFailure(other)` qui nomme le champ.
-- **`DataBackend`** (`app/data_backend.dart`) : `--dart-define=DATA_BACKEND=firestore`, défaut drift, valeur inconnue = erreur. `DataBackendModule` aiguille settings, student et group ;
+- **`DataBackend`** (`app/data_backend.dart`) : `--dart-define=DATA_BACKEND=drift|firestore`, défaut **firestore** (depuis le lot de bascule du 2026-10-21 ; était drift), valeur inconnue = erreur. `DataBackendModule` aiguille settings, student et group ;
   les dépôts drift sont enregistrés sous leur type concret.
 
 ## Cartographie des dépôts migrés
@@ -119,7 +119,7 @@ Budget de lectures : `GroupRepository.save` lit le groupe, les appartenances du 
 
 ## Reste après FB4
 
-- **Lot de bascule de production, après FB7** (décision du 2026-10-18) : défaut `DATA_BACKEND=firestore`, retrait de `CompositeUnitOfWork` et des dépôts drift de données (FB7), parcours navigateur application + émulateurs avec les dépôts Firestore, déploiement des règles et des index **par l'utilisateur** (rien n'est déployé).
+- **Lot de bascule de production, après FB7** (décision du 2026-10-18 ; **code livré le 2026-10-21 : défaut `DATA_BACKEND=firestore`**, drift explicite ; reste à faire plus tard) : retrait de `CompositeUnitOfWork` et des dépôts drift de données (FB7), parcours navigateur application + émulateurs avec les dépôts Firestore, déploiement des règles et des index **par l'utilisateur** (rien n'est déployé).
 - **FB5** : **fait** (parties A et B, 2026-10-19) : `watch…`, pastille, écritures non bloquantes hors ligne, création de saisie hors ligne, SDK web local ; voir la section suivante. Reste hors FB5 : écran de positionnement et fiche sans groupe.
 - **FB7** : **partie A faite (2026-10-20)** : moteur d'import (plan, intégrité, droits, lots, marqueur, règles, tests émulateur). **Reste (partie B)** : écran d'import, choix des groupes et des séances sans groupe, confirmation des élèves effacés, avancement, reprise ; parcours navigateur ; **clôture reprenable** (lots de 500 avec marqueur) ; reprise des séances sans groupe de drift *(faite côté moteur : choix explicite par séance)* ; saison courante du club (écrite par l'administrateur seulement).
 - **FB8** : `StudentEraser` côté serveur, effacement par lots reprenables.
@@ -173,12 +173,12 @@ Limites sans règle sûre : L1 agrégat de groupe périmé, L2 fiche supprimée 
 
 ## Ce que FB6 ajoute (2026-10-19) : aucun aiguillage par rôle
 
-**Décision de l'utilisateur du 2026-10-19** (ADR 0024, notes FB6) : **pas d'aiguillage de backend par rôle**. Une proposition d'aiguiller les comptes `student` et `guardian` vers Firestore avant la bascule (`DataBackendChoice.forRole`, `RoleRoute`, six `RoleRouted…Repository`) a été écartée : l'espace famille ne lit Firestore qu'avec `DATA_BACKEND=firestore` explicite, donc après la bascule, et **drift reste le défaut pour tous les rôles**. Aucune lecture de mineurs n'arrive au serveur avant.
+**Décision de l'utilisateur du 2026-10-19** (ADR 0024, notes FB6) : **pas d'aiguillage de backend par rôle**. Une proposition d'aiguiller les comptes `student` et `guardian` vers Firestore avant la bascule (`DataBackendChoice.forRole`, `RoleRoute`, six `RoleRouted…Repository`) a été écartée : l'espace famille ne lit Firestore qu'avec le backend Firestore, donc après la bascule ; **le défaut est Firestore pour tous les rôles depuis le 2026-10-21** (drift explicite).
 
 | Élément | Rôle |
 |---|---|
 | `DataBackendChoice(backend)` et `DataBackendModule` | inchangés : `choice.backend.choose`, le dépôt choisi par le réglage du build, l'autre n'est pas construit ; aucun rôle n'intervient |
-| Tests, dans les deux sens | `data_backend_module_test.dart` : sans `DATA_BACKEND`, les onze dépôts et l'unité de travail sont drift (le module ne reçoit aucun rôle : défaut drift vérifié, identique pour tout compte) ; `DATA_BACKEND=firestore` donne Firestore à tous ; `production_graph_test.dart` : graphe de production exact (drift) |
+| Tests, dans les deux sens | `data_backend_module_test.dart` : sans `DATA_BACKEND`, les onze dépôts et l'unité de travail sont Firestore (le module ne reçoit aucun rôle : défaut firestore vérifié, identique pour tout compte ; le test échoue si le défaut redevient drift) ; `DATA_BACKEND=drift` explicite donne drift à tous ; `production_graph_test.dart` : graphe de production exact (Firestore par défaut, SQLite quand drift est explicite) |
 | Parcours navigateur | `scripts/emulator_e2e/serve_and_test.sh` lance l'application avec `--dart-define=DATA_BACKEND=firestore` |
 
 **Ce que lit un parent ou un élève** (liste exacte : `scripts/rules_test/family_reads.json`) : le document de **chaque fiche liée** (`get` et écoute), ses passages et ses blocs acquis (égalité sur `studentId`), les séances de **ses groupes** (égalité sur `groupId`), le document de **chaque groupe** (jamais ses appartenances), le réglage du club (`settings/main` **en entier**, pas seulement les règles de validation) et **son propre `member`**. L'appareil **reçoit et met en cache sans l'afficher** : tous les passages de la fiche liée, réussis et manqués, avec leur date, leur séance et leur groupe (la présence s'en déduit), le document de chaque groupe (il porte `teacherUids`, identifiants de compte des enseignants : données d'un tiers) et toutes les séances de ces groupes, passées comprises (cinq affichées). Ni liste d'élèves, ni appartenances, ni saisies, bilans, « Vu », archives. Le test Dart du cas d'usage compare le journal des demandes de l'appareil à cette liste, le test de règles joue la liste contre les vraies règles et joue les lectures interdites.

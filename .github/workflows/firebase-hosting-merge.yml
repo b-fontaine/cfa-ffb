@@ -48,7 +48,9 @@ jobs:
       - name: Génération du code
         run: scripts/generate.sh
       # Une seule recette (CanvasKit local, service worker hors ligne stampé et
-      # vérifié) : scripts/build_web.sh.
+      # vérifié) : scripts/build_web.sh. Sans drapeau : le défaut du build est
+      # Firestore (bascule du 2026-10-21) ; les previews de PR, elles, passent
+      # drift explicitement (firebase-hosting-pull-request.yml).
       - name: Build web
         run: scripts/build_web.sh
       - name: Déploiement Firebase Hosting

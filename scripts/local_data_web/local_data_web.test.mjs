@@ -5,7 +5,7 @@
 // l'application n'ouvre la sienne ; ce mécanisme n'est éprouvé ni par `flutter test` ni par
 // un faux navigateur. Deux builds web partagent la MÊME origine (donc la même base) :
 //
-// - le build `drift` (le défaut) remplit la base par son écran « Sauvegarde » (import d'un
+// - le build `drift` (explicite) remplit la base par son écran « Sauvegarde » (import d'un
 //   fichier FICTIF des tests) ;
 // - le build `firestore` relève ensuite cette base au démarrage et affiche le bandeau.
 //
@@ -225,7 +225,7 @@ const typeInto = async (page, label, value) => {
   for (let attempt = 0; attempt < 4 && typed !== value; attempt++) {
     await field.click();
     await page.waitForFunction(() =>
-      ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName),
+      ['INPUT', 'TETAREA'].includes(document.activeElement?.tagName),
     );
     await page.waitForTimeout(300);
     await page.keyboard.press('ControlOrMeta+A');

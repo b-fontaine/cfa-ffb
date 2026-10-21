@@ -4,7 +4,7 @@
 #   scripts/web_smoke.sh           utilise app/build/web s'il existe, sinon le construit
 #   scripts/web_smoke.sh --build   reconstruit d'abord (scripts/build_web.sh)
 #
-# Charge le build de production (dart2js) dans Chrome et vérifie, avec le vrai SDK
+# Charge le build de production en drift explicite (dart2js) dans Chrome et vérifie, avec le vrai SDK
 # `firebase_auth`, le démarrage, l'échec générique de connexion, la connexion et la
 # déconnexion (scripts/web_smoke/web_smoke.test.mjs). Aucune requête n'atteint le projet
 # Firebase réel : émulateur « demo-… », tout autre hôte refusé par le test.
@@ -32,7 +32,9 @@ require_npm_package playwright-core
 require_chrome
 
 if [[ "${1:-}" == "--build" || ! -f app/build/web/index.html ]]; then
-  "$ROOT/scripts/build_web.sh"
+  # Build drift explicite : Firestore n'est pas émulé ici (voir web_smoke.test.mjs) ; le défaut du
+  # build (Firestore) est éprouvé par scripts/emulator_e2e.sh et par scripts/local_data_web.sh.
+  "$ROOT/scripts/build_web.sh" --dart-define=DATA_BACKEND=drift
 fi
 
 export PATH="$ROOT/node_modules/.bin:$PATH"

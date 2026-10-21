@@ -226,17 +226,31 @@ void main() {
     final choice = DataBackendChoice(DataBackend.resolve(''));
 
     // Le module ne reçoit aucun rôle (aucun aiguillage par rôle, décision du
-    // 2026-10-19) : la preuve est un défaut drift unique, identique pour tout
-    // compte, l'espace famille compris. Le graphe de production exact est
-    // vérifié par `production_graph_test`.
+    // 2026-10-19) : la preuve est un défaut Firestore unique (bascule du
+    // 2026-10-21), identique pour tout compte, l'espace famille compris. Le
+    // graphe de production exact est vérifié par `production_graph_test`.
     for (final entry in repositories.entries) {
-      test('${entry.key} is the very drift instance', () {
-        expect(entry.value.build(choice), same(entry.value.driftInstance));
+      test('${entry.key} is the Firestore repository', () {
+        expect(entry.value.build(choice), entry.value.firestore);
+        expect(
+          entry.value.build(choice),
+          isNot(same(entry.value.driftInstance)),
+        );
       });
     }
 
-    test('the unit of work is the very drift one', () {
-      expect(module.unitOfWork(choice, drift, club, tracker), same(drift));
+    test('the club import writes to Firestore', () {
+      expect(
+        module.clubImportStore(choice, club, user),
+        isA<FirestoreClubImportStore>(),
+      );
+    });
+
+    test('the unit of work wraps the Firestore batch in the drift one', () {
+      final work = module.unitOfWork(choice, drift, club, tracker);
+
+      expect(work, isNot(same(drift)));
+      expect((work as CompositeUnitOfWork).inner, isA<FirestoreUnitOfWork>());
     });
   });
 }

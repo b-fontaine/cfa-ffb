@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:billard_cfa/app/auth/auth_cubit.dart';
 import 'package:billard_cfa/app/auth/auth_state.dart';
+import 'package:billard_cfa/app/data_backend.dart';
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/app/firebase_environment.dart';
 import 'package:billard_cfa/app/firebase_startup.dart';
@@ -16,12 +17,14 @@ import 'package:billard_cfa/entities/account/data/in_memory_auth_repository.dart
 import 'package:billard_cfa/entities/account/domain/auth_repository.dart';
 import 'package:billard_cfa/entities/account/domain/session_scope.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_attempt_repository.dart';
+import 'package:billard_cfa/entities/exercise_result/data/firestore_attempt_repository.dart';
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/invitation/data/invitation_code_sources.dart';
 import 'package:billard_cfa/entities/invitation/domain/invitation_code_source.dart';
 import 'package:billard_cfa/entities/membership/data/store_memberships_source.dart';
 import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
+import 'package:billard_cfa/entities/student/data/firestore_student_repository.dart';
 import 'package:billard_cfa/entities/student/data/in_memory_student_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
@@ -48,8 +51,10 @@ import 'package:billard_cfa/shared/lib/key_value_store.dart';
 import 'package:billard_cfa/shared/lib/local_data_inventory.dart';
 import 'package:billard_cfa/shared/lib/storage_status.dart';
 import 'package:billard_cfa/shared/lib/unit_of_work.dart';
+import 'package:billard_cfa/shared/persistence/composite_unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/document_store.dart';
 import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
+import 'package:billard_cfa/shared/persistence/firestore_unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_document_store.dart';
 import 'package:billard_cfa/shared/persistence/open_app_database.dart';
 import 'package:drift/drift.dart';
@@ -73,17 +78,36 @@ void main() {
     await directory.delete(recursive: true);
   });
 
-  Future<void> configureProduction() => configureDependencies(
-    settings: DatabaseSettings(
-      native: DriftNativeOptions(
-        databaseDirectory: () async => directory,
-        tempDirectoryPath: () async => directory.path,
-      ),
-    ),
-  );
+  // Le défaut de production est Firestore (bascule du 2026-10-21) ; les tests
+  // qui lisent la base locale demandent drift explicitement.
+  Future<void> configureProduction({DataBackend? backend}) =>
+      configureDependencies(
+        backend: backend,
+        settings: DatabaseSettings(
+          native: DriftNativeOptions(
+            databaseDirectory: () async => directory,
+            tempDirectoryPath: () async => directory.path,
+          ),
+        ),
+      );
 
-  test('production wires SQLite repositories and UUID identifiers', () async {
+  test('production wires Firestore repositories by default', () async {
     await configureProduction();
+
+    expect(getIt<DataBackendChoice>().backend, DataBackend.firestore);
+    expect(getIt<StudentRepository>(), isA<FirestoreStudentRepository>());
+    expect(getIt<AttemptRepository>(), isA<FirestoreAttemptRepository>());
+    expect(getIt<StudentRepository>(), isNot(isA<DriftStudentRepository>()));
+    expect(
+      (getIt<UnitOfWork>() as CompositeUnitOfWork).inner,
+      isA<FirestoreUnitOfWork>(),
+    );
+  });
+
+  test('production wires SQLite repositories when drift is explicit', () async {
+    await configureProduction(backend: DataBackend.drift);
+
+    expect(getIt<DataBackendChoice>().backend, DataBackend.drift);
 
     expect(getIt<StudentRepository>(), isA<DriftStudentRepository>());
     expect(getIt<AttemptRepository>(), isA<DriftAttemptRepository>());
@@ -105,7 +129,7 @@ void main() {
   });
 
   test('production can export its (empty) database', () async {
-    await configureProduction();
+    await configureProduction(backend: DataBackend.drift);
 
     final result = await getIt<ExportBackup>()();
 
