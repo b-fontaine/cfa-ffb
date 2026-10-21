@@ -54,6 +54,8 @@ depuis `main`), et seul ce job reçoit `id-token: write`.
 prévisualisation. Le test `app/test/tool/workflows_test.dart` (forme des
 workflows, sans `actionlint`) garde tout cela.
 
+**Canal lancé à la main** (`firebase hosting:channel:deploy`) : le test ne garde que le workflow de PR. Construire le canal avec `scripts/build_web.sh --dart-define=DATA_BACKEND=drift` ; sans drapeau, le build est Firestore et lit le projet réel (décision A1 contredite). Pour tester le build Firestore sur un canal : il lit la production avec des données fictives et le canal est public, **ne pas partager son URL**.
+
 **Conséquence à connaître** : le déploiement part **à chaque exécution** (et non
 sur le seul diff d'un push). Tant que les variables ci-dessous n'existent pas,
 **tout push sur `main`, qu'il touche ou non aux règles, fait échouer le job
@@ -80,7 +82,7 @@ il ne déploie jamais en même temps qu'un push.
 5. **Déployer** : push sur `main` une fois la CI prête (le job `firestore` déploie règles et index, puis l'hébergement). Sinon, `firebase deploy --only hosting` **À LA MAIN** : cette voie **NE DÉPLOIE NI les règles NI les index** et **saute les tests** ; à n'utiliser que si règles et index sont déjà à jour, ce que `git log -- firestore.rules firestore.indexes.json` permet de vérifier (aucun commit postérieur au dernier déploiement des règles).
 6. **Vérifier** : connexion du compte administrateur du projet réel ; avec **ce compte**, écran « Plus » puis **Administration**, créer le **club de test** et le **directeur de test** ; inviter un compte de test.
 7. **Ne partager l'URL à personne.** Les canaux de prévisualisation de PR sont publics aussi : **aucune URL dans les commentaires de PR**. Changement de domaine futur : l'origine change, les données locales n'y suivent pas, et le nouveau domaine est à ajouter aux domaines autorisés d'Authentication.
-8. **Retour arrière** : revert du lot sur `main`, OU restauration de la version précédente dans la console Hosting. **Chaque push relance le job Firestore** (idempotent) ; une panne de la fédération d'identité (WIF) le bloque, donc bloque l'hébergement : lors d'un revert, si le job Firestore échoue, déployer l'hébergement **à la main** (`firebase deploy --only hosting`, mêmes réserves qu'à l'étape 5).
+8. **Retour arrière** : revert du lot sur `main`, OU restauration de la version précédente dans la console Hosting (**la restauration Hosting n'est valable que si aucun push n'a suivi le lot ; sinon revert du lot sur `main`**). **Chaque push relance le job Firestore** (idempotent) ; une panne de la fédération d'identité (WIF) le bloque, donc bloque l'hébergement : lors d'un revert, si le job Firestore échoue, déployer l'hébergement **à la main** (`firebase deploy --only hosting`, mêmes réserves qu'à l'étape 5).
 
 Les sections numérotées 1 à 6 ci-dessous détaillent l'étape 1 (sections 1 à 5) et l'étape 2 (section 6) de cette séquence.
 

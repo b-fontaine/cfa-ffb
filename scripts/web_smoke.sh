@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # Fumée du build web COMPILÉ contre l'émulateur Auth (lot FB2, ADR 0024).
 #
-#   scripts/web_smoke.sh           utilise app/build/web s'il existe, sinon le construit
-#   scripts/web_smoke.sh --build   reconstruit d'abord (scripts/build_web.sh)
+#   scripts/web_smoke.sh           reconstruit TOUJOURS le build drift (scripts/build_web.sh)
+#   scripts/web_smoke.sh --build   identique (option conservée pour check.sh --full)
+#
+# Jamais de réutilisation de app/build/web : depuis la bascule (2026-10-21) le build par défaut
+# (scripts/build_web.sh sans drapeau, task build:web) est Firestore ; la fumée tournerait sur le
+# mauvais backend sans le dire.
 #
 # Charge le build de production en drift explicite (dart2js) dans Chrome et vérifie, avec le vrai SDK
 # `firebase_auth`, le démarrage, l'échec générique de connexion, la connexion et la
@@ -31,11 +35,9 @@ require_firebase_cli
 require_npm_package playwright-core
 require_chrome
 
-if [[ "${1:-}" == "--build" || ! -f app/build/web/index.html ]]; then
-  # Build drift explicite : Firestore n'est pas émulé ici (voir web_smoke.test.mjs) ; le défaut du
-  # build (Firestore) est éprouvé par scripts/emulator_e2e.sh et par scripts/local_data_web.sh.
-  "$ROOT/scripts/build_web.sh" --dart-define=DATA_BACKEND=drift
-fi
+# Build drift explicite : Firestore n'est pas émulé ici (voir web_smoke.test.mjs) ; le défaut du
+# build (Firestore) est éprouvé par scripts/emulator_e2e.sh et par scripts/local_data_web.sh.
+"$ROOT/scripts/build_web.sh" --dart-define=DATA_BACKEND=drift
 
 export PATH="$ROOT/node_modules/.bin:$PATH"
 export FIREBASE_CLI_DISABLE_UPDATE_CHECK=true

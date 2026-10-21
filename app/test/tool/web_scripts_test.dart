@@ -30,6 +30,17 @@ void main() {
     expect(builds.single, contains(_drift));
   });
 
+  test('web_smoke.sh never reuses an existing build, whatever its backend', () {
+    final commands = _lines('scripts/web_smoke.sh').join('\n');
+    final build = _builds('scripts/web_smoke.sh').single;
+
+    // Le build est inconditionnel (en tête de ligne, hors `if`) et le script ne
+    // teste plus l'existence de app/build/web, qui peut être un build Firestore.
+    expect(build, startsWith('"'));
+    expect(commands, isNot(contains('index.html')));
+    expect(commands, isNot(contains('--build')));
+  });
+
   test('local_data_web.sh builds firestore bare, then drift explicitly', () {
     final builds = _builds('scripts/local_data_web.sh').toList();
 

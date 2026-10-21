@@ -39,7 +39,7 @@ if [[ "${1:-}" != "--no-build" ]]; then
   "$ROOT/scripts/build_web.sh"
   cp -r app/build/web "$WORK/firestore"
   # Le build drift (explicite) en dernier : c'est celui que app/build/web doit contenir ensuite
-  # (scripts/web_smoke.sh le réutilise).
+  # (par hygiène : web_smoke.sh reconstruit désormais toujours son propre build drift).
   "$ROOT/scripts/build_web.sh" --dart-define=DATA_BACKEND=drift
   cp -r app/build/web "$WORK/drift"
   export LOCAL_DATA_WEB_DRIFT="$WORK/drift"
