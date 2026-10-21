@@ -15,6 +15,8 @@
 // L'application et la graine visent le projet « demo-cfa-ffb » : aucune requête n'atteint un
 // projet réel (la graine refuse tout autre projet, et seul localhost est joignable (le SDK web est servi en local)).
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { after, before, describe, test } from 'node:test';
 
 import { chromium } from 'playwright-core';
@@ -305,6 +307,126 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
     const shown = await visible();
     for (const gone of ['Rebond au centre', '1 exercice validé', 'Parcours à commencer']) {
       assert.ok(!shown.includes(gone), `« ${gone} » doit avoir disparu : ${shown}`);
+    }
+  });
+
+  // --- FB7, partie B : import d'une sauvegarde de l'ancienne version dans le club -------------------
+  // Le fichier est une sauvegarde FICTIVE des tests (app/test/fixtures/backup, format 5). Le
+  // directeur l'importe par l'écran, sous les vraies règles ; la relecture compare ce que le club
+  // contient (autre appareil, Node) à ce que le fichier annonce. Puis un enseignant, qui ne peut
+  // rien écrire hors de ses groupes, voit le serveur refuser son lot, sobrement.
+  const backupPath = fileURLToPath(new URL('../../app/test/fixtures/backup/club-small-v5.json', import.meta.url));
+  const backup = JSON.parse(readFileSync(backupPath, 'utf8')).data;
+
+  // Le sélecteur de fichiers du navigateur : Playwright intercepte la boîte et donne le fichier.
+  const chooseBackupFile = async () => {
+    const [chooser] = await Promise.all([
+      page.waitForEvent('filechooser'),
+      page.getByRole('button', { name: 'Choisir un fichier de sauvegarde' }).click(),
+    ]);
+    await chooser.setFiles(backupPath);
+  };
+
+  // Un menu de choix (une question, ses options) : on l'ouvre par son nom accessible puis on prend l'option.
+  const chooseOption = async (question, option) => {
+    try {
+      await page.getByRole('button', { name: question }).first().click({ timeout: 15_000 });
+      await page.getByRole('menuitem', { name: option }).or(page.getByText(option, { exact: true })).first().click({ timeout: 15_000 });
+    } catch (error) {
+      const html = await page.evaluate(() =>
+        [...document.querySelectorAll('flt-semantics')]
+          .map((e) => `${e.getAttribute('role') ?? ''}|${e.getAttribute('aria-label') ?? ''}|${e.textContent.slice(0, 60)}`)
+          .join('\n'),
+      );
+      throw new Error(`menu « ${question} » / « ${option} » : ${html}`, { cause: error });
+    }
+  };
+
+  const clickButton = async (name) => {
+    await page.getByRole('button', { name, exact: true }).click();
+  };
+
+  const openImportScreen = async (email) => {
+    await signInAs(email);
+    await see(/^Plus/);
+    await goTo('Plus');
+    await see('Migrer mes données locales');
+    await goTo('Migrer mes données locales');
+    await see('Choisir le fichier');
+  };
+
+  test('le directeur importe la sauvegarde fictive par l’écran, et le club la contient ensuite', async () => {
+    await openImportScreen(accounts.director.email);
+    await see('Vous importez en tant que : Directeur.');
+    await chooseBackupFile();
+
+    await see('Rapport du fichier');
+    await see('Des choix sont nécessaires');
+    await clickButton('Continuer');
+    await see('Correspondance des groupes');
+    await chooseOption(/Que faire du groupe/, 'Créer dans le club');
+    await clickButton('Continuer');
+    await see('Récapitulatif avant écriture');
+    await see('Rôle effectif : Directeur');
+    await clickButton('Importer maintenant');
+    await see('Import terminé', { exact: false });
+
+    // Relecture comparée, par un autre appareil, sous les vraies règles.
+    const reader = await otherDevice(accounts.director.email);
+    const ids = async (collectionName) =>
+      (await getDocs(collection(reader, `clubs/${demoClubId}/${collectionName}`))).docs.map((d) => d.id);
+    const has = (all, wanted) => wanted.every((id) => all.includes(id));
+    assert.ok(has(await ids('groups'), backup.groups.map((g) => g.id)), 'groupes');
+    assert.ok(has(await ids('students'), backup.students.map((x) => x.id)), 'élèves');
+    assert.ok(has(await ids('attempts'), backup.attempts.map((x) => x.id)), 'passages');
+    assert.ok(has(await ids('records'), backup.sessionRecords.map((x) => x.id)), 'saisies');
+    assert.ok(has(await ids('sessions'), backup.plannedSessions.map((x) => x.id)), 'séances planifiées');
+    assert.ok(has(await ids('seasons'), backup.seasons.map((x) => x.id)), 'saisons');
+    const marker = (await ids('imports')).length;
+    assert.ok(marker >= 1, 'le marqueur d’import est posé');
+    // Aucune donnée personnelle à l'écran de fin : ni prénom d'élève, ni identifiant de compte.
+    const shown = await visible();
+    for (const secret of [...backup.students.map((x) => x.firstName), 'directrice@demo.test']) {
+      assert.ok(!shown.includes(secret), `« ${secret} » ne doit pas figurer à l'écran de fin`);
+    }
+  });
+
+  test('le même fichier, rouvert par le même compte, est annoncé comme déjà importé', async () => {
+    await openImportScreen(accounts.director.email);
+    await chooseBackupFile();
+    await see('Ce fichier est déjà importé');
+    assert.equal(await page.getByRole('button', { name: 'Continuer', exact: true }).count(), 0);
+  });
+
+  test('un enseignant dont les groupes ne contiennent pas ces fiches est refusé sobrement par le serveur', async () => {
+    await openImportScreen(accounts.teacherA.email);
+    await see('Vous importez en tant que : Enseignant.');
+    await chooseBackupFile();
+    await clickButton('Continuer');
+    await see('Correspondance des groupes');
+    // Un enseignant ne crée pas de groupe : seule l'association à son propre groupe est proposée.
+    await page.getByRole('button', { name: /Que faire du groupe/ }).first().click();
+    assert.equal(await page.getByText('Créer dans le club', { exact: true }).count(), 0);
+    // Le menu est ouvert : il ne propose que « À choisir » et l'association à son groupe.
+    await page.getByRole('menuitem').first().waitFor({ state: 'attached', timeout: 15_000 });
+    assert.equal(await page.getByRole('menuitem').count(), 2);
+    await page.getByRole('menuitem', { name: 'Associer à : Enfants du mardi' }).click();
+    await clickButton('Continuer');
+    // Ses fiches sont créées sans qu'il puisse vérifier qu'elles n'existent pas déjà.
+    await see('Confirmations');
+    await page.getByRole('checkbox', { name: /Je confirme la création de/ }).click();
+    await clickButton('Continuer');
+    await see('Récapitulatif avant écriture');
+    await see('Rôle effectif : Enseignant');
+    await clickButton('Importer maintenant');
+    // Les fiches existent déjà (le directeur les a importées dans un autre groupe) : les règles
+    // refusent le lot en entier, l'écran le dit sans rouge ni détail technique.
+    // Le message est une alerte annoncée par la seule région vive de l'écran ; son texte est aussi
+    // affiché (les boutons « Réessayer » et « Terminer » restent hors de la région vive).
+    await see('Le serveur a refusé l’écriture d’un lot');
+    const shown = await visible();
+    for (const secret of ['permission-denied', 'FirebaseError', ...backup.students.map((x) => x.firstName)]) {
+      assert.ok(!shown.includes(secret), `« ${secret} » ne doit pas figurer à l'écran`);
     }
   });
 

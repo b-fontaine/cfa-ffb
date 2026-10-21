@@ -32,6 +32,10 @@ enum Capability {
 
   /// Ouvrir « Administration » : clubs, directeurs, codes de directeur.
   administer,
+
+  /// Importer une sauvegarde de l'ancienne version dans le club (FB7) : le
+  /// directeur et l'administrateur partout, l'enseignant dans ses groupes.
+  importBackup,
 }
 
 /// Les capacités de chaque rôle.
@@ -42,6 +46,7 @@ extension RolePolicy on Role {
       Capability.animate,
       Capability.openClub,
       Capability.inviteFamilies,
+      Capability.importBackup,
     },
     Role.director => const {
       Capability.animate,
@@ -51,6 +56,7 @@ extension RolePolicy on Role {
       Capability.manageClub,
       Capability.inviteTeachers,
       Capability.inviteFamilies,
+      Capability.importBackup,
     },
     Role.admin => const {
       Capability.animate,
@@ -61,6 +67,7 @@ extension RolePolicy on Role {
       Capability.inviteTeachers,
       Capability.inviteFamilies,
       Capability.administer,
+      Capability.importBackup,
     },
   };
 

@@ -12,9 +12,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// quand la persistance est volatile. [fileName] est le nom proposé à
 /// l'export (daté, localisé).
 class BackupView extends StatelessWidget {
-  const BackupView({required this.fileName, super.key});
+  const BackupView({required this.fileName, this.onOpenClubImport, super.key});
 
   final String fileName;
+
+  /// Renseigné quand les données du club sont sur le serveur : l'import local
+  /// n'y existe pas, ce bouton mène à l'import dans le club.
+  final VoidCallback? onOpenClubImport;
 
   @override
   Widget build(BuildContext context) {
@@ -60,13 +64,23 @@ class BackupView extends StatelessWidget {
               Text(l10n.backupExportCancelled),
             ],
             const SizedBox(height: AppSpacing.md),
-            OutlinedButton.icon(
-              onPressed: working
-                  ? null
-                  : () => bloc.add(const BackupEvent.importRequested()),
-              icon: const Icon(Icons.upload_file),
-              label: Text(l10n.backupImport),
-            ),
+            if (onOpenClubImport == null)
+              OutlinedButton.icon(
+                onPressed: working
+                    ? null
+                    : () => bloc.add(const BackupEvent.importRequested()),
+                icon: const Icon(Icons.upload_file),
+                label: Text(l10n.backupImport),
+              )
+            else ...[
+              Text(l10n.backupClubImportHint),
+              const SizedBox(height: AppSpacing.sm),
+              OutlinedButton.icon(
+                onPressed: onOpenClubImport,
+                icon: const Icon(Icons.drive_folder_upload_outlined),
+                label: Text(l10n.backupClubImportOpen),
+              ),
+            ],
             if (failure != null) ...[
               const SizedBox(height: AppSpacing.sm),
               Text(

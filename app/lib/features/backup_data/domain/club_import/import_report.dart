@@ -1,4 +1,5 @@
 import 'package:billard_cfa/features/backup_data/domain/club_import/import_models.dart';
+import 'package:billard_cfa/features/backup_data/domain/club_import/import_outline.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 
 /// Les limites d'un import (réglables pour les tests, jamais par l'animateur).
@@ -234,6 +235,7 @@ final class ClubImportPlan {
     this.startLot = 0,
     this.limits = const ImportLimits(),
     this.version,
+    this.outline = ImportOutline.empty,
   });
 
   final ImportStatus status;
@@ -252,6 +254,33 @@ final class ClubImportPlan {
 
   /// Version du format du fichier (1 à 5).
   final int? version;
+
+  /// Ce que l'écran montre du fichier pour décider (groupes, séances et
+  /// élèves sans groupe) ; vide pour un fichier illisible.
+  final ImportOutline outline;
+
+  /// Le même plan avec [outline] (posé par `PrepareClubImport` : le
+  /// planificateur ne lit pas le club).
+  ClubImportPlan withOutline(ImportOutline outline) => ClubImportPlan(
+    status: status,
+    report: report,
+    fingerprint: fingerprint,
+    planId: planId,
+    lots: lots,
+    startLot: startLot,
+    limits: limits,
+    version: version,
+    outline: outline,
+  );
+
+  /// Un import de ce fichier est commencé et le plan ne diffère du sien que par
+  /// les choix : l'animateur doit refaire **les mêmes choix** pour le reprendre
+  /// (ce n'est pas un fichier refusé).
+  bool get awaitsSameChoices =>
+      status == ImportStatus.blocked &&
+      outline.marker != null &&
+      report.problems.isNotEmpty &&
+      report.problems.every((p) => p.code == ImportProblemCode.planChanged);
 
   /// Vrai si le moteur d'écriture peut l'exécuter.
   bool get isRunnable =>

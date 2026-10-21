@@ -193,7 +193,7 @@ Le moteur écrit une sauvegarde (formats 1 à 5) dans un club **sans passer par 
 | `ClubImportRunner` | écrit les lots à partir du marqueur ; budget du jour ; coupure et refus | idem |
 | `ClubImportStore` (port) | lire le club dans le périmètre du rôle, lire le marqueur, écrire un lot et le marqueur | idem |
 | `FirestoreClubImportStore` | le port sur `DocumentStore` (jamais d'écrasement ; accusé du serveur attendu) | `app/` |
-| marqueur `clubs/{c}/imports/{fileId}_{uid}` (propre à son auteur) | compare-and-swap de chaque lot ; reprise ; un fichier une fois | `firestore.rules`, `app/import_marker_document.dart` |
+| marqueur `clubs/{c}/imports/{fileId}_{uid}` (propre à son auteur) | compare-and-swap de chaque lot ; reprise ; un même compte n'importe pas deux fois le même fichier | `firestore.rules`, `app/import_marker_document.dart` |
 
 Lecture du club (`inventory`) : un gestionnaire **liste** les collections du club ; un enseignant interroge **un groupe à la fois** (égalité sur `groupId`) et ses fiches par `groupIds` (`array-contains-any`, 30 valeurs). Coût : une lecture par document présent, zéro pour un club vide ; aucune donnée personnelle ne sort de l'inventaire. Aucun index à déclarer (`tool/check_indexes.dart` vert).
 

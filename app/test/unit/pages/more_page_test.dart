@@ -176,4 +176,18 @@ void main() {
       expect(find.text('Settings'), findsNothing);
     },
   );
+
+  testWidgets('migrate entry: shown only with an action', (tester) async {
+    await pumpUi(tester, const MorePage());
+    expect(find.text('Move my local data'), findsNothing);
+
+    var opened = 0;
+    await pumpUi(tester, MorePage(onOpenMigrate: () => opened++));
+    expect(
+      find.text('Import a backup of the old version into the club'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Move my local data'));
+    expect(opened, 1);
+  });
 }

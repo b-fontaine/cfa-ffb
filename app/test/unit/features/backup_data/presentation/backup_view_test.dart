@@ -87,4 +87,32 @@ void main() {
 
     expect(find.text('Club settings included'), findsNothing);
   });
+
+  testWidgets(
+    'with data on the server, the local import gives way to the club import',
+    (tester) async {
+      final bloc = _MockBackupBloc();
+      whenListen(
+        bloc,
+        const Stream<BackupState>.empty(),
+        initialState: const BackupState(),
+      );
+      var opened = 0;
+      await pumpUi(
+        tester,
+        BlocProvider<BackupBloc>.value(
+          value: bloc,
+          child: SingleChildScrollView(
+            child: BackupView(
+              fileName: 'backup.json',
+              onOpenClubImport: () => opened++,
+            ),
+          ),
+        ),
+      );
+      expect(find.text('Import a backup'), findsNothing);
+      await tester.tap(find.text('Import into the club'));
+      expect(opened, 1);
+    },
+  );
 }

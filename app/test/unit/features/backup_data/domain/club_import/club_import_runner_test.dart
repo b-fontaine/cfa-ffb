@@ -386,7 +386,11 @@ void main() {
         plan,
         role: Role.director,
       );
-      expect(result, isA<Err<ImportRunResult>>());
+      expect(result, isA<Ok<ImportRunResult>>());
+      expect(
+        (result as Ok<ImportRunResult>).value.status,
+        ImportRunStatus.planChanged,
+      );
       expect(store.applied, isEmpty);
     });
 
@@ -399,6 +403,59 @@ void main() {
       expect(again.writes, 0);
       expect(store.applied, hasLength(applied));
     });
+  });
+
+  test('progress is reported from the start and after each lot', () async {
+    final seen = <(int, int)>[];
+    final result = await ClubImportRunner(FakeStore(), _ledger())(
+      plan,
+      role: Role.director,
+      onProgress: (done, total) => seen.add((done, total)),
+    );
+    expect(
+      (result as Ok<ImportRunResult>).value.status,
+      ImportRunStatus.completed,
+    );
+    final total = plan.lots.length;
+    expect(seen.first, (0, total));
+    expect(seen.last, (total, total));
+    expect(seen.length, total + 1);
+  });
+
+  test('a stop request is taken between two lots and resumes after', () async {
+    final store = FakeStore();
+    var asked = false;
+    store.afterApply = () => asked = true;
+    final runner = ClubImportRunner(store, _ledger());
+    final first = await runner(
+      plan,
+      role: Role.director,
+      shouldStop: () => asked,
+    );
+    final stopped = (first as Ok<ImportRunResult>).value;
+    expect(stopped.status, ImportRunStatus.cancelled);
+    expect(stopped.doneLots, 1);
+    expect(store.applied, [0]);
+    final second = await runner(plan, role: Role.director);
+    expect(
+      (second as Ok<ImportRunResult>).value.status,
+      ImportRunStatus.completed,
+    );
+    expect(store.applied, [for (var i = 0; i < plan.lots.length; i++) i]);
+  });
+
+  test('a stop asked before the first lot writes nothing', () async {
+    final store = FakeStore();
+    final result = await ClubImportRunner(store, _ledger())(
+      plan,
+      role: Role.director,
+      shouldStop: () => true,
+    );
+    expect(
+      (result as Ok<ImportRunResult>).value.status,
+      ImportRunStatus.cancelled,
+    );
+    expect(store.applied, isEmpty);
   });
 }
 

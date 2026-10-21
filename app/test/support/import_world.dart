@@ -68,6 +68,10 @@ class RulesLiteStore implements DocumentStore {
   /// tombe avant l'accusé : l'appelant reçoit `unavailable`.
   int? dropAckAt;
 
+  /// Attend avant d'appliquer chaque lot (un serveur lent : les tests de
+  /// l'écran y demandent l'arrêt de l'import pendant un lot).
+  Future<void> Function()? beforeCommit;
+
   /// Le compte connecté (`request.auth.uid`) : son marqueur seul est permis.
   String? authUid;
 
@@ -76,6 +80,7 @@ class RulesLiteStore implements DocumentStore {
 
   @override
   Future<void> commit(List<WriteOp> operations) async {
+    await beforeCommit?.call();
     final failAfter = failAfterBatches;
     if (failAfter != null && appliedBatches >= failAfter) {
       throw const StoreFailure(StoreFailureCode.unavailable, 'coupure');

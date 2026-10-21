@@ -413,7 +413,7 @@ final class ClubImportPlanner {
           );
         case UseExistingGroup(:final target):
           final existing = inventory.groups[target];
-          if (actor.isTeacher && !actor.groups.contains(target)) {
+          if (!actor.mayWriteTo(target)) {
             // Hors de ses groupes : un enseignant ne voit même pas ce groupe
             // (les règles le lui cachent), donc l'écriture lui est refusée.
             problems.add(

@@ -1,6 +1,7 @@
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 /// Les catégories de documents qu'un import écrit (FB7, ADR 0024 décision 19).
 ///
@@ -88,6 +89,7 @@ final class ImportLot {
 }
 
 /// Que faire d'un groupe du fichier (jamais deviné, ADR 0024 décision 19).
+@immutable
 sealed class GroupChoice {
   const GroupChoice();
 }
@@ -96,6 +98,12 @@ sealed class GroupChoice {
 /// identifiant) ; réservé au directeur et à l'administrateur.
 final class CreateGroup extends GroupChoice {
   const CreateGroup();
+
+  @override
+  bool operator ==(Object other) => other is CreateGroup;
+
+  @override
+  int get hashCode => (CreateGroup).hashCode;
 }
 
 /// Le groupe du fichier est **associé** à un groupe qui existe déjà dans le
@@ -104,12 +112,20 @@ final class UseExistingGroup extends GroupChoice {
   const UseExistingGroup(this.target);
 
   final GroupId target;
+
+  @override
+  bool operator ==(Object other) =>
+      other is UseExistingGroup && other.target == target;
+
+  @override
+  int get hashCode => Object.hash(UseExistingGroup, target);
 }
 
 /// Décision explicite pour une donnée sans groupe : une séance planifiée du
 /// fichier sans groupe (drift l'acceptait, le groupe est obligatoire depuis
 /// le 2026-10-18), ou un élève sans groupe dont des données (blocs acquis,
 /// bilans, acquittements) n'ont pas de séance pour leur donner un groupe.
+@immutable
 sealed class OwnerChoice {
   const OwnerChoice();
 }
@@ -120,11 +136,23 @@ final class AttachTo extends OwnerChoice {
   const AttachTo(this.target);
 
   final GroupId target;
+
+  @override
+  bool operator ==(Object other) => other is AttachTo && other.target == target;
+
+  @override
+  int get hashCode => Object.hash(AttachTo, target);
 }
 
 /// Ne pas importer cette donnée.
 final class SkipIt extends OwnerChoice {
   const SkipIt();
+
+  @override
+  bool operator ==(Object other) => other is SkipIt;
+
+  @override
+  int get hashCode => (SkipIt).hashCode;
 }
 
 /// Les décisions de l'animateur, toutes **explicites**.
@@ -197,6 +225,12 @@ final class ImportActor {
   bool get manages => role == Role.director || role == Role.admin;
 
   bool get isTeacher => role == Role.teacher;
+
+  /// Le droit d'écrire dans le groupe [group] du club : un gestionnaire
+  /// partout, un enseignant dans ses groupes seulement. Seule source de
+  /// vérité : le planificateur, la liste des cibles et l'écran la lisent ici.
+  bool mayWriteTo(GroupId group) =>
+      manages || (isTeacher && groups.contains(group));
 
   /// Un rôle qui peut importer (les règles ouvrent `imports` à eux seuls).
   bool get mayImport => manages || isTeacher;

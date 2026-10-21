@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 class MorePage extends StatelessWidget {
   const MorePage({
     this.onOpenBackup,
+    this.onOpenMigrate,
     this.onOpenSettings,
     this.onOpenSeasons,
     this.onOpenClub,
@@ -22,6 +23,11 @@ class MorePage extends StatelessWidget {
   });
 
   final VoidCallback? onOpenBackup;
+
+  /// Ouvre « Migrer mes données locales » (directeur, administrateur,
+  /// enseignant) : l'import dans le club ; absent quand les données restent
+  /// sur l'appareil (rien à migrer).
+  final VoidCallback? onOpenMigrate;
   final VoidCallback? onOpenSettings;
   final VoidCallback? onOpenSeasons;
 
@@ -75,6 +81,13 @@ class MorePage extends StatelessWidget {
             title: l10n.moreBackup,
             subtitle: l10n.moreBackupHint,
             onTap: onOpenBackup!,
+          ),
+        if (onOpenMigrate != null)
+          _MoreEntry(
+            icon: Icons.drive_folder_upload_outlined,
+            title: l10n.moreMigrate,
+            subtitle: l10n.moreMigrateHint,
+            onTap: onOpenMigrate!,
           ),
         if (onOpenSeasons != null)
           _MoreEntry(

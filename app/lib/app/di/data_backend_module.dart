@@ -55,6 +55,13 @@ abstract class DataBackendModule {
   @singleton
   DataBackendChoice dataBackend() => DataBackendChoice(DataBackend.fromBuild());
 
+  /// Les tests et les scénarios BDD tournent sur le backend local (les
+  /// scénarios qui parlent à Firestore le remplacent, comme leurs dépôts).
+  @Environment(Environment.test)
+  @singleton
+  DataBackendChoice testDataBackend() =>
+      const DataBackendChoice(DataBackend.drift);
+
   @Environment(Environment.prod)
   @lazySingleton
   SettingsRepository settingsRepository(

@@ -221,3 +221,10 @@ Un parent ou un élève de 15 ans et plus connecté arrive sur `/my-children` (l
 5. Les actions déjà listées pour FB1 et FB2 restent valables (fournisseur e-mail seul, protection contre l'énumération, modèles de courriel, domaines autorisés,
    `flutterfire configure`).
 6. **Garde-fou de mise en production** : aucun vrai élève avant la décision `[U]` datée de `conformite/README.md`.
+
+## Import d'une sauvegarde dans le club (FB7, partie B, 2026-10-20)
+
+- **Accès** : « Plus » > « Migrer mes données locales » pour l'enseignant, le directeur et l'administrateur (`Capability.importBackup`) ; `/more/import` est refusée à un parent ou un élève (ramené à « Mes enfants ») ; sous le backend local (`drift`) l'entrée est masquée (rien à migrer ; « Sauvegarde » suffit) et la route mène à l'ancienne sauvegarde.
+- **Rôles** : le directeur et l'administrateur créent les groupes du fichier ou les associent ; l'enseignant n'associe qu'à **ses** groupes (liste filtrée, aucune création) et confirme le nombre de fiches qu'il ne peut pas vérifier ; le rôle effectif est rappelé à l'étape du récapitulatif. Le serveur reste le garde de fond (un lot hors périmètre est refusé en entier, dit sobrement).
+- **Détail** : [ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) notes FB7b ; [roadmap](roadmap.md) (procédure de bascule) ; [guide de l'animateur](../guide-animateur.md) (« Migrer mes données locales vers le club ») ; [conformité](conformite/README.md) (traitement 4 bis, notice).
+

@@ -4,6 +4,7 @@ import 'package:billard_cfa/features/backup_data/domain/club_import/club_import_
 import 'package:billard_cfa/features/backup_data/domain/club_import/club_import_runner.dart';
 import 'package:billard_cfa/features/backup_data/domain/club_import/import_integrity.dart';
 import 'package:billard_cfa/features/backup_data/domain/club_import/import_models.dart';
+import 'package:billard_cfa/features/backup_data/domain/club_import/import_outline.dart';
 import 'package:billard_cfa/features/backup_data/domain/club_import/import_report.dart';
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/clock.dart';
@@ -88,7 +89,7 @@ class PrepareClubImport {
       }
     }
     final inventory = await _store.inventory(decoded.fingerprint);
-    return planner.plan(
+    final plan = planner.plan(
       ClubImportInput(
         snapshot: decoded.snapshot,
         fingerprint: decoded.fingerprint,
@@ -102,6 +103,9 @@ class PrepareClubImport {
         preProblems: preProblems,
         newerFileStudents: newerFileStudents,
       ),
+    );
+    return plan.withOutline(
+      ImportOutline.of(decoded.snapshot, marker: inventory.marker),
     );
   });
 }

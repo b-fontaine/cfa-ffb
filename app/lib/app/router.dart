@@ -4,6 +4,7 @@ import 'package:billard_cfa/app/auth/auth_cubit.dart';
 import 'package:billard_cfa/app/auth/auth_redirect.dart';
 import 'package:billard_cfa/app/auth/auth_state.dart';
 import 'package:billard_cfa/app/auth/sign_out_flow.dart';
+import 'package:billard_cfa/app/data_backend.dart';
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/app/record_screens.dart';
 import 'package:billard_cfa/app/record_sheet.dart';
@@ -17,7 +18,9 @@ import 'package:billard_cfa/features/assess_maturity/presentation/bloc/assessmen
 import 'package:billard_cfa/features/backup_data/domain/backup_reminder.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_bloc.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_reminder_cubit.dart';
+import 'package:billard_cfa/features/backup_data/presentation/bloc/club_import_cubit.dart';
 import 'package:billard_cfa/features/backup_data/presentation/ui/backup_reminder_banner.dart';
+import 'package:billard_cfa/features/backup_data/presentation/ui/club_import_actions.dart';
 import 'package:billard_cfa/features/browse_sheets/presentation/bloc/sheet_catalogue_bloc.dart';
 import 'package:billard_cfa/features/browse_sheets/presentation/bloc/sheet_detail_bloc.dart';
 import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_change_bloc.dart';
@@ -69,6 +72,7 @@ import 'package:billard_cfa/pages/administration/presentation/administration_pag
 import 'package:billard_cfa/pages/assessment/presentation/assessment_page.dart';
 import 'package:billard_cfa/pages/backup/presentation/backup_page.dart';
 import 'package:billard_cfa/pages/club/presentation/club_page.dart';
+import 'package:billard_cfa/pages/club_import/presentation/club_import_page.dart';
 import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_page.dart';
 import 'package:billard_cfa/pages/export_sheet/presentation/export_sheet_page.dart';
 import 'package:billard_cfa/pages/forgot_password/presentation/forgot_password_page.dart';
@@ -134,6 +138,11 @@ abstract final class AppRoutes {
   static const exercises = '/exercises';
   static const more = '/more';
   static const backup = '/backup';
+
+  /// Import d'une sauvegarde dans le club (FB7) : sous « Plus », réservé au
+  /// directeur, à l'administrateur et à l'enseignant ; sous le backend local
+  /// (`drift`), ramène à l'ancienne sauvegarde.
+  static const clubImport = '/more/import';
   static const settings = '/settings';
   static const seasons = '/seasons';
   static const catalogue = '/catalogue';
@@ -497,6 +506,12 @@ String? _nonBlank(String? raw) =>
 
 StudentId _studentId(GoRouterState state) =>
     StudentId(state.pathParameters['studentId']!);
+
+/// Vrai quand les données du club sont dans Firestore : l'écran d'import dans
+/// le club n'a de sens que là (sous drift, la sauvegarde locale reste le
+/// chemin).
+bool get _clubImportAvailable =>
+    getIt<DataBackendChoice>().backend == DataBackend.firestore;
 
 /// Vrai si la session ouverte a un rôle de club qui a [capability] : ce que le
 /// menu propose, et ce que le garde de route (`roleRedirect`) accepte.
@@ -1200,6 +1215,36 @@ GoRouter buildRouter({
             child: BackupPage(
               today: getIt<Clock>().today(),
               onBack: () => context.go(AppRoutes.more),
+              // Les données du club sont sur le serveur : l'import d'une
+              // sauvegarde de l'ancienne version a son propre écran.
+              onOpenClubImport: _clubImportAvailable
+                  ? () => context.go(AppRoutes.clubImport)
+                  : null,
+            ),
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.clubImport,
+          // Sous le backend local, l'import dans un club n'existe pas : la
+          // route mène à l'ancienne sauvegarde, jamais à un écran qui ne
+          // pourrait rien écrire.
+          redirect: (context, state) =>
+              _clubImportAvailable ? null : AppRoutes.backup,
+          builder: (context, state) => BlocProvider(
+            create: (_) {
+              final cubit = getIt<ClubImportCubit>();
+              unawaited(cubit.started());
+              return cubit;
+            },
+            child: BlocBuilder<ClubImportCubit, ClubImportState>(
+              builder: (context, state) => ClubImportPage(
+                state: state,
+                actions: ClubImportActions.of(
+                  context.read<ClubImportCubit>(),
+                  onFinish: () => context.go(AppRoutes.more),
+                ),
+                onBack: () => context.go(AppRoutes.more),
+              ),
             ),
           ),
         ),
@@ -1211,6 +1256,13 @@ GoRouter buildRouter({
             return MorePage(
               onOpenBackup: role?.animates ?? false
                   ? () => context.go(AppRoutes.backup)
+                  : null,
+              // « Migrer mes données locales » : seulement avec les données
+              // sur le serveur. Sous `drift` il n'y a rien à migrer et
+              // « Sauvegarde » est déjà l'entrée vers la même page.
+              onOpenMigrate:
+                  _clubImportAvailable && _can(auth, Capability.importBackup)
+                  ? () => context.go(AppRoutes.clubImport)
                   : null,
               onOpenSettings: _can(auth, Capability.manageSettings)
                   ? () => context.go(AppRoutes.settings)

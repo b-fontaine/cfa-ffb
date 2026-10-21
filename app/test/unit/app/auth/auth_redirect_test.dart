@@ -420,4 +420,29 @@ void main() {
       },
     );
   });
+
+  group('import into the club (FB7)', () {
+    AuthReady as(Role role) => AuthReady(
+      account: _account,
+      club: ClubMembership(
+        clubId: const ClubId('nice'),
+        clubName: 'Club Nice',
+        role: role,
+        studentIds: const [StudentId('s1')],
+      ),
+      choices: const [_club],
+    );
+
+    for (final role in [Role.teacher, Role.director, Role.admin]) {
+      test('${role.name} reaches the import', () {
+        expect(_go(as(role), '/more/import'), isNull);
+      });
+    }
+
+    for (final role in [Role.guardian, Role.student]) {
+      test('${role.name} is refused and sent to their children', () {
+        expect(_go(as(role), '/more/import'), '/my-children');
+      });
+    }
+  });
 }

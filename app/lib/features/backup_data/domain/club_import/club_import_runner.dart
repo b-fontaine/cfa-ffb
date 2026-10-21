@@ -73,6 +73,15 @@ enum ImportRunStatus {
   /// Une écriture est refusée (règles) ou a échoué : le lot en cause n'a rien
   /// écrit.
   failed,
+
+  /// L'animateur a demandé l'arrêt : l'exécution s'est arrêtée **entre deux
+  /// lots** (jamais au milieu d'un lot atomique) ; la reprise continue au lot
+  /// suivant.
+  cancelled,
+
+  /// Un import de ce fichier est commencé avec **d'autres choix** : rien n'a
+  /// été écrit, l'animateur doit refaire les mêmes choix.
+  planChanged,
 }
 
 /// Le résultat d'une exécution.
@@ -106,8 +115,8 @@ final class ImportRunResult {
 /// même rejoué après une coupure, par deux appareils ou par la file d'attente
 /// du SDK. Un lot rejeté parce que le marqueur a déjà avancé est un succès
 /// (relu au serveur) ; toute autre erreur laisse le marqueur où il était. Le
-/// fichier est identifié par son empreinte : le même fichier n'est pas importé
-/// deux fois.
+/// fichier est identifié par son empreinte : un même compte n'importe pas deux
+/// fois le même fichier (le marqueur est par fichier **et** par compte).
 ///
 /// **Budget** : le plafond est **quotidien**, pas par exécution : le compte du
 /// jour ([ImportDailyLedger]) est lu au début et incrémenté après chaque lot.
@@ -115,6 +124,10 @@ final class ImportRunResult {
 /// [ImportLimits.dailyWrites] (le premier lot du jour est toujours écrit, pour
 /// progresser), et une autre exécution le même jour s'arrête aussitôt
 /// (`paused`) ; la reprise a lieu un autre jour, au lot suivant.
+///
+/// **Écran** (FB7, partie B) : `shouldStop` est lu **avant chaque lot**
+/// (annulation propre : `cancelled`, rien n'est à défaire) et `onProgress`
+/// reçoit les lots faits sur les lots prévus (début compris, après chaque lot).
 @Environment(Environment.prod)
 @injectable
 class ClubImportRunner {
@@ -127,6 +140,8 @@ class ClubImportRunner {
     ClubImportPlan plan, {
     required Role role,
     int? budget,
+    bool Function()? shouldStop,
+    void Function(int done, int total)? onProgress,
   }) => runGuarded(() async {
     if (!plan.isRunnable) {
       throw const ServiceFailure(ServiceFailureCode.other, 'plan not runnable');
@@ -134,7 +149,13 @@ class ClubImportRunner {
     final inventory = await _store.inventory(plan.fingerprint);
     final marker = inventory.marker;
     if (marker != null && marker.planId != plan.planId) {
-      throw const ServiceFailure(ServiceFailureCode.other, 'plan changed');
+      // Un import de ce fichier est commencé avec d'autres choix : rien n'est
+      // écrit, et ce n'est pas une erreur (l'animateur refait les mêmes choix).
+      return ImportRunResult(
+        status: ImportRunStatus.planChanged,
+        doneLots: marker.done,
+        totalLots: marker.lots,
+      );
     }
     final total = plan.lots.length;
     var done = marker?.done ?? 0;
@@ -145,6 +166,7 @@ class ClubImportRunner {
         totalLots: total,
       );
     }
+    onProgress?.call(done, total);
     final limit = budget ?? plan.limits.dailyWrites;
     var spent = await _ledger.spentToday();
     var written = 0;
@@ -168,6 +190,8 @@ class ClubImportRunner {
           failure: failure,
         );
     while (done < total) {
+      // L'arrêt demandé n'interrompt jamais un lot : il se prend entre deux.
+      if (shouldStop?.call() ?? false) return stop(ImportRunStatus.cancelled);
       final lot = plan.lots[done];
       final cost = lot.writes.length + 1;
       if (spent > 0 && spent + cost > limit) {
@@ -202,6 +226,7 @@ class ClubImportRunner {
             seen.done > done) {
           done = seen.done;
           current = seen;
+          onProgress?.call(done, total);
           continue;
         }
         return stop(ImportRunStatus.failed, failure);
@@ -211,6 +236,7 @@ class ClubImportRunner {
       spent += cost;
       await _ledger.add(cost);
       written += lot.writes.length;
+      onProgress?.call(done, total);
     }
     return stop(ImportRunStatus.completed);
   });

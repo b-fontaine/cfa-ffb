@@ -140,6 +140,7 @@ String? roleRedirect(AuthReady state, Uri location) {
     final forbidden =
         path == AppRoutes.myChildren ||
         (path == AppRoutes.settings && !role.can(Capability.manageSettings)) ||
+        (path == AppRoutes.clubImport && !role.can(Capability.importBackup)) ||
         (closing && !role.can(Capability.closeSeason));
     return forbidden ? AppRoutes.home : null;
   }

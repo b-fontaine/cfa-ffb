@@ -7,10 +7,19 @@ import 'package:flutter/material.dart';
 /// l'appelant). [today] date le nom du fichier exporté ; [onBack] ramène à la
 /// destination « Plus » qui l'a ouverte.
 class BackupPage extends StatelessWidget {
-  const BackupPage({required this.today, required this.onBack, super.key});
+  const BackupPage({
+    required this.today,
+    required this.onBack,
+    this.onOpenClubImport,
+    super.key,
+  });
 
   final DateTime today;
   final VoidCallback onBack;
+
+  /// Quand les données du club sont sur le serveur : ouvre l'import dans le
+  /// club, qui remplace l'import local de cet écran.
+  final VoidCallback? onOpenClubImport;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +32,12 @@ class BackupPage extends StatelessWidget {
       title: l10n.backupTitle,
       onBack: onBack,
       backLabel: l10n.backupBackToMore,
-      children: [BackupView(fileName: l10n.backupFileName(date))],
+      children: [
+        BackupView(
+          fileName: l10n.backupFileName(date),
+          onOpenClubImport: onOpenClubImport,
+        ),
+      ],
     );
   }
 }

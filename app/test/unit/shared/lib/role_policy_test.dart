@@ -11,6 +11,7 @@ void main() {
       Capability.animate,
       Capability.openClub,
       Capability.inviteFamilies,
+      Capability.importBackup,
     },
     Role.director: {
       Capability.animate,
@@ -20,6 +21,7 @@ void main() {
       Capability.manageClub,
       Capability.inviteTeachers,
       Capability.inviteFamilies,
+      Capability.importBackup,
     },
     Role.admin: {
       Capability.animate,
@@ -30,6 +32,7 @@ void main() {
       Capability.inviteTeachers,
       Capability.inviteFamilies,
       Capability.administer,
+      Capability.importBackup,
     },
   };
 

@@ -489,6 +489,69 @@ disparaît dès qu'un export a été enregistré (un export annulé ne compte pa
   mémoire** (navigateur sans stockage durable), exportez une sauvegarde avant
   de fermer l'onglet : sinon elles seraient perdues.
 
+## Migrer mes données locales vers le club
+
+*(Version où les données du club sont sur le serveur ; texte à valider avec la
+notice d'information.)* Si vous avez saisi des séances et des résultats dans
+l'ancienne version, qui gardait tout sur l'appareil, vous les reprenez en une
+fois. **Exportez JUSTE avant la mise en ligne de la nouvelle version, et ne
+saisissez plus rien dans l'ancienne version entre cet export et la mise en
+ligne** : la nouvelle version remplace l'ancienne à la même adresse, on ne peut
+plus y exporter, et ce que vous auriez saisi après l'export n'est dans aucun
+fichier. Le **fichier exporté est votre seul repli garanti** : les données du
+navigateur sont un repli au mieux (Safari sur iPhone efface le stockage d'un
+onglet resté plusieurs jours fermé, et le navigateur peut refuser de le
+protéger). Sur iPhone, installez l'application sur l'écran d'accueil et ouvrez-la
+régulièrement pendant la période de migration. **Si le bandeau « Mettre à jour »
+apparaît et que vous n'avez pas encore exporté, touchez « Plus tard » et
+exportez d'abord.** L'import doit avoir lieu au plus 31 jours après l'export.
+L'import ne modifie pas les données du navigateur.
+
+1. Dans **l'ancienne version**, ouvrez **Plus**, **Sauvegarde**, et exportez un
+   fichier. Gardez-le **hors de l'appareil** (clé, ordinateur) et en lieu sûr :
+   il contient des prénoms d'enfants. Le directeur importe en premier, puis
+   chaque enseignant avec son propre fichier.
+2. Dans la nouvelle version (reconnectez-vous), ouvrez **Plus**,
+   **Migrer mes données locales** (ou **Importer dans le club**), puis **Choisir un fichier de sauvegarde**.
+3. Lisez le **rapport** : le fichier est contrôlé en entier avant que quoi que
+   ce soit soit écrit. Un fichier refusé dit pourquoi, sans prénom ; choisissez-en
+   un autre. Si vous n'en avez pas, prévenez la personne qui gère l'application :
+   elle peut remettre l'ancienne version le temps d'un nouvel export.
+4. **Groupes** : pour chaque groupe du fichier, créez-le dans le club (directeur
+   et administrateur) ou associez-le à un groupe existant. Rien n'est fusionné
+   sans votre accord. Un enseignant n'importe que dans ses groupes.
+5. **Séances et élèves sans groupe** : choisissez pour chacun un groupe, ou
+   ignorez-le. Rien n'est deviné.
+6. **Confirmations** : si le fichier est antérieur à une clôture de saison, des
+   élèves effacés pourraient être rétablis ; l'écran donne leur nombre exact et
+   vous le confirmez. Un enseignant confirme aussi le nombre de fiches qu'il ne
+   peut pas vérifier (si l'une existe déjà hors de ses groupes, le serveur
+   refuse le lot et un directeur doit importer).
+7. Le **récapitulatif** donne le nombre d'écritures, de lots et de jours, puis
+   **Importer maintenant**. Vous pouvez **arrêter après ce lot**.
+
+Le **même compte** ne ré-importe pas deux fois le même fichier ; un autre
+compte le pourrait, mais n'écraserait rien de ce qui est déjà dans le club. Si l'import s'arrête
+(réseau coupé, plafond du jour atteint, arrêt demandé), rien n'est perdu : il reprend
+tout seul au retour du réseau, ou rouvrez l'écran **le lendemain** avec **le même
+fichier, le même compte et les mêmes choix de groupes** ; il repart du lot où il
+s'était arrêté. Un gros fichier peut demander plusieurs jours : le serveur limite
+les écritures par jour.
+
+Si l'import ne convient pas, gardez votre fichier : tant que l'ancienne version
+n'est pas retirée, la personne qui gère l'application peut la remettre en ligne
+(touchez **Mettre à jour** dans le bandeau pour la retrouver). Vos données du
+navigateur y sont lisibles si le navigateur les a gardées ; sinon, votre fichier
+est le repli. Après un retour en arrière, un nouvel export est traité comme un
+nouveau fichier : seuls les éléments **absents** du club sont ajoutés. Une
+correction faite après un premier import sur un élément déjà importé (passage
+corrigé, bilan modifié, prénom rectifié) n'est **pas** reportée : refaites-la à
+la main dans le club.
+La période de migration s'arrête quand tous les animateurs ont importé et
+vérifié ; gardez votre fichier 31 jours après cette date.
+Supprimez vos anciens fichiers de sauvegarde seulement une fois l'import vérifié
+(fiches, groupes, derniers passages) et la période de vérification terminée.
+
 ## Régler l'application
 
 Ouvrez **Plus**, puis **Réglages**. Cinq réglages, chacun avec deux boutons
