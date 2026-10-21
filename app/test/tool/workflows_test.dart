@@ -324,6 +324,36 @@ void main() {
     });
   });
 
+  // Les previews de PR sont déployées avec le même compte de service et sur le
+  // même projet que le live : leur seule protection est ce test (ADR 0024,
+  // lot de bascule) : drift explicite, aucun secret de déploiement des règles,
+  // aucune étape Firestore.
+  group('the pull request workflow cannot touch Firestore', () {
+    const name = 'firebase-hosting-pull-request.yml';
+
+    test('it carries no rules deployment secret or variable', () {
+      final text = _text(name);
+
+      expect(text, isNot(contains('GCP_WORKLOAD_IDENTITY_PROVIDER')));
+      expect(text, isNot(contains('GCP_FIRESTORE_DEPLOY_SERVICE_ACCOUNT')));
+      expect(text, isNot(contains('firebase-firestore-deploy')));
+      expect(text, isNot(contains('workflow_call')));
+      expect(text, isNot(contains('id-token')));
+    });
+
+    test('none of its steps mentions Firestore', () {
+      for (final job in _jobs(name).values) {
+        for (final step in (job as YamlMap)['steps'] as YamlList) {
+          expect(
+            '$step'.toLowerCase(),
+            isNot(contains('firestore')),
+            reason: '$step',
+          );
+        }
+      }
+    });
+  });
+
   test('no other workflow can deploy rules or indexes', () {
     for (final name in workflows) {
       if (name == 'firebase-firestore-deploy.yml') continue;

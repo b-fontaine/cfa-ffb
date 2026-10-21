@@ -14,7 +14,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Build Firestore (FB7c) : relever la base locale AVANT que l'application ne
   // l'ouvre (elle crée une base absente et migre une base ancienne). Sous
-  // drift (le défaut), la base locale est la source de vérité : rien à relever.
+  // drift (explicite), la base locale est la source de vérité : rien à relever.
   const settings = DatabaseSettings();
   final localData = DataBackend.fromBuild() == DataBackend.firestore
       ? await probeLocalStore(settings)

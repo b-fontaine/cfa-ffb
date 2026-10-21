@@ -47,7 +47,7 @@ Registre au sens de l'article 30 du RGPD, modèle pour un club. Statut : **proje
 | Hors ligne | Les dernières données reçues restent affichées (cache de l'appareil, traitement 4) avec la pastille « Hors ligne » ; vidées à la déconnexion |
 | Journaux | Aucune donnée personnelle : les journaux techniques ne reçoivent que des codes (jamais prénom, e-mail, identifiant d'élève ou de compte) |
 | Durée | Celle du traitement 1 (élèves) et du traitement 2 (compte du parent) |
-| Choix technique à signaler | L'espace famille ne lit Firestore qu'avec `DATA_BACKEND=firestore`, donc **après la bascule de production** (décision de l'utilisateur du 2026-10-19, ADR 0024 notes FB6) : aucune lecture de mineurs n'arrive au serveur avant |
+| Choix technique à signaler | Le build par défaut lit Firestore pour **tous** les rôles dès son déploiement (lot de bascule du 2026-10-21, décision 28 amendée ; l'aiguillage par rôle a été écarté le 2026-10-19, ADR 0024 notes FB6). Ce qui protège les mineurs avant la validation de la conformité est la garde A3 (ADR 0025) : aucune invitation réelle, donc aucun compte élève ou parent réel, avant cette validation |
 
 ## Traitement 2 — Comptes des adultes (parents, enseignants, directeurs, administrateurs) et invitations
 

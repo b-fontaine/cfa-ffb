@@ -225,7 +225,7 @@ const typeInto = async (page, label, value) => {
   for (let attempt = 0; attempt < 4 && typed !== value; attempt++) {
     await field.click();
     await page.waitForFunction(() =>
-      ['INPUT', 'TETAREA'].includes(document.activeElement?.tagName),
+      ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName),
     );
     await page.waitForTimeout(300);
     await page.keyboard.press('ControlOrMeta+A');

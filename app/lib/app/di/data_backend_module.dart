@@ -186,7 +186,7 @@ abstract class DataBackendModule {
   );
 
   /// L'import d'une sauvegarde dans le club (FB7) : n'écrit que dans Firestore.
-  /// Avec drift (le défaut), tous les dépôts lisent drift : l'import est refusé
+  /// Avec drift (explicite), tous les dépôts lisent drift : l'import est refusé
   /// (`unsupported`) plutôt que d'écrire des données que l'application ne
   /// relirait pas.
   @Environment(Environment.prod)

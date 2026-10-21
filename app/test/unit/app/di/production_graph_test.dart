@@ -32,6 +32,8 @@ import 'package:billard_cfa/features/backup_data/data/file_picker_backup_files.d
 import 'package:billard_cfa/features/backup_data/data/in_memory_backup_files.dart';
 import 'package:billard_cfa/features/backup_data/data/startup_local_data_probe.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_files.dart';
+import 'package:billard_cfa/features/backup_data/domain/club_import/club_import_runner.dart';
+import 'package:billard_cfa/features/backup_data/domain/club_import/unsupported_club_import_store.dart';
 import 'package:billard_cfa/features/backup_data/domain/export_backup.dart';
 import 'package:billard_cfa/features/backup_data/domain/export_local_backup.dart';
 import 'package:billard_cfa/features/backup_data/domain/local_data_probe.dart';
@@ -117,6 +119,12 @@ void main() {
       File('${directory.path}/$appDatabaseName.sqlite').existsSync(),
       isTrue,
     );
+  });
+
+  test('the club import is unsupported when drift is explicit', () async {
+    await configureProduction(backend: DataBackend.drift);
+
+    expect(getIt<ClubImportStore>(), isA<UnsupportedClubImportStore>());
   });
 
   test('production reports a persistent native storage', () async {

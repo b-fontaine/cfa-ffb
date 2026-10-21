@@ -497,9 +497,9 @@ disparaît dès qu'un export a été enregistré (un export annulé ne compte pa
 ## Exporter mes données locales, puis les migrer vers le club
 
 *(Version où les données du club sont sur le serveur ; textes à valider avec la
-notice d'information.)* **Depuis le lot de bascule du 2026-10-21, l'adresse réelle
-de l'application sert le build Firestore** (le club est lu et écrit sur le
-serveur) ; les aperçus de pull request, eux, restent locaux. Cet export reste le
+notice d'information.)* **Le lot de bascule du 2026-10-21 est livré dans le code mais pas
+encore déployé : l'adresse réelle servira le build Firestore une fois le lot
+déployé** (le club sera lu et écrit sur le serveur) ; les aperçus de pull request, eux, restent locaux. Cet export reste le
 chemin pour des données **locales déjà saisies** sur un appareil. Ce que vous avez saisi avant le passage au club **reste
 sur l'appareil** (dans le navigateur, ou dans l'application installée) : la
 nouvelle version **ne l'efface pas**, et elle permet de **l'exporter puis de
