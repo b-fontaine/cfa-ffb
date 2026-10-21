@@ -184,10 +184,24 @@ void main() {
     var opened = 0;
     await pumpUi(tester, MorePage(onOpenMigrate: () => opened++));
     expect(
-      find.text('Import a backup of the old version into the club'),
+      find.text('Import into the club the exported file of your local data'),
       findsOneWidget,
     );
     await tester.tap(find.text('Move my local data'));
+    expect(opened, 1);
+  });
+
+  testWidgets('local export entry: shown only with an action', (tester) async {
+    await pumpUi(tester, const MorePage());
+    expect(find.text('Export my local data'), findsNothing);
+
+    var opened = 0;
+    await pumpUi(tester, MorePage(onOpenLocalExport: () => opened++));
+    expect(
+      find.text('Save a file of the data still on this device'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Export my local data'));
     expect(opened, 1);
   });
 }

@@ -310,7 +310,7 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
     }
   });
 
-  // --- FB7, partie B : import d'une sauvegarde de l'ancienne version dans le club -------------------
+  // --- FB7, partie B : import d'un fichier de sauvegarde dans le club -------------------
   // Le fichier est une sauvegarde FICTIVE des tests (app/test/fixtures/backup, format 5). Le
   // directeur l'importe par l'écran, sous les vraies règles ; la relecture compare ce que le club
   // contient (autre appareil, Node) à ce que le fichier annonce. Puis un enseignant, qui ne peut

@@ -19,8 +19,11 @@ import 'package:billard_cfa/features/backup_data/domain/backup_reminder.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_bloc.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_reminder_cubit.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/club_import_cubit.dart';
+import 'package:billard_cfa/features/backup_data/presentation/bloc/local_data_notice_cubit.dart';
+import 'package:billard_cfa/features/backup_data/presentation/bloc/local_export_cubit.dart';
 import 'package:billard_cfa/features/backup_data/presentation/ui/backup_reminder_banner.dart';
 import 'package:billard_cfa/features/backup_data/presentation/ui/club_import_actions.dart';
+import 'package:billard_cfa/features/backup_data/presentation/ui/local_data_banner.dart';
 import 'package:billard_cfa/features/browse_sheets/presentation/bloc/sheet_catalogue_bloc.dart';
 import 'package:billard_cfa/features/browse_sheets/presentation/bloc/sheet_detail_bloc.dart';
 import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_change_bloc.dart';
@@ -80,6 +83,7 @@ import 'package:billard_cfa/pages/group_overview/presentation/group_overview_pag
 import 'package:billard_cfa/pages/home/presentation/home_page.dart';
 import 'package:billard_cfa/pages/invite_member/presentation/invite_member_page.dart';
 import 'package:billard_cfa/pages/join/presentation/join_page.dart';
+import 'package:billard_cfa/pages/local_export/presentation/local_export_page.dart';
 import 'package:billard_cfa/pages/more/presentation/more_page.dart';
 import 'package:billard_cfa/pages/my_children/presentation/my_children_page.dart';
 import 'package:billard_cfa/pages/not_found/presentation/not_found_page.dart';
@@ -143,6 +147,12 @@ abstract final class AppRoutes {
   /// directeur, à l'administrateur et à l'enseignant ; sous le backend local
   /// (`drift`), ramène à l'ancienne sauvegarde.
   static const clubImport = '/more/import';
+
+  /// Export en lecture seule de la base locale (FB7c) : n'existe que sous
+  /// `firestore` (sous `drift`, « Sauvegarde » est l'export) et s'ouvre aussi
+  /// **sans compte** : les données locales de l'appareil ne dépendent pas
+  /// d'un compte.
+  static const localExport = '/local-export';
   static const settings = '/settings';
   static const seasons = '/seasons';
   static const catalogue = '/catalogue';
@@ -513,6 +523,31 @@ StudentId _studentId(GoRouterState state) =>
 bool get _clubImportAvailable =>
     getIt<DataBackendChoice>().backend == DataBackend.firestore;
 
+/// Habille un écran du bandeau « Des données de cet appareil n'ont pas encore
+/// été exportées » (FB7c) : sous `firestore` seulement, aux animateurs
+/// connectés et aux écrans sans compte (un parent ou un élève n'a aucune
+/// raison d'exporter les données de l'animateur). Hors de la session ouverte,
+/// le bandeau passe sous l'encoche et ne propose que l'export.
+Widget _withLocalDataNotice(
+  BuildContext context,
+  AuthCubit auth,
+  Widget child,
+) {
+  if (!_clubImportAvailable) return child;
+  final session = auth.state;
+  final signedIn = session is AuthReady;
+  if (signedIn && !session.club.role.animates) return child;
+  final cubit = getIt<LocalDataNoticeCubit>();
+  unawaited(cubit.load(account: signedIn ? session.account.id.value : null));
+  return LocalDataNoticeFrame(
+    cubit: cubit,
+    onExport: () => unawaited(context.push(AppRoutes.localExport)),
+    onAcknowledge: signedIn ? cubit.acknowledge : null,
+    safeArea: !signedIn,
+    child: child,
+  );
+}
+
 /// Vrai si la session ouverte a un rôle de club qui a [capability] : ce que le
 /// menu propose, et ce que le garde de route (`roleRedirect`) accepte.
 bool _can(AuthCubit auth, Capability capability) => switch (auth.state) {
@@ -571,17 +606,21 @@ GoRouter buildRouter({
           // déconnexion précédente a échoué (message et nouvel essai).
           child: BlocBuilder<AuthCubit, AuthState>(
             bloc: auth,
-            builder: (context, session) => SignInPage(
-              onForgotPassword: () => context.go(
-                AppRoutes.withFrom(AppRoutes.forgotPassword, from),
+            builder: (context, session) => _withLocalDataNotice(
+              context,
+              auth,
+              SignInPage(
+                onForgotPassword: () => context.go(
+                  AppRoutes.withFrom(AppRoutes.forgotPassword, from),
+                ),
+                onRegister: () =>
+                    context.go(AppRoutes.withFrom(AppRoutes.register, from)),
+                erasurePending: switch (session) {
+                  AuthSignedOut(:final erasurePending) => erasurePending,
+                  _ => false,
+                },
+                onRetryErasure: () => unawaited(auth.retryErasure()),
               ),
-              onRegister: () =>
-                  context.go(AppRoutes.withFrom(AppRoutes.register, from)),
-              erasurePending: switch (session) {
-                AuthSignedOut(:final erasurePending) => erasurePending,
-                _ => false,
-              },
-              onRetryErasure: () => unawaited(auth.retryErasure()),
             ),
           ),
         );
@@ -606,10 +645,14 @@ GoRouter buildRouter({
         final from = state.uri.queryParameters['from'];
         return BlocProvider(
           create: (_) => getIt<RegisterCubit>(),
-          child: RegisterPage(
-            initialCode: state.uri.queryParameters['code'],
-            onBack: () =>
-                context.go(AppRoutes.withFrom(AppRoutes.signIn, from)),
+          child: _withLocalDataNotice(
+            context,
+            auth,
+            RegisterPage(
+              initialCode: state.uri.queryParameters['code'],
+              onBack: () =>
+                  context.go(AppRoutes.withFrom(AppRoutes.signIn, from)),
+            ),
           ),
         );
       },
@@ -625,15 +668,19 @@ GoRouter buildRouter({
           AuthNoClub(:final isAdmin) => isAdmin,
           _ => false,
         };
-        return SelectClubPage(
-          choices: choices,
-          onChoose: (club) => unawaited(auth.chooseClub(club)),
-          onRefresh: () => unawaited(auth.refresh()),
-          onSignOut: () => unawaited(requestSignOut(context, auth)),
-          onJoin: () => context.go(AppRoutes.join),
-          onAdministration: isAdmin
-              ? () => context.go(AppRoutes.administration)
-              : null,
+        return _withLocalDataNotice(
+          context,
+          auth,
+          SelectClubPage(
+            choices: choices,
+            onChoose: (club) => unawaited(auth.chooseClub(club)),
+            onRefresh: () => unawaited(auth.refresh()),
+            onSignOut: () => unawaited(requestSignOut(context, auth)),
+            onJoin: () => context.go(AppRoutes.join),
+            onAdministration: isAdmin
+                ? () => context.go(AppRoutes.administration)
+                : null,
+          ),
         );
       },
     ),
@@ -670,17 +717,42 @@ GoRouter buildRouter({
     ),
     GoRoute(
       path: AppRoutes.unavailable,
-      builder: (context, state) => UnavailablePage(
-        onRetry: () => unawaited(auth.retry()),
-        onSignOut: auth.hasSession
-            ? () => unawaited(requestSignOut(context, auth))
-            : null,
+      builder: (context, state) => _withLocalDataNotice(
+        context,
+        auth,
+        UnavailablePage(
+          onRetry: () => unawaited(auth.retry()),
+          onSignOut: auth.hasSession
+              ? () => unawaited(requestSignOut(context, auth))
+              : null,
+        ),
       ),
     ),
     GoRoute(
       path: AppRoutes.accessDenied,
       builder: (context, state) => AccessDeniedPage(
         onSignOut: () => unawaited(requestSignOut(context, auth)),
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.localExport,
+      // Sous `drift`, « Sauvegarde » est déjà l'export : pas de seconde route.
+      redirect: (context, state) =>
+          _clubImportAvailable ? null : AppRoutes.backup,
+      builder: (context, state) => BlocProvider(
+        create: (_) {
+          final cubit = getIt<LocalExportCubit>();
+          unawaited(cubit.prepare());
+          return cubit;
+        },
+        child: LocalExportPage(
+          today: getIt<Clock>().today(),
+          onBack: () => context.canPop()
+              ? context.pop()
+              : context.go(
+                  auth.state is AuthReady ? AppRoutes.more : AppRoutes.signIn,
+                ),
+        ),
       ),
     ),
     ShellRoute(
@@ -695,7 +767,7 @@ GoRouter buildRouter({
             AuthReady(:final club) => club.role,
             _ => null,
           },
-          child: child,
+          child: _withLocalDataNotice(context, auth, child),
         ),
       ),
       routes: [
@@ -1253,7 +1325,8 @@ GoRouter buildRouter({
           builder: (context, state) {
             final session = auth.state;
             final role = session is AuthReady ? session.club.role : null;
-            return MorePage(
+            Widget page(void Function()? onOpenLocalExport) => MorePage(
+              onOpenLocalExport: onOpenLocalExport,
               onOpenBackup: role?.animates ?? false
                   ? () => context.go(AppRoutes.backup)
                   : null,
@@ -1289,6 +1362,25 @@ GoRouter buildRouter({
               onSwitchClub: session is AuthReady && session.canSwitchClub
                   ? () => context.go(AppRoutes.switchClub)
                   : null,
+            );
+            // « Exporter mes données locales » : sous `firestore`, aux
+            // animateurs, tant que l'appareil garde des données locales.
+            if (!_clubImportAvailable || !(role?.animates ?? false)) {
+              return page(null);
+            }
+            final notice = getIt<LocalDataNoticeCubit>();
+            unawaited(
+              notice.load(
+                account: session is AuthReady ? session.account.id.value : null,
+              ),
+            );
+            return BlocBuilder<LocalDataNoticeCubit, LocalDataNoticeState>(
+              bloc: notice,
+              builder: (context, state) => page(
+                state.entryVisible
+                    ? () => unawaited(context.push(AppRoutes.localExport))
+                    : null,
+              ),
             );
           },
         ),

@@ -415,7 +415,7 @@
       }
     }
   },
-  "backupBlockAcquisitions": "{count, plural, =1{1 bloc acquis} other{{count} blocs acquis}}",
+  "backupBlockAcquisitions": "{count, plural, =0{0 bloc acquis} =1{1 bloc acquis} other{{count} blocs acquis}}",
   "@backupBlockAcquisitions": {
     "placeholders": {
       "count": {
@@ -1144,7 +1144,7 @@
       }
     }
   },
-  "backupSeasons": "{count, plural, =1{1 saison} other{{count} saisons}}",
+  "backupSeasons": "{count, plural, =0{0 saison} =1{1 saison} other{{count} saisons}}",
   "@backupSeasons": {
     "placeholders": {
       "count": {
@@ -1152,7 +1152,7 @@
       }
     }
   },
-  "backupStudents": "{count, plural, =1{1 élève} other{{count} élèves}}",
+  "backupStudents": "{count, plural, =0{0 élève} =1{1 élève} other{{count} élèves}}",
   "@backupStudents": {
     "placeholders": {
       "count": {
@@ -1160,7 +1160,7 @@
       }
     }
   },
-  "backupGroups": "{count, plural, =1{1 groupe} other{{count} groupes}}",
+  "backupGroups": "{count, plural, =0{0 groupe} =1{1 groupe} other{{count} groupes}}",
   "@backupGroups": {
     "placeholders": {
       "count": {
@@ -1168,7 +1168,7 @@
       }
     }
   },
-  "backupSessionRecords": "{count, plural, =1{1 séance donnée} other{{count} séances données}}",
+  "backupSessionRecords": "{count, plural, =0{0 séance donnée} =1{1 séance donnée} other{{count} séances données}}",
   "@backupSessionRecords": {
     "placeholders": {
       "count": {
@@ -1176,7 +1176,7 @@
       }
     }
   },
-  "backupAttempts": "{count, plural, =1{1 passage} other{{count} passages}}",
+  "backupAttempts": "{count, plural, =0{0 passage} =1{1 passage} other{{count} passages}}",
   "@backupAttempts": {
     "placeholders": {
       "count": {
@@ -1184,7 +1184,7 @@
       }
     }
   },
-  "backupAssessments": "{count, plural, =1{1 bilan} other{{count} bilans}}",
+  "backupAssessments": "{count, plural, =0{0 bilan} =1{1 bilan} other{{count} bilans}}",
   "@backupAssessments": {
     "placeholders": {
       "count": {
@@ -1192,7 +1192,7 @@
       }
     }
   },
-  "backupPlannedSessions": "{count, plural, =1{1 séance planifiée} other{{count} séances planifiées}}",
+  "backupPlannedSessions": "{count, plural, =0{0 séance planifiée} =1{1 séance planifiée} other{{count} séances planifiées}}",
   "@backupPlannedSessions": {
     "placeholders": {
       "count": {
@@ -3041,7 +3041,7 @@
   "guideFoldLink": "Lien avec la séance précédente",
   "guideFoldAdaptation": "Adaptation à ce public",
   "guideBottomBarLabel": "Se déplacer dans la séance",
-  "updateBannerMessage": "Une nouvelle version est disponible. Vos données enregistrées sont conservées.",
+  "updateBannerMessage": "Une nouvelle version est disponible. Vos données enregistrées sont conservées, et celles de cet appareil restent exportables.",
   "updateBannerAction": "Mettre à jour",
   "updateBannerLater": "Plus tard",
   "groupsNew": "Nouveau groupe",
@@ -3416,7 +3416,7 @@
   "closureDoneSeasons": "Voir les saisons passées",
   "closureDoneHome": "Retour à Aujourd’hui",
   "backupClosureNote": "Si ce fichier date d’avant la clôture d’une saison de ce club, il est refusé : l’importer rétablirait des élèves effacés.",
-  "backupSeasonArchives": "{count, plural, =1{1 archive de saison close} other{{count} archives de saisons closes}}",
+  "backupSeasonArchives": "{count, plural, =0{0 archive de saison close} =1{1 archive de saison close} other{{count} archives de saisons closes}}",
   "@backupSeasonArchives": {
     "placeholders": {
       "count": {
@@ -4045,7 +4045,7 @@
   "importProblemStudentBeingErased": "Un élève du fichier est en cours d’effacement dans ce club.",
   "importProblemPlanChanged": "Un import de ce fichier est commencé avec d’autres choix : reprenez-le avec les mêmes choix.",
   "importProblemRoleDenied": "Votre rôle n’a pas le droit d’écrire cela dans ce club.",
-  "importWarningStaleFile": "Ce fichier a {days} jours : le travail fait depuis son export n’y figure pas.",
+  "importWarningStaleFile": "Les dernières données de ce fichier datent d’il y a {days} jours : ce qui a été saisi ensuite n’y figure pas.",
   "@importWarningStaleFile": {"placeholders": {"days": {"type": "int"}}},
   "importWarningLargeImport": "Cet import est long : il sera fractionné sur {days} jours.",
   "@importWarningLargeImport": {"placeholders": {"days": {"type": "int"}}},
@@ -4074,12 +4074,12 @@
   "importUnverifiableNotice": "{count, plural, =1{1 fiche d’élève sera créée sans que vous puissiez vérifier qu’elle n’existe pas déjà hors de vos groupes : si elle existe, le lot est refusé en entier et un directeur doit importer.} other{{count} fiches d’élèves seront créées sans que vous puissiez vérifier qu’elles n’existent pas déjà hors de vos groupes : si l’une existe, le lot est refusé en entier et un directeur doit importer.}}",
   "@importUnverifiableNotice": {"placeholders": {"count": {"type": "int"}}},
   "moreMigrate": "Migrer mes données locales",
-  "moreMigrateHint": "Importer dans le club une sauvegarde de l’ancienne version",
-  "backupClubImportHint": "Les données de ce club sont sur le serveur : une sauvegarde de l’ancienne version s’importe depuis « Importer dans le club ».",
+  "moreMigrateHint": "Importer dans le club le fichier exporté de vos données locales",
+  "backupClubImportHint": "Les données de ce club sont sur le serveur : le fichier exporté de vos données locales s’importe depuis « Importer dans le club ».",
   "backupClubImportOpen": "Importer dans le club",
   "clubImportTitle": "Importer dans le club",
   "clubImportGuideTitle": "Migrer mes données locales",
-  "clubImportGuideStep1": "1. Dans l’ancienne version de l’application, ouvrez « Sauvegarde » et exportez un fichier.",
+  "clubImportGuideStep1": "1. Si ce n’est pas déjà fait, dans cette application, ouvrez « Plus », « Exporter mes données locales », vérifiez les nombres affichés et enregistrez le fichier.",
   "clubImportGuideStep2": "2. Ici, choisissez ce fichier : il est contrôlé en entier avant que quoi que ce soit soit écrit.",
   "clubImportGuideStep3": "3. Le même compte ne ré-importe pas deux fois le même fichier ; un autre compte le pourrait, mais n’écraserait rien. Si l’import s’arrête, relancez-le avec le même fichier, le même compte et les mêmes choix : il reprend où il s’était arrêté.",
   "clubImportPrivacyNote": "Le fichier peut contenir des données d’enfants : son contenu est envoyé au club (serveur) et l’application n’en garde pas de copie.",
@@ -4094,7 +4094,7 @@
   "clubImportReportCounts": "Contenu du fichier",
   "clubImportReportMore": "{count, plural, =1{et 1 autre problème} other{et {count} autres problèmes}}",
   "@clubImportReportMore": {"placeholders": {"count": {"type": "int"}}},
-  "clubImportReportBlocked": "L’import est impossible tant que ces problèmes demeurent. Exportez à nouveau le fichier depuis l’ancienne version, ou choisissez un autre fichier.",
+  "clubImportReportBlocked": "L’import est impossible tant que ces problèmes demeurent. Exportez à nouveau le fichier avec « Exporter mes données locales » dans cette application, ou choisissez un autre fichier.",
   "clubImportAlreadyImported": "Ce fichier est déjà entièrement importé par ce compte dans ce club : il n’y a rien à faire.",
   "clubImportStarted": "Un import de ce fichier par ce compte est commencé : {done} lots sur {total}. Refaites les mêmes choix pour le reprendre.",
   "@clubImportStarted": {"placeholders": {"done": {"type": "int"}, "total": {"type": "int"}}},
@@ -4169,5 +4169,36 @@
   "@clubImportDoneBody": {"placeholders": {"writes": {"type": "int"}, "lots": {"type": "int"}}},
   "clubImportDoneNote": "Gardez le fichier en lieu sûr : il contient des données d’enfants. Ce compte ne peut pas le ré-importer ; un autre compte le pourrait, mais n’écraserait rien.",
   "clubImportFinish": "Terminer",
-  "clubImportSameChoices": "Un import de ce fichier est commencé : pour le reprendre, faites exactement les mêmes choix qu’au départ."
+  "clubImportSameChoices": "Un import de ce fichier est commencé : pour le reprendre, faites exactement les mêmes choix qu’au départ.",
+  "localExportTitle": "Exporter mes données locales",
+  "localExportBack": "Retour",
+  "localExportFileName": "donnees-locales-billard-{date}.json",
+  "@localExportFileName": {"placeholders": {"date": {"type": "String"}}},
+  "localExportIntro": "Cette application garde encore, sur cet appareil, les données saisies avant le passage au club. Ce fichier permet de les importer dans le club. Rien n’est modifié ni supprimé sur l’appareil.",
+  "localExportPrivacy": "Ces données sont sur l’appareil, pas dans un compte : cet écran est accessible sans se connecter. Sur un appareil partagé, toute personne qui l’utilise peut les exporter.",
+  "localExportReading": "Lecture des données de cet appareil…",
+  "localExportContentsTitle": "Ce que contient le fichier",
+  "localExportEmpty": "Ce fichier est vide : exportez depuis l’endroit où vous avez saisi (onglet du navigateur ou application installée). Sur iPhone, l’application installée a un stockage séparé de celui de Safari.",
+  "localExportSave": "Enregistrer le fichier",
+  "localExportSaved": "Fichier enregistré : {students}, {attempts}. Vérifiez que le fichier est bien dans vos téléchargements avant d’aller plus loin, puis gardez-le hors de l’appareil (clé, ordinateur) : il contient des prénoms d’enfants. Connectez-vous ensuite, puis ouvrez « Plus », « Migrer mes données locales ».",
+  "@localExportSaved": {"placeholders": {"students": {"type": "String"}, "attempts": {"type": "String"}}},
+  "localExportCancelled": "Enregistrement annulé : aucun fichier n’a été enregistré.",
+  "localExportNewer": "Ces données ont été écrites par une version plus récente de l’application. Pour ne rien altérer, l’export est refusé : mettez l’application à jour, ou ouvrez-la depuis la version qui les a écrites.",
+  "localExportUnreadable": "Les données de cet appareil n’ont pas pu être lues. Rien n’a été modifié. Réessayez ; si cela persiste, exportez depuis l’endroit où vous avez saisi (autre onglet ou application installée) et prévenez la personne qui gère l’application.",
+  "localExportMigrated": "Ces données venaient d’une version plus ancienne : l’application les a mises à niveau à l’ouverture, sans rien supprimer.",
+  "localExportRetry": "Relire les données",
+  "localDataBannerMessage": "Des données de cet appareil n’ont pas encore été exportées ou importées dans le club ({students}, {attempts}).",
+  "@localDataBannerMessage": {"placeholders": {"students": {"type": "String"}, "attempts": {"type": "String"}}},
+  "localDataBannerUnknown": "Des données de cet appareil n’ont peut-être pas encore été exportées ou importées dans le club.",
+  "localDataBannerExport": "Exporter maintenant",
+  "localDataBannerDone": "J’ai importé mes données dans le club",
+  "localDataDoneTitle": "Masquer ce rappel ?",
+  "localDataDoneBody": "Confirmez seulement si vous avez importé vos données dans le club et vérifié vos fiches. Rien n’est supprimé sur l’appareil : l’export reste disponible dans « Plus ».",
+  "localDataDoneConfirm": "Oui, masquer le rappel",
+  "localDataDoneUnsentTitle": "Des modifications ne sont pas encore envoyées",
+  "localDataDoneUnsentBody": "Votre import n’a pas fini d’arriver dans le club (appareil hors ligne ?). Attendez que l’envoi en attente soit terminé, puis recommencez : se déconnecter d’ici là ferait perdre ces données.",
+  "localDataDoneUnsentOk": "Compris",
+  "moreLocalExport": "Exporter mes données locales",
+  "moreLocalExportHint": "Enregistrer un fichier des données encore présentes sur cet appareil",
+  "localExportSaveFailed": "Le fichier n’a pas pu être enregistré. Les données de l’appareil n’ont pas été modifiées. Réessayez."
 }

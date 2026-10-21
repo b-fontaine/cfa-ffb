@@ -1,4 +1,5 @@
 import 'package:billard_cfa/features/backup_data/domain/backup_snapshot.dart';
+import 'package:billard_cfa/shared/lib/local_data_inventory.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'import_summary.freezed.dart';
@@ -36,4 +37,19 @@ abstract class ImportSummary with _$ImportSummary {
     seasonArchives: snapshot.seasonArchives.length,
     settings: snapshot.settings != null,
   );
+
+  /// Le fichier ne contient rien que l'animateur ait saisi (les saisons et les
+  /// réglages seuls ne sont pas un contenu à importer) : même définition que
+  /// la détection des données de l'appareil, [LocalDataCounts.hasContent].
+  bool get holdsNothing => !LocalDataCounts(
+    students: students,
+    groups: groups,
+    seasons: seasons,
+    sessionRecords: sessionRecords,
+    attempts: attempts,
+    plannedSessions: plannedSessions,
+    assessments: assessments,
+    blockAcquisitions: blockAcquisitions,
+    seasonArchives: seasonArchives,
+  ).hasContent;
 }

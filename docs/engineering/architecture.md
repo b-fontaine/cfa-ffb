@@ -153,6 +153,10 @@ app/
 │   │                                  # ImportIntegrity, ClubImportRunner (lots), port ClubImportStore (implémenté dans
 │   │                                  # `app/`, voir ci-dessous), ImportDailyLedger (plafond quotidien, data :
 │   │                                  # KeyValueImportDailyLedger), UnsupportedClubImportStore (drift)
+│   │                                  # FB7c : ExportLocalBackup + BackupSnapshotReader (export de la base locale en
+│   │                                  # lecture seule), port LocalDataProbe (data : StartupLocalDataProbe), LocalDataNoticeCubit
+│   │                                  # (bandeau, un seul exemplaire), LocalExportCubit, LocalExportView, LocalDataBanner
+│   │                                  # et LocalDataNoticeFrame ; page pages/local_export, route /local-export (ouverte sans compte)
 │   └── shared/
 │       ├── lib/                       # noyau Dart pur : Audience, identifiants typés,
 │       │                              # ExerciseRef, SuccessRate, RulesConfig,
@@ -161,7 +165,10 @@ app/
 │       │                              # CurrentUser, ActiveClubScope (ClubId, Role), ClubSwitchGuard, KeyValueStore (FB2) ;
 │       │                              # FB3 : InvitationCode, Capability/RolePolicy, ClubSession, field_limits ;
 │       │                              # FB7 : document_ids (identifiants déterministes partagés par ClubPaths et le plan), sha256
+│       │                              # FB7c : LocalDataInventory (relevé de la base locale : absente, présente, plus récente, illisible)
 │       ├── persistence/               # base drift (SQLite) : tables, AppDatabase,
+│       │                              # FB7c : local_store_probe (+ ouvreurs natif et web) : relevé de la base locale SANS la créer,
+│       │                              # la migrer ni y écrire, appelé par main() avant l'ouverture de la base ;
 │       │                              # ouverture natif/web, unité de travail ; FB3 : DocumentStore (port Firestore),
 │       │                              # InMemoryDocumentStore, guardStore ; FB4 : ClubPaths, ClubStore (club résolu à chaque appel),
 │       │                              # DocumentValues (lecture des champs), DocumentStore.query (égalité, AllEqual, array-contains-any),

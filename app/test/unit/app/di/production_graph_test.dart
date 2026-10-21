@@ -22,22 +22,30 @@ import 'package:billard_cfa/entities/invitation/domain/invitation_code_source.da
 import 'package:billard_cfa/entities/membership/data/store_memberships_source.dart';
 import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
+import 'package:billard_cfa/entities/student/data/in_memory_student_repository.dart';
+import 'package:billard_cfa/entities/student/domain/student.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/features/backup_data/data/file_picker_backup_files.dart';
 import 'package:billard_cfa/features/backup_data/data/in_memory_backup_files.dart';
+import 'package:billard_cfa/features/backup_data/data/startup_local_data_probe.dart';
 import 'package:billard_cfa/features/backup_data/domain/backup_files.dart';
 import 'package:billard_cfa/features/backup_data/domain/export_backup.dart';
+import 'package:billard_cfa/features/backup_data/domain/export_local_backup.dart';
+import 'package:billard_cfa/features/backup_data/domain/local_data_probe.dart';
 import 'package:billard_cfa/features/export_sheet/data/pdf_print_renderer.dart';
 import 'package:billard_cfa/features/export_sheet/domain/pdf_files.dart';
 import 'package:billard_cfa/features/export_sheet/domain/print_renderer.dart';
 import 'package:billard_cfa/features/export_sheet/presentation/bloc/export_sheet_cubit.dart';
 import 'package:billard_cfa/features/run_sheet/presentation/bloc/fullscreen_cubit.dart';
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
+import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/current_user.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/fullscreen_controller.dart';
 import 'package:billard_cfa/shared/lib/id_generator.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:billard_cfa/shared/lib/key_value_store.dart';
+import 'package:billard_cfa/shared/lib/local_data_inventory.dart';
 import 'package:billard_cfa/shared/lib/storage_status.dart';
 import 'package:billard_cfa/shared/lib/unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/document_store.dart';
@@ -48,6 +56,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' show Environment;
+
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
@@ -221,4 +230,51 @@ void main() {
     expect(getIt<KeyValueStore>(), isA<InMemoryKeyValueStore>());
     expect(getIt<SessionStartup>(), isA<InMemorySessionStartup>());
   });
+
+  test('production serves the start-up reading of the local base', () async {
+    const found = LocalDataInventory(
+      state: LocalStoreState.present,
+      schemaVersion: 12,
+      counts: LocalDataCounts(students: 6, attempts: 72),
+    );
+    await configureDependencies(
+      settings: DatabaseSettings(
+        native: DriftNativeOptions(
+          databaseDirectory: () async => directory,
+          tempDirectoryPath: () async => directory.path,
+        ),
+      ),
+      localData: found,
+    );
+
+    final probe = getIt<LocalDataProbe>();
+
+    expect(probe, isA<StartupLocalDataProbe>());
+    expect(await probe.inspect(), same(found));
+  });
+
+  test(
+    'the local export reads drift even when the club is elsewhere',
+    () async {
+      await configureProduction();
+      await getIt<DriftStudentRepository>().save(
+        Student.enroll(
+          id: const StudentId('s1'),
+          firstName: 'Léa',
+          audience: Audience.children,
+          since: DateTime(2026, 9),
+        ),
+      );
+      // Le build Firestore : le dépôt de l'application est celui du club (ici
+      // vide), la base locale reste lisible par l'export.
+      await getIt.unregister<StudentRepository>();
+      getIt.registerSingleton<StudentRepository>(InMemoryStudentRepository());
+
+      final result = await getIt<ExportLocalBackup>()();
+
+      final local = (result as Ok<LocalBackup>).value;
+      expect(local.summary.students, 1);
+      expect(local.content, contains('Léa'));
+    },
+  );
 }

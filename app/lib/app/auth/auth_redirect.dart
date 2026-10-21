@@ -68,6 +68,7 @@ String? authRedirect(AuthState state, Uri location) {
       : safeReturnAddress(location.toString());
   String? to(String target) =>
       path == target ? null : AppRoutes.withFrom(target, origin);
+  if (path == AppRoutes.localExport && _localExportOpen(state)) return null;
   return switch (state) {
     AuthUnknown() =>
       code == null
@@ -92,6 +93,16 @@ String? authRedirect(AuthState state, Uri location) {
           : roleRedirect(state, location),
   };
 }
+
+/// L'export des données locales (FB7c) est ouvert **sans compte** : ces
+/// données sont celles de l'appareil et ne dépendent d'aucun compte. Hors
+/// d'une session connue (démarrage) et pour un compte sans accès, la route
+/// suit le chemin ordinaire ; un parent ou un élève n'y a pas accès.
+bool _localExportOpen(AuthState state) => switch (state) {
+  AuthSignedOut() || AuthNoClub() || AuthIndisponible() => true,
+  AuthReady(:final club) => club.role.animates,
+  _ => false,
+};
 
 String? _signedOut(Uri location, String? origin, String? code) {
   final path = location.path;

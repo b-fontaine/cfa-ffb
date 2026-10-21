@@ -108,6 +108,9 @@ step "Règles Firestore (refus par défaut, contre l'émulateur ; échec si Node
 step "Build web compilé contre l'émulateur Auth (fumée navigateur ; échec si Node, Java, npm ci ou Chrome manquent)"
 "$ROOT/scripts/web_smoke.sh" --build
 
+step "Données locales relevées par le build web firestore (Chrome réel, deux builds, émulateur Auth ; échec si Node, Java, npm ci ou Chrome manquent)"
+"$ROOT/scripts/local_data_web.sh"
+
 step "Application + émulateurs Auth et Firestore + graine (parcours navigateur ; échec si Node, Java, npm ci, Chrome ou Flutter manquent)"
 "$ROOT/scripts/emulator_e2e.sh"
 

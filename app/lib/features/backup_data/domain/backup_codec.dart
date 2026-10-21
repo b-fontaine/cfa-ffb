@@ -48,11 +48,16 @@ class BackupCodec {
   /// Versions que [decode] sait lire.
   static const supportedVersions = {1, 2, 3, 4, 5};
 
-  String encode(BackupSnapshot snapshot, {required DateTime exportedAt}) {
+  /// [exportedAt] est la date que porte le fichier : l'heure de l'export pour
+  /// une sauvegarde, la dernière modification réelle des données pour un
+  /// export de la base locale (T2). `null` : le fichier n'est pas daté (le
+  /// lecteur le sait déjà : `exportedAt` est facultatif à la lecture).
+  String encode(BackupSnapshot snapshot, {required DateTime? exportedAt}) {
     final document = <String, Object?>{
       'format': format,
       'schemaVersion': currentVersion,
-      'exportedAt': exportedAt.toUtc().toIso8601String(),
+      if (exportedAt != null)
+        'exportedAt': exportedAt.toUtc().toIso8601String(),
       'data': const BackupEncoder().encode(snapshot),
     };
     return const JsonEncoder.withIndent('  ').convert(document);

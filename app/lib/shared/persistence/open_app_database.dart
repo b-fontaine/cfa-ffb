@@ -6,6 +6,11 @@ import 'package:drift_flutter/drift_flutter.dart';
 /// sur le web.
 const appDatabaseName = 'billard_cfa';
 
+/// Fichiers WebAssembly de drift servis depuis `web/` (ouverture et détection
+/// de la base locale, voir `local_store_probe.dart`).
+const sqlite3WasmPath = 'sqlite3.wasm';
+const driftWorkerPath = 'drift_worker.js';
+
 /// Réglages d'ouverture de la base (surchargeables dans les tests).
 class DatabaseSettings {
   const DatabaseSettings({this.native});
@@ -29,8 +34,8 @@ AppDatabase openAppDatabase({
     name: appDatabaseName,
     native: settings.native,
     web: DriftWebOptions(
-      sqlite3Wasm: Uri.parse('sqlite3.wasm'),
-      driftWorker: Uri.parse('drift_worker.js'),
+      sqlite3Wasm: Uri.parse(sqlite3WasmPath),
+      driftWorker: Uri.parse(driftWorkerPath),
       onResult: status.recordWebResult,
     ),
   ),

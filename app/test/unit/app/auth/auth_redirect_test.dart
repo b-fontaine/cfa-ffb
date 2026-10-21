@@ -445,4 +445,55 @@ void main() {
       });
     }
   });
+
+  // FB7c : les données locales de l'appareil ne dépendent d'aucun compte.
+  group('local data export', () {
+    const path = '/local-export';
+
+    test('is open without an account, with no club and when unavailable', () {
+      expect(_go(const AuthSignedOut(), path), isNull);
+      expect(_go(_noClub, path), isNull);
+      expect(_go(const AuthIndisponible(), path), isNull);
+    });
+
+    test('is open to an animator with a session', () {
+      expect(_go(_ready, path), isNull);
+      for (final role in [Role.teacher, Role.director, Role.admin]) {
+        final ready = AuthReady(
+          account: _account,
+          club: ClubMembership(
+            clubId: const ClubId('nice'),
+            clubName: 'Club Nice',
+            role: role,
+          ),
+          choices: const [_club],
+        );
+        expect(_go(ready, path), isNull, reason: role.name);
+      }
+    });
+
+    test('is not open to a parent or a student', () {
+      for (final role in [Role.guardian, Role.student]) {
+        final ready = AuthReady(
+          account: _account,
+          club: ClubMembership(
+            clubId: const ClubId('nice'),
+            clubName: 'Club Nice',
+            role: role,
+          ),
+          choices: const [_club],
+        );
+        expect(_go(ready, path), '/my-children', reason: role.name);
+      }
+    });
+
+    test('is not open to a refused account', () {
+      expect(_go(const AuthAccessDenied(), path), startsWith('/access-denied'));
+    });
+
+    test('waits for the session to be known, then comes back to it', () {
+      expect(_go(const AuthUnknown(), path), '/splash?from=%2Flocal-export');
+      expect(_go(_ready, '/sign-in?from=%2Flocal-export'), '/local-export');
+    });
+  });
 }

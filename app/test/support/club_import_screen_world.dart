@@ -94,7 +94,10 @@ class ImportScreenWorld {
   /// Choisit le fichier courant du monde dans le sélecteur de fichiers.
   static Future<void> pick(WidgetTester tester) async {
     files.nextPick = world.content;
-    await tester.tap(find.text('Choose a backup file'));
+    final button = find.text('Choose a backup file');
+    await tester.ensureVisible(button);
+    await tester.pumpAndSettle();
+    await tester.tap(button);
     await tester.pumpAndSettle();
   }
 

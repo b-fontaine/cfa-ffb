@@ -40,6 +40,7 @@ import 'package:billard_cfa/widgets/roster_picker/presentation/roster_picker.dar
 import 'package:billard_cfa/widgets/roster_picker/presentation/roster_selection_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/preview_world.dart';
 
@@ -228,6 +229,9 @@ Widget buildExerciseSheetPageUseCase(BuildContext context) => WorldScope(
 @widgetbook.UseCase(name: 'Plus', type: MorePage, path: _path)
 Widget buildMorePageUseCase(BuildContext context) => MorePage(
   onOpenBackup: () {},
+  onOpenLocalExport: context.knobs.boolean(label: 'Données locales à exporter')
+      ? () {}
+      : null,
   onOpenSettings: () {},
   onOpenSeasons: () {},
   account: AccountSection(

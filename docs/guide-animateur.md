@@ -28,7 +28,9 @@ La version web se prépare une fois, avec du réseau :
 À savoir :
 
 - Vos données (élèves, résultats) sont **dans le navigateur de l'appareil** ;
-  elles ne passent pas par un serveur. Effacer les données du site ou changer
+  elles ne passent pas par un serveur (tant que le club n'est pas passé sur le
+  serveur partagé : après, les données du club y sont, celles de l'appareil
+  restent locales jusqu'au retrait de l'ancienne base). Effacer les données du site ou changer
   d'appareil les perd : exportez une sauvegarde (voir **Sauvegarder vos
   données**). Sur iPhone, installer l'application sur l'écran d'accueil
   protège mieux les données qu'un onglet Safari laissé plusieurs jours sans
@@ -37,8 +39,11 @@ La version web se prépare une fois, avec du réseau :
   version est disponible** apparaît en haut des écrans principaux. **Mettre à
   jour** recharge l'application ; **Plus tard** le masque. Elle n'est jamais
   appliquée toute seule, et le bandeau n'apparaît pas pendant le guide ni la
-  présentation. Évitez de mettre à jour au milieu d'une séance guidée : l'étape
-  en cours et les compteurs pas encore enregistrés sont perdus au rechargement.
+  présentation. Une mise à jour **ne supprime aucune donnée** : celles de
+  l'appareil sont conservées et restent exportables (voir **Exporter mes
+  données locales**). Évitez de mettre à jour au milieu d'une séance guidée :
+  l'étape en cours et les compteurs pas encore enregistrés sont perdus au
+  rechargement.
 - Le plein écran n'est pas proposé sur iPhone (le navigateur ne le permet pas).
 
 ## Aujourd'hui : l'écran d'ouverture
@@ -489,34 +494,100 @@ disparaît dès qu'un export a été enregistré (un export annulé ne compte pa
   mémoire** (navigateur sans stockage durable), exportez une sauvegarde avant
   de fermer l'onglet : sinon elles seraient perdues.
 
-## Migrer mes données locales vers le club
+## Exporter mes données locales, puis les migrer vers le club
 
-*(Version où les données du club sont sur le serveur ; texte à valider avec la
-notice d'information.)* Si vous avez saisi des séances et des résultats dans
-l'ancienne version, qui gardait tout sur l'appareil, vous les reprenez en une
-fois. **Exportez JUSTE avant la mise en ligne de la nouvelle version, et ne
-saisissez plus rien dans l'ancienne version entre cet export et la mise en
-ligne** : la nouvelle version remplace l'ancienne à la même adresse, on ne peut
-plus y exporter, et ce que vous auriez saisi après l'export n'est dans aucun
-fichier. Le **fichier exporté est votre seul repli garanti** : les données du
-navigateur sont un repli au mieux (Safari sur iPhone efface le stockage d'un
-onglet resté plusieurs jours fermé, et le navigateur peut refuser de le
-protéger). Sur iPhone, installez l'application sur l'écran d'accueil et ouvrez-la
-régulièrement pendant la période de migration. **Si le bandeau « Mettre à jour »
-apparaît et que vous n'avez pas encore exporté, touchez « Plus tard » et
-exportez d'abord.** L'import doit avoir lieu au plus 31 jours après l'export.
-L'import ne modifie pas les données du navigateur.
+*(Version où les données du club sont sur le serveur ; textes à valider avec la
+notice d'information.)* Ce que vous avez saisi avant le passage au club **reste
+sur l'appareil** (dans le navigateur, ou dans l'application installée) : la
+nouvelle version **ne l'efface pas**, et elle permet de **l'exporter puis de
+l'importer dans le club**. Rien ne dépend d'une date : vous le faites quand vous
+êtes prêt, mais **pas trop tard** (voir « Ce qu'il faut savoir » plus bas).
 
-1. Dans **l'ancienne version**, ouvrez **Plus**, **Sauvegarde**, et exportez un
-   fichier. Gardez-le **hors de l'appareil** (clé, ordinateur) et en lieu sûr :
-   il contient des prénoms d'enfants. Le directeur importe en premier, puis
-   chaque enseignant avec son propre fichier.
-2. Dans la nouvelle version (reconnectez-vous), ouvrez **Plus**,
-   **Migrer mes données locales** (ou **Importer dans le club**), puis **Choisir un fichier de sauvegarde**.
+**Comment savoir s'il reste des données sur cet appareil.** Un **bandeau**
+apparaît en haut de l'écran : « Des données de cet appareil n'ont pas encore été
+exportées ou importées dans le club (12 élèves, 240 passages) ». Il porte le
+bouton **Exporter maintenant** et, une fois connecté et la base lue, **J'ai
+importé mes données dans le club**. Si l'application **ne parvient pas à lire**
+la base (message « peut-être pas encore exportées », base écrite par une version
+plus récente), ce bouton **n'existe pas** : on ne peut pas confirmer un import
+dont on ne connaît pas le contenu ; touchez **Relire les données**. Le repère est lié à **votre compte sur cet appareil** et au
+contenu relevé : sur un appareil partagé, un collègue qui n'a rien importé revoit
+le bandeau, même si vous avez confirmé ; si des données s'ajoutent ensuite (un
+ancien onglet resté ouvert), le bandeau **revient**, mais **seulement à la
+prochaine ouverture de l'application** : le relevé est pris au démarrage et
+n'est pas refait pendant que l'application reste ouverte. L'application **refuse** de
+masquer le bandeau tant que des modifications attendent d'être envoyées au club
+(appareil hors ligne) : attendez la fin de l'envoi, puis recommencez. **Pas de
+bandeau ne veut pas dire que vous n'avez rien perdu** : cela veut dire qu'il n'y
+a **rien que l'application sache lister à cet endroit**, ou que **vous avez
+déjà confirmé** sur cet appareil (élèves, groupes,
+séances, passages, bilans, blocs acquis, archives de saisons ; les séances
+guidées en cours ne comptent pas, **terminez-les avant la mise à jour**).
+Vérifiez aussi **l'adresse** : un autre domaine (adresse personnalisée,
+`web.app`, canal de prévisualisation) a un stockage différent et ne montre
+aucun bandeau. Si vous saisissiez ailleurs (un autre navigateur, ou
+l'application installée sur l'écran d'accueil, dont le stockage est séparé),
+ouvrez-la **depuis cet endroit-là**. Safari sur iPhone, ou un nettoyage de
+l'appareil, peut effacer le stockage d'un site resté plusieurs jours sans visite
+**avant** que vous ouvriez la nouvelle version : le message de prévenance du
+directeur est alors votre seule protection, ouvrez l'application sans attendre.
+**Sur un appareil partagé** : l'export ne dépend d'aucun compte (limite
+assumée, signalée au DPO) ; chacun voit les compteurs et peut exporter le
+fichier complet (tous les groupes, prénoms d'enfants compris), donc ne laissez
+pas l'appareil ouvert.
+
+**Conduite pendant la migration** (points relevés par la contre-relecture, **pas
+encore tous résolus** : voir la liste « Prérequis bloquants avant la bascule »
+de la feuille de route).
+- **Appareil partagé** : un enseignant n'importe que **ses** groupes. Ce qui
+  appartient à un tiers n'est alors importé par personne, même si chacun a
+  confirmé : le **directeur ou l'administrateur importe le fichier complet de
+  l'appareil**, et la confirmation est recueillie **par appareil**.
+- **Compte présent dans deux clubs** : le repère « J'ai importé » porte le
+  compte, pas le club. Importez dans **chaque** club les groupes qui lui
+  appartiennent **avant** de confirmer.
+- **Doublons d'élèves** : un même enfant saisi par le directeur et par un
+  enseignant, ou dans un onglet et dans l'application installée, a deux
+  identifiants, donc **deux fiches** après deux imports, sans avertissement.
+  Avant la migration, ne saisissez un enfant que dans **une seule** base ;
+  après l'import, repérez les doublons.
+- **Entre le déploiement et votre import** : ne saisissez **pas** dans le club.
+  Notez sur papier, ou saisissez **après** l'import.
+- **Aucune clôture de saison dans le club** pendant la période de bascule : un
+  fichier exporté depuis un ancien onglet resté ouvert serait daté après la
+  clôture et passerait pour récent.
+- **iPhone** : l'export (Safari **et** application installée) n'a pas encore été
+  éprouvé sur un iPhone réel ; essayez-le tôt et vérifiez que le fichier est
+  bien dans vos téléchargements.
+
+**Avant d'importer : ne saisissez rien dans le club.** Un élève recréé à la
+main dans le club n'a pas le même identifiant que celui du fichier : l'import ne
+les fusionne jamais, vous auriez **deux fiches** pour le même enfant. Si c'est
+déjà fait, retirez d'abord du club la fiche recréée à la main (notez ce qui y
+avait été saisi), puis importez ; si l'import est déjà fait, effacez la fiche
+créée à la main et reportez ce qui n'était que sur elle. **Terminez aussi vos
+séances guidées en cours** : elles ne sont ni dans l'export ni dans la
+sauvegarde.
+
+1. **Exporter.** Touchez **Exporter maintenant** (ou **Plus**, puis **Exporter
+   mes données locales**, ou, sans compte, le même bouton sur l'écran de
+   connexion : ces données sont celles de l'appareil et ne dépendent d'aucun
+   compte ; sur un appareil partagé, toute personne qui l'utilise peut les
+   exporter). L'application **lit** les données sans rien modifier et vous
+   **montre ce que contiendra le fichier** : nombre d'élèves, de groupes, de
+   séances, de passages. **Contrôlez ces nombres avant d'enregistrer.** Si tout
+   est à zéro, l'écran dit « Ce fichier est vide : exportez depuis l'endroit où
+   vous avez saisi (onglet du navigateur ou application installée) » et ne
+   propose pas d'enregistrer : sur iPhone, l'application installée a un
+   stockage **séparé** de celui de Safari. Sinon, **Enregistrer le fichier**.
+   Gardez-le **hors de l'appareil** (clé, ordinateur) et en lieu sûr : il
+   contient des prénoms d'enfants. Rien n'est supprimé sur l'appareil.
+2. **Se connecter**, puis **Plus**, **Migrer mes données locales**, **Choisir un
+   fichier de sauvegarde**. Le directeur importe en premier, puis chaque
+   enseignant avec son propre fichier, dans ses groupes.
 3. Lisez le **rapport** : le fichier est contrôlé en entier avant que quoi que
-   ce soit soit écrit. Un fichier refusé dit pourquoi, sans prénom ; choisissez-en
-   un autre. Si vous n'en avez pas, prévenez la personne qui gère l'application :
-   elle peut remettre l'ancienne version le temps d'un nouvel export.
+   ce soit soit écrit. Un fichier refusé dit pourquoi, sans prénom ; refaites
+   l'export avec **Exporter mes données locales**, ou choisissez un autre fichier.
 4. **Groupes** : pour chaque groupe du fichier, créez-le dans le club (directeur
    et administrateur) ou associez-le à un groupe existant. Rien n'est fusionné
    sans votre accord. Un enseignant n'importe que dans ses groupes.
@@ -524,33 +595,69 @@ L'import ne modifie pas les données du navigateur.
    ignorez-le. Rien n'est deviné.
 6. **Confirmations** : si le fichier est antérieur à une clôture de saison, des
    élèves effacés pourraient être rétablis ; l'écran donne leur nombre exact et
-   vous le confirmez. Un enseignant confirme aussi le nombre de fiches qu'il ne
+   vous le confirmez. La date d'un fichier exporté de l'appareil est celle de
+   la **dernière modification** de ses données (pas celle de l'export) ; une
+   base sans aucune date donne un fichier sans date, traité comme antérieur à
+   toute clôture. Un enseignant confirme aussi le nombre de fiches qu'il ne
    peut pas vérifier (si l'une existe déjà hors de ses groupes, le serveur
    refuse le lot et un directeur doit importer).
 7. Le **récapitulatif** donne le nombre d'écritures, de lots et de jours, puis
    **Importer maintenant**. Vous pouvez **arrêter après ce lot**.
+8. **Vérifiez** : les nombres du rapport de fin, quelques fiches d'élèves, un
+   groupe. **Ensuite seulement**, touchez **J'ai importé mes données dans le
+   club** dans le bandeau (une confirmation est demandée) : le bandeau disparaît
+   **de cet appareil**. L'export reste disponible dans **Plus**, et rien n'est
+   supprimé. Prévenez le directeur : il recueille la confirmation de chacun.
 
 Le **même compte** ne ré-importe pas deux fois le même fichier ; un autre
-compte le pourrait, mais n'écraserait rien de ce qui est déjà dans le club. Si l'import s'arrête
-(réseau coupé, plafond du jour atteint, arrêt demandé), rien n'est perdu : il reprend
-tout seul au retour du réseau, ou rouvrez l'écran **le lendemain** avec **le même
-fichier, le même compte et les mêmes choix de groupes** ; il repart du lot où il
-s'était arrêté. Un gros fichier peut demander plusieurs jours : le serveur limite
-les écritures par jour.
+compte le pourrait, mais n'écraserait rien de ce qui est déjà dans le club. Si
+l'import s'arrête (réseau coupé, plafond du jour atteint, arrêt demandé), rien
+n'est perdu : il reprend tout seul au retour du réseau, ou rouvrez l'écran **le
+lendemain** avec **le même fichier, le même compte et les mêmes choix de
+groupes** ; il repart du lot où il s'était arrêté. Un gros fichier peut demander
+plusieurs jours : le serveur limite les écritures par jour.
 
-Si l'import ne convient pas, gardez votre fichier : tant que l'ancienne version
-n'est pas retirée, la personne qui gère l'application peut la remettre en ligne
-(touchez **Mettre à jour** dans le bandeau pour la retrouver). Vos données du
-navigateur y sont lisibles si le navigateur les a gardées ; sinon, votre fichier
-est le repli. Après un retour en arrière, un nouvel export est traité comme un
-nouveau fichier : seuls les éléments **absents** du club sont ajoutés. Une
-correction faite après un premier import sur un élément déjà importé (passage
-corrigé, bilan modifié, prénom rectifié) n'est **pas** reportée : refaites-la à
-la main dans le club.
-La période de migration s'arrête quand tous les animateurs ont importé et
-vérifié ; gardez votre fichier 31 jours après cette date.
-Supprimez vos anciens fichiers de sauvegarde seulement une fois l'import vérifié
-(fiches, groupes, derniers passages) et la période de vérification terminée.
+**Ce qu'il faut savoir.**
+- Les données du navigateur sont conservées **au mieux** : Safari sur iPhone
+  efface le stockage d'un site resté plusieurs jours sans être ouvert, et
+  « effacer les données du site » ou changer d'appareil les supprime.
+  **Exportez sans attendre**, et ouvrez l'application régulièrement tant que
+  vous n'avez pas importé. Sur iPhone, ouvrez l'application **installée** si
+  c'est elle qui servait.
+- Si vous saisissiez dans **deux endroits** (un onglet et l'application
+  installée), exportez **de chacun**.
+- Un animateur sans compte peut exporter depuis l'écran de connexion ; seul un
+  compte connecté peut importer.
+- Si l'application dit que la base de l'appareil a été écrite par une version
+  **plus récente**, l'export est refusé pour ne rien altérer : mettez
+  l'application à jour. Si elle dit qu'elle **n'a pas pu lire** les données,
+  rien n'a été modifié : touchez **Relire les données** (la lecture est
+  refaite, elle ne reprend pas le relevé du démarrage), puis, si cela persiste,
+  fermez l'application, rouvrez-la et prévenez la personne qui gère
+  l'application. Sur le web, le fichier est téléchargé par le navigateur :
+  **vérifiez qu'il est bien dans vos téléchargements** avant d'importer (le
+  navigateur ou l'application installée peut bloquer un téléchargement sans que
+  l'application le sache). Une base venue d'une **version plus ancienne** est mise à niveau
+  à l'ouverture de l'application, sans rien supprimer ; l'écran le dit.
+- Le bandeau « Une nouvelle version est disponible » dit que vos données
+  enregistrées sont conservées **et que celles de cet appareil restent
+  exportables** : c'est exact, la mise à jour ne supprime rien.
+
+Si l'import ne convient pas, gardez votre fichier : la personne qui gère
+l'application peut remettre la version précédente en ligne tant que les données
+locales ne sont pas retirées (touchez **Mettre à jour** dans le bandeau pour la
+retrouver) ; vos données du navigateur y sont lisibles si le navigateur les a
+gardées, sinon votre fichier est le repli. Après un retour en arrière, un nouvel
+export est traité comme un nouveau fichier : seuls les éléments **absents** du
+club sont ajoutés. Une correction faite après un premier import sur un élément
+déjà importé (passage corrigé, bilan modifié, prénom rectifié) n'est **pas**
+reportée : refaites-la à la main dans le club.
+
+La période de migration s'arrête quand **tous les animateurs ont importé et
+vérifié** ; gardez votre fichier **31 jours** après cette date. Ensuite, un lot
+dédié retirera les données locales de l'application : vous supprimerez alors vos
+anciens fichiers de sauvegarde, seulement une fois l'import vérifié (fiches,
+groupes, derniers passages).
 
 ## Régler l'application
 
@@ -608,7 +715,11 @@ groupe, ni date de séance.
 ## Effacer un élève
 
 Les élèves sont souvent mineurs : l'application ne garde que le **prénom** et
-le **public**, sur votre appareil, et ne les envoie nulle part.
+le **public**. Avant le passage sur le serveur partagé, elles restent sur votre
+appareil ; ensuite, elles sont dans le club, et **l'effacement d'un élève dans
+le club n'efface pas encore la copie restée dans la base locale de l'appareil**
+(elle reste exportable, et la réimporter rétablirait l'élève : ne le faites pas
+après une demande d'effacement d'un parent).
 
 - Sur la fiche de l'élève, **Effacer** supprime définitivement l'élève, ses
   résultats, ses blocs acquis, ses alertes vues, ses bilans et ses appartenances à un groupe. Une confirmation est
