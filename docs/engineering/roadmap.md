@@ -457,7 +457,7 @@ est physique par défaut (`deletedAt` seulement s'il a un sens métier).
 | FB5 | `688509f` (A), `ff11842` (B) |
 | FB6 | `87cf393` |
 | FB7 | `8850926` (A), `7e05447` (B), `7bb86ca` (C) |
-| FB8 | partie A : à committer |
+| FB8 | `40c1e89` (partie A) ; parties B et C : à venir |
 
 ### À faire par l'animateur (état au 2026-10-19)
 
