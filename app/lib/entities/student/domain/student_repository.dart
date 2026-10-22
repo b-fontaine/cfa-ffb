@@ -9,7 +9,15 @@ import 'package:billard_cfa/shared/lib/identifiers.dart';
 /// logique (l'élève disparaît des lectures, une nouvelle sauvegarde le
 /// rétablit).
 abstract interface class StudentRepository {
-  /// Crée ou remplace l'élève.
+  /// **Inscrit** l'élève : la création, faite par le seul parcours
+  /// d'inscription (ou la restauration). Dans un club Firestore, c'est la
+  /// seule écriture qui peut faire naître une fiche.
+  Future<void> create(Student student);
+
+  /// Enregistre l'élève : remplace sa fiche (en local) ou met à jour ses champs
+  /// propres (club Firestore, où l'écriture **échoue** sur une fiche absente :
+  /// une édition rejouée par un appareil resté hors ligne ne recrée jamais une
+  /// fiche effacée, ADR 0025).
   Future<void> save(Student student);
 
   Future<Student?> byId(StudentId id);

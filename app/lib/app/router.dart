@@ -988,6 +988,7 @@ GoRouter buildRouter({
               ],
               child: StudentSheetPage(
                 today: getIt<Clock>().today,
+                canErase: _can(auth, Capability.eraseStudent),
                 onBack: () => context.go(AppRoutes.students),
                 onEdit: () => context.go(AppRoutes.editStudent(id)),
                 onOpenAssessment: () => context.go(AppRoutes.assessment(id)),

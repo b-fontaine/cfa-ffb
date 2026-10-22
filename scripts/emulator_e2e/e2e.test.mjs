@@ -28,10 +28,13 @@ import {
   connectFirestoreEmulator,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   getFirestore,
+  query,
   serverTimestamp,
   setDoc,
+  where,
 } from 'firebase/firestore';
 
 import { accounts, demoClubId, demoPassword, passingAttempt } from '../seed_emulator.mjs';
@@ -53,12 +56,15 @@ const sdkFiles = new Set();
 const [firestoreHost, firestorePort] = (process.env.FIRESTORE_EMULATOR_HOST ?? '127.0.0.1:8080').split(':');
 const authHost = process.env.FIREBASE_AUTH_EMULATOR_HOST ?? '127.0.0.1:9099';
 const otherApps = [];
+const uids = new Map();
+const uidOf = async (email) => uids.get(email);
 const otherDevice = async (email) => {
   const app = initializeApp({ apiKey: 'e2e', projectId: process.env.GCLOUD_PROJECT }, `other-${otherApps.length}-${Date.now()}`);
   otherApps.push(app);
   const auth = getAuth(app);
   connectAuthEmulator(auth, `http://${authHost}`, { disableWarnings: true });
   await signInWithEmailAndPassword(auth, email, demoPassword);
+  uids.set(email, auth.currentUser.uid);
   const db = getFirestore(app);
   connectFirestoreEmulator(db, firestoreHost, Number(firestorePort));
   return db;
@@ -288,6 +294,104 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
       assert.ok(!shown.includes(other), `« ${other} » ne doit pas être visible : ${shown}`);
     }
     assert.equal(await page.getByText(/^Élèves/).count(), 0);
+  });
+
+  // --- FB8, partie A : effacement d'un élève, côté serveur, par l'écran du directeur -------------
+  // Le directeur efface Tom par l'écran (lots reprenables, marqueur d'opération, vraies règles) ;
+  // le parent perd l'accès à cette fiche seulement ; une relecture par un autre appareil ne trouve
+  // plus AUCUN document qui s'y rapporte (fiche, passages, appartenances, présences, lien du
+  // compte, marqueur d'opération).
+  test('le directeur efface Tom par l’écran : plus aucun document lié, et le parent perd cette seule fiche', async () => {
+    const reader = await otherDevice(accounts.director.email);
+    const guardian = await otherDevice(accounts.parent.email);
+    const base = `clubs/${demoClubId}`;
+    const linked = async (collectionName) =>
+      (await getDocs(query(collection(reader, `${base}/${collectionName}`), where('studentId', '==', 's-tom')))).docs.map((d) => d.id);
+
+    // Avant : Tom a des passages et le parent lit sa fiche.
+    assert.ok((await linked('attempts')).length >= 1, 'la graine donne des passages à Tom');
+    assert.ok((await getDoc(doc(guardian, `${base}/students/s-tom`))).exists(), 'le parent lit la fiche de Tom');
+
+    await signInAs(accounts.director.email);
+    await see(/^Élèves/);
+    await goTo('Élèves');
+    // Chaque ligne de la liste est un bouton « Ouvrir la fiche de {prénom} ».
+    const openSheet = (name) => page.getByRole('button', { name: `Ouvrir la fiche de ${name}`, exact: true });
+    await openSheet('Tom').waitFor({ state: 'visible', timeout: 30_000 });
+    // La fiche de Tom s'ouvre par son adresse (le clic sur une ligne de liste d'un navigateur
+    // sans souris réelle tombe sur la ligne voisine : on garde ce parcours pour l'import).
+    await page.goto(`${baseUrl}#/students/s-tom`);
+    await enableSemantics();
+    await see('Effacer cet élève');
+    assert.ok((await visible()).includes('Tom'), 'la fiche ouverte est celle de Tom');
+    // La fiche est une liste défilante : les actions rares du bas ne sont construites qu'une fois
+    // visibles. On fait défiler jusqu'à la carte d'effacement.
+    const erase = page.getByRole('button', { name: /Effacer Tom/ });
+    await page.mouse.move(400, 400);
+    for (let attempt = 0; attempt < 30; attempt++) {
+      if ((await erase.count()) > 0 && (await erase.first().isVisible())) break;
+      await page.mouse.wheel(0, 1200);
+      await page.waitForTimeout(300);
+    }
+    try {
+      await erase.first().waitFor({ state: 'visible', timeout: 15_000 });
+    } catch (error) {
+      const dump = await page.evaluate(() =>
+        [...document.querySelectorAll('flt-semantics')]
+          .map((e) => `${e.getAttribute('role') ?? ''}|${e.getAttribute('aria-label') ?? ''}|${e.textContent.slice(0, 50)}|${Math.round(e.getBoundingClientRect().top)}`)
+          .join('\n'),
+      );
+      throw new Error(`bouton « Effacer Tom » invisible : ${dump}`, { cause: error });
+    }
+    await see('limites', { exact: false });
+    await erase.first().click();
+    await see('Effacer Tom définitivement ?');
+    await page.getByRole('button', { name: 'Confirmer', exact: true }).click();
+    // L'effacement fini, l'écran revient à la liste des élèves, où Tom n'est plus.
+    await page.waitForFunction(
+      () => !document.body.innerText.includes('Effacer cet élève'),
+      undefined,
+      { timeout: 60_000 },
+    );
+    try {
+      await openSheet('Léa').waitFor({ state: 'visible', timeout: 30_000 });
+    } catch (error) {
+      throw new Error(`liste des élèves absente de ${page.url()} ; affiché : ${await visible()}`, { cause: error });
+    }
+    await page.waitForTimeout(500);
+    assert.equal(await openSheet('Tom').count(), 0, 'Tom n’est plus listé');
+
+    // Relecture par un autre appareil, sous les vraies règles : plus aucun document lié.
+    assert.equal((await getDoc(doc(reader, `${base}/students/s-tom`))).exists(), false, 'la fiche');
+    for (const name of ['attempts', 'acquisitions', 'assessments', 'acknowledgements', 'memberships']) {
+      assert.deepEqual(await linked(name), [], name);
+    }
+    const records = await getDocs(query(collection(reader, `${base}/records`), where('presentStudentIds', 'array-contains', 's-tom')));
+    assert.equal(records.size, 0, 'présences');
+    const members = await getDocs(collection(reader, `${base}/members`));
+    for (const member of members.docs) {
+      assert.ok(!(member.data().studentIds ?? []).includes('s-tom'), `lien de ${member.id}`);
+    }
+    const parent = members.docs.find((d) => d.data().displayName === accounts.parent.name);
+    assert.deepEqual(parent.data().studentIds, ['s-lea'], 'le parent garde Léa seulement');
+    const markers = await getDocs(query(collection(reader, `${base}/operations`), where('createdBy', '==', await uidOf(accounts.director.email))));
+    assert.equal(markers.size, 0, 'aucun marqueur d’opération ne reste');
+    // Le parent ne lit plus rien de Tom, ni sa fiche, ni ses passages.
+    await assert.rejects(() => getDoc(doc(guardian, `${base}/students/s-tom`)), /permission|insufficient/i);
+    await assert.rejects(
+      () => getDocs(query(collection(guardian, `${base}/attempts`), where('studentId', '==', 's-tom'))),
+      /permission|insufficient/i,
+    );
+  });
+
+  test('le parent, ensuite, ne voit plus que Léa : plus de Tom ni de ses passages', async () => {
+    await signInAs(accounts.parent.email);
+    await see('Mes enfants');
+    await see('Léa');
+    await page.waitForTimeout(500);
+    const shown = await visible();
+    assert.ok(!shown.includes('Tom'), `« Tom » ne doit plus être visible : ${shown}`);
+    assert.equal(await page.getByLabel('Tom', { exact: true }).count(), 0);
   });
 
   test('le directeur retire l’accès du parent : son écran passe à « Accès retiré » sans recharger', async () => {

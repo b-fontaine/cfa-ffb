@@ -392,7 +392,7 @@ suite('students', 'clubs/{c}/students/{id}', () => {
     test(`création d'une fiche dans le groupe ${g} : gestionnaires et enseignant du groupe`, () =>
       check({
         expectAllowed: staffOf(g),
-        run: (db) => setDoc(doc(db, 'clubs/c1/students/nouvelle'), student([g])),
+        run: (db) => setDoc(doc(db, 'clubs/c1/students/nouvelle'), { ...student([g]), createdAt: serverTimestamp() }),
         reset: () => remove(env, 'clubs/c1/students/nouvelle'),
       }));
     test(`mise à jour de la fiche ${s} : le directeur et l'administrateur (l'enseignant ne modifie pas)`, () =>
@@ -653,6 +653,59 @@ suite('imports', 'clubs/{c}/imports/{fileId}_{uid}', () => {
   test('suppression : personne, pas même l\'administrateur', async () => {
     await seedMarkers();
     await check({ expectAllowed: [], run: (db, actor) => deleteDoc(doc(db, mine(actor))), reset: () => seedMarkers() });
+    await reset();
+  });
+});
+
+// ───────────────────────── Marqueurs d'opération reprenable (FB8) ─────────────────────────
+// La grille ; les attaques, la forme exigée et le parcours d'un effacement sont dans operations.test.mjs.
+suite('operations', 'clubs/{c}/operations/{operationId}_{uid}', () => {
+  const OP = 'a'.repeat(64);
+  const mine = (actor) => `clubs/c1/operations/${OP}_${uids[actor] ?? `u-${actor}`}`;
+  const pathOf = (uid) => `clubs/c1/operations/${OP}_${uid}`;
+  const roleOf = (actor) => (actor === 'admin' ? 'admin' : 'director');
+  const created = (actor) => ({
+    operationId: OP, kind: 'erasure', done: 1, stage: 1, role: roleOf(actor), createdBy: uids[actor] ?? `u-${actor}`,
+    startedAt: serverTimestamp(), updatedAt: serverTimestamp(),
+  });
+  const reset = async () => {
+    for (const uid of [...Object.values(uids), 'u-anonymous']) await remove(env, pathOf(uid));
+  };
+  const seedOwn = async () => {
+    await reset();
+    for (const actor of MGR) {
+      await put(env, mine(actor), { ...created(actor), startedAt: ts(now() - 1000), updatedAt: ts(now() - 1000) });
+    }
+  };
+
+  test('création de SON marqueur (premier lot) : le directeur et l\'administrateur seulement', () =>
+    check({ expectAllowed: MGR, run: (db, actor) => setDoc(doc(db, mine(actor)), created(actor)), reset }));
+  test('get de SON marqueur (même absent) : le directeur et l\'administrateur ; celui d\'un autre : personne', async () => {
+    await check({ expectAllowed: MGR, run: (db, actor) => getDoc(doc(db, mine(actor))) });
+    await seedOwn();
+    await check({ expectAllowed: ['director'], run: (db) => getDoc(doc(db, pathOf(uids.director))) });
+    await check({ expectAllowed: ['admin'], run: (db) => getDoc(doc(db, pathOf(uids.admin))) });
+    await reset();
+  });
+  test('list : SES marqueurs (filtre sur l\'auteur) par le directeur et l\'administrateur ; jamais ceux d\'un autre, jamais sans filtre', async () => {
+    await check({
+      expectAllowed: MGR,
+      run: (db, actor) => getDocs(query(collection(db, 'clubs/c1/operations'), where('createdBy', '==', uids[actor] ?? `u-${actor}`))),
+    });
+    await check({ expectAllowed: [], run: (db) => getDocs(collection(db, 'clubs/c1/operations')) });
+  });
+  test('avancement de SON marqueur d\'un lot : le directeur et l\'administrateur seulement', async () => {
+    await seedOwn();
+    await check({
+      expectAllowed: MGR,
+      run: (db, actor) => updateDoc(doc(db, mine(actor)), { done: 2, stage: 1, updatedAt: serverTimestamp() }),
+      reset: seedOwn,
+    });
+    await reset();
+  });
+  test('suppression de SON marqueur (dernier lot) : le directeur et l\'administrateur seulement', async () => {
+    await seedOwn();
+    await check({ expectAllowed: MGR, run: (db, actor) => deleteDoc(doc(db, mine(actor))), reset: seedOwn });
     await reset();
   });
 });

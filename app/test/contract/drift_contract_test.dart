@@ -11,6 +11,8 @@ import 'package:billard_cfa/entities/session_record/data/drift_session_record_re
 import 'package:billard_cfa/entities/settings/data/drift_settings_repository.dart';
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
 import 'package:billard_cfa/features/backup_data/data/drift_backup_marker_repository.dart';
+import 'package:billard_cfa/features/manage_students/domain/erase_student.dart';
+import 'package:billard_cfa/features/manage_students/domain/local_student_erasure.dart';
 import 'package:billard_cfa/shared/persistence/drift_unit_of_work.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -26,6 +28,7 @@ import 'repository_watch_contract.dart';
 import 'run_progress_contract.dart';
 import 'season_archive_contract.dart';
 import 'settings_contract.dart';
+import 'student_erasure_contract.dart';
 
 Future<RepositoryHarness> _open() async {
   final db = openMemoryDatabase();
@@ -48,7 +51,31 @@ Future<RepositoryHarness> _open() async {
   );
 }
 
+Future<ErasureSetup> _openErasure() async {
+  final r = await _open();
+  return (
+    erasure: LocalStudentErasure(
+      EraseStudent(
+        r.students,
+        r.groups,
+        r.sessionRecords,
+        r.attempts,
+        r.assessments,
+        r.acquisitions,
+        r.acknowledgements,
+        r.runProgress,
+        r.sessions,
+        r.unitOfWork,
+      ),
+      r.students,
+    ),
+    repositories: r,
+    close: r.close,
+  );
+}
+
 void main() {
+  studentErasureContract('drift (SQLite)', _openErasure);
   planningContract('drift (SQLite)', () async {
     final db = openMemoryDatabase();
     final clock = TickingClock();

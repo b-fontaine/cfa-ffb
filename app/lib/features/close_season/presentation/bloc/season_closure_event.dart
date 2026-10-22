@@ -24,4 +24,12 @@ sealed class SeasonClosureEvent with _$SeasonClosureEvent {
   /// L'animateur a confirmé (case « J'ai compris » cochée si des élèves sont
   /// à effacer).
   const factory SeasonClosureEvent.confirmed() = SeasonClosureConfirmed;
+
+  /// L'animateur reprend la clôture commencée (sans nouvelle confirmation :
+  /// il a déjà confirmé et rien n'est redemandé).
+  const factory SeasonClosureEvent.resumed() = SeasonClosureResumed;
+
+  /// L'animateur demande l'arrêt : la clôture s'arrête **entre deux lots**,
+  /// ce qui reste se reprend plus tard.
+  const factory SeasonClosureEvent.stopRequested() = SeasonClosureStopRequested;
 }

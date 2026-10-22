@@ -13,6 +13,7 @@ import 'package:billard_cfa/features/change_audience/presentation/ui/audience_ch
 import 'package:billard_cfa/features/manage_settings/presentation/bloc/settings_bloc.dart';
 import 'package:billard_cfa/features/manage_settings/presentation/ui/settings_form.dart';
 import 'package:billard_cfa/features/manage_students/domain/get_club_overview.dart';
+import 'package:billard_cfa/features/manage_students/domain/student_erasure.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_erasure_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/bloc/student_form_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/ui/club_list.dart';
@@ -48,13 +49,17 @@ import 'package:billard_cfa/features/track_progress/presentation/ui/sheet_header
 import 'package:billard_cfa/features/track_progress/presentation/ui/student_sheet_view.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
 import 'package:billard_cfa/shared/lib/exercise_ref.dart';
+import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/operations/operation_runner.dart';
+import 'package:billard_cfa/shared/lib/operations/student_purge.dart';
 import 'package:billard_cfa/shared/lib/rules_config.dart';
 import 'package:billard_cfa/shared/ui/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/support/club_operations_fakes.dart';
 import 'package:widgetbook_workspace/support/preview_world.dart';
 
 const _path = '[Features]';
@@ -77,6 +82,96 @@ Widget buildEraseStudentCardUseCase(BuildContext context) => WorldScope(
     ),
   ),
 );
+
+const _clubErasureStatus = ErasureStatus(
+  preview: StudentPurgePreview(attempts: 42, assessments: 2, presences: 12),
+  inProgress: false,
+  synchronized: true,
+);
+
+Widget _erasureCard(
+  PreviewWorld world,
+  ScriptedStudentErasure erasure, {
+  bool start = false,
+}) => BlocProvider(
+  create: (_) {
+    final bloc = StudentErasureBloc(erasure);
+    if (start) {
+      bloc.add(StudentErasureEvent.requested(studentId: world.children.id));
+    }
+    return bloc;
+  },
+  child: _scroll(
+    EraseStudentCard(
+      studentId: world.children.id,
+      studentName: world.children.firstName,
+      onErased: () {},
+    ),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Effacement (club synchronisé)',
+  type: EraseStudentCard,
+  path: _path,
+)
+Widget buildEraseStudentCardClubUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) =>
+      _erasureCard(world, ScriptedStudentErasure(status: _clubErasureStatus)),
+);
+
+@widgetbook.UseCase(
+  name: 'Effacement à reprendre',
+  type: EraseStudentCard,
+  path: _path,
+)
+Widget buildEraseStudentCardResumeUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) => _erasureCard(
+    world,
+    ScriptedStudentErasure(
+      status: ErasureStatus(
+        preview: _clubErasureStatus.preview,
+        inProgress: true,
+        synchronized: true,
+      ),
+    ),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Effacement en cours',
+  type: EraseStudentCard,
+  path: _path,
+)
+Widget buildEraseStudentCardWorkingUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) => _erasureCard(
+    world,
+    ScriptedStudentErasure(status: _clubErasureStatus, hang: true),
+    start: true,
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Effacement interrompu',
+  type: EraseStudentCard,
+  path: _path,
+)
+Widget buildEraseStudentCardInterruptedUseCase(BuildContext context) =>
+    WorldScope(
+      builder: (context, world) => _erasureCard(
+        world,
+        ScriptedStudentErasure(
+          status: _clubErasureStatus,
+          outcome: const ErasureOutcome(
+            status: OperationRunStatus.interrupted,
+            doneLots: 2,
+            totalLots: 5,
+            failure: ServiceFailure(ServiceFailureCode.unavailable),
+          ),
+        ),
+        start: true,
+      ),
+    );
 
 @widgetbook.UseCase(name: 'Aucune note', type: ScoreSelector, path: _path)
 Widget buildScoreSelectorEmptyUseCase(BuildContext context) => Padding(

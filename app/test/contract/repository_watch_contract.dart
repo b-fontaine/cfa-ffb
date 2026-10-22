@@ -43,7 +43,7 @@ void repositoryWatchContract(
         ),
       );
       for (final (id, name) in [('s1', 'Léa'), ('s2', 'Théo')]) {
-        await repos.students.save(
+        await repos.students.create(
           Student.enroll(
             id: StudentId(id),
             firstName: name,
@@ -93,7 +93,7 @@ void repositoryWatchContract(
         await log.settle();
         expect(ids(log.last, (s) => s.id.value), ['s1', 's2']);
 
-        await repos.students.save(
+        await repos.students.create(
           Student.enroll(
             id: const StudentId('s3'),
             firstName: 'Zoé',
@@ -114,7 +114,7 @@ void repositoryWatchContract(
         await log.settle();
         expect(log.last!.firstName, 'Léa');
 
-        await repos.students.save(
+        await repos.students.create(
           Student.enroll(
             id: const StudentId('s1'),
             firstName: 'Léa B.',

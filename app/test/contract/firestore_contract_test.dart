@@ -1,3 +1,5 @@
+import 'package:billard_cfa/app/club_student_purge.dart';
+import 'package:billard_cfa/app/firestore_operation_store.dart';
 import 'package:billard_cfa/app/platform/firestore_document_store.dart';
 import 'package:billard_cfa/entities/account/domain/session_scope.dart';
 import 'package:billard_cfa/entities/exercise_result/data/drift_acknowledgement_repository.dart';
@@ -26,9 +28,12 @@ import 'package:billard_cfa/entities/settings/data/firestore_settings_repository
 import 'package:billard_cfa/entities/student/data/drift_student_repository.dart';
 import 'package:billard_cfa/entities/student/data/firestore_student_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student.dart';
+import 'package:billard_cfa/features/manage_students/domain/club_student_erasure.dart';
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/audience.dart';
+import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/operations/operation_runner.dart';
 import 'package:billard_cfa/shared/lib/unit_of_work.dart';
 import 'package:billard_cfa/shared/persistence/club_store.dart';
 import 'package:billard_cfa/shared/persistence/composite_unit_of_work.dart';
@@ -40,6 +45,8 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/drift_support.dart';
+import '../support/fixed_clock.dart';
+import '../support/in_memory_write_ledger.dart';
 import 'acknowledgement_contract.dart';
 import 'acquisition_contract.dart';
 import 'backup_contract.dart';
@@ -49,6 +56,7 @@ import 'repository_harness.dart';
 import 'repository_watch_contract.dart';
 import 'season_archive_contract.dart';
 import 'settings_contract.dart';
+import 'student_erasure_contract.dart';
 import 'student_group_contract.dart';
 import 'unit_of_work_contract.dart';
 
@@ -98,7 +106,7 @@ Future<ClubStore> _openOwnedClub({SessionScope? scope}) async {
     audience: Audience.children,
   );
   for (final id in ['s1', 's2']) {
-    await students.save(
+    await students.create(
       Student.enroll(
         id: StudentId(id),
         firstName: id,
@@ -172,7 +180,45 @@ Future<RepositoryHarness> _openAll() async {
   );
 }
 
+/// L'effacement par lots reprenables sur le faux Firestore : le montage de
+/// production avec `DATA_BACKEND=firestore` (`DataBackendModule`).
+Future<ErasureSetup> _openErasure() async {
+  final scope = _directorScope();
+  final club = _openClub(scope: scope);
+  final db = openMemoryDatabase();
+  final harness = RepositoryHarness(
+    students: FirestoreStudentRepository(club),
+    groups: FirestoreGroupRepository(club),
+    seasons: FirestoreSeasonRepository(club),
+    seasonArchives: FirestoreSeasonArchiveRepository(club),
+    sessionRecords: FirestoreSessionRecordRepository(club),
+    attempts: FirestoreAttemptRepository(club),
+    acquisitions: FirestoreAcquisitionRepository(club),
+    acknowledgements: FirestoreAcknowledgementRepository(club, scope),
+    assessments: FirestoreAssessmentRepository(club),
+    sessions: FirestoreSessionRepository(club),
+    settings: FirestoreSettingsRepository(club),
+    runProgress: DriftRunProgressRepository(db),
+    unitOfWork: FirestoreUnitOfWork(club),
+    close: db.close,
+  );
+  return (
+    erasure: ClubStudentErasure(
+      OperationRunner(
+        FirestoreOperationStore(club, scope),
+        InMemoryWriteLedger(FixedClock(DateTime.utc(2026, 10, 12))),
+      ),
+      ClubStudentPurge(club, DriftRunProgressRepository(db)),
+      scope,
+    ),
+    repositories: harness,
+    close: db.close,
+  );
+}
+
 void main() {
+  studentErasureContract('Firestore (faux en mémoire)', _openErasure);
+
   repositoryContract(
     'Firestore (faux en mémoire)',
     _openAll,
@@ -206,6 +252,33 @@ void main() {
       close: () async {},
     );
   });
+
+  test(
+    'FirestoreStudentRepository : une édition ne recrée pas une fiche effacée, '
+    "seule l'inscription (create) crée",
+    () async {
+      final students = FirestoreStudentRepository(_openClub());
+      final student = Student.enroll(
+        id: const StudentId('s9'),
+        firstName: 'Léa',
+        audience: Audience.children,
+        since: DateTime(2026, 9),
+      );
+      await students.create(student);
+      await students.delete(student.id);
+
+      await expectLater(
+        students.save(student.copyWith(firstName: 'Léa B')),
+        throwsA(isA<ServiceFailure>()),
+      );
+      expect(await students.byId(student.id), isNull);
+
+      await students.create(student);
+      expect(await students.byId(student.id), isNotNull);
+      await students.save(student.copyWith(firstName: 'Léa C'));
+      expect((await students.byId(student.id))!.firstName, 'Léa C');
+    },
+  );
 
   unitOfWorkContract('Firestore (faux en mémoire)', () async {
     final club = _openClub();

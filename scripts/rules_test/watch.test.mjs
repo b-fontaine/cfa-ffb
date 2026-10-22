@@ -133,7 +133,7 @@ describe('deux clients : l\'un écrit, l\'autre reçoit', () => {
     assert.equal(reader.last().exists(), false);
 
     const writer = dbOf(env, 'director');
-    await setDoc(doc(writer, `${C}/students/s9`), { firstName: 'Zoé', groupIds: ['g1'] });
+    await setDoc(doc(writer, `${C}/students/s9`), { firstName: 'Zoé', groupIds: ['g1'], createdAt: serverTimestamp() });
     await reader.until((l) => l.last().exists(), 'création');
     await updateDoc(doc(writer, `${C}/students/s9`), { firstName: 'Zoé B.' });
     await reader.until((l) => l.last().data()?.firstName === 'Zoé B.', 'mise à jour');
@@ -149,8 +149,8 @@ describe('deux clients : l\'un écrit, l\'autre reçoit', () => {
 
     const writer = dbOf(env, 'director');
     const batch = writeBatch(writer);
-    batch.set(doc(writer, `${C}/students/s7`), { firstName: 'Sept', groupIds: ['g1'] });
-    batch.set(doc(writer, `${C}/students/s8`), { firstName: 'Huit', groupIds: ['g1'] });
+    batch.set(doc(writer, `${C}/students/s7`), { firstName: 'Sept', groupIds: ['g1'], createdAt: serverTimestamp() });
+    batch.set(doc(writer, `${C}/students/s8`), { firstName: 'Huit', groupIds: ['g1'], createdAt: serverTimestamp() });
     await batch.commit();
 
     await reader.until((l) => l.ids().includes('s8'), 'les deux fiches');
@@ -167,7 +167,7 @@ describe('deux clients : l\'un écrit, l\'autre reçoit', () => {
     assert.deepEqual(reader.ids(), ['s1']);
 
     const dir = dbOf(env, 'director');
-    await setDoc(doc(dir, `${C}/students/s5`), { firstName: 'Cinq', groupIds: ['g1'] });
+    await setDoc(doc(dir, `${C}/students/s5`), { firstName: 'Cinq', groupIds: ['g1'], createdAt: serverTimestamp() });
     await reader.until((l) => l.ids().includes('s5'), 'arrivée dans le groupe');
     await updateDoc(doc(dir, `${C}/students/s5`), { groupIds: ['g2'] });
     await reader.until((l) => !l.ids().includes('s5'), 'sortie du groupe');
@@ -249,7 +249,7 @@ describe('abonnement et métadonnées', () => {
     const reader = listen(doc(db, `${C}/students/s6`), { includeMetadataChanges: true });
     await reader.until((l) => l.events.length >= 1, 'état de départ');
 
-    const written = setDoc(doc(db, `${C}/students/s6`), { firstName: 'Six', groupIds: ['g1'] });
+    const written = setDoc(doc(db, `${C}/students/s6`), { firstName: 'Six', groupIds: ['g1'], createdAt: serverTimestamp() });
     await reader.until((l) => l.events.some((e) => e.exists() && e.metadata.hasPendingWrites), 'écriture en attente');
     await written;
     await reader.until(

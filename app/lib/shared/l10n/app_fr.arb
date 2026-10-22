@@ -4200,5 +4200,89 @@
   "localDataDoneUnsentOk": "Compris",
   "moreLocalExport": "Exporter mes données locales",
   "moreLocalExportHint": "Enregistrer un fichier des données encore présentes sur cet appareil",
-  "localExportSaveFailed": "Le fichier n’a pas pu être enregistré. Les données de l’appareil n’ont pas été modifiées. Réessayez."
+  "localExportSaveFailed": "Le fichier n’a pas pu être enregistré. Les données de l’appareil n’ont pas été modifiées. Réessayez.",
+  "failTooManyToErase": "Une clôture efface {max} élèves au plus. Choisissez-en moins à effacer ; vous pourrez effacer les autres ensuite, un par un, depuis leur fiche.",
+  "@failTooManyToErase": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "failClosurePending": "Une clôture de cette saison est déjà commencée : reprenez-la plutôt que d’en lancer une autre.",
+  "eraseClubBody": "Supprime définitivement {name} et ses {count} données liées dans le club : passages, blocs acquis, bilans, acquittements, appartenances et présences. Les comptes parent et élève liés perdent l’accès à la fiche. Aucune trace de l’effacement ne reste.",
+  "@eraseClubBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "eraseClubLimits": "Limites : une copie locale de cet élève peut rester sur un appareil qui a utilisé l’application avant le passage au club synchronisé, et les sauvegardes déjà exportées ne sont pas touchées. Supprimez-les vous-même (voir le guide de l’animateur).",
+  "eraseConfirmClubBody": "Tout ce qui concerne {name} est supprimé du club, sur tous les appareils, et ne peut pas être récupéré. L’effacement se fait par étapes : si la connexion est coupée, vous pourrez le reprendre depuis cette fiche. Exportez d’abord une sauvegarde si vous voulez en garder une copie.",
+  "@eraseConfirmClubBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eraseProgress": "Effacement en cours : étape {done} sur {total}",
+  "@eraseProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "eraseStop": "Arrêter après cette étape",
+  "eraseResume": "Reprendre l’effacement",
+  "eraseResumeNotice": "L’effacement de {name} est commencé mais pas terminé. Plus aucune donnée nouvelle ne peut lui être ajoutée. Reprenez-le pour le terminer.",
+  "@eraseResumeNotice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eraseInterrupted": "L’effacement est interrompu : la connexion a manqué. Rien n’est perdu, reprenez-le quand elle revient.",
+  "eraseStopped": "L’effacement est arrêté. Reprenez-le pour le terminer.",
+  "erasePaused": "Le plafond d’écritures du jour est atteint. Reprenez l’effacement demain : il continue où il s’est arrêté.",
+  "closureResumeTitle": "Clôture à reprendre",
+  "closureResumeBody": "Une clôture de cette saison est commencée et n’est pas terminée. Plus aucune donnée nouvelle ne peut être ajoutée aux élèves marqués pour l’effacement. Reprenez-la pour la terminer : elle continue là où elle s’est arrêtée, sans rien redemander.",
+  "closureResumeAction": "Reprendre la clôture",
+  "closureProgress": "Clôture en cours : étape {done} sur {total}",
+  "@closureProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "closureStop": "Arrêter après cette étape",
+  "closureInterrupted": "La clôture est interrompue : la connexion a manqué. Rien n’est perdu, reprenez-la quand elle revient.",
+  "closureStopped": "La clôture est arrêtée. Reprenez-la pour la terminer.",
+  "closurePaused": "Le plafond d’écritures du jour est atteint. Reprenez la clôture demain : elle continue où elle s’est arrêtée.",
+  "closureEffectsTitle": "Ce que la clôture va faire",
+  "closureEffectsArchive": "L’archive agrégée de la saison est écrite d’abord, avant tout effacement.",
+  "closureEffectsErase": "Élèves effacés avec toutes leurs données (passages, bilans, appartenances, présences) : {count}. Les comptes parent et élève liés perdent l’accès à leur fiche.",
+  "@closureEffectsErase": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "closureEffectsSteps": "La clôture se fait dans le club par étapes de 400 écritures au plus : si la connexion est coupée, elle se reprend là où elle s’est arrêtée. Aucune clôture ne doit avoir lieu pendant la période de bascule des données locales.",
+  "closureEffectsLocalCopy": "Les copies locales d’élèves effacés qui restent sur un appareil, et les sauvegardes déjà exportées, ne sont pas touchées : supprimez-les vous-même (guide de l’animateur).",
+  "closureDoneResumed": "La clôture interrompue est terminée."
 }

@@ -97,7 +97,7 @@ void main() {
 
   test('puts a student without membership in the unassigned list', () async {
     await world.seedClub();
-    await world.students.save(
+    await world.students.create(
       Student.enroll(
         id: const StudentId('loner'),
         firstName: 'Loner',

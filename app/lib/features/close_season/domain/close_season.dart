@@ -1,23 +1,20 @@
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
-import 'package:billard_cfa/entities/group/domain/choose_group.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/entities/season/domain/season_archive_repository.dart';
-import 'package:billard_cfa/entities/season/domain/season_calendar.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session/domain/session_repository.dart';
 import 'package:billard_cfa/entities/session_record/domain/session_record_repository.dart';
 import 'package:billard_cfa/entities/student/domain/student_repository.dart';
 import 'package:billard_cfa/features/close_season/domain/build_archive.dart';
+import 'package:billard_cfa/features/close_season/domain/closure_checks.dart';
+import 'package:billard_cfa/features/close_season/domain/next_season_plan.dart';
 import 'package:billard_cfa/features/close_season/domain/planned_after_closure.dart';
-import 'package:billard_cfa/features/close_season/domain/propose_closure.dart';
 import 'package:billard_cfa/features/close_season/domain/student_eraser.dart';
-import 'package:billard_cfa/shared/lib/date_only.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/id_generator.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
-import 'package:billard_cfa/shared/lib/unique_name.dart';
 import 'package:billard_cfa/shared/lib/unit_of_work.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -84,38 +81,19 @@ class CloseSeason {
     bool prepareNext = true,
     bool dropPlanned = true,
   }) => runGuarded(() async {
-    final season = await _seasons.byId(seasonId);
-    if (season == null) throw NotFound('season', seasonId.value);
-    if (season.isClosed) {
-      throw const InvariantViolation(InvariantCode.seasonAlreadyClosed);
-    }
-    final day = closedOn.dateOnly;
-    if (!day.isAfter(season.startDate)) {
-      throw const InvariantViolation(InvariantCode.invalidPeriod);
-    }
-    final groups = await _groups.all();
-    final seasonGroups = [
-      for (final group in groups)
-        if (group.seasonId == seasonId) group,
-    ];
-    final candidates = closureCandidates(
-      season: season,
-      students: await _students.all(),
-      groups: groups,
-      seasons: await _seasons.all(),
+    final checked = await checkClosure(
+      seasons: _seasons,
+      groups: _groups,
+      students: _students,
+      seasonId: seasonId,
+      closedOn: closedOn,
+      erase: erase,
     );
-    for (final id in erase) {
-      if (!candidates.contains(id)) throw NotFound('student', id.value);
-    }
-    // Reconduits : ceux qui ont encore une appartenance ouverte dans la
-    // saison et ne sont pas effacés (ceux qui l'avaient déjà quittée ne le
-    // sont pas).
-    final kept = <StudentId>{
-      for (final group in seasonGroups)
-        for (final membership in group.memberships)
-          if (membership.to == null && !erase.contains(membership.studentId))
-            membership.studentId,
-    };
+    final season = checked.season;
+    final day = checked.day;
+    final groups = checked.groups;
+    final seasonGroups = checked.seasonGroups;
+    final kept = checked.kept;
 
     // (1) L'archive se calcule sur les données complètes, avant l'effacement.
     final archive = buildArchive(
@@ -153,87 +131,30 @@ class CloseSeason {
   });
 
   /// Prépare la saison qui suit [closed] ; rend le nombre de groupes
-  /// reconduits (créés ou retrouvés).
+  /// reconduits (créés ou retrouvés). La règle est `planNextSeason`, partagée
+  /// avec la clôture reprenable.
   Future<int> _prepareNext(
     Season closed,
     DateTime day,
     Set<StudentId> erased,
   ) async {
-    final seasons = await _seasons.all();
-    final candidate = nextSeasonAfter(
-      closed,
-      SeasonId(_ids.next()),
-      takenLabels: {for (final s in seasons) s.label},
+    final groups = await _groups.all();
+    final plan = planNextSeason(
+      closed: closed,
+      day: day,
+      seasons: await _seasons.all(),
+      groups: groups,
+      erased: erased,
+      newSeasonId: SeasonId(_ids.next()),
+      newGroupId: (_) => GroupId(_ids.next()),
     );
-    final existing = seasons
-        .where((s) => s.id != closed.id && s.overlaps(candidate))
-        .firstOrNull;
-    if (existing != null && existing.isClosed) return 0;
-    final next = existing ?? candidate;
-    if (existing == null) await _seasons.save(next);
-    // Les élèves reconduits rejoignent la saison suivante dès son premier
-    // jour, même si la clôture a lieu après : ils ne sont pas « sans groupe »
-    // entre son début et la clôture. L'ancienne appartenance finit la veille.
-    final from = next.startDate.dateOnly;
-    final lastDay = DateTime(from.year, from.month, from.day - 1);
-    final releaseOn = lastDay.isBefore(day) ? lastDay : day;
-
-    final all = await _groups.all();
-    var prepared = 0;
-    for (final origin in all.where((g) => g.seasonId == closed.id)) {
-      var destination =
-          _homonym(all, next.id, origin) ?? _fresh(all, next, origin);
-      var released = origin;
-      for (final membership in origin.memberships) {
-        if (membership.to != null || erased.contains(membership.studentId)) {
-          continue;
-        }
-        released = released.release(
-          studentId: membership.studentId,
-          to: releaseOn.isBefore(membership.from) ? membership.from : releaseOn,
-        );
-        destination = destination.admit(
-          studentId: membership.studentId,
-          studentAudience: destination.audience,
-          from: from,
-        );
-      }
-      await _groups.save(released);
-      await _groups.save(destination);
-      prepared++;
+    if (plan == null) return 0;
+    if (plan.seasonToSave case final next?) await _seasons.save(next);
+    for (final step in plan.steps) {
+      await _groups.save(step.released);
+      await _groups.save(step.destination);
     }
-    return prepared;
-  }
-
-  Group? _homonym(List<Group> all, SeasonId seasonId, Group origin) {
-    final wanted = normalizedGroupName(origin.name);
-    for (final group in all) {
-      if (group.seasonId == seasonId &&
-          normalizedGroupName(group.name) == wanted &&
-          group.audience == origin.audience) {
-        return group;
-      }
-    }
-    return null;
-  }
-
-  /// Un groupe neuf de la saison [next] portant le nom de [origin] ; si ce nom
-  /// y est pris par un groupe d'un autre public, il est suffixé (« (2) »,
-  /// « (3) »… jusqu'à un nom libre : le nom reste unique dans la saison).
-  Group _fresh(List<Group> all, Season next, Group origin) {
-    final taken = {
-      for (final g in all)
-        if (g.seasonId == next.id) normalizedGroupName(g.name),
-    };
-    return Group(
-      id: GroupId(_ids.next()),
-      seasonId: next.id,
-      name: firstFreeName(
-        origin.name,
-        (c) => taken.contains(normalizedGroupName(c)),
-      ),
-      audience: origin.audience,
-    );
+    return groups.where((g) => g.seasonId == closed.id).length;
   }
 
   Future<int> _dropPlanned(

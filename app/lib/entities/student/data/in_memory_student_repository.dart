@@ -11,6 +11,9 @@ class InMemoryStudentRepository implements StudentRepository {
   final ObservedMap<StudentId, Student> _students = ObservedMap();
 
   @override
+  Future<void> create(Student student) => save(student);
+
+  @override
   Future<void> save(Student student) async =>
       _students.journaledPut(student.id, student);
 

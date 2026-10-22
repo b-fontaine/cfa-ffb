@@ -29,7 +29,7 @@ void main() {
   Future<StudentRow> row() => db.select(db.students).getSingle();
 
   test('stamps createdAt and updatedAt on the first save', () async {
-    await students.save(_student('Léa'));
+    await students.create(_student('Léa'));
 
     final saved = await row();
     expect(saved.createdAt, DateTime.utc(2026, 10));
@@ -38,8 +38,8 @@ void main() {
   });
 
   test('keeps createdAt and refreshes updatedAt when saved again', () async {
-    await students.save(_student('Léa'));
-    await students.save(_student('Léa-Rose'));
+    await students.create(_student('Léa'));
+    await students.create(_student('Léa-Rose'));
 
     final saved = await row();
     expect(saved.firstName, 'Léa-Rose');
@@ -48,7 +48,7 @@ void main() {
   });
 
   test('keeps a deleted student in the table with its deletion date', () async {
-    await students.save(_student('Léa'));
+    await students.create(_student('Léa'));
     await students.delete(const StudentId('s1'));
 
     final saved = await row();
@@ -57,17 +57,17 @@ void main() {
   });
 
   test('clears the deletion date when the student is saved again', () async {
-    await students.save(_student('Léa'));
+    await students.create(_student('Léa'));
     await students.delete(const StudentId('s1'));
-    await students.save(_student('Léa'));
+    await students.create(_student('Léa'));
 
     expect((await row()).deletedAt, isNull);
   });
 
   test('keeps the insertion order of the first save', () async {
-    await students.save(_student('Léa'));
+    await students.create(_student('Léa'));
     final first = (await row()).seq;
-    await students.save(_student('Léa-Rose'));
+    await students.create(_student('Léa-Rose'));
 
     expect((await row()).seq, first);
   });

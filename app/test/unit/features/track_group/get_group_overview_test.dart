@@ -135,7 +135,7 @@ void main() {
     'leaves out a student who has not joined yet at the given day',
     () async {
       final group = (await world.groups.byId(const GroupId('g1')))!;
-      await world.students.save(
+      await world.students.create(
         Student.enroll(
           id: const StudentId('Eve'),
           firstName: 'Eve',
@@ -171,7 +171,7 @@ void main() {
         studentAudience: Audience.children,
         from: day(1),
       );
-      await world.students.save(
+      await world.students.create(
         Student.enroll(
           id: StudentId(id),
           firstName: 'Zoé',

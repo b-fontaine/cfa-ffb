@@ -1,6 +1,7 @@
 import 'package:billard_cfa/features/close_season/domain/closure_proposal.dart';
 import 'package:billard_cfa/features/close_season/presentation/bloc/season_closure_bloc.dart';
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/ui/closure_choice_tile.dart';
 import 'package:billard_cfa/shared/ui/error_view.dart';
 import 'package:billard_cfa/shared/ui/failure_message.dart';
@@ -43,6 +44,11 @@ class SeasonClosureView extends StatelessWidget {
         if (state.status == SeasonClosureStatus.loading) {
           return const SizedBox(height: 200, child: LoadingView());
         }
+        if (state.pending != null &&
+            state.status != SeasonClosureStatus.closing &&
+            state.status != SeasonClosureStatus.closed) {
+          return _Resume(state: state);
+        }
         if (plan == null) {
           return SizedBox(
             height: 240,
@@ -80,6 +86,10 @@ class SeasonClosureView extends StatelessWidget {
             _Choices(state: state),
             const SizedBox(height: AppSpacing.md),
             _Options(state: state),
+            if (state.synchronized) ...[
+              const SizedBox(height: AppSpacing.md),
+              _Effects(state: state),
+            ],
             const SizedBox(height: AppSpacing.md),
             _Confirm(state: state),
           ],
@@ -261,6 +271,7 @@ class _Confirm extends StatelessWidget {
     final erased = state.erasedCount;
     final failure = state.failure;
     final working = state.status == SeasonClosureStatus.closing;
+    final blocked = state.tooManyToErase;
     return SectionCard(
       title: l10n.closureConfirmTitle,
       emphasis: SectionEmphasis.high,
@@ -280,14 +291,153 @@ class _Confirm extends StatelessWidget {
                     backgroundColor: theme.colorScheme.error,
                     foregroundColor: theme.colorScheme.onError,
                   ),
-            onPressed: working ? null : () => _close(context),
+            onPressed: working || blocked ? null : () => _close(context),
             child: Text(
               erased == 0
                   ? l10n.closureActionClose
                   : l10n.closureActionEraseAndClose(erased),
             ),
           ),
+          if (blocked) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              failureMessage(
+                l10n,
+                const InvariantViolation(InvariantCode.tooManyToErase),
+              ),
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
+          ],
+          if (working && state.synchronized) _Progress(state: state),
           if (failure != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              failureMessage(l10n, failure),
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// L'avancement d'une clôture par lots, annoncé aux lecteurs d'écran, et son
+/// arrêt entre deux lots.
+class _Progress extends StatelessWidget {
+  const _Progress({required this.state});
+
+  final SeasonClosureState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final label = l10n.closureProgress(state.done, state.total);
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.sm),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Semantics(
+            liveRegion: true,
+            label: label,
+            child: LinearProgressIndicator(
+              value: state.total == 0 ? null : state.done / state.total,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(label, style: Theme.of(context).textTheme.bodySmall),
+          const SizedBox(height: AppSpacing.sm),
+          OutlinedButton.icon(
+            key: const ValueKey('closure-stop'),
+            onPressed: () => context.read<SeasonClosureBloc>().add(
+              const SeasonClosureEvent.stopRequested(),
+            ),
+            icon: const Icon(Icons.pause_circle_outline),
+            label: Text(l10n.closureStop),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// L'aperçu des effets d'une clôture dans un club synchronisé : ce qui sera
+/// écrit, dans quel ordre, ce qui reste hors de portée.
+class _Effects extends StatelessWidget {
+  const _Effects({required this.state});
+
+  final SeasonClosureState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return SectionCard(
+      title: l10n.closureEffectsTitle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.closureEffectsArchive),
+          const SizedBox(height: AppSpacing.xs),
+          Text(l10n.closureEffectsErase(state.erasedCount)),
+          const SizedBox(height: AppSpacing.xs),
+          Text(l10n.closureEffectsSteps),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            l10n.closureEffectsLocalCopy,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Une clôture commencée à reprendre : sans nouvelle confirmation, sans rien
+/// redemander (les termes sont dans le marqueur d'opération).
+class _Resume extends StatelessWidget {
+  const _Resume({required this.state});
+
+  final SeasonClosureState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final working = state.status == SeasonClosureStatus.closing;
+    final notice = switch (state.status) {
+      SeasonClosureStatus.interrupted => l10n.closureInterrupted,
+      SeasonClosureStatus.stopped => l10n.closureStopped,
+      SeasonClosureStatus.paused => l10n.closurePaused,
+      _ => null,
+    };
+    final failure = state.failure;
+    return SectionCard(
+      title: l10n.closureResumeTitle,
+      emphasis: SectionEmphasis.high,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(l10n.closureResumeBody),
+          if (notice != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Semantics(
+              liveRegion: true,
+              child: Text(notice, style: theme.textTheme.bodyMedium),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.sm),
+          FilledButton(
+            key: const ValueKey('closure-resume'),
+            onPressed: working
+                ? null
+                : () => context.read<SeasonClosureBloc>().add(
+                    const SeasonClosureEvent.resumed(),
+                  ),
+            child: Text(l10n.closureResumeAction),
+          ),
+          if (failure != null &&
+              state.status == SeasonClosureStatus.failure) ...[
             const SizedBox(height: AppSpacing.sm),
             Text(
               failureMessage(l10n, failure),
@@ -372,17 +522,25 @@ class _Done extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final result = state.result!;
+    final result = state.result;
+    final plan = state.plan;
     return SectionCard(
       title: l10n.closureDoneTitle,
       emphasis: SectionEmphasis.high,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(l10n.closureDoneSeason(state.plan!.season.label)),
-          Text(l10n.closureDoneErased(result.erased)),
-          Text(l10n.closureDoneKept(result.kept)),
-          Text(l10n.closureDoneGroups(result.groupsPrepared)),
+          if (plan != null) Text(l10n.closureDoneSeason(plan.season.label)),
+          // Une clôture reprise ne donne pas de compte rendu : elle l'a fait
+          // en plusieurs fois, le détail n'est pas reconstituable sans garder
+          // de trace des élèves effacés.
+          if (result == null)
+            Text(l10n.closureDoneResumed)
+          else ...[
+            Text(l10n.closureDoneErased(result.erased)),
+            Text(l10n.closureDoneKept(result.kept)),
+            Text(l10n.closureDoneGroups(result.groupsPrepared)),
+          ],
           const SizedBox(height: AppSpacing.md),
           Text(l10n.closureDoneBackup),
           const SizedBox(height: AppSpacing.sm),

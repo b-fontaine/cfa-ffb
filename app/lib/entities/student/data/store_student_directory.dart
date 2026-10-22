@@ -5,7 +5,12 @@ import 'package:billard_cfa/shared/persistence/document_store.dart';
 import 'package:billard_cfa/shared/persistence/store_guard.dart';
 import 'package:injectable/injectable.dart';
 
-/// Annuaire des fiches d'élèves dans le stock de documents.
+/// Annuaire des fiches d'élèves dans le stock de documents, pour le backend
+/// **drift** : les fiches y sont locales et publiées vers le club à la première
+/// invitation (c'est alors le seul créateur de fiche hors inscription). Sous
+/// `DATA_BACKEND=firestore`, `ExistingStudentDirectory` le remplace : il ne
+/// crée jamais de fiche. Environnement de test : ce backend local.
+@Environment(Environment.test)
 @LazySingleton(as: StudentDirectory)
 class StoreStudentDirectory implements StudentDirectory {
   StoreStudentDirectory(this._store);

@@ -44,6 +44,7 @@ void main() {
   late _MockErasure erasure;
   late _MockAck ack;
   var shown = 0;
+  var erasedCount = 0;
 
   setUpAll(() {
     registerFallbackValue(const StudentSheetEvent.refreshed());
@@ -62,6 +63,7 @@ void main() {
     erasure = _MockErasure();
     ack = _MockAck();
     shown = 0;
+    erasedCount = 0;
     whenListen(
       recall,
       const Stream<StudentRecallState>.empty(),
@@ -83,6 +85,7 @@ void main() {
     WidgetTester tester,
     SheetWorld world, {
     Stream<AcknowledgementState> acks = const Stream.empty(),
+    bool canErase = true,
   }) async {
     final sheet = await world.sheet(tester);
     whenListen(
@@ -109,8 +112,9 @@ void main() {
           onBack: () {},
           onEdit: () {},
           onOpenAssessment: () {},
-          onErased: () {},
+          onErased: () => erasedCount++,
           onShow: () => shown++,
+          canErase: canErase,
         ),
       ),
     );
@@ -257,5 +261,41 @@ void main() {
       expect(tester.getTopLeft(find.text(label)).dy, greaterThan(path));
     }
     expect(find.text('Performance curves'), findsOneWidget);
+  });
+
+  testWidgets('offers the erasure to a role that may erase', (tester) async {
+    final world = SheetWorld();
+    await world.start();
+    await pump(tester, world);
+
+    expect(find.text('Erase this student'), findsOneWidget);
+  });
+
+  testWidgets('does not offer the erasure to a role that may not (teacher)', (
+    tester,
+  ) async {
+    final world = SheetWorld();
+    await world.start();
+    await pump(tester, world, canErase: false);
+
+    expect(find.text('Erase this student'), findsNothing);
+    expect(find.text('Edit the first name'), findsOneWidget);
+  });
+
+  testWidgets('an erasure that ends takes the page back, once', (tester) async {
+    final world = SheetWorld();
+    await world.start();
+    whenListen(
+      erasure,
+      Stream.fromIterable(const [
+        StudentErasureState(status: StudentErasureStatus.working),
+        StudentErasureState(status: StudentErasureStatus.erased),
+      ]),
+      initialState: const StudentErasureState(),
+    );
+    await pump(tester, world);
+    await tester.pump();
+
+    expect(erasedCount, 1);
   });
 }

@@ -187,6 +187,19 @@ const _expected = <InvariantCode, (String, String)>{
         'ne sait pas dessiner : l’export est refusé plutôt que d’imprimer un '
         'carré vide.',
   ),
+  InvariantCode.tooManyToErase: (
+    'A closure erases at most 390 students. Choose fewer to erase; you can '
+        'erase the others afterwards, one by one, from their sheet.',
+    'Une clôture efface 390 élèves au plus. Choisissez-en moins à effacer ; '
+        'vous pourrez effacer les autres ensuite, un par un, depuis leur '
+        'fiche.',
+  ),
+  InvariantCode.closurePending: (
+    'A closure of this season is already started: resume it instead of '
+        'starting another one.',
+    'Une clôture de cette saison est déjà commencée : reprenez-la plutôt que '
+        'd’en lancer une autre.',
+  ),
   InvariantCode.alertNotActive: (
     'This alert is no longer active: there is nothing to acknowledge.',
     'Cette alerte n’est plus active : il n’y a rien à acquitter.',

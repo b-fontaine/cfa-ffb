@@ -122,7 +122,7 @@ Future<void> _seed(RepositoryHarness r) async {
       endDate: DateTime(2027, 6, 30),
     ),
   );
-  await r.students.save(
+  await r.students.create(
     Student.enroll(
       id: const StudentId('s1'),
       firstName: 'Léa',
@@ -130,7 +130,7 @@ Future<void> _seed(RepositoryHarness r) async {
       since: DateTime(2026, 9),
     ).changeAudience(Audience.adults, DateTime(2027, 2)),
   );
-  await r.students.save(
+  await r.students.create(
     Student.enroll(
       id: const StudentId('s2'),
       firstName: 'Théo',
@@ -822,7 +822,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
     });
 
     test('merges into existing data and replaces by id', () async {
-      await target.students.save(
+      await target.students.create(
         Student.enroll(
           id: const StudentId('s1'),
           firstName: 'Ancien prénom',
@@ -830,7 +830,7 @@ void backupContract(String label, Future<RepositoryHarness> Function() open) {
           since: DateTime(2025, 9),
         ),
       );
-      await target.students.save(
+      await target.students.create(
         Student.enroll(
           id: const StudentId('other'),
           firstName: 'Zoé',

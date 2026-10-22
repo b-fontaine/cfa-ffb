@@ -54,7 +54,7 @@ void studentGroupContract(
           since: DateTime(2026, 9, 1, 14, 30, 15, 123, 456),
         ).changeAudience(Audience.adults, DateTime.utc(2028, 9));
 
-        await repos.students.save(student);
+        await repos.students.create(student);
 
         final loaded = await repos.students.byId(const StudentId('s1'));
         expect(loaded, student);
@@ -63,17 +63,17 @@ void studentGroupContract(
       });
 
       test('keeps the order of first save and replaces by id', () async {
-        await repos.students.save(_student('s1', 'Léa'));
-        await repos.students.save(_student('s2', 'Théo'));
-        await repos.students.save(_student('s1', 'Léa-Rose'));
+        await repos.students.create(_student('s1', 'Léa'));
+        await repos.students.create(_student('s2', 'Théo'));
+        await repos.students.create(_student('s1', 'Léa-Rose'));
 
         final all = await repos.students.all();
         expect(all.map((s) => s.firstName), ['Léa-Rose', 'Théo']);
       });
 
       test('hides a deleted student and ignores unknown deletions', () async {
-        await repos.students.save(_student('s1', 'Léa'));
-        await repos.students.save(_student('s2', 'Théo'));
+        await repos.students.create(_student('s1', 'Léa'));
+        await repos.students.create(_student('s2', 'Théo'));
 
         await repos.students.delete(const StudentId('s1'));
         await repos.students.delete(const StudentId('unknown'));
@@ -83,10 +83,10 @@ void studentGroupContract(
       });
 
       test('restores a deleted student when it is saved again', () async {
-        await repos.students.save(_student('s1', 'Léa'));
+        await repos.students.create(_student('s1', 'Léa'));
         await repos.students.delete(const StudentId('s1'));
 
-        await repos.students.save(_student('s1', 'Léa'));
+        await repos.students.create(_student('s1', 'Léa'));
 
         expect(await repos.students.byId(const StudentId('s1')), isNotNull);
         expect(await repos.students.all(), hasLength(1));

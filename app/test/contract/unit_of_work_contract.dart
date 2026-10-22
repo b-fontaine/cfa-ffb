@@ -69,7 +69,7 @@ void unitOfWorkContract(
 
     test('applies every write of the body together', () async {
       await setup.unitOfWork.run(() async {
-        await students.save(_student('s1'));
+        await students.create(_student('s1'));
         await groups.save(_groupWith('g1', ['s1']));
       });
 
@@ -84,7 +84,7 @@ void unitOfWorkContract(
       // Sans lecture de ses propres écritures, `groups.save` ne voyait pas la
       // fiche encore absente et laissait `groupIds` vide.
       await setup.unitOfWork.run(() async {
-        await students.save(_student('s1'));
+        await students.create(_student('s1'));
         await groups.save(_groupWith('g1', ['s1']));
       });
 
@@ -95,7 +95,7 @@ void unitOfWorkContract(
     test('writes nothing when the body fails', () async {
       await expectLater(
         setup.unitOfWork.run<void>(() async {
-          await students.save(_student('s1'));
+          await students.create(_student('s1'));
           throw StateError('boom');
         }),
         throwsStateError,
@@ -162,7 +162,7 @@ void unitOfWorkContract(
     test('a nested unit joins the outer one: all or nothing', () async {
       await expectLater(
         setup.unitOfWork.run<void>(() async {
-          await setup.unitOfWork.run(() => students.save(_student('s1')));
+          await setup.unitOfWork.run(() => students.create(_student('s1')));
           throw StateError('outer fails');
         }),
         throwsStateError,

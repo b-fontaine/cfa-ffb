@@ -1,6 +1,26 @@
 part of 'season_closure_bloc.dart';
 
-enum SeasonClosureStatus { loading, ready, closing, closed, failure }
+enum SeasonClosureStatus {
+  loading,
+
+  /// Une clôture de cette saison, commencée par ce compte, est à reprendre.
+  resumable,
+  ready,
+
+  /// En cours : `done` lots sur `total` (club synchronisé).
+  closing,
+
+  /// Arrêtée par l'animateur entre deux lots : reprendre pour terminer.
+  stopped,
+
+  /// Interrompue par le réseau : rien n'est perdu, reprendre plus tard.
+  interrupted,
+
+  /// Plafond d'écritures du jour atteint : reprendre un autre jour.
+  paused,
+  closed,
+  failure,
+}
 
 @freezed
 abstract class SeasonClosureState with _$SeasonClosureState {
@@ -18,7 +38,17 @@ abstract class SeasonClosureState with _$SeasonClosureState {
     /// Supprimer les séances planifiées postérieures à la clôture (U11-11).
     @Default(true) bool dropPlanned,
 
-    /// Compte rendu de la clôture (nombres seulement).
+    /// La clôture se fait dans le club, par lots reprenables.
+    @Default(false) bool synchronized,
+
+    /// La clôture commencée à reprendre (`resumable`, `stopped`,
+    /// `interrupted`, `paused`).
+    ClosureTerms? pending,
+    @Default(0) int done,
+    @Default(0) int total,
+
+    /// Compte rendu de la clôture (nombres seulement) ; absent d'une clôture
+    /// reprise.
     ClosureResult? result,
     Failure? failure,
   }) = _SeasonClosureState;
@@ -29,4 +59,8 @@ abstract class SeasonClosureState with _$SeasonClosureState {
       choices.values.where((c) => c == ClosureChoice.erase).length;
 
   int get keptCount => choices.length - erasedCount;
+
+  /// Trop d'élèves à effacer pour une clôture par lots reprenables : refusée
+  /// avant toute écriture.
+  bool get tooManyToErase => synchronized && erasedCount > maxErasedPerClosure;
 }

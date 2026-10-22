@@ -12,6 +12,9 @@ final class ClubPaths {
 
   String get root => 'clubs/${club.value}';
 
+  /// Les `members` du club (rôle et périmètre de chaque compte).
+  String get members => '$root/members';
+
   /// Le `member` d'un compte (rôle et périmètre) : `members/{uid}`.
   String member(UserId user) => '$root/members/${user.value}';
 
@@ -70,6 +73,17 @@ final class ClubPaths {
   /// directeur en posant un marqueur au nom d'un fichier).
   String importMarker(String fileId, UserId author) =>
       '$imports/${fileId}_${author.value}';
+
+  /// Marqueurs d'opération reprenable (FB8, ADR 0024 décision 19) : un
+  /// document par opération en cours **et par auteur**, sans aucune donnée
+  /// personnelle. Il disparaît avec la fin de l'opération.
+  String get operations => '$root/operations';
+
+  /// Le marqueur de [author] pour l'opération d'empreinte [key] :
+  /// `{key}_{uid}`. Comme pour l'import, l'identifiant porte l'auteur :
+  /// les règles le lui réservent par construction.
+  String operationMarker(String key, UserId author) =>
+      '$operations/${key}_${author.value}';
 
   /// Passages : **un document par passage** (ADR 0024, décision 17).
   String get attempts => '$root/attempts';

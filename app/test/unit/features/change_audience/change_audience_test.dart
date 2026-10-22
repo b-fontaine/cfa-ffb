@@ -212,7 +212,7 @@ void main() {
         from: day(8),
       );
       await world.groups.save(late);
-      await world.students.save(
+      await world.students.create(
         Student.enroll(
           id: const StudentId('s2'),
           firstName: 's2',
@@ -236,7 +236,7 @@ void main() {
     test(
       'leaves the groups alone when the student has no membership',
       () async {
-        await world.students.save(
+        await world.students.create(
           Student.enroll(
             id: const StudentId('loner'),
             firstName: 'Loner',

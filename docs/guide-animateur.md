@@ -706,7 +706,19 @@ Ouvrez **Plus**, puis **Réglages**. Cinq réglages, chacun avec deux boutons
 5. **Confirmer** : le bouton **Effacer N élèves et clore** demande de cocher
    **J'ai compris**. L'effacement est définitif.
 
-La clôture est **tout ou rien**. L'application garde alors, **sans aucun nom**,
+Dans le club, la clôture se fait **par étapes** (400 écritures au plus chacune), l'archive
+étant écrite **avant** tout effacement ; l'assistant montre d'abord un **aperçu
+des effets**, puis l'avancement, et propose **Arrêter après cette étape**. Si la
+connexion est coupée ou si l'application est fermée, **rien n'est perdu** : en
+rouvrant l'assistant de cette saison, **Reprendre la clôture** termine ce qui
+reste, **sans rien redemander** (c'est le même compte qui reprend). **390 élèves
+au plus** peuvent être effacés dans une même clôture : au-delà, l'assistant le
+dit et refuse avant toute écriture ; effacez les autres ensuite, un par un.
+**Aucune clôture pendant la période de bascule** des données locales (voir
+plus haut). Les copies locales d'élèves effacés restées sur un appareil, et les
+sauvegardes déjà exportées, ne sont pas touchées : supprimez-les vous-même. Sur
+un appareil qui n'est pas encore passé au club, la clôture reste **tout ou rien**.
+L'application garde alors, **sans aucun nom**,
 des chiffres par public (séances, présences, passages) et, par exercice,
 seulement ceux pratiqués par **au moins 3 élèves** : ils se lisent dans
 **Plus**, **Saisons passées**. Elle ne garde ni liste des élèves effacés, ni
@@ -715,19 +727,36 @@ groupe, ni date de séance.
 ## Effacer un élève
 
 Les élèves sont souvent mineurs : l'application ne garde que le **prénom** et
-le **public**. Avant le passage sur le serveur partagé, elles restent sur votre
-appareil ; ensuite, elles sont dans le club, et **l'effacement d'un élève dans
-le club n'efface pas encore la copie restée dans la base locale de l'appareil**
-(elle reste exportable, et la réimporter rétablirait l'élève : ne le faites pas
-après une demande d'effacement d'un parent).
+le **public**. Le droit à l'effacement s'exerce **à tout moment**, à la demande
+de l'élève ou de ses parents, et à la fin de la saison.
 
+- **Qui peut effacer** : le **directeur** et l'**administrateur**. Un
+  enseignant n'a pas le bouton : il transmet la demande au directeur.
 - Sur la fiche de l'élève, **Effacer** supprime définitivement l'élève, ses
-  résultats, ses blocs acquis, ses alertes vues, ses bilans et ses appartenances à un groupe. Une confirmation est
-  demandée ; l'action ne peut pas être annulée.
+  résultats, ses blocs acquis, ses alertes vues, ses bilans, ses présences et ses
+  appartenances à un groupe ; **le compte du parent ou de l'élève lié perd
+  aussitôt l'accès à cette fiche** (le compte reste, sans la fiche). L'écran
+  chiffre d'abord ce qui sera supprimé. Une confirmation est demandée ; l'action
+  ne peut pas être annulée. **Aucune trace de l'effacement ne reste** : ni liste,
+  ni nom.
+- **Dans le club, l'effacement se fait par étapes** : l'écran montre
+  l'avancement (« étape 2 sur 5 ») et propose **Arrêter après cette étape**. Un
+  dossier ordinaire s'efface en quelques secondes. Si la connexion est coupée,
+  si vous fermez l'application ou si le plafond d'écritures du jour est atteint
+  (très gros dossier), **rien n'est perdu** : la fiche reste « en cours
+  d'effacement » (plus aucune donnée nouvelle ne peut lui être ajoutée) et, en
+  rouvrant la fiche, l'écran propose **Reprendre l'effacement**, sans nouvelle
+  confirmation.
+- **Ce que l'effacement dans le club n'atteint pas, et que vous traitez vous-même** :
+  - **la copie restée dans la base locale d'un appareil** qui a utilisé
+    l'application avant le passage au club (elle reste exportable, et la
+    réimporter rétablirait l'élève : ne le faites pas après une demande
+    d'effacement d'un parent) ; effacez les données du site sur cet appareil ;
+  - **les sauvegardes déjà exportées** (fichiers JSON) : supprimez-les ;
+  - les copies d'écran et les fichiers PDF imprimés.
 - Effacez les élèves **à la fin de la saison**, ou à la demande de l'élève ou de
-  ses parents. Exportez d'abord une sauvegarde si vous voulez garder une copie.
-- Les sauvegardes déjà exportées ne sont pas modifiées : supprimez-les vous-même
-  quand vous n'en avez plus besoin.
+  ses parents. Exportez d'abord une sauvegarde si vous voulez garder une copie
+  (puis supprimez-la).
 
 ## Une saison en bref
 

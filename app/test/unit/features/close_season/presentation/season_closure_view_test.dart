@@ -8,6 +8,7 @@ import 'package:billard_cfa/features/close_season/presentation/ui/season_closure
 import 'package:billard_cfa/shared/lib/audience.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/operations/operation_marker.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -315,5 +316,132 @@ void main() {
     await tester.tap(find.text('Back to Today'));
     expect(seasons, 1);
     expect(home, 1);
+  });
+  group('club synchronisé (lots reprenables)', () {
+    final terms = ClosureTerms(
+      seasonId: const SeasonId('s'),
+      closedOn: day(12),
+      prepareNext: true,
+      dropPlanned: true,
+    );
+
+    SeasonClosureState synced(ClosurePlan plan) =>
+        ready(plan).copyWith(synchronized: true);
+
+    testWidgets('the preview of the effects is shown before confirmation', (
+      tester,
+    ) async {
+      await pump(tester, synced(plan()));
+
+      expect(find.text('What the closure will do'), findsOneWidget);
+      expect(
+        find.textContaining('written first, before any erasure'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('Students erased with all their data'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('steps of at most 400 writes'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Local copies of erased'), findsOneWidget);
+    });
+
+    testWidgets('on the device there is no preview of steps', (tester) async {
+      await pump(tester, ready(plan()));
+
+      expect(find.text('What the closure will do'), findsNothing);
+    });
+
+    testWidgets(
+      'the progress is announced and the closure can be stopped between steps',
+      (tester) async {
+        await pump(
+          tester,
+          synced(plan())
+              .copyWith(status: SeasonClosureStatus.closing, done: 3, total: 9),
+        );
+
+        expect(find.text('Closure in progress: step 3 of 9'), findsOneWidget);
+        expect(
+          tester.getSemantics(find.byType(LinearProgressIndicator)).label,
+          'Closure in progress: step 3 of 9',
+        );
+        await tester.tap(find.byKey(const ValueKey('closure-stop')));
+        verify(() => bloc.add(const SeasonClosureEvent.stopRequested()))
+            .called(1);
+      },
+    );
+
+    testWidgets('more students to erase than allowed blocks the button', (
+      tester,
+    ) async {
+      final many = [
+        for (var i = 0; i < 391; i++)
+          ClosureProposal(
+            studentId: StudentId('s$i'),
+            firstName: 'E$i',
+            audience: Audience.children,
+            choice: ClosureChoice.erase,
+            reason: ClosureReason.inactive,
+          ),
+      ];
+      await pump(tester, synced(plan(proposals: many)));
+
+      final button = tester.widget<FilledButton>(
+        find.byKey(const ValueKey('closure-close')),
+      );
+      expect(button.onPressed, isNull);
+      expect(
+        find.textContaining('A closure erases at most 390 students'),
+        findsOneWidget,
+      );
+    });
+
+    for (final (status, text) in [
+      (SeasonClosureStatus.resumable, null),
+      (SeasonClosureStatus.interrupted, 'The closure is interrupted'),
+      (SeasonClosureStatus.stopped, 'The closure is stopped'),
+      (SeasonClosureStatus.paused, 'Today’s write limit is reached'),
+    ]) {
+      testWidgets(
+        'a started closure is resumed without asking again ($status)',
+        (tester) async {
+          await pump(
+            tester,
+            SeasonClosureState(
+              status: status,
+              synchronized: true,
+              pending: terms,
+            ),
+          );
+
+          expect(find.text('Closure to resume'), findsOneWidget);
+          if (text != null) expect(find.textContaining(text), findsOneWidget);
+          expect(find.byKey(const ValueKey('closure-close')), findsNothing);
+          await tester.tap(find.byKey(const ValueKey('closure-resume')));
+          verify(() => bloc.add(const SeasonClosureEvent.resumed())).called(1);
+        },
+      );
+    }
+
+    testWidgets('a resumed closure that finishes gives no student detail', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        SeasonClosureState(
+          status: SeasonClosureStatus.closed,
+          synchronized: true,
+          plan: plan(),
+        ),
+      );
+
+      expect(find.text('The interrupted closure is finished.'), findsOneWidget);
+      expect(find.textContaining('student erased'), findsNothing);
+      expect(find.textContaining('students erased'), findsNothing);
+    });
   });
 }

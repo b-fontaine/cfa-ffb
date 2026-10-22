@@ -11,9 +11,11 @@ import 'package:billard_cfa/shared/persistence/store_guard.dart';
 /// document** que `StoreStudentDirectory` publie à l'invitation (même
 /// identifiant local). Choisi par `DataBackend.firestore`.
 ///
-/// - `save` crée la fiche (sans groupe courant, date du serveur) ou met à jour
+/// - `create` (l'inscription seule) crée la fiche, sans groupe courant, avec la
+///   date du serveur que les règles exigent à la création ; `save` met à jour
 ///   ses champs propres (prénom, public, historique) sans toucher `groupIds`
-///   ni `createdAt` : les groupes tiennent le premier, le serveur le second ;
+///   ni `createdAt`, et **échoue sur une fiche absente** : une fiche effacée ne
+///   revient jamais avec son prénom par une édition rejouée ;
 /// - `delete` et `erase` suppriment le document (suppression **physique**, ADR
 ///   0024 décision 15) ; l'effacement en cascade des données de l'élève est le
 ///   lot FB8 ;
@@ -32,22 +34,30 @@ class FirestoreStudentRepository implements StudentRepository {
   final ClubStore _club;
 
   @override
-  Future<void> save(Student student) => guardStore(() async {
-    final path = _club.paths.student(student.id);
-    final exists = await _club.get(path) != null;
-    final fields = StudentDocument.encode(student);
+  Future<void> create(Student student) => guardStore(() async {
     // Fusion : même si la lecture ne voit pas une fiche qui existe
-    // (concurrence,
-    // cache hors ligne), `groupIds` n'est jamais remplacé (`ArrayUnion([])` le
-    // crée vide ou le laisse tel quel). Seule `createdAt` dépend de la lecture.
+    // (concurrence, cache hors ligne), `groupIds` n'est jamais remplacé
+    // (`ArrayUnion([])` le crée vide ou le laisse tel quel).
     await _club.commit([
-      SetOp(path, {
-        ...fields,
+      SetOp(_club.paths.student(student.id), {
+        ...StudentDocument.encode(student),
         'groupIds': const ArrayUnion([]),
-        if (!exists) ...StudentDocument.creationOnly(),
+        ...StudentDocument.creationOnly(),
       }, merge: true),
     ]);
   });
+
+  @override
+  Future<void> save(Student student) => guardStore(
+    // Une mise à jour : sur une fiche absente (effacée par un autre appareil),
+    // elle échoue (`notFound`) au lieu de la recréer avec son prénom.
+    () => _club.commit([
+      UpdateOp(
+        _club.paths.student(student.id),
+        StudentDocument.encode(student),
+      ),
+    ]),
+  );
 
   @override
   Future<Student?> byId(StudentId id) => guardStore(() async {

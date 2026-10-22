@@ -583,7 +583,7 @@ class TrackingWorld {
     );
     final students = getIt<StudentRepository>();
     if (await students.byId(studentId(student)) == null) {
-      await students.save(
+      await students.create(
         Student.enroll(
           id: studentId(student),
           firstName: student,

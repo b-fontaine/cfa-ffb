@@ -17,6 +17,7 @@ import {
   invitation,
   now,
   put,
+  remove,
   seed,
   ts,
 } from './support.mjs';
@@ -415,6 +416,23 @@ describe('consommation : un lot crée le member et consomme l\'invitation', () =
       ),
       false,
     );
+  });
+
+  test('ATTAQUE : une invitation non utilisée qui cite un élève effacé ou en cours d\'effacement n\'est plus utilisable', async () => {
+    const db = dbFor('u-new');
+    await seedInvitation('GUARDGUARD', { role: 'guardian', groupIds: ['g1', 'g2'], studentIds: ['s1', 's2'] });
+    const asGuardian = { memberData: { role: 'guardian', groupIds: ['g1', 'g2'], studentIds: ['s1', 's2'] } };
+    // Fiche supprimée : refusé (l'identifiant de l'élève ne serait pas purgé du nouveau member).
+    await remove(env, 'clubs/c1/students/s1');
+    assert.equal(await allowed(() => join(db, 'u-new', 'JOINJOINJO')), false, 'élève : fiche supprimée');
+    assert.equal(await allowed(() => join(db, 'u-new', 'GUARDGUARD', asGuardian)), false, 'parent : une fiche citée supprimée');
+    // Fiche en cours d'effacement : refusé (le lien serait posé pendant la purge).
+    await put(env, 'clubs/c1/students/s1', { firstName: 'Léa', groupIds: ['g1'], erasing: true });
+    assert.equal(await allowed(() => join(db, 'u-new', 'JOINJOINJO')), false, 'élève : fiche en cours d\'effacement');
+    assert.equal(await allowed(() => join(db, 'u-new', 'GUARDGUARD', asGuardian)), false, 'parent : fiche en cours d\'effacement');
+    // Témoin : fiches ordinaires, l'invitation s'utilise.
+    await put(env, 'clubs/c1/students/s1', { firstName: 'Léa', groupIds: ['g1'] });
+    assert.equal(await allowed(() => join(db, 'u-new', 'GUARDGUARD', asGuardian)), true, 'témoin');
   });
 
   test('l\'invitation seule, sans member : refusée (on ne la brûle pas)', async () => {

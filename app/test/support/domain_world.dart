@@ -126,7 +126,7 @@ class DomainWorld {
         studentAudience: audience,
         from: day(1),
       );
-      await students.save(
+      await students.create(
         Student.enroll(
           id: StudentId(name),
           firstName: name,

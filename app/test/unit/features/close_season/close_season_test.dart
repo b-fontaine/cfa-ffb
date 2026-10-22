@@ -114,7 +114,7 @@ void main() {
     });
 
     test('refuses to erase a student placed in another open season', () async {
-      await world.students.save(
+      await world.students.create(
         (await world.students.byId(const StudentId('a')))!
             .copyWith(id: const StudentId('stranger')),
       );
@@ -141,7 +141,7 @@ void main() {
 
   group('students no group places any more', () {
     test('can be erased: a student who never had a group', () async {
-      await world.students.save(
+      await world.students.create(
         (await world.students.byId(const StudentId('a')))!
             .copyWith(id: const StudentId('loose')),
       );

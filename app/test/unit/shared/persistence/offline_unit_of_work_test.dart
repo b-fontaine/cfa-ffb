@@ -68,7 +68,7 @@ void main() {
     await unit
         .run(() async {
           await drift.save(_student('local'));
-          await firestore.save(_student('remote'));
+          await firestore.create(_student('remote'));
         })
         .timeout(const Duration(seconds: 2));
 
@@ -92,7 +92,7 @@ void main() {
     expect(tracker.pending, 0);
 
     await unit
-        .run(() => FirestoreStudentRepository(club).save(_student('s1')))
+        .run(() => FirestoreStudentRepository(club).create(_student('s1')))
         .timeout(const Duration(seconds: 2));
     await pumpEventQueue();
 

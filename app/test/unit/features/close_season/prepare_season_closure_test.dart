@@ -43,7 +43,7 @@ void main() {
     });
 
     test('proposes to erase a student who never had a group', () async {
-      await world.students.save(
+      await world.students.create(
         (await world.students.byId(const StudentId('a')))!
             .copyWith(id: const StudentId('loose'), firstName: 'loose'),
       );
@@ -57,7 +57,7 @@ void main() {
     });
 
     test('previews the archive figures without storing anything', () async {
-      await world.students.save(
+      await world.students.create(
         (await world.students.byId(const StudentId('a')))!
             .copyWith(id: const StudentId('c'), firstName: 'c'),
       );

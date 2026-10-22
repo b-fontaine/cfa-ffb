@@ -93,6 +93,15 @@ enum InvariantCode {
   /// Un texte à imprimer contient un caractère que la fonte du document ne
   /// sait pas dessiner (export PDF, ADR 0021).
   unprintableContent,
+
+  /// Une clôture efface plus d'élèves que le premier lot d'une clôture
+  /// reprenable ne peut en déclarer (FB8) : en effacer moins, puis les autres
+  /// ensuite, un par un.
+  tooManyToErase,
+
+  /// Une clôture de cette saison est déjà commencée par ce compte : la
+  /// reprendre (avec ses propres choix) plutôt qu'en lancer une autre (FB8).
+  closurePending,
 }
 
 /// Échec métier attendu (sceller : un `switch` exhaustif suffit à le traiter).

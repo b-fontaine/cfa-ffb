@@ -91,7 +91,7 @@ class ClubWorld {
     final start = DateTime(2026, 10);
     await local.seedClub(studentNames: ['s1', 's2']);
     for (final (id, name) in [('s1', 'Léa'), ('s2', 'Tom')]) {
-      await local.students.save(
+      await local.students.create(
         Student.enroll(
           id: StudentId(id),
           firstName: name,
@@ -103,7 +103,7 @@ class ClubWorld {
     await local.groups.save(
       (await local.groups.byId(const GroupId('g1')))!.rename('Mardi'),
     );
-    await local.students.save(
+    await local.students.create(
       Student.enroll(
         id: const StudentId('s3'),
         firstName: 'Marc',

@@ -339,13 +339,13 @@ describe('C13 suppression physique et documents uniques', () => {
     assert.equal((await getDoc(doc(a, `${C}/attempts/a-g1`))).exists(), false);
   });
 
-  test('LIMITE : une écriture par fusion (set merge) après la suppression recrée la fiche', async () => {
+  test('une écriture d\'édition par fusion (sans date de création) après la suppression ne recrée pas la fiche', async () => {
     const [a, b] = devices();
     await deleteDoc(doc(a, `${C}/students/s2`));
 
-    await setDoc(doc(b, `${C}/students/s2`), { firstName: 'Tom B', groupIds: arrayUnion() }, merge);
+    await assert.rejects(setDoc(doc(b, `${C}/students/s2`), { firstName: 'Tom B', groupIds: arrayUnion() }, merge));
 
-    assert.equal((await getDoc(doc(a, `${C}/students/s2`))).exists(), true);
+    assert.equal((await getDoc(doc(a, `${C}/students/s2`))).exists(), false);
   });
 
   test('les réglages du club : une écriture entière gagne', async () => {

@@ -20,3 +20,6 @@ widgetbook/lib/**/*.g.dart
 node_modules/
 # Journaux des émulateurs Firebase
 *-debug.log
+
+# Arbres git séparés créés par les agents (jamais versionnés)
+.claude/worktrees/

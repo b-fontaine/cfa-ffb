@@ -63,7 +63,7 @@ void main() {
         endDate: DateTime(2027, 6, 30),
       ),
     );
-    await students.save(
+    await students.create(
       Student.enroll(
         id: const StudentId('1'),
         firstName: 'Zoé',

@@ -1,4 +1,5 @@
 import 'package:billard_cfa/shared/l10n/generated/app_localizations.dart';
+import 'package:billard_cfa/shared/lib/closure_limits.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/field_limits.dart';
 
@@ -64,6 +65,10 @@ String failureMessage(
     InvariantCode.membershipAlreadyOpen => l10n.failMembershipAlreadyOpen,
     InvariantCode.audienceMismatch => l10n.failAudienceMismatch,
     InvariantCode.unprintableContent => l10n.failUnprintableContent,
+    InvariantCode.tooManyToErase => l10n.failTooManyToErase(
+      maxErasedPerClosure,
+    ),
+    InvariantCode.closurePending => l10n.failClosurePending,
 
     InvariantCode.invalidRules => l10n.failInvalidRules,
     InvariantCode.invalidPeriod ||

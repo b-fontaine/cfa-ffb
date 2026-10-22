@@ -60,7 +60,7 @@ void main() {
     final acquisitions = DriftAcquisitionRepository(db, clock);
     final acknowledgements = DriftAcknowledgementRepository(db, clock);
     const lea = StudentId('s1');
-    await students.save(
+    await students.create(
       Student.enroll(
         id: lea,
         firstName: 'Léa',
@@ -184,7 +184,7 @@ void main() {
     );
     final names = ['s1', 's2', 's3'];
     for (final id in names) {
-      await students.save(
+      await students.create(
         Student.enroll(
           id: StudentId(id),
           firstName: 'Élève $id',
@@ -344,7 +344,7 @@ void main() {
       final planned = DriftSessionRepository(db, clock);
       final runProgress = DriftRunProgressRepository(db);
       const lea = StudentId('s1');
-      await students.save(
+      await students.create(
         Student.enroll(
           id: lea,
           firstName: 'Léa',

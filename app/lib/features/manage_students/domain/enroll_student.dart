@@ -92,7 +92,7 @@ class EnrollStudent {
     );
     await _unitOfWork.run(() async {
       await _seasons.save(season);
-      await _students.save(student);
+      await _students.create(student);
       await _groups.save(group);
     });
     return EnrolledStudent(student: student, group: group);

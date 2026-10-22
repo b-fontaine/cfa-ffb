@@ -91,7 +91,7 @@ class ImportBackup {
         await _seasonArchives.save(archive);
       }
       for (final student in snapshot.students) {
-        await _students.save(student);
+        await _students.create(student);
       }
       for (final group in snapshot.groups) {
         await _groups.save(group);

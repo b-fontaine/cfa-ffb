@@ -138,8 +138,8 @@ void repositoryContract(
     /// `g1`) : ce que Firestore exige avant toute donnée dénormalisée.
     Future<void> seedOwners() async {
       await repos.seasons.save(_season('season'));
-      await repos.students.save(_student('s1', 'Léa'));
-      await repos.students.save(_student('s2', 'Théo'));
+      await repos.students.create(_student('s1', 'Léa'));
+      await repos.students.create(_student('s2', 'Théo'));
       for (final id in ['g1', 'g2', 'g3']) {
         var group = _group(id, name: 'Groupe $id');
         if (id == 'g1') {
@@ -731,8 +731,8 @@ void repositoryContract(
 
     group('effacement d’un élève (droit à l’effacement)', () {
       Future<void> seed() async {
-        await repos.students.save(_student('s1', 'Léa'));
-        await repos.students.save(_student('s2', 'Théo'));
+        await repos.students.create(_student('s1', 'Léa'));
+        await repos.students.create(_student('s2', 'Théo'));
         await repos.groups.save(
           _group('g1')
               .admit(
@@ -820,7 +820,7 @@ void repositoryContract(
 
         await erase('s1');
         // Une nouvelle sauvegarde ne ressuscite que ce qu'elle écrit.
-        await repos.students.save(_student('s1', 'Autre'));
+        await repos.students.create(_student('s1', 'Autre'));
 
         expect(await repos.attempts.forStudent(const StudentId('s1')), isEmpty);
         expect(
@@ -846,7 +846,7 @@ void repositoryContract(
     group('unité de travail', () {
       test('returns the value of the body', () async {
         final value = await repos.unitOfWork.run(() async {
-          await repos.students.save(_student('s1', 'Léa'));
+          await repos.students.create(_student('s1', 'Léa'));
           return 42;
         });
 
@@ -864,7 +864,7 @@ void repositoryContract(
       test('cancels the writes already made when the body fails', () async {
         await expectLater(
           repos.unitOfWork.run<void>(() async {
-            await repos.students.save(_student('s1', 'Léa'));
+            await repos.students.create(_student('s1', 'Léa'));
             await repos.groups.save(_group('g1'));
             throw StateError('boom');
           }),
@@ -876,14 +876,14 @@ void repositoryContract(
       });
 
       test('restores overwritten and removed items on failure', () async {
-        await repos.students.save(_student('s1', 'Léa'));
-        await repos.students.save(_student('s2', 'Hugo'));
+        await repos.students.create(_student('s1', 'Léa'));
+        await repos.students.create(_student('s2', 'Hugo'));
 
         await expectLater(
           repos.unitOfWork.run<void>(() async {
-            await repos.students.save(_student('s1', 'Renamed'));
+            await repos.students.create(_student('s1', 'Renamed'));
             await repos.students.delete(const StudentId('s2'));
-            await repos.students.save(_student('s3', 'Mia'));
+            await repos.students.create(_student('s3', 'Mia'));
             throw StateError('boom');
           }),
           throwsStateError,
@@ -897,8 +897,8 @@ void repositoryContract(
 
       test('keeps the writes of a body that succeeds', () async {
         await repos.unitOfWork.run<void>(() async {
-          await repos.students.save(_student('s1', 'Léa'));
-          await repos.students.save(_student('s2', 'Hugo'));
+          await repos.students.create(_student('s1', 'Léa'));
+          await repos.students.create(_student('s2', 'Hugo'));
         });
 
         expect(await repos.students.all(), hasLength(2));
@@ -910,7 +910,7 @@ void repositoryContract(
           await expectLater(
             repos.unitOfWork.run<void>(() async {
               await repos.unitOfWork.run<void>(() async {
-                await repos.students.save(_student('s1', 'Léa'));
+                await repos.students.create(_student('s1', 'Léa'));
               });
               throw StateError('boom');
             }),

@@ -23,7 +23,7 @@ beforeEach(async () => {
 const text = (n) => 'é'.repeat(n);
 
 describe('fiche élève : prénom et initiale (minimisation)', () => {
-  const create = (data) => allowed(() => setDoc(doc(dbOf(env, 'director'), 'clubs/c1/students/n1'), data));
+  const create = (data) => allowed(() => setDoc(doc(dbOf(env, 'director'), 'clubs/c1/students/n1'), { ...data, createdAt: serverTimestamp() }));
 
   test('le prénom compte de 1 à 40 caractères', async () => {
     assert.equal(await create(student(['g1'], { firstName: text(40) })), true, '40');

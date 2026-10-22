@@ -112,7 +112,7 @@ void main() {
         studentAudience: Audience.children,
         from: DateTime(2025, 9),
       );
-      await world.students.save(
+      await world.students.create(
         Student.enroll(
           id: StudentId(name),
           firstName: name,

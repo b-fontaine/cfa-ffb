@@ -18,6 +18,9 @@ class DriftStudentRepository implements StudentRepository {
   final Clock _clock;
 
   @override
+  Future<void> create(Student student) => save(student);
+
+  @override
   Future<void> save(Student student) => _db.transaction(() async {
     final now = _clock.now();
     await _db

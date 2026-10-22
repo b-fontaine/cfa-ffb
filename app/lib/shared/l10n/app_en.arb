@@ -4200,5 +4200,89 @@
   "localDataDoneUnsentOk": "Understood",
   "moreLocalExport": "Export my local data",
   "moreLocalExportHint": "Save a file of the data still on this device",
-  "localExportSaveFailed": "The file could not be saved. The data of this device was not changed. Try again."
+  "localExportSaveFailed": "The file could not be saved. The data of this device was not changed. Try again.",
+  "failTooManyToErase": "A closure erases at most {max} students. Choose fewer to erase; you can erase the others afterwards, one by one, from their sheet.",
+  "@failTooManyToErase": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "failClosurePending": "A closure of this season is already started: resume it instead of starting another one.",
+  "eraseClubBody": "Permanently deletes {name} and the {count} linked records in the club: passes, acquired blocks, assessments, acknowledgements, memberships and attendance. Linked parent and student accounts lose access to the sheet. No trace of the erasure remains.",
+  "@eraseClubBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "eraseClubLimits": "Limits: a local copy of this student may remain on a device that used the app before the switch to the synchronised club, and backups already exported are not touched. Delete them yourself (see the facilitator guide).",
+  "eraseConfirmClubBody": "Everything about {name} is deleted from the club, on every device, and cannot be recovered. The erasure runs in steps: if the connection drops, you can resume it from this sheet. Export a backup first if you want to keep a copy.",
+  "@eraseConfirmClubBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eraseProgress": "Erasure in progress: step {done} of {total}",
+  "@eraseProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "eraseStop": "Stop after this step",
+  "eraseResume": "Resume the erasure",
+  "eraseResumeNotice": "The erasure of {name} has started but is not finished. No new data can be added to it any more. Resume it to finish.",
+  "@eraseResumeNotice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eraseInterrupted": "The erasure is interrupted: the connection dropped. Nothing is lost, resume it when it comes back.",
+  "eraseStopped": "The erasure is stopped. Resume it to finish.",
+  "erasePaused": "Today’s write limit is reached. Resume the erasure tomorrow: it continues where it stopped.",
+  "closureResumeTitle": "Closure to resume",
+  "closureResumeBody": "A closure of this season has started and is not finished. No new data can be added to the students marked for erasure any more. Resume it to finish: it continues where it stopped, without asking anything again.",
+  "closureResumeAction": "Resume the closure",
+  "closureProgress": "Closure in progress: step {done} of {total}",
+  "@closureProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "closureStop": "Stop after this step",
+  "closureInterrupted": "The closure is interrupted: the connection dropped. Nothing is lost, resume it when it comes back.",
+  "closureStopped": "The closure is stopped. Resume it to finish.",
+  "closurePaused": "Today’s write limit is reached. Resume the closure tomorrow: it continues where it stopped.",
+  "closureEffectsTitle": "What the closure will do",
+  "closureEffectsArchive": "The aggregated archive of the season is written first, before any erasure.",
+  "closureEffectsErase": "Students erased with all their data (passes, assessments, memberships, attendance): {count}. Linked parent and student accounts lose access to their sheet.",
+  "@closureEffectsErase": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "closureEffectsSteps": "The closure runs in the club in steps of at most 400 writes: if the connection drops, it resumes where it stopped. No closure should take place during the local data switch-over period.",
+  "closureEffectsLocalCopy": "Local copies of erased students left on a device, and backups already exported, are not touched: delete them yourself (facilitator guide).",
+  "closureDoneResumed": "The interrupted closure is finished."
 }

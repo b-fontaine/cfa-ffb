@@ -11,6 +11,8 @@ import 'package:billard_cfa/entities/session_record/data/in_memory_session_recor
 import 'package:billard_cfa/entities/settings/data/in_memory_settings_repository.dart';
 import 'package:billard_cfa/entities/student/data/in_memory_student_repository.dart';
 import 'package:billard_cfa/features/backup_data/data/in_memory_backup_marker_repository.dart';
+import 'package:billard_cfa/features/manage_students/domain/erase_student.dart';
+import 'package:billard_cfa/features/manage_students/domain/local_student_erasure.dart';
 import 'package:billard_cfa/shared/persistence/in_memory_unit_of_work.dart';
 
 import 'acknowledgement_contract.dart';
@@ -24,6 +26,7 @@ import 'repository_watch_contract.dart';
 import 'run_progress_contract.dart';
 import 'season_archive_contract.dart';
 import 'settings_contract.dart';
+import 'student_erasure_contract.dart';
 
 Future<RepositoryHarness> _open() async => RepositoryHarness(
   students: InMemoryStudentRepository(),
@@ -42,7 +45,31 @@ Future<RepositoryHarness> _open() async => RepositoryHarness(
   close: () async {},
 );
 
+Future<ErasureSetup> _openErasure() async {
+  final r = await _open();
+  return (
+    erasure: LocalStudentErasure(
+      EraseStudent(
+        r.students,
+        r.groups,
+        r.sessionRecords,
+        r.attempts,
+        r.assessments,
+        r.acquisitions,
+        r.acknowledgements,
+        r.runProgress,
+        r.sessions,
+        r.unitOfWork,
+      ),
+      r.students,
+    ),
+    repositories: r,
+    close: r.close,
+  );
+}
+
 void main() {
+  studentErasureContract('en mémoire', _openErasure);
   planningContract(
     'en mémoire',
     () async => (

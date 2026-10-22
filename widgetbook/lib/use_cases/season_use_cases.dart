@@ -5,6 +5,7 @@ import 'package:billard_cfa/entities/season/domain/season.dart';
 import 'package:billard_cfa/entities/season/domain/season_archive.dart';
 import 'package:billard_cfa/features/backup_data/presentation/bloc/backup_bloc.dart';
 import 'package:billard_cfa/features/close_season/domain/get_closable_season.dart';
+import 'package:billard_cfa/features/close_season/domain/prepare_season_closure.dart';
 import 'package:billard_cfa/features/close_season/presentation/bloc/closable_season_cubit.dart';
 import 'package:billard_cfa/features/close_season/presentation/bloc/season_closure_bloc.dart';
 import 'package:billard_cfa/features/close_season/presentation/ui/closable_season_card.dart';
@@ -26,6 +27,7 @@ import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/failure.dart';
 import 'package:billard_cfa/shared/lib/group_choice.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
+import 'package:billard_cfa/shared/lib/operations/operation_marker.dart';
 import 'package:billard_cfa/shared/ui/archive_figure_table.dart';
 import 'package:billard_cfa/shared/ui/closure_choice_tile.dart';
 import 'package:billard_cfa/shared/ui/group_choice_picker.dart';
@@ -34,6 +36,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/support/club_operations_fakes.dart';
 import 'package:widgetbook_workspace/support/preview_world.dart';
 
 const _components = '[Design system]/Composants';
@@ -255,6 +258,77 @@ Widget buildSeasonClosureViewUseCase(BuildContext context) => WorldScope(
         backupAfterSection: const SizedBox.shrink(),
         onSeasons: () {},
         onHome: () {},
+      ),
+    ),
+  ),
+);
+
+Widget _clubClosure(
+  PreviewWorld world,
+  ScriptedSeasonClosing closing, {
+  bool confirm = false,
+}) => BlocProvider(
+  create: (_) {
+    final bloc = SeasonClosureBloc(
+      getIt<PrepareSeasonClosure>(),
+      closing,
+      getIt<Clock>(),
+    )..add(SeasonClosureEvent.started(seasonId: world.seasonId));
+    if (confirm) {
+      unawaited(
+        bloc.stream
+            .firstWhere((s) => s.status == SeasonClosureStatus.ready)
+            .then((_) => bloc.add(const SeasonClosureEvent.confirmed())),
+      );
+    }
+    return bloc;
+  },
+  child: _scroll(
+    SeasonClosureView(
+      backupSection: OutlinedButton(
+        onPressed: () {},
+        child: const Text('Exporter une sauvegarde'),
+      ),
+      backupAfterSection: const SizedBox.shrink(),
+      onSeasons: () {},
+      onHome: () {},
+    ),
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Assistant (club synchronisé)',
+  type: SeasonClosureView,
+  path: _features,
+)
+Widget buildSeasonClosureViewClubUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) => _clubClosure(world, ScriptedSeasonClosing()),
+);
+
+@widgetbook.UseCase(
+  name: 'Clôture en cours',
+  type: SeasonClosureView,
+  path: _features,
+)
+Widget buildSeasonClosureViewWorkingUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) =>
+      _clubClosure(world, ScriptedSeasonClosing(hang: true), confirm: true),
+);
+
+@widgetbook.UseCase(
+  name: 'Clôture à reprendre',
+  type: SeasonClosureView,
+  path: _features,
+)
+Widget buildSeasonClosureViewResumeUseCase(BuildContext context) => WorldScope(
+  builder: (context, world) => _clubClosure(
+    world,
+    ScriptedSeasonClosing(
+      pendingTerms: ClosureTerms(
+        seasonId: world.seasonId,
+        closedOn: world.today,
+        prepareNext: true,
+        dropPlanned: true,
       ),
     ),
   ),

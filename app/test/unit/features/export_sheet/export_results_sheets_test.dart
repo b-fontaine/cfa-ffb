@@ -120,11 +120,11 @@ void main() {
 
   group('with the first names of a group', () {
     Future<void> seed() async {
-      await students.save(student('1', 'Zoé'));
-      await students.save(student('2', 'Éloïse'));
-      await students.save(student('3', 'Anna'));
-      await students.save(student('4', 'Hugo'));
-      await students.save(student('5', 'Ancien'));
+      await students.create(student('1', 'Zoé'));
+      await students.create(student('2', 'Éloïse'));
+      await students.create(student('3', 'Anna'));
+      await students.create(student('4', 'Hugo'));
+      await students.create(student('5', 'Ancien'));
       await groups.save(
         Group(
           id: const GroupId('g1'),
@@ -170,7 +170,7 @@ void main() {
     );
 
     test('prints a name without the spaces around it', () async {
-      await students.save(student('9', '  Inès '));
+      await students.create(student('9', '  Inès '));
       await groups.save(
         Group(
           id: const GroupId('g9'),

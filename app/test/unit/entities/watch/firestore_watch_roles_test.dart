@@ -74,7 +74,7 @@ void main() {
       ),
     );
     for (final (id, name) in [('s1', 'Léa'), ('s2', 'Théo'), ('s3', 'Marc')]) {
-      await students.save(
+      await students.create(
         Student.enroll(
           id: StudentId(id),
           firstName: name,

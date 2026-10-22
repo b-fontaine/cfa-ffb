@@ -38,7 +38,7 @@ Future<void> seedSnapshot(
     await seasonArchives.save(archive);
   }
   for (final student in s.students) {
-    await students.save(student);
+    await students.create(student);
   }
   for (final group in s.groups) {
     await groups.save(group);

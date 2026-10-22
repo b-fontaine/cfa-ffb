@@ -33,6 +33,11 @@ enum Capability {
   /// Ouvrir « Administration » : clubs, directeurs, codes de directeur.
   administer,
 
+  /// Effacer un élève et tout ce qui le concerne (droit à l'effacement) : le
+  /// directeur et l'administrateur (ADR 0024, matrice : l'enseignant ne
+  /// supprime pas une fiche).
+  eraseStudent,
+
   /// Importer une sauvegarde de l'ancienne version dans le club (FB7) : le
   /// directeur et l'administrateur partout, l'enseignant dans ses groupes.
   importBackup,
@@ -52,6 +57,7 @@ extension RolePolicy on Role {
       Capability.animate,
       Capability.manageSettings,
       Capability.closeSeason,
+      Capability.eraseStudent,
       Capability.openClub,
       Capability.manageClub,
       Capability.inviteTeachers,
@@ -62,6 +68,7 @@ extension RolePolicy on Role {
       Capability.animate,
       Capability.manageSettings,
       Capability.closeSeason,
+      Capability.eraseStudent,
       Capability.openClub,
       Capability.manageClub,
       Capability.inviteTeachers,

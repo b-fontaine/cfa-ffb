@@ -1,5 +1,6 @@
 import 'package:billard_cfa/features/acknowledge_alert/presentation/bloc/acknowledgement_bloc.dart';
 import 'package:billard_cfa/features/manage_groups/presentation/ui/move_student_dialog.dart';
+import 'package:billard_cfa/features/manage_students/presentation/bloc/student_erasure_bloc.dart';
 import 'package:billard_cfa/features/manage_students/presentation/ui/erase_student_card.dart';
 import 'package:billard_cfa/features/place_student/presentation/bloc/placement_bloc.dart';
 import 'package:billard_cfa/features/place_student/presentation/ui/acquire_block_dialog.dart';
@@ -38,6 +39,7 @@ class StudentSheetPage extends StatelessWidget {
     required this.onErased,
     required this.onShow,
     required this.today,
+    this.canErase = true,
     super.key,
   });
 
@@ -45,12 +47,18 @@ class StudentSheetPage extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onOpenAssessment;
 
-  /// Appelé quand l'élève vient d'être effacé (la fiche n'existe plus).
+  /// Appelé quand l'élève vient d'être effacé (la fiche n'existe plus) : écouté
+  /// ici, au-dessus de la fiche qui se recharge en direct.
   final VoidCallback onErased;
 
   /// Ouvre la vue « à montrer à l'élève ».
   final VoidCallback onShow;
   final DateTime Function() today;
+
+  /// Le rôle peut effacer un élève (directeur et administrateur) : sinon la
+  /// carte d'effacement n'est pas proposée (les règles du serveur la
+  /// refuseraient).
+  final bool canErase;
 
   Future<void> _mark(BuildContext context, StudentSheet sheet, String blockId) {
     final block = sheet.catalogue.blockById(blockId)!;
@@ -171,6 +179,15 @@ class StudentSheetPage extends StatelessWidget {
               current.status == AcknowledgementStatus.refused,
           listener: _onAcknowledgement,
         ),
+        // La fiche se recharge en direct : elle disparaît avec l'élève (la page
+        // peut alors montrer « introuvable » avant que la carte d'effacement ne
+        // le dise). L'effacement fini est donc écouté ici, plus haut que la
+        // carte, pour ramener toujours à la liste.
+        BlocListener<StudentErasureBloc, StudentErasureState>(
+          listenWhen: (previous, current) =>
+              current.status == StudentErasureStatus.erased,
+          listener: (context, state) => onErased(),
+        ),
       ],
       child: _sheet(context, l10n),
     );
@@ -260,11 +277,11 @@ class StudentSheetPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                EraseStudentCard(
-                  studentId: sheet.student.id,
-                  studentName: sheet.student.firstName,
-                  onErased: onErased,
-                ),
+                if (canErase)
+                  EraseStudentCard(
+                    studentId: sheet.student.id,
+                    studentName: sheet.student.firstName,
+                  ),
               ],
             );
         }

@@ -171,17 +171,20 @@ service cloud.firestore {
         && d.studentId is string && d.studentId.size() > 0 && d.studentId.size() <= 64;
     }
 
-    // La fiche existe : une donnée d'un élève effacé ne ressuscite pas (ADR 0024, limites).
+    // La fiche existe ET n'est pas en cours d'effacement : une donnée d'un élève effacé ne ressuscite pas
+    // (ADR 0024, limites), et un effacement commencé (`erasing`, FB8) n'accepte plus aucune donnée NOUVELLE.
+    // Un seul `get()` : sur une fiche absente il échoue, donc la règle refuse (comme `exists`).
     function studentExists(c) {
-      return exists(/databases/$(database)/documents/clubs/$(c)/students/$(request.resource.data.studentId));
+      return !get(/databases/$(database)/documents/clubs/$(c)/students/$(request.resource.data.studentId))
+        .data.get('erasing', false);
     }
 
     // La fiche existe ET l'élève appartient au groupe écrit dans le document : un enseignant ne
     // crée pas de donnée sur un élève hors de ses groupes (la donnée porterait son `groupId` mais
     // serait lue par la famille de l'autre élève). Un seul get() (remplace exists()).
     function studentInGroup(c) {
-      return get(/databases/$(database)/documents/clubs/$(c)/students/$(request.resource.data.studentId))
-        .data.groupIds.hasAny([request.resource.data.groupId]);
+      let s = get(/databases/$(database)/documents/clubs/$(c)/students/$(request.resource.data.studentId)).data;
+      return s.groupIds.hasAny([request.resource.data.groupId]) && !s.get('erasing', false);
     }
 
     // Création d'une donnée d'élève : gestionnaire (fiche existante, import possible d'un
@@ -490,7 +493,16 @@ service cloud.firestore {
             && get(/databases/$(database)/documents/clubs/$(c)/groups/$(d.groupId))
                  .data.seasonId == d.seasonId;
         }
-        allow create: if studentOwned() && membershipShape() && (manages(clubId) || teacherEnrolls(clubId));
+        // Un gestionnaire ne crée pas d'appartenance sur une fiche en cours d'effacement (`erasing`) :
+        // la purge la supprimerait et un appareil retardataire en laisserait une orpheline. `getAfter` :
+        // la fiche et son appartenance peuvent naître dans le même lot. LIMITE CONNUE (ADR 0024, notes
+        // FB8) : une fiche déjà SUPPRIMÉE ne se distingue pas d'une fiche jamais créée (la restauration
+        // d'une sauvegarde écrit l'appartenance avant la fiche) ; elle est acceptée.
+        function managerEnrolls(c) {
+          let s = /databases/$(database)/documents/clubs/$(c)/students/$(request.resource.data.studentId);
+          return manages(c) && (!existsAfter(s) || !getAfter(s).data.get('erasing', false));
+        }
+        allow create: if studentOwned() && membershipShape() && (managerEnrolls(clubId) || teacherEnrolls(clubId));
         allow update: if manages(clubId) && studentOwned() && sameOwnership() && membershipShape();
         allow delete: if manages(clubId);
       }
@@ -528,6 +540,7 @@ service cloud.firestore {
           && d.firstName is string && d.firstName.size() >= 1 && d.firstName.size() <= 40
           && (!('initial' in d) || (d.initial is string && d.initial.matches('\\pL')))
           && (!('audience' in d) || d.audience in ['children', 'adults'])
+          && (!('erasing' in d) || d.erasing is bool)
           && idList(d.groupIds, 30);
       }
 
@@ -539,11 +552,22 @@ service cloud.firestore {
         allow list: if manages(clubId)
           || (isTeacher(clubId) && resource.data.groupIds.hasAny(me(clubId).groupIds));
         // L'enseignant crée une fiche dans ses groupes ; il ne la modifie ni ne l'efface.
-        allow create: if studentShape() && (
+        // Une fiche ne naît jamais « en cours d'effacement » (`erasing`, FB8) ; le marquage est posé par une
+        // mise à jour de gestionnaire, et irréversible : une fois posé, toute mise à jour le garde à `true`
+        // (seule la suppression de la fiche, dernier lot de l'effacement, le fait disparaître).
+        // À la CRÉATION, la date du serveur est exigée (`createdAt == request.time`) : seule l'inscription
+        // la pose (`StudentDocument.creationOnly`), jamais une édition, qui est une mise à jour sans
+        // `createdAt` et échoue donc sur une fiche supprimée (appareil resté hors ligne : une fiche
+        // effacée ne revient pas avec son prénom). Limite assumée : la règle ne distingue pas une
+        // inscription d'une inscription REJOUÉE (même écriture) ; l'application ne rejoue jamais une
+        // inscription après son succès.
+        allow create: if studentShape() && !('erasing' in request.resource.data)
+          && request.resource.data.get('createdAt', null) == request.time && (
           manages(clubId)
           || (isTeacher(clubId) && request.resource.data.groupIds.size() >= 1
               && request.resource.data.groupIds.hasOnly(me(clubId).groupIds)));
-        allow update: if manages(clubId) && studentShape();
+        allow update: if manages(clubId) && studentShape()
+          && (!resource.data.get('erasing', false) || request.resource.data.get('erasing', false) == true);
         allow delete: if manages(clubId);
       }
 
@@ -737,6 +761,68 @@ service cloud.firestore {
           && request.resource.data.startedAt == resource.data.startedAt;
         allow delete: if false;
       }
+      // ── Marqueurs d'opération reprenable (FB8, ADR 0024 décision 19) ──
+      // Un document par opération EN COURS (effacement d'un élève, clôture d'une saison) ET PAR AUTEUR :
+      // son identifiant est `{empreinte SHA-256 de la nature et de la cible}_{uid de l'auteur}`, donc le
+      // marqueur appartient à celui qui l'a créé PAR CONSTRUCTION (comme celui de l'import) : personne ne
+      // crée, ne lit pour agir ni n'avance le marqueur d'un autre, et un enseignant, un parent, un élève
+      // n'en posent aucun (seuls le directeur et l'administrateur effacent et closent) : ils ne peuvent
+      // donc pas bloquer le directeur. SANS donnée personnelle : l'empreinte (qui ne se lit pas), la
+      // nature, l'avancement (lots écrits, étape), le rôle, l'auteur, deux dates du serveur ; pour une
+      // clôture seulement, la saison, le jour et deux choix. Aucun prénom, aucun identifiant d'élève
+      // (les élèves à effacer sont repérés par `erasing` sur leur fiche). Le premier lot le CRÉE avec
+      // `done == 1`, chaque lot suivant l'AVANCE d'exactement un (`done == avant + 1`) et d'au plus une
+      // étape, DANS LE MÊME lot atomique que ses écritures : un lot rejoué (coupure, file du SDK, second
+      // appareil du même compte) voit un `done` déjà avancé, les règles le refusent en bloc. Le dernier
+      // lot le SUPPRIME avec ce qu'il achève : aucune trace de l'opération ne reste.
+      function operationRoleMatches(c, role) {
+        return (role == 'director' && isDirector(c)) || (role == 'admin' && adminOk());
+      }
+
+      function operationMarkerShape(markerId) {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['operationId', 'kind', 'done', 'stage', 'role', 'createdBy', 'startedAt',
+                                 'updatedAt', 'seasonId', 'closedOn', 'prepareNext', 'dropPlanned'])
+          && d.keys().hasAll(['operationId', 'kind', 'done', 'stage', 'role', 'createdBy', 'startedAt', 'updatedAt'])
+          && d.operationId is string && d.operationId.matches('[0-9a-f]{64}')
+          && markerId == d.operationId + '_' + request.auth.uid
+          && d.kind in ['erasure', 'closure']
+          && d.done is int && d.done >= 1 && d.done <= 100000
+          && d.stage is int && d.stage >= 0 && d.stage <= 8
+          && d.role in ['director', 'admin']
+          && d.createdBy is string && d.createdBy.size() >= 1 && d.createdBy.size() <= 128
+          && d.updatedAt == request.time
+          && (d.kind == 'closure'
+              ? (d.keys().hasAll(['seasonId', 'closedOn', 'prepareNext', 'dropPlanned'])
+                 && d.seasonId is string && d.seasonId.size() >= 1 && d.seasonId.size() <= 64
+                 && isoText(d.closedOn) && d.prepareNext is bool && d.dropPlanned is bool)
+              : !d.keys().hasAny(['seasonId', 'closedOn', 'prepareNext', 'dropPlanned']));
+      }
+
+      match /operations/{markerId} {
+        // Un document absent se lit aussi (« cette opération est-elle commencée ? ») : on ne lit que le sien.
+        allow get: if manages(clubId) && markerId.matches('[0-9a-f]{64}_.+')
+          && markerId[65:] == request.auth.uid;
+        // La liste des SIENS (reprise d'une clôture dont on ne connaît que l'auteur) : la requête doit
+        // filtrer sur `createdBy == uid` ; jamais celle d'un collègue.
+        allow list: if manages(clubId) && resource.data.createdBy == request.auth.uid;
+        allow create: if manages(clubId) && operationMarkerShape(markerId)
+          && request.resource.data.done == 1
+          && request.resource.data.stage <= 1
+          && request.resource.data.startedAt == request.time
+          && request.resource.data.createdBy == request.auth.uid
+          && operationRoleMatches(clubId, request.resource.data.role);
+        // L'identifiant porte l'uid : seul l'AUTEUR avance son marqueur (`operationMarkerShape` le lie à
+        // `request.auth.uid`), et seuls `done`, `stage` et `updatedAt` changent.
+        allow update: if manages(clubId) && operationMarkerShape(markerId)
+          && request.resource.data.createdBy == resource.data.createdBy
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['done', 'stage', 'updatedAt'])
+          && request.resource.data.done == resource.data.done + 1
+          && request.resource.data.stage in [resource.data.stage, resource.data.stage + 1];
+        // Le dernier lot supprime son marqueur ; seul l'auteur supprime le sien.
+        allow delete: if manages(clubId) && markerId.matches('[0-9a-f]{64}_.+')
+          && markerId[65:] == request.auth.uid;
+      }
     }
 
     // ───────────────────────── Invitations ─────────────────────────
@@ -779,6 +865,21 @@ service cloud.firestore {
         && (ids.size() < 4 || exists(/databases/$(database)/documents/clubs/$(clubId)/students/$(ids[3])));
     }
 
+    // Les fiches citées par une invitation à l'UTILISATION : elles existent et ne sont pas en cours
+    // d'effacement (`erasing`). Une invitation non utilisée qui cite un élève effacé ne donne ni lien
+    // ni identifiant recopié dans un nouveau `members` que la purge ne verrait pas (jusqu'à quatre
+    // fiches : déroulé sans boucle ; `exists` et `get` d'un même document comptent pour un accès).
+    function studentOpen(clubId, id) {
+      let s = /databases/$(database)/documents/clubs/$(clubId)/students/$(id);
+      return exists(s) && !get(s).data.get('erasing', false);
+    }
+    function studentsOpen(clubId, ids) {
+      return (ids.size() < 1 || studentOpen(clubId, ids[0]))
+        && (ids.size() < 2 || studentOpen(clubId, ids[1]))
+        && (ids.size() < 3 || studentOpen(clubId, ids[2]))
+        && (ids.size() < 4 || studentOpen(clubId, ids[3]));
+    }
+
     // Les fiches liées sont dans un groupe de l'enseignant qui invite.
     function studentsInMyGroups(clubId, ids) {
       return (ids.size() < 1 || get(/databases/$(database)/documents/clubs/$(clubId)/students/$(ids[0])).data.groupIds.hasAny(me(clubId).groupIds))
@@ -810,6 +911,7 @@ service cloud.firestore {
       allow update: if verified()
         && resource.data.used == false
         && request.time < resource.data.expiresAt
+        && studentsOpen(resource.data.clubId, resource.data.studentIds)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used', 'usedBy', 'usedAt'])
         && request.resource.data.used == true
         && request.resource.data.usedBy == request.auth.uid

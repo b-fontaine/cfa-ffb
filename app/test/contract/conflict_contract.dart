@@ -88,7 +88,7 @@ void conflictContract(
         ),
       );
       for (final id in ['s1', 's2', 's3']) {
-        await a.students.save(_student(id, 'Élève $id'));
+        await a.students.create(_student(id, 'Élève $id'));
       }
       var g1 = _group('g1');
       for (final id in ['s1', 's2']) {
@@ -114,8 +114,8 @@ void conflictContract(
       test('two renames concurrently: exactly one wins, both devices agree, '
           'the groups are kept', () async {
         await Future.wait([
-          a.students.save(_student('s1', 'Léa A')),
-          b.students.save(_student('s1', 'Léa B')),
+          a.students.create(_student('s1', 'Léa A')),
+          b.students.create(_student('s1', 'Léa B')),
         ]);
 
         final seenByA = await student(a, 's1');
@@ -508,7 +508,7 @@ void conflictContract(
       test('L2 a stale save recreates a student deleted elsewhere', () async {
         await b.students.delete(const StudentId('s3'));
 
-        await a.students.save(_student('s3', 'Élève s3 corrigé'));
+        await a.students.create(_student('s3', 'Élève s3 corrigé'));
 
         expect(
           (await a.students.byId(const StudentId('s3')))?.firstName,
@@ -520,11 +520,11 @@ void conflictContract(
         'L3 the audience history is replaced whole by the last write',
         () async {
           final base = await student(a, 's1');
-          await a.students.save(
+          await a.students.create(
             base.changeAudience(Audience.adults, DateTime(2026, 10)),
           );
           // B écrit une fiche lue avant le changement de A.
-          await b.students.save(
+          await b.students.create(
             Student(
               id: base.id,
               firstName: 'Léa B',

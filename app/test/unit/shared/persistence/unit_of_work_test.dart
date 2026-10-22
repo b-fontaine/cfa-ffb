@@ -23,7 +23,7 @@ void main() {
 
     await expectLater(
       DriftUnitOfWork(db).run<void>(() async {
-        await students.save(
+        await students.create(
           Student.enroll(
             id: const StudentId('s1'),
             firstName: 'Léa',

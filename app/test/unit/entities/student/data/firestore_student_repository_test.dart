@@ -43,7 +43,7 @@ void main() {
       'Léa',
     ).changeAudience(Audience.adults, DateTime.utc(2028, 9));
 
-    await repository.save(student);
+    await repository.create(student);
 
     expect(world.documents.read('clubs/c1/students/s1'), {
       'firstName': 'Léa',
@@ -113,15 +113,15 @@ void main() {
       ),
     ]);
 
-    await repository.save(_student('s1', 'Léa'));
+    await repository.create(_student('s1', 'Léa'));
 
     expect(world.paths, ['clubs/c1/students/s1']);
     expect(world.documents.read('clubs/c1/students/s1')!['groupIds'], ['g1']);
   });
 
   test('delete and erase remove the document physically', () async {
-    await repository.save(_student('s1', 'Léa'));
-    await repository.save(_student('s2', 'Théo'));
+    await repository.create(_student('s1', 'Léa'));
+    await repository.create(_student('s2', 'Théo'));
 
     await repository.delete(const StudentId('s1'));
     await repository.erase(const StudentId('s2'));
@@ -131,9 +131,9 @@ void main() {
   });
 
   test('lists by enrolment, then by id', () async {
-    await repository.save(_student('b', 'B', since: DateTime(2026, 9)));
-    await repository.save(_student('c', 'C', since: DateTime(2026, 8)));
-    await repository.save(_student('a', 'A', since: DateTime(2026, 9)));
+    await repository.create(_student('b', 'B', since: DateTime(2026, 9)));
+    await repository.create(_student('c', 'C', since: DateTime(2026, 8)));
+    await repository.create(_student('a', 'A', since: DateTime(2026, 9)));
 
     expect(
       [for (final s in await repository.all()) s.id.value],
@@ -142,12 +142,12 @@ void main() {
   });
 
   test('a club only sees its own students', () async {
-    await repository.save(_student('s1', 'Léa'));
+    await repository.create(_student('s1', 'Léa'));
     world.act('c2', Role.director);
 
     expect(await repository.all(), isEmpty);
     expect(await repository.byId(const StudentId('s1')), isNull);
-    await repository.save(_student('s1', 'Zoé'));
+    await repository.create(_student('s1', 'Zoé'));
     world.act('c1', Role.director);
 
     expect((await repository.byId(const StudentId('s1')))!.firstName, 'Léa');
@@ -305,7 +305,7 @@ void main() {
 
     await expectLater(repository.all(), throwsA(isA<ServiceFailure>()));
     await expectLater(
-      repository.save(_student('s1', 'Léa')),
+      repository.create(_student('s1', 'Léa')),
       throwsA(isA<ServiceFailure>()),
     );
     expect(world.documents.reads + world.documents.commits, 0);
