@@ -36,7 +36,7 @@ Statut technique : **réalisé côté serveur** (FB8 partie A, [ADR 0024](../adr
 
 ## Clôture de saison (effacement des élèves sortants)
 
-Réalisée côté serveur par la même méthode (FB8 partie A) : l'**archive agrégée** (chiffres par public, sans nom) est écrite **avant** tout effacement ; les élèves choisis par le directeur sont marqués puis purgés par lots ; les autres sont reconduits ; **aucune liste d'élèves effacés n'est conservée**. L'assistant montre un **aperçu des effets**, demande une confirmation explicite (« J'ai compris »), affiche l'avancement et propose la **reprise** d'une clôture interrompue sans rien redemander. Limite : **390 élèves effacés au plus par clôture** (les autres s'effacent ensuite, un par un). Règle de période : **aucune clôture pendant la période de bascule des données locales** (roadmap, FB7).
+Réalisée côté serveur par la même méthode (FB8 partie A) : l'**archive agrégée** (chiffres par public, sans nom) est écrite **avant** tout effacement ; les élèves choisis par le directeur sont marqués puis purgés par lots ; les autres sont reconduits ; **aucune liste d'élèves effacés n'est conservée**. L'assistant montre un **aperçu des effets**, demande une confirmation explicite (« J'ai compris »), affiche l'avancement et propose la **reprise** d'une clôture interrompue sans rien redemander. Limite : **390 élèves effacés au plus par clôture** (les autres s'effacent ensuite, un par un). Règle de période : **aucune clôture pendant la période de migration des données locales** (roadmap, FB7).
 
 ## Suppression d'un compte d'adulte
 

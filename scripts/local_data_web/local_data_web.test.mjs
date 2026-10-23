@@ -5,7 +5,7 @@
 // l'application n'ouvre la sienne ; ce mécanisme n'est éprouvé ni par `flutter test` ni par
 // un faux navigateur. Deux builds web partagent la MÊME origine (donc la même base) :
 //
-// - le build `drift` (le défaut) remplit la base par son écran « Sauvegarde » (import d'un
+// - le build `drift` (explicite) remplit la base par son écran « Sauvegarde » (import d'un
 //   fichier FICTIF des tests) ;
 // - le build `firestore` relève ensuite cette base au démarrage et affiche le bandeau.
 //

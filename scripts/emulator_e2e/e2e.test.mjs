@@ -205,7 +205,7 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
     await signInAs(accounts.parent.email);
 
     // Rôle lu dans Firestore (guardian) : l'accueil est celui d'un parent, ses données aussi
-    // (FB6 : l'application est lancée avec DATA_BACKEND=firestore explicite, serve_and_test.sh ; voir les parcours suivants).
+    // (FB6 : l'application est lancée avec le défaut Firestore, serve_and_test.sh ; voir les parcours suivants).
     await see('Mes enfants');
     assert.equal(await page.getByText(/^Aujourd/).count(), 0, 'pas d’onglet animateur');
     await goTo('Plus');

@@ -3,18 +3,21 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('DataBackend.resolve', () {
-    test('defaults to drift: no setting, empty or drift', () {
-      expect(DataBackend.resolve(''), DataBackend.drift);
-      expect(DataBackend.resolve('  '), DataBackend.drift);
-      expect(DataBackend.resolve('drift'), DataBackend.drift);
-    });
-
-    test('firestore only when asked, whatever the case', () {
+    // Garde de la bascule (2026-10-21) : si le défaut redevient drift, un
+    // club écrirait sur l'appareil sans le savoir.
+    test('defaults to firestore: no setting, blank or firestore', () {
+      expect(DataBackend.resolve(''), DataBackend.firestore);
+      expect(DataBackend.resolve('  '), DataBackend.firestore);
       expect(DataBackend.resolve('firestore'), DataBackend.firestore);
       expect(DataBackend.resolve(' Firestore '), DataBackend.firestore);
     });
 
-    test('an unknown value is an error, never a silent drift', () {
+    test('drift only when asked explicitly, whatever the case', () {
+      expect(DataBackend.resolve('drift'), DataBackend.drift);
+      expect(DataBackend.resolve(' Drift '), DataBackend.drift);
+    });
+
+    test('an unknown value is an error, never a silent fallback', () {
       expect(
         () => DataBackend.resolve('firebase'),
         throwsA(
@@ -28,8 +31,8 @@ void main() {
     });
   });
 
-  test('the build of the test suite sets nothing: drift', () {
-    expect(DataBackend.fromBuild(), DataBackend.drift);
+  test('the build of the test suite sets nothing: firestore', () {
+    expect(DataBackend.fromBuild(), DataBackend.firestore);
   });
 
   group('choose', () {

@@ -497,7 +497,8 @@ disparaît dès qu'un export a été enregistré (un export annulé ne compte pa
 ## Exporter mes données locales, puis les migrer vers le club
 
 *(Version où les données du club sont sur le serveur ; textes à valider avec la
-notice d'information.)* Ce que vous avez saisi avant le passage au club **reste
+notice d'information.)* Dans la version où le club est sur le serveur, l'adresse habituelle lit et écrit les données du club sur le serveur ; vos données de cet appareil restent exportables par le bandeau. Cet export reste le
+chemin pour des données **locales déjà saisies** sur un appareil. Ce que vous avez saisi avant le passage au club **reste
 sur l'appareil** (dans le navigateur, ou dans l'application installée) : la
 nouvelle version **ne l'efface pas**, et elle permet de **l'exporter puis de
 l'importer dans le club**. Rien ne dépend d'une date : vous le faites quand vous
@@ -536,9 +537,7 @@ assumée, signalée au DPO) ; chacun voit les compteurs et peut exporter le
 fichier complet (tous les groupes, prénoms d'enfants compris), donc ne laissez
 pas l'appareil ouvert.
 
-**Conduite pendant la migration** (points relevés par la contre-relecture, **pas
-encore tous résolus** : voir la liste « Prérequis bloquants avant la bascule »
-de la feuille de route).
+**Conduite pendant la migration.**
 - **Appareil partagé** : un enseignant n'importe que **ses** groupes. Ce qui
   appartient à un tiers n'est alors importé par personne, même si chacun a
   confirmé : le **directeur ou l'administrateur importe le fichier complet de
@@ -551,14 +550,18 @@ de la feuille de route).
   identifiants, donc **deux fiches** après deux imports, sans avertissement.
   Avant la migration, ne saisissez un enfant que dans **une seule** base ;
   après l'import, repérez les doublons.
-- **Entre le déploiement et votre import** : ne saisissez **pas** dans le club.
-  Notez sur papier, ou saisissez **après** l'import.
-- **Aucune clôture de saison dans le club** pendant la période de bascule : un
+- **Entre l'export et votre import** : ne saisissez **rien** sur l'appareil (cela
+  ne serait pas dans le fichier) ni dans le club. Notez sur papier, ou saisissez
+  **après** l'import.
+- **Aucune clôture de saison dans le club** pendant la période de migration : un
   fichier exporté depuis un ancien onglet resté ouvert serait daté après la
   clôture et passerait pour récent.
-- **iPhone** : l'export (Safari **et** application installée) n'a pas encore été
-  éprouvé sur un iPhone réel ; essayez-le tôt et vérifiez que le fichier est
-  bien dans vos téléchargements.
+- **iPhone** : Safari et l'application installée ont chacun leur stockage et
+  leur façon de télécharger ; exportez tôt et vérifiez que le fichier est bien
+  dans vos téléchargements.
+- **Un seul club à la fois** : la migration commence par un club pilote, un
+  animateur et un appareil ; le directeur recueille la confirmation de chaque
+  appareil avant que les autres animateurs migrent.
 
 **Avant d'importer : ne saisissez rien dans le club.** Un élève recréé à la
 main dans le club n'a pas le même identifiant que celui du fichier : l'import ne
@@ -644,10 +647,9 @@ plusieurs jours : le serveur limite les écritures par jour.
   exportables** : c'est exact, la mise à jour ne supprime rien.
 
 Si l'import ne convient pas, gardez votre fichier : la personne qui gère
-l'application peut remettre la version précédente en ligne tant que les données
-locales ne sont pas retirées (touchez **Mettre à jour** dans le bandeau pour la
-retrouver) ; vos données du navigateur y sont lisibles si le navigateur les a
-gardées, sinon votre fichier est le repli. Après un retour en arrière, un nouvel
+l'application met en ligne une version corrigée qui relit les données de
+l'appareil (retour arrière par revert) ; elles y sont lisibles si le navigateur
+les a gardées, sinon votre fichier est le repli. Après un retour en arrière, un nouvel
 export est traité comme un nouveau fichier : seuls les éléments **absents** du
 club sont ajoutés. Une correction faite après un premier import sur un élément
 déjà importé (passage corrigé, bilan modifié, prénom rectifié) n'est **pas**
@@ -714,10 +716,10 @@ rouvrant l'assistant de cette saison, **Reprendre la clôture** termine ce qui
 reste, **sans rien redemander** (c'est le même compte qui reprend). **390 élèves
 au plus** peuvent être effacés dans une même clôture : au-delà, l'assistant le
 dit et refuse avant toute écriture ; effacez les autres ensuite, un par un.
-**Aucune clôture pendant la période de bascule** des données locales (voir
+**Aucune clôture pendant la période de migration** des données locales (voir
 plus haut). Les copies locales d'élèves effacés restées sur un appareil, et les
-sauvegardes déjà exportées, ne sont pas touchées : supprimez-les vous-même. Sur
-un appareil qui n'est pas encore passé au club, la clôture reste **tout ou rien**.
+sauvegardes déjà exportées, ne sont pas touchées : supprimez-les vous-même. Avec
+la version locale de développement (`DATA_BACKEND=drift` explicite), la clôture reste **tout ou rien**.
 L'application garde alors, **sans aucun nom**,
 des chiffres par public (séances, présences, passages) et, par exercice,
 seulement ceux pratiqués par **au moins 3 élèves** : ils se lisent dans

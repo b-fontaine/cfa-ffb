@@ -11,7 +11,7 @@ const _failure = ServiceFailure(
 );
 
 /// Le magasin d'opérations quand les données **ne sont pas** dans Firestore
-/// (`DATA_BACKEND=drift`, le défaut) : l'effacement et la clôture restent
+/// (`DATA_BACKEND=drift`, explicite) : l'effacement et la clôture restent
 /// ceux de l'appareil (une unité de travail), et rien n'appelle ce magasin.
 /// Chaque appel est refusé (`unsupported`) sans rien lire ni écrire.
 final class UnsupportedOperationStore implements OperationStore {

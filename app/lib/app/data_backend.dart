@@ -1,11 +1,12 @@
 /// Où vivent les données d'un club : l'appareil (drift) ou Firestore.
 ///
-/// Réglage de **build** : `--dart-define=DATA_BACKEND=firestore`. Sans réglage
-/// (ou `drift`), l'application reste sur SQLite : la bascule de production est
-/// décidée dans un lot dédié, après FB7 (2026-10-18), jamais par défaut avant
-/// (roadmap). Une valeur
-/// inconnue est une erreur de configuration, pas un repli silencieux sur drift
-/// (un club qui croit écrire sur le serveur écrirait sur l'appareil).
+/// Réglage de **build** : `--dart-define=DATA_BACKEND=drift|firestore`. Sans
+/// réglage (ou `firestore`), les données du club vivent sur Firestore : lot de
+/// bascule du 2026-10-21 (ADR 0024, décision 28 amendée). `drift` reste
+/// sélectionnable **explicitement** (développement, build qui remplit une base
+/// locale, prévisualisations de pull request). Une valeur inconnue est une
+/// erreur de configuration, pas un repli silencieux sur l'un des deux (un club
+/// qui croit écrire sur le serveur écrirait sur l'appareil).
 enum DataBackend {
   drift,
   firestore;
@@ -14,10 +15,10 @@ enum DataBackend {
   factory DataBackend.fromBuild() =>
       DataBackend.resolve(const String.fromEnvironment('DATA_BACKEND'));
 
-  /// Le choix pour la valeur [requested] du réglage (vide : drift).
+  /// Le choix pour la valeur [requested] du réglage (vide : firestore).
   factory DataBackend.resolve(String requested) {
     final value = requested.trim().toLowerCase();
-    if (value.isEmpty) return DataBackend.drift;
+    if (value.isEmpty) return DataBackend.firestore;
     for (final backend in DataBackend.values) {
       if (backend.name == value) return backend;
     }
@@ -51,4 +52,14 @@ final class DataBackendChoice {
   const DataBackendChoice(this.backend);
 
   final DataBackend backend;
+}
+
+/// La demande de backend faite à l'injection : [backend] explicite (tests du
+/// graphe de production), sinon le réglage du build ([DataBackend.fromBuild]).
+final class DataBackendRequest {
+  const DataBackendRequest([this.backend]);
+
+  final DataBackend? backend;
+
+  DataBackend get resolved => backend ?? DataBackend.fromBuild();
 }

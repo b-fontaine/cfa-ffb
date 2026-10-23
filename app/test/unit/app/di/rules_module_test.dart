@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:billard_cfa/app/data_backend.dart';
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/app/di/rules_module.dart';
 import 'package:billard_cfa/entities/settings/data/in_memory_settings_repository.dart';
@@ -86,7 +87,10 @@ void main() {
     test('the settings survive a restart of the production graph', () async {
       final directory = await Directory.systemTemp.createTemp('billard_cfa_s');
       addTearDown(() => directory.delete(recursive: true));
+      // Les réglages sont lus sur l'appareil : drift explicite (le défaut de
+      // production est Firestore).
       Future<void> start() => configureDependencies(
+        backend: DataBackend.drift,
         settings: DatabaseSettings(
           native: DriftNativeOptions(
             databaseDirectory: () async => directory,

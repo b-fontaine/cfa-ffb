@@ -274,6 +274,86 @@ void main() {
     );
   });
 
+  group('the data backend of each hosting build (ADR 0024, decision A1)', () {
+    // L'étape « Build web » d'un workflow : sa commande `run`.
+    String buildCommand(String name, String job) {
+      final steps = (_jobs(name)[job] as YamlMap)['steps'] as YamlList;
+      final builds = [
+        for (final step in steps)
+          if ((step as YamlMap)['name'] == 'Build web') '${step['run']}'.trim(),
+      ];
+      expect(builds, hasLength(1), reason: '$name : une seule étape de build');
+      return builds.single;
+    }
+
+    test('the live deployment builds the default backend, Firestore', () {
+      final command = buildCommand(
+        'firebase-hosting-merge.yml',
+        'build_and_deploy',
+      );
+
+      expect(command, 'scripts/build_web.sh');
+      expect(command, isNot(contains('DATA_BACKEND')));
+    });
+
+    test('the pull request previews stay on drift, explicitly', () {
+      final command = buildCommand(
+        'firebase-hosting-pull-request.yml',
+        'build_and_preview',
+      );
+
+      expect(command, contains('--dart-define=DATA_BACKEND=drift'));
+    });
+
+    test('the pull request preview says why it is not on Firestore', () {
+      expect(
+        _text('firebase-hosting-pull-request.yml'),
+        contains('previews de PR non connectées à Firestore'),
+      );
+    });
+
+    test('no workflow passes a redundant Firestore flag', () {
+      // Le défaut est Firestore : aucun drapeau firestore redondant.
+      for (final name in workflows) {
+        expect(
+          _text(name),
+          isNot(contains('DATA_BACKEND=firestore')),
+          reason: name,
+        );
+      }
+    });
+  });
+
+  // Les previews de PR sont déployées avec le même compte de service et sur le
+  // même projet que le live : leur seule protection est ce test (ADR 0024,
+  // lot de bascule) : drift explicite, aucun secret de déploiement des règles,
+  // aucune étape Firestore.
+  group('the pull request workflow cannot touch Firestore', () {
+    const name = 'firebase-hosting-pull-request.yml';
+
+    test('it carries no rules deployment secret or variable', () {
+      final text = _text(name);
+
+      expect(text, isNot(contains('GCP_WORKLOAD_IDENTITY_PROVIDER')));
+      expect(text, isNot(contains('GCP_FIRESTORE_DEPLOY_SERVICE_ACCOUNT')));
+      expect(text, isNot(contains('firebase-firestore-deploy')));
+      expect(text, isNot(contains('workflow_call')));
+      expect(text, isNot(contains('id-token')));
+    });
+
+    test('none of its steps mentions Firestore', () {
+      for (final job in _jobs(name).values) {
+        for (final step in (job as YamlMap)['steps'] as YamlList) {
+          expect(
+            '$step'.toLowerCase(),
+            isNot(contains('firestore')),
+            reason: '$step',
+          );
+        }
+      }
+    });
+  });
+
   test('no other workflow can deploy rules or indexes', () {
     for (final name in workflows) {
       if (name == 'firebase-firestore-deploy.yml') continue;

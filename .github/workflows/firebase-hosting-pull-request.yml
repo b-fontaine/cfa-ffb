@@ -35,8 +35,14 @@ jobs:
         run: scripts/generate.sh
       # Une seule recette (CanvasKit local, service worker hors ligne stampé et
       # vérifié) : scripts/build_web.sh.
+      # Décision A1 de l'ADR 0024 : previews de PR non connectées à Firestore.
+      # Le défaut du build est Firestore (bascule du 2026-10-21) ; la
+      # prévisualisation d'une PR, éphémère et sans donnée de club, reste sur
+      # drift (explicite) pour ne jamais lire ni écrire les données du club
+      # réel. Le déploiement live (firebase-hosting-merge.yml) construit le
+      # défaut, Firestore. Contrôlé par app/test/tool/workflows_test.dart.
       - name: Build web
-        run: scripts/build_web.sh
+        run: scripts/build_web.sh --dart-define=DATA_BACKEND=drift
       - name: Déploiement sur un canal de prévisualisation
         uses: FirebaseExtended/action-hosting-deploy@500ac625ca2dd40cbd15f7659af953801858032a # v0
         with:

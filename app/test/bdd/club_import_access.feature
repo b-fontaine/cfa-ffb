@@ -1,7 +1,7 @@
 # FB7, partie B : qui voit l'entrée « Migrer mes données locales » et où elle
 # mène. Le menu est filtré par rôle ET la route est refusée à qui n'a pas le
 # droit (un lien tapé à la main ne contourne rien). Sous le backend local
-# (`drift`, le défaut), il n'y a rien à migrer : « Plus » n'offre que
+# (`drift`, explicite), il n'y a rien à migrer : « Plus » n'offre que
 # « Sauvegarde » (pas de seconde entrée vers la même page) et la route d'import
 # reste redirigée vers l'ancienne sauvegarde. Le texte par défaut est l'anglais.
 Feature: Access to the import into the club

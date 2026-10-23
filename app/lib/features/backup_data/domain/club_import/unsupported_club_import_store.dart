@@ -3,7 +3,7 @@ import 'package:billard_cfa/features/backup_data/domain/club_import/import_model
 import 'package:billard_cfa/shared/lib/failure.dart';
 
 /// Le club vu par l'import quand les données **ne sont pas** dans Firestore
-/// (`DATA_BACKEND=drift`, le défaut) : toutes les lectures de l'application
+/// (`DATA_BACKEND=drift`, explicite) : toutes les lectures de l'application
 /// vont à drift, un import qui écrirait dans Firestore créerait des données que
 /// l'application ne relirait pas. Chaque appel est donc refusé
 /// (`ServiceFailure` `unsupported`), sans rien lire ni écrire (ADR 0024,
