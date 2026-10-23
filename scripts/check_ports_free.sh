@@ -13,7 +13,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 if (( $# > 0 )); then
   ports=("$@")
 else
-  mapfile -t ports < <(node -e '
+  # Pas de `mapfile` : absent du bash 3.2 de macOS.
+  ports=()
+  while IFS= read -r port; do ports+=("$port"); done < <(node -e '
     const e = require(process.argv[1]).emulators ?? {};
     for (const c of Object.values(e)) if (c && typeof c === "object" && c.port) console.log(c.port);
   ' "$ROOT/firebase.json")

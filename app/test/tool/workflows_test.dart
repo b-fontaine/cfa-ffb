@@ -113,6 +113,16 @@ void main() {
       expect(tests, contains('tool/check_indexes.dart'));
     });
 
+    test('the code is generated before the tools of the rules tests run', () {
+      // Les fichiers générés (freezed, injectable) ne sont pas versionnés :
+      // sans génération, `tool/import_plan_fixture.dart` ne compile pas en CI.
+      final tests = _text(name);
+      final generation = tests.indexOf('scripts/generate.sh');
+
+      expect(generation, isNonNegative);
+      expect(generation, lessThan(tests.indexOf('scripts/rules_test.sh')));
+    });
+
     test('only the deployment job may ask for an identity token', () {
       final jobs = _jobs(name);
 

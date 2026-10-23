@@ -45,4 +45,4 @@ export FIREBASE_CLI_DISABLE_UPDATE_CHECK=true
 firebase emulators:exec \
   --project "$WEB_SMOKE_PROJECT" \
   --only auth \
-  "node --test scripts/web_smoke/"
+  "node --test scripts/web_smoke/*.test.mjs"

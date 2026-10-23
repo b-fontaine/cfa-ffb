@@ -54,4 +54,4 @@ export FIREBASE_CLI_DISABLE_UPDATE_CHECK=true
 firebase emulators:exec \
   --project "$LOCAL_DATA_WEB_PROJECT" \
   --only auth \
-  "node --test ${LOCAL_DATA_WEB_NODE_ARGS:-} scripts/local_data_web/"
+  "node --test ${LOCAL_DATA_WEB_NODE_ARGS:-} scripts/local_data_web/*.test.mjs"

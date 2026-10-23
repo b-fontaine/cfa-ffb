@@ -7,7 +7,7 @@
 #   scripts/rules_test.sh
 #
 # Lance `firebase emulators:exec` (Auth + Firestore, ports de firebase.json) puis
-# `node --test --test-concurrency=1 scripts/rules_test/` (un fichier à la fois : ils
+# `node --test --test-concurrency=1 scripts/rules_test/*.test.mjs` (un fichier à la fois : ils
 # partagent la même base d'émulateur). `RULES_FILE=copie.rules` fait tourner la suite sur une
 # COPIE des règles (mutations à la main, docs/engineering/testing.md). Aucune requête n'atteint le projet Firebase
 # réel : projet « demo-… » (émulateurs seuls), jamais de déploiement.
@@ -57,4 +57,4 @@ export FIREBASE_CLI_DISABLE_UPDATE_CHECK=true
 firebase emulators:exec \
   --project "$RULES_TEST_PROJECT" \
   --only auth,firestore \
-  "node --test --test-concurrency=1 scripts/rules_test/"
+  "node --test --test-concurrency=1 scripts/rules_test/*.test.mjs"

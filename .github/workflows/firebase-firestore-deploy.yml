@@ -79,6 +79,11 @@ jobs:
         run: |
           flutter pub get
           dart run tool/check_indexes.dart
+      # Les fichiers générés (freezed, injectable, l10n) ne sont pas versionnés :
+      # les outils Dart lancés par les tests des règles (import_plan_fixture)
+      # ne compilent pas sans eux. Même script que ci.yml.
+      - name: Génération du code
+        run: scripts/generate.sh
       # Même script que dans check.sh --full : refus par défaut, matrice des
       # rôles, dépôts, contre l'émulateur et les vraies règles.
       - name: Règles Firestore (émulateurs)

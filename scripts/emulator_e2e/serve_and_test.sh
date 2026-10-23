@@ -52,4 +52,4 @@ for _ in $(seq 1 600); do
 done
 grep -q 'is being served at' "$LOG" || { cat "$LOG" >&2; echo "✘ L'application n'est pas servie après 10 minutes." >&2; exit 1; }
 
-E2E_URL="http://127.0.0.1:${E2E_PORT}" node --test scripts/emulator_e2e/
+E2E_URL="http://127.0.0.1:${E2E_PORT}" node --test scripts/emulator_e2e/*.test.mjs
