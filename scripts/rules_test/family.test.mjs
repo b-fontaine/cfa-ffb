@@ -27,7 +27,7 @@ import {
   where,
 } from 'firebase/firestore';
 
-import { allowed, createEnv, dbOf, member, put, remove, seed, uids } from './support.mjs';
+import { allowed, createEnv, dbOf, freshDbOf, member, put, remove, seed, uids } from './support.mjs';
 
 const reads = JSON.parse(
   readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), 'family_reads.json'), 'utf8'),
@@ -67,7 +67,9 @@ const fill = (template, values) =>
 
 /** Joue une demande du format de `family_reads.json` ; refus des règles = `false`. */
 const play = async (actor, request) => {
-  const db = dbOf(env, actor);
+  // Instance neuve : le témoin de « known limit » doit être refusé par le serveur, pas
+  // servi par l'écoute que le client partagé de `dbOf` tient ouverte.
+  const db = freshDbOf(env, actor);
   const [verb, ...rest] = request.split(' ');
   if (verb === 'get') return allowed(() => getDoc(doc(db, rest[0])));
   if (verb === 'list') return allowed(() => getDocs(collection(db, rest[0])));

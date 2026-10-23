@@ -87,7 +87,24 @@ function verifiedContext(env, uid) {
   return env.authenticatedContext(uid, { email: `${uid}@example.org`, email_verified: true });
 }
 
-export const dbOf = (env, actor) => actors[actor](env).firestore();
+// Un seul contexte (donc une App Firebase et un client Firestore) par couple
+// (environnement, acteur) : l'environnement retient chaque contexte jusqu'à
+// `env.cleanup()`, en créer un par requête de la grille fait fuir la mémoire
+// (plus de 1 500 clients par fichier, tas de 2 Go dépassé sur macOS en CI).
+const dbs = new WeakMap();
+export const dbOf = (env, actor) => {
+  let byActor = dbs.get(env);
+  if (!byActor) dbs.set(env, (byActor = new Map()));
+  let db = byActor.get(actor);
+  if (!db) byActor.set(actor, (db = actors[actor](env).firestore()));
+  return db;
+};
+
+// Une instance neuve à chaque appel : pour un témoin qui doit prouver qu'une lecture
+// est refusée par le SERVEUR, sans être servie par une écoute déjà ouverte sur le client
+// partagé de `dbOf`. À réserver aux tests peu nombreux qui en ont besoin (fuite de mémoire
+// sinon, voir ci-dessus).
+export const freshDbOf = (env, actor) => actors[actor](env).firestore();
 
 // ───────────────────────── Jeu de données ─────────────────────────
 
