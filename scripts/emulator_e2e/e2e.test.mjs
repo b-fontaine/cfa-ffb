@@ -119,7 +119,7 @@ const open = async () => {
     // (polices refusées, ressources externes bloquées) ferait déborder le tampon pendant les 30 s
     // d'attente d'un `see`.
     const text = message.text();
-    if (text.includes('[pick]')) note(`page ${text}`);
+    if (text.includes('[pick]') || text.includes('[imp]')) note(`page ${text}`);
     else if (message.type() === 'error' && !text.includes('Failed to load resource')) {
       note(`console.error ${text.slice(0, 300)}`);
     }
@@ -188,14 +188,20 @@ const open = async () => {
     const match = /^https?:\/\/(?:127\.0\.0\.1|localhost):\d+\/(?:.*\/)?firebasejs\/[0-9.]+\/([\w.-]+\.js)$/.exec(request.url());
     if (match) sdkFiles.add(match[1]);
   });
+  // Mise au point : E2E_CPU_THROTTLE=6 ralentit la page de 6 fois (processeur de Chrome seulement,
+  // pas la machine ni les émulateurs) pour retrouver la lenteur d'un exécuteur de CI.
+  if (process.env.E2E_CPU_THROTTLE) {
+    const session = await context.newCDPSession(page);
+    await session.send('Emulation.setCPUThrottlingRate', { rate: Number(process.env.E2E_CPU_THROTTLE) });
+  }
   await page.goto(baseUrl);
   await page.waitForSelector('flt-semantics-placeholder', { state: 'attached', timeout: 180_000 });
   await enableSemantics();
 };
 
-const see = async (name, options = {}) => {
+const see = async (name, options = {}, timeout = 30_000) => {
   try {
-    await page.getByText(name, options).first().waitFor({ state: 'visible', timeout: 30_000 });
+    await page.getByText(name, options).first().waitFor({ state: 'visible', timeout });
   } catch (error) {
     const shown = await page.evaluate(() => document.body.innerText).catch(() => '(illisible)');
     const history = trace.slice(-70);
@@ -205,6 +211,12 @@ const see = async (name, options = {}) => {
     );
   }
 };
+
+// Les étapes de l'écran d'import recalculent le plan à chaque choix (relectures du club sur le
+// serveur) : mesuré à ~17 s chacune dans cette version de débogage, sur une machine rapide. 30 s ne
+// laissent aucune marge à un exécuteur de CI plus lent.
+const importWait = 120_000;
+const seeSlow = (name, options = {}) => see(name, options, importWait);
 
 // Une ligne de membre avec son bouton « Retirer l'accès » est un groupe sémantique dont le nom
 // (« Sophie\nEnseignant ») est l'étiquette ; sans bouton, c'est un simple texte.
@@ -544,7 +556,7 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
   };
 
   const clickButton = async (name) => {
-    await page.getByRole('button', { name, exact: true }).click();
+    await page.getByRole('button', { name, exact: true }).click({ timeout: importWait });
   };
 
   const openImportScreen = async (email) => {
@@ -558,19 +570,19 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
 
   test('le directeur importe la sauvegarde fictive par l’écran, et le club la contient ensuite', async () => {
     await openImportScreen(accounts.director.email);
-    await see('Vous importez en tant que : Directeur.');
+    await seeSlow('Vous importez en tant que : Directeur.');
     await chooseBackupFile();
 
-    await see('Rapport du fichier');
-    await see('Des choix sont nécessaires');
+    await seeSlow('Rapport du fichier');
+    await seeSlow('Des choix sont nécessaires');
     await clickButton('Continuer');
-    await see('Correspondance des groupes');
+    await seeSlow('Correspondance des groupes');
     await chooseOption(/Que faire du groupe/, 'Créer dans le club');
     await clickButton('Continuer');
-    await see('Récapitulatif avant écriture');
-    await see('Rôle effectif : Directeur');
+    await seeSlow('Récapitulatif avant écriture');
+    await seeSlow('Rôle effectif : Directeur');
     await clickButton('Importer maintenant');
-    await see('Import terminé', { exact: false });
+    await seeSlow('Import terminé', { exact: false });
 
     // Relecture comparée, par un autre appareil, sous les vraies règles.
     const reader = await otherDevice(accounts.director.email);
@@ -595,16 +607,16 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
   test('le même fichier, rouvert par le même compte, est annoncé comme déjà importé', async () => {
     await openImportScreen(accounts.director.email);
     await chooseBackupFile();
-    await see('Ce fichier est déjà importé');
+    await seeSlow('Ce fichier est déjà importé');
     assert.equal(await page.getByRole('button', { name: 'Continuer', exact: true }).count(), 0);
   });
 
   test('un enseignant dont les groupes ne contiennent pas ces fiches est refusé sobrement par le serveur', async () => {
     await openImportScreen(accounts.teacherA.email);
-    await see('Vous importez en tant que : Enseignant.');
+    await seeSlow('Vous importez en tant que : Enseignant.');
     await chooseBackupFile();
     await clickButton('Continuer');
-    await see('Correspondance des groupes');
+    await seeSlow('Correspondance des groupes');
     // Un enseignant ne crée pas de groupe : seule l'association à son propre groupe est proposée.
     await page.getByRole('button', { name: /Que faire du groupe/ }).first().click();
     assert.equal(await page.getByText('Créer dans le club', { exact: true }).count(), 0);
@@ -614,17 +626,17 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
     await page.getByRole('menuitem', { name: 'Associer à : Enfants du mardi' }).click();
     await clickButton('Continuer');
     // Ses fiches sont créées sans qu'il puisse vérifier qu'elles n'existent pas déjà.
-    await see('Confirmations');
+    await seeSlow('Confirmations');
     await page.getByRole('checkbox', { name: /Je confirme la création de/ }).click();
     await clickButton('Continuer');
-    await see('Récapitulatif avant écriture');
-    await see('Rôle effectif : Enseignant');
+    await seeSlow('Récapitulatif avant écriture');
+    await seeSlow('Rôle effectif : Enseignant');
     await clickButton('Importer maintenant');
     // Les fiches existent déjà (le directeur les a importées dans un autre groupe) : les règles
     // refusent le lot en entier, l'écran le dit sans rouge ni détail technique.
     // Le message est une alerte annoncée par la seule région vive de l'écran ; son texte est aussi
     // affiché (les boutons « Réessayer » et « Terminer » restent hors de la région vive).
-    await see('Le serveur a refusé l’écriture d’un lot');
+    await seeSlow('Le serveur a refusé l’écriture d’un lot');
     const shown = await visible();
     for (const secret of ['permission-denied', 'FirebaseError', ...backup.students.map((x) => x.firstName)]) {
       assert.ok(!shown.includes(secret), `« ${secret} » ne doit pas figurer à l'écran`);
