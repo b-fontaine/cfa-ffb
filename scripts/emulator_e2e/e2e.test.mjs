@@ -91,6 +91,12 @@ const route = (r) => {
 // Trace de la page (console, sélecteur de fichier), jointe au message d'un échec de `see`.
 const trace = [];
 const traceStart = Date.now();
+let tracingFirestore = false;
+let channelRequests = 0;
+const note = (line) => {
+  trace.push(`${Date.now() - traceStart} ${line}`);
+  if (trace.length > 300) trace.shift();
+};
 
 const enableSemantics = () =>
   page.evaluate(() => document.querySelector('flt-semantics-placeholder')?.click());
@@ -102,13 +108,42 @@ const open = async () => {
   await context.route('**/*', route);
   page = await context.newPage();
   trace.length = 0;
-  page.on('pageerror', (error) => pageErrors.push(error.message));
+  tracingFirestore = false;
+  channelRequests = 0;
+  page.on('pageerror', (error) => {
+    pageErrors.push(error.message);
+    note(`pageerror ${error.message.slice(0, 300)}`);
+  });
   page.on('console', (message) => {
-    // Seulement le sélecteur de fichier : le reste de la console (polices refusées, ressources
-    // externes bloquées) ferait déborder le tampon pendant les 30 s d'attente d'un `see`.
-    if (!message.text().includes('[pick]')) return;
-    trace.push(`${Date.now() - traceStart} page ${message.text()}`);
-    if (trace.length > 200) trace.shift();
+    // Le sélecteur de fichier et les erreurs de l'application seulement : le reste de la console
+    // (polices refusées, ressources externes bloquées) ferait déborder le tampon pendant les 30 s
+    // d'attente d'un `see`.
+    const text = message.text();
+    if (text.includes('[pick]')) note(`page ${text}`);
+    else if (message.type() === 'error' && !text.includes('Failed to load resource')) {
+      note(`console.error ${text.slice(0, 300)}`);
+    }
+  });
+  // Un rechargement ou une navigation de la page remettrait l'écran d'import à son étape initiale.
+  page.on('load', () => note('page load'));
+  page.on('framenavigated', (frame) => {
+    if (frame === page.mainFrame()) note(`navigated ${frame.url()}`);
+  });
+  page.on('crash', () => note('page crash'));
+  page.on('requestfailed', (request) => {
+    const url = new URL(request.url());
+    if (url.hostname === '127.0.0.1' || url.hostname === 'localhost') {
+      note(`requestfailed ${request.method()} ${url.port}${url.pathname.slice(0, 80)}`);
+    }
+  });
+  page.on('request', (request) => {
+    if (!tracingFirestore) return;
+    const url = new URL(request.url());
+    if (url.port !== String(firestorePort)) return;
+    // Les canaux d'écoute et d'écriture sont du long-polling permanent : on les compte, on ne
+    // les note pas, sinon ils noient le reste de la trace.
+    if (/\/(Listen|Write)\/channel$/.test(url.pathname)) channelRequests += 1;
+    else note(`firestore ${request.method()} ${url.pathname.slice(-70)}`);
   });
   // Sans effet sur le comportement : note, dans la page, ce que fait le sélecteur de fichier
   // (clic sur l'input, focus, change, cancel, nombre de fichiers) pour qu'un échec en CI dise
@@ -139,9 +174,9 @@ const see = async (name, options = {}) => {
     await page.getByText(name, options).first().waitFor({ state: 'visible', timeout: 30_000 });
   } catch (error) {
     const shown = await page.evaluate(() => document.body.innerText).catch(() => '(illisible)');
-    const history = trace.slice(-40);
+    const history = trace.slice(-70);
     throw new Error(
-      `« ${name} » absent de ${page.url()} ; affiché : ${shown}\n  trace de la page :\n    ${history.join('\n    ') || '(rien)'}`,
+      `« ${name} » absent de ${page.url()} ; affiché : ${shown}\n  trace de la page (requêtes de canal Firestore depuis le choix du fichier : ${channelRequests}) :\n    ${history.join('\n    ') || '(rien)'}`,
       { cause: error },
     );
   }
@@ -463,9 +498,10 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
       page.waitForEvent('filechooser'),
       page.getByRole('button', { name: 'Choisir un fichier de sauvegarde' }).click(),
     ]);
-    trace.push(`${Date.now() - traceStart} playwright filechooser reçu`);
+    note('playwright filechooser reçu');
+    tracingFirestore = true;
     await chooser.setFiles(backupPath);
-    trace.push(`${Date.now() - traceStart} playwright setFiles terminé`);
+    note('playwright setFiles terminé');
   };
 
   // Un menu de choix (une question, ses options) : on l'ouvre par son nom accessible puis on prend l'option.
