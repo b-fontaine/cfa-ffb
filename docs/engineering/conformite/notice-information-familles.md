@@ -1,6 +1,6 @@
 # Notice d'information des familles — projet à valider par la fédération ou un DPO
 
-Statut : **projet, non validé** (2026-10-17). À remettre aux familles **avant** l'invitation d'un parent ou d'un élève, puis rappelée à la première connexion. Les champs `[…]` sont à remplir par le club. Section française, puis section anglaise (même contenu, même statut).
+Statut : **projet, non validé** (2026-10-17 ; mis à jour le 2026-10-24 : durées, suppression de compte, effacement par étapes). À remettre aux familles **avant** l'invitation d'un parent ou d'un élève, puis rappelée à la première connexion. Les champs `[…]` sont à remplir par le club. Section française, puis section anglaise (même contenu, même statut).
 
 ---
 
@@ -20,7 +20,7 @@ Pour préparer les séances de billard (Blackball) et suivre les progrès de cha
 
 ### Quelles données ?
 
-Pour un élève : prénom, initiale du nom, public (enfants ou adultes), groupes, présences, résultats d'exercices, étiquettes de séance (une liste fermée, sans nom), acquittements d'alertes par les animateurs (avec l'identifiant du compte de l'animateur) et un **commentaire d'évaluation** facultatif et court, écrit par l'enseignant. Nous ne collectons ni date de naissance, ni information de santé, ni photo. Pour un adulte : adresse e-mail, rôle dans le club, code d'invitation (rôle, club, expiration) et, pour un parent, le lien avec la fiche de son enfant. Le service de connexion de Google traite aussi l'adresse IP et le type d'appareil des adultes.
+Pour un élève : prénom, initiale du nom, public (enfants ou adultes), groupes, présences, résultats d'exercices, étiquettes de séance (une liste fermée, sans nom), acquittements d'alertes par les animateurs (avec l'identifiant du compte de l'animateur, gardé même après la suppression de son compte) et un **commentaire d'évaluation** facultatif et court, écrit par l'enseignant. Nous ne collectons ni date de naissance, ni information de santé, ni photo. Pour un adulte : adresse e-mail, rôle dans le club, code d'invitation (rôle, club, expiration) et, pour un parent, le lien avec la fiche de son enfant. Le service de connexion de Google traite aussi l'adresse IP et le type d'appareil des adultes.
 
 ### Qui voit quoi ?
 
@@ -60,18 +60,20 @@ Les données de suivi sont hébergées en France (Paris, `europe-west9`). **Le s
 
 ### Combien de temps ?
 
-Élèves : la saison en cours et la saison suivante, puis effacement. Parents : jusqu'à la fin de la saison suivante du dernier enfant lié. Enseignants et directeurs : 12 mois après le dernier rattachement. Invitations : effacées à la clôture de saison. `[Durées à valider.]` **L'effacement est lancé par le directeur du club à la clôture de saison : il n'est pas automatique** ; un club qui tarde garde les données plus longtemps, d'où une alerte puis un blocage de la saisie. Vous pouvez demander l'effacement à tout moment.
+Élèves : la saison en cours et la saison suivante, puis effacement. Parents : jusqu'à la fin de la saison suivante du dernier enfant lié ; le compte du parent quitte le club quand la fiche de son dernier enfant est effacée. Enseignants et directeurs : 12 mois après le dernier rattachement. Ces durées sont **tenues par le club** : l'application n'enregistre pas de date limite et ne prévient pas quand elle approche. Invitations utilisées ou expirées : effacées à la clôture de saison. `[Durées à valider.]` **L'effacement est lancé par le directeur du club, à la clôture de saison ou à la demande : il n'est pas automatique** ; un club qui tarde garde les données plus longtemps, et rien dans l'application ne l'en empêche. Vous pouvez demander l'effacement à tout moment.
 
 ### Vos droits
 
-Accès (avec un export de la fiche de votre enfant), rectification, effacement, limitation, opposition. Écrivez à `[e-mail du club]` ; réponse sous un mois. En cas de désaccord, vous pouvez saisir la CNIL (cnil.fr).
+Accès, rectification, effacement, limitation, opposition. Écrivez à `[e-mail du club]` ; réponse sous un mois. Pour l'accès, le club vous communique les données de votre enfant ; un export de sa fiche depuis l'application est prévu mais **pas encore disponible**. Vous pouvez aussi **supprimer vous-même votre compte** (voir plus bas). En cas de désaccord, vous pouvez saisir la CNIL (cnil.fr).
 
 ### À savoir
 
 - Les données peuvent être mémorisées sur l'appareil (cache hors ligne) ; elles sont effacées à la déconnexion. Évitez de rester connecté sur un appareil partagé.
 - Les fichiers que le club exporte (sauvegarde, PDF) et les copies d'écran **ne sont pas effaçables par l'application**.
+- **Supprimer votre compte** *(texte de projet, à valider)* : depuis **Plus**, **Supprimer mon compte**, avec votre mot de passe. Votre accès au club, votre fiche de membre et votre compte de connexion (adresse e-mail, mot de passe) sont supprimés. La fiche et les résultats de votre enfant **restent au club** : ils appartiennent au suivi du club, et leur effacement se demande au club. Un élève de 15 ans et plus qui supprime son compte garde de même sa fiche au club.
 - Les comptes supprimés disparaissent des sauvegardes de Google sous 180 jours.
-- **Reprise de l'historique d'un appareil** *(texte de projet, à valider)* : un animateur peut reprendre dans le club l'historique qu'il avait saisi sur son appareil avant la synchronisation, à partir d'un fichier de sauvegarde. Ce fichier **peut contenir des prénoms d'enfants et leurs résultats** ; il **quitte l'appareil** et son contenu est envoyé au club (serveur), comme toute saisie. L'application n'en garde pas de copie ; le fichier reste chez l'animateur, qui doit le conserver en lieu sûr puis le supprimer. Le club garde une trace technique de l'import (empreinte du fichier, nombre d'écritures, identifiant du compte de l'animateur, sans nom ni donnée d'enfant) pour qu'un même compte n'importe pas deux fois le même fichier (un autre compte le pourrait, mais n'écraserait aucune donnée déjà présente). **Conséquence** : si une fiche a été effacée du club entre-temps, un second import du même fichier par un autre compte peut la recréer, sous la même confirmation du nombre exact d'élèves rétablis.
+- **Effacement par étapes** : quand le club efface un élève, sa fiche est d'abord marquée « en cours d'effacement » (plus rien ne peut s'y ajouter), puis tout ce qui le concerne est supprimé, la fiche en dernier ; un effacement interrompu reprend là où il s'était arrêté. Il ne reste ni liste ni nom des élèves effacés.
+- **Reprise de l'historique d'un appareil** *(texte de projet, à valider)* : un animateur peut reprendre dans le club l'historique qu'il avait saisi sur son appareil avant la synchronisation, à partir d'un fichier de sauvegarde. Ce fichier **peut contenir des prénoms d'enfants et leurs résultats** ; il **quitte l'appareil** et son contenu est envoyé au club (serveur), comme toute saisie. L'application n'en garde pas de copie ; le fichier reste chez l'animateur, qui doit le conserver en lieu sûr puis le supprimer. Le club garde une trace technique de l'import (empreinte du fichier, nombre d'écritures, identifiant du compte de l'animateur, sans nom ni donnée d'enfant) pour qu'un même compte n'importe pas deux fois le même fichier (un autre compte le pourrait, mais n'écraserait aucune donnée déjà présente). Cette trace est supprimée avec le compte de l'animateur, ou par le directeur quand elle n'a pas servi depuis 90 jours. **Conséquence** : si une fiche a été effacée du club entre-temps, un second import du même fichier, par un autre compte ou une fois la trace supprimée, peut la recréer, sous la même confirmation du nombre exact d'élèves rétablis.
 
 ---
 
@@ -91,7 +93,7 @@ To prepare billiards sessions (Blackball) and follow each student's progress ove
 
 ### What data?
 
-For a student: first name, initial of the surname, audience (children or adults), groups, attendance, exercise results, session labels (a closed list, with no names), alert acknowledgements by instructors (with the instructor's account identifier) and an optional, short **evaluation comment** written by the teacher. We do not collect date of birth, health information or photos. For an adult: e-mail address, role in the club, invitation code (role, club, expiry) and, for a parent, the link to their child's record. Google's sign-in service also processes adults' IP address and device type.
+For a student: first name, initial of the surname, audience (children or adults), groups, attendance, exercise results, session labels (a closed list, with no names), alert acknowledgements by instructors (with the instructor's account identifier, kept even after their account is deleted) and an optional, short **evaluation comment** written by the teacher. We do not collect date of birth, health information or photos. For an adult: e-mail address, role in the club, invitation code (role, club, expiry) and, for a parent, the link to their child's record. Google's sign-in service also processes adults' IP address and device type.
 
 ### Who sees what?
 
@@ -131,15 +133,17 @@ Tracking data is hosted in France (Paris, `europe-west9`). **Google's sign-in se
 
 ### How long?
 
-Students: the current season and the next one, then erasure. Parents: until the end of the season following their last linked child's. Teachers and directors: 12 months after their last club assignment. Invitations: erased at season closure. `[Durations to be validated.]` **Erasure is launched by the club director at season closure: it is not automatic**; a club that delays keeps the data longer, hence a warning and then a block on data entry. You can request erasure at any time.
+Students: the current season and the next one, then erasure. Parents: until the end of the season following their last linked child's; a parent's account leaves the club when their last child's record is erased. Teachers and directors: 12 months after their last club assignment. These periods are **kept by the club**: the application records no deadline and gives no warning when one approaches. Used or expired invitations: erased at season closure. `[Durations to be validated.]` **Erasure is launched by the club director, at season closure or on request: it is not automatic**; a club that delays keeps the data longer, and nothing in the application prevents it. You can request erasure at any time.
 
 ### Your rights
 
-Access (with an export of your child's record), rectification, erasure, restriction, objection. Write to `[club e-mail]`; reply within one month. If you disagree, you may complain to the CNIL (cnil.fr).
+Access, rectification, erasure, restriction, objection. Write to `[club e-mail]`; reply within one month. For access, the club gives you your child's data; an export of their record from the application is planned but **not available yet**. You can also **delete your account yourself** (see below). If you disagree, you may complain to the CNIL (cnil.fr).
 
 ### Good to know
 
 - Data may be kept on the device (offline cache); it is erased on sign-out. Do not stay signed in on a shared device.
 - Files the club exports (backup, PDF) and screenshots **cannot be erased by the application**.
+- **Deleting your account** *(draft text, to be validated)*: from **More**, **Delete my account**, with your password. Your access to the club, your member record and your sign-in account (e-mail address, password) are deleted. Your child's record and results **stay with the club**: they belong to the club's follow-up, and their erasure is requested from the club. A student aged 15 or over who deletes their account likewise keeps their record at the club.
 - Deleted accounts disappear from Google's backups within 180 days.
-- **Moving the history of a device** *(draft text, to be validated)*: a coach can move into the club the history entered on their device before synchronisation, from a backup file. That file **may contain children's first names and their results**; it **leaves the device** and its content is sent to the club (server), like any entry. The app keeps no copy; the file stays with the coach, who must keep it safe and then delete it. The club keeps a technical trace of the import (file fingerprint, number of writes, the coach's account identifier, no name or child data) so that the same account does not import the same file twice (another account could, but would overwrite no data already present). **Consequence**: if a record was erased from the club in the meantime, a second import of the same file by another account may recreate it, under the same confirmation of the exact number of restored students.
+- **Erasure in steps**: when the club erases a student, their record is first marked "being erased" (nothing more can be added to it), then everything about them is deleted, the record last; an interrupted erasure resumes where it stopped. No list or name of erased students is kept.
+- **Moving the history of a device** *(draft text, to be validated)*: a coach can move into the club the history entered on their device before synchronisation, from a backup file. That file **may contain children's first names and their results**; it **leaves the device** and its content is sent to the club (server), like any entry. The app keeps no copy; the file stays with the coach, who must keep it safe and then delete it. The club keeps a technical trace of the import (file fingerprint, number of writes, the coach's account identifier, no name or child data) so that the same account does not import the same file twice (another account could, but would overwrite no data already present). This trace is deleted with the coach's account, or by the director once it has not been used for 90 days. **Consequence**: if a record was erased from the club in the meantime, a second import of the same file, by another account or once the trace is deleted, may recreate it, under the same confirmation of the exact number of restored students.

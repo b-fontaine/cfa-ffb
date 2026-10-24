@@ -1,6 +1,6 @@
 # Sous-traitants et accords de traitement — projet à valider par la fédération ou un DPO
 
-Statut : **projet, non validé** (2026-10-17). Sources Google : firebase.google.com/support/privacy et firebase.google.com/pricing, lues le 2026-10-17. Les clauses elles-mêmes ne sont pas reproduites ici : elles sont à lire et à accepter dans la console par le titulaire du projet.
+Statut : **projet, non validé** (2026-10-17 ; relu le 2026-10-24 pour FB8 partie B : aucun sous-traitant ni service nouveau). Sources Google : firebase.google.com/support/privacy et firebase.google.com/pricing, lues le 2026-10-17. Les clauses elles-mêmes ne sont pas reproduites ici : elles sont à lire et à accepter dans la console par le titulaire du projet.
 
 ## Chaîne de traitement
 
@@ -14,7 +14,7 @@ Statut : **projet, non validé** (2026-10-17). Sources Google : firebase.google.
 
 | Service | Données | Localisation | Statut |
 |---|---|---|---|
-| **Cloud Firestore** | Données de suivi (prénom + initiale, groupes, présences, résultats), membres, invitations | **`europe-west9` (Paris)**, base irréversible, **créée par l'animateur le 2026-10-17** (déclaré) | Région effective à constater dans la console `[à confirmer]` ; quota Paris non vérifié (à relever dans la console) |
+| **Cloud Firestore** | Données de suivi (prénom + initiale, groupes, présences, résultats), membres, invitations, marqueurs techniques d'import et d'opération (identifiant du compte de l'auteur, aucune donnée d'élève) | **`europe-west9` (Paris)**, base irréversible, **créée par l'animateur le 2026-10-17** (déclaré) | Région effective à constater dans la console `[à confirmer]` ; quota Paris non vérifié (à relever dans la console) |
 | **Firebase Authentication** (e-mail et mot de passe seul) | Adresse e-mail, mot de passe haché, identifiant, IP et agent utilisateur | **États-Unis seulement** : « run only from US data centers » ; IP conservées quelques semaines ; suppression des systèmes et sauvegardes sous 180 jours | Vérifié à la source |
 | **App Check** | Jetons d'attestation (7 jours au plus), attestation non conservée ; Play Integrity (Android), App Attest (iOS) | Non précisée | Vérifié à la source ; localisation `[à valider]` |
 | **reCAPTCHA** (fournisseur web d'App Check) | Adresse IP et signaux du navigateur | Non précisée | Non traité par la page Firebase : `[conditions reCAPTCHA à lire et valider]` |
@@ -44,7 +44,7 @@ Mentions minimales à signer `[par le responsable de traitement et l'éditeur]` 
 - **Sécurité** : mesures de la fiche du registre ; règles Firestore testées ; App Check.
 - **Sous-traitants ultérieurs** : Google uniquement ; information préalable du club avant tout ajout ; mêmes obligations contractuelles.
 - **Assistance** : aide pour droits des personnes (voir la procédure), AIPD, violations (notification au club sans délai).
-- **Fin du contrat** : export du club (sauvegarde v5), puis effacement des données du club ; sauvegardes Google sous 180 jours pour Auth.
+- **Fin du contrat** : export du club (sauvegarde v5), puis effacement des données du club ; sauvegardes Google sous 180 jours pour Auth. L'application n'a **pas** d'écran de suppression d'un club (constaté le 2026-10-24) : l'effacement se fait par la clôture et l'effacement des élèves, la suppression de leur compte par chaque utilisateur, puis par le titulaire du projet en console pour le reste `[procédure à valider]`.
 - **Audit** : le club peut demander les preuves de conformité.
 - **Si une fédération devient responsable** : l'accord est repris à l'identique avec la fédération comme responsable ; les clubs deviennent utilisateurs.
 

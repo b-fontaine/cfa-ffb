@@ -717,7 +717,18 @@ reste, **sans rien redemander** (c'est le même compte qui reprend). **390 élè
 au plus** peuvent être effacés dans une même clôture : au-delà, l'assistant le
 dit et refuse avant toute écriture ; effacez les autres ensuite, un par un.
 **Aucune clôture pendant la période de migration** des données locales (voir
-plus haut). Les copies locales d'élèves effacés restées sur un appareil, et les
+plus haut).
+**Invitations** : dans le club, la clôture supprime aussi les **invitations
+utilisées ou expirées** du club (l'aperçu dit combien, sous « Ce que la clôture
+va faire ») ; les invitations encore valables restent. La clôture d'un
+directeur ne touche pas aux invitations de **directeur** créées par
+l'administrateur : elles expirent en 48 heures sans servir, et la clôture d'un
+administrateur les supprime. Si une invitation est révoquée pendant la
+clôture, celle-ci s'arrête : **Reprendre la clôture** termine le reste.
+**Votre équipe** : la clôture ne retire aucun compte d'adulte. Profitez-en
+pour revoir **Mon club** et **retirer l'accès** des enseignants partis ; un
+directeur parti est retiré par l'administrateur. Les parents et les élèves
+quittent le club avec la fiche de leur dernier enfant effacé. Les copies locales d'élèves effacés restées sur un appareil, et les
 sauvegardes déjà exportées, ne sont pas touchées : supprimez-les vous-même. Avec
 la version locale de développement (`DATA_BACKEND=drift` explicite), la clôture reste **tout ou rien**.
 L'application garde alors, **sans aucun nom**,
@@ -760,6 +771,67 @@ de l'élève ou de ses parents, et à la fin de la saison.
   ses parents. Exportez d'abord une sauvegarde si vous voulez garder une copie
   (puis supprimez-la).
 
+## Supprimer les marqueurs abandonnés (directeur)
+
+Chaque **import d'une sauvegarde** et chaque **opération par étapes**
+(effacement d'un élève, clôture d'une saison) laisse dans le club un petit
+**marqueur**, sans prénom ni donnée d'élève : il permet de reprendre là où
+l'on s'est arrêté et d'empêcher qu'un même fichier soit importé deux fois. Le
+marqueur disparaît à la fin de l'opération, ou quand son auteur supprime son
+compte. Celui d'un compte déjà supprimé, ou d'une opération jamais reprise,
+reste.
+
+- **Qui** : le **directeur** et l'**administrateur**, dans **Mon club**, carte
+  **Marqueurs abandonnés**. Un enseignant ne la voit pas.
+- **Quoi** : **Supprimer les marqueurs abandonnés** supprime, pour le club
+  ouvert seulement, les marqueurs qui **n'ont pas bougé depuis plus de 90
+  jours**, quel qu'en soit l'auteur. Un marqueur plus récent n'est jamais
+  touché (une reprise reste possible). La durée de 90 jours est à valider par
+  le responsable de la protection des données.
+- **Par lots** : jusqu'à 400 marqueurs à la fois, sous le **plafond d'écritures
+  du jour** partagé avec l'import ; s'il est atteint, l'écran le dit :
+  relancez le lendemain. Sans réseau, rien n'est supprimé : relancez plus
+  tard.
+- **Attention à un nouvel import** : sans son marqueur, un fichier de
+  sauvegarde **déjà importé** peut être importé de nouveau, et son aperçu
+  proposerait alors de **rétablir les élèves effacés depuis**. Ne confirmez
+  pas un tel rétablissement après une demande d'effacement ; mieux, supprimez
+  les anciens fichiers de sauvegarde (voir « Effacer un élève »).
+- **Quand** : par exemple une fois par trimestre, et après le départ d'un enseignant ou
+  d'un directeur (compte supprimé), suffit. Rien ne se fait sans que vous
+  ouvriez la carte.
+
+## Supprimer mon compte
+
+Chacun peut supprimer **son propre** compte : parent, élève, enseignant ou
+directeur, depuis **Plus**, **Supprimer mon compte** (ou depuis l'écran
+**Aucun club** si le compte n'est plus rattaché à un club).
+
+- **Ce qui est supprimé** : votre accès à chacun de vos clubs, vos
+  **marqueurs** d'import et d'opération, les invitations **encore en attente**
+  que vous avez créées **depuis cet appareil**, puis le compte lui-même
+  (adresse e-mail et mot de passe). L'appareil oublie aussi ce que la
+  déconnexion oublie.
+- **Ce qui reste au club** : les fiches des élèves, leurs résultats et les
+  séances ; ils appartiennent au club. Un parent qui supprime son compte ne
+  touche à aucune fiche de ses enfants ; leur effacement se demande au club.
+  Les « Vu » que vous avez donnés gardent l'identifiant de votre compte, sans
+  nom ni adresse.
+- **Avant de commencer** : soyez **en ligne**, et attendez que vos
+  modifications soient envoyées (sinon l'écran refuse, sans rien supprimer).
+  Votre **mot de passe** est demandé : un mot de passe faux ne supprime rien.
+- **Directeur** : le **dernier directeur** d'un club ne peut pas supprimer son
+  compte. Demandez d'abord à l'**administrateur** d'inviter un autre
+  directeur ; une fois celui-ci inscrit, vous pouvez supprimer le vôtre.
+- **Administrateur** : son compte ne se supprime pas depuis l'application,
+  mais dans la console Firebase.
+- **Si la connexion est coupée** : l'écran dit ce qui a pu être supprimé ;
+  recommencez une fois en ligne pour terminer. Si seul le compte reste,
+  l'écran **Aucun club** propose de nouveau la suppression.
+- Les invitations que vous avez créées et qui n'ont pas encore servi sont
+  annulées, y compris celles créées depuis un **autre appareil**. Celles qui
+  ont déjà servi restent jusqu'à la clôture de saison.
+
 ## Une saison en bref
 
 | Quand | Action |
@@ -772,4 +844,4 @@ de l'élève ou de ses parents, et à la fin de la saison.
 | Régulièrement | Lire les fiches et la grille du groupe, marquer les alertes « Vu », rappeler les notions signalées |
 | Vers 16-17 ans | Faire un bilan de maturité, décider du passage à la main |
 | Fin de mois / de saison | Exporter une sauvegarde |
-| Fin de saison | Clore la saison (sauvegarde, élèves à effacer ou à reconduire) ; ou effacer à la main un élève à sa demande |
+| Fin de saison | Clore la saison (sauvegarde, élèves à effacer ou à reconduire ; les invitations utilisées ou expirées partent avec) ; revoir l'équipe dans **Mon club** ; supprimer les marqueurs abandonnés (directeur) ; ou effacer à la main un élève à sa demande |
