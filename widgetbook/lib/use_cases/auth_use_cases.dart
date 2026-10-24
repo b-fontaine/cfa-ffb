@@ -1,6 +1,10 @@
 import 'package:billard_cfa/app/di/injection.dart';
 import 'package:billard_cfa/entities/account/domain/auth_failure.dart';
 import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
+import 'package:billard_cfa/features/delete_account/domain/account_deletion.dart';
+import 'package:billard_cfa/features/delete_account/presentation/bloc/delete_account_cubit.dart';
+import 'package:billard_cfa/features/delete_account/presentation/bloc/delete_account_state.dart';
+import 'package:billard_cfa/features/delete_account/presentation/ui/delete_account_form.dart';
 import 'package:billard_cfa/features/select_club/presentation/ui/club_choice_list.dart';
 import 'package:billard_cfa/features/sign_in/presentation/bloc/auth_form_state.dart';
 import 'package:billard_cfa/features/sign_in/presentation/bloc/forgot_password_cubit.dart';
@@ -11,6 +15,7 @@ import 'package:billard_cfa/features/sign_in/presentation/ui/auth_fields.dart';
 import 'package:billard_cfa/features/sign_in/presentation/ui/forgot_password_form.dart';
 import 'package:billard_cfa/features/sign_in/presentation/ui/register_form.dart';
 import 'package:billard_cfa/features/sign_in/presentation/ui/sign_in_form.dart';
+import 'package:billard_cfa/pages/delete_account/presentation/delete_account_page.dart';
 import 'package:billard_cfa/pages/forgot_password/presentation/forgot_password_page.dart';
 import 'package:billard_cfa/pages/register/presentation/register_page.dart';
 import 'package:billard_cfa/pages/select_club/presentation/select_club_page.dart';
@@ -116,6 +121,7 @@ Widget buildAccountSectionUseCase(BuildContext context) => _padded(
     clubName: 'Billard Club de Nice',
     roleLabel: 'Directeur',
     onSignOut: () {},
+    onDeleteAccount: () {},
   ),
 );
 
@@ -183,7 +189,69 @@ Widget buildSelectClubPageUseCase(BuildContext context) => SelectClubPage(
   onSignOut: () {},
   onRefresh: () {},
   onBack: context.knobs.boolean(label: 'Retour à « Plus »') ? () {} : null,
+  onDeleteAccount: () {},
 );
+
+/// Les états du formulaire « Supprimer mon compte » (FB8 partie B).
+DeleteAccountState _deletionState(BuildContext context) =>
+    switch (context.knobs.object.dropdown<String>(
+      label: 'État',
+      options: const [
+        'Au repos',
+        'Retrait d’un club',
+        'Dernier directeur',
+        'Coupure après la purge',
+        'Supprimé',
+      ],
+    )) {
+      'Retrait d’un club' => const DeleteAccountState.working(
+        AccountDeletionStep.leavingClub(
+          clubName: 'Billard Club de Nice',
+          index: 1,
+          count: 2,
+        ),
+      ),
+      'Dernier directeur' => const DeleteAccountState.stopped(
+        AccountDeletionResult.refused(
+          AccountDeletionRefusal.lastDirector,
+          clubName: 'Billard Club de Nice',
+        ),
+      ),
+      'Coupure après la purge' => const DeleteAccountState.stopped(
+        AccountDeletionResult.failed(
+          AccountDeletionError.network,
+          progress: AccountDeletionProgress.clubDataRemoved,
+        ),
+      ),
+      'Supprimé' => const DeleteAccountState.deleted(),
+      _ => const DeleteAccountState.idle(),
+    };
+
+@widgetbook.UseCase(
+  name: 'Supprimer mon compte',
+  type: DeleteAccountForm,
+  path: _path,
+)
+Widget buildDeleteAccountFormUseCase(BuildContext context) => _padded(
+  DeleteAccountForm(state: _deletionState(context), onSubmit: (_) {}),
+);
+
+@widgetbook.UseCase(
+  name: 'Supprimer mon compte',
+  type: DeleteAccountPage,
+  path: _path,
+)
+Widget buildDeleteAccountPageUseCase(BuildContext context) {
+  final state = _deletionState(context);
+  return BlocProvider<DeleteAccountCubit>(
+    key: ValueKey(state),
+    create: (_) => _PreviewDeleteAccountCubit(state),
+    child: DeleteAccountPage(
+      isAdministrator: context.knobs.boolean(label: 'Administrateur'),
+      onBack: () {},
+    ),
+  );
+}
 
 @widgetbook.UseCase(
   name: 'Service injoignable',
@@ -200,3 +268,17 @@ Widget buildUnavailablePageUseCase(BuildContext context) =>
 )
 Widget buildAccessDeniedPageUseCase(BuildContext context) =>
     AccessDeniedPage(onSignOut: () {});
+
+/// Le cubit de l'aperçu : il montre l'état choisi, et une demande y aboutit
+/// au refus du dernier directeur (aucune suppression réelle).
+class _PreviewDeleteAccountCubit extends DeleteAccountCubit {
+  _PreviewDeleteAccountCubit(DeleteAccountState initial)
+    : super(
+        (password, {onProgress}) async => const AccountDeletionResult.refused(
+          AccountDeletionRefusal.lastDirector,
+          clubName: 'Billard Club de Nice',
+        ),
+      ) {
+    emit(initial);
+  }
+}

@@ -1,13 +1,26 @@
 // Invitations (ADR 0024, décision 24) : création par rôle, validité, usage unique par lot
 // (`getAfter`), révocation, contre l'émulateur Firestore (lot FB3).
 //
-// Une invitation est lue par `get` seulement (jamais `list`) ; elle porte le club, le rôle, les
-// groupes ou les fiches ; elle se consomme dans le MÊME lot que la création du member, et les
+// Une invitation est lue par `get` ; la liste n'est ouverte qu'à un membre du club, pour ses
+// propres invitations (suppression de son compte, FB8 partie B) ; elle porte le
+// club, le rôle, les groupes ou les fiches ; elle se consomme dans le MÊME lot que la création du member, et les
 // deux écritures se vérifient mutuellement (`existsAfter` d'un côté, `getAfter` de l'autre).
 import assert from 'node:assert/strict';
 import { after, before, beforeEach, describe, test } from 'node:test';
 
-import { deleteDoc, doc, getDoc, serverTimestamp, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
+  writeBatch,
+} from 'firebase/firestore';
 
 import {
   allowed,
@@ -253,13 +266,72 @@ describe('création : forme', () => {
 });
 
 // ───────────────────────── Lecture ─────────────────────────
-describe('lecture : par le code, jamais en liste', () => {
+describe('lecture : par le code', () => {
   test('un compte vérifié lit une invitation par son code', async () => {
     assert.equal(await allowed(() => getDoc(doc(dbFor('u-invited'), 'invitations/AAAAAAAAAA'))), true);
   });
   test('anonyme et e-mail non vérifié ne la lisent pas', async () => {
     assert.equal(await allowed(() => getDoc(doc(env.unauthenticatedContext().firestore(), 'invitations/AAAAAAAAAA'))), false);
     assert.equal(await allowed(() => getDoc(doc(dbFor('u-invited', { email_verified: false }), 'invitations/AAAAAAAAAA'))), false);
+  });
+});
+
+// ───────────── Liste de SES invitations (suppression de son compte, FB8 partie B) ─────────────
+// Avant de quitter un club, le compte révoque les invitations encore inutilisées qu'IL a créées,
+// depuis n'importe quel appareil : la requête porte `clubId ==` et `createdBy ==` son uid (deux
+// égalités, aucun index composite), et la règle exige qu'il soit encore membre du club.
+describe('liste de ses propres invitations (suppression de son compte)', () => {
+  beforeEach(async () => {
+    await put(env, 'invitations/TEACHAWAIT', invitation({ role: 'student', groupIds: ['g1'], studentIds: ['s1'], createdBy: 'u-teacher-a' }));
+    await put(env, 'invitations/TEACHAUSED', invitation({ role: 'guardian', groupIds: ['g1'], studentIds: ['s1'], createdBy: 'u-teacher-a', used: true, usedBy: 'u-guardian', usedAt: ts(now()) }));
+    await put(env, 'invitations/TEACHBWAIT', invitation({ role: 'student', groupIds: ['g2'], studentIds: ['s2'], createdBy: 'u-teacher-b' }));
+    await put(env, 'invitations/DIRECTORAA', invitation({ role: 'director', createdBy: 'u-admin' }));
+    await put(env, 'invitations/C2TEACHERA', invitation({ clubId: 'c2', role: 'student', createdBy: 'u-teacher-c2' }));
+  });
+
+  const invitations = (db) => collection(db, 'invitations');
+  const mine = (db, clubId, uid) =>
+    getDocs(query(invitations(db), where('clubId', '==', clubId), where('createdBy', '==', uid)));
+  const codes = (snapshot) => snapshot.docs.map((d) => d.id).sort();
+
+  test('l\'enseignant liste les invitations qu\'il a créées dans son club, utilisées ou non', async () => {
+    assert.deepEqual(codes(await mine(dbFor('u-teacher-a'), 'c1', 'u-teacher-a')), ['TEACHAUSED', 'TEACHAWAIT']);
+  });
+
+  test('le directeur liste aussi les siennes, jamais une invitation de directeur créée par l\'administrateur', async () => {
+    assert.deepEqual(codes(await mine(dbFor('u-dir'), 'c1', 'u-dir')), ['AAAAAAAAAA']);
+  });
+
+  test('puis il révoque celles qui ne sont pas utilisées', async () => {
+    assert.equal(await allowed(() => deleteDoc(doc(dbFor('u-teacher-a'), 'invitations/TEACHAWAIT'))), true);
+  });
+
+  test('attaque : un enseignant ne liste pas les invitations d\'un collègue', async () => {
+    const db = dbFor('u-teacher-a');
+    assert.equal(await allowed(() => mine(db, 'c1', 'u-teacher-b')), false, 'collègue');
+    assert.equal(await allowed(() => mine(db, 'c1', 'u-dir')), false, 'directeur');
+    assert.equal(await allowed(() => mine(db, 'c1', 'u-admin')), false, 'administrateur');
+  });
+
+  test('attaque : sans filtre de club ou sans filtre d\'auteur, la liste est refusée', async () => {
+    const db = dbFor('u-teacher-a');
+    assert.equal(await allowed(() => getDocs(query(invitations(db), where('createdBy', '==', 'u-teacher-a')))), false, 'sans club');
+    assert.equal(await allowed(() => getDocs(query(invitations(db), where('clubId', '==', 'c1')))), false, 'sans auteur');
+    assert.equal(await allowed(() => getDocs(invitations(db))), false, 'sans filtre');
+  });
+
+  test('attaque : hors de son club, plus membre, ou e-mail non vérifié, la liste est refusée', async () => {
+    assert.equal(await allowed(() => mine(dbFor('u-teacher-c2'), 'c1', 'u-teacher-c2')), false, 'autre club');
+    assert.equal(await allowed(() => mine(dbFor('u-teacher-a'), 'c2', 'u-teacher-a')), false, 'club dont il n\'est pas membre');
+    assert.equal(await allowed(() => mine(dbFor('u-invited'), 'c1', 'u-invited')), false, 'compte sans member');
+    assert.equal(
+      await allowed(() => mine(dbFor('u-teacher-a', { email_verified: false }), 'c1', 'u-teacher-a')),
+      false,
+      'non vérifié',
+    );
+    assert.equal(await allowed(() => mine(env.unauthenticatedContext().firestore(), 'c1', 'u-teacher-a')), false, 'anonyme');
+    await remove(env, 'clubs/c1/members/u-teacher-a');
+    assert.equal(await allowed(() => mine(dbFor('u-teacher-a'), 'c1', 'u-teacher-a')), false, 'member déjà supprimé');
   });
 });
 

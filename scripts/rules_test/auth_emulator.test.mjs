@@ -18,7 +18,14 @@
 //   appliquée par l'application seule (décision 24), pas par le fournisseur ;
 // - le courriel de vérification et celui de réinitialisation sont émis par le
 //   service (l'application n'envoie rien), la réinitialisation d'une adresse
-//   inconnue aboutit sans rien émettre, et chaque lien fait ce qu'il annonce.
+//   inconnue aboutit sans rien émettre, et chaque lien fait ce qu'il annonce ;
+// - suppression de son compte (FB8 partie B, B2) : la réauthentification par mot de
+//   passe échoue avec un code d'identifiants (que `FirebaseAuthRepository` ramène à
+//   « mot de passe incorrect »), réussit avec le bon, et `delete()` fait disparaître le
+//   compte : se reconnecter échoue ensuite comme une adresse inconnue. L'émulateur
+//   n'impose PAS la « connexion récente » (`requires-recent-login`) d'un vrai projet :
+//   ce code est traduit par l'application (test unitaire), et c'est pourquoi elle
+//   réauthentifie TOUJOURS avant la première écriture.
 //
 // Aucune requête n'atteint le projet réel : projet « demo-… », émulateur local
 // obligatoire (scripts/rules_test.sh). Les deux fournisseurs retirés de
@@ -33,8 +40,11 @@ import {
   applyActionCode,
   confirmPasswordReset,
   connectAuthEmulator,
+  EmailAuthProvider,
   createUserWithEmailAndPassword,
+  deleteUser,
   getAuth,
+  reauthenticateWithCredential,
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
@@ -202,5 +212,32 @@ describe('mot de passe oublié', () => {
     const { user } = await signInWithEmailAndPassword(auth, email, 'a-brand-new-password');
     assert.equal(user.email, email);
     await signOut(auth);
+  });
+});
+
+describe('suppression de son compte (FB8 partie B, B2)', () => {
+  test('un mauvais mot de passe à la réauthentification est un échec d’identifiants', async () => {
+    const email = nextEmail();
+    const { user } = await createUserWithEmailAndPassword(auth, email, password);
+
+    const code = await errorCode(() =>
+      reauthenticateWithCredential(user, EmailAuthProvider.credential(email, 'not-the-password')),
+    );
+
+    assert.ok(credentialCodes.includes(code), code);
+    assert.equal(auth.currentUser?.uid, user.uid, 'le compte reste connecté');
+    await signOut(auth);
+  });
+
+  test('réauthentifié, le compte se supprime ; se reconnecter échoue ensuite comme une adresse inconnue', async () => {
+    const email = nextEmail();
+    const { user } = await createUserWithEmailAndPassword(auth, email, password);
+
+    await reauthenticateWithCredential(user, EmailAuthProvider.credential(email, password));
+    await deleteUser(user);
+
+    assert.equal(auth.currentUser, null, 'la session se ferme avec le compte');
+    const again = await errorCode(() => signInWithEmailAndPassword(auth, email, password));
+    assert.ok(credentialCodes.includes(again), again);
   });
 });

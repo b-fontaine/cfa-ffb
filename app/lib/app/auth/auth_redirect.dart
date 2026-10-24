@@ -45,9 +45,10 @@ String? invitationCodeOf(Uri location) {
 ///   `/join/<code>` au code valide ouvre l'inscription avec le code déjà saisi,
 ///   tout autre `/join…` (sans code, code mal formé) mène à la connexion, à
 ///   froid comme session connue ;
-/// - `noClub` : choix du club, « Rejoindre un club » (`/join…`) et, pour un
-///   administrateur, « Administration » ; un code gardé à l'inscription mène
-///   directement à `/join/<code>` quand le compte n'a aucun club ;
+/// - `noClub` : choix du club, « Rejoindre un club » (`/join…`), « Supprimer
+///   mon compte » et, pour un administrateur, « Administration » ; un code
+///   gardé à l'inscription mène directement à `/join/<code>` quand le compte
+///   n'a aucun club ;
 /// - `indisponible` : écran dédié ;
 /// - `ready` : un écran de session mène à l'adresse d'origine (`from`) ou à
 ///   l'accueil ; le reste est filtré par le rôle ([roleRedirect]).
@@ -78,7 +79,9 @@ String? authRedirect(AuthState state, Uri location) {
     AuthNoClub(:final choices, :final isAdmin, :final pendingInvitation) =>
       carriedOnSplash
           ? AppRoutes.joinWith(code)
-          : isJoinPath(path) || (isAdmin && path == AppRoutes.administration)
+          : isJoinPath(path) ||
+                path == AppRoutes.deleteAccount ||
+                (isAdmin && path == AppRoutes.administration)
           ? null
           : pendingInvitation != null && choices.isEmpty
           ? AppRoutes.joinWith(pendingInvitation.value)
@@ -128,7 +131,7 @@ String? _signedOut(Uri location, String? origin, String? code) {
 /// ne montre pas, la route le refuse aussi (un lien tapé à la main ne contourne
 /// rien) ; les règles Firestore sont le garde de fond côté serveur.
 ///
-/// - tout rôle : « Rejoindre un club » ;
+/// - tout rôle : « Rejoindre un club » et « Supprimer mon compte » ;
 /// - **administrateur** (le compte, quel que soit son rôle de club) :
 ///   `/administration` ;
 /// - **enseignant, directeur, administrateur** : tout l'animateur, sauf les
@@ -139,7 +142,7 @@ String? roleRedirect(AuthReady state, Uri location) {
   final role = state.club.role;
   final path = location.path;
   final segments = location.pathSegments;
-  if (isJoinPath(path)) return null;
+  if (isJoinPath(path) || path == AppRoutes.deleteAccount) return null;
   if (path == AppRoutes.administration) {
     return state.isAdmin ? null : AppRoutes.home;
   }
@@ -169,7 +172,8 @@ String? roleRedirect(AuthReady state, Uri location) {
 }
 
 /// L'adresse de retour, si c'est une adresse intérieure qui n'est pas un écran
-/// de session, un lien d'invitation (le code ne se recopie pas) ni l'accueil ;
+/// de session, un lien d'invitation (le code ne se recopie pas), « Supprimer
+/// mon compte » (le compte suivant ne doit pas y atterrir) ni l'accueil ;
 /// `null` sinon (jamais une adresse extérieure).
 String? safeReturnAddress(String? raw) {
   if (raw == null || raw.isEmpty) return null;
@@ -181,6 +185,7 @@ String? safeReturnAddress(String? raw) {
       raw.startsWith('//') ||
       authPaths.contains(uri.path) ||
       isJoinPath(uri.path) ||
+      uri.path == AppRoutes.deleteAccount ||
       uri.path == AppRoutes.home) {
     return null;
   }

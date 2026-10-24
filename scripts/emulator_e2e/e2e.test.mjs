@@ -3,7 +3,8 @@
 // (SDK web seul), ni la fumée du build de production (Firestore refusé) ne prouvent : une
 // directrice se connecte avec un vrai jeton de l'émulateur, l'application lit ses appartenances
 // dans Firestore SOUS LES RÈGLES, et « Mon club » affiche l'équipe semée ; un parent ne voit que
-// ses enfants.
+// ses enfants ; un enseignant supprime son compte, avec l'invitation qu'il a créée ailleurs ; la
+// dernière directrice ne le peut pas (FB8 partie B).
 //
 // L'application tourne en MODE DEBUG (`flutter run -d web-server`, DDC) et non en build compilé :
 // le build `--profile` (seul autre mode qui accepte l'émulateur, la release le refuse) est
@@ -34,6 +35,7 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  Timestamp,
   where,
 } from 'firebase/firestore';
 
@@ -532,6 +534,100 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
     for (const secret of ['permission-denied', 'FirebaseError', ...backup.students.map((x) => x.firstName)]) {
       assert.ok(!shown.includes(secret), `« ${secret} » ne doit pas figurer à l'écran`);
     }
+  });
+
+  // --- FB8 partie B, tranche B2 : suppression de son propre compte -------------------------
+  // Un enseignant (Julien, sans autre rôle dans ce parcours) supprime son compte par l'écran,
+  // sous les VRAIES règles et le vrai Firebase Auth (émulateurs) : mot de passe vérifié, son
+  // `member` supprimé par lui-même (règle `members` delete du titulaire), puis le compte Auth.
+  // La relecture (autre appareil) prouve qu'il n'est plus membre et qu'il ne peut plus se connecter.
+  test('un enseignant supprime son compte par l’écran : plus de member, plus de compte', async () => {
+    const director = await otherDevice(accounts.director.email);
+    const before = await getDocs(collection(director, `clubs/${demoClubId}/members`));
+    const julien = before.docs.find((d) => d.data().displayName === accounts.teacherB.name);
+    assert.ok(julien, 'le member de Julien est dans la graine');
+
+    // Une invitation de parent que Julien a créée depuis UN AUTRE APPAREIL (client Node, vraies
+    // règles) : le journal local du navigateur ne la connaît pas ; la suppression la retrouve par
+    // la liste au serveur (`clubId ==`, `createdBy ==`) et la révoque avant de retirer le member.
+    const julienElsewhere = await otherDevice(accounts.teacherB.email);
+    const elsewhere = doc(julienElsewhere, 'invitations/JULIENOTHER2');
+    await setDoc(elsewhere, {
+      clubId: demoClubId,
+      role: 'guardian',
+      groupIds: ['g-adultes'],
+      studentIds: ['s-marc'],
+      createdBy: await uidOf(accounts.teacherB.email),
+      createdAt: serverTimestamp(),
+      expiresAt: Timestamp.fromMillis(Date.now() + 2 * 24 * 3600 * 1000),
+      used: false,
+    });
+    assert.ok((await getDoc(doc(director, 'invitations/JULIENOTHER2'))).exists(), 'invitation créée ailleurs');
+
+    await signInAs(accounts.teacherB.email);
+    await see(/^Plus/);
+    await goTo('Plus');
+    await see('Supprimer mon compte');
+    await page.getByRole('button', { name: 'Supprimer mon compte', exact: true }).click();
+    await see('Les fiches des élèves, leurs résultats et les séances restent au club : ils appartiennent au club, pas à votre compte.');
+    // Un mauvais mot de passe ne supprime rien.
+    await typeInto('Votre mot de passe', 'pas-le-bon-mot-de-passe');
+    await clickButton('Supprimer définitivement mon compte');
+    await see('Mot de passe incorrect. Rien n’a été supprimé.');
+    assert.ok((await getDoc(julien.ref)).exists(), 'le member reste après un mauvais mot de passe');
+
+    await typeInto('Votre mot de passe', demoPassword);
+    await clickButton('Supprimer définitivement mon compte');
+    // Comme à la déconnexion, le cache local est vidé et la page web se recharge : l'arbre
+    // d'accessibilité est à réactiver sur la nouvelle page.
+    await page.waitForURL(/#\/sign-in/, { timeout: 60_000 });
+    await page.waitForSelector('flt-semantics-placeholder', { state: 'attached', timeout: 180_000 });
+    await enableSemantics();
+    await see('Connexion à l’application');
+
+    assert.equal((await getDoc(julien.ref)).exists(), false, 'le member de Julien est supprimé');
+    assert.equal(
+      (await getDoc(doc(director, 'invitations/JULIENOTHER2'))).exists(),
+      false,
+      'l’invitation créée depuis un autre appareil est révoquée',
+    );
+    const after = await getDocs(collection(director, `clubs/${demoClubId}/members`));
+    assert.equal(after.size, before.size - 1, 'aucun autre member touché');
+    const app = initializeApp({ apiKey: 'e2e', projectId: process.env.GCLOUD_PROJECT }, `deleted-${Date.now()}`);
+    otherApps.push(app);
+    const auth = getAuth(app);
+    connectAuthEmulator(auth, `http://${authHost}`, { disableWarnings: true });
+    await assert.rejects(
+      () => signInWithEmailAndPassword(auth, accounts.teacherB.email, demoPassword),
+      (error) => ['auth/user-not-found', 'auth/invalid-credential'].includes(error.code),
+      'le compte Auth de Julien n’existe plus',
+    );
+  });
+
+  // Décision D1 du 2026-10-24 : la garde est dans l'application (une règle ne compte pas les
+  // membres). La directrice de la graine est la seule de son club : refus, rien n'est supprimé.
+  test('la dernière directrice du club ne peut pas supprimer son compte : refus, rien n’est supprimé', async () => {
+    const director = await otherDevice(accounts.director.email);
+    const nadia = doc(director, `clubs/${demoClubId}/members/${await uidOf(accounts.director.email)}`);
+    assert.ok((await getDoc(nadia)).exists(), 'le member de Nadia est dans la graine');
+
+    await signInAs(accounts.director.email);
+    await see(/^Plus/);
+    await goTo('Plus');
+    await see('Supprimer mon compte');
+    await page.getByRole('button', { name: 'Supprimer mon compte', exact: true }).click();
+    await typeInto('Votre mot de passe', demoPassword);
+    await page.getByRole('button', { name: 'Supprimer définitivement mon compte', exact: true }).click();
+    await see(
+      'Vous êtes le dernier directeur du club Démo. Demandez à l’administrateur de nommer un autre directeur, puis réessayez. Rien n’a été supprimé.',
+    );
+
+    assert.ok((await getDoc(nadia)).exists(), 'le member de Nadia reste');
+    const app = initializeApp({ apiKey: 'e2e', projectId: process.env.GCLOUD_PROJECT }, `kept-${Date.now()}`);
+    otherApps.push(app);
+    const auth = getAuth(app);
+    connectAuthEmulator(auth, `http://${authHost}`, { disableWarnings: true });
+    await signInWithEmailAndPassword(auth, accounts.director.email, demoPassword);
   });
 
   test('le SDK web est servi par l’application, aucun appel vers un hôte autre que localhost, aucune erreur de page', () => {

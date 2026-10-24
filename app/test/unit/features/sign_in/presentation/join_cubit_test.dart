@@ -159,6 +159,10 @@ class _DenyingRepository implements InvitationRepository {
   final InvitationRepository _inner;
 
   @override
+  Future<List<InvitationCode>> unusedIssuedBy(UserId user, ClubId club) =>
+      _inner.unusedIssuedBy(user, club);
+
+  @override
   Future<void> accept({
     required InvitationCode code,
     required UserId user,

@@ -271,19 +271,45 @@ suite('members', 'clubs/{c}/members/{uid}', () => {
       reset: resetDirector,
     });
   });
-  test('suppression d\'un enseignant : le directeur et l\'administrateur', () =>
+  // Suppression de son compte (FB8 partie B, B2) : le titulaire supprime SON member, quel que
+  // soit son rôle (le refus du dernier directeur est une garde de l'APPLICATION, décision D1 du
+  // 2026-10-24 : une règle ne compte pas les membres). Jamais celui d'un autre.
+  test('suppression d\'un enseignant : lui-même, le directeur et l\'administrateur', () =>
     check({
-      expectAllowed: MGR,
+      expectAllowed: ['teacherA', ...MGR],
       run: (db) => deleteDoc(doc(db, teacherPath)),
       reset: reset,
     }));
-  test('suppression d\'un directeur : l\'administrateur seulement', () =>
+  test('suppression d\'un directeur : lui-même (adresse vérifiée) et l\'administrateur', () =>
     check({
-      expectAllowed: ['admin'],
+      expectAllowed: ['director', 'admin'],
       run: (db) => deleteDoc(doc(db, 'clubs/c1/members/u-dir')),
       reset: () => put(env, 'clubs/c1/members/u-dir', seededData('clubs/c1/members/u-dir')),
     }));
-  test('un enseignant, un élève ou un parent ne crée ni ne supprime aucun member', async () => {
+  for (const [owner, uid] of [
+    ['student', 'u-student'],
+    ['guardian', 'u-guardian'],
+    ['guardian2', 'u-guardian2'],
+    ['teacherB', 'u-teacher-b'],
+  ]) {
+    test(`suppression du member ${uid} : son titulaire, le directeur et l'administrateur`, () => {
+      const path = `clubs/c1/members/${uid}`;
+      return check({
+        expectAllowed: [owner, ...MGR],
+        run: (db) => deleteDoc(doc(db, path)),
+        reset: () => put(env, path, seededData(path)),
+      });
+    });
+  }
+  test('suppression du member d\'un autre club par son titulaire : lui seul, son directeur et l\'administrateur', () => {
+    const path = 'clubs/c2/members/u-teacher-c2';
+    return check({
+      expectAllowed: ['teacherC2', 'directorOther', 'admin'],
+      run: (db) => deleteDoc(doc(db, path)),
+      reset: () => put(env, path, seededData(path)),
+    });
+  });
+  test('un enseignant, un élève ou un parent ne crée aucun member et ne supprime que le sien', async () => {
     for (const actor of ['teacherA', 'student', 'guardian', 'invited']) {
       const db = dbOf(env, actor);
       assert.equal(
@@ -291,7 +317,9 @@ suite('members', 'clubs/{c}/members/{uid}', () => {
         false,
         actor,
       );
-      assert.equal(await allowed(() => deleteDoc(doc(db, 'clubs/c1/members/u-student'))), false, actor);
+      for (const other of ['u-student', 'u-guardian', 'u-teacher-a', 'u-dir'].filter((u) => u !== uids[actor])) {
+        assert.equal(await allowed(() => deleteDoc(doc(db, `clubs/c1/members/${other}`))), false, `${actor} -> ${other}`);
+      }
     }
   });
 });

@@ -34,6 +34,37 @@ void main() {
     source = StoreMembershipsSource(store);
   });
 
+  group('ownMembers', () {
+    test('every member of the account, even in a club deleted or without a '
+        'name, read at the server; nothing of another account', () async {
+      store = _ServerOnlyStore();
+      source = StoreMembershipsSource(store);
+      club('nice', 'Club Nice');
+      member('nice', 'alice', 'teacher');
+      member('gone', 'alice', 'guardian', students: ['s1']); // club supprimé
+      store.seed('clubs/blank', {'name': ''});
+      member('blank', 'alice', 'wizard');
+      member('nice', 'bob', 'director');
+
+      final owned = await source.ownMembers(alice);
+
+      expect(owned.toSet(), {
+        (clubId: const ClubId('nice'), role: Role.teacher),
+        (clubId: const ClubId('gone'), role: Role.guardian),
+        (clubId: const ClubId('blank'), role: null),
+      });
+    });
+
+    test('an unreachable server is unavailable, never an empty list', () async {
+      store.failing = StoreFailureCode.unavailable;
+
+      await expectLater(
+        source.ownMembers(alice),
+        throwsA(isA<MembershipsUnavailable>()),
+      );
+    });
+  });
+
   test('a compte without member belongs to no club', () async {
     club('nice', 'Club Nice');
     member('nice', 'bob', 'teacher');
@@ -191,4 +222,15 @@ void main() {
     expect(bare.groupIds, isEmpty);
     expect(bare.studentIds, isEmpty);
   });
+}
+
+/// Un stock dont le cache ne répond jamais : seule la lecture au serveur
+/// aboutit (la requête de groupe ordinaire échoue).
+class _ServerOnlyStore extends InMemoryDocumentStore {
+  @override
+  Future<List<StoredDocument>> collectionGroup(
+    String collectionId, {
+    required String field,
+    required Object? equalTo,
+  }) => throw const StoreFailure(StoreFailureCode.other, 'lecture du cache');
 }

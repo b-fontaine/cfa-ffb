@@ -493,10 +493,12 @@ describe('purge d\'un élève : ce que le gestionnaire supprime et ce qu\'un ens
       reset: () => put(env, 'clubs/c1/members/u-guardian', member('u-guardian', 'guardian', { groupIds: ['g1'], studentIds: ['s1'] })),
     }));
 
-  test('qui supprime le compte parent ou élève d\'un élève effacé : le directeur et l\'administrateur, pas un enseignant, un parent ni un autre club', async () => {
-    for (const [uid, role] of [['u-guardian', 'guardian'], ['u-student', 'student']]) {
+  // Le titulaire supprime aussi le sien (suppression de son compte, FB8 partie B, B2) ; personne
+  // d'autre qu'un gestionnaire ne supprime celui d'un autre.
+  test('qui supprime le compte parent ou élève d\'un élève effacé : le directeur, l\'administrateur et son titulaire, pas un enseignant, un autre parent ni un autre club', async () => {
+    for (const [uid, role, owner] of [['u-guardian', 'guardian', 'guardian'], ['u-student', 'student', 'student']]) {
       await check({
-        expectAllowed: MGR,
+        expectAllowed: [...MGR, owner],
         run: (db) => deleteDoc(doc(db, `clubs/c1/members/${uid}`)),
         reset: () => put(env, `clubs/c1/members/${uid}`, member(uid, role, { groupIds: ['g1'], studentIds: ['s1'] })),
       });

@@ -53,6 +53,26 @@ class StoreInvitationRepository implements InvitationRepository {
   Future<void> revoke(InvitationCode code) =>
       guardStore(() => _store.commit([DeleteOp(pathOf(code))]));
 
+  /// Deux égalités (`clubId`, `createdBy`) : la requête que les règles
+  /// prouvent, servie sans index composite ; l'usage se trie ici (un champ
+  /// de plus dans la requête n'ajouterait rien à la preuve).
+  @override
+  Future<List<InvitationCode>> unusedIssuedBy(UserId user, ClubId club) =>
+      guardStore(() async {
+        final documents = await _store.queryFromServer(
+          'invitations',
+          AllEqual([
+            FieldEquals('clubId', club.value),
+            FieldEquals('createdBy', user.value),
+          ]),
+        );
+        return [
+          for (final document in documents)
+            if (document.fields['used'] == false)
+              ?InvitationCode.tryParse(document.id),
+        ];
+      });
+
   @override
   Future<void> accept({
     required InvitationCode code,

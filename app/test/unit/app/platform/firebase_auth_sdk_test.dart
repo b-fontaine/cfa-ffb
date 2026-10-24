@@ -137,4 +137,68 @@ void main() {
       );
     },
   );
+
+  group('account deletion (FB8 partie B)', () {
+    setUpAll(() {
+      registerFallbackValue(
+        EmailAuthProvider.credential(email: 'x@y.z', password: 'x'),
+      );
+    });
+
+    test(
+      'reauthenticate builds an e-mail credential for the current user',
+      () async {
+        when(() => auth.currentUser).thenReturn(user);
+        when(() => user.reauthenticateWithCredential(any()))
+            .thenAnswer((_) async => credential());
+
+        await sdk.reauthenticate('pw');
+
+        final used =
+            verify(() => user.reauthenticateWithCredential(captureAny()))
+                    .captured
+                    .single
+                as AuthCredential;
+        expect(used.providerId, EmailAuthProvider.PROVIDER_ID);
+      },
+    );
+
+    test('reauthenticate or delete without a user is an SDK error', () async {
+      when(() => auth.currentUser).thenReturn(null);
+
+      for (final call in [() => sdk.reauthenticate('pw'), sdk.deleteUser]) {
+        await expectLater(
+          call(),
+          throwsA(
+            isA<AuthSdkException>().having(
+              (e) => e.code,
+              'code',
+              'no-current-user',
+            ),
+          ),
+        );
+      }
+    });
+
+    test('deleteUser deletes the current user and maps its errors', () async {
+      when(() => auth.currentUser).thenReturn(user);
+      when(() => user.delete()).thenAnswer((_) async {});
+
+      await sdk.deleteUser();
+      verify(() => user.delete()).called(1);
+
+      when(() => user.delete())
+          .thenThrow(FirebaseAuthException(code: 'requires-recent-login'));
+      await expectLater(
+        sdk.deleteUser(),
+        throwsA(
+          isA<AuthSdkException>().having(
+            (e) => e.code,
+            'code',
+            'requires-recent-login',
+          ),
+        ),
+      );
+    });
+  });
 }

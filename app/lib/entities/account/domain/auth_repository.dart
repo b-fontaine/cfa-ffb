@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/account/domain/account.dart';
+import 'package:billard_cfa/entities/account/domain/auth_failure.dart';
 
 /// Port de l'authentification (ADR 0024) : e-mail et mot de passe seulement.
 ///
@@ -24,4 +25,15 @@ abstract interface class AuthRepository {
   Future<void> sendPasswordReset(String email);
 
   Future<void> signOut();
+
+  /// Vérifie à nouveau le mot de passe du compte connecté (réauthentification),
+  /// juste avant une opération sensible : la suppression du compte
+  /// (FB8 partie B). Un mauvais mot de passe donne
+  /// [AuthFailureCode.invalidCredentials], comme à la connexion.
+  Future<void> reauthenticate(String password);
+
+  /// Supprime **définitivement** le compte connecté (après [reauthenticate]) ;
+  /// la session se ferme avec lui. Une vérification trop ancienne donne
+  /// [AuthFailureCode.recentLoginRequired].
+  Future<void> deleteAccount();
 }

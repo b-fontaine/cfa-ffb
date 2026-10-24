@@ -18,5 +18,6 @@ String authFailureMessage(AppLocalizations l10n, AuthFailureCode code) =>
       AuthFailureCode.registrationFailed => l10n.authErrorRegistrationFailed,
       AuthFailureCode.tooManyRequests => l10n.authErrorTooManyRequests,
       AuthFailureCode.network => l10n.authErrorNetwork,
+      AuthFailureCode.recentLoginRequired => l10n.authErrorRecentLoginRequired,
       AuthFailureCode.unavailable => l10n.authErrorUnavailable,
     };

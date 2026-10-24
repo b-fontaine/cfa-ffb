@@ -148,4 +148,92 @@ void main() {
       AuthFailureCode.network,
     );
   });
+
+  group('account deletion (FB8 partie B)', () {
+    setUp(() {
+      auth
+        ..seed(email: 'coach@example.org', password: 'right-password')
+        ..restoreSession('coach@example.org');
+    });
+
+    test(
+      'reauthenticate checks the password of the signed-in account',
+      () async {
+        expect(
+          await codeOf(() => auth.reauthenticate('wrong')),
+          AuthFailureCode.invalidCredentials,
+        );
+        await auth.reauthenticate('right-password');
+      },
+    );
+
+    test('reauthenticate without a session or a network fails', () async {
+      auth.offline = true;
+      expect(
+        await codeOf(() => auth.reauthenticate('right-password')),
+        AuthFailureCode.network,
+      );
+      auth.offline = false;
+      await auth.signOut();
+      expect(
+        await codeOf(() => auth.reauthenticate('right-password')),
+        AuthFailureCode.unavailable,
+      );
+    });
+
+    test('deleteAccount removes the account and closes the session', () async {
+      final seen = <Account?>[];
+      final subscription = auth.watchAccount().listen(seen.add);
+      await pumpEventQueue();
+      await auth.reauthenticate('right-password');
+
+      await auth.deleteAccount();
+      await pumpEventQueue();
+      await subscription.cancel();
+
+      expect(auth.accountOf('coach@example.org'), isNull);
+      expect(auth.current, isNull);
+      expect(auth.deletedAccounts.single.email, 'coach@example.org');
+      expect(seen.last, isNull);
+      expect(
+        await codeOf(
+          () => auth.signIn(
+            email: 'coach@example.org',
+            password: 'right-password',
+          ),
+        ),
+        AuthFailureCode.invalidCredentials,
+      );
+    });
+
+    test('deleteAccount without a recent password check is refused', () async {
+      expect(
+        await codeOf(auth.deleteAccount),
+        AuthFailureCode.recentLoginRequired,
+      );
+      expect(auth.accountOf('coach@example.org'), isNotNull);
+    });
+
+    test(
+      'a scripted failure happens once, then the deletion goes through',
+      () async {
+        await auth.reauthenticate('right-password');
+        auth.nextDeletionFailure = AuthFailureCode.network;
+
+        expect(await codeOf(auth.deleteAccount), AuthFailureCode.network);
+        expect(auth.accountOf('coach@example.org'), isNotNull);
+
+        await auth.deleteAccount();
+        expect(auth.accountOf('coach@example.org'), isNull);
+      },
+    );
+
+    test('offline, nothing is deleted', () async {
+      await auth.reauthenticate('right-password');
+      auth.offline = true;
+
+      expect(await codeOf(auth.deleteAccount), AuthFailureCode.network);
+      expect(auth.accountOf('coach@example.org'), isNotNull);
+    });
+  });
 }

@@ -303,4 +303,34 @@ void main() {
 
     expect(signedOut, 1);
   });
+
+  testWidgets('AccountSection offers the account deletion only when given', (
+    tester,
+  ) async {
+    var opened = 0;
+    await pumpUi(
+      tester,
+      AccountSection(
+        email: 'a@b.cd',
+        clubName: 'Club Nice',
+        roleLabel: 'Director',
+        onSignOut: () {},
+      ),
+    );
+    expect(find.text('Delete my account'), findsNothing);
+
+    await pumpUi(
+      tester,
+      AccountSection(
+        email: 'a@b.cd',
+        clubName: 'Club Nice',
+        roleLabel: 'Director',
+        onSignOut: () {},
+        onDeleteAccount: () => opened++,
+      ),
+    );
+    await tester.tap(find.text('Delete my account'));
+
+    expect(opened, 1);
+  });
 }

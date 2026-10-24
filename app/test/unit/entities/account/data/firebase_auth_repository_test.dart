@@ -58,6 +58,18 @@ class _ScriptedSdk implements AuthSdk {
     calls.add('signOut');
     _maybeFail();
   }
+
+  @override
+  Future<void> reauthenticate(String password) async {
+    calls.add('reauthenticate $password');
+    _maybeFail();
+  }
+
+  @override
+  Future<void> deleteUser() async {
+    calls.add('deleteUser');
+    _maybeFail();
+  }
 }
 
 void main() {
@@ -275,6 +287,86 @@ void main() {
       );
       sdk.failWith = 'no-current-user';
       expect(await codeOf(repository.signOut), AuthFailureCode.unavailable);
+    });
+  });
+
+  group('reauthenticate (suppression de son compte, FB8 partie B)', () {
+    test('asks the SDK with the password', () async {
+      await repository.reauthenticate('pw');
+
+      expect(sdk.calls, ['reauthenticate pw']);
+    });
+
+    test(
+      'every credential problem is a wrong password, never a cause',
+      () async {
+        for (final code in [
+          'invalid-credential',
+          'wrong-password',
+          'user-not-found',
+          'user-mismatch',
+          'user-disabled',
+          'invalid-login-credentials',
+        ]) {
+          sdk.failWith = code;
+          expect(
+            await codeOf(() => repository.reauthenticate('pw')),
+            AuthFailureCode.invalidCredentials,
+            reason: code,
+          );
+        }
+      },
+    );
+
+    test('transport failures stay distinct, the rest is unavailable', () async {
+      final expected = {
+        'network-request-failed': AuthFailureCode.network,
+        'too-many-requests': AuthFailureCode.tooManyRequests,
+        'no-current-user': AuthFailureCode.unavailable,
+        'something-new': AuthFailureCode.unavailable,
+      };
+      for (final entry in expected.entries) {
+        sdk.failWith = entry.key;
+        expect(
+          await codeOf(() => repository.reauthenticate('pw')),
+          entry.value,
+          reason: entry.key,
+        );
+      }
+    });
+  });
+
+  group('deleteAccount', () {
+    test('asks the SDK to delete the user', () async {
+      await repository.deleteAccount();
+
+      expect(sdk.calls, ['deleteUser']);
+    });
+
+    test('a stale sign-in asks for the password again', () async {
+      sdk.failWith = 'requires-recent-login';
+
+      expect(
+        await codeOf(repository.deleteAccount),
+        AuthFailureCode.recentLoginRequired,
+      );
+    });
+
+    test('transport failures stay distinct, the rest is unavailable', () async {
+      final expected = {
+        'network-request-failed': AuthFailureCode.network,
+        'too-many-requests': AuthFailureCode.tooManyRequests,
+        'user-token-expired': AuthFailureCode.recentLoginRequired,
+        'no-current-user': AuthFailureCode.unavailable,
+      };
+      for (final entry in expected.entries) {
+        sdk.failWith = entry.key;
+        expect(
+          await codeOf(repository.deleteAccount),
+          entry.value,
+          reason: entry.key,
+        );
+      }
     });
   });
 }

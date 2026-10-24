@@ -1,4 +1,5 @@
 import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
+import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
 
 /// Les clubs d'un compte ne peuvent pas être lus (réseau, service).
@@ -25,6 +26,12 @@ class MembershipsDenied implements Exception {
   String toString() => 'MembershipsDenied(${detail ?? ''})';
 }
 
+/// Un document `clubs/{club}/members/{uid}` du compte, **sans le nom du
+/// club** : `role` est `null` s'il est illisible. Sert à la suppression d'un
+/// compte (FB8 partie B), qui retire aussi le `member` d'un club supprimé ou
+/// sans nom, que `MembershipsSource.membershipsOf` ne liste pas.
+typedef OwnMember = ({ClubId clubId, Role? role});
+
 /// Port de lecture des appartenances d'un compte (ADR 0024).
 ///
 /// Implémentation : `StoreMembershipsSource` (documents `members` lus par une
@@ -43,4 +50,12 @@ abstract interface class MembershipsSource {
   /// `admins/{uid}`, créé en console). Lève [MembershipsUnavailable] si la
   /// lecture est impossible, [MembershipsDenied] si le serveur la refuse.
   Future<bool> isAdmin(UserId user);
+
+  /// **Tous** les `members` de [user], où qu'ils soient : y compris dans un
+  /// club supprimé (Firestore ne supprime pas les sous-collections) ou sans
+  /// nom lisible. Lus **au serveur**, jamais dans le cache : la suppression
+  /// d'un compte ne supprime son compte d'authentification qu'une fois sûre
+  /// qu'il n'en reste aucun. Lève [MembershipsUnavailable] (réseau, hors
+  /// ligne) ou [MembershipsDenied] (règle, index).
+  Future<List<OwnMember>> ownMembers(UserId user);
 }

@@ -496,4 +496,34 @@ void main() {
       expect(_go(_ready, '/sign-in?from=%2Flocal-export'), '/local-export');
     });
   });
+
+  group("deleting one's account (FB8 partie B)", () {
+    test('every role with a club reaches the deletion screen', () {
+      for (final role in Role.values) {
+        final club = ClubMembership(
+          clubId: const ClubId('nice'),
+          clubName: 'Club Nice',
+          role: role,
+        );
+        final state = AuthReady(account: _account, club: club, choices: [club]);
+        expect(_go(state, '/delete-account'), isNull, reason: role.name);
+      }
+    });
+
+    test('an account without a club reaches it too', () {
+      expect(_go(_noClub, '/delete-account'), isNull);
+      expect(
+        _go(
+          const AuthNoClub(account: _account, choices: [_club]),
+          '/delete-account',
+        ),
+        isNull,
+      );
+    });
+
+    test('signed out, it leads to the sign-in screen, never back to it', () {
+      expect(_go(const AuthSignedOut(), '/delete-account'), '/sign-in');
+      expect(safeReturnAddress('/delete-account'), isNull);
+    });
+  });
 }

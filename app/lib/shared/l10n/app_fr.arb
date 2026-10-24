@@ -4284,5 +4284,66 @@
   },
   "closureEffectsSteps": "La clôture se fait dans le club par étapes de 400 écritures au plus : si la connexion est coupée, elle se reprend là où elle s’est arrêtée. Aucune clôture ne doit avoir lieu pendant la période de bascule des données locales.",
   "closureEffectsLocalCopy": "Les copies locales d’élèves effacés qui restent sur un appareil, et les sauvegardes déjà exportées, ne sont pas touchées : supprimez-les vous-même (guide de l’animateur).",
-  "closureDoneResumed": "La clôture interrompue est terminée."
+  "closureDoneResumed": "La clôture interrompue est terminée.",
+  "authErrorRecentLoginRequired": "Par sécurité, saisissez de nouveau votre mot de passe.",
+  "deleteAccountTitle": "Supprimer mon compte",
+  "deleteAccountIntro": "La suppression de votre compte est définitive. Votre accès à vos clubs est retiré, avec les traces que vous y avez laissées : marqueurs d’import et d’opération, invitations que vous avez créées et qui n’ont pas encore servi. Puis le compte lui-même est supprimé.",
+  "deleteAccountStays": "Les fiches des élèves, leurs résultats et les séances restent au club : ils appartiennent au club, pas à votre compte.",
+  "deleteAccountPassword": "Votre mot de passe",
+  "deleteAccountPasswordHint": "Pour confirmer que c’est bien vous.",
+  "deleteAccountPasswordRequired": "Saisissez votre mot de passe.",
+  "deleteAccountConfirm": "Supprimer définitivement mon compte",
+  "deleteAccountStepChecking": "Vérification du mot de passe…",
+  "deleteAccountStepLeaving": "Retrait du club {club} ({index} sur {count})…",
+  "@deleteAccountStepLeaving": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      },
+      "index": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteAccountStepLeavingUnnamed": "Retrait d’un club supprimé ou sans nom ({index} sur {count})…",
+  "@deleteAccountStepLeavingUnnamed": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteAccountStepRemoving": "Suppression du compte…",
+  "deleteAccountDone": "Votre compte est supprimé.",
+  "deleteAccountAdministrator": "Un compte administrateur ne se supprime pas depuis l’application : il se supprime dans la console Firebase, en suivant la procédure des droits et de l’effacement.",
+  "deleteAccountRefusedUnsent": "Des modifications faites sur cet appareil n’ont pas encore été envoyées. Revenez en ligne, attendez leur envoi, puis réessayez. Rien n’a été supprimé.",
+  "deleteAccountRefusedLastDirector": "Vous êtes le dernier directeur du club {club}. Demandez à l’administrateur de nommer un autre directeur, puis réessayez. Rien n’a été supprimé.",
+  "@deleteAccountRefusedLastDirector": {
+    "placeholders": {
+      "club": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteAccountWrongPassword": "Mot de passe incorrect. Rien n’a été supprimé.",
+  "deleteAccountTooManyRequests": "Trop de tentatives. Patientez quelques minutes avant de réessayer. Rien n’a été supprimé.",
+  "deleteAccountPasswordExpired": "Vos données de club sont supprimées, mais la vérification du mot de passe a expiré avant la suppression du compte lui-même. Saisissez de nouveau votre mot de passe.",
+  "deleteAccountWrongPasswordPartial": "Mot de passe incorrect. La suppression s’est arrêtée en route et une partie de vos données de club a pu être supprimée. Saisissez de nouveau votre mot de passe pour terminer.",
+  "deleteAccountWrongPasswordClubDataRemoved": "Vos données de club sont supprimées, mais le compte lui-même n’a pas pu l’être : mot de passe incorrect. Saisissez de nouveau votre mot de passe.",
+  "deleteAccountTooManyRequestsPartial": "Trop de tentatives : la suppression s’est arrêtée en route et une partie de vos données de club a pu être supprimée. Patientez quelques minutes, puis réessayez pour terminer.",
+  "deleteAccountTooManyRequestsClubDataRemoved": "Vos données de club sont supprimées, mais le compte lui-même n’a pas pu l’être : trop de tentatives. Patientez quelques minutes avant de réessayer.",
+  "deleteAccountPasswordExpiredNothing": "La vérification du mot de passe a expiré avant la suppression du compte. Rien n’a été supprimé. Saisissez de nouveau votre mot de passe.",
+  "deleteAccountPasswordExpiredPartial": "La vérification du mot de passe a expiré : la suppression s’est arrêtée en route et une partie de vos données de club a pu être supprimée. Saisissez de nouveau votre mot de passe pour terminer.",
+  "deleteAccountNetworkNothing": "Pas de connexion : rien n’a été supprimé. Réessayez une fois en ligne.",
+  "deleteAccountNetworkPartial": "Pas de connexion : la suppression s’est arrêtée en route et une partie de vos données de club a pu être supprimée. Réessayez une fois en ligne pour terminer.",
+  "deleteAccountNetworkClubDataRemoved": "Vos données de club sont supprimées, mais le compte lui-même n’a pas pu l’être : pas de connexion. Réessayez une fois en ligne.",
+  "deleteAccountFailedNothing": "La suppression a échoué : rien n’a été supprimé. Réessayez plus tard.",
+  "deleteAccountFailedPartial": "La suppression s’est arrêtée en route et une partie de vos données de club a pu être supprimée. Réessayez plus tard pour terminer.",
+  "deleteAccountFailedClubDataRemoved": "Vos données de club sont supprimées, mais le compte lui-même n’a pas pu l’être. Réessayez plus tard."
 }

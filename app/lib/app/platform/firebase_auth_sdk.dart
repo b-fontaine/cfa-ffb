@@ -53,6 +53,22 @@ class FirebaseAuthSdk implements AuthSdk {
   @override
   Future<void> signOut() => _guard(() => _auth().signOut());
 
+  @override
+  Future<void> reauthenticate(String password) => _guard(() async {
+    final user = _currentUser();
+    final email = user.email;
+    if (email == null) throw const AuthSdkException('no-current-user');
+    await user.reauthenticateWithCredential(
+      EmailAuthProvider.credential(email: email, password: password),
+    );
+  });
+
+  @override
+  Future<void> deleteUser() => _guard(() => _currentUser().delete());
+
+  User _currentUser() =>
+      _auth().currentUser ?? (throw const AuthSdkException('no-current-user'));
+
   static AuthSdkUser _user(User user) => AuthSdkUser(
     uid: user.uid,
     email: user.email,

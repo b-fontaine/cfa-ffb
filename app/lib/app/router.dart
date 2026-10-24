@@ -30,6 +30,7 @@ import 'package:billard_cfa/features/change_audience/presentation/bloc/audience_
 import 'package:billard_cfa/features/close_season/presentation/bloc/closable_season_cubit.dart';
 import 'package:billard_cfa/features/close_season/presentation/bloc/season_closure_bloc.dart';
 import 'package:billard_cfa/features/close_season/presentation/ui/closable_season_section.dart';
+import 'package:billard_cfa/features/delete_account/presentation/bloc/delete_account_cubit.dart';
 import 'package:billard_cfa/features/export_sheet/presentation/bloc/export_sheet_cubit.dart';
 import 'package:billard_cfa/features/manage_club/presentation/bloc/club_cubit.dart';
 import 'package:billard_cfa/features/manage_club/presentation/bloc/invite_cubit.dart';
@@ -76,6 +77,7 @@ import 'package:billard_cfa/pages/assessment/presentation/assessment_page.dart';
 import 'package:billard_cfa/pages/backup/presentation/backup_page.dart';
 import 'package:billard_cfa/pages/club/presentation/club_page.dart';
 import 'package:billard_cfa/pages/club_import/presentation/club_import_page.dart';
+import 'package:billard_cfa/pages/delete_account/presentation/delete_account_page.dart';
 import 'package:billard_cfa/pages/exercise_sheet/presentation/exercise_sheet_page.dart';
 import 'package:billard_cfa/pages/export_sheet/presentation/export_sheet_page.dart';
 import 'package:billard_cfa/pages/forgot_password/presentation/forgot_password_page.dart';
@@ -169,6 +171,10 @@ abstract final class AppRoutes {
 
   /// Accueil d'un parent ou d'un élève : les élèves liés au compte.
   static const myChildren = '/my-children';
+
+  /// « Supprimer mon compte » (FB8 partie B) : tout compte connecté, avec ou
+  /// sans club.
+  static const deleteAccount = '/delete-account';
 
   /// Rejoindre un club avec un code d'invitation (`/join/<code>` : le lien).
   static const join = '/join';
@@ -680,6 +686,29 @@ GoRouter buildRouter({
             onAdministration: isAdmin
                 ? () => context.go(AppRoutes.administration)
                 : null,
+            onDeleteAccount: () => context.go(AppRoutes.deleteAccount),
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.deleteAccount,
+      builder: (context, state) {
+        // L'état de session est relu à chaque reconstruction : une
+        // suppression arrêtée après la purge mène à « Aucun club », la page
+        // reste ouverte (son cubit aussi) et le retour suit.
+        final session = auth.state;
+        final isAdmin = switch (session) {
+          AuthReady(:final isAdmin) || AuthNoClub(:final isAdmin) => isAdmin,
+          _ => false,
+        };
+        return BlocProvider(
+          create: (_) => DeleteAccountCubit(auth.deleteAccount),
+          child: DeleteAccountPage(
+            isAdministrator: isAdmin,
+            onBack: () => context.go(
+              auth.state is AuthReady ? AppRoutes.more : AppRoutes.selectClub,
+            ),
           ),
         );
       },
@@ -1358,6 +1387,8 @@ GoRouter buildRouter({
                         AppLocalizations.of(context),
                       ),
                       onSignOut: () => unawaited(requestSignOut(context, auth)),
+                      onDeleteAccount: () =>
+                          context.go(AppRoutes.deleteAccount),
                     )
                   : null,
               onSwitchClub: session is AuthReady && session.canSwitchClub

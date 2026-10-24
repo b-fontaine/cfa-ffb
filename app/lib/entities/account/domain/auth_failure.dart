@@ -32,6 +32,10 @@ enum AuthFailureCode {
   /// Pas de réseau.
   network,
 
+  /// L'opération sensible (suppression du compte) exige une vérification
+  /// récente du mot de passe : la redemander (`requires-recent-login`).
+  recentLoginRequired,
+
   /// Tout autre échec du fournisseur.
   unavailable,
 }

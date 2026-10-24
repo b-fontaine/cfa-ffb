@@ -29,6 +29,13 @@ class InMemoryAuthRepository implements AuthRepository {
   /// Quand il est vrai, seul l'envoi du courriel de vérification échoue.
   bool verificationMailFails = false;
 
+  /// Les comptes supprimés par leur titulaire, dans l'ordre (assertions).
+  final List<Account> deletedAccounts = [];
+
+  /// Fait échouer **une fois** la prochaine suppression du compte, avec ce
+  /// code (coupure du réseau juste avant la suppression).
+  AuthFailureCode? nextDeletionFailure;
+
   /// Ajoute un compte existant (préparation d'un scénario).
   Account seed({
     required String email,
@@ -52,6 +59,7 @@ class InMemoryAuthRepository implements AuthRepository {
   void restoreSession(String email) {
     final record = _accounts[_normalize(email)]!;
     _current = record.account;
+    _reauthenticated = false;
   }
 
   /// Le compte actuellement connecté.
@@ -118,6 +126,42 @@ class InMemoryAuthRepository implements AuthRepository {
   @override
   Future<void> signOut() async {
     _current = null;
+    _reauthenticated = false;
+    _changes.add(null);
+  }
+
+  /// Le mot de passe a été vérifié à nouveau depuis la dernière connexion
+  /// (exigé par la suppression, comme la « connexion récente » de Firebase).
+  bool _reauthenticated = false;
+
+  @override
+  Future<void> reauthenticate(String password) async {
+    _requireNetwork();
+    final account = _current;
+    if (account == null) throw const AuthFailure(AuthFailureCode.unavailable);
+    if (_accounts[account.email]?.password != password) {
+      throw const AuthFailure(AuthFailureCode.invalidCredentials);
+    }
+    _reauthenticated = true;
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    _requireNetwork();
+    final account = _current;
+    if (account == null) throw const AuthFailure(AuthFailureCode.unavailable);
+    if (!_reauthenticated) {
+      throw const AuthFailure(AuthFailureCode.recentLoginRequired);
+    }
+    final failure = nextDeletionFailure;
+    if (failure != null) {
+      nextDeletionFailure = null;
+      throw AuthFailure(failure);
+    }
+    _accounts.remove(account.email);
+    deletedAccounts.add(account);
+    _current = null;
+    _reauthenticated = false;
     _changes.add(null);
   }
 
@@ -136,6 +180,7 @@ class InMemoryAuthRepository implements AuthRepository {
 
   Account _set(Account account) {
     _current = account;
+    _reauthenticated = false;
     _changes.add(account);
     return account;
   }

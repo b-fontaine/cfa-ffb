@@ -66,6 +66,28 @@ class StoreMembershipsSource implements MembershipsSource {
   }
 
   @override
+  Future<List<OwnMember>> ownMembers(UserId user) async {
+    try {
+      final owned = await _store.collectionGroupFromServer(
+        'members',
+        field: 'uid',
+        equalTo: user.value,
+      );
+      return [
+        for (final member in owned)
+          // `clubs/{club}/members/{uid}` : le club est le deuxième segment.
+          if (member.segments.length == 4 && member.segments.first == 'clubs')
+            (
+              clubId: ClubId(member.segments[1]),
+              role: Role.tryParse(member.fields['role'] as String?),
+            ),
+      ];
+    } on StoreFailure catch (failure) {
+      throw _translate(failure);
+    }
+  }
+
+  @override
   Future<bool> isAdmin(UserId user) async {
     try {
       return await _isAdmin(user);

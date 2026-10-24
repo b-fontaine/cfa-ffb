@@ -4,9 +4,21 @@
 import assert from 'node:assert/strict';
 import { after, before, beforeEach, describe, test } from 'node:test';
 
-import { deleteDoc, doc, serverTimestamp, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
+import {
+  collection,
+  collectionGroup,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
+  writeBatch,
+} from 'firebase/firestore';
 
-import { allowed, createEnv, dbOf, invitation, member, now, put, seed, ts, days } from './support.mjs';
+import { allowed, createEnv, dbOf, invitation, member, now, put, remove, seed, ts, days } from './support.mjs';
 
 let env;
 before(async () => {
@@ -69,9 +81,81 @@ describe('mise à jour de son propre member', () => {
     assert.equal(await update('teacherC2', 'u-teacher-a', { displayName: 'Pirate' }), false, 'enseignant d\'un autre club');
   });
 
-  test('on ne s\'efface pas pour mieux revenir', async () => {
-    assert.equal(await allowed(() => deleteDoc(doc(dbOf(env, 'teacherA'), memberPath('u-teacher-a')))), false);
-    assert.equal(await allowed(() => deleteDoc(doc(dbOf(env, 'director'), memberPath('u-dir')))), false);
+});
+
+// Suppression de son compte (FB8 partie B, B2 ; ADR 0025 décision 7(e)) : le titulaire supprime
+// son member (voir la grille de matrix.test.mjs), mais s'effacer n'ouvre AUCUN retour : recréer
+// un member exige toujours une invitation valide, un directeur ou l'administrateur.
+describe('suppression de son propre member', () => {
+  const del = (actor, path) => allowed(() => deleteDoc(doc(dbOf(env, actor), path)));
+  const recreate = (actor, uid, role, extra = {}) =>
+    allowed(() =>
+      setDoc(doc(dbOf(env, actor), memberPath(uid)), { ...member(uid, role, extra), createdAt: serverTimestamp() }),
+    );
+
+  test('s\'effacer est permis, revenir sans invitation ne l\'est pas (même rôle, plus de droits)', async () => {
+    const cases = [
+      ['teacherA', 'u-teacher-a', 'teacher', { groupIds: ['g1'] }],
+      ['student', 'u-student', 'student', { groupIds: ['g1'], studentIds: ['s1'] }],
+      ['guardian', 'u-guardian', 'guardian', { groupIds: ['g1'], studentIds: ['s1'] }],
+      ['director', 'u-dir', 'director', {}],
+    ];
+    for (const [actor, uid, role, extra] of cases) {
+      assert.equal(await del(actor, memberPath(uid)), true, `${actor} supprime son member`);
+      assert.equal(await recreate(actor, uid, role, extra), false, `${actor} ne se recrée pas ${role}`);
+      assert.equal(await recreate(actor, uid, 'director'), false, `${actor} ne se recrée pas directeur`);
+      assert.equal(await recreate(actor, uid, 'teacher', { groupIds: ['g1', 'g2'] }), false, `${actor} ne se recrée pas enseignant`);
+    }
+  });
+
+  test('revenir avec une invitation déjà consommée est refusé', async () => {
+    await put(env, 'invitations/USEDCODE22', invitation({ role: 'teacher', used: true, usedBy: 'u-teacher-a', usedAt: ts(now()) }));
+    assert.equal(await del('teacherA', memberPath('u-teacher-a')), true);
+    const batch = writeBatch(dbOf(env, 'teacherA'));
+    batch.set(doc(dbOf(env, 'teacherA'), memberPath('u-teacher-a')), {
+      ...member('u-teacher-a', 'teacher'),
+      invitationCode: 'USEDCODE22',
+      createdAt: serverTimestamp(),
+    });
+    assert.equal(await allowed(() => batch.commit()), false);
+  });
+
+  test('un compte ne supprime pas le member d\'un collègue, d\'un autre club, ni avec une adresse non vérifiée', async () => {
+    assert.equal(await del('teacherA', memberPath('u-teacher-b')), false, 'collègue enseignant');
+    assert.equal(await del('guardian', memberPath('u-guardian2')), false, 'autre parent');
+    assert.equal(await del('student', memberPath('u-guardian')), false, 'son propre parent');
+    assert.equal(await del('teacherC2', 'clubs/c1/members/u-teacher-c2'), true, 'chemin absent de c1 : aucun document, rien à protéger');
+    assert.equal(await del('teacherC2', memberPath('u-teacher-a')), false, 'enseignant d\'un autre club');
+    assert.equal(await del('directorOther', memberPath('u-dir')), false, 'directeur d\'un autre club');
+    assert.equal(await del('unverified', memberPath('u-dir')), false, 'adresse non vérifiée');
+    assert.equal(await del('anonymous', memberPath('u-student')), false, 'sans compte');
+  });
+
+  test('dans un club supprimé par l\'administrateur (sous-collections restées), le compte retrouve et efface encore SES traces', async () => {
+    // Suppression de son compte (FB8 partie B) : `membershipsOf` ne liste plus ce club (sans nom),
+    // mais ses `members` se lisent au serveur par la requête de groupe, et les règles ne demandent
+    // pas que le document du club existe : invitations, marqueurs, puis le member.
+    const marker = `${'ab'.repeat(32)}_u-teacher-a`;
+    await put(env, `clubs/c1/imports/${marker}`, { createdBy: 'u-teacher-a', updatedAt: ts(now()) });
+    await put(env, 'invitations/ORPHANINV2', invitation({ role: 'student', groupIds: ['g1'], studentIds: ['s1'], createdBy: 'u-teacher-a' }));
+    await remove(env, 'clubs/c1');
+    const db = dbOf(env, 'teacherA');
+
+    const mine = await getDocs(query(collectionGroup(db, 'members'), where('uid', '==', 'u-teacher-a')));
+    assert.deepEqual(mine.docs.map((d) => d.ref.path), ['clubs/c1/members/u-teacher-a']);
+    const invitations = await getDocs(
+      query(collection(db, 'invitations'), where('clubId', '==', 'c1'), where('createdBy', '==', 'u-teacher-a')),
+    );
+    assert.deepEqual(invitations.docs.map((d) => d.id), ['ORPHANINV2']);
+    assert.equal(await del('teacherA', 'invitations/ORPHANINV2'), true, 'révoque son invitation');
+    const markers = await getDocs(query(collection(db, 'clubs/c1/imports'), where('createdBy', '==', 'u-teacher-a')));
+    assert.deepEqual(markers.docs.map((d) => d.id), [marker]);
+    assert.equal(await del('teacherA', `clubs/c1/imports/${marker}`), true, 'supprime son marqueur');
+    assert.equal(await del('teacherA', memberPath('u-teacher-a')), true, 'supprime son member');
+  });
+
+  test('l\'administrateur ne s\'efface pas de admins (console seule)', async () => {
+    assert.equal(await del('admin', 'admins/u-admin'), false);
   });
 });
 

@@ -111,6 +111,70 @@ void main() {
     });
   });
 
+  group('unusedIssuedBy', () {
+    void put(
+      String code, {
+      String club = 'c1',
+      String by = 'u-me',
+      bool used = false,
+    }) => store.seed('invitations/$code', {
+      'clubId': club,
+      'role': 'student',
+      'groupIds': ['g1'],
+      'studentIds': ['s1'],
+      'createdBy': by,
+      'createdAt': clock.now(),
+      'expiresAt': clock.now().add(const Duration(days: 7)),
+      'used': used,
+    });
+
+    test('the unused invitations this account created in the club, read at '
+        'the server, by the two equalities the rules prove', () async {
+      store = _ServerOnlyStore()..serverNow = clock.now;
+      repository = StoreInvitationRepository(store, clock);
+      put('AAAAAAAAAA');
+      put('BBBBBBBBBB', used: true);
+      put('CCCCCCCCCC', by: 'u-colleague');
+      put('DDDDDDDDDD', club: 'c2');
+      put('EEEEEEEEEE');
+      store.seed('invitations/not-a-code', {
+        'clubId': 'c1',
+        'createdBy': 'u-me',
+        'used': false,
+      });
+
+      final codes = await repository.unusedIssuedBy(
+        const UserId('u-me'),
+        const ClubId('c1'),
+      );
+
+      expect(codes.map((code) => code.value), ['AAAAAAAAAA', 'EEEEEEEEEE']);
+      final filter = store.queryLog.single as AllEqual;
+      expect(
+        {for (final clause in filter.clauses) clause.field: clause.value},
+        {'clubId': 'c1', 'createdBy': 'u-me'},
+      );
+    });
+
+    test(
+      'an unreachable server is a ServiceFailure, never an empty list',
+      () async {
+        store.failing = StoreFailureCode.unavailable;
+
+        await expectLater(
+          repository.unusedIssuedBy(const UserId('u-me'), const ClubId('c1')),
+          throwsA(
+            isA<ServiceFailure>().having(
+              (f) => f.code,
+              'code',
+              ServiceFailureCode.unavailable,
+            ),
+          ),
+        );
+      },
+    );
+  });
+
   group('accept', () {
     test(
       'creates the member and consumes the invitation in ONE batch',
@@ -410,4 +474,12 @@ class _FailingCommitStore implements DocumentStore {
   @override
   Stream<CollectionUpdate> watchQuery(String collection, QueryFilter filter) =>
       _inner.watchQuery(collection, filter);
+}
+
+/// Un stock dont le cache ne répond jamais : seule la lecture au serveur
+/// aboutit (la requête ordinaire échoue).
+class _ServerOnlyStore extends InMemoryDocumentStore {
+  @override
+  Future<List<StoredDocument>> query(String collection, QueryFilter filter) =>
+      throw const StoreFailure(StoreFailureCode.other, 'lecture du cache');
 }

@@ -807,3 +807,33 @@ Règles par `RULES_FILE` (copie), code par modification temporaire restaurée pa
 | `RemoveOwnMarkers` : pas de découpe en lots (deux variantes) | BDD 454 marqueurs et coupure, tests de lots |
 
 **Limites dites.** (1) `MarkerRulesStore` ne rejoue pas la grammaire des règles : la vérité est l'émulateur. (2) La liste (`DocumentStore.query`) n'est pas une lecture « serveur seulement » : hors ligne, le SDK peut rendre le cache ; le lot de suppression, lui, attend l'accusé (refus `unavailable` sinon). (3) Pas de parcours navigateur dans cette tranche (aucun écran).
+
+## Lot FB8, partie B, tranche B2 : suppression de son compte (2026-10-24)
+
+Voir l'[ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) (notes FB8b, B2) et le plan `fb8b-plan.md` (décisions D1 et D4). Aucun projet réel : doubles en mémoire, émulateurs `demo-cfa-ffb`.
+
+**Rouge avant le code.** (1) `account_deletion.feature` (12 scénarios) et ses étapes écrits d'abord : **12 rouges sur 12**, chacun sur l'absence de « Delete my account » (le double d'authentification n'avait reçu que deux champs d'assertion, sans comportement). (2) Règles : `matrix.test.mjs`, `escalation.test.mjs` et `auth_emulator.test.mjs` joués contre les règles d'avant : **10 rouges sur 207** (le titulaire refusé), puis **209 verts** avec la règle. (3) Tests unitaires d'`AuthRepository` (réauthentification, suppression, contrat, SDK) puis de `DeleteOwnAccount` (16), d'`AuthCubit.deleteAccount` (5), de `DeleteAccountCubit` (5) et de la redirection (3) : chacun rouge (méthode, fichier ou route absents) avant son code. **Écart reconnu** : les tests du formulaire (`delete_account_form_test.dart`) et de l'entrée de `AccountSection` ont été écrits **après** le widget, que les scénarios avaient exigé ; ils couvrent les branches de message que les scénarios ne jouent pas.
+
+| Fichier | Prouve |
+|---|---|
+| `test/bdd/account_deletion.feature` (12) ; monde `test/support/account_deletion_world.dart` | un enseignant supprime son compte : son marqueur d'import, son invitation en attente et son `member` disparaissent, rien ne reste sur l'appareil, le directeur reste ; un parent de deux élèves, un élève : les fiches restent ; dernier directeur refusé (rien de supprimé) ; directeur avec successeur accepté ; administrateur : explication, pas de formulaire ; mauvais mot de passe ; hors ligne ; écritures non envoyées ; purge faite puis suppression du compte coupée, reprise depuis « Aucun club » ; compte sans club ; écran en français |
+| `test/unit/features/delete_account/domain/delete_own_account_test.dart` (16) | ordre exact (invitations, marqueurs, `member`, puis le compte), marqueur d'un autre intact, seules les invitations en attente révoquées, refus avant toute écriture (envois en attente, mot de passe, administrateur, dernier directeur nommé), clubs illisibles, trop de tentatives, accusé absent ou refus pendant la purge (`clubDataPartlyRemoved`), échec du compte après la purge (`clubDataRemoved`) et reprise sans toucher aucun club, vérification expirée |
+| `test/unit/app/auth/auth_cubit_test.dart` (+5) | supprimé : `signedOut`, club retenu, journal, code gardé et cache oubliés ; refus : rien ne change ; arrêt après la purge : session relue (« Aucun club ») puis fin de la suppression ; cache non vidé : effacement en attente ; sans session : `unavailable` |
+| `test/unit/entities/account/...` (+16 : dépôt Firebase 6, contrat 1 × 4 réalisations, double en mémoire 6), `test/unit/app/platform/firebase_auth_sdk_test.dart` (+3) | codes du SDK traduits (identifiants → mot de passe incorrect, `requires-recent-login` → vérification à refaire, réseau) ; même échec en mémoire et pour Firebase (contrat) ; `reauthenticateWithCredential` par e-mail, `User.delete()` |
+| `test/unit/features/delete_account/presentation/` (5 + 8) | étapes puis issue, demande non doublée, aucun état après fermeture ; formulaire : mot de passe exigé, région vive, alerte « attention » pour un refus et « persistante » pour un échec, un message distinct par issue |
+
+**Règles contre l'émulateur** : `matrix.test.mjs`, suite `members` (suppression de chaque `member` par son titulaire, le directeur et l'administrateur ; un directeur : lui-même et l'administrateur, jamais le compte non vérifié ; titulaire d'un autre club ; **ATTAQUE** un enseignant, un élève, un parent ou un invité ne suppriment aucun autre `member`) ; `escalation.test.mjs` (« s'effacer est permis, revenir sans invitation ne l'est pas », même rôle ou plus de droits ; « revenir avec une invitation déjà consommée est refusé » ; **ATTAQUE** collègue, autre parent, son propre parent, autre club, directeur d'un autre club, adresse non vérifiée, sans compte ; l'administrateur ne s'efface pas de `admins`) ; `operations.test.mjs` (grille « qui supprime le compte parent ou élève d’un élève effacé » : le titulaire s’y ajoute) ; `auth_emulator.test.mjs` (réauthentification par mauvais mot de passe : code d'identifiants ; réauthentifié, `delete()` ; se reconnecter échoue ensuite).
+
+**Parcours navigateur** (`scripts/emulator_e2e/e2e.test.mjs`) : un enseignant de la graine (Julien) supprime son compte par l'écran, sous les vraies règles et le vrai Firebase Auth : mauvais mot de passe (rien de supprimé), puis suppression ; relecture par un autre appareil (son `member` absent, aucun autre touché) et connexion refusée.
+
+### Mutations à la main (FB8 partie B, B2, 2026-10-24)
+
+Règles par `RULES_FILE` (copie) ; **3 mutations, toutes tuées** (`matrix.test.mjs` + `escalation.test.mjs`).
+
+| Règle | Suite rouge |
+|---|---|
+| titulaire sans `verified()` | `matrix` « suppression d'un directeur : lui-même (adresse vérifiée)… », `escalation` « … ni avec une adresse non vérifiée » |
+| titulaire réduit à `verified()` (tout compte vérifié) | `matrix` grille `members` et suites suivantes, `escalation` attaques |
+| clause du titulaire retirée | `matrix` six grilles de suppression par le titulaire, `escalation` « s'effacer est permis… » |
+
+**Limites dites.** (1) Le stock en mémoire des scénarios n'applique pas les règles : la vérité des droits est l'émulateur. (2) L'émulateur Auth n'impose pas `requires-recent-login` : sa traduction est prouvée par test unitaire. (3) Le parcours navigateur ne joue ni l'interruption entre purge et suppression du compte (scénario BDD et test du cas d'usage), ni un parent à deux enfants (scénario BDD).

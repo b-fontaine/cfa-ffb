@@ -44,6 +44,14 @@ class _FirebaseLikeSdk implements AuthSdk {
 
   @override
   Future<void> signOut() async {}
+
+  @override
+  Future<void> reauthenticate(String password) async {
+    if (password != 'correct-horse') throw AuthSdkException(wrongCode);
+  }
+
+  @override
+  Future<void> deleteUser() async {}
 }
 
 /// Le contrat de connexion que **toute** implémentation d'`AuthRepository`
@@ -86,6 +94,24 @@ void _signInContract(String name, AuthRepository Function() create) {
     test('a password reset for an unknown address reveals nothing', () async {
       await repository.sendPasswordReset('nobody@example.org');
     });
+
+    test(
+      'reauthenticating with a wrong password is the sign-in failure',
+      () async {
+        await repository.signIn(
+          email: 'coach@example.org',
+          password: 'correct-horse',
+        );
+
+        try {
+          await repository.reauthenticate('not-the-password');
+          fail('un AuthFailure était attendu');
+        } on AuthFailure catch (failure) {
+          expect(failure.code, AuthFailureCode.invalidCredentials);
+        }
+        await repository.reauthenticate('correct-horse');
+      },
+    );
   });
 }
 

@@ -23,6 +23,7 @@ class SelectClubPage extends StatelessWidget {
     this.onBack,
     this.onJoin,
     this.onAdministration,
+    this.onDeleteAccount,
     super.key,
   });
 
@@ -40,6 +41,10 @@ class SelectClubPage extends StatelessWidget {
 
   /// « Administration » : pour un administrateur, même sans club.
   final VoidCallback? onAdministration;
+
+  /// « Supprimer mon compte » (FB8 partie B) : aussi pour un compte sans club
+  /// (élève déjà effacé, suppression reprise après une interruption).
+  final VoidCallback? onDeleteAccount;
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +92,12 @@ class SelectClubPage extends StatelessWidget {
             onPressed: onSignOut,
             icon: const Icon(Icons.logout),
             label: Text(l10n.accountSignOut),
+          ),
+        if (onDeleteAccount != null)
+          TextButton.icon(
+            onPressed: onDeleteAccount,
+            icon: const Icon(Icons.person_remove_outlined),
+            label: Text(l10n.deleteAccountTitle),
           ),
       ],
     );

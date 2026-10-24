@@ -12,6 +12,7 @@ import 'package:billard_cfa/entities/invitation/domain/invitation_log.dart';
 import 'package:billard_cfa/entities/membership/data/key_value_active_club_memory.dart';
 import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
 import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
+import 'package:billard_cfa/features/delete_account/domain/account_deletion.dart';
 import 'package:billard_cfa/features/select_club/domain/choose_club.dart';
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
 import 'package:billard_cfa/shared/lib/identifiers.dart';
@@ -54,6 +55,12 @@ class _BrokenAuth implements AuthRepository {
 
   @override
   Future<void> signOut() => throw UnimplementedError();
+
+  @override
+  Future<void> reauthenticate(String password) => throw UnimplementedError();
+
+  @override
+  Future<void> deleteAccount() => throw UnimplementedError();
 }
 
 /// Démarrage dont l'attente ne se termine jamais.
@@ -89,6 +96,10 @@ class _ExplodingMemberships implements MembershipsSource {
 
   @override
   Future<bool> isAdmin(UserId user) => throw StateError('clubs illisibles');
+
+  @override
+  Future<List<OwnMember>> ownMembers(UserId user) =>
+      throw StateError('clubs illisibles');
 }
 
 /// Stockage local dont la lecture lève une erreur inattendue.
@@ -188,6 +199,7 @@ void main() {
         rig.issued,
         rig.reloadRules,
         rig.local,
+        rig.deleteOwnAccount,
       );
       addTearDown(cubit.close);
       final reported = <FlutterErrorDetails>[];
@@ -549,6 +561,7 @@ void main() {
           rig.issued,
           rig.reloadRules,
           rig.local,
+          rig.deleteOwnAccount,
         );
         addTearDown(cubit.close);
         await cubit.start();
@@ -594,6 +607,7 @@ void main() {
       rig.issued,
       rig.reloadRules,
       rig.local,
+      rig.deleteOwnAccount,
     );
     addTearDown(cubit.close);
     final other = rig.auth.seed(email: 'other@example.org', password: 'pw');
@@ -665,6 +679,7 @@ void main() {
           rig.issued,
           rig.reloadRules,
           rig.local,
+          rig.deleteOwnAccount,
         );
         addTearDown(cubit.close);
 
@@ -697,6 +712,7 @@ void main() {
           rig.issued,
           rig.reloadRules,
           rig.local,
+          rig.deleteOwnAccount,
         );
         addTearDown(cubit.close);
 
@@ -724,6 +740,7 @@ void main() {
         rig.issued,
         rig.reloadRules,
         rig.local,
+        rig.deleteOwnAccount,
       );
       addTearDown(cubit.close);
       return cubit;
@@ -1384,6 +1401,115 @@ void main() {
 
       expect((rig.cubit.state as AuthReady).isAdmin, isTrue);
       expect(rig.scope.role, Role.admin);
+    });
+  });
+
+  group('account deletion (FB8 partie B)', () {
+    Future<void> openTeacherClub() async {
+      rig.auth.restoreSession('coach@example.org');
+      rig.memberships.grant(coach.id, _lyon);
+      await rig.cubit.start();
+      await settle();
+      expect(rig.cubit.state, isA<AuthReady>());
+    }
+
+    test('a deleted account is signed out and forgotten on the device, like '
+        'a sign-out', () async {
+      await openTeacherClub();
+      await rig.pending.hold(coach.id, InvitationCode.tryParse('AAAAAAAAAA')!);
+      final steps = <AccountDeletionStep>[];
+
+      final result = await rig.cubit.deleteAccount('pw', onProgress: steps.add);
+      await settle();
+
+      expect(result, const AccountDeletionResult.deleted());
+      expect(rig.cubit.state, const AuthSignedOut());
+      expect(rig.auth.accountOf('coach@example.org'), isNull);
+      expect(rig.members.removed, [(_lyon.clubId, coach.id)]);
+      expect(rig.scope.id, isNull);
+      expect(await rig.memory.read(coach.id), isNull);
+      expect(await rig.pending.read(coach.id), isNull);
+      expect(
+        rig.store.entries.keys.where((key) => key.contains(coach.id.value)),
+        isEmpty,
+      );
+      expect(rig.cache.clears, 1);
+      expect(rig.cache.reopens, 1);
+      expect(steps.last, const AccountDeletionStep.removingAccount());
+    });
+
+    test(
+      'a refusal changes nothing: still in the club, account kept',
+      () async {
+        await openTeacherClub();
+        final before = rig.cubit.state;
+
+        final result = await rig.cubit.deleteAccount('wrong');
+        await settle();
+
+        expect(
+          result,
+          const AccountDeletionResult.failed(
+            AccountDeletionError.wrongPassword,
+          ),
+        );
+        expect(rig.cubit.state, before);
+        expect(rig.auth.current, isNotNull);
+        expect(rig.cache.clears, 0);
+      },
+    );
+
+    test('stopped after the purge, the session is read again: no club left, '
+        'and the account can still finish its deletion', () async {
+      await openTeacherClub();
+      rig.auth.nextDeletionFailure = AuthFailureCode.network;
+
+      final first = await rig.cubit.deleteAccount('pw');
+      await settle();
+
+      expect(
+        first,
+        const AccountDeletionResult.failed(
+          AccountDeletionError.network,
+          progress: AccountDeletionProgress.clubDataRemoved,
+        ),
+      );
+      expect(rig.cubit.state, isA<AuthNoClub>());
+      expect((rig.cubit.state as AuthNoClub).choices, isEmpty);
+      expect(rig.cache.clears, 0);
+
+      final second = await rig.cubit.deleteAccount('pw');
+      await settle();
+
+      expect(second, const AccountDeletionResult.deleted());
+      expect(rig.cubit.state, const AuthSignedOut());
+    });
+
+    test('a cache that cannot be cleared still ends signed out, with the '
+        'erasure pending', () async {
+      await openTeacherClub();
+      rig.cache.clearFailure = const FormatException('disque');
+      final reported = <FlutterErrorDetails>[];
+      final previous = FlutterError.onError;
+      FlutterError.onError = reported.add;
+      addTearDown(() => FlutterError.onError = previous);
+
+      final result = await rig.cubit.deleteAccount('pw');
+      await settle();
+
+      expect(result, const AccountDeletionResult.deleted());
+      expect(rig.cubit.state, const AuthSignedOut(erasurePending: true));
+      expect(reported, hasLength(1));
+    });
+
+    test('without a session there is nothing to delete', () async {
+      await rig.cubit.start();
+      await settle();
+
+      expect(
+        await rig.cubit.deleteAccount('pw'),
+        const AccountDeletionResult.failed(AccountDeletionError.unavailable),
+      );
     });
   });
 }

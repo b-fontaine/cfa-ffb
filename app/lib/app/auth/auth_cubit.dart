@@ -11,10 +11,13 @@ import 'package:billard_cfa/entities/invitation/domain/invitation_log.dart';
 import 'package:billard_cfa/entities/membership/domain/active_club_memory.dart';
 import 'package:billard_cfa/entities/membership/domain/club_membership.dart';
 import 'package:billard_cfa/entities/membership/domain/memberships_source.dart';
+import 'package:billard_cfa/features/delete_account/domain/account_deletion.dart';
+import 'package:billard_cfa/features/delete_account/domain/delete_own_account.dart';
 import 'package:billard_cfa/features/manage_settings/domain/reload_rules.dart';
 import 'package:billard_cfa/features/select_club/domain/choose_club.dart';
 import 'package:billard_cfa/features/select_club/domain/resolve_active_club.dart';
 import 'package:billard_cfa/features/sign_in/domain/pending_invitations.dart';
+import 'package:billard_cfa/shared/lib/identifiers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -67,6 +70,7 @@ class AuthCubit extends Cubit<AuthState> {
     this._issued,
     this._rules,
     this._local,
+    this._deleteOwnAccount,
   ) : super(const AuthUnknown());
 
   final SessionStartup _startup;
@@ -79,6 +83,7 @@ class AuthCubit extends Cubit<AuthState> {
   final InvitationLog _issued;
   final ReloadRules _rules;
   final LocalDataGuard _local;
+  final DeleteOwnAccount _deleteOwnAccount;
 
   /// Délai au-delà duquel un démarrage resté sans réponse (SDK qui ne
   /// s'initialise pas, première session jamais livrée) mène à `indisponible`
@@ -179,6 +184,14 @@ class AuthCubit extends Cubit<AuthState> {
       _signingOut = false;
       return SignOutResult.refused;
     }
+    await _forgetOnDevice(user);
+    return SignOutResult.signedOut;
+  }
+
+  /// Ce que la déconnexion et la suppression du compte font sur l'appareil,
+  /// une fois la session fermée : oublier le club retenu et le journal des
+  /// invitations de [user], vider le cache local, passer à `signedOut`.
+  Future<void> _forgetOnDevice(UserId? user) async {
     if (user != null) {
       await _memory.clear(user);
       await _issued.clear(user);
@@ -202,7 +215,56 @@ class AuthCubit extends Cubit<AuthState> {
     // main si elle recharge.
     _signingOut = false;
     await _local.reopen();
-    return SignOutResult.signedOut;
+  }
+
+  /// Supprime le compte connecté et ses données de club (FB8 partie B,
+  /// tranche B2) : le cas d'usage `DeleteOwnAccount` vérifie [password],
+  /// contrôle, purge chaque club puis supprime le compte d'authentification.
+  ///
+  /// - **Supprimé** : la session est fermée par le service ; l'appareil oublie
+  ///   ensuite ce que la déconnexion oublie (club retenu, invitations émises,
+  ///   cache local), plus le code d'invitation gardé à l'inscription.
+  ///   `_signingOut` est levé **avant** : la fin de session qu'émet le service
+  ///   n'est pas prise pour une session perdue ailleurs (rechargement).
+  /// - **Arrêté après le début de la purge** : les clubs sont relus, la
+  ///   session reflète ce qui reste (souvent « Aucun club », où la suppression
+  ///   est de nouveau proposée).
+  /// - **Refusé**, ou échoué avant toute écriture : rien ne change.
+  Future<AccountDeletionResult> deleteAccount(
+    String password, {
+    void Function(AccountDeletionStep step)? onProgress,
+  }) async {
+    final account = _account;
+    if (account == null) {
+      return const AccountDeletionResult.failed(
+        AccountDeletionError.unavailable,
+      );
+    }
+    _signingOut = true;
+    final AccountDeletionResult result;
+    try {
+      result = await _deleteOwnAccount(
+        user: account.id,
+        password: password,
+        onProgress: onProgress,
+      );
+    } on Object {
+      _signingOut = false;
+      rethrow;
+    }
+    switch (result) {
+      case AccountDeleted():
+        // `_forgetOnDevice` baisse `_signingOut` une fois la session oubliée.
+        await _pending.clear(account.id);
+        await _forgetOnDevice(account.id);
+      case AccountDeletionFailed(:final progress)
+          when progress != AccountDeletionProgress.nothingDeleted:
+        _signingOut = false;
+        await refresh();
+      case AccountDeletionRefused() || AccountDeletionFailed():
+        _signingOut = false;
+    }
+    return result;
   }
 
   /// « Réessayer l'effacement » de l'écran de connexion : retente l'effacement

@@ -61,6 +61,45 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   Future<void> signOut() => _guard(_sdk.signOut);
 
+  @override
+  Future<void> reauthenticate(String password) async {
+    try {
+      await _sdk.reauthenticate(password);
+    } on AuthSdkException catch (error) {
+      throw _transportFailure(error) ??
+          switch (error.code) {
+            // Mauvais mot de passe, ou session d'un autre compte : même
+            // message générique qu'à la connexion.
+            'invalid-credential' ||
+            'wrong-password' ||
+            'user-not-found' ||
+            'user-mismatch' ||
+            'user-disabled' ||
+            'invalid-login-credentials' => AuthFailure(
+              AuthFailureCode.invalidCredentials,
+              error.code,
+            ),
+            _ => AuthFailure(AuthFailureCode.unavailable, error.code),
+          };
+    }
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    try {
+      await _sdk.deleteUser();
+    } on AuthSdkException catch (error) {
+      throw _transportFailure(error) ??
+          switch (error.code) {
+            'requires-recent-login' || 'user-token-expired' => AuthFailure(
+              AuthFailureCode.recentLoginRequired,
+              error.code,
+            ),
+            _ => AuthFailure(AuthFailureCode.unavailable, error.code),
+          };
+    }
+  }
+
   Future<void> _guard(Future<void> Function() body) async {
     try {
       await body();

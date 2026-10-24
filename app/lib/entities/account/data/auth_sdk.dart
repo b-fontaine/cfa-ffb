@@ -41,4 +41,10 @@ abstract interface class AuthSdk {
   Future<void> sendPasswordResetEmail(String email);
 
   Future<void> signOut();
+
+  /// Réauthentifie l'utilisateur courant avec son adresse et [password].
+  Future<void> reauthenticate(String password);
+
+  /// Supprime l'utilisateur courant (session fermée).
+  Future<void> deleteUser();
 }
