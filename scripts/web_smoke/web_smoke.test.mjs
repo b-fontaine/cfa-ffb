@@ -289,14 +289,20 @@ describe('build web compilé contre l’émulateur Auth', () => {
     await see('Adresse e-mail ou mot de passe incorrect.');
     // Le nombre de nœuds sémantiques qui portent le message varie (région vivante et libellé,
     // selon l'instant de la capture) : on compare le texte, pas le compte.
-    const wrongPassword = await page.getByText('Adresse e-mail ou mot de passe incorrect.').first().textContent();
+    // Les espaces de fin varient aussi avec l'instant de la capture (observé sur macOS en CI) : on
+    // compare le message, espaces normalisées.
+    const messageShown = async () =>
+      (await page.getByText('Adresse e-mail ou mot de passe incorrect.').first().textContent())
+        .replace(/\s+/g, ' ')
+        .trim();
+    const wrongPassword = await messageShown();
 
     await page.reload();
     await enableSemantics();
     await see('Connexion à l’application');
     await signInWith(unknownEmail, password);
     await see('Adresse e-mail ou mot de passe incorrect.');
-    const unknownAddress = await page.getByText('Adresse e-mail ou mot de passe incorrect.').first().textContent();
+    const unknownAddress = await messageShown();
 
     assert.equal(unknownAddress, wrongPassword);
   });

@@ -88,6 +88,10 @@ const route = (r) => {
   return r.abort();
 };
 
+// Trace de la page (console, sélecteur de fichier), jointe au message d'un échec de `see`.
+const trace = [];
+const traceStart = Date.now();
+
 const enableSemantics = () =>
   page.evaluate(() => document.querySelector('flt-semantics-placeholder')?.click());
 
@@ -97,7 +101,30 @@ const open = async () => {
   context = await browser.newContext({ serviceWorkers: 'block', locale: 'fr-FR' });
   await context.route('**/*', route);
   page = await context.newPage();
+  trace.length = 0;
   page.on('pageerror', (error) => pageErrors.push(error.message));
+  page.on('console', (message) => {
+    // Seulement le sélecteur de fichier : le reste de la console (polices refusées, ressources
+    // externes bloquées) ferait déborder le tampon pendant les 30 s d'attente d'un `see`.
+    if (!message.text().includes('[pick]')) return;
+    trace.push(`${Date.now() - traceStart} page ${message.text()}`);
+    if (trace.length > 200) trace.shift();
+  });
+  // Sans effet sur le comportement : note, dans la page, ce que fait le sélecteur de fichier
+  // (clic sur l'input, focus, change, cancel, nombre de fichiers) pour qu'un échec en CI dise
+  // si la sélection a été avalée par l'heuristique « le focus de la fenêtre vaut annulation ».
+  await page.addInitScript(() => {
+    const log = (message) => console.log(`[pick] ${Math.round(performance.now())} ${message}`);
+    window.addEventListener('focus', () => log('window focus'), true);
+    window.addEventListener('blur', () => log('window blur'), true);
+    document.addEventListener('change', (event) => log(`change files=${event.target.files?.length}`), true);
+    document.addEventListener('cancel', () => log('cancel'), true);
+    const click = HTMLInputElement.prototype.click;
+    HTMLInputElement.prototype.click = function (...args) {
+      if (this.type === 'file') log('input.click');
+      return click.apply(this, args);
+    };
+  });
   page.on('request', (request) => {
     const match = /^https?:\/\/(?:127\.0\.0\.1|localhost):\d+\/(?:.*\/)?firebasejs\/[0-9.]+\/([\w.-]+\.js)$/.exec(request.url());
     if (match) sdkFiles.add(match[1]);
@@ -112,7 +139,11 @@ const see = async (name, options = {}) => {
     await page.getByText(name, options).first().waitFor({ state: 'visible', timeout: 30_000 });
   } catch (error) {
     const shown = await page.evaluate(() => document.body.innerText).catch(() => '(illisible)');
-    throw new Error(`« ${name} » absent de ${page.url()} ; affiché : ${shown}`, { cause: error });
+    const history = trace.slice(-40);
+    throw new Error(
+      `« ${name} » absent de ${page.url()} ; affiché : ${shown}\n  trace de la page :\n    ${history.join('\n    ') || '(rien)'}`,
+      { cause: error },
+    );
   }
 };
 
@@ -432,7 +463,9 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
       page.waitForEvent('filechooser'),
       page.getByRole('button', { name: 'Choisir un fichier de sauvegarde' }).click(),
     ]);
+    trace.push(`${Date.now() - traceStart} playwright filechooser reçu`);
     await chooser.setFiles(backupPath);
+    trace.push(`${Date.now() - traceStart} playwright setFiles terminé`);
   };
 
   // Un menu de choix (une question, ses options) : on l'ouvre par son nom accessible puis on prend l'option.
