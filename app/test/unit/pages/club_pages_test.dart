@@ -185,6 +185,50 @@ void main() {
       expect(find.text('Invitations sent from this device'), findsOneWidget);
     });
 
+    testWidgets('a director gets the maintenance card below the team', (
+      tester,
+    ) async {
+      world.signIn(Role.director);
+      await pump(
+        tester,
+        clubCubit(),
+        ClubPage(
+          clubName: 'Club un',
+          onInvite: () {},
+          onBack: () {},
+          onRenamed: () {},
+          maintenance: const Text('maintenance'),
+        ),
+      );
+
+      expect(find.text('maintenance'), findsOneWidget);
+      expect(
+        tester.getTopLeft(find.text('maintenance')).dy,
+        greaterThan(tester.getTopLeft(find.text('Team and families')).dy),
+      );
+    });
+
+    testWidgets('a teacher never gets the maintenance card', (tester) async {
+      world.signIn(
+        Role.teacher,
+        user: const UserId('u-sophie'),
+        groupIds: [const GroupId('g1')],
+      );
+      await pump(
+        tester,
+        clubCubit(),
+        ClubPage(
+          clubName: 'Club un',
+          onInvite: () {},
+          onBack: () {},
+          onRenamed: () {},
+          maintenance: const Text('maintenance'),
+        ),
+      );
+
+      expect(find.text('maintenance'), findsNothing);
+    });
+
     testWidgets(
       'an administrator may remove a director other than themselves',
       (tester) async {

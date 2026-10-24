@@ -34,8 +34,8 @@ abstract interface class FirestoreAccess {
 
   Future<List<RawDocument>> readCollection(String path);
 
-  /// Une collection filtrée sur un champ par [op] : égalité ou « contient
-  /// l'un de » ([value] est la liste). Avec
+  /// Une collection filtrée sur un champ par [op] : égalité, « contient l'un
+  /// de » ([value] est la liste) ou « strictement inférieur à ». Avec
   /// [fromServer], **au serveur seulement** (jamais le cache ; `unavailable`
   /// hors ligne), comme les trois lectures de ce groupe.
   Future<List<RawDocument>> readQuery(
@@ -98,6 +98,9 @@ enum RawFilter {
 
   /// `arrayContainsAny` (la valeur est une liste).
   containsAny,
+
+  /// `isLessThan`.
+  lessThan,
 }
 
 /// Une écriture déjà traduite : `set`, `setMerge`, `update` (champs) ou
@@ -195,6 +198,7 @@ class FirestoreSdkAccess implements FirestoreAccess {
       field,
       arrayContainsAny: value! as List<Object?>,
     ),
+    RawFilter.lessThan => collection.where(field, isLessThan: value),
   };
 
   @override
@@ -371,6 +375,13 @@ class FirestoreDocumentStore implements DocumentStore {
           value: [for (final value in values) _encode(value)],
           fromServer: fromServer,
         ),
+      FieldBefore(:final field, :final value) => await _access.readQuery(
+        collection,
+        field,
+        op: RawFilter.lessThan,
+        value: _encode(value),
+        fromServer: fromServer,
+      ),
       AllEqual(:final clauses) => await _access.readQueryAll(collection, {
         for (final clause in clauses) clause.field: _encode(clause.value),
       }, fromServer: fromServer),
@@ -429,6 +440,12 @@ class FirestoreDocumentStore implements DocumentStore {
             op: RawFilter.containsAny,
             value: [for (final value in values) _encode(value)],
           ),
+        FieldBefore(:final field, :final value) => _access.watchQuery(
+          collection,
+          field,
+          op: RawFilter.lessThan,
+          value: _encode(value),
+        ),
         AllEqual(:final clauses) => _access.watchQueryAll(collection, {
           for (final clause in clauses) clause.field: _encode(clause.value),
         }),

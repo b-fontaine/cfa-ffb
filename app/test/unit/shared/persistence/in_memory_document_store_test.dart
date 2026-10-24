@@ -158,6 +158,26 @@ void main() {
     expect([for (final d in docs) d.id], ['s1', 's2']);
   });
 
+  test(
+    'query before keeps only documents whose date is strictly earlier',
+    () async {
+      store
+        ..seed('clubs/c1/imports/a', {'updatedAt': DateTime.utc(2026)})
+        ..seed('clubs/c1/imports/b', {'updatedAt': DateTime.utc(2026, 2)})
+        ..seed('clubs/c1/imports/c', {'updatedAt': DateTime.utc(2026, 3)})
+        ..seed('clubs/c1/imports/d', {'state': 'done'})
+        ..seed('clubs/c1/imports/e', {'updatedAt': '2025-01-01'});
+
+      final docs = await store.query(
+        'clubs/c1/imports',
+        FieldBefore('updatedAt', DateTime.utc(2026, 2)),
+      );
+
+      expect([for (final d in docs) d.id], ['a']);
+      expect(store.queryLog.single, isA<FieldBefore>());
+    },
+  );
+
   test('query counts as a read and obeys the simulated failure', () async {
     store.failing = StoreFailureCode.permissionDenied;
 

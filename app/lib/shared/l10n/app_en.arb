@@ -4353,5 +4353,41 @@
   "deleteAccountNetworkClubDataRemoved": "Your club data has been removed, but the account itself could not be deleted: no connection. Try again once you are online.",
   "deleteAccountFailedNothing": "The deletion failed: nothing has been deleted. Try again later.",
   "deleteAccountFailedPartial": "The deletion stopped part-way and some of your club data may already be removed. Try again later to finish.",
-  "deleteAccountFailedClubDataRemoved": "Your club data has been removed, but the account itself could not be deleted. Try again later."
+  "deleteAccountFailedClubDataRemoved": "Your club data has been removed, but the account itself could not be deleted. Try again later.",
+  "staleMarkersTitle": "Abandoned markers",
+  "staleMarkersBody": "Each backup import and each operation (erasing a student, closing a season) leaves a marker in the club, with no personal data. The marker of a deleted account, or of an operation never resumed, stays: you can remove those untouched for more than {days} days, whoever left them.",
+  "@staleMarkersBody": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "staleMarkersWarning": "Without its marker, a backup file already imported can be imported again, and its preview would then offer to restore the students erased since. Do not confirm such an import.",
+  "staleMarkersAction": "Remove abandoned markers",
+  "staleMarkersRunning": "Removing abandoned markers…",
+  "staleMarkersDone": "{count, plural, =0{No abandoned marker.} =1{1 abandoned marker removed.} other{{count} abandoned markers removed.}}",
+  "@staleMarkersDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "staleMarkersPaused": "{count, plural, =0{Daily write ceiling reached: no marker removed. Run again tomorrow.} =1{1 abandoned marker removed; daily write ceiling reached. Run again tomorrow to finish.} other{{count} abandoned markers removed; daily write ceiling reached. Run again tomorrow to finish.}}",
+  "@staleMarkersPaused": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "staleMarkersStopped": "{count, plural, =0{No marker removed. Run again to resume.} =1{1 abandoned marker removed before the stop. Run again to resume.} other{{count} abandoned markers removed before the stop. Run again to resume.}}",
+  "@staleMarkersStopped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

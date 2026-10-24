@@ -4353,5 +4353,41 @@
   "deleteAccountNetworkClubDataRemoved": "Vos données de club sont supprimées, mais le compte lui-même n’a pas pu l’être : pas de connexion. Réessayez une fois en ligne.",
   "deleteAccountFailedNothing": "La suppression a échoué : rien n’a été supprimé. Réessayez plus tard.",
   "deleteAccountFailedPartial": "La suppression s’est arrêtée en route et une partie de vos données de club a pu être supprimée. Réessayez plus tard pour terminer.",
-  "deleteAccountFailedClubDataRemoved": "Vos données de club sont supprimées, mais le compte lui-même n’a pas pu l’être. Réessayez plus tard."
+  "deleteAccountFailedClubDataRemoved": "Vos données de club sont supprimées, mais le compte lui-même n’a pas pu l’être. Réessayez plus tard.",
+  "staleMarkersTitle": "Marqueurs abandonnés",
+  "staleMarkersBody": "Chaque import d’une sauvegarde et chaque opération (effacement d’un élève, clôture d’une saison) laisse dans le club un marqueur, sans donnée personnelle. Celui d’un compte supprimé ou d’une opération jamais reprise reste : vous pouvez supprimer ceux qui n’ont pas bougé depuis plus de {days} jours, quel qu’en soit l’auteur.",
+  "@staleMarkersBody": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "staleMarkersWarning": "Sans son marqueur, un fichier de sauvegarde déjà importé peut être importé de nouveau, et son aperçu proposerait alors de rétablir les élèves effacés depuis. Ne confirmez pas un tel import.",
+  "staleMarkersAction": "Supprimer les marqueurs abandonnés",
+  "staleMarkersRunning": "Suppression des marqueurs abandonnés…",
+  "staleMarkersDone": "{count, plural, =0{Aucun marqueur abandonné.} =1{1 marqueur abandonné supprimé.} other{{count} marqueurs abandonnés supprimés.}}",
+  "@staleMarkersDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "staleMarkersPaused": "{count, plural, =0{Plafond d’écritures du jour atteint : aucun marqueur supprimé. Relancez demain.} =1{1 marqueur abandonné supprimé ; plafond d’écritures du jour atteint. Relancez demain pour finir.} other{{count} marqueurs abandonnés supprimés ; plafond d’écritures du jour atteint. Relancez demain pour finir.}}",
+  "@staleMarkersPaused": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "staleMarkersStopped": "{count, plural, =0{Aucun marqueur supprimé. Relancez pour reprendre.} =1{1 marqueur abandonné supprimé avant l’arrêt. Relancez pour reprendre.} other{{count} marqueurs abandonnés supprimés avant l’arrêt. Relancez pour reprendre.}}",
+  "@staleMarkersStopped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -866,3 +866,44 @@ Règles par `RULES_FILE` (copie) ; **5 mutations, toutes tuées**.
 | `isDirector(resource.data.clubId)` remplacé par `isDirector('c1')` (code absent accepté) | `operations` « … refusé EN BLOC » |
 
 **Limites dites.** (1) Le faux serveur des scénarios imite les règles ; la vérité des droits est l'émulateur. (2) Aucun parcours navigateur de clôture n'existe : la clôture complète sous les vraies règles n'est pas jouée de bout en bout, ses lots le sont un à un (`operations.test.mjs`).
+
+## Lot FB8, partie B, tranche B5 : filet des marqueurs abandonnés (2026-10-24)
+
+Voir l'[ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) (notes FB8b, B5) et le plan `fb8b-plan.md` (décision D4). Aucun projet réel : faux serveur de règles en mémoire (`StaleMarkerRulesStore`), `fake_cloud_firestore`, émulateurs `demo-cfa-ffb`.
+
+**Rouge avant le code.** (1) Règles : `stale_markers.test.mjs` écrit d'abord et joué contre les règles d'avant : **8 rouges sur 14** (suppression juste après 90 jours, autre club, liste de plage, lot de 400 ; les refus étaient déjà verts), puis **14 verts** ; suite complète `scripts/rules_test.sh` : **797 verts sur 797**. (2) `stale_markers_purge.feature` (10 scénarios) et ses étapes : **rouge à la compilation** (port, cas d'usage, réalisation, cubit et carte absents), puis **10 verts**. (3) Tests unitaires rouges (types absents) avant leur code : `FieldBefore` du stock en mémoire et de `FirestoreDocumentStore`, `PurgeStaleMarkers` (16), `FirestoreStaleMarkerStore` (9), `StaleMarkersCubit` (5), `StaleMarkersCard` (8), `ClubPage` (+2, paramètre `maintenance` absent). **Écart reconnu** : chaque fichier de test a été écrit en entier puis rendu vert en un pas (pas de micro-cycles) ; la force des tests est prouvée par les mutations ci-dessous. `FirestoreSdkAccess.readQuery` (opérateur `lessThan`) a été changé avec `FirestoreAccess`, son test `fake_cloud_firestore` ajouté ensuite. La suite complète (`flutter test`) a ensuite révélé **8 rouges** dans `clubs_roles.feature` : « Mon club » d'un directeur, sous `Environment.test`, ne trouvait pas `ImportDailyLedger` (enregistré pour `prod` seul) ; corrigé à la racine (`StaleMarkersModule.testImportDailyLedger`, même réalisation sur le `KeyValueStore` du test), puis **8 490 verts**.
+
+| Fichier | Prouve |
+|---|---|
+| `test/bdd/stale_markers_purge.feature` (10) ; monde `test/support/stale_markers_world.dart` (`StaleMarkerRulesStore` : liste de plage bornée à 90 jours à l'heure du serveur, suppression d'un marqueur ancien par un gestionnaire du club, lot refusé en bloc, hors ligne) | directeur et administrateur suppriment les marqueurs de 120 jours d'un compte supprimé, celui de 10 jours d'un enseignant reste ; un marqueur de 89 jours reste ; l'autre club n'est jamais touché ; un enseignant est refusé **sans rien lire ni écrire** ; 453 marqueurs en lots de 400 au plus ; plafond partagé (9 550 écritures déjà faites : 400 supprimés, suspendu, le reste le lendemain) ; serveur injoignable puis relance ; carte de « Mon club » : avertissement « rétablir les élèves effacés », bouton, « 3 marqueurs abandonnés supprimés. », « Aucun marqueur abandonné. » |
+| `test/unit/features/purge_stale_markers/domain/purge_stale_markers_test.dart` (16) | 90 jours et un jour de marge ; enseignant, parent, élève, sans club : refus avant toute lecture ; directeur et administrateur : imports puis opérations ; borne exacte (maintenant − 91 jours) ; rien d'ancien : aucun lot ; lots 400/400/1 ; plafond (pause, compte du jour exact) ; premier lot du jour toujours écrit ; liste hors ligne : interrompue ; liste refusée : échec, ce qui est fait reste compté ; lot sans réponse : interrompu et compté ; lot refusé : échec, non compté, rien d'autre demandé |
+| `test/unit/app/firestore_stale_marker_store_test.dart` (9) | requête `FieldBefore('updatedAt', borne)` sur la collection du club ; tous les auteurs, identifiant d'une autre forme ignoré ; chemins composés du club et de la nature, un seul lot ; lot vide non envoyé ; plus de 400 refusé ; identifiant non conforme (`../`, `/`) refusé avant écriture ; serveur muet : `unavailable` ; refus : `denied` ; par le SDK (`fake_cloud_firestore`) : seuls les anciens du club, l'autre club intact |
+| `test/unit/shared/persistence/in_memory_document_store_test.dart` (+1), `test/unit/app/platform/firestore_document_store_test.dart` (2 modifiés), `firestore_sdk_access_test.dart` (+1) | `FieldBefore` strictement antérieur (borne exclue, champ absent ou non daté exclu) ; traduit en `isLessThan` avec un `Timestamp`, en lecture et en flux |
+| `test/unit/features/purge_stale_markers/presentation/` (5 + 8), `test/unit/pages/club_pages_test.dart` (+2) | cubit : en cours puis issue, jamais doublé, relance, rien après fermeture ; carte : texte, 90 jours, avertissement (fr et en), bouton, progression sans bouton, issues (nombre, aucun, plafond, échec et relance, refus) ; `ClubPage` : la carte sous l'équipe pour un directeur, jamais pour un enseignant |
+
+**Règles contre l'émulateur** : `scripts/rules_test/stale_markers.test.mjs` (14), pour les imports et pour les opérations : marqueur d'un auteur parti à **90 jours + 5 minutes** (horodatage relatif à l'heure de l'émulateur) supprimé par le directeur et l'administrateur, refusé aux 10 autres acteurs ; à **90 jours − 5 minutes** refusé à tous ; **ATTAQUES** autre club (seuls son directeur et l'administrateur), marqueur sans `updatedAt`, `updatedAt` antidaté par l'auteur (avancement et création) ou par un gestionnaire sur le marqueur d'un autre ; **liste** `updatedAt < maintenant − 91 jours` : gestionnaires seuls, ne rend que l'ancien ; borne à 89 jours refusée pour les opérations ; liste d'un autre club ; **budget** : un lot de 400 suppressions passe ; un lot qui contient un marqueur récent est refusé en bloc. Les grilles existantes (`matrix`, `operations`, `import`) restent vertes : le marqueur récent d'un autre reste intouchable.
+
+### Mutations à la main (FB8 partie B, B5, 2026-10-24)
+
+Règles par `RULES_FILE` (copie) ; code par modification temporaire restaurée par le script ; **5 + 8 mutations, toutes tuées**.
+
+| Règle (`stale_markers.test.mjs`) | Rouges |
+|---|---|
+| `imports` : clause `manages && staleMarker()` retirée de `delete` | 4 |
+| `operations` : `staleMarker()` retiré de `list` | 1 (liste de plage) |
+| `operations` : `staleMarker()` retiré de `delete` | 3 |
+| `staleMarkerAge()` à 0 jour | 6 (« juste avant », attaques, liste 89 jours) |
+| `imports` : `manages(clubId)` remplacé par `verified()` | 2 (grille, autre club) |
+
+| Code | Suite rouge |
+|---|---|
+| `PurgeStaleMarkers` : rôle ignoré | 3 tests de refus, BDD enseignant |
+| `PurgeStaleMarkers` : sans marge d'horloge | test de la borne |
+| `PurgeStaleMarkers` : sans plafond | 2 tests, BDD plafond |
+| `PurgeStaleMarkers` : sans découpe en lots | 5 tests, BDD 453 marqueurs |
+| `PurgeStaleMarkers` : lot coupé non compté | test « counted » |
+| `FirestoreStaleMarkerStore` : requête sur `startedAt` | 2 tests, 8 scénarios BDD |
+| `FirestoreStaleMarkerStore` : identifiant non revérifié | test « not a marker id » |
+| `ClubPage` : carte montrée à tout rôle | test « a teacher never gets the maintenance card » |
+
+**Limites dites.** (1) `StaleMarkerRulesStore` imite les règles ; la vérité des droits est l'émulateur. (2) L'émulateur compare à son heure : « juste avant / juste après » est à 5 minutes près (temps d'exécution du test), pas à la milliseconde. (3) Parcours navigateur depuis les corrections après relecture : la directrice purge dans Chrome deux marqueurs antidatés (écrits règles désactivées) et garde le récent (`e2e.test.mjs`). (4) Le délai d'accusé de 30 s par défaut est tenu par un test de sa valeur (mutation : 31 s) ; l'attente elle-même est jouée avec un délai court (« serveur muet »).

@@ -178,6 +178,28 @@ void main() {
         'clubs/c1/students/s2',
       ]);
     });
+
+    test(
+      'less-than keeps the strictly earlier dates of that collection',
+      () async {
+        Timestamp at(int month) =>
+            Timestamp.fromDate(DateTime.utc(2026, month));
+        await firestore.doc('clubs/c1/operations/a').set({'updatedAt': at(1)});
+        await firestore.doc('clubs/c1/operations/b').set({'updatedAt': at(2)});
+        await firestore.doc('clubs/c1/operations/c').set({'updatedAt': at(3)});
+        await firestore.doc('clubs/c1/operations/d').set({'kind': 'closure'});
+        await firestore.doc('clubs/c2/operations/e').set({'updatedAt': at(1)});
+
+        final read = await access.readQuery(
+          'clubs/c1/operations',
+          'updatedAt',
+          op: RawFilter.lessThan,
+          value: at(2),
+        );
+
+        expect([for (final d in read) d.path], ['clubs/c1/operations/a']);
+      },
+    );
   });
 
   group('readQueryAll', () {

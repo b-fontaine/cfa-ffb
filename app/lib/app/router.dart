@@ -44,6 +44,8 @@ import 'package:billard_cfa/features/place_student/presentation/bloc/placement_b
 import 'package:billard_cfa/features/plan_session/presentation/bloc/plan_next_session_cubit.dart';
 import 'package:billard_cfa/features/plan_session/presentation/bloc/session_planner_bloc.dart';
 import 'package:billard_cfa/features/plan_session/presentation/bloc/upcoming_sessions_cubit.dart';
+import 'package:billard_cfa/features/purge_stale_markers/presentation/bloc/stale_markers_cubit.dart';
+import 'package:billard_cfa/features/purge_stale_markers/presentation/ui/stale_markers_card.dart';
 import 'package:billard_cfa/features/record_results/presentation/bloc/recorded_sessions_bloc.dart';
 import 'package:billard_cfa/features/review_session/presentation/bloc/session_review_bloc.dart';
 import 'package:billard_cfa/features/run_sheet/domain/resolve_run_plan.dart';
@@ -1451,6 +1453,13 @@ GoRouter buildRouter({
                       onInvite: () => context.go(AppRoutes.invite),
                       onBack: () => context.go(AppRoutes.more),
                       onRenamed: () => unawaited(auth.refresh()),
+                      // Filet des marqueurs abandonnés (FB8 partie B, B5).
+                      maintenance: _can(auth, Capability.manageClub)
+                          ? BlocProvider(
+                              create: (_) => getIt<StaleMarkersCubit>(),
+                              child: const StaleMarkersSection(),
+                            )
+                          : null,
                     )
                   : NotFoundPage(onHome: () => context.go(AppRoutes.home)),
             ),

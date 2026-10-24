@@ -14,13 +14,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// « Mon club » : inviter quelqu'un, les invitations de cet appareil et, pour
 /// le directeur et l'administrateur, l'équipe, les familles et le nom du club.
 /// Le cubit est fourni par l'appelant ; [onRenamed] relit la session (le nom
-/// affiché vient d'elle).
+/// affiché vient d'elle). [maintenance] (la purge des marqueurs abandonnés,
+/// FB8 partie B, B5) n'est montrée qu'à qui gère le club, sous l'équipe.
 class ClubPage extends StatelessWidget {
   const ClubPage({
     required this.clubName,
     required this.onInvite,
     required this.onBack,
     required this.onRenamed,
+    this.maintenance,
     super.key,
   });
 
@@ -28,6 +30,7 @@ class ClubPage extends StatelessWidget {
   final VoidCallback onInvite;
   final VoidCallback onBack;
   final VoidCallback onRenamed;
+  final Widget? maintenance;
 
   Future<void> _rename(BuildContext context) async {
     final cubit = context.read<ClubCubit>();
@@ -90,6 +93,10 @@ class ClubPage extends StatelessWidget {
                       onRemove: cubit.removeMember,
                     ),
                     const SizedBox(height: 16),
+                    if (maintenance case final maintenance?) ...[
+                      maintenance,
+                      const SizedBox(height: 16),
+                    ],
                   ],
                   IssuedInvitationsCard(
                     title: l10n.clubInvitationsTitle,

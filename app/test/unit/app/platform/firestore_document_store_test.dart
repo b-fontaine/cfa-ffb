@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 String _symbol(RawFilter op) => switch (op) {
   RawFilter.equals => '=',
   RawFilter.containsAny => 'any',
+  RawFilter.lessThan => '<',
 };
 
 class _FakeAccess implements FirestoreAccess {
@@ -263,11 +264,18 @@ void main() {
         const FieldArrayContainsAny('groupIds', ['g1', 'g2']),
       );
 
+      final byDate = await store.query(
+        'clubs/c1/operations',
+        FieldBefore('updatedAt', DateTime.utc(2026, 7)),
+      );
+
       expect([for (final d in byValue) d.path], ['a/1']);
       expect(byList, hasLength(1));
+      expect(byDate, hasLength(1));
       expect(access.calls, [
         'query clubs/c1/memberships groupId = ${Timestamp.fromDate(DateTime.utc(2026))}',
         'query clubs/c1/students groupIds any [g1, g2]',
+        'query clubs/c1/operations updatedAt < ${Timestamp.fromDate(DateTime.utc(2026, 7))}',
       ]);
     });
 
@@ -568,12 +576,16 @@ void main() {
                 AllEqual(const [FieldEquals('a', 1), FieldEquals('b', 2)]),
               )
               .listen((_) {}),
+          store
+              .watchQuery('c/d', FieldBefore('u', DateTime.utc(2026)))
+              .listen((_) {}),
         ];
 
         expect(access.calls, [
           'watch query c/a d = ${Timestamp.fromDate(DateTime.utc(2026))}',
           'watch query c/b ids any [g1]',
           'watch queryAll c/c a=1,b=2',
+          'watch query c/d u < ${Timestamp.fromDate(DateTime.utc(2026))}',
         ]);
         for (final subscription in subscriptions) {
           await subscription.cancel();

@@ -117,7 +117,8 @@ final class DeleteOp extends WriteOp {
 
 /// Filtre d'une requête sur une collection : un seul champ, un seul
 /// opérateur. Ni tri ni filtre composé : un index composite n'est donc jamais
-/// nécessaire (et `tool/check_indexes.dart` le garde).
+/// nécessaire (et `tool/check_indexes.dart` le garde ; une inégalité sur un
+/// seul champ est servie par l'index automatique de ce champ).
 sealed class QueryFilter {
   const QueryFilter(this.field);
 
@@ -137,6 +138,17 @@ final class FieldArrayContainsAny extends QueryFilter {
   const FieldArrayContainsAny(super.field, this.values);
 
   final List<Object?> values;
+}
+
+/// Le champ est une date **strictement antérieure** à [value] (requête de
+/// plage, sans tri). Un document sans ce champ, ou dont le champ n'est pas une
+/// date, n'en fait pas partie. Sert au filet des marqueurs abandonnés (FB8
+/// partie B, B5) : les règles n'ouvrent la liste des marqueurs d'opération
+/// d'un autre auteur qu'à une borne qui prouve leur ancienneté.
+final class FieldBefore extends QueryFilter {
+  const FieldBefore(super.field, this.value);
+
+  final DateTime value;
 }
 
 /// Plusieurs égalités sur des champs **différents**, toutes exigées. Sans

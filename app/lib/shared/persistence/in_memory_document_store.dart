@@ -28,9 +28,10 @@ class InMemoryDocumentStore implements DocumentStore {
   final List<QueryFilter> queryLog = [];
 
   /// Les flux demandés, dans l'ordre : `document <chemin>`, `collection <c>`,
-  /// `query <c> <champ> = <valeur>`, `query <c> <champ> any <valeurs>` ou
-  /// `query <c> <champ>=<valeur>,…` (assertions : ce qu'un rôle a le droit de
-  /// suivre, les règles refusant toute autre écoute).
+  /// `query <c> <champ> = <valeur>`, `query <c> <champ> any <valeurs>`,
+  /// `query <c> <champ> < <date>` ou `query <c> <champ>=<valeur>,…`
+  /// (assertions : ce qu'un rôle a le droit de suivre, les règles refusant
+  /// toute autre écoute).
   final List<String> watchLog = [];
 
   /// Les flux ouverts et non annulés (assertions : aucune fuite d'abonnement).
@@ -186,6 +187,8 @@ class InMemoryDocumentStore implements DocumentStore {
         AllEqual(:final clauses) => clauses.every(
           (clause) => fields[clause.field] == clause.value,
         ),
+        FieldBefore(value: final bound) =>
+          value is DateTime && value.isBefore(bound),
       };
     }).toList()..sort();
     return [
@@ -233,6 +236,7 @@ class InMemoryDocumentStore implements DocumentStore {
     FieldArrayContainsAny(:final field, :final values) =>
       '$field any ${values.join('|')}',
     AllEqual(:final clauses) => clauses.map(_describeFilter).join(','),
+    FieldBefore(:final field, :final value) => '$field < $value',
   };
 
   Stream<CollectionUpdate> _watchQuery(String collection, QueryFilter filter) =>

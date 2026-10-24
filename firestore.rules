@@ -710,12 +710,27 @@ service cloud.firestore {
       // seule fois » : le premier lot le CRÉE avec `done == 1`, chaque lot suivant l'AVANCE d'exactement
       // un (`done == avant + 1`) DANS LE MÊME lot atomique que ses écritures. Un lot rejoué (coupure,
       // file du SDK, deuxième appareil du même compte) voit un `done` déjà avancé : les règles le
-      // refusent en bloc, rien n'est écrit deux fois. Supprimé par son auteur seul (FB8 partie B). Entre deux
-      // auteurs, l'idempotence ne vient pas du marqueur : un document déjà présent n'est jamais écrasé
+      // refusent en bloc, rien n'est écrit deux fois. Supprimé par son auteur (FB8 partie B), ou par
+      // un gestionnaire une fois ABANDONNÉ (B5, `staleMarker`). Entre deux auteurs, l'idempotence ne vient pas du marqueur : un document déjà présent n'est jamais écrasé
       // (`importedAt`, identifiants du fichier) et le plan du second voit l'inventaire. Le directeur,
       // l'administrateur et l'enseignant (qui n'écrit que dans ses groupes, par les règles des données)
       // importent.
       function mayImport(c) { return manages(c) || isTeacher(c); }
+
+      // ── Filet des marqueurs abandonnés (FB8 partie B, B5 ; décision D4 du 2026-10-24) ──
+      // Un marqueur (import ou opération) dont le dernier lot (`updatedAt`, toujours `request.time`
+      // à l'écriture : personne ne l'antidate) a plus de `staleMarkerAge()` est réputé ABANDONNÉ :
+      // auteur parti (compte supprimé) ou opération jamais reprise. Tout gestionnaire du club
+      // (`manages` : directeur, administrateur) peut alors le lister et le supprimer, même s'il est
+      // d'un autre auteur ; jamais un marqueur plus récent (une reprise légitime reste possible),
+      // jamais celui d'un autre club (chemin du club et `manages(clubId)`). Un marqueur sans
+      // `updatedAt` (forme inattendue) rend l'expression en erreur : refus. 90 jours, UNE seule
+      // valeur, la même que `staleMarkerAge` du domaine
+      // (`app/lib/features/purge_stale_markers/domain/stale_markers.dart`) ; durée à valider par
+      // le DPO. Risque dit à l'écran : effacer le marqueur d'un import terminé permet de rejouer ce
+      // fichier, et l'aperçu proposerait alors de rétablir les élèves effacés depuis.
+      function staleMarkerAge() { return duration.value(90, 'd'); }
+      function staleMarker() { return resource.data.updatedAt < request.time - staleMarkerAge(); }
 
       // Le rôle écrit au marqueur est celui de l'auteur du premier lot.
       function importRoleMatches(c, role) {
@@ -772,9 +787,11 @@ service cloud.firestore {
         // Seul l'AUTEUR supprime le sien (identifiant suffixé par son uid, comparé comme une chaîne),
         // en cours ou terminé : c'est le nettoyage à la suppression de son compte (FB8 partie B, B1).
         // Il peut ensuite rejouer cet import (limite dite au registre) ; l'idempotence entre auteurs
-        // ne dépend pas du marqueur (règles des documents importés) ; un tiers n'y touche jamais.
-        allow delete: if mayImport(clubId) && markerId.matches('[0-9a-f]{64}_.+')
-          && markerId[65:] == request.auth.uid;
+        // ne dépend pas du marqueur (règles des documents importés) ; un tiers n'y touche qu'après 90 jours.
+        allow delete: if (mayImport(clubId) && markerId.matches('[0-9a-f]{64}_.+')
+            && markerId[65:] == request.auth.uid)
+          // Filet de 90 jours (B5) : tout gestionnaire, le marqueur ancien d'un autre auteur.
+          || (manages(clubId) && staleMarker());
       }
       // ── Marqueurs d'opération reprenable (FB8, ADR 0024 décision 19) ──
       // Un document par opération EN COURS (effacement d'un élève, clôture d'une saison) ET PAR AUTEUR :
@@ -820,7 +837,11 @@ service cloud.firestore {
           && markerId[65:] == request.auth.uid;
         // La liste des SIENS (reprise d'une clôture dont on ne connaît que l'auteur) : la requête doit
         // filtrer sur `createdBy == uid` ; jamais celle d'un collègue.
-        allow list: if manages(clubId) && resource.data.createdBy == request.auth.uid;
+        // Filet de 90 jours (B5) : aussi les marqueurs ANCIENS de tout le club, par une requête de
+        // plage `updatedAt < borne` dont la borne prouve l'ancienneté (une borne plus récente que
+        // 90 jours est refusée).
+        allow list: if manages(clubId)
+          && (resource.data.createdBy == request.auth.uid || staleMarker());
         allow create: if manages(clubId) && operationMarkerShape(markerId)
           && request.resource.data.done == 1
           && request.resource.data.stage <= 1
@@ -834,9 +855,11 @@ service cloud.firestore {
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['done', 'stage', 'updatedAt'])
           && request.resource.data.done == resource.data.done + 1
           && request.resource.data.stage in [resource.data.stage, resource.data.stage + 1];
-        // Le dernier lot supprime son marqueur ; seul l'auteur supprime le sien.
-        allow delete: if manages(clubId) && markerId.matches('[0-9a-f]{64}_.+')
-          && markerId[65:] == request.auth.uid;
+        // Le dernier lot supprime son marqueur ; seul l'auteur supprime le sien, sauf le filet de
+        // 90 jours (B5) : tout gestionnaire, le marqueur ancien d'un autre auteur.
+        allow delete: if manages(clubId)
+          && ((markerId.matches('[0-9a-f]{64}_.+') && markerId[65:] == request.auth.uid)
+              || staleMarker());
       }
     }
 

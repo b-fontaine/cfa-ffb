@@ -4,7 +4,7 @@
 // directrice se connecte avec un vrai jeton de l'émulateur, l'application lit ses appartenances
 // dans Firestore SOUS LES RÈGLES, et « Mon club » affiche l'équipe semée ; un parent ne voit que
 // ses enfants ; un enseignant supprime son compte, avec l'invitation qu'il a créée ailleurs ; la
-// dernière directrice ne le peut pas (FB8 partie B).
+// dernière directrice ne le peut pas ; la directrice purge les marqueurs abandonnés (FB8 partie B).
 //
 // L'application tourne en MODE DEBUG (`flutter run -d web-server`, DDC) et non en build compilé :
 // le build `--profile` (seul autre mode qui accepte l'émulateur, la release le refuse) est
@@ -21,6 +21,8 @@ import { fileURLToPath } from 'node:url';
 import { after, before, describe, test } from 'node:test';
 
 import { chromium } from 'playwright-core';
+
+import { initializeTestEnvironment } from '@firebase/rules-unit-testing';
 
 import { deleteApp, initializeApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
@@ -628,6 +630,50 @@ describe('application + émulateurs Auth et Firestore + graine', () => {
     const auth = getAuth(app);
     connectAuthEmulator(auth, `http://${authHost}`, { disableWarnings: true });
     await signInWithEmailAndPassword(auth, accounts.director.email, demoPassword);
+  });
+
+  // Filet de 90 jours (B5, décision D4) : des marqueurs ANTIDATÉS (écrits règles désactivées, comme
+  // seule la console le pourrait : les règles imposent `updatedAt == request.time`) d'un auteur
+  // parti ; la directrice les purge depuis « Mon club » sous les vraies règles, par le SDK Dart.
+  test('la directrice purge depuis « Mon club » les marqueurs abandonnés, jamais un récent', async () => {
+    const [host, port] = [firestoreHost, Number(firestorePort)];
+    const admin = await initializeTestEnvironment({ projectId: process.env.GCLOUD_PROJECT, firestore: { host, port } });
+    const days = (n) => Timestamp.fromMillis(Date.now() - n * 24 * 3600 * 1000);
+    const paths = {
+      oldOperation: `clubs/${demoClubId}/operations/${'a1'.repeat(32)}_u-gone`,
+      oldImport: `clubs/${demoClubId}/imports/${'b2'.repeat(32)}_u-gone`,
+      recent: `clubs/${demoClubId}/operations/${'c3'.repeat(32)}_u-gone`,
+    };
+    const marker = (updatedAt) => ({ createdBy: 'u-gone', role: 'director', updatedAt, startedAt: updatedAt });
+    const exists = async (path) => {
+      let found;
+      await admin.withSecurityRulesDisabled(async (ctx) => {
+        found = (await getDoc(doc(ctx.firestore(), path))).exists();
+      });
+      return found;
+    };
+    try {
+      await admin.withSecurityRulesDisabled(async (ctx) => {
+        await setDoc(doc(ctx.firestore(), paths.oldOperation), marker(days(120)));
+        await setDoc(doc(ctx.firestore(), paths.oldImport), marker(days(95)));
+        await setDoc(doc(ctx.firestore(), paths.recent), marker(days(30)));
+      });
+
+      await signInAs(accounts.director.email);
+      await see(/^Plus/);
+      await goTo('Plus');
+      await see('Mon club');
+      await goTo('Mon club');
+      await see('Marqueurs abandonnés');
+      await page.getByRole('button', { name: 'Supprimer les marqueurs abandonnés', exact: true }).click();
+      await see('2 marqueurs abandonnés supprimés.');
+
+      assert.equal(await exists(paths.oldOperation), false, 'marqueur d’opération de 120 jours supprimé');
+      assert.equal(await exists(paths.oldImport), false, 'marqueur d’import de 95 jours supprimé');
+      assert.equal(await exists(paths.recent), true, 'marqueur de 30 jours gardé');
+    } finally {
+      await admin.cleanup();
+    }
   });
 
   test('le SDK web est servi par l’application, aucun appel vers un hôte autre que localhost, aucune erreur de page', () => {

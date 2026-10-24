@@ -167,6 +167,7 @@ class DeviceDocumentStore implements DocumentStore {
     FieldArrayContainsAny(:final field, :final values) =>
       '$field any ${values.join('|')}',
     AllEqual(:final clauses) => clauses.map(_describe).join(','),
+    FieldBefore(:final field, :final value) => '$field < $value',
   };
 
   Stream<T> _gated<T>(Stream<T> source) {

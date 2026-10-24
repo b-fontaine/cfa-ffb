@@ -235,7 +235,8 @@ class OperationsRulesStore implements DocumentStore {
   }
 
   /// Les rôles des invitations que le directeur liste, recopiés de
-  /// `firestore.rules` (`allow list` des invitations).
+  /// `firestore.rules` (`allow list` des invitations) ; leur parité avec les
+  /// règles est tenue par `test/unit/app/rules_parity_test.dart`.
   static const directorInvites = {'teacher', 'student', 'guardian'};
 
   void _guardInvitationList(QueryFilter filter) {
@@ -243,7 +244,7 @@ class OperationsRulesStore implements DocumentStore {
     final clauses = switch (filter) {
       FieldEquals() => [filter],
       AllEqual(:final clauses) => clauses,
-      FieldArrayContainsAny() => const <FieldEquals>[],
+      FieldArrayContainsAny() || FieldBefore() => const <FieldEquals>[],
     };
     Object? valueOf(String field) {
       for (final clause in clauses) {
