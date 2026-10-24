@@ -159,6 +159,30 @@ const open = async () => {
       if (this.type === 'file') log('input.click');
       return click.apply(this, args);
     };
+    // Ce que le sélecteur fait du fichier choisi : retrait de l'input du DOM, lecture des octets
+    // (FileReader), URL d'objet, lecture par fetch d'une URL blob:.
+    const removeChild = Node.prototype.removeChild;
+    Node.prototype.removeChild = function (child, ...rest) {
+      if (child?.tagName === 'INPUT' && child.type === 'file') log(`input retiré files=${child.files?.length}`);
+      return removeChild.call(this, child, ...rest);
+    };
+    const readAsArrayBuffer = FileReader.prototype.readAsArrayBuffer;
+    FileReader.prototype.readAsArrayBuffer = function (blob) {
+      log(`FileReader.readAsArrayBuffer size=${blob?.size}`);
+      this.addEventListener('loadend', () => log(`FileReader.loadend error=${this.error?.name ?? 'non'}`));
+      return readAsArrayBuffer.call(this, blob);
+    };
+    const createObjectURL = URL.createObjectURL;
+    URL.createObjectURL = function (object) {
+      log(`URL.createObjectURL size=${object?.size}`);
+      return createObjectURL.call(this, object);
+    };
+    const nativeFetch = window.fetch;
+    window.fetch = function (input, ...rest) {
+      const url = String(input?.url ?? input);
+      if (url.startsWith('blob:')) log('fetch blob:');
+      return nativeFetch.call(this, input, ...rest);
+    };
   });
   page.on('request', (request) => {
     const match = /^https?:\/\/(?:127\.0\.0\.1|localhost):\d+\/(?:.*\/)?firebasejs\/[0-9.]+\/([\w.-]+\.js)$/.exec(request.url());
