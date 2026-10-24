@@ -349,6 +349,36 @@ void main() {
       expect(find.textContaining('Local copies of erased'), findsOneWidget);
     });
 
+    testWidgets('the preview says how many used or expired invitations the '
+        'closure deletes', (tester) async {
+      await pump(tester, synced(plan()).copyWith(invitationsToPurge: 2));
+
+      expect(
+        find.text(
+          '2 used or expired invitations of the club will be deleted; '
+          'invitations still valid stay.',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('no invitation to delete is said too', (tester) async {
+      await pump(tester, synced(plan()).copyWith(invitationsToPurge: 0));
+
+      expect(
+        find.text('No used or expired invitation of the club to delete.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('invitations that could not be counted give no figure', (
+      tester,
+    ) async {
+      await pump(tester, synced(plan()));
+
+      expect(find.textContaining('invitation'), findsNothing);
+    });
+
     testWidgets('on the device there is no preview of steps', (tester) async {
       await pump(tester, ready(plan()));
 

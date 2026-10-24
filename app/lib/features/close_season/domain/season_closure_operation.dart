@@ -1,5 +1,6 @@
 import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
+import 'package:billard_cfa/entities/invitation/domain/spent_invitations.dart';
 import 'package:billard_cfa/entities/season/domain/season_archive_repository.dart';
 import 'package:billard_cfa/entities/season/domain/season_repository.dart';
 import 'package:billard_cfa/entities/session/domain/session_repository.dart';
@@ -57,7 +58,11 @@ final class ClosureRepositories {
 /// 5. **Reconduction** : saison suivante, groupes homonymes, élèves non
 ///    effacés (identifiants dérivés de l'opération : la reprise retrouve les
 ///    mêmes).
-/// 6. **Fin** : la purge est **rejouée** (une présence ajoutée depuis par un
+/// 6. **Invitations** utilisées ou échues du club supprimées (ADR 0025,
+///    décision 6 ; FB8 partie B), celles que le compte peut lister : toutes
+///    pour l'administrateur, jamais celles de directeur pour le directeur
+///    ([SpentInvitations]). Une invitation encore valable reste.
+/// 7. **Fin** : la purge est **rejouée** (une présence ajoutée depuis par un
 ///    appareil retardataire est retirée), puis les fiches des élèves effacés
 ///    sont supprimées **en dernier**, avec le marqueur.
 ///
@@ -77,12 +82,14 @@ final class SeasonClosureOperation implements ResumableOperation {
     required this.repositories,
     required this.purge,
     required this.closureTerms,
+    required this.invitations,
     this.erase = const {},
   }) : key = operationKey(OperationKind.closure, closureTerms.seasonId.value);
 
   final ClosureRepositories repositories;
   final StudentPurge purge;
   final ClosureTerms closureTerms;
+  final SpentInvitations invitations;
 
   /// Les élèves à effacer, **au premier lancement seulement** : une reprise les
   /// retrouve par leur marque `erasing`.
@@ -118,6 +125,7 @@ final class SeasonClosureOperation implements ResumableOperation {
     _Stage(_close),
     _Stage(_purge),
     _Stage(_prepareNext),
+    _Stage(_purgeInvitations),
     _Stage(_finish),
   ];
 
@@ -278,6 +286,16 @@ final class SeasonClosureOperation implements ResumableOperation {
             apply: () => repositories.groups.save(step.released),
           ),
       ], max),
+    ];
+  }
+
+  Future<List<OperationLot>> _purgeInvitations(int max) async {
+    final codes = await invitations.codes();
+    return [
+      for (var i = 0; i < codes.length; i += max)
+        invitations.remove(
+          codes.sublist(i, i + max > codes.length ? codes.length : i + max),
+        ),
     ];
   }
 

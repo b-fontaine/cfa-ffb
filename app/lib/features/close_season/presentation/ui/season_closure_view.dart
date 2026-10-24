@@ -381,6 +381,10 @@ class _Effects extends StatelessWidget {
           const SizedBox(height: AppSpacing.xs),
           Text(l10n.closureEffectsErase(state.erasedCount)),
           const SizedBox(height: AppSpacing.xs),
+          if (state.invitationsToPurge case final invitations?) ...[
+            Text(l10n.closureEffectsInvitations(invitations)),
+            const SizedBox(height: AppSpacing.xs),
+          ],
           Text(l10n.closureEffectsSteps),
           const SizedBox(height: AppSpacing.xs),
           Text(

@@ -1,8 +1,8 @@
 // Invitations (ADR 0024, décision 24) : création par rôle, validité, usage unique par lot
 // (`getAfter`), révocation, contre l'émulateur Firestore (lot FB3).
 //
-// Une invitation est lue par `get` ; la liste n'est ouverte qu'à un membre du club, pour ses
-// propres invitations (suppression de son compte, FB8 partie B) ; elle porte le
+// Une invitation est lue par `get` ; la liste n'est ouverte qu'au gestionnaire, bornée au club et,
+// pour le directeur, aux rôles qu'il invite (purge à la clôture, FB8 partie B) ; elle porte le
 // club, le rôle, les groupes ou les fiches ; elle se consomme dans le MÊME lot que la création du member, et les
 // deux écritures se vérifient mutuellement (`existsAfter` d'un côté, `getAfter` de l'autre).
 import assert from 'node:assert/strict';
@@ -273,6 +273,93 @@ describe('lecture : par le code', () => {
   test('anonyme et e-mail non vérifié ne la lisent pas', async () => {
     assert.equal(await allowed(() => getDoc(doc(env.unauthenticatedContext().firestore(), 'invitations/AAAAAAAAAA'))), false);
     assert.equal(await allowed(() => getDoc(doc(dbFor('u-invited', { email_verified: false }), 'invitations/AAAAAAAAAA'))), false);
+  });
+});
+
+// ───────────────────────── Liste bornée au club (clôture, FB8 partie B) ─────────────────────────
+// La clôture de saison purge les invitations utilisées ou échues du club (ADR 0025, décision 6) :
+// il faut donc les énumérer. Décision D3 du 2026-10-24 : une liste BORNÉE AU CLUB (la requête porte
+// `clubId ==`), pour l'administrateur et le directeur, AVEC LE RÔLE IMPOSÉ par la règle pour le
+// directeur (`role ==` enseignant, élève ou parent) : sinon il lirait le code d'une invitation de
+// directeur créée par l'administrateur et fabriquerait un second directeur (escalade).
+describe('liste bornée au club (clôture de saison)', () => {
+  beforeEach(async () => {
+    await put(env, 'invitations/DIRECTORAA', invitation({ role: 'director', createdBy: 'u-admin', expiresAt: ts(now() + hours(40)) }));
+    await put(env, 'invitations/USEDSTUDNT', invitation({ role: 'student', groupIds: ['g1'], studentIds: ['s1'], used: true, usedBy: 'u-student', usedAt: ts(now()) }));
+    await put(env, 'invitations/OLDGUARDAA', invitation({ role: 'guardian', groupIds: ['g1'], studentIds: ['s1'], expiresAt: ts(now() - days(2)) }));
+    await put(env, 'invitations/OTHERCLUBA', invitation({ clubId: 'c2', role: 'teacher', createdBy: 'u-dir2' }));
+  });
+
+  const invitations = (db) => collection(db, 'invitations');
+  const byRole = (db, clubId, role) => getDocs(query(invitations(db), where('clubId', '==', clubId), where('role', '==', role)));
+  const codes = (snapshot) => snapshot.docs.map((d) => d.id).sort();
+
+  test('le directeur liste, rôle par rôle, les invitations d\'enseignant, d\'élève et de parent de son club', async () => {
+    const db = dbFor('u-dir');
+    assert.deepEqual(codes(await byRole(db, 'c1', 'teacher')), ['AAAAAAAAAA']);
+    assert.deepEqual(codes(await byRole(db, 'c1', 'student')), ['USEDSTUDNT']);
+    assert.deepEqual(codes(await byRole(db, 'c1', 'guardian')), ['OLDGUARDAA']);
+  });
+
+  test('l\'administrateur liste toutes les invitations d\'un club, celles de directeur comprises', async () => {
+    const db = dbFor('u-admin');
+    assert.deepEqual(codes(await getDocs(query(invitations(db), where('clubId', '==', 'c1')))),
+      ['AAAAAAAAAA', 'DIRECTORAA', 'OLDGUARDAA', 'USEDSTUDNT']);
+    assert.deepEqual(codes(await byRole(db, 'c1', 'director')), ['DIRECTORAA']);
+  });
+
+  test('attaque : le directeur ne lit pas les invitations de directeur (il fabriquerait un second directeur)', async () => {
+    const db = dbFor('u-dir');
+    assert.equal(await allowed(() => byRole(db, 'c1', 'director')), false, 'rôle directeur');
+    assert.equal(await allowed(() => getDocs(query(invitations(db), where('clubId', '==', 'c1')))), false, 'sans filtre de rôle');
+    assert.equal(
+      await allowed(() => getDocs(query(invitations(db), where('clubId', '==', 'c1'), where('role', 'in', ['teacher', 'director'])))),
+      false,
+      'rôle directeur glissé dans une liste de rôles',
+    );
+  });
+
+  test('attaque : une liste sans filtre de club est refusée, même à l\'administrateur', async () => {
+    for (const uid of ['u-admin', 'u-dir']) {
+      assert.equal(await allowed(() => getDocs(invitations(dbFor(uid)))), false, `${uid} sans filtre`);
+      assert.equal(await allowed(() => getDocs(query(invitations(dbFor(uid)), where('role', '==', 'teacher')))), false, `${uid} rôle seul`);
+    }
+  });
+
+  test('attaque : le directeur ne liste pas les invitations d\'un autre club', async () => {
+    assert.equal(await allowed(() => byRole(dbFor('u-dir'), 'c2', 'teacher')), false);
+    assert.equal(await allowed(() => byRole(dbFor('u-dir2'), 'c1', 'teacher')), false);
+  });
+
+  test('attaque : enseignant, élève, parent, compte sans member et e-mail non vérifié ne listent pas', async () => {
+    for (const uid of ['u-teacher-a', 'u-teacher-b', 'u-student', 'u-guardian', 'u-guardian2', 'u-invited', 'u-teacher-c2']) {
+      for (const role of ['teacher', 'student', 'guardian']) {
+        assert.equal(await allowed(() => byRole(dbFor(uid), 'c1', role)), false, `${uid} ${role}`);
+      }
+    }
+    assert.equal(await allowed(() => byRole(dbFor('u-dir', { email_verified: false }), 'c1', 'teacher')), false, 'directeur non vérifié');
+    assert.equal(
+      await allowed(() => getDocs(query(invitations(dbFor('u-admin', { email_verified: false })), where('clubId', '==', 'c1')))),
+      false,
+      'administrateur non vérifié',
+    );
+    assert.equal(await allowed(() => byRole(env.unauthenticatedContext().firestore(), 'c1', 'teacher')), false, 'anonyme');
+  });
+
+  test('la clôture supprime ce qu\'elle a listé : utilisées et échues de son club', async () => {
+    const db = dbFor('u-dir');
+    assert.equal(await allowed(() => deleteDoc(doc(db, 'invitations/USEDSTUDNT'))), true, 'utilisée');
+    assert.equal(await allowed(() => deleteDoc(doc(db, 'invitations/OLDGUARDAA'))), true, 'échue');
+    assert.equal(await allowed(() => deleteDoc(doc(db, 'invitations/OTHERCLUBA'))), false, 'autre club');
+  });
+
+  test('une invitation déjà supprimée (par un autre gestionnaire) : le directeur est refusé, l\'administrateur non', async () => {
+    // Limite déclarée : la règle de suppression lit le club DANS le document ; un lot de purge qui
+    // arrive après la suppression par un autre est refusé au directeur et se reprend (l'étape
+    // recalcule ce qui reste).
+    await remove(env, 'invitations/USEDSTUDNT');
+    assert.equal(await allowed(() => deleteDoc(doc(dbFor('u-dir'), 'invitations/USEDSTUDNT'))), false, 'directeur');
+    assert.equal(await allowed(() => deleteDoc(doc(dbFor('u-admin'), 'invitations/USEDSTUDNT'))), true, 'administrateur');
   });
 });
 

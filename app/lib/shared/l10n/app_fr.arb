@@ -4282,6 +4282,14 @@
       }
     }
   },
+  "closureEffectsInvitations": "{count, plural, =0{Aucune invitation utilisée ou échue du club à supprimer.} =1{1 invitation utilisée ou échue du club sera supprimée ; les invitations encore valables restent.} other{{count} invitations utilisées ou échues du club seront supprimées ; les invitations encore valables restent.}}",
+  "@closureEffectsInvitations": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "closureEffectsSteps": "La clôture se fait dans le club par étapes de 400 écritures au plus : si la connexion est coupée, elle se reprend là où elle s’est arrêtée. Aucune clôture ne doit avoir lieu pendant la période de bascule des données locales.",
   "closureEffectsLocalCopy": "Les copies locales d’élèves effacés qui restent sur un appareil, et les sauvegardes déjà exportées, ne sont pas touchées : supprimez-les vous-même (guide de l’animateur).",
   "closureDoneResumed": "La clôture interrompue est terminée.",

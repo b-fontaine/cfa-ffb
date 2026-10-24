@@ -42,6 +42,7 @@ import {
   complete,
   createEnv,
   dbOf,
+  invitation,
   member,
   now,
   owned,
@@ -580,6 +581,64 @@ describe('budget des règles : des lots de 400 écritures', () => {
     }
     batch.set(doc(db, mine('director')), created('director', uids.director, { kind: 'closure', stage: 1, ...closureTerms() }));
     await batch.commit();
+  });
+});
+
+// Purge des invitations à la clôture (FB8 partie B, B3 ; décision D3) : l'étape « invitations » de
+// `SeasonClosureOperation` envoie `ClubSpentInvitations.remove` (suppressions `invitations/{code}`)
+// dans le lot du marqueur, 399 au plus.
+describe('clôture : lot de suppression des invitations utilisées ou échues', () => {
+  const codeOf = (i) => `PURGE${String.fromCharCode(65 + Math.floor(i / 26 / 26) % 26)}${String.fromCharCode(65 + Math.floor(i / 26) % 26)}${String.fromCharCode(65 + i % 26)}AA`;
+  const seedSpent = async (count) => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      for (let i = 0; i < count; i++) {
+        await setDoc(doc(ctx.firestore(), `invitations/${codeOf(i)}`), invitation({ used: true, usedBy: 'u-x', usedAt: ts(now()) }));
+      }
+    });
+  };
+
+  test('un lot de 399 suppressions d\'invitations du club et l\'avancement du marqueur passent le budget des règles', async () => {
+    for (const actor of MGR) {
+      await seedSpent(399);
+      await put(env, mine(actor), stored(roleOf(actor), uids[actor], { kind: 'closure', done: 1, stage: 6, ...closureTerms() }));
+      const db = dbOf(env, actor);
+      const batch = writeBatch(db);
+      for (let i = 0; i < 399; i++) batch.delete(doc(db, `invitations/${codeOf(i)}`));
+      batch.update(doc(db, mine(actor)), advance({ done: 2, stage: 7 }));
+      await batch.commit();
+      let left = [];
+      await env.withSecurityRulesDisabled(async (ctx) => {
+        left = (await getDocs(query(collection(ctx.firestore(), 'invitations'), where('clubId', '==', 'c1')))).docs.map((d) => d.id);
+      });
+      assert.deepEqual(left.filter((id) => id.startsWith('PURGE')), [], actor);
+    }
+  });
+
+  test('le lot du directeur qui supprime une invitation déjà révoquée est refusé EN BLOC : le marqueur n\'avance pas, la reprise recalcule', async () => {
+    await seedSpent(2);
+    await remove(env, `invitations/${codeOf(1)}`);
+    await put(env, mine('director'), stored('director', uids.director, { kind: 'closure', done: 1, stage: 6, ...closureTerms() }));
+    const db = dbOf(env, 'director');
+    const batch = writeBatch(db);
+    batch.delete(doc(db, `invitations/${codeOf(0)}`));
+    batch.delete(doc(db, `invitations/${codeOf(1)}`));
+    batch.update(doc(db, mine('director')), advance({ done: 2, stage: 7 }));
+    assert.equal(await allowed(() => batch.commit()), false);
+    let marker;
+    let kept;
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      marker = (await getDoc(doc(ctx.firestore(), mine('director')))).data();
+      kept = (await getDoc(doc(ctx.firestore(), `invitations/${codeOf(0)}`))).exists();
+    });
+    assert.equal(marker.done, 1, 'marqueur inchangé');
+    assert.equal(kept, true, 'rien n\'est supprimé');
+  });
+
+  test('attaque : ni enseignant, ni famille, ni directeur d\'un autre club, ni compte non vérifié ne supprime une invitation du club', async () => {
+    await seedSpent(1);
+    for (const actor of actorNames.filter((a) => !MGR.includes(a))) {
+      assert.equal(await allowed(() => deleteDoc(doc(dbOf(env, actor), `invitations/${codeOf(0)}`))), false, actor);
+    }
   });
 });
 

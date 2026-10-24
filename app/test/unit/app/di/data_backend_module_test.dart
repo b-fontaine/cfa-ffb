@@ -57,6 +57,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../support/firestore_world.dart';
+import '../../../support/fixed_clock.dart';
 import '../../../support/import_world.dart';
 import '../../../support/realistic_backup.dart';
 
@@ -157,6 +158,8 @@ void _operations(_Module module, ClubStore club, CurrentUser user) {
       attempts,
       planned,
       archives,
+      club,
+      FixedClock(DateTime.utc(2026, 10, 12)),
     );
   }
 

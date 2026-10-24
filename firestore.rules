@@ -11,8 +11,8 @@ rules_version = '2';
 //     console, jamais un champ) n'est évalué qu'après le rôle de club (`||` court-circuite) ;
 //   - les documents de données portent `groupId`, `studentId` et `seasonId` dénormalisés : une
 //     règle ne filtre pas les champs et ne parcourt pas une liste ;
-//   - `admins` : écriture jamais (console) ; `invitations` : get, et list de SES invitations pour
-//     un membre du club ;
+//   - `admins` : écriture jamais (console) ; `invitations` : get, et list borné au club pour les
+//     gestionnaires (le directeur : rôles qu'il invite seulement) ;
 //   - un `member` ne se crée que par une invitation valide consommée dans le MÊME lot
 //     (`getAfter`), ou par le directeur (rôles teacher, student, guardian) ou l'administrateur ;
 //   - aucune élévation de privilège : un member ne modifie que son `displayName`.
@@ -841,8 +841,8 @@ service cloud.firestore {
     }
 
     // ───────────────────────── Invitations ─────────────────────────
-    // `invitations/{code}` (code Base32 d'au moins 10 caractères) : get par le code ; list de ses
-    // propres invitations pour un membre du club (voir `allow list`). Le
+    // `invitations/{code}` (code Base32 d'au moins 10 caractères) : get par le code ; list borné au
+    // club pour les gestionnaires (purge à la clôture, voir `allow list`). Le
     // chemin ne porte pas le club : l'invité ne connaît que le code (écart au tableau de
     // l'ADR 0024, noté dans sa note de réalisation FB3).
 
@@ -906,11 +906,21 @@ service cloud.firestore {
 
     match /invitations/{code} {
       allow get: if verified();
-      // Pour tout MEMBRE du club, les invitations qu'IL a créées (la requête porte
+      // Liste BORNÉE AU CLUB, pour la purge à la clôture de saison (FB8 partie B ; ADR 0025
+      // décision 6 ; décision D3 du 2026-10-24) : la requête doit porter `clubId ==` (sans quoi le
+      // club du document n'est pas prouvable et la liste est refusée, même à l'administrateur).
+      // Le directeur ne voit que les rôles qu'il invite (la requête porte `role ==` l'un d'eux) :
+      // lire le code d'une invitation de DIRECTEUR, créée par l'administrateur, lui permettrait
+      // de fabriquer un second directeur. L'administrateur voit tous les rôles.
+      // Aussi, pour tout MEMBRE du club, les invitations qu'IL a créées (la requête porte
       // `clubId ==` et `createdBy ==` son uid) : avant de supprimer son compte, il révoque celles
       // encore inutilisées, émises depuis n'importe quel appareil (FB8 partie B) ; jamais celles
       // d'un collègue. Il doit être encore membre : la révocation précède le retrait du member.
-      allow list: if resource.data.createdBy == request.auth.uid && isMember(resource.data.clubId);
+      allow list: if (isDirector(resource.data.clubId)
+                       && resource.data.role in ['teacher', 'student', 'guardian'])
+        || (adminOk()
+            && exists(/databases/$(database)/documents/clubs/$(resource.data.clubId)))
+        || (resource.data.createdBy == request.auth.uid && isMember(resource.data.clubId));
 
       // L'administrateur invite partout (le directeur d'un club existant) ; le directeur dans son
       // club (jamais un directeur) ; l'enseignant des élèves et parents de SES groupes.

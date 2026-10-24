@@ -51,6 +51,9 @@ class LocalSeasonClosing implements SeasonClosing {
   Future<Result<ClosureTerms?>> pending() async => const Ok(null);
 
   @override
+  Future<Result<int>> invitationsToPurge() async => const Ok(0);
+
+  @override
   Future<Result<ClosureOutcome>> resume(
     ClosureTerms terms, {
     bool Function()? shouldStop,

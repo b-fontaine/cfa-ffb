@@ -40,6 +40,39 @@ void main() {
     });
   }
 
+  for (final role in Role.values) {
+    test('${role.name}: counting the invitations to delete follows the '
+        'capability to close', () async {
+      world.scope.activate(OperationsWorld.clubId, role);
+      world.store.admin = role == Role.admin;
+
+      final result = await world.closing.invitationsToPurge();
+
+      if (role.can(Capability.closeSeason)) {
+        expect(result, isA<Ok<int>>(), reason: '$result');
+      } else {
+        expect(
+          ((result as Err<int>).failure as ServiceFailure).code,
+          ServiceFailureCode.denied,
+        );
+        expect(world.store.invitationQueries, isEmpty);
+      }
+    });
+  }
+
+  test('invitations that cannot be listed are a failure of the preview, '
+      'never zero', () async {
+    world.scope.activate(OperationsWorld.clubId, Role.director);
+    world.store.denyAll = true;
+
+    final result = await world.closing.invitationsToPurge();
+
+    expect(
+      ((result as Err<int>).failure as ServiceFailure).code,
+      ServiceFailureCode.denied,
+    );
+  });
+
   test('closing with an erased student also erases the local guided-run '
       'progress linked to it, by the same links as EraseStudent', () async {
     await world.seeding((w) async {

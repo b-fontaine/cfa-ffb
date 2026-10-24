@@ -41,6 +41,11 @@ abstract class SeasonClosureState with _$SeasonClosureState {
     /// La clôture se fait dans le club, par lots reprenables.
     @Default(false) bool synchronized,
 
+    /// Aperçu : invitations utilisées ou échues du club que la clôture
+    /// supprimera (club synchronisé) ; `null` si elles n'ont pas pu être
+    /// comptées (aucun chiffre montré, la clôture reste possible).
+    int? invitationsToPurge,
+
     /// La clôture commencée à reprendre (`resumable`, `stopped`,
     /// `interrupted`, `paused`).
     ClosureTerms? pending,

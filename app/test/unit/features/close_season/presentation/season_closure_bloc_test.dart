@@ -94,6 +94,8 @@ void main() {
     verify: (bloc) {
       expect(bloc.state.erasedCount, 1);
       expect(bloc.state.keptCount, 1);
+      // Sur l'appareil, pas d'invitation : rien à compter.
+      verifyNever(() => closing.invitationsToPurge());
     },
   );
 
@@ -269,7 +271,42 @@ void main() {
     setUp(() {
       when(() => closing.synchronized).thenReturn(true);
       when(() => closing.pending()).thenAnswer((_) async => const Ok(null));
+      when(() => closing.invitationsToPurge())
+          .thenAnswer((_) async => const Ok(3));
     });
+
+    blocTest<SeasonClosureBloc, SeasonClosureState>(
+      'the preview counts the used or expired invitations the closure will '
+      'delete',
+      build: () {
+        when(() => prepare(seasonId: seasonId, today: day(12)))
+            .thenAnswer((_) async => Ok(plan));
+        return build();
+      },
+      act: (bloc) =>
+          bloc.add(const SeasonClosureEvent.started(seasonId: seasonId)),
+      expect: () => [
+        const SeasonClosureState(synchronized: true),
+        synced.copyWith(invitationsToPurge: 3),
+      ],
+    );
+
+    blocTest<SeasonClosureBloc, SeasonClosureState>(
+      'invitations that cannot be counted give no figure and never block the '
+      'closure',
+      build: () {
+        when(() => prepare(seasonId: seasonId, today: day(12)))
+            .thenAnswer((_) async => Ok(plan));
+        when(() => closing.invitationsToPurge()).thenAnswer(
+          (_) async =>
+              const Err(ServiceFailure(ServiceFailureCode.denied, 'rules')),
+        );
+        return build();
+      },
+      act: (bloc) =>
+          bloc.add(const SeasonClosureEvent.started(seasonId: seasonId)),
+      expect: () => [const SeasonClosureState(synchronized: true), synced],
+    );
 
     blocTest<SeasonClosureBloc, SeasonClosureState>(
       'a closure of this season already started is offered for resumption, '
@@ -343,7 +380,10 @@ void main() {
       },
       act: (bloc) =>
           bloc.add(const SeasonClosureEvent.started(seasonId: seasonId)),
-      expect: () => [const SeasonClosureState(synchronized: true), synced],
+      expect: () => [
+        const SeasonClosureState(synchronized: true),
+        synced.copyWith(invitationsToPurge: 3),
+      ],
     );
 
     blocTest<SeasonClosureBloc, SeasonClosureState>(

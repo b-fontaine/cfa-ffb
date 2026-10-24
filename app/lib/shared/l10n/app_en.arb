@@ -4282,6 +4282,14 @@
       }
     }
   },
+  "closureEffectsInvitations": "{count, plural, =0{No used or expired invitation of the club to delete.} =1{1 used or expired invitation of the club will be deleted; invitations still valid stay.} other{{count} used or expired invitations of the club will be deleted; invitations still valid stay.}}",
+  "@closureEffectsInvitations": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "closureEffectsSteps": "The closure runs in the club in steps of at most 400 writes: if the connection drops, it resumes where it stopped. No closure should take place during the local data switch-over period.",
   "closureEffectsLocalCopy": "Local copies of erased students left on a device, and backups already exported, are not touched: delete them yourself (facilitator guide).",
   "closureDoneResumed": "The interrupted closure is finished.",

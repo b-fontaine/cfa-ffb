@@ -10,6 +10,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/block_acquisition.da
 import 'package:billard_cfa/entities/exercise_result/domain/exercise_attempt.dart';
 import 'package:billard_cfa/entities/group/data/firestore_group_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group.dart';
+import 'package:billard_cfa/entities/invitation/data/club_spent_invitations.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/firestore_assessment_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/maturity_assessment.dart';
 import 'package:billard_cfa/entities/run_progress/data/in_memory_run_progress_repository.dart';
@@ -57,7 +58,13 @@ import 'in_memory_write_ledger.dart';
 /// - **`erasing` est irréversible** ;
 /// - **au plus 400 écritures par lot** (une opération en envoie 400 au plus,
 ///   marqueur compris) ;
-/// - un lot qui touche le marqueur d'un autre auteur est refusé.
+/// - un lot qui touche le marqueur d'un autre auteur est refusé ;
+/// - **les invitations** (`invitations/{code}`, FB8 partie B, décision D3) :
+///   la liste exige `clubId ==` ; l'administrateur ([admin]) voit tous les
+///   rôles, le directeur du club seulement ceux qu'il invite (`role ==`
+///   enseignant, élève ou parent) ; la suppression revient à l'administrateur
+///   (même d'un code qui n'existe plus) ou au directeur du club de
+///   l'invitation (qui doit exister).
 ///
 /// Il simule aussi les coupures : [failAfterBatches] (le réseau tombe avant le
 /// lot suivant) et [dropAckAt] (le lot est appliqué mais l'accusé est perdu).
@@ -95,6 +102,16 @@ class OperationsRulesStore implements DocumentStore {
   /// Les règles refusent tout : le rôle courant n'a aucun droit (enseignant).
   bool denyAll = false;
 
+  /// Le compte connecté est administrateur (`admins/{uid}`).
+  bool admin = false;
+
+  /// Chaque requête sur les invitations, refusée ou non (assertions).
+  final List<QueryFilter> invitationQueries = [];
+
+  /// Appelé avec les écritures d'un lot **avant** qu'il soit jugé : un autre
+  /// appareil écrit juste avant ce lot.
+  void Function(List<WriteOp> operations)? beforeValidate;
+
   DateTime serverStart = DateTime.utc(2026, 10, 12, 9);
 
   static const _studentData = [
@@ -125,6 +142,7 @@ class OperationsRulesStore implements DocumentStore {
     if (failAfter != null && appliedBatches >= failAfter) {
       throw const StoreFailure(StoreFailureCode.unavailable, 'coupure');
     }
+    beforeValidate?.call(operations);
     _validate(operations);
     final stamp = serverStart.add(Duration(seconds: appliedBatches));
     inner.serverNow = () => stamp;
@@ -186,6 +204,9 @@ class OperationsRulesStore implements DocumentStore {
           deny("donnée sur une fiche absente ou en cours d'effacement");
         }
       }
+      if (operation.path.startsWith('invitations/')) {
+        _validateInvitation(operation, current, deny);
+      }
       if (operation is UpdateOp &&
           operation.path.contains('/students/') &&
           current?['erasing'] == true &&
@@ -193,6 +214,60 @@ class OperationsRulesStore implements DocumentStore {
           operation.fields['erasing'] != true) {
         deny('erasing est irréversible');
       }
+    }
+  }
+
+  /// Le rôle de ce compte dans [club], d'après son `member`.
+  String? _roleIn(Object? club) =>
+      inner.read('clubs/$club/members/$authUid')?['role'] as String?;
+
+  void _validateInvitation(
+    WriteOp operation,
+    Fields? current,
+    Never Function(String) deny,
+  ) {
+    if (operation is! DeleteOp) deny("seule la suppression d'une invitation");
+    if (admin) return;
+    if (current == null) deny('suppression sans invitation (directeur)');
+    if (_roleIn(current['clubId']) != 'director') {
+      deny("invitation d'un autre club");
+    }
+  }
+
+  /// Les rôles des invitations que le directeur liste, recopiés de
+  /// `firestore.rules` (`allow list` des invitations).
+  static const directorInvites = {'teacher', 'student', 'guardian'};
+
+  void _guardInvitationList(QueryFilter filter) {
+    invitationQueries.add(filter);
+    final clauses = switch (filter) {
+      FieldEquals() => [filter],
+      AllEqual(:final clauses) => clauses,
+      FieldArrayContainsAny() => const <FieldEquals>[],
+    };
+    Object? valueOf(String field) {
+      for (final clause in clauses) {
+        if (clause.field == field) return clause.value;
+      }
+      return null;
+    }
+
+    final club = valueOf('clubId');
+    Never deny(String why) =>
+        throw StoreFailure(StoreFailureCode.permissionDenied, why);
+    if (denyAll) deny('rôle sans droit');
+    if (club == null) deny('liste sans filtre de club');
+    if (admin) return;
+    // Ses propres invitations, pour tout membre du club (suppression de son
+    // compte) : `createdBy ==` son uid.
+    if (authUid != null &&
+        valueOf('createdBy') == authUid &&
+        _roleIn(club) != null) {
+      return;
+    }
+    if (_roleIn(club) != 'director') deny("liste d'un autre club");
+    if (!directorInvites.contains(valueOf('role'))) {
+      deny('liste sans rôle que le directeur invite');
     }
   }
 
@@ -207,12 +282,24 @@ class OperationsRulesStore implements DocumentStore {
       inner.getFromServer(path);
 
   @override
-  Future<List<StoredDocument>> list(String collection) =>
-      inner.list(collection);
+  Future<List<StoredDocument>> list(String collection) async {
+    if (collection == 'invitations') {
+      throw const StoreFailure(
+        StoreFailureCode.permissionDenied,
+        'liste sans filtre de club',
+      );
+    }
+    return await inner.list(collection);
+  }
 
   @override
-  Future<List<StoredDocument>> query(String collection, QueryFilter filter) =>
-      inner.query(collection, filter);
+  Future<List<StoredDocument>> query(
+    String collection,
+    QueryFilter filter,
+  ) async {
+    if (collection == 'invitations') _guardInvitationList(filter);
+    return await inner.query(collection, filter);
+  }
 
   /// Sans cache dans ce double : la lecture au serveur est [query].
   @override
@@ -265,7 +352,9 @@ class OperationsWorld {
   OperationsWorld({this.uid = 'u-dir', Role role = Role.director})
     : server = InMemoryDocumentStore(),
       scope = SessionScope()..signIn(UserId(uid)) {
-    store = OperationsRulesStore(server)..authUid = uid;
+    store = OperationsRulesStore(server)
+      ..authUid = uid
+      ..admin = role == Role.admin;
     scope.activate(clubId, role);
     club = ClubStore(store, scope);
     seedScope = SessionScope()
@@ -306,6 +395,12 @@ class OperationsWorld {
   final InMemoryRunProgressRepository runProgress =
       InMemoryRunProgressRepository();
   late final ClubStudentPurge purge = ClubStudentPurge(club, runProgress);
+
+  /// Les invitations utilisées ou échues du club, vues par ce compte.
+  late final ClubSpentInvitations spentInvitations = ClubSpentInvitations(
+    club,
+    clock,
+  );
   late OperationRunner runner = OperationRunner(operationStore, ledger);
 
   late FirestoreStudentRepository students;
@@ -386,6 +481,7 @@ class OperationsWorld {
     operationStore,
     purge,
     closureRepositories,
+    spentInvitations,
     scope,
   );
 
@@ -597,6 +693,40 @@ class OperationsWorld {
     });
   }
 
+  /// Une invitation [code] de rôle [role] du club [clubId], valable,
+  /// utilisée ou échue à l'heure de l'appareil ([clock]), telle que
+  /// l'application l'écrit.
+  void seedInvitation(
+    String code, {
+    required String role,
+    String clubId = 'c1',
+    bool used = false,
+    bool expired = false,
+  }) {
+    final now = clock.now();
+    server.seed('invitations/$code', {
+      'clubId': clubId,
+      'role': role,
+      'groupIds': <String>[],
+      'studentIds': <String>[],
+      'createdBy': uid,
+      'createdAt': now.subtract(const Duration(days: 3)),
+      'expiresAt': expired
+          ? now.subtract(const Duration(days: 1))
+          : now.add(const Duration(hours: 40)),
+      'used': used,
+      if (used) 'usedBy': 'u-$code',
+      if (used) 'usedAt': now.subtract(const Duration(days: 2)),
+    });
+  }
+
+  /// Les codes des invitations encore présentes, triés.
+  List<String> invitationCodes() => [
+    for (final path in server.documents.keys)
+      if (path.startsWith('invitations/'))
+        path.substring('invitations/'.length),
+  ]..sort();
+
   // ───────────────────────── Lectures ─────────────────────────
 
   Fields? doc(String path) => server.read(path);
@@ -726,8 +856,14 @@ class OperationsWorld {
       erase: toErase,
       prepareNext: prepareNext,
       dropPlanned: dropPlanned,
+      onProgress: _recordProgress,
     );
   }
+
+  /// Le dernier avancement annoncé par une clôture (lots faits, prévus).
+  (int, int)? lastProgress;
+
+  void _recordProgress(int done, int total) => lastProgress = (done, total);
 
   /// Une clôture commencée par ce compte reste-t-elle à reprendre ?
   Future<bool> hasPendingClosure({ClubSeasonClosing? by}) async =>
@@ -745,7 +881,10 @@ class OperationsWorld {
       Err(:final failure) => fail('reprise impossible : $failure'),
     };
     if (terms == null) fail('aucune clôture à reprendre');
-    return closureResult = await closing.resume(terms);
+    return closureResult = await closing.resume(
+      terms,
+      onProgress: _recordProgress,
+    );
   }
 
   /// Le même club, clos **en un seul lot** par `CloseSeason` sur des dépôts en
@@ -845,7 +984,9 @@ class OperationsActor {
     required this.uid,
     required Role role,
   }) : scope = SessionScope()..signIn(UserId(uid)) {
-    store = OperationsRulesStore(world.server)..authUid = uid;
+    store = OperationsRulesStore(world.server)
+      ..authUid = uid
+      ..admin = role == Role.admin;
     scope.activate(OperationsWorld.clubId, role);
     club = ClubStore(store, scope);
     operationStore = FirestoreOperationStore(club, scope);
@@ -864,6 +1005,7 @@ class OperationsActor {
         plannedSessions: FirestoreSessionRepository(club),
         archives: FirestoreSeasonArchiveRepository(club),
       ),
+      ClubSpentInvitations(club, world.clock),
       scope,
     );
     erasure = ClubStudentErasure(runner, purge, scope);

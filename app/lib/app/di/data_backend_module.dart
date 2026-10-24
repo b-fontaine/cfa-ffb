@@ -15,6 +15,7 @@ import 'package:billard_cfa/entities/exercise_result/domain/attempt_repository.d
 import 'package:billard_cfa/entities/group/data/drift_group_repository.dart';
 import 'package:billard_cfa/entities/group/data/firestore_group_repository.dart';
 import 'package:billard_cfa/entities/group/domain/group_repository.dart';
+import 'package:billard_cfa/entities/invitation/data/club_spent_invitations.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/drift_assessment_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/data/firestore_assessment_repository.dart';
 import 'package:billard_cfa/entities/maturity_assessment/domain/assessment_repository.dart';
@@ -52,6 +53,7 @@ import 'package:billard_cfa/features/manage_students/domain/erase_student.dart';
 import 'package:billard_cfa/features/manage_students/domain/local_student_erasure.dart';
 import 'package:billard_cfa/features/manage_students/domain/student_erasure.dart';
 import 'package:billard_cfa/shared/lib/active_club_scope.dart';
+import 'package:billard_cfa/shared/lib/clock.dart';
 import 'package:billard_cfa/shared/lib/current_user.dart';
 import 'package:billard_cfa/shared/lib/operations/operation_runner.dart';
 import 'package:billard_cfa/shared/lib/operations/operation_store.dart';
@@ -306,6 +308,8 @@ abstract class DataBackendModule {
     AttemptRepository attempts,
     SessionRepository sessions,
     SeasonArchiveRepository archives,
+    ClubStore club,
+    Clock clock,
   ) => choice.backend.choose(
     drift: () => LocalSeasonClosing(close),
     firestore: () => ClubSeasonClosing(
@@ -321,6 +325,7 @@ abstract class DataBackendModule {
         plannedSessions: sessions,
         archives: archives,
       ),
+      ClubSpentInvitations(club, clock),
       scope,
     ),
   );

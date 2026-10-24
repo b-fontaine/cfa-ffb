@@ -1,3 +1,4 @@
+import 'package:billard_cfa/entities/invitation/domain/spent_invitations.dart';
 import 'package:billard_cfa/features/close_season/domain/close_season.dart';
 import 'package:billard_cfa/features/close_season/domain/closure_checks.dart';
 import 'package:billard_cfa/features/close_season/domain/season_closing.dart';
@@ -30,6 +31,7 @@ class ClubSeasonClosing implements SeasonClosing {
     this._store,
     this._purge,
     this._repositories,
+    this._invitations,
     this._scope,
   );
 
@@ -37,6 +39,7 @@ class ClubSeasonClosing implements SeasonClosing {
   final OperationStore _store;
   final StudentPurge _purge;
   final ClosureRepositories _repositories;
+  final SpentInvitations _invitations;
   final ActiveClubScope _scope;
 
   @override
@@ -82,6 +85,7 @@ class ClubSeasonClosing implements SeasonClosing {
     final operation = SeasonClosureOperation(
       repositories: _repositories,
       purge: _purge,
+      invitations: _invitations,
       closureTerms: ClosureTerms(
         seasonId: seasonId,
         closedOn: checked.day,
@@ -111,6 +115,12 @@ class ClubSeasonClosing implements SeasonClosing {
   });
 
   @override
+  Future<Result<int>> invitationsToPurge() => runGuarded(() async {
+    _manager;
+    return (await _invitations.codes()).length;
+  });
+
+  @override
   Future<Result<ClosureTerms?>> pending() => runGuarded(() async {
     _manager;
     for (final marker in await _store.ownMarkers()) {
@@ -132,6 +142,7 @@ class ClubSeasonClosing implements SeasonClosing {
       SeasonClosureOperation(
         repositories: _repositories,
         purge: _purge,
+        invitations: _invitations,
         closureTerms: terms,
       ),
       role,

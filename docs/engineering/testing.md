@@ -837,3 +837,32 @@ Règles par `RULES_FILE` (copie) ; **3 mutations, toutes tuées** (`matrix.test.
 | clause du titulaire retirée | `matrix` six grilles de suppression par le titulaire, `escalation` « s'effacer est permis… » |
 
 **Limites dites.** (1) Le stock en mémoire des scénarios n'applique pas les règles : la vérité des droits est l'émulateur. (2) L'émulateur Auth n'impose pas `requires-recent-login` : sa traduction est prouvée par test unitaire. (3) Le parcours navigateur ne joue ni l'interruption entre purge et suppression du compte (scénario BDD et test du cas d'usage), ni un parent à deux enfants (scénario BDD).
+
+## Lot FB8, partie B, tranche B3 : purge des invitations à la clôture (2026-10-24)
+
+Voir l'[ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) (notes FB8b, B3) et le plan `fb8b-plan.md` (décision D3). Aucun projet réel : faux serveur de règles en mémoire (`OperationsRulesStore`, qui applique désormais aussi la liste bornée au club et au rôle et la suppression des invitations), `fake_cloud_firestore`, émulateurs `demo-cfa-ffb`.
+
+**Rouge avant le code.** (1) Règles : `invitations.test.mjs` et `matrix.test.mjs` joués contre une copie où la liste reste `list: false` : **5 rouges** (listes du directeur par rôle et de l'administrateur), puis **233 verts** sur les vraies règles. (2) `club_closure_invitations.feature` (6 scénarios) et ses étapes : d'abord rouge à la compilation (port et réalisation absents), puis, l'aperçu seul câblé, **5 rouges sur 6** (invitations restantes, clôture terminée au lieu d'interrompue ou d'échouée), puis **6 verts** avec l'étape de la clôture. (3) Contrat `spent_invitations_contract_test.dart` rouge (réalisation absente), tests de l'assistant (`season_closure_bloc_test`, `season_closure_view_test`) rouges (champ `invitationsToPurge` absent) avant leur code. **Écart reconnu** : `LocalSeasonClosing.invitationsToPurge` (0, sans lecture) a été écrit avant son test, vu rouge ensuite par mutation.
+
+| Fichier | Prouve |
+|---|---|
+| `test/bdd/club_closure_invitations.feature` (6) | la clôture supprime les invitations utilisées et échues du club, et seulement elles (une valable et celle d'un autre club restent) ; l'aperçu les compte sans rien écrire ; la clôture du directeur ne liste jamais une invitation de directeur (chaque requête porte le club et un rôle qu'il invite) et la laisse, celle de l'administrateur la purge ; 450 invitations : coupure après le premier lot (51 restent), reprise, aucun lot de plus de 400 écritures, avancement jusqu'au dernier lot ; invitation révoquée entre la liste et le lot : le lot échoue en bloc, la reprise termine |
+| `test/contract/spent_invitations_contract_test.dart` (6 × 2 : stock en mémoire, `fake_cloud_firestore`) | administrateur : tous les rôles du club actif ; directeur : jamais une invitation de directeur ; autre club jamais listé ; échéance égale à l'heure : échue ; usage ou échéance illisibles : laissée ; sans club actif : refus ; le lot supprime exactement les codes donnés, une écriture chacun |
+| `test/unit/features/close_season/club_season_closing_test.dart` (+6), `local_season_closing_test.dart` (1) | l'aperçu suit la capacité de clôture (aucune requête pour un autre rôle) ; liste refusée : échec, jamais zéro ; sur l'appareil : 0 sans lecture |
+| `season_closure_bloc_test.dart` (+2, 2 modifiés), `season_closure_view_test.dart` (+3) | l'aperçu porte le nombre, un échec ne donne aucun chiffre et ne bloque pas ; l'écran dit « N invitations… seront supprimées », « Aucune invitation… », rien sans chiffre |
+
+**Règles contre l'émulateur** : `invitations.test.mjs`, « liste bornée au club » (directeur rôle par rôle, administrateur tous les rôles ; **ATTAQUES** directeur et rôle `director`, sans filtre de rôle, rôle `director` glissé dans un `in` ; liste sans `clubId`, même pour l'administrateur ; autre club ; enseignants, élève, parents, invité, enseignant d'un autre club, adresses non vérifiées, anonyme ; suppression de ce qui a été listé, pas d'un autre club ; code déjà supprimé : refusé au directeur, permis à l'administrateur) ; `matrix.test.mjs`, suite `invitations` (grille des 12 acteurs pour la liste sans filtre, par club, par club et rôle invitable, par club et rôle `director`) ; `operations.test.mjs`, « clôture : lot de suppression des invitations » (399 suppressions et l'avancement du marqueur passent le budget des règles, directeur et administrateur ; lot du directeur avec un code révoqué refusé **en bloc**, marqueur inchangé ; **ATTAQUE** aucun non-gestionnaire ni directeur d'un autre club ne supprime une invitation du club).
+
+### Mutations à la main (FB8 partie B, B3, 2026-10-24)
+
+Règles par `RULES_FILE` (copie) ; **5 mutations, toutes tuées**.
+
+| Règle | Suite rouge |
+|---|---|
+| `allow list: if false` (avant) | `invitations` « le directeur liste, rôle par rôle… », « l'administrateur liste… » ; `matrix` trois grilles de liste |
+| contrainte de rôle du directeur retirée | `invitations` « attaque : le directeur ne lit pas les invitations de directeur… » ; `matrix` « club seul », « rôle directeur » |
+| `exists(clubs/{clubId})` de l'administrateur retiré | `invitations` « attaque : une liste sans filtre de club est refusée… » ; `matrix` « list sans filtre » |
+| suppression d'une invitation réduite à `verified()` | `operations` « attaque : ni enseignant… », « … refusé EN BLOC » |
+| `isDirector(resource.data.clubId)` remplacé par `isDirector('c1')` (code absent accepté) | `operations` « … refusé EN BLOC » |
+
+**Limites dites.** (1) Le faux serveur des scénarios imite les règles ; la vérité des droits est l'émulateur. (2) Aucun parcours navigateur de clôture n'existe : la clôture complète sous les vraies règles n'est pas jouée de bout en bout, ses lots le sont un à un (`operations.test.mjs`).

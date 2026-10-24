@@ -81,11 +81,20 @@ class SeasonClosureBloc extends Bloc<SeasonClosureEvent, SeasonClosureState> {
     }
     switch (await _prepare(seasonId: event.seasonId, today: _clock.today())) {
       case Ok(:final value):
+        // Les invitations à supprimer : un aperçu, jamais une condition (un
+        // échec de lecture ne montre aucun chiffre).
+        final invitations = _closing.synchronized
+            ? switch (await _closing.invitationsToPurge()) {
+                Ok(:final value) => value,
+                Err() => null,
+              }
+            : null;
         emit(
           state.copyWith(
             status: SeasonClosureStatus.ready,
             plan: value,
             choices: {for (final p in value.proposals) p.studentId: p.choice},
+            invitationsToPurge: invitations,
           ),
         );
       case Err(:final failure):

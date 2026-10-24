@@ -331,12 +331,24 @@ suite('invitations', 'invitations/{code}', () => {
     check({ expectAllowed: verified, run: (db) => getDoc(doc(db, 'invitations/AAAAAAAAAA')) }));
   test('get d\'un code inexistant : même autorisation (le refus ne révèle rien)', () =>
     check({ expectAllowed: verified, run: (db) => getDoc(doc(db, 'invitations/BBBBBBBBBB')) }));
-  test('list : personne, pas même l\'administrateur', () =>
+  // Liste BORNÉE AU CLUB (purge à la clôture, FB8 partie B, décision D3) ; le détail et les
+  // attaques sont dans invitations.test.mjs (« liste bornée au club »).
+  test('list sans filtre : personne, pas même l\'administrateur', () =>
     check({ expectAllowed: [], run: (db) => getDocs(collection(db, 'invitations')) }));
-  test('list filtrée sur le club : personne', () =>
+  test('list filtrée sur le club seul : l\'administrateur (tous les rôles)', () =>
     check({
-      expectAllowed: [],
+      expectAllowed: ['admin'],
       run: (db) => getDocs(query(collection(db, 'invitations'), where('clubId', '==', 'c1'))),
+    }));
+  test('list filtrée sur le club et un rôle que le directeur invite : directeur du club et administrateur', () =>
+    check({
+      expectAllowed: MGR,
+      run: (db) => getDocs(query(collection(db, 'invitations'), where('clubId', '==', 'c1'), where('role', '==', 'teacher'))),
+    }));
+  test('list filtrée sur le club et le rôle directeur : l\'administrateur seulement', () =>
+    check({
+      expectAllowed: ['admin'],
+      run: (db) => getDocs(query(collection(db, 'invitations'), where('clubId', '==', 'c1'), where('role', '==', 'director'))),
     }));
 });
 

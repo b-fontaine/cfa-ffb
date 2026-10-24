@@ -51,16 +51,26 @@ class ScriptedStudentErasure implements StudentErasure {
 /// Une clôture **scénarisée** pour les maquettes d'un club synchronisé :
 /// reprise d'une clôture commencée, ou clôture en cours.
 class ScriptedSeasonClosing implements SeasonClosing {
-  ScriptedSeasonClosing({this.pendingTerms, this.hang = false});
+  ScriptedSeasonClosing({
+    this.pendingTerms,
+    this.hang = false,
+    this.invitations = 4,
+  });
 
   final ClosureTerms? pendingTerms;
   final bool hang;
+
+  /// Invitations utilisées ou échues que l'aperçu annonce.
+  final int invitations;
 
   @override
   bool get synchronized => true;
 
   @override
   Future<Result<ClosureTerms?>> pending() async => Ok(pendingTerms);
+
+  @override
+  Future<Result<int>> invitationsToPurge() async => Ok(invitations);
 
   @override
   Future<Result<ClosureOutcome>> close({

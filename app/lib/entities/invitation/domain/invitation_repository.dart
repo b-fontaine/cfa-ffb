@@ -5,8 +5,8 @@ import 'package:billard_cfa/shared/lib/invitation_code.dart';
 /// Port d'accès aux invitations (implémenté dans la couche data).
 ///
 /// Les droits sont ceux de `firestore.rules` : lecture par le code (la liste
-/// bornée au club ne sert qu'à la révocation de ses propres invitations,
-/// [unusedIssuedBy]),
+/// bornée au club ne sert qu'à la purge à la clôture, `SpentInvitations`, et
+/// à la révocation de ses propres invitations, [unusedIssuedBy]),
 /// création selon le rôle, révocation par le créateur, le
 /// directeur ou l'administrateur, consommation unique dans le même lot que la
 /// création du `member`. Les pannes du service lèvent `ServiceFailure`.

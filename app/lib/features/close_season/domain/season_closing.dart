@@ -48,6 +48,12 @@ abstract interface class SeasonClosing {
   /// La clôture commencée par ce compte et non terminée, si elle existe.
   Future<Result<ClosureTerms?>> pending();
 
+  /// Aperçu des effets (lecture seule) : combien d'invitations utilisées ou
+  /// échues du club la clôture supprimera, parmi celles que ce compte peut
+  /// lister (FB8 partie B). Aucune sur l'appareil : les invitations
+  /// n'existent que dans un club synchronisé.
+  Future<Result<int>> invitationsToPurge();
+
   /// Reprend la clôture [terms] là où elle s'est arrêtée.
   Future<Result<ClosureOutcome>> resume(
     ClosureTerms terms, {
