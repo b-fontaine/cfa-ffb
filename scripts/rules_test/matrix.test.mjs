@@ -650,9 +650,46 @@ suite('imports', 'clubs/{c}/imports/{fileId}_{uid}', () => {
     await check({ expectAllowed: [], run: (db, actor) => updateDoc(doc(db, mine(actor)), advance({ done: 3 })), reset: done });
     await reset();
   });
-  test('suppression : personne, pas même l\'administrateur', async () => {
+  // FB8 partie B (B1) : l'auteur retrouve et supprime SES marqueurs (suppression de son compte) ;
+  // personne d'autre, gestionnaires compris (le filet d'âge des gestionnaires est la tranche B5).
+  const uidOf = (actor) => uids[actor] ?? `u-${actor}`;
+  test('list de SES marqueurs (filtre sur l\'auteur) : chaque importateur ; sur l\'uid d\'un autre : son auteur et les gestionnaires seulement', async () => {
     await seedMarkers();
-    await check({ expectAllowed: [], run: (db, actor) => deleteDoc(doc(db, mine(actor))), reset: () => seedMarkers() });
+    await check({
+      expectAllowed: importers,
+      run: (db, actor) => getDocs(query(collection(db, 'clubs/c1/imports'), where('createdBy', '==', uidOf(actor)))),
+    });
+    // Filtre sur l'uid de teacherA : lui et les gestionnaires ; teacherB (même club) est refusé.
+    await check({
+      expectAllowed: [...MGR, 'teacherA'],
+      run: (db) => getDocs(query(collection(db, 'clubs/c1/imports'), where('createdBy', '==', uids.teacherA))),
+    });
+    await reset();
+  });
+  test('suppression de SON marqueur, en cours ou terminé : chaque importateur (enseignant, directeur, administrateur)', async () => {
+    await check({ expectAllowed: importers, run: (db, actor) => deleteDoc(doc(db, mine(actor))), reset: () => seedMarkers() });
+    const done = () => seedMarkers({ lots: 2, done: 2, state: 'done' });
+    await check({ expectAllowed: importers, run: (db, actor) => deleteDoc(doc(db, mine(actor))), reset: done });
+    await reset();
+  });
+  test('ATTAQUE : supprimer le marqueur d\'un AUTRE est refusé pour tous, gestionnaires compris, ni sous l\'empreinte seule', async () => {
+    const mark = () => seedMarkers();
+    for (const owner of importers) {
+      await check({ expectAllowed: [owner], run: (db) => deleteDoc(doc(db, mine(owner))), reset: mark });
+    }
+    const bare = async () => put(env, `clubs/c1/imports/${FILE}`, stored('director', uids.director));
+    await check({ expectAllowed: [], run: (db) => deleteDoc(doc(db, `clubs/c1/imports/${FILE}`)), reset: bare });
+    await reset();
+  });
+  test('ATTAQUE (pas d\'élévation) : un marqueur à son propre uid ne se supprime que par un importateur du club', async () => {
+    // Un parent, un élève, un invité, l'enseignant ou le directeur d'un autre club, un compte non vérifié :
+    // refusés même pour un marqueur posé (en console) à leur uid.
+    const all = async () => {
+      await reset();
+      for (const actor of actorNames) await put(env, pathOf(uidOf(actor)), stored('director', uidOf(actor)));
+    };
+    await check({ expectAllowed: importers, run: (db, actor) => deleteDoc(doc(db, pathOf(uidOf(actor)))), reset: all });
+    for (const actor of actorNames) await remove(env, pathOf(uidOf(actor)));
     await reset();
   });
 });
@@ -707,6 +744,16 @@ suite('operations', 'clubs/{c}/operations/{operationId}_{uid}', () => {
     await seedOwn();
     await check({ expectAllowed: MGR, run: (db, actor) => deleteDoc(doc(db, mine(actor))), reset: seedOwn });
     await reset();
+  });
+  test('ATTAQUE (pas d\'élévation, FB8 B1) : un marqueur à son propre uid ne se supprime que par un gestionnaire du club', async () => {
+    const all = async () => {
+      await reset();
+      for (const actor of actorNames) {
+        await put(env, mine(actor), { ...created(actor), role: 'director', startedAt: ts(now() - 1000), updatedAt: ts(now() - 1000) });
+      }
+    };
+    await check({ expectAllowed: MGR, run: (db, actor) => deleteDoc(doc(db, mine(actor))), reset: all });
+    for (const actor of actorNames) await remove(env, mine(actor));
   });
 });
 

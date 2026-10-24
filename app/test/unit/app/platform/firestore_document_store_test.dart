@@ -6,6 +6,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Les appels du SDK, scriptés : ce que le magasin leur demande est enregistré.
+String _symbol(RawFilter op) => switch (op) {
+  RawFilter.equals => '=',
+  RawFilter.containsAny => 'any',
+};
+
 class _FakeAccess implements FirestoreAccess {
   Map<String, dynamic>? document;
   List<RawDocument> collection = const [];
@@ -49,10 +54,13 @@ class _FakeAccess implements FirestoreAccess {
   Future<List<RawDocument>> readQuery(
     String path,
     String field, {
-    required bool contains,
+    required RawFilter op,
     required Object? value,
+    bool fromServer = false,
   }) async {
-    calls.add('query $path $field ${contains ? 'any' : '='} $value');
+    calls.add(
+      '${fromServer ? 'server ' : ''}query $path $field ${_symbol(op)} $value',
+    );
     _maybeFail();
     return collection;
   }
@@ -60,10 +68,13 @@ class _FakeAccess implements FirestoreAccess {
   @override
   Future<List<RawDocument>> readQueryAll(
     String path,
-    Map<String, Object?> equalities,
-  ) async {
+    Map<String, Object?> equalities, {
+    bool fromServer = false,
+  }) async {
     final clauses = [for (final e in equalities.entries) '${e.key}=${e.value}'];
-    calls.add('queryAll $path ${clauses.join(',')}');
+    calls.add(
+      '${fromServer ? 'server ' : ''}queryAll $path ${clauses.join(',')}',
+    );
     _maybeFail();
     return collection;
   }
@@ -72,9 +83,11 @@ class _FakeAccess implements FirestoreAccess {
   Future<List<RawDocument>> readGroup(
     String collectionId,
     String field,
-    Object? equalTo,
-  ) async {
-    calls.add('group $collectionId $field=$equalTo');
+    Object? equalTo, {
+    bool fromServer = false,
+  }) async {
+    final server = fromServer ? 'server ' : '';
+    calls.add('${server}group $collectionId $field=$equalTo');
     _maybeFail();
     return collection;
   }
@@ -109,9 +122,9 @@ class _FakeAccess implements FirestoreAccess {
   Stream<RawCollectionEvent> watchQuery(
     String path,
     String field, {
-    required bool contains,
+    required RawFilter op,
     required Object? value,
-  }) => _watch('query $path $field ${contains ? 'any' : '='} $value');
+  }) => _watch('query $path $field ${_symbol(op)} $value');
 
   @override
   Stream<RawCollectionEvent> watchQueryAll(
@@ -277,6 +290,63 @@ void main() {
         expect(access.calls, [
           'queryAll clubs/c1/attempts groupId=g1,sessionId=x1',
         ]);
+      },
+    );
+
+    test('queryFromServer asks the server only, for every filter', () async {
+      access.collection = [
+        (path: 'a/1', data: {'x': 1}),
+      ];
+
+      final found = await store.queryFromServer(
+        'clubs/c1/imports',
+        const FieldEquals('createdBy', 'u1'),
+      );
+      await store.queryFromServer(
+        'invitations',
+        AllEqual(const [
+          FieldEquals('clubId', 'c1'),
+          FieldEquals('createdBy', 'u1'),
+        ]),
+      );
+
+      expect([for (final d in found) d.path], ['a/1']);
+      expect(access.calls, [
+        'server query clubs/c1/imports createdBy = u1',
+        'server queryAll invitations clubId=c1,createdBy=u1',
+      ]);
+    });
+
+    test('collectionGroupFromServer asks the server only', () async {
+      access.collection = [
+        (path: 'clubs/c1/members/u1', data: {'uid': 'u1'}),
+      ];
+
+      final found = await store.collectionGroupFromServer(
+        'members',
+        field: 'uid',
+        equalTo: 'u1',
+      );
+
+      expect([for (final d in found) d.path], ['clubs/c1/members/u1']);
+      expect(access.calls, ['server group members uid=u1']);
+    });
+
+    test(
+      'a server-only query offline is unavailable, never the cache',
+      () async {
+        access.error = _failure('unavailable');
+
+        await expectLater(
+          store.queryFromServer('a', const FieldEquals('x', 1)),
+          throwsA(
+            isA<StoreFailure>().having(
+              (e) => e.code,
+              'code',
+              StoreFailureCode.unavailable,
+            ),
+          ),
+        );
       },
     );
 

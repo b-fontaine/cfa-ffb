@@ -25,6 +25,7 @@ import {
   Timestamp,
   arrayUnion,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -595,6 +596,50 @@ describe('le marqueur d\'import est lié à son auteur', () => {
       assert.equal(await allowed(() => getDoc(doc(db, markerPath(teacherLarge, uid)))), true, 'le sien (même absent)');
     });
   }
+
+  /** Un marqueur déjà là (un lot), posé hors règles au nom de [uid]. */
+  const storedMarker = (plan, uid) => ({
+    fileId: plan.fileId, planId: 'd'.repeat(64), lots: 3, done: 1, writes: 10, restored: 0, role: 'director',
+    createdBy: uid, state: 'running', startedAt: Timestamp.now(), updatedAt: Timestamp.now(),
+  });
+
+  // FB8 partie B (B1) : l'auteur supprime SES marqueurs (suppression de son compte), jamais celui d'un autre.
+  for (const uid of ['.*', '.+', '[0-9a-f]+', 'u-teacher-a|.*']) {
+    test(`un compte dont l'uid est « ${uid} » ne supprime que son propre marqueur`, async () => {
+      assert.equal(await applyLot(teacherLarge, 0, 'teacherA'), true);
+      await put(env, `clubs/c1/members/${uid.replaceAll('/', '_')}`, member(uid, 'teacher', { groupIds: ['g1'] }));
+      const db = env.authenticatedContext(uid, { email: 'x@example.org', email_verified: true }).firestore();
+      assert.equal(await allowed(() => deleteDoc(doc(db, markerPath(teacherLarge, 'u-teacher-a')))), false, 'celui d\'un autre');
+      assert.equal(await allowed(() => deleteDoc(doc(db, markerPath(teacherLarge, uid)))), true, 'le sien');
+      assert.equal((await readMarker(teacherLarge, 'teacherA')).done, 1);
+    });
+  }
+
+  test('un lot qui supprime SON marqueur et celui d\'un autre est refusé en bloc', async () => {
+    assert.equal(await applyLot(teacherLarge, 0, 'teacherA'), true);
+    await put(env, markerPath(teacherLarge, 'u-teacher-b'), { ...storedMarker(teacherLarge, 'u-teacher-b'), role: 'teacher' });
+    const db = dbOf(env, 'teacherA');
+    const ok = await allowed(async () => {
+      const batch = writeBatch(db);
+      batch.delete(doc(db, markerPath(teacherLarge, 'u-teacher-a')));
+      batch.delete(doc(db, markerPath(teacherLarge, 'u-teacher-b')));
+      await batch.commit();
+    });
+    assert.equal(ok, false);
+    assert.equal((await readMarker(teacherLarge, 'teacherA')).done, 1);
+    assert.equal((await readMarker(teacherLarge, 'teacherB')).done, 1);
+  });
+
+  test('l\'enseignant liste et supprime ses marqueurs ; ceux du directeur restent (idempotence entre auteurs intacte)', async () => {
+    assert.equal(await applyLot(teacherLarge, 0, 'teacherA'), true);
+    await put(env, markerPath(teacherLarge, 'u-dir'), storedMarker(teacherLarge, 'u-dir'));
+    const db = dbOf(env, 'teacherA');
+    const own = await getDocs(query(collection(db, 'clubs/c1/imports'), where('createdBy', '==', 'u-teacher-a')));
+    assert.deepEqual(own.docs.map((d) => d.id), [`${teacherLarge.fileId}_u-teacher-a`]);
+    for (const d of own.docs) await deleteDoc(d.ref);
+    assert.equal(await readMarker(teacherLarge, 'teacherA'), undefined);
+    assert.equal((await readMarker(teacherLarge, 'director')).done, 1);
+  });
 
   test('l\'auteur du marqueur ne se change pas à l\'avancement', async () => {
     assert.equal(await applyLot(teacherLarge, 0, 'teacherA'), true);

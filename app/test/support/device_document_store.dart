@@ -100,6 +100,21 @@ class DeviceDocumentStore implements DocumentStore {
     return await server.query(collection, filter);
   }
 
+  /// Sans cache dans ce double : la lecture au serveur est [query].
+  @override
+  Future<List<StoredDocument>> queryFromServer(
+    String collection,
+    QueryFilter filter,
+  ) => query(collection, filter);
+
+  /// Sans cache dans ce double : la lecture au serveur est [collectionGroup].
+  @override
+  Future<List<StoredDocument>> collectionGroupFromServer(
+    String collectionId, {
+    required String field,
+    required Object? equalTo,
+  }) => collectionGroup(collectionId, field: field, equalTo: equalTo);
+
   @override
   Future<List<StoredDocument>> collectionGroup(
     String collectionId, {

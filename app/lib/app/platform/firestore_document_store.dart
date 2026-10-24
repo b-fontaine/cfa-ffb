@@ -34,26 +34,31 @@ abstract interface class FirestoreAccess {
 
   Future<List<RawDocument>> readCollection(String path);
 
-  /// Une collection filtrée sur un champ : égalité ([contains] faux, [value]
-  /// la valeur) ou « contient l'un de » ([contains] vrai, [value] la liste).
+  /// Une collection filtrée sur un champ par [op] : égalité ou « contient
+  /// l'un de » ([value] est la liste). Avec
+  /// [fromServer], **au serveur seulement** (jamais le cache ; `unavailable`
+  /// hors ligne), comme les trois lectures de ce groupe.
   Future<List<RawDocument>> readQuery(
     String path,
     String field, {
-    required bool contains,
+    required RawFilter op,
     required Object? value,
+    bool fromServer = false,
   });
 
   /// Une collection filtrée par plusieurs égalités sur des champs différents.
   Future<List<RawDocument>> readQueryAll(
     String path,
-    Map<String, Object?> equalities,
-  );
+    Map<String, Object?> equalities, {
+    bool fromServer = false,
+  });
 
   Future<List<RawDocument>> readGroup(
     String collectionId,
     String field,
-    Object? equalTo,
-  );
+    Object? equalTo, {
+    bool fromServer = false,
+  });
 
   /// Les écoutes temps réel (`snapshots()`) : l'état courant puis un état par
   /// changement. Une erreur du SDK (`FirebaseException`) arrive sur le flux ;
@@ -66,7 +71,7 @@ abstract interface class FirestoreAccess {
   Stream<RawCollectionEvent> watchQuery(
     String path,
     String field, {
-    required bool contains,
+    required RawFilter op,
     required Object? value,
   });
 
@@ -84,6 +89,15 @@ abstract interface class FirestoreAccess {
   /// est absent) ; `false` s'il existe déjà. Un lot ne sait pas « créer » :
   /// il écrit par-dessus, ce qui est une mise à jour pour les règles.
   Future<bool> createDocument(String path, Map<String, Object?> data);
+}
+
+/// L'opérateur d'un filtre à un champ ([FirestoreAccess.readQuery]).
+enum RawFilter {
+  /// `isEqualTo`.
+  equals,
+
+  /// `arrayContainsAny` (la valeur est une liste).
+  containsAny,
 }
 
 /// Une écriture déjà traduite : `set`, `setMerge`, `update` (champs) ou
@@ -154,38 +168,59 @@ class FirestoreSdkAccess implements FirestoreAccess {
   Future<List<RawDocument>> readQuery(
     String path,
     String field, {
-    required bool contains,
+    required RawFilter op,
     required Object? value,
-  }) async {
-    final collection = _firestore().collection(path);
-    final query = contains
-        ? collection.where(field, arrayContainsAny: value! as List<Object?>)
-        : collection.where(field, isEqualTo: value);
-    return _raw(await query.get());
-  }
+    bool fromServer = false,
+  }) async => _raw(
+    await _where(
+      _firestore().collection(path),
+      field,
+      op,
+      value,
+    ).get(_options(fromServer)),
+  );
+
+  /// Lecture par défaut (serveur, sinon cache hors ligne) ou au serveur seul.
+  static GetOptions? _options(bool fromServer) =>
+      fromServer ? const GetOptions(source: Source.server) : null;
+
+  static Query<Map<String, dynamic>> _where(
+    CollectionReference<Map<String, dynamic>> collection,
+    String field,
+    RawFilter op,
+    Object? value,
+  ) => switch (op) {
+    RawFilter.equals => collection.where(field, isEqualTo: value),
+    RawFilter.containsAny => collection.where(
+      field,
+      arrayContainsAny: value! as List<Object?>,
+    ),
+  };
 
   @override
   Future<List<RawDocument>> readQueryAll(
     String path,
-    Map<String, Object?> equalities,
-  ) async {
+    Map<String, Object?> equalities, {
+    bool fromServer = false,
+  }) async {
     Query<Map<String, dynamic>> query = _firestore().collection(path);
     for (final entry in equalities.entries) {
       query = query.where(entry.key, isEqualTo: entry.value);
     }
-    return _raw(await query.get());
+    return _raw(await query.get(_options(fromServer)));
   }
 
   @override
   Future<List<RawDocument>> readGroup(
     String collectionId,
     String field,
-    Object? equalTo,
-  ) async => _raw(
+    Object? equalTo, {
+    bool fromServer = false,
+  }) async => _raw(
     await _firestore()
         .collectionGroup(collectionId)
         .where(field, isEqualTo: equalTo)
-        .get(),
+        .get(_options(fromServer)),
   );
 
   @override
@@ -207,20 +242,11 @@ class FirestoreSdkAccess implements FirestoreAccess {
   Stream<RawCollectionEvent> watchQuery(
     String path,
     String field, {
-    required bool contains,
+    required RawFilter op,
     required Object? value,
-  }) {
-    final collection = _firestore().collection(path);
-    return _events(
-      (contains
-              ? collection.where(
-                  field,
-                  arrayContainsAny: value! as List<Object?>,
-                )
-              : collection.where(field, isEqualTo: value))
-          .snapshots(),
-    );
-  }
+  }) => _events(
+    _where(_firestore().collection(path), field, op, value).snapshots(),
+  );
 
   @override
   Stream<RawCollectionEvent> watchQueryAll(
@@ -316,27 +342,41 @@ class FirestoreDocumentStore implements DocumentStore {
 
   @override
   Future<List<StoredDocument>> query(String collection, QueryFilter filter) =>
-      _guard(() async {
-        final raw = switch (filter) {
-          FieldEquals(:final field, :final value) => await _access.readQuery(
-            collection,
-            field,
-            contains: false,
-            value: _encode(value),
-          ),
-          FieldArrayContainsAny(:final field, :final values) =>
-            await _access.readQuery(
-              collection,
-              field,
-              contains: true,
-              value: [for (final value in values) _encode(value)],
-            ),
-          AllEqual(:final clauses) => await _access.readQueryAll(collection, {
-            for (final clause in clauses) clause.field: _encode(clause.value),
-          }),
-        };
-        return _documents(raw);
-      });
+      _query(collection, filter, fromServer: false);
+
+  @override
+  Future<List<StoredDocument>> queryFromServer(
+    String collection,
+    QueryFilter filter,
+  ) => _query(collection, filter, fromServer: true);
+
+  Future<List<StoredDocument>> _query(
+    String collection,
+    QueryFilter filter, {
+    required bool fromServer,
+  }) => _guard(() async {
+    final raw = switch (filter) {
+      FieldEquals(:final field, :final value) => await _access.readQuery(
+        collection,
+        field,
+        op: RawFilter.equals,
+        value: _encode(value),
+        fromServer: fromServer,
+      ),
+      FieldArrayContainsAny(:final field, :final values) =>
+        await _access.readQuery(
+          collection,
+          field,
+          op: RawFilter.containsAny,
+          value: [for (final value in values) _encode(value)],
+          fromServer: fromServer,
+        ),
+      AllEqual(:final clauses) => await _access.readQueryAll(collection, {
+        for (final clause in clauses) clause.field: _encode(clause.value),
+      }, fromServer: fromServer),
+    };
+    return _documents(raw);
+  });
 
   @override
   Future<List<StoredDocument>> collectionGroup(
@@ -346,6 +386,17 @@ class FirestoreDocumentStore implements DocumentStore {
   }) => _guard(
     () async =>
         _documents(await _access.readGroup(collectionId, field, equalTo)),
+  );
+
+  @override
+  Future<List<StoredDocument>> collectionGroupFromServer(
+    String collectionId, {
+    required String field,
+    required Object? equalTo,
+  }) => _guard(
+    () async => _documents(
+      await _access.readGroup(collectionId, field, equalTo, fromServer: true),
+    ),
   );
 
   @override
@@ -368,14 +419,14 @@ class FirestoreDocumentStore implements DocumentStore {
         FieldEquals(:final field, :final value) => _access.watchQuery(
           collection,
           field,
-          contains: false,
+          op: RawFilter.equals,
           value: _encode(value),
         ),
         FieldArrayContainsAny(:final field, :final values) =>
           _access.watchQuery(
             collection,
             field,
-            contains: true,
+            op: RawFilter.containsAny,
             value: [for (final value in values) _encode(value)],
           ),
         AllEqual(:final clauses) => _access.watchQueryAll(collection, {

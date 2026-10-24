@@ -237,6 +237,25 @@ abstract interface class DocumentStore {
     required Object? equalTo,
   });
 
+  /// Comme [query], **au serveur, jamais dans le cache local** : l'état que
+  /// le serveur a aujourd'hui, ou `unavailable` (hors ligne, réseau muet).
+  /// C'est la lecture d'une liste dont l'**absence** d'un document compte
+  /// (FB8 partie B : « il ne reste plus aucun de mes marqueurs, de mes
+  /// invitations ») : un cache vide ou en retard le ferait croire à tort.
+  Future<List<StoredDocument>> queryFromServer(
+    String collection,
+    QueryFilter filter,
+  );
+
+  /// Comme [collectionGroup], **au serveur, jamais dans le cache local** (voir
+  /// [queryFromServer]) : « tous les `members` de ce compte », avant de
+  /// supprimer son compte d'authentification.
+  Future<List<StoredDocument>> collectionGroupFromServer(
+    String collectionId, {
+    required String field,
+    required Object? equalTo,
+  });
+
   /// Suit le document [path] : son état courant d'abord, puis un état à
   /// chaque changement (création, mise à jour, suppression : `document` nul).
   ///

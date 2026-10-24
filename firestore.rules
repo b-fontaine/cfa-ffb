@@ -703,7 +703,7 @@ service cloud.firestore {
       // seule fois » : le premier lot le CRÉE avec `done == 1`, chaque lot suivant l'AVANCE d'exactement
       // un (`done == avant + 1`) DANS LE MÊME lot atomique que ses écritures. Un lot rejoué (coupure,
       // file du SDK, deuxième appareil du même compte) voit un `done` déjà avancé : les règles le
-      // refusent en bloc, rien n'est écrit deux fois. Jamais supprimé (console seule). Entre deux
+      // refusent en bloc, rien n'est écrit deux fois. Supprimé par son auteur seul (FB8 partie B). Entre deux
       // auteurs, l'idempotence ne vient pas du marqueur : un document déjà présent n'est jamais écrasé
       // (`importedAt`, identifiants du fichier) et le plan du second voit l'inventaire. Le directeur,
       // l'administrateur et l'enseignant (qui n'écrit que dans ses groupes, par les règles des données)
@@ -740,7 +740,10 @@ service cloud.firestore {
         // Comparaison de chaînes, sans regex construite depuis l'uid (un uid « .* » en serait un motif).
         allow get: if mayImport(clubId) && markerId.matches('[0-9a-f]{64}_.+')
           && markerId[65:] == request.auth.uid;
-        allow list: if manages(clubId);
+        // La liste de tout le club pour un gestionnaire ; pour un enseignant, ses SEULS marqueurs (la
+        // requête doit filtrer sur `createdBy == uid` : suppression de son compte, FB8 partie B).
+        allow list: if manages(clubId)
+          || (mayImport(clubId) && resource.data.createdBy == request.auth.uid);
         allow create: if mayImport(clubId) && importMarkerShape(markerId)
           && request.resource.data.done == 1
           && request.resource.data.startedAt == request.time
@@ -759,7 +762,12 @@ service cloud.firestore {
           && request.resource.data.restored == resource.data.restored
           && request.resource.data.role == resource.data.role
           && request.resource.data.startedAt == resource.data.startedAt;
-        allow delete: if false;
+        // Seul l'AUTEUR supprime le sien (identifiant suffixé par son uid, comparé comme une chaîne),
+        // en cours ou terminé : c'est le nettoyage à la suppression de son compte (FB8 partie B, B1).
+        // Il peut ensuite rejouer cet import (limite dite au registre) ; l'idempotence entre auteurs
+        // ne dépend pas du marqueur (règles des documents importés) ; un tiers n'y touche jamais.
+        allow delete: if mayImport(clubId) && markerId.matches('[0-9a-f]{64}_.+')
+          && markerId[65:] == request.auth.uid;
       }
       // ── Marqueurs d'opération reprenable (FB8, ADR 0024 décision 19) ──
       // Un document par opération EN COURS (effacement d'un élève, clôture d'une saison) ET PAR AUTEUR :

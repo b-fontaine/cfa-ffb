@@ -150,7 +150,7 @@ void main() {
       final read = await access.readQuery(
         'clubs/c1/memberships',
         'groupId',
-        contains: false,
+        op: RawFilter.equals,
         value: 'g1',
       );
 
@@ -169,7 +169,7 @@ void main() {
       final read = await access.readQuery(
         'clubs/c1/students',
         'groupIds',
-        contains: true,
+        op: RawFilter.containsAny,
         value: ['g1', 'g3'],
       );
 

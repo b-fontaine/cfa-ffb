@@ -769,3 +769,41 @@ Chaque mutation est appliquée à une copie (code : source temporairement modifi
 | champs en trop ; `done` quelconque à la création ; termes de clôture libres | « création : forme exigée » ; « création d'une clôture : les termes sont exigés » |
 | un enseignant retire le lien d'un compte ; un enseignant supprime une fiche | « qui peut retirer le lien d'un compte à une fiche » ; « qui supprime une fiche… » |
 
+
+## Lot FB8, partie B, tranche B1 : nettoyage des marqueurs par leur auteur (2026-10-24)
+
+Voir l'[ADR 0024](adr/0024-firebase-source-de-verite-comptes-clubs-roles.md) (notes FB8b) et le plan `fb8b-plan.md` (décision D4). Aucun écran : le consommateur est la suppression d'un compte (B2). Aucun SDK ni projet réel : faux serveur de règles en mémoire, `fake_cloud_firestore`, émulateurs `demo-cfa-ffb`.
+
+**Rouge avant le code.** (1) Règles : les tests d'émulateur ont été écrits d'abord et joués contre les règles d'avant : **9 rouges sur 229** (`matrix.test.mjs` + `import.test.mjs`), puis verts après la règle. (2) `own_markers_cleanup.feature` (6 scénarios) écrit avec ses étapes avant le cas d'usage : **6 rouges sur 6** (cas d'usage absent). (3) `remove_own_markers_test.dart` : **9 rouges sur 10** (le test de `MarkerKind.heldBy` était vert d'emblée : l'énumération a été écrite avec le port, écart reconnu). (4) Contrat `own_marker_store_contract.dart` : **21 rouges sur 21** (7 cas × 3 réalisations). **Écart reconnu** : `firestore_own_marker_store_test.dart` (6 tests propres à Firestore : filtre sur l'auteur, identifiant sans l'`uid`, chemins recomposés, lot vide, accusé absent, refus) a été écrit **après** la réalisation ; chaque test a été éprouvé par mutation (tableau ci-dessous).
+
+| Fichier | Prouve |
+|---|---|
+| `test/bdd/own_markers_cleanup.feature` (6) ; monde `test/support/own_markers_world.dart` (`MarkerRulesStore` : liste filtrée sur l'auteur et rôle qui pose ce marqueur, suppression du sien seul, coupure après N lots) | un directeur retire ses marqueurs d'import et d'opération, ceux de l'enseignant et de l'administrateur restent ; un enseignant retire les siens **sans demander la liste des opérations** ; un parent : rien n'est lu ni écrit ; 454 marqueurs en lots de 400 au plus ; coupure après un lot puis reprise ; hors ligne : rien n'est retiré |
+| `test/unit/shared/lib/operations/remove_own_markers_test.dart` (10) | natures demandées selon le rôle (toutes les valeurs de `Role`), ordre imports puis opérations, lots de 400 (bornes 400 et 801), aucun lot sans marqueur, un lot en échec arrête et remonte |
+| `test/contract/own_marker_store_contract.dart` (7 × 3 : mémoire, Firestore sur stock en mémoire, Firestore sur `fake_cloud_firestore`) | ne liste que **mes** marqueurs de cette nature dans ce club ; supprime les miens et rien d'autre (autre club, autre nature) ; **jamais le marqueur d'un autre auteur de même empreinte** ; supprimer un absent n'est pas une erreur ; lot de plus de 400 refusé en entier ; sans compte : `denied`, rien d'écrit |
+| `test/unit/app/firestore_own_marker_store_test.dart` (6) | requête filtrée sur `createdBy == uid` (la seule que les règles permettent) ; identifiant sans `_{uid}` ignoré ; chemins recomposés avec l'`uid` courant en un seul lot ; lot vide non envoyé ; serveur muet : `unavailable` ; refus : `denied` |
+
+**Règles contre l'émulateur** : `matrix.test.mjs`, suite `imports` (+4 : liste des siens par chaque importateur et liste filtrée sur l'`uid` d'un autre refusée à un autre enseignant ; suppression du sien, en cours ou terminé ; **ATTAQUE** suppression du marqueur d'un autre, gestionnaires compris, et sous l'empreinte seule ; **ATTAQUE pas d'élévation** : parent, élève, invité, anonyme, compte non vérifié, enseignant et directeur d'un autre club refusés même pour un marqueur à leur `uid`), suite `operations` (+1 : même attaque, réservée aux gestionnaires du club) ; `import.test.mjs` (+6 : uid fait de métacaractères de regex « .* », « .+ »… ne supprime que le sien ; un lot qui supprime le sien et celui d'un autre est refusé en bloc ; l'enseignant liste et supprime les siens, ceux du directeur restent).
+
+### Mutations à la main (FB8 partie B, B1, 2026-10-24)
+
+Règles par `RULES_FILE` (copie), code par modification temporaire restaurée par le script ; **4 + 8 mutations, toutes tuées**.
+
+| Règle | Suite rouge |
+|---|---|
+| `delete` sans la comparaison du suffixe à l'`uid` | `matrix` « ATTAQUE : supprimer le marqueur d'un AUTRE », `import` métacaractères et « refusé en bloc » |
+| `delete` sans `mayImport` | `matrix` « pas d'élévation », « supprimer le marqueur d'un AUTRE » |
+| `list` sans le filtre `createdBy == uid` (tout importateur) | `matrix` « list de SES marqueurs », « get … list : le directeur et l'administrateur » |
+| `list` sans `mayImport` (tout compte, filtré sur lui-même) | `matrix` « list de SES marqueurs » |
+
+| Code | Suite rouge |
+|---|---|
+| `FirestoreOwnMarkerStore` : suffixe `_{uid}` non vérifié | test « a document whose id does not end with my uid is ignored » |
+| `FirestoreOwnMarkerStore` : accusé non attendu (pas de délai) | test « a lot without an answer from the server is unavailable » |
+| `FirestoreOwnMarkerStore` : liste sans filtre sur l'auteur | BDD (4 scénarios, refus du faux serveur) et test du filtre |
+| `FirestoreOwnMarkerStore` : borne de 400 relevée | contrat « lot de plus de 400 refusé » (deux réalisations Firestore) |
+| `InMemoryOwnMarkerStore` : auteur ignoré à la suppression | contrat « never deletes the marker another author left » |
+| `RemoveOwnMarkers` : rôle ignoré | BDD enseignant et parent, tests parent et élève |
+| `RemoveOwnMarkers` : pas de découpe en lots (deux variantes) | BDD 454 marqueurs et coupure, tests de lots |
+
+**Limites dites.** (1) `MarkerRulesStore` ne rejoue pas la grammaire des règles : la vérité est l'émulateur. (2) La liste (`DocumentStore.query`) n'est pas une lecture « serveur seulement » : hors ligne, le SDK peut rendre le cache ; le lot de suppression, lui, attend l'accusé (refus `unavailable` sinon). (3) Pas de parcours navigateur dans cette tranche (aucun écran).

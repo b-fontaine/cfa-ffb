@@ -302,6 +302,21 @@ class _VanishingStore implements DocumentStore {
   Future<List<StoredDocument>> query(String collection, QueryFilter filter) =>
       _inner.query(collection, filter);
 
+  /// Sans cache dans ce double : la lecture au serveur est [query].
+  @override
+  Future<List<StoredDocument>> queryFromServer(
+    String collection,
+    QueryFilter filter,
+  ) => query(collection, filter);
+
+  /// Sans cache dans ce double : la lecture au serveur est [collectionGroup].
+  @override
+  Future<List<StoredDocument>> collectionGroupFromServer(
+    String collectionId, {
+    required String field,
+    required Object? equalTo,
+  }) => collectionGroup(collectionId, field: field, equalTo: equalTo);
+
   @override
   Future<List<StoredDocument>> collectionGroup(
     String id, {
@@ -353,6 +368,21 @@ class _FailingCommitStore implements DocumentStore {
   @override
   Future<List<StoredDocument>> query(String collection, QueryFilter filter) =>
       _inner.query(collection, filter);
+
+  /// Sans cache dans ce double : la lecture au serveur est [query].
+  @override
+  Future<List<StoredDocument>> queryFromServer(
+    String collection,
+    QueryFilter filter,
+  ) => query(collection, filter);
+
+  /// Sans cache dans ce double : la lecture au serveur est [collectionGroup].
+  @override
+  Future<List<StoredDocument>> collectionGroupFromServer(
+    String collectionId, {
+    required String field,
+    required Object? equalTo,
+  }) => collectionGroup(collectionId, field: field, equalTo: equalTo);
 
   @override
   Future<List<StoredDocument>> collectionGroup(

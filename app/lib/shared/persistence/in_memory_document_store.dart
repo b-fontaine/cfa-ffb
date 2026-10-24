@@ -156,6 +156,19 @@ class InMemoryDocumentStore implements DocumentStore {
     return _matching(collection, filter);
   }
 
+  /// Sans cache dans ce double : la même lecture que [query] (le serveur et
+  /// l'appareil ne font qu'un ; `failing` la fait échouer comme hors ligne).
+  @override
+  Future<List<StoredDocument>> queryFromServer(
+    String collection,
+    QueryFilter filter,
+  ) async {
+    reads++;
+    queryLog.add(filter);
+    _check('$collection/');
+    return _matching(collection, filter);
+  }
+
   List<StoredDocument> _matching(String collection, QueryFilter? filter) {
     final prefix = '$collection/';
     final paths = _documents.keys.where((path) {
@@ -293,7 +306,21 @@ class InMemoryDocumentStore implements DocumentStore {
     String collectionId, {
     required String field,
     required Object? equalTo,
-  }) async {
+  }) async => _group(collectionId, field, equalTo);
+
+  /// Sans cache dans ce double : la même lecture que [collectionGroup].
+  @override
+  Future<List<StoredDocument>> collectionGroupFromServer(
+    String collectionId, {
+    required String field,
+    required Object? equalTo,
+  }) async => _group(collectionId, field, equalTo);
+
+  List<StoredDocument> _group(
+    String collectionId,
+    String field,
+    Object? equalTo,
+  ) {
     reads++;
     _check();
     final paths = _documents.keys.where((path) {
